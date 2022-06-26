@@ -19749,6 +19749,42 @@ paths:
           format: int64
       tags:
         - Query
+  /empowerchain/empowerchain/proofofexistence/params:
+    get:
+      summary: Parameters queries the parameters of the module.
+      operationId: EmpowerchainEmpowerchainProofofexistenceParams
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                description: params holds all the parameters of this module.
+                type: object
+            description: >-
+              QueryParamsResponse is response type for the Query/Params RPC
+              method.
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
   /ibc/apps/interchain_accounts/controller/v1/params:
     get:
       summary: Params queries all parameters of the ICA controller submodule.
@@ -47092,6 +47128,16 @@ definitions:
     description: >-
       MsgCreateVestingAccountResponse defines the Msg/CreateVestingAccount
       response type.
+  empowerchain.empowerchain.proofofexistence.Params:
+    type: object
+    description: Params defines the parameters for the module.
+  empowerchain.empowerchain.proofofexistence.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        description: params holds all the parameters of this module.
+        type: object
+    description: QueryParamsResponse is response type for the Query/Params RPC method.
   ibc.applications.interchain_accounts.controller.v1.Params:
     type: object
     properties:
