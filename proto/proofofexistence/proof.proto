@@ -1,0 +1,8 @@
+syntax = "proto3";
+package empowerchain.empowerchain.proofofexistence;
+
+option go_package = "github.com/empowerchain/empowerchain/x/proofofexistence/types";
+
+message Proof {
+  string hash = 1; 
+}
