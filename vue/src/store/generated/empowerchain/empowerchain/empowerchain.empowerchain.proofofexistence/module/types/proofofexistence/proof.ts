@@ -5,7 +5,10 @@ import { Writer, Reader } from "protobufjs/minimal";
 export const protobufPackage = "empowerchain.empowerchain.proofofexistence";
 
 export interface Proof {
-  /** Hash is the SHA-256 hash of the data of which is being made a proof for */
+  /**
+   * Hash is the SHA-256 hash of the data of which is being made a proof for.
+   * The hash needs to be sent as a Base64 encoded string.
+   */
   hash: string;
   /** Timestamp is the time the proof was added on-chain (block time) */
   timestamp: Date | undefined;

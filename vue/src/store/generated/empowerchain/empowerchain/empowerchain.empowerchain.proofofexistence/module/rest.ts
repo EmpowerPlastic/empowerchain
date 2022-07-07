@@ -9,6 +9,8 @@
  * ---------------------------------------------------------------
  */
 
+export type ProofofexistenceMsgCreateResponse = object;
+
 /**
  * Params defines the parameters for the module.
  */

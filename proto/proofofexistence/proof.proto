@@ -7,7 +7,8 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/empowerchain/empowerchain/x/proofofexistence/types";
 
 message Proof {
-  // Hash is the SHA-256 hash of the data of which is being made a proof for
+  // Hash is the SHA-256 hash of the data of which is being made a proof for.
+  // The hash needs to be sent as a Base64 encoded string.
   string hash = 1;
 
   // Timestamp is the time the proof was added on-chain (block time)

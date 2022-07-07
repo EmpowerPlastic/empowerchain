@@ -28,7 +28,8 @@ var _ = time.Kitchen
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type Proof struct {
-	// Hash is the SHA-256 hash of the data of which is being made a proof for
+	// Hash is the SHA-256 hash of the data of which is being made a proof for.
+	// The hash needs to be sent as a Base64 encoded string.
 	Hash string `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	// Timestamp is the time the proof was added on-chain (block time)
 	Timestamp time.Time `protobuf:"bytes,2,opt,name=timestamp,proto3,stdtime" json:"timestamp" yaml:"timestamp"`

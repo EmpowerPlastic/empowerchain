@@ -10,7 +10,7 @@ that you are the owner of the reporter address).
 
 - Proof `0x01 | hash | -> ProtocolBuffer(Proof)`
 
-The hash is not made on-chain to avoid the privacy issues that would entail. Instead, the hash string is just checked to
+The hash is not made on-chain to avoid the privacy issues that would entail. Instead, the hash is just checked to
 be a valid SHA-256 hash.
 
 The timestamp is simply taken from current block's header (i.e. the time of the block).

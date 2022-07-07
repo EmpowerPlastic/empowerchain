@@ -47128,6 +47128,8 @@ definitions:
     description: >-
       MsgCreateVestingAccountResponse defines the Msg/CreateVestingAccount
       response type.
+  empowerchain.empowerchain.proofofexistence.MsgCreateResponse:
+    type: object
   empowerchain.empowerchain.proofofexistence.Params:
     type: object
     description: Params defines the parameters for the module.

@@ -8,5 +8,6 @@ import (
 
 // x/proofofexistence module sentinel errors
 var (
-	ErrSample = sdkerrors.Register(ModuleName, 1100, "sample error")
+	ErrInvalidHash = sdkerrors.Register(ModuleName, 2, "invalid hash")
+	ErrHashExists  = sdkerrors.Register(ModuleName, 3, "hash already registered")
 )
