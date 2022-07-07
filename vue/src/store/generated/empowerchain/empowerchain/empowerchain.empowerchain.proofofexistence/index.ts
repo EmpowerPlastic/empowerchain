@@ -2,9 +2,10 @@ import { txClient, queryClient, MissingWalletError , registry} from './module'
 
 import { Params } from "./module/types/proofofexistence/params"
 import { Proof } from "./module/types/proofofexistence/proof"
+import { StoredProof } from "./module/types/proofofexistence/stored_proof"
 
 
-export { Params, Proof };
+export { Params, Proof, StoredProof };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -43,10 +44,13 @@ function getStructure(template) {
 const getDefaultState = () => {
 	return {
 				Params: {},
+				StoredProof: {},
+				StoredProofAll: {},
 				
 				_Structure: {
 						Params: getStructure(Params.fromPartial({})),
 						Proof: getStructure(Proof.fromPartial({})),
+						StoredProof: getStructure(StoredProof.fromPartial({})),
 						
 		},
 		_Registry: registry,
@@ -80,6 +84,18 @@ export default {
 						(<any> params).query=null
 					}
 			return state.Params[JSON.stringify(params)] ?? {}
+		},
+				getStoredProof: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.StoredProof[JSON.stringify(params)] ?? {}
+		},
+				getStoredProofAll: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.StoredProofAll[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -132,6 +148,54 @@ export default {
 				return getters['getParams']( { params: {...key}, query}) ?? {}
 			} catch (e) {
 				throw new Error('QueryClient:QueryParams API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryStoredProof({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryStoredProof( key.hash)).data
+				
+					
+				commit('QUERY', { query: 'StoredProof', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryStoredProof', payload: { options: { all }, params: {...key},query }})
+				return getters['getStoredProof']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryStoredProof API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
+		
+		
+		 		
+		
+		
+		async QueryStoredProofAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+			try {
+				const key = params ?? {};
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryStoredProofAll(query)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
+					let next_values=(await queryClient.queryStoredProofAll({...query, 'pagination.key':(<any> value).pagination.next_key})).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'StoredProofAll', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryStoredProofAll', payload: { options: { all }, params: {...key},query }})
+				return getters['getStoredProofAll']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new Error('QueryClient:QueryStoredProofAll API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},

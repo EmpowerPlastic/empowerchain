@@ -6,7 +6,7 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/empowerchain/empowerchain/x/proofofexistence/types";
 
-message Proof {
+message StoredProof {
   // Hash is the SHA-256 hash of the data of which is being made a proof for.
   // The hash needs to be sent as a Base64 encoded string.
   string hash = 1;
