@@ -39,3 +39,12 @@ func TestStoredProofGet(t *testing.T) {
 		)
 	}
 }
+
+func TestStoredGameGetAll(t *testing.T) {
+	keeper, ctx := keepertest.ProofofexistenceKeeper(t)
+	items := createNStoredProof(keeper, ctx, 10)
+	require.ElementsMatch(t,
+		nullify.Fill(items),
+		nullify.Fill(keeper.GetAllStoredProof(ctx)),
+	)
+}

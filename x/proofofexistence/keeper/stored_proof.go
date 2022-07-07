@@ -50,3 +50,19 @@ func (k Keeper) GetStoredProof(
 	k.cdc.MustUnmarshal(b, &val)
 	return val, true
 }
+
+// GetAllStoredProof returns all storedProof
+func (k Keeper) GetAllStoredProof(ctx sdk.Context) (list []types.StoredProof) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StoredProofKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.StoredProof
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		list = append(list, val)
+	}
+
+	return
+}
