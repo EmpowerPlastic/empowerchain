@@ -7,6 +7,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestDefaultGenesisIsCorrect(t *testing.T) {
+	genesis := types.DefaultGenesis()
+	require.Equal(t, &types.GenesisState{
+		Params:    types.Params{},
+		ProofList: []types.Proof{},
+	}, genesis)
+}
+
 func TestGenesisState_Validate(t *testing.T) {
 	for _, tc := range []struct {
 		desc     string
@@ -22,7 +30,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			desc: "valid genesis state",
 			genState: &types.GenesisState{
 
-				StoredProofList: []types.StoredProof{
+				ProofList: []types.Proof{
 					{
 						Hash: "0",
 					},
@@ -35,9 +43,9 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid: true,
 		},
 		{
-			desc: "duplicated storedProof",
+			desc: "duplicated proof",
 			genState: &types.GenesisState{
-				StoredProofList: []types.StoredProof{
+				ProofList: []types.Proof{
 					{
 						Hash: "0",
 					},

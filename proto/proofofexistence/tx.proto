@@ -7,11 +7,11 @@ option go_package = "github.com/empowerchain/empowerchain/x/proofofexistence/typ
 
 // Msg defines the Msg service.
 service Msg {
-      rpc Create(MsgCreate) returns (MsgCreateResponse);
+      rpc CreateProof(MsgCreateProof) returns (MsgCreateProofResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
-message MsgCreate {
+message MsgCreateProof {
   // reporter is the address of the signer
   string reporter = 1;
 
@@ -19,7 +19,7 @@ message MsgCreate {
   string hash = 2;
 }
 
-message MsgCreateResponse {
+message MsgCreateProofResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

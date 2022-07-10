@@ -20,27 +20,27 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
-func networkWithStoredProofObjects(t *testing.T, n int) (*network.Network, []types.StoredProof) {
+func networkWithProofObjects(t *testing.T, n int) (*network.Network, []types.Proof) {
 	t.Helper()
 	cfg := network.DefaultConfig()
 	state := types.GenesisState{}
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
 	for i := 0; i < n; i++ {
-		storedProof := types.StoredProof{
+		proof := types.Proof{
 			Hash: strconv.Itoa(i),
 		}
-		nullify.Fill(&storedProof)
-		state.StoredProofList = append(state.StoredProofList, storedProof)
+		nullify.Fill(&proof)
+		state.ProofList = append(state.ProofList, proof)
 	}
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf
-	return network.New(t, cfg), state.StoredProofList
+	return network.New(t, cfg), state.ProofList
 }
 
-func TestShowStoredProof(t *testing.T) {
-	net, objs := networkWithStoredProofObjects(t, 2)
+func TestShowProof(t *testing.T) {
+	net, objs := networkWithProofObjects(t, 2)
 
 	ctx := net.Validators[0].ClientCtx
 	common := []string{
@@ -52,7 +52,7 @@ func TestShowStoredProof(t *testing.T) {
 
 		args []string
 		err  error
-		obj  types.StoredProof
+		obj  types.Proof
 	}{
 		{
 			desc:   "found",
@@ -74,19 +74,19 @@ func TestShowStoredProof(t *testing.T) {
 				tc.idHash,
 			}
 			args = append(args, tc.args...)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowStoredProof(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowProof(), args)
 			if tc.err != nil {
 				stat, ok := status.FromError(tc.err)
 				require.True(t, ok)
 				require.ErrorIs(t, stat.Err(), tc.err)
 			} else {
 				require.NoError(t, err)
-				var resp types.QueryGetStoredProofResponse
+				var resp types.QueryGetProofResponse
 				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				require.NotNil(t, resp.StoredProof)
+				require.NotNil(t, resp.Proof)
 				require.Equal(t,
 					nullify.Fill(&tc.obj),
-					nullify.Fill(&resp.StoredProof),
+					nullify.Fill(&resp.Proof),
 				)
 			}
 		})

@@ -25,7 +25,7 @@ func CmdCreate() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgCreate(
+			msg := types.NewMsgCreateProof(
 				clientCtx.GetFromAddress().String(),
 				argHash,
 			)

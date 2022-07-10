@@ -18,12 +18,12 @@ func SimulateMsgCreate(
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
-		msg := &types.MsgCreate{
+		msg := &types.MsgCreateProof{
 			Reporter: simAccount.Address.String(),
 		}
 
-		// TODO: Handling the Create simulation
+		// TODO: Handling the CreateProof simulation
 
-		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "Create simulation not implemented"), nil, nil
+		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "CreateProof simulation not implemented"), nil, nil
 	}
 }

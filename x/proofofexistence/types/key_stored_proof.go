@@ -5,12 +5,12 @@ import "encoding/binary"
 var _ binary.ByteOrder
 
 const (
-	// StoredProofKeyPrefix is the prefix to retrieve all StoredProof
-	StoredProofKeyPrefix = "StoredProof/value/"
+	// ProofKeyPrefix is the prefix to retrieve all Proof
+	ProofKeyPrefix = "Proof/value/"
 )
 
-// StoredProofKey returns the store key to retrieve a StoredProof from the index fields
-func StoredProofKey(
+// ProofKey returns the store key to retrieve a Proof from the index fields
+func ProofKey(
 	hash string,
 ) []byte {
 	var key []byte

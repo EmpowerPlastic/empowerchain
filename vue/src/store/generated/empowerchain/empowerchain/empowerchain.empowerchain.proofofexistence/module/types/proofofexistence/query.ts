@@ -1,11 +1,7 @@
 /* eslint-disable */
 import { Reader, Writer } from "protobufjs/minimal";
 import { Params } from "../proofofexistence/params";
-import { StoredProof } from "../proofofexistence/stored_proof";
-import {
-  PageRequest,
-  PageResponse,
-} from "../cosmos/base/query/v1beta1/pagination";
+import { Proof } from "../proofofexistence/proof";
 
 export const protobufPackage = "empowerchain.empowerchain.proofofexistence";
 
@@ -18,21 +14,12 @@ export interface QueryParamsResponse {
   params: Params | undefined;
 }
 
-export interface QueryGetStoredProofRequest {
+export interface QueryGetProofRequest {
   hash: string;
 }
 
-export interface QueryGetStoredProofResponse {
-  storedProof: StoredProof | undefined;
-}
-
-export interface QueryAllStoredProofRequest {
-  pagination: PageRequest | undefined;
-}
-
-export interface QueryAllStoredProofResponse {
-  storedProof: StoredProof[];
-  pagination: PageResponse | undefined;
+export interface QueryGetProofResponse {
+  proof: Proof | undefined;
 }
 
 const baseQueryParamsRequest: object = {};
@@ -132,11 +119,11 @@ export const QueryParamsResponse = {
   },
 };
 
-const baseQueryGetStoredProofRequest: object = { hash: "" };
+const baseQueryGetProofRequest: object = { hash: "" };
 
-export const QueryGetStoredProofRequest = {
+export const QueryGetProofRequest = {
   encode(
-    message: QueryGetStoredProofRequest,
+    message: QueryGetProofRequest,
     writer: Writer = Writer.create()
   ): Writer {
     if (message.hash !== "") {
@@ -148,12 +135,12 @@ export const QueryGetStoredProofRequest = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): QueryGetStoredProofRequest {
+  ): QueryGetProofRequest {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseQueryGetStoredProofRequest,
-    } as QueryGetStoredProofRequest;
+      ...baseQueryGetProofRequest,
+    } as QueryGetProofRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -168,10 +155,10 @@ export const QueryGetStoredProofRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryGetStoredProofRequest {
+  fromJSON(object: any): QueryGetProofRequest {
     const message = {
-      ...baseQueryGetStoredProofRequest,
-    } as QueryGetStoredProofRequest;
+      ...baseQueryGetProofRequest,
+    } as QueryGetProofRequest;
     if (object.hash !== undefined && object.hash !== null) {
       message.hash = String(object.hash);
     } else {
@@ -180,18 +167,18 @@ export const QueryGetStoredProofRequest = {
     return message;
   },
 
-  toJSON(message: QueryGetStoredProofRequest): unknown {
+  toJSON(message: QueryGetProofRequest): unknown {
     const obj: any = {};
     message.hash !== undefined && (obj.hash = message.hash);
     return obj;
   },
 
   fromPartial(
-    object: DeepPartial<QueryGetStoredProofRequest>
-  ): QueryGetStoredProofRequest {
+    object: DeepPartial<QueryGetProofRequest>
+  ): QueryGetProofRequest {
     const message = {
-      ...baseQueryGetStoredProofRequest,
-    } as QueryGetStoredProofRequest;
+      ...baseQueryGetProofRequest,
+    } as QueryGetProofRequest;
     if (object.hash !== undefined && object.hash !== null) {
       message.hash = object.hash;
     } else {
@@ -201,16 +188,16 @@ export const QueryGetStoredProofRequest = {
   },
 };
 
-const baseQueryGetStoredProofResponse: object = {};
+const baseQueryGetProofResponse: object = {};
 
-export const QueryGetStoredProofResponse = {
+export const QueryGetProofResponse = {
   encode(
-    message: QueryGetStoredProofResponse,
+    message: QueryGetProofResponse,
     writer: Writer = Writer.create()
   ): Writer {
-    if (message.storedProof !== undefined) {
-      StoredProof.encode(
-        message.storedProof,
+    if (message.proof !== undefined) {
+      Proof.encode(
+        message.proof,
         writer.uint32(10).fork()
       ).ldelim();
     }
@@ -220,17 +207,17 @@ export const QueryGetStoredProofResponse = {
   decode(
     input: Reader | Uint8Array,
     length?: number
-  ): QueryGetStoredProofResponse {
+  ): QueryGetProofResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
-      ...baseQueryGetStoredProofResponse,
-    } as QueryGetStoredProofResponse;
+      ...baseQueryGetProofResponse,
+    } as QueryGetProofResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.storedProof = StoredProof.decode(reader, reader.uint32());
+          message.proof = Proof.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -240,210 +227,37 @@ export const QueryGetStoredProofResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryGetStoredProofResponse {
+  fromJSON(object: any): QueryGetProofResponse {
     const message = {
-      ...baseQueryGetStoredProofResponse,
-    } as QueryGetStoredProofResponse;
-    if (object.storedProof !== undefined && object.storedProof !== null) {
-      message.storedProof = StoredProof.fromJSON(object.storedProof);
+      ...baseQueryGetProofResponse,
+    } as QueryGetProofResponse;
+    if (object.proof !== undefined && object.proof !== null) {
+      message.proof = Proof.fromJSON(object.proof);
     } else {
-      message.storedProof = undefined;
+      message.proof = undefined;
     }
     return message;
   },
 
-  toJSON(message: QueryGetStoredProofResponse): unknown {
+  toJSON(message: QueryGetProofResponse): unknown {
     const obj: any = {};
-    message.storedProof !== undefined &&
-      (obj.storedProof = message.storedProof
-        ? StoredProof.toJSON(message.storedProof)
+    message.proof !== undefined &&
+      (obj.proof = message.proof
+        ? Proof.toJSON(message.proof)
         : undefined);
     return obj;
   },
 
   fromPartial(
-    object: DeepPartial<QueryGetStoredProofResponse>
-  ): QueryGetStoredProofResponse {
+    object: DeepPartial<QueryGetProofResponse>
+  ): QueryGetProofResponse {
     const message = {
-      ...baseQueryGetStoredProofResponse,
-    } as QueryGetStoredProofResponse;
-    if (object.storedProof !== undefined && object.storedProof !== null) {
-      message.storedProof = StoredProof.fromPartial(object.storedProof);
+      ...baseQueryGetProofResponse,
+    } as QueryGetProofResponse;
+    if (object.proof !== undefined && object.proof !== null) {
+      message.proof = Proof.fromPartial(object.proof);
     } else {
-      message.storedProof = undefined;
-    }
-    return message;
-  },
-};
-
-const baseQueryAllStoredProofRequest: object = {};
-
-export const QueryAllStoredProofRequest = {
-  encode(
-    message: QueryAllStoredProofRequest,
-    writer: Writer = Writer.create()
-  ): Writer {
-    if (message.pagination !== undefined) {
-      PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(
-    input: Reader | Uint8Array,
-    length?: number
-  ): QueryAllStoredProofRequest {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseQueryAllStoredProofRequest,
-    } as QueryAllStoredProofRequest;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.pagination = PageRequest.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): QueryAllStoredProofRequest {
-    const message = {
-      ...baseQueryAllStoredProofRequest,
-    } as QueryAllStoredProofRequest;
-    if (object.pagination !== undefined && object.pagination !== null) {
-      message.pagination = PageRequest.fromJSON(object.pagination);
-    } else {
-      message.pagination = undefined;
-    }
-    return message;
-  },
-
-  toJSON(message: QueryAllStoredProofRequest): unknown {
-    const obj: any = {};
-    message.pagination !== undefined &&
-      (obj.pagination = message.pagination
-        ? PageRequest.toJSON(message.pagination)
-        : undefined);
-    return obj;
-  },
-
-  fromPartial(
-    object: DeepPartial<QueryAllStoredProofRequest>
-  ): QueryAllStoredProofRequest {
-    const message = {
-      ...baseQueryAllStoredProofRequest,
-    } as QueryAllStoredProofRequest;
-    if (object.pagination !== undefined && object.pagination !== null) {
-      message.pagination = PageRequest.fromPartial(object.pagination);
-    } else {
-      message.pagination = undefined;
-    }
-    return message;
-  },
-};
-
-const baseQueryAllStoredProofResponse: object = {};
-
-export const QueryAllStoredProofResponse = {
-  encode(
-    message: QueryAllStoredProofResponse,
-    writer: Writer = Writer.create()
-  ): Writer {
-    for (const v of message.storedProof) {
-      StoredProof.encode(v!, writer.uint32(10).fork()).ldelim();
-    }
-    if (message.pagination !== undefined) {
-      PageResponse.encode(
-        message.pagination,
-        writer.uint32(18).fork()
-      ).ldelim();
-    }
-    return writer;
-  },
-
-  decode(
-    input: Reader | Uint8Array,
-    length?: number
-  ): QueryAllStoredProofResponse {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input;
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseQueryAllStoredProofResponse,
-    } as QueryAllStoredProofResponse;
-    message.storedProof = [];
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.storedProof.push(StoredProof.decode(reader, reader.uint32()));
-          break;
-        case 2:
-          message.pagination = PageResponse.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): QueryAllStoredProofResponse {
-    const message = {
-      ...baseQueryAllStoredProofResponse,
-    } as QueryAllStoredProofResponse;
-    message.storedProof = [];
-    if (object.storedProof !== undefined && object.storedProof !== null) {
-      for (const e of object.storedProof) {
-        message.storedProof.push(StoredProof.fromJSON(e));
-      }
-    }
-    if (object.pagination !== undefined && object.pagination !== null) {
-      message.pagination = PageResponse.fromJSON(object.pagination);
-    } else {
-      message.pagination = undefined;
-    }
-    return message;
-  },
-
-  toJSON(message: QueryAllStoredProofResponse): unknown {
-    const obj: any = {};
-    if (message.storedProof) {
-      obj.storedProof = message.storedProof.map((e) =>
-        e ? StoredProof.toJSON(e) : undefined
-      );
-    } else {
-      obj.storedProof = [];
-    }
-    message.pagination !== undefined &&
-      (obj.pagination = message.pagination
-        ? PageResponse.toJSON(message.pagination)
-        : undefined);
-    return obj;
-  },
-
-  fromPartial(
-    object: DeepPartial<QueryAllStoredProofResponse>
-  ): QueryAllStoredProofResponse {
-    const message = {
-      ...baseQueryAllStoredProofResponse,
-    } as QueryAllStoredProofResponse;
-    message.storedProof = [];
-    if (object.storedProof !== undefined && object.storedProof !== null) {
-      for (const e of object.storedProof) {
-        message.storedProof.push(StoredProof.fromPartial(e));
-      }
-    }
-    if (object.pagination !== undefined && object.pagination !== null) {
-      message.pagination = PageResponse.fromPartial(object.pagination);
-    } else {
-      message.pagination = undefined;
+      message.proof = undefined;
     }
     return message;
   },
@@ -453,14 +267,10 @@ export const QueryAllStoredProofResponse = {
 export interface Query {
   /** Parameters queries the parameters of the module. */
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse>;
-  /** Queries a StoredProof by index. */
-  StoredProof(
-    request: QueryGetStoredProofRequest
-  ): Promise<QueryGetStoredProofResponse>;
-  /** Queries a list of StoredProof items. */
-  StoredProofAll(
-    request: QueryAllStoredProofRequest
-  ): Promise<QueryAllStoredProofResponse>;
+  /** Queries a Proof by hash. */
+  Proof(
+    request: QueryGetProofRequest
+  ): Promise<QueryGetProofResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -478,31 +288,17 @@ export class QueryClientImpl implements Query {
     return promise.then((data) => QueryParamsResponse.decode(new Reader(data)));
   }
 
-  StoredProof(
-    request: QueryGetStoredProofRequest
-  ): Promise<QueryGetStoredProofResponse> {
-    const data = QueryGetStoredProofRequest.encode(request).finish();
+  Proof(
+    request: QueryGetProofRequest
+  ): Promise<QueryGetProofResponse> {
+    const data = QueryGetProofRequest.encode(request).finish();
     const promise = this.rpc.request(
       "empowerchain.empowerchain.proofofexistence.Query",
-      "StoredProof",
+      "Proof",
       data
     );
     return promise.then((data) =>
-      QueryGetStoredProofResponse.decode(new Reader(data))
-    );
-  }
-
-  StoredProofAll(
-    request: QueryAllStoredProofRequest
-  ): Promise<QueryAllStoredProofResponse> {
-    const data = QueryAllStoredProofRequest.encode(request).finish();
-    const promise = this.rpc.request(
-      "empowerchain.empowerchain.proofofexistence.Query",
-      "StoredProofAll",
-      data
-    );
-    return promise.then((data) =>
-      QueryAllStoredProofResponse.decode(new Reader(data))
+      QueryGetProofResponse.decode(new Reader(data))
     );
   }
 }

@@ -2,10 +2,9 @@ import { txClient, queryClient, MissingWalletError , registry} from './module'
 
 import { Params } from "./module/types/proofofexistence/params"
 import { Proof } from "./module/types/proofofexistence/proof"
-import { StoredProof } from "./module/types/proofofexistence/stored_proof"
 
 
-export { Params, Proof, StoredProof };
+export { Params, Proof };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -44,13 +43,11 @@ function getStructure(template) {
 const getDefaultState = () => {
 	return {
 				Params: {},
-				StoredProof: {},
-				StoredProofAll: {},
+				Proof: {},
 				
 				_Structure: {
 						Params: getStructure(Params.fromPartial({})),
 						Proof: getStructure(Proof.fromPartial({})),
-						StoredProof: getStructure(StoredProof.fromPartial({})),
 						
 		},
 		_Registry: registry,
@@ -85,17 +82,11 @@ export default {
 					}
 			return state.Params[JSON.stringify(params)] ?? {}
 		},
-				getStoredProof: (state) => (params = { params: {}}) => {
+				getProof: (state) => (params = { params: {}}) => {
 					if (!(<any> params).query) {
 						(<any> params).query=null
 					}
-			return state.StoredProof[JSON.stringify(params)] ?? {}
-		},
-				getStoredProofAll: (state) => (params = { params: {}}) => {
-					if (!(<any> params).query) {
-						(<any> params).query=null
-					}
-			return state.StoredProofAll[JSON.stringify(params)] ?? {}
+			return state.Proof[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -158,78 +149,24 @@ export default {
 		 		
 		
 		
-		async QueryStoredProof({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
+		async QueryProof({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
 			try {
 				const key = params ?? {};
 				const queryClient=await initQueryClient(rootGetters)
-				let value= (await queryClient.queryStoredProof( key.hash)).data
+				let value= (await queryClient.queryProof( key.hash)).data
 				
 					
-				commit('QUERY', { query: 'StoredProof', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryStoredProof', payload: { options: { all }, params: {...key},query }})
-				return getters['getStoredProof']( { params: {...key}, query}) ?? {}
+				commit('QUERY', { query: 'Proof', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryProof', payload: { options: { all }, params: {...key},query }})
+				return getters['getProof']( { params: {...key}, query}) ?? {}
 			} catch (e) {
-				throw new Error('QueryClient:QueryStoredProof API Node Unavailable. Could not perform query: ' + e.message)
+				throw new Error('QueryClient:QueryProof API Node Unavailable. Could not perform query: ' + e.message)
 				
 			}
 		},
 		
 		
 		
-		
-		 		
-		
-		
-		async QueryStoredProofAll({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params, query=null }) {
-			try {
-				const key = params ?? {};
-				const queryClient=await initQueryClient(rootGetters)
-				let value= (await queryClient.queryStoredProofAll(query)).data
-				
-					
-				while (all && (<any> value).pagination && (<any> value).pagination.next_key!=null) {
-					let next_values=(await queryClient.queryStoredProofAll({...query, 'pagination.key':(<any> value).pagination.next_key})).data
-					value = mergeResults(value, next_values);
-				}
-				commit('QUERY', { query: 'StoredProofAll', key: { params: {...key}, query}, value })
-				if (subscribe) commit('SUBSCRIBE', { action: 'QueryStoredProofAll', payload: { options: { all }, params: {...key},query }})
-				return getters['getStoredProofAll']( { params: {...key}, query}) ?? {}
-			} catch (e) {
-				throw new Error('QueryClient:QueryStoredProofAll API Node Unavailable. Could not perform query: ' + e.message)
-				
-			}
-		},
-		
-		
-		async sendMsgCreate({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgCreate(value)
-				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
-	gas: "200000" }, memo})
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCreate:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgCreate:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
-		
-		async MsgCreate({ rootGetters }, { value }) {
-			try {
-				const txClient=await initTxClient(rootGetters)
-				const msg = await txClient.msgCreate(value)
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgCreate:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgCreate:Create Could not create message: ' + e.message)
-				}
-			}
-		},
 		
 	}
 }

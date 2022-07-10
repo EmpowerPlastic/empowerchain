@@ -8,13 +8,13 @@ import (
 )
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgCreate{}, "proofofexistence/Create", nil)
+	cdc.RegisterConcrete(&MsgCreateProof{}, "proofofexistence/CreateProof", nil)
 	// this line is used by starport scaffolding # 2
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgCreate{},
+		&MsgCreateProof{},
 	)
 	// this line is used by starport scaffolding # 3
 

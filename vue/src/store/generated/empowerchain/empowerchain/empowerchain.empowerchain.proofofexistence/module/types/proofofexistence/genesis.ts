@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { Params } from "../proofofexistence/params";
-import { StoredProof } from "../proofofexistence/stored_proof";
+import { Proof } from "../proofofexistence/proof";
 import { Writer, Reader } from "protobufjs/minimal";
 
 export const protobufPackage = "empowerchain.empowerchain.proofofexistence";
@@ -9,7 +9,7 @@ export const protobufPackage = "empowerchain.empowerchain.proofofexistence";
 export interface GenesisState {
   params: Params | undefined;
   /** this line is used by starport scaffolding # genesis/proto/state */
-  storedProofList: StoredProof[];
+  ProofList: Proof[];
 }
 
 const baseGenesisState: object = {};
@@ -19,8 +19,8 @@ export const GenesisState = {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
     }
-    for (const v of message.storedProofList) {
-      StoredProof.encode(v!, writer.uint32(18).fork()).ldelim();
+    for (const v of message.proofList) {
+      Proof.encode(v!, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -29,7 +29,7 @@ export const GenesisState = {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseGenesisState } as GenesisState;
-    message.storedProofList = [];
+    message.proofList = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -37,8 +37,8 @@ export const GenesisState = {
           message.params = Params.decode(reader, reader.uint32());
           break;
         case 2:
-          message.storedProofList.push(
-            StoredProof.decode(reader, reader.uint32())
+          message.proofList.push(
+            Proof.decode(reader, reader.uint32())
           );
           break;
         default:
@@ -51,18 +51,18 @@ export const GenesisState = {
 
   fromJSON(object: any): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
-    message.storedProofList = [];
+    message.proofList = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromJSON(object.params);
     } else {
       message.params = undefined;
     }
     if (
-      object.storedProofList !== undefined &&
-      object.storedProofList !== null
+      object.proofList !== undefined &&
+      object.proofList !== null
     ) {
-      for (const e of object.storedProofList) {
-        message.storedProofList.push(StoredProof.fromJSON(e));
+      for (const e of object.proofList) {
+        message.proofList.push(Proof.fromJSON(e));
       }
     }
     return message;
@@ -72,30 +72,30 @@ export const GenesisState = {
     const obj: any = {};
     message.params !== undefined &&
       (obj.params = message.params ? Params.toJSON(message.params) : undefined);
-    if (message.storedProofList) {
-      obj.storedProofList = message.storedProofList.map((e) =>
-        e ? StoredProof.toJSON(e) : undefined
+    if (message.proofList) {
+      obj.proofList = message.proofList.map((e) =>
+        e ? Proof.toJSON(e) : undefined
       );
     } else {
-      obj.storedProofList = [];
+      obj.proofList = [];
     }
     return obj;
   },
 
   fromPartial(object: DeepPartial<GenesisState>): GenesisState {
     const message = { ...baseGenesisState } as GenesisState;
-    message.storedProofList = [];
+    message.proofList = [];
     if (object.params !== undefined && object.params !== null) {
       message.params = Params.fromPartial(object.params);
     } else {
       message.params = undefined;
     }
     if (
-      object.storedProofList !== undefined &&
-      object.storedProofList !== null
+      object.proofList !== undefined &&
+      object.proofList !== null
     ) {
-      for (const e of object.storedProofList) {
-        message.storedProofList.push(StoredProof.fromPartial(e));
+      for (const e of object.proofList) {
+        message.proofList.push(Proof.fromPartial(e));
       }
     }
     return message;

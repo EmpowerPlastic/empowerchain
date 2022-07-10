@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "proofofexistence/params.proto";
-import "proofofexistence/stored_proof.proto";
+import "proofofexistence/proof.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/empowerchain/empowerchain/x/proofofexistence/types";
@@ -16,9 +16,9 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/empowerchain/empowerchain/proofofexistence/params";
   }
-  // Queries a StoredProof by hash.
-	rpc StoredProof(QueryGetStoredProofRequest) returns (QueryGetStoredProofResponse) {
-		option (google.api.http).get = "/empowerchain/empowerchain/proofofexistence/stored_proof/{hash}";
+  // Queries a Proof by hash.
+	rpc Proof(QueryGetProofRequest) returns (QueryGetProofResponse) {
+		option (google.api.http).get = "/empowerchain/empowerchain/proofofexistence/proof/{hash}";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -33,22 +33,13 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryGetStoredProofRequest {
+message QueryGetProofRequest {
 	  string hash = 1;
 
 }
 
-message QueryGetStoredProofResponse {
-	StoredProof storedProof = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryAllStoredProofRequest {
-	cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryAllStoredProofResponse {
-	repeated StoredProof storedProof = 1 [(gogoproto.nullable) = false];
-	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+message QueryGetProofResponse {
+	Proof proof = 1 [(gogoproto.nullable) = false];
 }
 
 // this line is used by starport scaffolding # 3

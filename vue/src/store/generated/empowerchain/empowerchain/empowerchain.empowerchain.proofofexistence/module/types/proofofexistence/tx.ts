@@ -3,19 +3,19 @@ import { Reader, Writer } from "protobufjs/minimal";
 
 export const protobufPackage = "empowerchain.empowerchain.proofofexistence";
 
-export interface MsgCreate {
+export interface MsgCreateProof {
   /** reporter is the address of the signer */
   reporter: string;
   /** hash is the SHA-256 hash as a Base64 encoded string */
   hash: string;
 }
 
-export interface MsgCreateResponse {}
+export interface MsgCreateProofResponse {}
 
-const baseMsgCreate: object = { reporter: "", hash: "" };
+const baseMsgCreateProof: object = { reporter: "", hash: "" };
 
-export const MsgCreate = {
-  encode(message: MsgCreate, writer: Writer = Writer.create()): Writer {
+export const MsgCreateProof = {
+  encode(message: MsgCreateProof, writer: Writer = Writer.create()): Writer {
     if (message.reporter !== "") {
       writer.uint32(10).string(message.reporter);
     }
@@ -25,10 +25,10 @@ export const MsgCreate = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): MsgCreate {
+  decode(input: Reader | Uint8Array, length?: number): MsgCreateProof {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgCreate } as MsgCreate;
+    const message = { ...baseMsgCreateProof } as MsgCreateProof;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -46,8 +46,8 @@ export const MsgCreate = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreate {
-    const message = { ...baseMsgCreate } as MsgCreate;
+  fromJSON(object: any): MsgCreateProof {
+    const message = { ...baseMsgCreateProof } as MsgCreateProof;
     if (object.reporter !== undefined && object.reporter !== null) {
       message.reporter = String(object.reporter);
     } else {
@@ -61,15 +61,15 @@ export const MsgCreate = {
     return message;
   },
 
-  toJSON(message: MsgCreate): unknown {
+  toJSON(message: MsgCreateProof): unknown {
     const obj: any = {};
     message.reporter !== undefined && (obj.reporter = message.reporter);
     message.hash !== undefined && (obj.hash = message.hash);
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgCreate>): MsgCreate {
-    const message = { ...baseMsgCreate } as MsgCreate;
+  fromPartial(object: DeepPartial<MsgCreateProof>): MsgCreateProof {
+    const message = { ...baseMsgCreateProof } as MsgCreateProof;
     if (object.reporter !== undefined && object.reporter !== null) {
       message.reporter = object.reporter;
     } else {
@@ -84,17 +84,17 @@ export const MsgCreate = {
   },
 };
 
-const baseMsgCreateResponse: object = {};
+const baseMsgCreateProofResponse: object = {};
 
-export const MsgCreateResponse = {
-  encode(_: MsgCreateResponse, writer: Writer = Writer.create()): Writer {
+export const MsgCreateProofResponse = {
+  encode(_: MsgCreateProofResponse, writer: Writer = Writer.create()): Writer {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): MsgCreateResponse {
+  decode(input: Reader | Uint8Array, length?: number): MsgCreateProofResponse {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseMsgCreateResponse } as MsgCreateResponse;
+    const message = { ...baseMsgCreateProofResponse } as MsgCreateProofResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -106,18 +106,18 @@ export const MsgCreateResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgCreateResponse {
-    const message = { ...baseMsgCreateResponse } as MsgCreateResponse;
+  fromJSON(_: any): MsgCreateProofResponse {
+    const message = { ...baseMsgCreateProofResponse } as MsgCreateProofResponse;
     return message;
   },
 
-  toJSON(_: MsgCreateResponse): unknown {
+  toJSON(_: MsgCreateProofResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgCreateResponse>): MsgCreateResponse {
-    const message = { ...baseMsgCreateResponse } as MsgCreateResponse;
+  fromPartial(_: DeepPartial<MsgCreateProofResponse>): MsgCreateProofResponse {
+    const message = { ...baseMsgCreateProofResponse } as MsgCreateProofResponse;
     return message;
   },
 };
@@ -125,7 +125,7 @@ export const MsgCreateResponse = {
 /** Msg defines the Msg service. */
 export interface Msg {
   /** this line is used by starport scaffolding # proto/tx/rpc */
-  Create(request: MsgCreate): Promise<MsgCreateResponse>;
+  CreateProof(request: MsgCreateProof): Promise<MsgCreateProofResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -133,14 +133,16 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc) {
     this.rpc = rpc;
   }
-  Create(request: MsgCreate): Promise<MsgCreateResponse> {
-    const data = MsgCreate.encode(request).finish();
+  CreateProof(request: MsgCreateProof): Promise<MsgCreateProofResponse> {
+    const data = MsgCreateProof.encode(request).finish();
     const promise = this.rpc.request(
       "empowerchain.empowerchain.proofofexistence.Msg",
-      "Create",
+      "CreateProof",
       data
     );
-    return promise.then((data) => MsgCreateResponse.decode(new Reader(data)));
+    return promise.then((data) =>
+      MsgCreateProofResponse.decode(new Reader(data))
+    );
   }
 }
 
