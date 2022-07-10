@@ -47187,6 +47187,23 @@ definitions:
   empowerchain.empowerchain.proofofexistence.Params:
     type: object
     description: Params defines the parameters for the module.
+  empowerchain.empowerchain.proofofexistence.Proof:
+    type: object
+    properties:
+      hash:
+        type: string
+        description: >-
+          Hash is the SHA-256 hash of the data of which is being made a proof
+          for.
+
+          The hash needs to be sent as a Base64 encoded string.
+      timestamp:
+        type: string
+        format: date-time
+        title: Timestamp is the time the proof was added on-chain (block time)
+      reporter:
+        type: string
+        title: Reporter is the account address that created the proof
   empowerchain.empowerchain.proofofexistence.QueryGetProofResponse:
     type: object
     properties:
@@ -47214,23 +47231,6 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  empowerchain.empowerchain.proofofexistence.Proof:
-    type: object
-    properties:
-      hash:
-        type: string
-        description: >-
-          Hash is the SHA-256 hash of the data of which is being made a proof
-          for.
-
-          The hash needs to be sent as a Base64 encoded string.
-      timestamp:
-        type: string
-        format: date-time
-        title: Timestamp is the time the proof was added on-chain (block time)
-      reporter:
-        type: string
-        title: Reporter is the account address that created the proof
   ibc.applications.interchain_accounts.controller.v1.Params:
     type: object
     properties:
