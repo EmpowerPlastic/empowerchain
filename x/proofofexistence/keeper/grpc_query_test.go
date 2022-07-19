@@ -11,6 +11,7 @@ import (
 
 	keepertest "github.com/empowerchain/empowerchain/testutil/keeper"
 	"github.com/empowerchain/empowerchain/testutil/nullify"
+	"github.com/empowerchain/empowerchain/x/proofofexistence/keeper"
 	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
 )
 
@@ -18,9 +19,9 @@ import (
 var _ = strconv.IntSize
 
 func TestProofQuerySingle(t *testing.T) {
-	keeper, ctx := keepertest.ProofofexistenceKeeper(t)
+	k, ctx := keepertest.ProofofexistenceKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNProof(keeper, ctx, 2)
+	msgs := createNProof(k, ctx, 2)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryGetProofRequest
@@ -54,7 +55,8 @@ func TestProofQuerySingle(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			response, err := keeper.Proof(wctx, tc.request)
+			q := keeper.Querier{Keeper: *k}
+			response, err := q.Proof(wctx, tc.request)
 			if tc.err != nil {
 				require.ErrorIs(t, err, tc.err)
 			} else {
