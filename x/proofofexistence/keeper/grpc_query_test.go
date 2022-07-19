@@ -18,8 +18,21 @@ import (
 // Prevent strconv unused error
 var _ = strconv.IntSize
 
+func TestParamsQuery(t *testing.T) {
+	k, ctx := keepertest.ProofofexistenceKeeper(t)
+	q := keeper.Querier{Keeper: *k}
+	wctx := sdk.WrapSDKContext(ctx)
+	params := types.DefaultParams()
+	k.SetParams(ctx, params)
+
+	response, err := q.Params(wctx, &types.QueryParamsRequest{})
+	require.NoError(t, err)
+	require.Equal(t, &types.QueryParamsResponse{Params: params}, response)
+}
+
 func TestProofQuerySingle(t *testing.T) {
 	k, ctx := keepertest.ProofofexistenceKeeper(t)
+	q := keeper.Querier{Keeper: *k}
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNProof(k, ctx, 2)
 	for _, tc := range []struct {
@@ -55,7 +68,6 @@ func TestProofQuerySingle(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			q := keeper.Querier{Keeper: *k}
 			response, err := q.Proof(wctx, tc.request)
 			if tc.err != nil {
 				require.ErrorIs(t, err, tc.err)

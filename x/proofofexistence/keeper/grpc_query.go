@@ -15,6 +15,15 @@ type Querier struct {
 
 var _ types.QueryServer = Querier{}
 
+func (k Querier) Params(c context.Context, req *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+
+	return &types.QueryParamsResponse{Params: k.GetParams(ctx)}, nil
+}
+
 func (k Querier) Proof(c context.Context, req *types.QueryGetProofRequest) (*types.QueryGetProofResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
