@@ -1,5 +1,6 @@
 #!/usr/bin/make -f
 
+BINDIR ?= $(GOPATH)/bin
 BINARY_NAME := "empowerd"
 CHAIN_NAME := "empowerchain"
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
@@ -127,23 +128,8 @@ proto:
 test:
 	@go test -v ./x/...
 
-docs:
-	@echo
-	@echo "=========== Generate Message ============"
-	@echo
-	./scripts/generate-docs.sh
-
-	statik -src=client/docs/static -dest=client/docs -f -m
-	@if [ -n "$(git status --porcelain)" ]; then \
-        echo "\033[91mSwagger docs are out of sync!!!\033[0m";\
-        exit 1;\
-    else \
-        echo "\033[92mSwagger docs are in sync\033[0m";\
-    fi
-	@echo
-	@echo "=========== Generate Complete ============"
-	@echo
-.PHONY: docs
+smoketest: install
+	./scripts/test/smoke.sh
 
 protoVer=v0.7
 protoImageName=tendermintdev/sdk-proto-gen:$(protoVer)
@@ -161,24 +147,19 @@ proto-format:
 		find ./ -not -path "./third_party/*" -name "*.proto" -exec clang-format -i {} \; ; fi
 
 ###############################################################################
-###                                 Devdoc                                  ###
+###                                  Serve                                  ###
 ###############################################################################
 
-build-docs:
-	@cd docs && \
-	while read p; do \
-		(git checkout $${p} && npm install && VUEPRESS_BASE="/$${p}/" npm run build) ; \
-		mkdir -p ~/output/$${p} ; \
-		cp -r .vuepress/dist/* ~/output/$${p}/ ; \
-		cp ~/output/$${p}/index.html ~/output ; \
-	done < versions ;
+serve:
+	@echo
+	@echo "===========     Serve     ============"
+	@echo
+	./scripts/serve.sh
+	@echo
+	@echo "===========  Serving now  ============"
+	@echo
 
-sync-docs:
-	cd ~/output && \
-	echo "role_arn = ${DEPLOYMENT_ROLE_ARN}" >> /root/.aws/config ; \
-	echo "CI job = ${CIRCLE_BUILD_URL}" >> version.html ; \
-	aws s3 sync . s3://${WEBSITE_BUCKET} --profile terraform --delete ; \
-	aws cloudfront create-invalidation --distribution-id ${CF_DISTRIBUTION_ID} --profile terraform --path "/*" ;
-.PHONY: sync-docs
-
-# TODO: Line 207 Osmosis Makefile?
+kill:
+	@echo "Killing empowerd and removing previous data"
+	-@rm -rf ./tmp/empowerchain-local-1
+	-@killall empowerd 2>/dev/null
