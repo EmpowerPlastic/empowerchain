@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/empowerchain/empowerchain/app/params"
 	"os"
 
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
@@ -9,6 +10,8 @@ import (
 )
 
 func main() {
+	params.SetAddressPrefixes()
+
 	rootCmd, _ := cosmoscmd.NewRootCmd(
 		app.Name,
 		app.AccountAddressPrefix,
