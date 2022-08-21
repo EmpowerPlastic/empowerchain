@@ -111,10 +111,18 @@ clean:
 	rm -f $(shell which $(BINARY_NAME))
 
 ###############################################################################
-###                                  Proto                                  ###
+###                                  Test                                   ###
 ###############################################################################
 
-proto-all: proto-format proto-gen
+test:
+	@go test -v ./x/...
+
+smoketest: install
+	./scripts/test/smoke.sh
+
+###############################################################################
+###                                  Proto                                  ###
+###############################################################################
 
 proto:
 	@echo
@@ -124,27 +132,6 @@ proto:
 	@echo
 	@echo "=========== Generate Complete ============"
 	@echo
-
-test:
-	@go test -v ./x/...
-
-smoketest: install
-	./scripts/test/smoke.sh
-
-protoVer=v0.7
-protoImageName=tendermintdev/sdk-proto-gen:$(protoVer)
-containerProtoGen=cosmos-sdk-proto-gen-$(protoVer)
-containerProtoFmt=cosmos-sdk-proto-fmt-$(protoVer)
-
-proto-gen:
-	@echo "Generating Protobuf files"
-	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGen}$$"; then docker start -a $(containerProtoGen); else docker run --name $(containerProtoGen) -v $(CURDIR):/workspace --workdir /workspace $(protoImageName) \
-		sh ./scripts/protocgen.sh; fi
-
-proto-format:
-	@echo "Formatting Protobuf files"
-	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoFmt}$$"; then docker start -a $(containerProtoFmt); else docker run --name $(containerProtoFmt) -v $(CURDIR):/workspace --workdir /workspace tendermintdev/docker-build-proto \
-		find ./ -not -path "./third_party/*" -name "*.proto" -exec clang-format -i {} \; ; fi
 
 ###############################################################################
 ###                                  Serve                                  ###
