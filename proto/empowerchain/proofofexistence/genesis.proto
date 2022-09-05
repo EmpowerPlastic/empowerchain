@@ -2,8 +2,8 @@ syntax = "proto3";
 package empowerchain.empowerchain.proofofexistence;
 
 import "gogoproto/gogo.proto";
-import "proofofexistence/params.proto";
-import "proofofexistence/proof.proto";
+import "empowerchain/proofofexistence/params.proto";
+import "empowerchain/proofofexistence/proof.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/empowerchain/empowerchain/x/proofofexistence/types";
