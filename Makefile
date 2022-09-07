@@ -150,3 +150,16 @@ kill:
 	@echo "Killing empowerd and removing previous data"
 	-@rm -rf ./tmp/empowerchain-local-1
 	-@killall empowerd 2>/dev/null
+
+
+###############################################################################
+###                                Linting                                  ###
+###############################################################################
+
+lint:
+	@echo "--> Running linter"
+	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run --timeout=10m
+
+format:
+	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./... --fix
+	@go run mvdan.cc/gofumpt -l -w x/ app/ ante/ tests/
