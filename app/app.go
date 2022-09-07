@@ -1,13 +1,14 @@
 package app
 
 import (
-	"github.com/empowerchain/empowerchain/app/params"
-	"github.com/gorilla/mux"
-	"github.com/rakyll/statik/fs"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/empowerchain/empowerchain/app/params"
+	"github.com/gorilla/mux"
+	"github.com/rakyll/statik/fs"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -101,6 +102,7 @@ import (
 	proofofexistencemodule "github.com/empowerchain/empowerchain/x/proofofexistence"
 	proofofexistencemodulekeeper "github.com/empowerchain/empowerchain/x/proofofexistence/keeper"
 	proofofexistencemoduletypes "github.com/empowerchain/empowerchain/x/proofofexistence/types"
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
 	// unnamed import of statik for swagger UI support

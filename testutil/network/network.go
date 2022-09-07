@@ -2,7 +2,6 @@ package network
 
 import (
 	"fmt"
-	"github.com/empowerchain/empowerchain/app/params"
 	"testing"
 	"time"
 
@@ -19,6 +18,7 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 
 	"github.com/empowerchain/empowerchain/app"
+	"github.com/empowerchain/empowerchain/app/params"
 )
 
 type (
