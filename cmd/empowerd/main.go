@@ -1,11 +1,12 @@
 package main
 
 import (
+	"os"
+
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/empowerchain/empowerchain/app"
 	"github.com/empowerchain/empowerchain/app/params"
 	"github.com/empowerchain/empowerchain/cmd/empowerd/cmd"
-	"os"
 
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 )

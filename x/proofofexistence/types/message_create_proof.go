@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/base64"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
