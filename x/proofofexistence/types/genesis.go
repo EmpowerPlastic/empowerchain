@@ -11,8 +11,6 @@ const DefaultIndex uint64 = 1
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		ProofList: []Proof{},
-		// this line is used by starport scaffolding # genesis/types/default
-		Params: DefaultParams(),
 	}
 }
 
@@ -29,7 +27,6 @@ func (gs GenesisState) Validate() error {
 		}
 		proofIndexMap[index] = struct{}{}
 	}
-	// this line is used by starport scaffolding # genesis/types/validate
 
-	return gs.Params.Validate()
+	return nil
 }

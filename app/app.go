@@ -395,7 +395,6 @@ func New(
 		appCodec,
 		keys[proofofexistencemoduletypes.StoreKey],
 		keys[proofofexistencemoduletypes.MemStoreKey],
-		app.GetSubspace(proofofexistencemoduletypes.ModuleName),
 	)
 	proofofexistenceModule := proofofexistencemodule.NewAppModule(appCodec, app.ProofofexistenceKeeper, app.AccountKeeper, app.BankKeeper)
 

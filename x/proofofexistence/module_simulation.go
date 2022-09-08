@@ -27,8 +27,6 @@ const (
 	opWeightMsgCreate = "op_weight_msg_create"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgCreate int = 100
-
-	// this line is used by starport scaffolding # simapp/module/const
 )
 
 // GenerateGenesisState creates a randomized GenState of the module
@@ -37,10 +35,7 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	for i, acc := range simState.Accounts {
 		accs[i] = acc.Address.String()
 	}
-	proofofexistenceGenesis := types.GenesisState{
-		Params: types.DefaultParams(),
-		// this line is used by starport scaffolding # simapp/module/genesisState
-	}
+	proofofexistenceGenesis := types.GenesisState{}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&proofofexistenceGenesis)
 }
 
@@ -71,8 +66,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		weightMsgCreate,
 		proofofexistencesimulation.SimulateMsgCreate(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
-
-	// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations
 }
