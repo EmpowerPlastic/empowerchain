@@ -11,7 +11,7 @@ docker:
 
 build:
     FROM +docker
-    COPY .git .
+    COPY .git .git
     COPY Makefile .
     COPY go.mod .
     COPY go.sum .
