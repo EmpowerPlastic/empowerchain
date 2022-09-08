@@ -62,7 +62,7 @@ require (
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.17.3 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
-	github.com/cosmos/ledger-go v0.9.2 // indirect
+	github.com/cosmos/ledger-go v0.9.3 // indirect
 	github.com/curioswitch/go-reassign v0.1.2 // indirect
 	github.com/daixiang0/gci v0.6.3 // indirect
 	github.com/danieljoos/wincred v1.0.2 // indirect
@@ -253,8 +253,6 @@ require (
 	mvdan.cc/unparam v0.0.0-20220706161116-678bad134442 // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
 )
-
-replace github.com/cosmos/ledger-go => github.com/cosmos/ledger-go v0.9.2
 
 replace (
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1

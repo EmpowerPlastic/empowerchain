@@ -25,7 +25,6 @@ func NewKeeper(
 
 ) *Keeper {
 	return &Keeper{
-
 		cdc:      cdc,
 		storeKey: storeKey,
 		memKey:   memKey,
