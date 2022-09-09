@@ -1,14 +1,11 @@
 syntax = "proto3";
 package empowerchain.empowerchain.proofofexistence;
 
-// this line is used by starport scaffolding # proto/tx/import
-
 option go_package = "github.com/empowerchain/empowerchain/x/proofofexistence/types";
 
 // Msg defines the Msg service.
 service Msg {
       rpc CreateProof(MsgCreateProof) returns (MsgCreateProofResponse);
-// this line is used by starport scaffolding # proto/tx/rpc
 }
 
 message MsgCreateProof {
@@ -21,5 +18,3 @@ message MsgCreateProof {
 
 message MsgCreateProofResponse {
 }
-
-// this line is used by starport scaffolding # proto/tx/message

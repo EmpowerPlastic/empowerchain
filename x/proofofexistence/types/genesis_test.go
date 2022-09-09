@@ -10,7 +10,6 @@ import (
 func TestDefaultGenesisIsCorrect(t *testing.T) {
 	genesis := types.DefaultGenesis()
 	require.Equal(t, &types.GenesisState{
-		Params:    types.Params{},
 		ProofList: []types.Proof{},
 	}, genesis)
 }
@@ -38,7 +37,6 @@ func TestGenesisState_Validate(t *testing.T) {
 						Hash: "1",
 					},
 				},
-				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
 		},
@@ -56,7 +54,6 @@ func TestGenesisState_Validate(t *testing.T) {
 			},
 			valid: false,
 		},
-		// this line is used by starport scaffolding # types/genesis/testcase
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			err := tc.genState.Validate()

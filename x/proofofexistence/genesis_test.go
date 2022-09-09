@@ -13,8 +13,6 @@ import (
 
 func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
-		Params: types.DefaultParams(),
-
 		ProofList: []types.Proof{
 			{
 				Hash:      "0",
@@ -27,7 +25,6 @@ func TestGenesis(t *testing.T) {
 				Reporter:  "empower10m8qakrveaxvcr5085c73de30ff5umdem2ua5u",
 			},
 		},
-		// this line is used by starport scaffolding # genesis/test/state
 	}
 
 	k, ctx := keepertest.ProofofexistenceKeeper(t)
@@ -46,5 +43,4 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(got)
 
 	require.ElementsMatch(t, genesisState.ProofList, got.ProofList)
-	// this line is used by starport scaffolding # genesis/test/assert
 }
