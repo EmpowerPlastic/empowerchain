@@ -163,3 +163,13 @@ lint:
 format:
 	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./... --fix
 	@go run mvdan.cc/gofumpt -l -w x/ app/ ante/ tests/
+
+###############################################################################
+###                                 Docs                                    ###
+###############################################################################
+
+dev-docs:
+	@cd docs && yarn docs:dev
+
+build-docs:
+	@cd docs && yarn docs:build

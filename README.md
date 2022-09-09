@@ -45,3 +45,22 @@ To run a basic smoke test (spins up the chain and runs a couple of commands agai
 ```shell
 $ make smoketest
 ```
+
+## Docs
+
+Docs are written in markdown and rendered used Vitepress.
+
+### Run doc site locally
+
+```shell
+$ make dev-docs
+```
+
+### Build
+
+Built docs are located in `docs/.vitepress/dist`
+
+```shell
+$ make build-docs
+```
+
