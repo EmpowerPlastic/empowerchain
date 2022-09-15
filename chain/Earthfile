@@ -10,8 +10,10 @@ docker:
     ENV PATH $PATH:/usr/local/go/bin:/root/go/bin
 
 build:
+    ARG EARTHLY_GIT_HASH
+    ARG EARTHLY_GIT_SHORT_HASH
+    ARG VERSION=dev-$EARTHLY_GIT_SHORT_HASH
     FROM +docker
-    COPY .git .git
     COPY Makefile .
     COPY go.mod .
     COPY go.sum .
@@ -21,7 +23,8 @@ build:
     COPY scripts scripts
     COPY testutil testutil
     COPY x x
-    RUN make build
+    RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build
+    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd
     SAVE ARTIFACT go.mod AS LOCAL go.mod
     SAVE ARTIFACT go.sum AS LOCAL go.sum
 

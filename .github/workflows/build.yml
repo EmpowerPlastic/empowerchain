@@ -1,0 +1,34 @@
+name: "Build"
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build EmpowerChain
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        arch: [amd64]
+        targetos: [darwin, linux]
+        include:
+          - targetos: darwin
+            arch: arm64
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: earthly/actions/setup-earthly@v1
+        with:
+          version: v0.6.22
+
+      - run: earthly --ci +build
+        working-directory: ./chain
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: empowerd ${{ matrix.targetos }} ${{ matrix.arch }}
+          path: chain/build/empowerd
