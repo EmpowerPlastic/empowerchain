@@ -32,5 +32,5 @@ jobs:
             exit 1
           fi
           for added_modified_file in ${added_modified_files[@]}; do
-            node altruistic-1/gentx-checker.js ${added_modified_file}
+            node testnets/altruistic-1/gentx-checker.js ${added_modified_file}
           done
