@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: [ "main" ]
     paths:
-      - 'altruistic-1/gentx/**.json'
+      - 'testnets/altruistic-1/gentx/**.json'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
