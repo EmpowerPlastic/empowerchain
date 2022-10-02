@@ -4,7 +4,7 @@
 
 **Download genesis altruistic-1**
 ```bash
-rm -rf $HOME/.empowerchain/config/genesis.json && wget https://raw.githubusercontent.com/empowerchain/empowerchain/main/testnets/altruistic-1/genesis.json
+rm -rf $HOME/.empowerchain/config/genesis.json && cd $HOME/.empowerchain/config && wget https://raw.githubusercontent.com/empowerchain/empowerchain/main/testnets/altruistic-1/genesis.json
 ```
 
 **Unnsafe-reset-all**
