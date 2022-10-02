@@ -87,7 +87,7 @@ Result: fcae4a283488be14181fdc55f46705d9e11a32f8e3e8e25da5374914915d5ca8
 ```bash
 sudo tee /etc/systemd/system/empowerd.service > /dev/null <<EOF
 [Unit]
-Description=Haqq Node
+Description=EmpowerChain Node
 After=network.target
 
 [Service]
