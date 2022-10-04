@@ -1,5 +1,11 @@
 ![empower](https://user-images.githubusercontent.com/104348282/192093493-67779857-653e-4018-8c78-49530690f7a0.png)
 
+# IMPORTANT!
+
+We are not accepting gentx PRs at the moment, so there is no need to submit those.
+
+You can come and visit us on our Discord to discuss more and keep up to date on the next phase of the validator selection process.
+
 # Prepare testnet altruistic-1
 **Update packages and install required packages**
 ```bash
@@ -82,6 +88,12 @@ empowerd tendermint unsafe-reset-all --home $HOME/.empowerchain
 sha256sum $HOME/.empowerchain/config/genesis.json
 ```
 Result: fcae4a283488be14181fdc55f46705d9e11a32f8e3e8e25da5374914915d5ca8
+
+
+**Set minimum gas price**
+```bash
+sed -i.bak -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.025umpwr\"/" $HOME/.empowerchain/config/app.toml
+```
 
 **Create a service file**
 ```bash
