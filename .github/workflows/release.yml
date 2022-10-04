@@ -1,4 +1,4 @@
-name: create release
+name: Create release
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
         with:
           version: v0.6.22
 
-      - run: earthly --ci --output +build
+      - run: earthly --ci --output +build --VERSION=${{ github.ref_name }}
         working-directory: ./chain
 
       - run: mv ./chain/build/empowerd ./chain/build/empowerd-${{ github.ref_name }}-amd64
