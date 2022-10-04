@@ -1,0 +1,31 @@
+name: Create release
+
+on:
+  push:
+    tags:
+      - "v*" # Push events to matching v*
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: earthly/actions/setup-earthly@v1
+        with:
+          version: v0.6.22
+
+      - run: earthly --ci --output +build --VERSION=${{ github.ref_name }}
+        working-directory: ./chain
+
+      - run: mv ./chain/build/empowerd ./chain/build/empowerd-${{ github.ref_name }}-amd64
+
+      # TODO: 1. Generate release notes
+      # TODO: 2. Build darwin + darwin arm version (maybe windows too)
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: ./chain/build/*
