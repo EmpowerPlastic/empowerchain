@@ -62,7 +62,9 @@ empowerd gentx <WALLET_NAME> 1000000umpwr \
 --website="" \
 --security-contact="" \
 --identity="" \
---details=""
+--details="" \
+--gas=auto \
+--gas-prices=0.025umpwr
 ```
 
 After executing this command, you have a gentx. Submit a pull request (gentx folder) with the given gentx
