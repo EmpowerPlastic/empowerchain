@@ -19,18 +19,18 @@ if ! mkdir -p $CHAIN_DIR 2>/dev/null; then
 fi
 
 echo "Initializing $CHAIN_ID..."
-$BINARY init test --home $CHAIN_DIR --chain-id=$CHAIN_ID
+$BINARY init test --home $CHAIN_DIR --chain-id=$CHAIN_ID --staking-bond-denom umpwr
 
 echo "Adding genesis accounts..."
 echo "$ALICE_MNEMONIC" | $BINARY keys add alice --home $CHAIN_DIR --recover --keyring-backend=test
 echo "$BOB_MNEMONIC" | $BINARY keys add bob --home $CHAIN_DIR --recover --keyring-backend=test
 echo "$VALIDATOR_MNEMONIC" | $BINARY keys add validator --home $CHAIN_DIR --recover --keyring-backend=test
 
-$BINARY add-genesis-account $($BINARY --home $CHAIN_DIR keys show alice --keyring-backend test -a) 100000000000stake  --home $CHAIN_DIR
-$BINARY add-genesis-account $($BINARY --home $CHAIN_DIR keys show bob --keyring-backend test -a) 100000000000stake  --home $CHAIN_DIR
-$BINARY add-genesis-account $($BINARY --home $CHAIN_DIR keys show validator --keyring-backend test -a) 100000000000stake  --home $CHAIN_DIR
+$BINARY add-genesis-account $($BINARY --home $CHAIN_DIR keys show alice --keyring-backend test -a) 100000000000umpwr  --home $CHAIN_DIR
+$BINARY add-genesis-account $($BINARY --home $CHAIN_DIR keys show bob --keyring-backend test -a) 100000000000umpwr  --home $CHAIN_DIR
+$BINARY add-genesis-account $($BINARY --home $CHAIN_DIR keys show validator --keyring-backend test -a) 100000000000umpwr  --home $CHAIN_DIR
 
-$BINARY gentx validator 7000000000stake --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test
+$BINARY gentx validator 7000000000umpwr --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test
 $BINARY collect-gentxs --home $CHAIN_DIR
 
 echo "Changing defaults and ports in app.toml and config.toml files..."
@@ -45,6 +45,8 @@ sed -i -e 's#"tcp://0.0.0.0:1317"#"tcp://0.0.0.0:'"$REST_PORT"'"#g' $CHAIN_DIR/c
 sed -i -e 's#":8080"#":'"$ROSETTA_PORT"'"#g' $CHAIN_DIR/config/app.toml
 sed -i -e 's/enable-unsafe-cors = false/enable-unsafe-cors = true/g' $CHAIN_DIR/config/app.toml
 sed -i -e 's/enabled-unsafe-cors = false/enable-unsafe-cors = true/g' $CHAIN_DIR/config/app.toml
+sed -i.bak -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.025umpwr\"/" $CHAIN_DIR/config/app.toml
+
 
 echo "Starting $CHAIN_ID in $CHAIN_DIR..."
 echo "Creating log file at $LOG_FILE_PATH"
