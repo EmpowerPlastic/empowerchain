@@ -13,6 +13,7 @@ import (
 
 func main() {
 	params.SetAddressPrefixes()
+	params.RegisterDenoms()
 
 	rootCmd, _ := cmd.NewRootCmd()
 
