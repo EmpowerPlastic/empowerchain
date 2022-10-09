@@ -96,10 +96,6 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	proofofexistencemodule "github.com/empowerchain/empowerchain/x/proofofexistence"
-	proofofexistencemodulekeeper "github.com/empowerchain/empowerchain/x/proofofexistence/keeper"
-	proofofexistencemoduletypes "github.com/empowerchain/empowerchain/x/proofofexistence/types"
-
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 )
@@ -150,7 +146,6 @@ var (
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
-		proofofexistencemodule.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -219,8 +214,6 @@ type App struct {
 	ScopedTransferKeeper   capabilitykeeper.ScopedKeeper
 	ScopedMonitoringKeeper capabilitykeeper.ScopedKeeper
 
-	ProofofexistenceKeeper proofofexistencemodulekeeper.Keeper
-
 	// mm is the module manager
 	mm *module.Manager
 
@@ -255,7 +248,6 @@ func New(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		proofofexistencemoduletypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -370,13 +362,6 @@ func New(
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
-	app.ProofofexistenceKeeper = *proofofexistencemodulekeeper.NewKeeper(
-		appCodec,
-		keys[proofofexistencemoduletypes.StoreKey],
-		keys[proofofexistencemoduletypes.MemStoreKey],
-	)
-	proofofexistenceModule := proofofexistencemodule.NewAppModule(appCodec, app.ProofofexistenceKeeper, app.AccountKeeper, app.BankKeeper)
-
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
@@ -413,7 +398,6 @@ func New(
 		ibc.NewAppModule(app.IBCKeeper),
 		sdkparams.NewAppModule(app.ParamsKeeper),
 		transferModule,
-		proofofexistenceModule,
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -439,7 +423,6 @@ func New(
 		genutiltypes.ModuleName,
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
-		proofofexistencemoduletypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -461,7 +444,6 @@ func New(
 		upgradetypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
-		proofofexistencemoduletypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -488,7 +470,6 @@ func New(
 		upgradetypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		feegrant.ModuleName,
-		proofofexistencemoduletypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -511,7 +492,6 @@ func New(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
-		proofofexistenceModule,
 	)
 	app.sm.RegisterStoreDecoders()
 
@@ -707,7 +687,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
-	paramsKeeper.Subspace(proofofexistencemoduletypes.ModuleName)
 
 	return paramsKeeper
 }
