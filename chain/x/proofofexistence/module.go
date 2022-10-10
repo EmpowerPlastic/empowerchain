@@ -1,0 +1,116 @@
+package proofofexistence
+
+import (
+	"encoding/json"
+
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/spf13/cobra"
+	abci "github.com/tendermint/tendermint/abci/types"
+)
+
+// ConsensusVersion defines the current x/proofofexistence module consensus version.
+const ConsensusVersion = 1
+
+var (
+	_ module.AppModule      = AppModule{}
+	_ module.AppModuleBasic = AppModuleBasic{}
+)
+
+// AppModuleBasic defines the basic application module used by the consensus_param module.
+type AppModuleBasic struct{}
+
+type AppModule struct {
+	AppModuleBasic
+}
+
+func (AppModuleBasic) Name() string { return types.ModuleName }
+
+func (AppModuleBasic) RegisterLegacyAminoCodec(*codec.LegacyAmino) {}
+
+func (AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {}
+
+func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
+	return cdc.MustMarshalJSON(types.DefaultGenesisState())
+}
+
+func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncodingConfig, bz json.RawMessage) error {
+	var data types.GenesisState
+	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
+		return sdkerrors.Wrapf(err, "failed to unmarshal %s genesis state", types.ModuleName)
+	}
+
+	return data.Validate()
+}
+
+func (AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runtime.ServeMux) {
+	// TODO
+}
+
+func (AppModuleBasic) GetTxCmd() *cobra.Command {
+	// TODO
+	return nil
+}
+
+func (AppModuleBasic) GetQueryCmd() *cobra.Command {
+	// TODO
+	return nil
+}
+
+// RegisterInvariants does nothing, there are no invariants to enforce
+func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
+
+// Deprecated: Route returns the capability module's message routing key.
+func (AppModule) Route() sdk.Route {
+	return sdk.Route{}
+}
+
+// Deprecated: QuerierRoute returns the proofofexistence module's query routing key.
+func (AppModule) QuerierRoute() string { return types.QuerierRoute }
+
+// Deprecated: LegacyQuerierHandler returns the proofofexistence module's Querier.
+func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
+	return nil
+}
+
+// RegisterServices registers a GRPC query service to respond to the
+// module-specific GRPC queries.
+func (am AppModule) RegisterServices(cfg module.Configurator) {
+	// TODO
+
+	/*querier := keeper.Querier{Keeper: am.keeper}
+	types.RegisterQueryServer(cfg.QueryServer(), querier)
+	msgServer := keeper.NewMsgServerImpl(am.keeper)
+	types.RegisterMsgServer(cfg.MsgServer(), msgServer)*/
+}
+
+func (AppModule) ConsensusVersion() uint64 {
+	return ConsensusVersion
+}
+
+// InitGenesis performs the proofofexistence module's genesis initialization
+// It returns no validator updates.
+func (AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, gs json.RawMessage) []abci.ValidatorUpdate {
+	var genState types.GenesisState
+	// Initialize global index to index in genesis state
+	cdc.MustUnmarshalJSON(gs, &genState)
+
+	// TODO: InitGenesis(ctx, am.keeper, genState)
+
+	return []abci.ValidatorUpdate{}
+}
+
+// ExportGenesis returns the proofofexistence module's exported genesis state as raw JSON bytes.
+func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
+	// TODO
+
+	return nil
+	/*genState := ExportGenesis(ctx, am.keeper)
+	return cdc.MustMarshalJSON(genState)*/
+}

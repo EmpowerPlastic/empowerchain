@@ -1,0 +1,22 @@
+syntax = "proto3";
+package empowerchain.proofofexistence;
+
+option go_package = "github.com/empowerchain/empowerchain/x/proofofexistence/types";
+
+// Msg defines the message service
+service Msg {
+    // CreateProof creates a new proof of existence
+    rpc CreateProof(MsgCreateProof) returns(MsgCreateProofResponse);
+}
+
+// MsgCreateProof is the message used for creating a new proof of existence
+message MsgCreateProof {
+    // hash is the SHA-256 hash in HEX format
+    string hash = 1;
+    
+    // creator is the account address that created the proof
+    string creator = 2;
+}
+
+// MsgCreateProofResponse is response from creating a new proof of existence
+message MsgCreateProofResponse {}
