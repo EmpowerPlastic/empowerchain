@@ -1,7 +1,10 @@
 package proofofexistence
 
 import (
+	"context"
 	"encoding/json"
+	"github.com/empowerchain/empowerchain/x/proofofexistence/client/cli"
+	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -9,6 +12,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/empowerchain/empowerchain/x/proofofexistence/keeper"
 	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -28,19 +33,32 @@ type AppModuleBasic struct{}
 
 type AppModule struct {
 	AppModuleBasic
+
+	keeper keeper.Keeper
 }
 
+func NewAppModule(keeper keeper.Keeper) AppModule {
+	return AppModule{
+		AppModuleBasic: AppModuleBasic{},
+		keeper:         keeper,
+	}
+}
+
+// Name returns the name of the module
 func (AppModuleBasic) Name() string { return types.ModuleName }
 
 func (AppModuleBasic) RegisterLegacyAminoCodec(*codec.LegacyAmino) {}
 
-func (AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {}
+// RegisterInterfaces registers the module's interface types
+func (AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
+	types.RegisterInterfaces(registry)
+}
 
 func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	return cdc.MustMarshalJSON(types.DefaultGenesisState())
 }
 
-func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncodingConfig, bz json.RawMessage) error {
+func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, bz json.RawMessage) error {
 	var data types.GenesisState
 	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
 		return sdkerrors.Wrapf(err, "failed to unmarshal %s genesis state", types.ModuleName)
@@ -49,18 +67,18 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 	return data.Validate()
 }
 
-func (AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runtime.ServeMux) {
-	// TODO
+func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
+	if err := types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx)); err != nil {
+		panic(err)
+	}
 }
 
 func (AppModuleBasic) GetTxCmd() *cobra.Command {
-	// TODO
-	return nil
+	return cli.GetTxCmd()
 }
 
 func (AppModuleBasic) GetQueryCmd() *cobra.Command {
-	// TODO
-	return nil
+	return cli.GetQueryCmd()
 }
 
 // RegisterInvariants does nothing, there are no invariants to enforce
@@ -75,19 +93,18 @@ func (AppModule) Route() sdk.Route {
 func (AppModule) QuerierRoute() string { return types.QuerierRoute }
 
 // Deprecated: LegacyQuerierHandler returns the proofofexistence module's Querier.
-func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
+func (am AppModule) LegacyQuerierHandler(*codec.LegacyAmino) sdk.Querier {
 	return nil
 }
 
 // RegisterServices registers a GRPC query service to respond to the
 // module-specific GRPC queries.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
-	// TODO
-
-	/*querier := keeper.Querier{Keeper: am.keeper}
+	querier := keeper.Querier{Keeper: am.keeper}
 	types.RegisterQueryServer(cfg.QueryServer(), querier)
+
 	msgServer := keeper.NewMsgServerImpl(am.keeper)
-	types.RegisterMsgServer(cfg.MsgServer(), msgServer)*/
+	types.RegisterMsgServer(cfg.MsgServer(), msgServer)
 }
 
 func (AppModule) ConsensusVersion() uint64 {
@@ -96,21 +113,52 @@ func (AppModule) ConsensusVersion() uint64 {
 
 // InitGenesis performs the proofofexistence module's genesis initialization
 // It returns no validator updates.
-func (AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, gs json.RawMessage) []abci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, gs json.RawMessage) []abci.ValidatorUpdate {
 	var genState types.GenesisState
 	// Initialize global index to index in genesis state
 	cdc.MustUnmarshalJSON(gs, &genState)
-
-	// TODO: InitGenesis(ctx, am.keeper, genState)
+	if err := am.keeper.InitGenesis(ctx, genState); err != nil {
+		panic(err)
+	}
 
 	return []abci.ValidatorUpdate{}
 }
 
 // ExportGenesis returns the proofofexistence module's exported genesis state as raw JSON bytes.
 func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
-	// TODO
+	gs, err := am.keeper.ExportGenesis(ctx)
+	if err != nil {
+		panic(err)
+	}
 
+	return cdc.MustMarshalJSON(gs)
+}
+
+// AppModuleSimulation functions
+
+// GenerateGenesisState creates a randomized GenState of the proofofexistence module.
+func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
+	// TODO: simulation.RandomizedGenState(simState)
+	// https://github.com/cosmos/cosmos-sdk/blob/main/x/nft/simulation/genesis.go
+}
+
+// ProposalContents returns all the proofofexistence content functions used to simulate governance proposals.
+func (am AppModule) ProposalContents(simState module.SimulationState) []simtypes.WeightedProposalContent {
 	return nil
-	/*genState := ExportGenesis(ctx, am.keeper)
-	return cdc.MustMarshalJSON(genState)*/
+}
+
+// RandomizedParams creates randomized proofofexistence param changes for the simulator.
+func (AppModule) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
+	return nil
+}
+
+// RegisterStoreDecoder registers a decoder for proofofexistence module's types
+func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
+	// TODO: sdr[keeper.StoreKey] = simulation.NewDecodeStore(am.cdc)
+}
+
+// WeightedOperations returns the all the proofofexistence module operations with their respective weights.
+func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
+	// TODO
+	return nil
 }

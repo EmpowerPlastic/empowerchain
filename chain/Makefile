@@ -166,3 +166,10 @@ lint:
 format:
 	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./... --fix
 	@go run mvdan.cc/gofumpt -l -w x/ app/ ante/ tests/
+
+###############################################################################
+###                      Avoid "make: 'x' is up to date.                    ###
+###############################################################################
+
+.PHONY: ver all build clean test lint serve kill test smoketest format proto \
+    build-linux go-mod-cache
