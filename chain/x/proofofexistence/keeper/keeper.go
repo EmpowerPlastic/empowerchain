@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"encoding/hex"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -16,6 +17,7 @@ type Keeper struct {
 	cdc      codec.BinaryCodec
 	storeKey storetypes.StoreKey
 }
+
 func NewKeeper(cdc codec.BinaryCodec, storeKey storetypes.StoreKey) Keeper {
 	return Keeper{
 		cdc:      cdc,

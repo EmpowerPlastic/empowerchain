@@ -66,6 +66,7 @@ func (s *TestSuite) TestCreateNewProof() {
 		})
 	}
 }
+
 func (s *TestSuite) TestGetProof() {
 	testHash := "2feca43664769f70935eb2495eb0e7436b0ea0c7ccfddc0d6f029d8a33b09781"
 	testCases := map[string]struct {

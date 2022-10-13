@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
 	"github.com/spf13/cobra"

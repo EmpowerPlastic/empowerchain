@@ -2,11 +2,12 @@ package types
 
 import (
 	"encoding/hex"
+	"testing"
+
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/empowerchain/empowerchain/testutil/sample"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto"
-	"testing"
 )
 
 const testData = "This is just some random test data to be hashed. 42."

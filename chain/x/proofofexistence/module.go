@@ -3,8 +3,9 @@ package proofofexistence
 import (
 	"context"
 	"encoding/json"
-	"github.com/empowerchain/empowerchain/x/proofofexistence/client/cli"
 	"math/rand"
+
+	"github.com/empowerchain/empowerchain/x/proofofexistence/client/cli"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"

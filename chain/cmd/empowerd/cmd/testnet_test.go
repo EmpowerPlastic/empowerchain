@@ -3,9 +3,10 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"testing"
+
 	"github.com/empowerchain/empowerchain/app"
 	"github.com/empowerchain/empowerchain/app/params"
-	"testing"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
