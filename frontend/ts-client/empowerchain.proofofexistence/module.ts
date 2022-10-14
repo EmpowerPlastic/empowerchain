@@ -58,7 +58,7 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 		
 		msgCreateProof({ value }: msgCreateProofParams): EncodeObject {
 			try {
-				return { typeUrl: "/empowerchain.empowerchain.proofofexistence.MsgCreateProof", value: MsgCreateProof.fromPartial( value ) }  
+				return { typeUrl: "/empowerchain.proofofexistence.MsgCreateProof", value: MsgCreateProof.fromPartial( value ) }  
 			} catch (e: any) {
 				throw new Error('TxClient:MsgCreateProof: Could not create message: ' + e.message)
 			}
@@ -91,7 +91,7 @@ class SDKModule {
 const Module = (test: IgniteClient) => {
 	return {
 		module: {
-			EmpowerchainEmpowerchainProofofexistence: new SDKModule(test)
+			EmpowerchainProofofexistence: new SDKModule(test)
 		},
 		registry: msgTypes
   }

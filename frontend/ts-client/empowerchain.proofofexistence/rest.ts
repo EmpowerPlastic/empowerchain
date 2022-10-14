@@ -9,6 +9,28 @@
  * ---------------------------------------------------------------
  */
 
+export type ProofofexistenceMsgCreateProofResponse = object;
+
+/**
+* ProofMetadata is the metadata attached to a specific data proof
+Because the proof itself is also the key, the data structure is hash -> ProofMetadata
+The hash is the SHA-256 hash of the data of which is being made a proof for.
+*/
+export interface ProofofexistenceProofMetadata {
+  /** @format date-time */
+  timestamp?: string;
+  creator?: string;
+}
+
+export interface ProofofexistenceQueryProofResponse {
+  /**
+   * ProofMetadata is the metadata attached to a specific data proof
+   * Because the proof itself is also the key, the data structure is hash -> ProofMetadata
+   * The hash is the SHA-256 hash of the data of which is being made a proof for.
+   */
+  metadata?: ProofofexistenceProofMetadata;
+}
+
 export interface ProtobufAny {
   "@type"?: string;
 }
@@ -18,23 +40,6 @@ export interface RpcStatus {
   code?: number;
   message?: string;
   details?: ProtobufAny[];
-}
-
-/**
-* Params defines the set of on-chain interchain accounts parameters.
-The following parameters may be used to disable the controller submodule.
-*/
-export interface V1Params {
-  /** controller_enabled enables or disables the controller submodule. */
-  controller_enabled?: boolean;
-}
-
-/**
- * QueryParamsResponse is the response type for the Query/Params RPC method.
- */
-export interface V1QueryParamsResponse {
-  /** params defines the parameters of the module. */
-  params?: V1Params;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -229,7 +234,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title ibc/applications/interchain_accounts/controller/v1/controller.proto
+ * @title empowerchain/proofofexistence/genesis.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
@@ -237,13 +242,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * No description
    *
    * @tags Query
-   * @name QueryParams
-   * @summary Params queries all parameters of the ICA controller submodule.
-   * @request GET:/ibc/apps/interchain_accounts/controller/v1/params
+   * @name QueryProof
+   * @request GET:/empowerchain/empowerchain/proofofexistence/proof/{hash}
    */
-  queryParams = (params: RequestParams = {}) =>
-    this.request<V1QueryParamsResponse, RpcStatus>({
-      path: `/ibc/apps/interchain_accounts/controller/v1/params`,
+  queryProof = (hash: string, params: RequestParams = {}) =>
+    this.request<ProofofexistenceQueryProofResponse, RpcStatus>({
+      path: `/empowerchain/empowerchain/proofofexistence/proof/${hash}`,
       method: "GET",
       format: "json",
       ...params,

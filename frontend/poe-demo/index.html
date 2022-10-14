@@ -4,7 +4,15 @@
     </head>
 
     <body>
-        <textarea></textarea>
-        <button onclick="hashString('wtf')">Hash it bro</button>
+        <button id="connect-button" onclick="connect()">Connect Keplr</button>
+        <br>
+        <br>
+        <textarea id="area-to-hash"></textarea>
+        <br>
+        <button onclick="hashString()">Hash it like it's hot!</button>
+        <div id="output" style="display: none">
+            <div id="output-hash"></div>
+            <button onclick="createProof()">Create proof</button>
+        </div>
     </body>
 </html>

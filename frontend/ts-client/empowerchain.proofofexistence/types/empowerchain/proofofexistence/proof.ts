@@ -2,56 +2,50 @@
 import { Timestamp } from "../../google/protobuf/timestamp";
 import { Writer, Reader } from "protobufjs/minimal";
 
-export const protobufPackage = "empowerchain.empowerchain.proofofexistence";
+export const protobufPackage = "empowerchain.proofofexistence";
 
-export interface Proof {
-  /**
-   * Hash is the SHA-256 hash of the data of which is being made a proof for.
-   * The hash needs to be sent as a Base64 encoded string.
-   */
-  hash: string;
-  /** Timestamp is the time the proof was added on-chain (block time) */
+/**
+ * ProofMetadata is the metadata attached to a specific data proof
+ * Because the proof itself is also the key, the data structure is hash -> ProofMetadata
+ * The hash is the SHA-256 hash of the data of which is being made a proof for.
+ */
+export interface ProofMetadata {
+  /** timestamp is the time the proof was added on-chain (block time) */
   timestamp: Date | undefined;
-  /** Reporter is the account address that created the proof */
-  reporter: string;
+  /** creator is the account address that created the proof */
+  creator: string;
 }
 
-const baseProof: object = { hash: "", reporter: "" };
+const baseProofMetadata: object = { creator: "" };
 
-export const Proof = {
-  encode(message: Proof, writer: Writer = Writer.create()): Writer {
-    if (message.hash !== "") {
-      writer.uint32(10).string(message.hash);
-    }
+export const ProofMetadata = {
+  encode(message: ProofMetadata, writer: Writer = Writer.create()): Writer {
     if (message.timestamp !== undefined) {
       Timestamp.encode(
         toTimestamp(message.timestamp),
-        writer.uint32(18).fork()
+        writer.uint32(10).fork()
       ).ldelim();
     }
-    if (message.reporter !== "") {
-      writer.uint32(26).string(message.reporter);
+    if (message.creator !== "") {
+      writer.uint32(18).string(message.creator);
     }
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): Proof {
+  decode(input: Reader | Uint8Array, length?: number): ProofMetadata {
     const reader = input instanceof Uint8Array ? new Reader(input) : input;
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseProof } as Proof;
+    const message = { ...baseProofMetadata } as ProofMetadata;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.hash = reader.string();
-          break;
-        case 2:
           message.timestamp = fromTimestamp(
             Timestamp.decode(reader, reader.uint32())
           );
           break;
-        case 3:
-          message.reporter = reader.string();
+        case 2:
+          message.creator = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -61,54 +55,43 @@ export const Proof = {
     return message;
   },
 
-  fromJSON(object: any): Proof {
-    const message = { ...baseProof } as Proof;
-    if (object.hash !== undefined && object.hash !== null) {
-      message.hash = String(object.hash);
-    } else {
-      message.hash = "";
-    }
+  fromJSON(object: any): ProofMetadata {
+    const message = { ...baseProofMetadata } as ProofMetadata;
     if (object.timestamp !== undefined && object.timestamp !== null) {
       message.timestamp = fromJsonTimestamp(object.timestamp);
     } else {
       message.timestamp = undefined;
     }
-    if (object.reporter !== undefined && object.reporter !== null) {
-      message.reporter = String(object.reporter);
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator);
     } else {
-      message.reporter = "";
+      message.creator = "";
     }
     return message;
   },
 
-  toJSON(message: Proof): unknown {
+  toJSON(message: ProofMetadata): unknown {
     const obj: any = {};
-    message.hash !== undefined && (obj.hash = message.hash);
     message.timestamp !== undefined &&
       (obj.timestamp =
         message.timestamp !== undefined
           ? message.timestamp.toISOString()
           : null);
-    message.reporter !== undefined && (obj.reporter = message.reporter);
+    message.creator !== undefined && (obj.creator = message.creator);
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Proof>): Proof {
-    const message = { ...baseProof } as Proof;
-    if (object.hash !== undefined && object.hash !== null) {
-      message.hash = object.hash;
-    } else {
-      message.hash = "";
-    }
+  fromPartial(object: DeepPartial<ProofMetadata>): ProofMetadata {
+    const message = { ...baseProofMetadata } as ProofMetadata;
     if (object.timestamp !== undefined && object.timestamp !== null) {
       message.timestamp = object.timestamp;
     } else {
       message.timestamp = undefined;
     }
-    if (object.reporter !== undefined && object.reporter !== null) {
-      message.reporter = object.reporter;
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator;
     } else {
-      message.reporter = "";
+      message.creator = "";
     }
     return message;
   },

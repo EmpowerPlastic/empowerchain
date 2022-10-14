@@ -56,6 +56,8 @@ sed -i -e 's/enabled-unsafe-cors = false/enable-unsafe-cors = true/g' $CHAIN_DIR
 sed -i.bak -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.025umpwr\"/" $CHAIN_DIR/config/app.toml
 
 
+exit 0
+
 echo "Starting $CHAIN_ID in $CHAIN_DIR..."
 echo "Creating log file at $LOG_FILE_PATH"
 $BINARY start --log_level trace --log_format json --home $CHAIN_DIR --pruning=nothing --rpc.unsafe --grpc.address="0.0.0.0:$GRPC_PORT" --grpc-web.address="0.0.0.0:$GRPC_WEB" > $LOG_FILE_PATH 2>&1 &
@@ -66,4 +68,10 @@ if ! $BINARY --home $CHAIN_DIR --node tcp://:$RPC_PORT status; then
   echo "Chain failed to start"
 fi
 
-echo "Chain started!"
+echo ""
+echo "----------- Config -------------"
+echo "RPC: tcp://0.0.0.0:$RPC_PORT"
+echo "REST: tcp://0.0.0.0:$REST_PORT"
+echo "chain-id: $CHAIN_ID"
+echo ""
+echo "-------- Chain started! --------"

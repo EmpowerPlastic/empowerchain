@@ -1,26 +1,28 @@
 /* eslint-disable */
 import { Reader, Writer } from "protobufjs/minimal";
 
-export const protobufPackage = "empowerchain.empowerchain.proofofexistence";
+export const protobufPackage = "empowerchain.proofofexistence";
 
+/** MsgCreateProof is the message used for creating a new proof of existence */
 export interface MsgCreateProof {
-  /** reporter is the address of the signer */
-  reporter: string;
-  /** hash is the SHA-256 hash as a Base64 encoded string */
+  /** hash is the SHA-256 hash in HEX format */
   hash: string;
+  /** creator is the account address that created the proof */
+  creator: string;
 }
 
+/** MsgCreateProofResponse is response from creating a new proof of existence */
 export interface MsgCreateProofResponse {}
 
-const baseMsgCreateProof: object = { reporter: "", hash: "" };
+const baseMsgCreateProof: object = { hash: "", creator: "" };
 
 export const MsgCreateProof = {
   encode(message: MsgCreateProof, writer: Writer = Writer.create()): Writer {
-    if (message.reporter !== "") {
-      writer.uint32(10).string(message.reporter);
-    }
     if (message.hash !== "") {
-      writer.uint32(18).string(message.hash);
+      writer.uint32(10).string(message.hash);
+    }
+    if (message.creator !== "") {
+      writer.uint32(18).string(message.creator);
     }
     return writer;
   },
@@ -33,10 +35,10 @@ export const MsgCreateProof = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.reporter = reader.string();
+          message.hash = reader.string();
           break;
         case 2:
-          message.hash = reader.string();
+          message.creator = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -48,37 +50,37 @@ export const MsgCreateProof = {
 
   fromJSON(object: any): MsgCreateProof {
     const message = { ...baseMsgCreateProof } as MsgCreateProof;
-    if (object.reporter !== undefined && object.reporter !== null) {
-      message.reporter = String(object.reporter);
-    } else {
-      message.reporter = "";
-    }
     if (object.hash !== undefined && object.hash !== null) {
       message.hash = String(object.hash);
     } else {
       message.hash = "";
+    }
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator);
+    } else {
+      message.creator = "";
     }
     return message;
   },
 
   toJSON(message: MsgCreateProof): unknown {
     const obj: any = {};
-    message.reporter !== undefined && (obj.reporter = message.reporter);
     message.hash !== undefined && (obj.hash = message.hash);
+    message.creator !== undefined && (obj.creator = message.creator);
     return obj;
   },
 
   fromPartial(object: DeepPartial<MsgCreateProof>): MsgCreateProof {
     const message = { ...baseMsgCreateProof } as MsgCreateProof;
-    if (object.reporter !== undefined && object.reporter !== null) {
-      message.reporter = object.reporter;
-    } else {
-      message.reporter = "";
-    }
     if (object.hash !== undefined && object.hash !== null) {
       message.hash = object.hash;
     } else {
       message.hash = "";
+    }
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator;
+    } else {
+      message.creator = "";
     }
     return message;
   },
@@ -122,8 +124,9 @@ export const MsgCreateProofResponse = {
   },
 };
 
-/** Msg defines the Msg service. */
+/** Msg defines the message service */
 export interface Msg {
+  /** CreateProof creates a new proof of existence */
   CreateProof(request: MsgCreateProof): Promise<MsgCreateProofResponse>;
 }
 
@@ -135,7 +138,7 @@ export class MsgClientImpl implements Msg {
   CreateProof(request: MsgCreateProof): Promise<MsgCreateProofResponse> {
     const data = MsgCreateProof.encode(request).finish();
     const promise = this.rpc.request(
-      "empowerchain.empowerchain.proofofexistence.Msg",
+      "empowerchain.proofofexistence.Msg",
       "CreateProof",
       data
     );
