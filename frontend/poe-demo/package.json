@@ -1,0 +1,13 @@
+{
+  "name": "poe-demo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "parcel index.html"
+  },
+  "dependencies": {
+    "empowerchain-empowerchain-client-ts": "0.0.1",
+    "parcel": "^2.7.0"
+  }
+}

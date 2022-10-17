@@ -66,4 +66,10 @@ if ! $BINARY --home $CHAIN_DIR --node tcp://:$RPC_PORT status; then
   echo "Chain failed to start"
 fi
 
-echo "Chain started!"
+echo ""
+echo "----------- Config -------------"
+echo "RPC: tcp://0.0.0.0:$RPC_PORT"
+echo "REST: tcp://0.0.0.0:$REST_PORT"
+echo "chain-id: $CHAIN_ID"
+echo ""
+echo "-------- Chain started! --------"
