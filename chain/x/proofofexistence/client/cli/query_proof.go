@@ -9,10 +9,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func CmdShowProof() *cobra.Command {
+func QueryProofCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "show-stored-proof [hash]",
-		Short: "shows a Proof",
+		Use:   "proof [hash]",
+		Short: "get proof metadata",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -21,7 +21,7 @@ func CmdShowProof() *cobra.Command {
 
 			argHash := args[0]
 
-			params := &types.QueryGetProofRequest{
+			params := &types.QueryProofRequest{
 				Hash: argHash,
 			}
 

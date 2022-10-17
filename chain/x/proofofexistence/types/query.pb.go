@@ -6,8 +6,7 @@ package types
 import (
 	context "context"
 	fmt "fmt"
-	_ "github.com/cosmos/cosmos-sdk/types/query"
-	_ "github.com/gogo/protobuf/gogoproto"
+	_ "github.com/cosmos/gogoproto/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -30,22 +29,22 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type QueryGetProofRequest struct {
+type QueryProofRequest struct {
 	Hash string `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 }
 
-func (m *QueryGetProofRequest) Reset()         { *m = QueryGetProofRequest{} }
-func (m *QueryGetProofRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryGetProofRequest) ProtoMessage()    {}
-func (*QueryGetProofRequest) Descriptor() ([]byte, []int) {
+func (m *QueryProofRequest) Reset()         { *m = QueryProofRequest{} }
+func (m *QueryProofRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryProofRequest) ProtoMessage()    {}
+func (*QueryProofRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_ac74458ad64ae405, []int{0}
 }
-func (m *QueryGetProofRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryProofRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryGetProofRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryProofRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryGetProofRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryProofRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -55,41 +54,41 @@ func (m *QueryGetProofRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *QueryGetProofRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetProofRequest.Merge(m, src)
+func (m *QueryProofRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryProofRequest.Merge(m, src)
 }
-func (m *QueryGetProofRequest) XXX_Size() int {
+func (m *QueryProofRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryGetProofRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetProofRequest.DiscardUnknown(m)
+func (m *QueryProofRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryProofRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryGetProofRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryProofRequest proto.InternalMessageInfo
 
-func (m *QueryGetProofRequest) GetHash() string {
+func (m *QueryProofRequest) GetHash() string {
 	if m != nil {
 		return m.Hash
 	}
 	return ""
 }
 
-type QueryGetProofResponse struct {
-	Proof Proof `protobuf:"bytes,1,opt,name=proof,proto3" json:"proof"`
+type QueryProofResponse struct {
+	Metadata ProofMetadata `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata"`
 }
 
-func (m *QueryGetProofResponse) Reset()         { *m = QueryGetProofResponse{} }
-func (m *QueryGetProofResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryGetProofResponse) ProtoMessage()    {}
-func (*QueryGetProofResponse) Descriptor() ([]byte, []int) {
+func (m *QueryProofResponse) Reset()         { *m = QueryProofResponse{} }
+func (m *QueryProofResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryProofResponse) ProtoMessage()    {}
+func (*QueryProofResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_ac74458ad64ae405, []int{1}
 }
-func (m *QueryGetProofResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryProofResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryGetProofResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryProofResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryGetProofResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryProofResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -99,28 +98,28 @@ func (m *QueryGetProofResponse) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *QueryGetProofResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetProofResponse.Merge(m, src)
+func (m *QueryProofResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryProofResponse.Merge(m, src)
 }
-func (m *QueryGetProofResponse) XXX_Size() int {
+func (m *QueryProofResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryGetProofResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetProofResponse.DiscardUnknown(m)
+func (m *QueryProofResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryProofResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryGetProofResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryProofResponse proto.InternalMessageInfo
 
-func (m *QueryGetProofResponse) GetProof() Proof {
+func (m *QueryProofResponse) GetMetadata() ProofMetadata {
 	if m != nil {
-		return m.Proof
+		return m.Metadata
 	}
-	return Proof{}
+	return ProofMetadata{}
 }
 
 func init() {
-	proto.RegisterType((*QueryGetProofRequest)(nil), "empowerchain.empowerchain.proofofexistence.QueryGetProofRequest")
-	proto.RegisterType((*QueryGetProofResponse)(nil), "empowerchain.empowerchain.proofofexistence.QueryGetProofResponse")
+	proto.RegisterType((*QueryProofRequest)(nil), "empowerchain.proofofexistence.QueryProofRequest")
+	proto.RegisterType((*QueryProofResponse)(nil), "empowerchain.proofofexistence.QueryProofResponse")
 }
 
 func init() {
@@ -128,28 +127,27 @@ func init() {
 }
 
 var fileDescriptor_ac74458ad64ae405 = []byte{
-	// 333 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x91, 0xc1, 0x4a, 0xf3, 0x40,
-	0x10, 0xc7, 0xb3, 0x1f, 0xed, 0x07, 0xae, 0xb7, 0xa5, 0x82, 0x14, 0x89, 0xd2, 0x93, 0xf6, 0x90,
-	0xa5, 0xf5, 0x22, 0x82, 0x50, 0x7b, 0xf1, 0x24, 0x68, 0x2f, 0x82, 0xb7, 0x4d, 0x98, 0x26, 0x0b,
-	0x76, 0x67, 0x9b, 0xdd, 0x6a, 0x8b, 0x78, 0xf1, 0x09, 0x04, 0x5f, 0xaa, 0x27, 0x29, 0x78, 0xe9,
-	0x49, 0xa4, 0xf5, 0x41, 0x24, 0x9b, 0x1c, 0x6c, 0x15, 0xad, 0x78, 0x9b, 0x4c, 0x7e, 0xf3, 0x9b,
-	0xcc, 0x3f, 0x74, 0x0f, 0x7a, 0x1a, 0x6f, 0x20, 0x8d, 0x12, 0x21, 0x15, 0xd7, 0x29, 0x62, 0x17,
-	0xbb, 0x30, 0x94, 0xc6, 0x82, 0x8a, 0x80, 0xf7, 0x07, 0x90, 0x8e, 0x02, 0x9d, 0xa2, 0x45, 0x56,
-	0xff, 0x88, 0x06, 0x0b, 0x0f, 0xcb, 0x73, 0xd5, 0x4a, 0x8c, 0x31, 0xba, 0x31, 0x9e, 0x55, 0xb9,
-	0xa1, 0xba, 0x15, 0x23, 0xc6, 0x57, 0xc0, 0x85, 0x96, 0x5c, 0x28, 0x85, 0x56, 0x58, 0x89, 0xca,
-	0x14, 0x6f, 0xeb, 0x11, 0x9a, 0x1e, 0x1a, 0x1e, 0x0a, 0x53, 0x2c, 0xe6, 0xd7, 0x8d, 0x10, 0xac,
-	0x68, 0x70, 0x2d, 0x62, 0xa9, 0x1c, 0x5c, 0xb0, 0x3f, 0x7c, 0xb6, 0x6b, 0xe4, 0x68, 0xad, 0x4e,
-	0x2b, 0xe7, 0x99, 0xec, 0x04, 0xec, 0x59, 0xd6, 0xee, 0x40, 0x7f, 0x00, 0xc6, 0x32, 0x46, 0x4b,
-	0x89, 0x30, 0xc9, 0x26, 0xd9, 0x21, 0xbb, 0x6b, 0x1d, 0x57, 0xd7, 0xba, 0x74, 0x63, 0x89, 0x35,
-	0x1a, 0x95, 0x01, 0x76, 0x4a, 0xcb, 0xce, 0xe9, 0xe8, 0xf5, 0x66, 0x23, 0x58, 0x3d, 0x8b, 0xc0,
-	0x99, 0xda, 0xa5, 0xf1, 0xcb, 0xb6, 0xd7, 0xc9, 0x2d, 0xcd, 0x29, 0xa1, 0x65, 0xb7, 0x88, 0x3d,
-	0x11, 0x5a, 0x76, 0x00, 0x6b, 0xfd, 0xc6, 0xf9, 0xd5, 0x45, 0xd5, 0xe3, 0x3f, 0x18, 0xf2, 0x3b,
-	0x6b, 0xad, 0xfb, 0xe7, 0xb7, 0xc7, 0x7f, 0x87, 0xec, 0x80, 0x2f, 0x04, 0xbc, 0x42, 0xda, 0xfc,
-	0x36, 0x4b, 0xf0, 0xae, 0x7d, 0x31, 0x9e, 0xf9, 0x64, 0x32, 0xf3, 0xc9, 0xeb, 0xcc, 0x27, 0x0f,
-	0x73, 0xdf, 0x9b, 0xcc, 0x7d, 0x6f, 0x3a, 0xf7, 0xbd, 0xcb, 0xa3, 0x58, 0xda, 0x64, 0x10, 0x06,
-	0x11, 0xf6, 0xbe, 0xb1, 0x0f, 0x3f, 0xfb, 0xed, 0x48, 0x83, 0x09, 0xff, 0xbb, 0xdf, 0xb9, 0xff,
-	0x1e, 0x00, 0x00, 0xff, 0xff, 0x3a, 0xb2, 0x68, 0x6c, 0xb2, 0x02, 0x00, 0x00,
+	// 306 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xd2, 0x4c, 0xcd, 0x2d, 0xc8,
+	0x2f, 0x4f, 0x2d, 0x4a, 0xce, 0x48, 0xcc, 0xcc, 0xd3, 0x2f, 0x28, 0xca, 0xcf, 0x4f, 0xcb, 0x4f,
+	0x4b, 0xad, 0xc8, 0x2c, 0x2e, 0x49, 0xcd, 0x4b, 0x4e, 0xd5, 0x2f, 0x2c, 0x4d, 0x2d, 0xaa, 0xd4,
+	0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x92, 0x45, 0x56, 0xaa, 0x87, 0xae, 0x54, 0x4a, 0x24, 0x3d,
+	0x3f, 0x3d, 0x1f, 0xac, 0x52, 0x1f, 0xc4, 0x82, 0x68, 0x92, 0x92, 0x49, 0xcf, 0xcf, 0x4f, 0xcf,
+	0x49, 0xd5, 0x4f, 0x2c, 0xc8, 0xd4, 0x4f, 0xcc, 0xcb, 0xcb, 0x2f, 0x49, 0x2c, 0xc9, 0xcc, 0xcf,
+	0x2b, 0x86, 0xca, 0x12, 0xb0, 0x1d, 0x2c, 0x00, 0x51, 0xaa, 0xa4, 0xce, 0x25, 0x18, 0x08, 0x72,
+	0x4c, 0x00, 0x48, 0x2c, 0x28, 0xb5, 0xb0, 0x34, 0xb5, 0xb8, 0x44, 0x48, 0x88, 0x8b, 0x25, 0x23,
+	0xb1, 0x38, 0x43, 0x82, 0x51, 0x81, 0x51, 0x83, 0x33, 0x08, 0xcc, 0x56, 0x4a, 0xe1, 0x12, 0x42,
+	0x56, 0x58, 0x5c, 0x90, 0x9f, 0x57, 0x9c, 0x2a, 0xe4, 0xc7, 0xc5, 0x91, 0x9b, 0x5a, 0x92, 0x98,
+	0x92, 0x58, 0x92, 0x08, 0x56, 0xcd, 0x6d, 0xa4, 0xa3, 0x87, 0xd7, 0x3f, 0x7a, 0x60, 0xfd, 0xbe,
+	0x50, 0x3d, 0x4e, 0x2c, 0x27, 0xee, 0xc9, 0x33, 0x04, 0xc1, 0xcd, 0x30, 0xda, 0xc1, 0xc8, 0xc5,
+	0x0a, 0xb6, 0x46, 0x68, 0x1d, 0x23, 0x17, 0x2b, 0x58, 0xad, 0x90, 0x01, 0x01, 0x13, 0x31, 0xdc,
+	0x2f, 0x65, 0x48, 0x82, 0x0e, 0x88, 0x47, 0x94, 0x1c, 0x9a, 0x2e, 0x3f, 0x99, 0xcc, 0x64, 0x25,
+	0x64, 0xa1, 0x8f, 0x12, 0x76, 0x44, 0x04, 0xa4, 0x7e, 0x35, 0x28, 0x7c, 0x6a, 0x9d, 0xc2, 0x4f,
+	0x3c, 0x92, 0x63, 0xbc, 0xf0, 0x48, 0x8e, 0xf1, 0xc1, 0x23, 0x39, 0xc6, 0x09, 0x8f, 0xe5, 0x18,
+	0x2e, 0x3c, 0x96, 0x63, 0xb8, 0xf1, 0x58, 0x8e, 0x21, 0xca, 0x36, 0x3d, 0xb3, 0x24, 0xa3, 0x34,
+	0x49, 0x2f, 0x39, 0x3f, 0x17, 0x8f, 0xe9, 0x15, 0x98, 0xe6, 0x97, 0x54, 0x16, 0xa4, 0x16, 0x27,
+	0xb1, 0x81, 0x63, 0xca, 0x18, 0x10, 0x00, 0x00, 0xff, 0xff, 0x95, 0xf7, 0x97, 0xb9, 0x54, 0x02,
+	0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -164,8 +162,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	// Queries a Proof by hash.
-	Proof(ctx context.Context, in *QueryGetProofRequest, opts ...grpc.CallOption) (*QueryGetProofResponse, error)
+	Proof(ctx context.Context, in *QueryProofRequest, opts ...grpc.CallOption) (*QueryProofResponse, error)
 }
 
 type queryClient struct {
@@ -176,9 +173,9 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 	return &queryClient{cc}
 }
 
-func (c *queryClient) Proof(ctx context.Context, in *QueryGetProofRequest, opts ...grpc.CallOption) (*QueryGetProofResponse, error) {
-	out := new(QueryGetProofResponse)
-	err := c.cc.Invoke(ctx, "/empowerchain.empowerchain.proofofexistence.Query/Proof", in, out, opts...)
+func (c *queryClient) Proof(ctx context.Context, in *QueryProofRequest, opts ...grpc.CallOption) (*QueryProofResponse, error) {
+	out := new(QueryProofResponse)
+	err := c.cc.Invoke(ctx, "/empowerchain.proofofexistence.Query/Proof", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -187,15 +184,14 @@ func (c *queryClient) Proof(ctx context.Context, in *QueryGetProofRequest, opts 
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// Queries a Proof by hash.
-	Proof(context.Context, *QueryGetProofRequest) (*QueryGetProofResponse, error)
+	Proof(context.Context, *QueryProofRequest) (*QueryProofResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
 type UnimplementedQueryServer struct {
 }
 
-func (*UnimplementedQueryServer) Proof(ctx context.Context, req *QueryGetProofRequest) (*QueryGetProofResponse, error) {
+func (*UnimplementedQueryServer) Proof(ctx context.Context, req *QueryProofRequest) (*QueryProofResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Proof not implemented")
 }
 
@@ -204,7 +200,7 @@ func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
 }
 
 func _Query_Proof_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryGetProofRequest)
+	in := new(QueryProofRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -213,16 +209,16 @@ func _Query_Proof_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/empowerchain.empowerchain.proofofexistence.Query/Proof",
+		FullMethod: "/empowerchain.proofofexistence.Query/Proof",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Proof(ctx, req.(*QueryGetProofRequest))
+		return srv.(QueryServer).Proof(ctx, req.(*QueryProofRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 var _Query_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "empowerchain.empowerchain.proofofexistence.Query",
+	ServiceName: "empowerchain.proofofexistence.Query",
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -234,7 +230,7 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	Metadata: "empowerchain/proofofexistence/query.proto",
 }
 
-func (m *QueryGetProofRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryProofRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -244,12 +240,12 @@ func (m *QueryGetProofRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryGetProofRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryProofRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryGetProofRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryProofRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -264,7 +260,7 @@ func (m *QueryGetProofRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryGetProofResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryProofResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -274,18 +270,18 @@ func (m *QueryGetProofResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryGetProofResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryProofResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryGetProofResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryProofResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
 	{
-		size, err := m.Proof.MarshalToSizedBuffer(dAtA[:i])
+		size, err := m.Metadata.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
 			return 0, err
 		}
@@ -308,7 +304,7 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *QueryGetProofRequest) Size() (n int) {
+func (m *QueryProofRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -321,13 +317,13 @@ func (m *QueryGetProofRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryGetProofResponse) Size() (n int) {
+func (m *QueryProofResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = m.Proof.Size()
+	l = m.Metadata.Size()
 	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
@@ -338,7 +334,7 @@ func sovQuery(x uint64) (n int) {
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *QueryGetProofRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryProofRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -361,10 +357,10 @@ func (m *QueryGetProofRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetProofRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryProofRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetProofRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryProofRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -420,7 +416,7 @@ func (m *QueryGetProofRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryGetProofResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryProofResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -443,15 +439,15 @@ func (m *QueryGetProofResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetProofResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryProofResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetProofResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryProofResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Proof", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -478,7 +474,7 @@ func (m *QueryGetProofResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.Proof.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Metadata.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
