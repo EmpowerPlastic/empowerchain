@@ -33,6 +33,11 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState types.GenesisState) error 
 			return err
 		}
 
+		_, err = sdk.AccAddressFromBech32(elem.Metadata.Creator)
+		if err != nil {
+			return err
+		}
+
 		if err := k.setProof(ctx, hash, *elem.Metadata); err != nil {
 			return err
 		}

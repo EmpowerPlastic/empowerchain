@@ -6,6 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/empowerchain/empowerchain/app"
+	"github.com/empowerchain/empowerchain/app/params"
 	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -36,6 +37,8 @@ func (s *TestSuite) SetupTest() {
 }
 
 func TestTestSuite(t *testing.T) {
+	params.SetAddressPrefixes()
+	params.RegisterDenoms()
 	suite.Run(t, new(TestSuite))
 }
 
