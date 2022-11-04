@@ -58,7 +58,7 @@ sed -i.bak -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.025umpwr\"/" 
 
 echo "Starting $CHAIN_ID in $CHAIN_DIR..."
 echo "Creating log file at $LOG_FILE_PATH"
-$BINARY start --log_level trace --log_format json --home $CHAIN_DIR --pruning=nothing --rpc.unsafe --grpc.address="0.0.0.0:$GRPC_PORT" --grpc-web.address="0.0.0.0:$GRPC_WEB" > $LOG_FILE_PATH 2>&1 &
+$BINARY start --log_format json --home $CHAIN_DIR --pruning=nothing --rpc.unsafe --grpc.address="0.0.0.0:$GRPC_PORT" --grpc-web.address="0.0.0.0:$GRPC_WEB" --state-sync.snapshot-interval 10 --state-sync.snapshot-keep-recent 2 > $LOG_FILE_PATH 2>&1 &
 
 sleep 3
 
