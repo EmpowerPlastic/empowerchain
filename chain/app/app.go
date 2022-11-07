@@ -1,6 +1,9 @@
 package app
 
 import (
+	"fmt"
+	"github.com/empowerchain/empowerchain/app/upgrades"
+	v2 "github.com/empowerchain/empowerchain/app/upgrades/v2"
 	"io"
 	"net/http"
 	"os"
@@ -162,6 +165,8 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 	}
+
+	Upgrades = []upgrades.Upgrade{v2.Upgrade}
 )
 
 var (
@@ -221,10 +226,9 @@ type EmpowerApp struct {
 	ScopedTransferKeeper   capabilitykeeper.ScopedKeeper
 	ScopedMonitoringKeeper capabilitykeeper.ScopedKeeper
 
-	// mm is the module manager
-	mm *module.Manager
+	mm           *module.Manager
+	configurator module.Configurator
 
-	// sm is the simulation manager
 	sm *module.SimulationManager
 }
 
@@ -492,7 +496,11 @@ func New(
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
-	app.mm.RegisterServices(module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter()))
+	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
+	app.mm.RegisterServices(app.configurator)
+
+	app.setupUpgradeStoreLoaders()
+	app.setupUpgradeHandlers()
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	app.sm = module.NewSimulationManager(
@@ -656,6 +664,32 @@ func (app *EmpowerApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.AP
 	/*if apiConfig.Swagger {
 		RegisterSwaggerAPI(clientCtx, apiSvr.Router)
 	}*/
+}
+
+func (app *EmpowerApp) setupUpgradeStoreLoaders() {
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Sprintf("failed to read upgrade info from disk %s", err))
+	}
+
+	if app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		return
+	}
+
+	for _, u := range Upgrades {
+		if upgradeInfo.Name == u.UpgradeName {
+			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &u.StoreUpgrades))
+		}
+	}
+}
+
+func (app *EmpowerApp) setupUpgradeHandlers() {
+	for _, u := range Upgrades {
+		app.UpgradeKeeper.SetUpgradeHandler(
+			u.UpgradeName,
+			u.CreateUpgradeHandler(app.mm, app.configurator),
+		)
+	}
 }
 
 func RegisterSwaggerAPI(ctx client.Context, rtr *mux.Router) {

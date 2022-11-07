@@ -1,10 +1,10 @@
 syntax = "proto3";
-package empowerchain.proofofexistence.v1beta2;
+package empowerchain.proofofexistence;
 
 import "gogoproto/gogo.proto";
-import "empowerchain/proofofexistence/v1beta2/proof.proto";
+import "empowerchain/proofofexistence/proof.proto";
 
-option go_package = "github.com/empowerchain/empowerchain/x/proofofexistence/types/v1beta2";
+option go_package = "github.com/empowerchain/empowerchain/x/proofofexistence/types";
 
 // GenesisState defines the proofofexistence module's genesis state.
 message GenesisState {
