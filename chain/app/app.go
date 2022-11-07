@@ -2,12 +2,13 @@ package app
 
 import (
 	"fmt"
-	"github.com/empowerchain/empowerchain/app/upgrades"
-	v2 "github.com/empowerchain/empowerchain/app/upgrades/v2"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/empowerchain/empowerchain/app/upgrades"
+	v2 "github.com/empowerchain/empowerchain/app/upgrades/v2"
 
 	"github.com/empowerchain/empowerchain/app/params"
 	"github.com/gorilla/mux"
