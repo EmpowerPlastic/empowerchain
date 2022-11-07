@@ -106,6 +106,11 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 
 	msgServer := keeper.NewMsgServerImpl(am.keeper)
 	types.RegisterMsgServer(cfg.MsgServer(), msgServer)
+
+	m := keeper.NewMigrator(am.keeper)
+	if err := cfg.RegisterMigration(types.ModuleName, 1, m.Migrate1to2); err != nil {
+		panic(err)
+	}
 }
 
 func (AppModule) ConsensusVersion() uint64 {

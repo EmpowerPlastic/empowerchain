@@ -1,7 +1,7 @@
 syntax = "proto3";
-package empowerchain.proofofexistence;
+package empowerchain.proofofexistence.v1beta2;
 
-option go_package = "github.com/empowerchain/empowerchain/x/proofofexistence/types";
+option go_package = "github.com/empowerchain/empowerchain/x/proofofexistence/types/v1beta2";
 
 // Msg defines the message service
 service Msg {
