@@ -63,7 +63,3 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) (*types.GenesisState, error) {
 
 	return genesis, nil
 }
-
-func KeyPrefix(p string) []byte {
-	return []byte(p)
-}

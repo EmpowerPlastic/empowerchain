@@ -22,7 +22,7 @@ import (
 )
 
 // ConsensusVersion defines the current x/proofofexistence module consensus version.
-const ConsensusVersion = 1
+const ConsensusVersion = 3
 
 var (
 	_ module.AppModule      = AppModule{}
@@ -106,6 +106,13 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 
 	msgServer := keeper.NewMsgServerImpl(am.keeper)
 	types.RegisterMsgServer(cfg.MsgServer(), msgServer)
+
+	m := keeper.NewMigrator(am.keeper)
+	// For some reason this was hardcoded to 2 in the previous version https://github.com/empowerchain/empowerchain/blob/f7e68c0cd2901c9a60bd2ce00b43cf0db2c33f0e/chain/x/proofofexistence/module.go#L171
+	// When resetting all this before main net, get it back to 1
+	if err := cfg.RegisterMigration(types.ModuleName, 2, m.Migrate1to2); err != nil {
+		panic(err)
+	}
 }
 
 func (AppModule) ConsensusVersion() uint64 {
