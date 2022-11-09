@@ -56,7 +56,7 @@ Wait until the upgrade time. At the upgrade time, move to the next section.
 ### Replace the binaries
 
 ```bash
-cp $HOME/empowerchain/build/empowerd $(which empowerd)
+cp $HOME/empowerchain/chain/build/empowerd $(which empowerd)
 ```
 
 ### Restart The Node
