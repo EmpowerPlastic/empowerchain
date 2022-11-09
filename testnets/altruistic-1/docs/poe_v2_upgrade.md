@@ -51,24 +51,12 @@ git checkout v0.0.2
 cd chain && make build
 ```
 
-### Set Halt Height
-
-```bash
-sed -i.bak 's/halt-height = 0/halt-height = 580000/' $HOME/.empowerchain/config/app.toml
-```
-
-Then, wait until the upgrade time. At the upgrade time, move to the next section.
+Wait until the upgrade time. At the upgrade time, move to the next section.
 
 ### Replace the binaries
 
 ```bash
 cp $HOME/empowerchain/build/empowerd $(which empowerd)
-```
-
-### Reset the Halt Height
-
-```bash
-sed -i.bak 's/halt-height = 580000/halt-height = 0/' $HOME/.empowerchain/config/app.toml
 ```
 
 ### Restart The Node
