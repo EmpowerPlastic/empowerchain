@@ -5,11 +5,11 @@ import (
 )
 
 const (
-	HumanCoinUnit = "mpwr"
-	BaseCoinUnit  = "umpwr"
-	OsmoExponent  = 6
+	humanCoinUnit = "mpwr"
+	baseCoinUnit  = "umpwr"
+	coinExponent  = 6
 
-	DefaultBondDenom = BaseCoinUnit
+	DefaultBondDenom = baseCoinUnit
 
 	Bech32AccountPrefix = "empower"
 )
@@ -26,4 +26,16 @@ func SetAddressPrefixes() {
 	config.SetBech32PrefixForValidator(validatorAddressPrefix, validatorPubKeyPrefix)
 	config.SetBech32PrefixForConsensusNode(consNodeAddressPrefix, consNodePubKeyPrefix)
 	config.Seal()
+}
+
+// RegisterDenoms registers token denoms.
+func RegisterDenoms() {
+	err := sdk.RegisterDenom(humanCoinUnit, sdk.OneDec())
+	if err != nil {
+		panic(err)
+	}
+	err = sdk.RegisterDenom(baseCoinUnit, sdk.NewDecWithPrec(1, coinExponent))
+	if err != nil {
+		panic(err)
+	}
 }

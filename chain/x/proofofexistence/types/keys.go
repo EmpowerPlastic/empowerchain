@@ -1,22 +1,15 @@
 package types
 
 const (
-	// ModuleName defines the module name
+	// ModuleName defines the name of the x/consensus module.
 	ModuleName = "proofofexistence"
 
-	// StoreKey defines the primary module store key
-	StoreKey = ModuleName
-
-	// RouterKey is the message route for slashing
+	// RouterKey defines the module's router key.
 	RouterKey = ModuleName
+
+	// StoreKey defines the module's store key.
+	StoreKey = ModuleName
 
 	// QuerierRoute defines the module's query routing key
 	QuerierRoute = ModuleName
-
-	// MemStoreKey defines the in-memory store key
-	MemStoreKey = "mem_proofofexistence"
 )
-
-func KeyPrefix(p string) []byte {
-	return []byte(p)
-}

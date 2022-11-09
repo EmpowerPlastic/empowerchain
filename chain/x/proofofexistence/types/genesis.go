@@ -1,31 +1,44 @@
 package types
 
-import (
-	"fmt"
-)
+import fmt "fmt"
 
-// DefaultIndex is the default capability global index
-const DefaultIndex uint64 = 1
-
-// DefaultGenesis returns the default Capability genesis state
-func DefaultGenesis() *GenesisState {
+// DefaultGenesisState - Return a default genesis state
+func DefaultGenesisState() *GenesisState {
 	return &GenesisState{
 		ProofList: []Proof{},
 	}
 }
 
-// Validate performs basic genesis state validation returning an error upon any
-// failure.
+// Validate performs basic genesis state validation returning an error upon failure
 func (gs GenesisState) Validate() error {
 	// Check for duplicated index in proof
-	proofIndexMap := make(map[string]struct{})
+	hashMap := make(map[string]struct{})
 
-	for _, elem := range gs.ProofList {
-		index := string(ProofKey(elem.Hash))
-		if _, ok := proofIndexMap[index]; ok {
-			return fmt.Errorf("duplicated index for proof")
+	for _, proof := range gs.ProofList {
+		if _, exists := hashMap[proof.Hash]; exists {
+			return fmt.Errorf("duplicated hash found")
 		}
-		proofIndexMap[index] = struct{}{}
+		hashMap[proof.Hash] = struct{}{}
+
+		if err := validateGenesisProof(proof); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func validateGenesisProof(proof Proof) error {
+	if proof.Hash == "" {
+		return fmt.Errorf("hash cannot be empty")
+	}
+
+	if proof.Metadata == nil {
+		return fmt.Errorf("metadata cannot be empty")
+	}
+
+	if proof.Metadata.Creator == "" {
+		return fmt.Errorf("metadata.creator cannot be empty")
 	}
 
 	return nil

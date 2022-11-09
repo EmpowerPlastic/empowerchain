@@ -1,67 +1,114 @@
-package types_test
+package types
 
 import (
 	"testing"
+	"time"
 
-	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
 	"github.com/stretchr/testify/require"
 )
 
-func TestDefaultGenesisIsCorrect(t *testing.T) {
-	genesis := types.DefaultGenesis()
-	require.Equal(t, &types.GenesisState{
-		ProofList: []types.Proof{},
-	}, genesis)
-}
-
-func TestGenesisState_Validate(t *testing.T) {
-	for _, tc := range []struct {
-		desc     string
-		genState *types.GenesisState
-		valid    bool
+func TestValidateGenesis(t *testing.T) {
+	testCases := map[string]struct {
+		genesisState GenesisState
+		expErr       bool
 	}{
-		{
-			desc:     "default is valid",
-			genState: types.DefaultGenesis(),
-			valid:    true,
+		"valid default genesis state": {
+			genesisState: *DefaultGenesisState(),
+			expErr:       false,
 		},
-		{
-			desc: "valid genesis state",
-			genState: &types.GenesisState{
+		"valid custom genesis state": {
+			genesisState: GenesisState{
+				ProofList: []Proof{
+					{
+						Hash: "2feca43664769f70935eb2495eb0e7436b0ea0c7ccfddc0d6f029d8a33b09781",
+						Metadata: &ProofMetadata{
+							Timestamp: time.Now(),
+							Creator:   "empower1euf0uzgegfvyvwy6935pm82er5q3zkj5yytcrx",
+						},
+					},
+					{
+						Hash: "ffb5ff85bf44c95908f7965d9d379a378ab93bc3e9c14eb99c9980e3c41ae270",
+						Metadata: &ProofMetadata{
+							Timestamp: time.Now(),
+							Creator:   "empower1vujkvs47zkrj97fh46a53yf2nty8hm9rqs64f4",
+						},
+					},
+				},
+			},
+			expErr: false,
+		},
+		"duplicate proof": {
+			genesisState: GenesisState{
+				ProofList: []Proof{
+					{
+						Hash: "2feca43664769f70935eb2495eb0e7436b0ea0c7ccfddc0d6f029d8a33b09781",
+						Metadata: &ProofMetadata{
+							Timestamp: time.Now(),
+							Creator:   "empower1euf0uzgegfvyvwy6935pm82er5q3zkj5yytcrx",
+						},
+					},
+					{
+						Hash: "2feca43664769f70935eb2495eb0e7436b0ea0c7ccfddc0d6f029d8a33b09781",
+						Metadata: &ProofMetadata{
+							Timestamp: time.Now(),
+							Creator:   "empower1vujkvs47zkrj97fh46a53yf2nty8hm9rqs64f4",
+						},
+					},
+				},
+			},
+			expErr: true,
+		},
+		"empty hash": {
+			genesisState: GenesisState{
+				ProofList: []Proof{
+					{
+						Hash: "",
+						Metadata: &ProofMetadata{
+							Timestamp: time.Now(),
+							Creator:   "empower1euf0uzgegfvyvwy6935pm82er5q3zkj5yytcrx",
+						},
+					},
+				},
+			},
+			expErr: true,
+		},
+		"empty metadata": {
+			genesisState: GenesisState{
+				ProofList: []Proof{
+					{
+						Hash:     "2feca43664769f70935eb2495eb0e7436b0ea0c7ccfddc0d6f029d8a33b09781",
+						Metadata: nil,
+					},
+				},
+			},
+			expErr: true,
+		},
+		"empty creator": {
+			genesisState: GenesisState{
+				ProofList: []Proof{
+					{
+						Hash: "2feca43664769f70935eb2495eb0e7436b0ea0c7ccfddc0d6f029d8a33b09781",
+						Metadata: &ProofMetadata{
+							Timestamp: time.Now(),
+							Creator:   "",
+						},
+					},
+				},
+			},
+			expErr: true,
+		},
+	}
 
-				ProofList: []types.Proof{
-					{
-						Hash: "0",
-					},
-					{
-						Hash: "1",
-					},
-				},
-			},
-			valid: true,
-		},
-		{
-			desc: "duplicated proof",
-			genState: &types.GenesisState{
-				ProofList: []types.Proof{
-					{
-						Hash: "0",
-					},
-					{
-						Hash: "0",
-					},
-				},
-			},
-			valid: false,
-		},
-	} {
-		t.Run(tc.desc, func(t *testing.T) {
-			err := tc.genState.Validate()
-			if tc.valid {
-				require.NoError(t, err)
-			} else {
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			err := tc.genesisState.Validate()
+
+			if tc.expErr {
 				require.Error(t, err)
+				return
 			}
+
+			require.NoError(t, err)
 		})
 	}
 }

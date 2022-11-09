@@ -27,11 +27,12 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// MsgCreateProof is the message used for creating a new proof of existence
 type MsgCreateProof struct {
-	// reporter is the address of the signer
-	Reporter string `protobuf:"bytes,1,opt,name=reporter,proto3" json:"reporter,omitempty"`
-	// hash is the SHA-256 hash as a Base64 encoded string
-	Hash string `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
+	// hash is the SHA-256 hash in HEX format
+	Hash string `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	// creator is the account address that created the proof
+	Creator string `protobuf:"bytes,2,opt,name=creator,proto3" json:"creator,omitempty"`
 }
 
 func (m *MsgCreateProof) Reset()         { *m = MsgCreateProof{} }
@@ -67,13 +68,6 @@ func (m *MsgCreateProof) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgCreateProof proto.InternalMessageInfo
 
-func (m *MsgCreateProof) GetReporter() string {
-	if m != nil {
-		return m.Reporter
-	}
-	return ""
-}
-
 func (m *MsgCreateProof) GetHash() string {
 	if m != nil {
 		return m.Hash
@@ -81,6 +75,14 @@ func (m *MsgCreateProof) GetHash() string {
 	return ""
 }
 
+func (m *MsgCreateProof) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+// MsgCreateProofResponse is response from creating a new proof of existence
 type MsgCreateProofResponse struct {
 }
 
@@ -118,8 +120,8 @@ func (m *MsgCreateProofResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgCreateProofResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgCreateProof)(nil), "empowerchain.empowerchain.proofofexistence.MsgCreateProof")
-	proto.RegisterType((*MsgCreateProofResponse)(nil), "empowerchain.empowerchain.proofofexistence.MsgCreateProofResponse")
+	proto.RegisterType((*MsgCreateProof)(nil), "empowerchain.proofofexistence.MsgCreateProof")
+	proto.RegisterType((*MsgCreateProofResponse)(nil), "empowerchain.proofofexistence.MsgCreateProofResponse")
 }
 
 func init() {
@@ -127,22 +129,21 @@ func init() {
 }
 
 var fileDescriptor_b45d71116a87d100 = []byte{
-	// 225 bytes of a gzipped FileDescriptorProto
+	// 218 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x4b, 0xcd, 0x2d, 0xc8,
 	0x2f, 0x4f, 0x2d, 0x4a, 0xce, 0x48, 0xcc, 0xcc, 0xd3, 0x2f, 0x28, 0xca, 0xcf, 0x4f, 0xcb, 0x4f,
 	0x4b, 0xad, 0xc8, 0x2c, 0x2e, 0x49, 0xcd, 0x4b, 0x4e, 0xd5, 0x2f, 0xa9, 0xd0, 0x2b, 0x28, 0xca,
-	0x2f, 0xc9, 0x17, 0xd2, 0x42, 0x56, 0xa7, 0x87, 0xc2, 0x41, 0xd7, 0xa4, 0xe4, 0xc0, 0xc5, 0xe7,
-	0x5b, 0x9c, 0xee, 0x5c, 0x94, 0x9a, 0x58, 0x92, 0x1a, 0x00, 0x92, 0x14, 0x92, 0xe2, 0xe2, 0x28,
-	0x4a, 0x2d, 0xc8, 0x2f, 0x2a, 0x49, 0x2d, 0x92, 0x60, 0x54, 0x60, 0xd4, 0xe0, 0x0c, 0x82, 0xf3,
-	0x85, 0x84, 0xb8, 0x58, 0x32, 0x12, 0x8b, 0x33, 0x24, 0x98, 0xc0, 0xe2, 0x60, 0xb6, 0x92, 0x04,
-	0x97, 0x18, 0xaa, 0x09, 0x41, 0xa9, 0xc5, 0x05, 0xf9, 0x79, 0xc5, 0xa9, 0x46, 0x53, 0x19, 0xb9,
-	0x98, 0x7d, 0x8b, 0xd3, 0x85, 0x7a, 0x19, 0xb9, 0xb8, 0x91, 0x6d, 0xb0, 0xd2, 0x23, 0xde, 0x81,
-	0x7a, 0xa8, 0x66, 0x4b, 0x39, 0x91, 0xaf, 0x17, 0xe6, 0x2e, 0xa7, 0xf0, 0x13, 0x8f, 0xe4, 0x18,
-	0x2f, 0x3c, 0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x0b, 0x8f, 0xe5,
-	0x18, 0x6e, 0x3c, 0x96, 0x63, 0x88, 0xb2, 0x4d, 0xcf, 0x2c, 0xc9, 0x28, 0x4d, 0xd2, 0x4b, 0xce,
-	0xcf, 0xd5, 0x47, 0x09, 0x6c, 0x14, 0x4e, 0x05, 0x96, 0xb0, 0xaf, 0x2c, 0x48, 0x2d, 0x4e, 0x62,
-	0x03, 0x87, 0xbf, 0x31, 0x20, 0x00, 0x00, 0xff, 0xff, 0x82, 0x57, 0xba, 0x00, 0xa9, 0x01, 0x00,
-	0x00,
+	0x2f, 0xc9, 0x17, 0x92, 0x45, 0x56, 0xa7, 0x87, 0xae, 0x4e, 0xc9, 0x8e, 0x8b, 0xcf, 0xb7, 0x38,
+	0xdd, 0xb9, 0x28, 0x35, 0xb1, 0x24, 0x35, 0x00, 0x24, 0x29, 0x24, 0xc4, 0xc5, 0x92, 0x91, 0x58,
+	0x9c, 0x21, 0xc1, 0xa8, 0xc0, 0xa8, 0xc1, 0x19, 0x04, 0x66, 0x0b, 0x49, 0x70, 0xb1, 0x27, 0x83,
+	0x94, 0xe4, 0x17, 0x49, 0x30, 0x81, 0x85, 0x61, 0x5c, 0x25, 0x09, 0x2e, 0x31, 0x54, 0xfd, 0x41,
+	0xa9, 0xc5, 0x05, 0xf9, 0x79, 0xc5, 0xa9, 0x46, 0x55, 0x5c, 0xcc, 0xbe, 0xc5, 0xe9, 0x42, 0xc5,
+	0x5c, 0xdc, 0xc8, 0xa6, 0xeb, 0xea, 0xe1, 0x75, 0x8f, 0x1e, 0xaa, 0x61, 0x52, 0xa6, 0x24, 0x29,
+	0x87, 0xd9, 0xed, 0x14, 0x7e, 0xe2, 0x91, 0x1c, 0xe3, 0x85, 0x47, 0x72, 0x8c, 0x0f, 0x1e, 0xc9,
+	0x31, 0x4e, 0x78, 0x2c, 0xc7, 0x70, 0xe1, 0xb1, 0x1c, 0xc3, 0x8d, 0xc7, 0x72, 0x0c, 0x51, 0xb6,
+	0xe9, 0x99, 0x25, 0x19, 0xa5, 0x49, 0x7a, 0xc9, 0xf9, 0xb9, 0xfa, 0x28, 0x21, 0x88, 0xc2, 0xa9,
+	0xc0, 0x12, 0xa0, 0x95, 0x05, 0xa9, 0xc5, 0x49, 0x6c, 0xe0, 0x40, 0x35, 0x06, 0x04, 0x00, 0x00,
+	0xff, 0xff, 0x8d, 0xe3, 0xcb, 0x8d, 0x7e, 0x01, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -157,6 +158,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
+	// CreateProof creates a new proof of existence
 	CreateProof(ctx context.Context, in *MsgCreateProof, opts ...grpc.CallOption) (*MsgCreateProofResponse, error)
 }
 
@@ -170,7 +172,7 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 
 func (c *msgClient) CreateProof(ctx context.Context, in *MsgCreateProof, opts ...grpc.CallOption) (*MsgCreateProofResponse, error) {
 	out := new(MsgCreateProofResponse)
-	err := c.cc.Invoke(ctx, "/empowerchain.empowerchain.proofofexistence.Msg/CreateProof", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/empowerchain.proofofexistence.Msg/CreateProof", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -179,6 +181,7 @@ func (c *msgClient) CreateProof(ctx context.Context, in *MsgCreateProof, opts ..
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
+	// CreateProof creates a new proof of existence
 	CreateProof(context.Context, *MsgCreateProof) (*MsgCreateProofResponse, error)
 }
 
@@ -204,7 +207,7 @@ func _Msg_CreateProof_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/empowerchain.empowerchain.proofofexistence.Msg/CreateProof",
+		FullMethod: "/empowerchain.proofofexistence.Msg/CreateProof",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).CreateProof(ctx, req.(*MsgCreateProof))
@@ -213,7 +216,7 @@ func _Msg_CreateProof_Handler(srv interface{}, ctx context.Context, dec func(int
 }
 
 var _Msg_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "empowerchain.empowerchain.proofofexistence.Msg",
+	ServiceName: "empowerchain.proofofexistence.Msg",
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -245,17 +248,17 @@ func (m *MsgCreateProof) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0x12
+	}
 	if len(m.Hash) > 0 {
 		i -= len(m.Hash)
 		copy(dAtA[i:], m.Hash)
 		i = encodeVarintTx(dAtA, i, uint64(len(m.Hash)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Reporter) > 0 {
-		i -= len(m.Reporter)
-		copy(dAtA[i:], m.Reporter)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Reporter)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -302,11 +305,11 @@ func (m *MsgCreateProof) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Reporter)
+	l = len(m.Hash)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Hash)
+	l = len(m.Creator)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -359,38 +362,6 @@ func (m *MsgCreateProof) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Reporter", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Reporter = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Hash", wireType)
 			}
 			var stringLen uint64
@@ -420,6 +391,38 @@ func (m *MsgCreateProof) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Hash = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

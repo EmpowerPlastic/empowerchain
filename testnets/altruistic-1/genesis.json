@@ -1,0 +1,1860 @@
+{
+  "genesis_time": "2022-10-03T16:00:00.895898898Z",
+  "chain_id": "altruistic-1",
+  "initial_height": "1",
+  "consensus_params": {
+    "block": {
+      "max_bytes": "22020096",
+      "max_gas": "-1",
+      "time_iota_ms": "1000"
+    },
+    "evidence": {
+      "max_age_num_blocks": "100000",
+      "max_age_duration": "172800000000000",
+      "max_bytes": "1048576"
+    },
+    "validator": {
+      "pub_key_types": [
+        "ed25519"
+      ]
+    },
+    "version": {}
+  },
+  "app_hash": "",
+  "app_state": {
+    "auth": {
+      "params": {
+        "max_memo_characters": "256",
+        "tx_sig_limit": "7",
+        "tx_size_cost_per_byte": "10",
+        "sig_verify_cost_ed25519": "590",
+        "sig_verify_cost_secp256k1": "1000"
+      },
+      "accounts": [
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower19u539q85fun7nax92w853gcqtl74kr0en27rkd",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1rnmlnlka66h76h50lyes243z388l5vkpf0qvq9",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1lzg0ddk7jqqnqalhueml54yejklad22jtvzrm9",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1l4xt877lhhhm9573ewpxrcdl9x29n7sc2c4zwm",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1qjg3cqx8w46drfyj96tsqwksle7cg5yw0sw226",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower15x4mp4jfvptlgyzne62v62534x9y8zrpzahgs7",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1vlan0w7pgm9h8xtfzm80uru497f7mpr8lcngmm",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1tr55feld2k4g9xmvqw803m4jvgekldc6n9cegv",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1l5u9f4d4qfsj0sh4lgqvaz8hchz5nqzmcmeg09",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1a84g9rv7z2fx9ls60x2w20anddejg65rczrfz2",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1vhyzdf0lv3zul4q2fpwthvfydg34najfpz23qk",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower18t634traelzqr40n397puglaxy7vft9cfvv6hg",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1vcr92vm2a3dexxl923zvw02k9pxxda6fpgx3nj",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1jzds0k6d04zu52paldgzlav7dtvd2lflx6rmar",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1msjwmclw77h5j0t69n7j2p9ur5ra46uxcx8zgh",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1lln3986rtjt07c2rd6w9476h4fdysqtt5n7j22",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1nzk8plx0q9j2k7nql33fyh38zwl8zeu65qa0rr",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1jt9w26mpxxjsk63mvd4m2ynj0af09cslld6dn0",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1lfc486f0gas5rd2yggwxzchvgq4jfhrmg9f4lw",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1t02v7nyy75kjsuqnnctfkmd64gcygm5pjyv2zt",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1vl6v7epa4qjrcayekf7lz3xgm9vu7qdltl8264",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1sy88pdqse7xu5ln5vqumna4qg3ye7f8xvttcd3",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        }
+      ]
+    },
+    "authz": {
+      "authorization": []
+    },
+    "bank": {
+      "params": {
+        "send_enabled": [],
+        "default_send_enabled": true
+      },
+      "balances": [
+        {
+          "address": "empower1qjg3cqx8w46drfyj96tsqwksle7cg5yw0sw226",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1rnmlnlka66h76h50lyes243z388l5vkpf0qvq9",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower19u539q85fun7nax92w853gcqtl74kr0en27rkd",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower18t634traelzqr40n397puglaxy7vft9cfvv6hg",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1tr55feld2k4g9xmvqw803m4jvgekldc6n9cegv",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1t02v7nyy75kjsuqnnctfkmd64gcygm5pjyv2zt",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1vhyzdf0lv3zul4q2fpwthvfydg34najfpz23qk",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1vcr92vm2a3dexxl923zvw02k9pxxda6fpgx3nj",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1vl6v7epa4qjrcayekf7lz3xgm9vu7qdltl8264",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "10000000000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1vlan0w7pgm9h8xtfzm80uru497f7mpr8lcngmm",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1sy88pdqse7xu5ln5vqumna4qg3ye7f8xvttcd3",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1jzds0k6d04zu52paldgzlav7dtvd2lflx6rmar",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1jt9w26mpxxjsk63mvd4m2ynj0af09cslld6dn0",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1nzk8plx0q9j2k7nql33fyh38zwl8zeu65qa0rr",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower15x4mp4jfvptlgyzne62v62534x9y8zrpzahgs7",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1msjwmclw77h5j0t69n7j2p9ur5ra46uxcx8zgh",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1a84g9rv7z2fx9ls60x2w20anddejg65rczrfz2",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1lzg0ddk7jqqnqalhueml54yejklad22jtvzrm9",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1lfc486f0gas5rd2yggwxzchvgq4jfhrmg9f4lw",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1l5u9f4d4qfsj0sh4lgqvaz8hchz5nqzmcmeg09",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1l4xt877lhhhm9573ewpxrcdl9x29n7sc2c4zwm",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1lln3986rtjt07c2rd6w9476h4fdysqtt5n7j22",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        }
+      ],
+      "supply": [
+        {
+          "denom": "umpwr",
+          "amount": "10000021000000"
+        }
+      ],
+      "denom_metadata": []
+    },
+    "capability": {
+      "index": "1",
+      "owners": []
+    },
+    "crisis": {
+      "constant_fee": {
+        "denom": "umpwr",
+        "amount": "1000"
+      }
+    },
+    "distribution": {
+      "params": {
+        "community_tax": "0.020000000000000000",
+        "base_proposer_reward": "0.010000000000000000",
+        "bonus_proposer_reward": "0.040000000000000000",
+        "withdraw_addr_enabled": true
+      },
+      "fee_pool": {
+        "community_pool": []
+      },
+      "delegator_withdraw_infos": [],
+      "previous_proposer": "",
+      "outstanding_rewards": [],
+      "validator_accumulated_commissions": [],
+      "validator_historical_rewards": [],
+      "validator_current_rewards": [],
+      "delegator_starting_infos": [],
+      "validator_slash_events": []
+    },
+    "evidence": {
+      "evidence": []
+    },
+    "feegrant": {
+      "allowances": []
+    },
+    "genutil": {
+      "gen_txs": [
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "EZStaking.io 100% Slash Protected",
+                  "identity": "1534523421A364DB",
+                  "website": "https://ezstaking.io",
+                  "security_contact": "contact@ezstaking.io",
+                  "details": "100% refund on downtime slashing. Enterprise grade infrastructure. High end security and 24/7 monitoring. https://twitter.com/EZStaking https://t.me/ezstaking"
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.030000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower1rnmlnlka66h76h50lyes243z388l5vkpf0qvq9",
+                "validator_address": "empowervaloper1rnmlnlka66h76h50lyes243z388l5vkp357rws",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "bQGfW5hTlVwRSkAHE1+VQoZSIr5ymP9adtQ6tMNnyiE="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "9de92b545638f6baaa7d6d5109a1f7148f093db3@65.108.77.106:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A0zg7uO5SYGBXQW4Yl8u/sf8U/qr3slCZkBGGBgl+oRW"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "Am3nGLoCQZsrFgoUxzZkf2VxBLLbVty7D1XpAPqAZlk8Oq+ACWwoN6/JMFQGJ0p9CKEV/DSYTfA3m2fhLbpqHw=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "𝑵𝒐𝒅𝒆𝒔𝑩𝒍𝒐𝒄𝒌𝒔",
+                  "identity": "5328563A4BD384C9",
+                  "website": "https://nodesblocks.dev",
+                  "security_contact": "nodesblocks@outlook.com",
+                  "details": "𝑩𝑬𝑺𝑻 𝑩𝑳𝑶𝑪𝑲𝑺 𝑶𝑹 𝑵𝑶𝑻𝑯𝑰𝑵𝑮"
+                },
+                "commission": {
+                  "rate": "0.030000000000000000",
+                  "max_rate": "0.130000000000000000",
+                  "max_change_rate": "0.030000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower1sy88pdqse7xu5ln5vqumna4qg3ye7f8xvttcd3",
+                "validator_address": "empowervaloper1sy88pdqse7xu5ln5vqumna4qg3ye7f8x5s4hry",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "v92TzfiIfsA4925d+o0eUgWobbTfZ3fBtQAJF7r+M5E="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "4fd5e497563b2e09cfe6f857fb35bdae76c12582@65.108.206.56:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "Ag88fbz3ngAJ/jVhpqoZUqK8L675thkiYPzMzUEYypNX"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "1cxUS++JlMD+owyBZAU7ee7ICFE7If4kftypTEKGtZ1qMhAJFxC6xsaLDPCygi0TeB81SEyQMouLTL9VyTei8A=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "[NODERS]TEAM",
+                  "identity": "B38EBF2F38B998F4",
+                  "website": "",
+                  "security_contact": "dudava45@gmailc.com",
+                  "details": "Tell me what node you set, and I will tell you who you are"
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.100000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower1lzg0ddk7jqqnqalhueml54yejklad22jtvzrm9",
+                "validator_address": "empowervaloper1lzg0ddk7jqqnqalhueml54yejklad22jnhuv4s",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "hevwRQebyjDf5m4U7fOOlqqqAYs0mK5+T0dIDi541PI="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "fe32c17373fbaa36d9fd86bc1146bfa125bb4f58@5.9.147.185:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AqYLSMutCDtvZmNiDfwAiDlWQJJJBeluZ3hxPEeTuOuZ"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "w0Z2eUrpjjvZaFaaAu/gpyWrWhVWVQ5I10vGZBVhw4VfaW4WtL1QTFCstOp3+uZcJlXi1mLr9ZJb1zbhiRu9BQ=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "STAVR",
+                  "identity": "F2F91999ECCC092F",
+                  "website": "https://github.com/obajay",
+                  "security_contact": "",
+                  "details": "A team of professional and reliable validators. Safety first.Stake with us and profit with the mark of quality. Monitoring 25\\7"
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.100000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower1l4xt877lhhhm9573ewpxrcdl9x29n7sc2c4zwm",
+                "validator_address": "empowervaloper1l4xt877lhhhm9573ewpxrcdl9x29n7scjrtdqw",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "X1zl0YRzay9UPF3wHifuuuDEOVNI74XDPO2CtDUZZAk="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "220fb60b083bc4d443ce2a7a5363f4813dd4aef4@116.202.236.115:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "Av+EQ55NkIqTiVclshzOo5vPitWXu74wY2ZBBDL/W9DF"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "GMzs05n71PMUJquno2BlGKLDOE1WrQoL+szmeW2qLb10bUmKr/94bAm7fmAW+WreM3Tz71/LPQIZIkvtjZgJJQ=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": " WhisperNode🤐",
+                  "identity": "9C7571030BEF5157",
+                  "website": "https://REStake.WhisperNode.com",
+                  "security_contact": "security@whispernode.com",
+                  "details": "WhisperNode operates robust, high up-time validators across the Cosmos ecosystem. Auto-compound your rewards with our REStake app. Join our Discord: https://discord.gg/4E5KZsRtjE / tweet @ https://twitter.com/WhisperNode 🐦"
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.050000000000000000"
+                },
+                "min_self_delegation": "1000000",
+                "delegator_address": "empower1qjg3cqx8w46drfyj96tsqwksle7cg5yw0sw226",
+                "validator_address": "empowervaloper1qjg3cqx8w46drfyj96tsqwksle7cg5ywhts9y0",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "dGFmrf3w0xk0s6oV6/EZT3PxTFx2U+3+0Zu6YKtd5nE="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "225ad85c594d03942a026b90f4dab43f90230ea0@88.99.3.158:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AwVIUmMsldM6W5Ol6s14dUOxpDDbmUtyBQR+RKPxicfy"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "ovfilakALLZ1KSnEqQ0CJ7gqkU5x0Huqbd8KJGoCoWZqT3d2j6RsVHhDU/eRvGPvfg6XKlWd3EH4GEqgHcuu/g=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "✅ CryptoCrew Validators #IBCgang",
+                  "identity": "9AE70F9E3EDA8956",
+                  "website": "https://ccvalidators.com",
+                  "security_contact": "support@ccvalidators.com",
+                  "details": "CryptoCrew validator \u0026 multi-chain IBC-relayer service for EMPOWER CHAIN. Based in Europe. t.me/cryptocrew_validators"
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower15x4mp4jfvptlgyzne62v62534x9y8zrpzahgs7",
+                "validator_address": "empowervaloper15x4mp4jfvptlgyzne62v62534x9y8zrp6xf87t",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "2lIFDH4ufWG6BO3g2QF6IY1M/VI1RwiFgZuKhFPfFlE="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "2a2932e780a681ddf980594f7eacf5a33081edaf@192.168.147.43:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AuSStkrSPRssn05ab/DwlkRcyf8Vt63SaEn+Oun3Qclj"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "XY/WUpoeOcExKY6ONKojlKILJjLsmE1E1oK/L7cNjCw9poLRM1D1yYVzKJpWks6RAPZ1CFXxy46CUfGSEgX+MQ=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "Empower Validator ♻️ | 20% to plastic waste cleanups",
+                  "identity": "CB7829D9D72A40E4",
+                  "website": "https://www.empowerchain.io/validator",
+                  "security_contact": "validator@empowerchain.io",
+                  "details": "We work to develop best practise governance in the Cosmos ecosystem, with a focus on transparency, decentralisation and sustainability. 20% of fees goes to funding plastic waste cleanups around the globe, fighting for a world without waste."
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.100000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower1vlan0w7pgm9h8xtfzm80uru497f7mpr8lcngmm",
+                "validator_address": "empowervaloper1vlan0w7pgm9h8xtfzm80uru497f7mpr88rd84w",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "xxTdBBjFfEW4XUVeV49KPeqZh2BcOCWd4ZSXxjP9XCU="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "333de3fc2eba7eead24e0c5f53d665662b2ba001@10.132.0.11:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A0x/ClNoUoWBtxLOJhcssoRr9VGAXzdLh8lz4Z9pudPb"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "22QE249ylvRL226TgD3m+5q0fKU8Y6WgNWNucEU3d8An5V7wsGGa8NEjdHQFvZy5IVVm7xurx3VQvOeiDANmcA=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "SteadyCrypto | EMPOWER",
+                  "identity": "1571B9CF08E4AF4B",
+                  "website": "https://SteadyCrypto.solutions",
+                  "security_contact": "security@steadycrypto.solutions",
+                  "details": "Creators + operators of the @airdrops_one 🐦 account. 🤝 Working hard to make #Cosmos a better, more decentralized ecosystem. ⚛️ Tweets @ SteadyCrypto 👍 "
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.050000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower1tr55feld2k4g9xmvqw803m4jvgekldc6n9cegv",
+                "validator_address": "empowervaloper1tr55feld2k4g9xmvqw803m4jvgekldc6t7xkxe",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "FTeRs4aERFFFpWSXjNyfRx74XxXgaySmlTYbXXFjcac="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "4a38efbae54fd1357329bd583186a68ccd6d85f9@94.130.212.252:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AmZ4KzFsxKpYfFy62gXVuqQZk62apdeBrXzplUjuLiII"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "tLaHbTv4cHHrtzYR7x2r2spgZg0Bw91fpBm+v/p3nZxxVyZnZSfmw0kph+vE2AvxBC7cSXVwTaSLQhTK9B0pLQ=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "LOALabs",
+                  "identity": "ACB2261DAB6606BA",
+                  "website": "https://loalabs.io",
+                  "security_contact": "dev@loalabs.io",
+                  "details": "Building Better World Blockchains"
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.100000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower1l5u9f4d4qfsj0sh4lgqvaz8hchz5nqzmcmeg09",
+                "validator_address": "empowervaloper1l5u9f4d4qfsj0sh4lgqvaz8hchz5nqzmqq88ps",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "4ntYn4Mr6hh4nKC8GMudXuQMrCq1vk/yy3AhhuzVJ2M="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "52450b21f346a4cf76334374c9d8012b2867b842@167.172.246.201:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AvZ5A3n3LPQzC5vqgXzUuN5quPhIkoDegJ4RyvngkacM"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "Y60+gfKHHEwn5+0t+11gM4vo0cojenkWZCEENJyZlOsOyPZK2KHfTdsICL9zETRADs7iAwEIny60x0zAR0KQCA=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "Crypto Chemistry",
+                  "identity": "969E99E6E4DD9BD5",
+                  "website": "https://cryptochemistry.io/",
+                  "security_contact": "relyte@protonmail.com",
+                  "details": "Crypto Chemistry aims to decentralize and provide security \u0026 stability to the DPoS Networks we validate. We are active in the communities we operate in \u0026 participate in governance to ensure proper representation."
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.100000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower1a84g9rv7z2fx9ls60x2w20anddejg65rczrfz2",
+                "validator_address": "empowervaloper1a84g9rv7z2fx9ls60x2w20anddejg65rqeaxvl",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "4gGhDL7WykhZcW+705hEhKk93ZI4C2ri1uWHBQdBia4="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "56d05d4ae0e1440ad7c68e52cc841c424d59badd@192.168.1.46:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AjG0FpLi0Fpb7vI82lkM2itlcQRuQRvb5qEPkVR7o5ku"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "d+pWi5/gilf95y+t/kfR1Mbj8sQy/AUvFFMOuudTzvtbQg1rTnA+/8OZtuLFBPmkRqIS6+arEio0VHkiAACHgA=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": " carbonZERO????",
+                  "identity": "9E3466C0CB62F484",
+                  "website": "https://restake.carbonZERO.zone/chihuahua",
+                  "security_contact": "security@carbonzero.zone",
+                  "details": "Eco-friendly Chihuahua staking. Donating 10% of ALL commissions earned = donated to Ecologi.com to plant ???????? \u0026 reduce co2 emissions. Try our REStake bot! Find us on Twitter for more info: https://twitter.com/carbonZEROzone"
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.050000000000000000"
+                },
+                "min_self_delegation": "1000000",
+                "delegator_address": "empower1vhyzdf0lv3zul4q2fpwthvfydg34najfpz23qk",
+                "validator_address": "empowervaloper1vhyzdf0lv3zul4q2fpwthvfydg34najfee57wr",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "eVA+OikF29E7rTE6jCKbnvraVfABRlEwEqaJ4lEiT2w="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "6a675d4f66bfe049321c3861bcfd19bd09fefbde@195.3.223.204:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A7cGQ8YyrzlpflhZbxIrWZ+DRvM/BMCiM49adgxoQ5IM"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "1ra0XnKwTLhDDF/rbI7deVD9chM7KSoq/lNhiySWStcEZWi2uAaD/db0QUHi1Ej3Yu5eKDL8iw80UolF4v2xgA=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "PPNV Service",
+                  "identity": "862C5270EE4D7EB6",
+                  "website": "https://PPNV.space",
+                  "security_contact": "",
+                  "details": "Professional Proof of Stake Network Validator ✅"
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.100000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower18t634traelzqr40n397puglaxy7vft9cfvv6hg",
+                "validator_address": "empowervaloper18t634traelzqr40n397puglaxy7vft9c3hj4ea",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "K6jeFhocgdj6VvkHdwMMbNI9gze9vMbCEvTp3AFGjhc="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "1069820cdd9f5332503166b60dc686703b2dccc5@138.201.141.76:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A620Jg8EuwXn5xdxMSLVXi+3mSoE6+vuiFWOnCE0EGkE"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "V1+0eC5zBHzpnIfl06ya2KlN/RpqbcOki6ZkcrYupBIPvwtaYE2rAwnj+WVQaSaZSj18ZQKV4OkRKHImURYhPw=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "Stake-Take",
+                  "identity": "4A1DED53D477793B",
+                  "website": "https://stake-take.com/",
+                  "security_contact": "team@stake-take.com",
+                  "details": " Trustworthy and high performance validators. Stake with us and Take profit 🚀 "
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.050000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower1vcr92vm2a3dexxl923zvw02k9pxxda6fpgx3nj",
+                "validator_address": "empowervaloper1vcr92vm2a3dexxl923zvw02k9pxxda6fenc7a8",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "e7vE34zcj0Xkuk/+H7RfXLKRSh0ahyzZJQ0I90F1B80="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "277ff448eec6ec7fa665f68bdb1c9cb1a52ff597@159.69.110.238:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A+DB2aadNLBgG+GIwQf92kD8GCitnbX/TYcZFw4iStPu"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "C9DICO8slK3SNrQ01dqU9s/8RzL7fHFh/QVvH6rd4MYxMAuuhmZIWQGCE6Ef5TQ9IQ+rLDD9//wZHk4HTe79MQ=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "Validator.run",
+                  "identity": "2CC4D67B2136C051",
+                  "website": "https://www.validator.run",
+                  "security_contact": "contact@validator.run",
+                  "details": "Validator.run provides trusted stake service with 100% refund on downtime slashing. Enterprise grade infrastructure. High end security and 24/7 monitoring."
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.100000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower1jzds0k6d04zu52paldgzlav7dtvd2lflx6rmar",
+                "validator_address": "empowervaloper1jzds0k6d04zu52paldgzlav7dtvd2lfl7pa5nk",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "yxhUC+vVANFIRW+wZLxzpRkHACXjJwQaZwhKVQx/ess="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "3335c9458105cf65546db0fb51b66f751eeb4906@5.189.129.30:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A6GoMyiuWqy6f+rdMVV+moHkkr4JRBc/8+rP5CUP7Jxb"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "RQAAABpyt0naxiXeh3ZDaYV1eNkBRixgMiB23VGYjcNLy6RvnRUpMxCspZyn3BFOekmyVkYyKw7ozSJM0yCV7A=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "ECO Stake 🌱",
+                  "identity": "5992A6D423A406D6",
+                  "website": "https://ecostake.com",
+                  "security_contact": "support@ecostake.com",
+                  "details": "ECO Stake is a climate positive validator 🌱 Carbon neutral and 10% of commission is donated to climate causes 🌍 Check out REStake.app on our website and let us auto-compound your staking rewards for you 🔄"
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.100000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower1msjwmclw77h5j0t69n7j2p9ur5ra46uxcx8zgh",
+                "validator_address": "empowervaloper1msjwmclw77h5j0t69n7j2p9ur5ra46uxqaedxz",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "7ZJBXwpZZJyzK9I0LcsRU5Danzv9ipYDfKtbOM0Ww1A="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "bfb56f4cb8361c49a2ac107251f92c0ea5a1c251@192.168.1.177:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AxHr9Q92maXSKUADK9uXa7f4dyKG2UI+6Xs0oMg2zRmd"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_LEGACY_AMINO_JSON"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "xsKlZjNbI/ZqabhMw4cXwD+vZQtrFMtZ+wfmrOlLMFodte+A4cwkE15/7lJgTkVApdjr3SsEKKGtwjnNFTmqsw=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "Munris",
+                  "identity": "E781A7FB7A3511B4",
+                  "website": "https://munris.tech",
+                  "security_contact": "",
+                  "details": ""
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.100000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower1lln3986rtjt07c2rd6w9476h4fdysqtt5n7j22",
+                "validator_address": "empowervaloper1lln3986rtjt07c2rd6w9476h4fdysqttvgqayl",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "43C2SaxBlTs/FhQzaQeQHbVeIE2B+nKnV4i5Ikp/yV0="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "edc9aa0bbf1fcd7433fcc3650e3f50ab0becc0b5@65.21.170.3:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AlTrGLYvRJOXpXEfir0PxEuKvnqSViyysz+aKU9UQ7+k"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "M8IrYmXav31MiPB72WmE4Edhha3C0mk3Mv9Ot/YCCTkdfQpYEwYzxsp5I9KTLPG4yaCm0dTVlB8PIZ1Al1z5JA=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "n0ok[MC]",
+                  "identity": "2CCE7DDD3B53F8AB",
+                  "website": "https://n0ok.net",
+                  "security_contact": "n0ok0ne.Sergey@gmail.com",
+                  "details": "Secure and reliable individual PoS/PoW validator. Best uptime and 24/7 support."
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.100000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower1nzk8plx0q9j2k7nql33fyh38zwl8zeu65qa0rr",
+                "validator_address": "empowervaloper1nzk8plx0q9j2k7nql33fyh38zwl8zeu6vmrqdk",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "GdXEt2F2aPdoh8npwVkZwR69XarGWt1pAugT1N4toH4="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "d582bcd8a8f0a20c551098571727726bc75bae74@213.239.217.52:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AhEcMaoEQWT5mYcDaMWY+gWKjuQwIsfW+X8AMkvIt3Hp"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "yBzfhct1nuUotdYyH2KyvOunw42Ni1xyrOmQcOeQiFxKAht01aZmBVUHbg6TfZOO4T1668L4fUiUHk1/Ex3Fbg=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "polkachu.com",
+                  "identity": "0A6AF02D1557E5B4",
+                  "website": "https://polkachu.com",
+                  "security_contact": "hello@polkachu.com",
+                  "details": "Polkachu is the trusted staking service provider for blockchain projects. 100% refund for downtime slash. Contact us at hello@polkachu.com"
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.100000000000000000",
+                  "max_change_rate": "0.050000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower1jt9w26mpxxjsk63mvd4m2ynj0af09cslld6dn0",
+                "validator_address": "empowervaloper1jt9w26mpxxjsk63mvd4m2ynj0af09csl8kyza6",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "XchrDqaIzTF4bCJVdMA1Y+W6W5Yj+21CAtMuNpKDPVs="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "eb182533a12d75fbae1ec32ef1f8fc6b6dd06601@65.109.28.219:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "As1WcJsvf1NQgRlS8a2PHuueKhHlCYrFe3VooMxQdflR"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "DximpGcHrQC4pwwDsdzb/92JW1rK0nvT6Fvi/SQrOjs2tKXTeuI+9Nj7sS9mBQS6eM/s0FpJ8vczBRIEMLVklw=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "YEFU",
+                  "identity": "23BB80998470934B",
+                  "website": "https://twitter.com/zhekakrip",
+                  "security_contact": "yefucryp@gmail.com",
+                  "details": "validation and staking services"
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.100000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower1lfc486f0gas5rd2yggwxzchvgq4jfhrmg9f4lw",
+                "validator_address": "empowervaloper1lfc486f0gas5rd2yggwxzchvgq4jfhrms7h63m",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "lOd3fvAkG/0X8Cud9RvGju97+XNujRTdIpyhtytug4c="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "b22f0708c6f393bf79acc0a6ca23643fe7d58391@65.21.91.50:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A6/KQZuDvXa3MI66C/9gNlsBe6FNA+1gDTKyyMi8o5oz"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "xQdQ8StF62EY9muhOuR4FUJ37tFoeYr7SYpPvgSaQwJ5iYu8LPGCoYvqXSJ+Bweyh30DBMCp1rRNInaZ2RgN9w=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "ZenChainLabs",
+                  "identity": "C0586A29077BF9AE",
+                  "website": "https://zenchainlabs.io",
+                  "security_contact": "support@zenchainlabs.io",
+                  "details": "Secure and Reliable Blockchain Services"
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.100000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower1t02v7nyy75kjsuqnnctfkmd64gcygm5pjyv2zt",
+                "validator_address": "empowervaloper1t02v7nyy75kjsuqnnctfkmd64gcygm5p2lj9v7",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "h29dPNexTfLMCG7EU1lCyM/Hs0JC0JzKe34cFRbEt/Y="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "e8f6d75ab37bf4f08c018f306416df1e138fd21c@95.217.135.41:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "AqIgBJAffy5tVP7FpuXL0Bq8ClAUYu9+XA7q+72e/q7p"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "35EcNZM/c+ytBjgU+q4A3xBfCeumqohy81gxzllMlEpKy2EdBdXEY5yVwsK6YdcDp6YYOxMsem0GzfYlXrnd/Q=="
+          ]
+        },
+        {
+          "body": {
+            "messages": [
+              {
+                "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+                "description": {
+                  "moniker": "zuka",
+                  "identity": "672671D0995AFC73",
+                  "website": "",
+                  "security_contact": "",
+                  "details": "Discord: Zuka:5870"
+                },
+                "commission": {
+                  "rate": "0.050000000000000000",
+                  "max_rate": "0.200000000000000000",
+                  "max_change_rate": "0.010000000000000000"
+                },
+                "min_self_delegation": "1",
+                "delegator_address": "empower19u539q85fun7nax92w853gcqtl74kr0en27rkd",
+                "validator_address": "empowervaloper19u539q85fun7nax92w853gcqtl74kr0et3qvcc",
+                "pubkey": {
+                  "@type": "/cosmos.crypto.ed25519.PubKey",
+                  "key": "cPEZqjNBZfQOUzYFcLu96F0s6TITsIkW5iwtbf8htn0="
+                },
+                "value": {
+                  "denom": "umpwr",
+                  "amount": "1000000"
+                }
+              }
+            ],
+            "memo": "ed83872f2781b2bdb282fc2fd790527bcb6ffe9f@192.168.3.17:26656",
+            "timeout_height": "0",
+            "extension_options": [],
+            "non_critical_extension_options": []
+          },
+          "auth_info": {
+            "signer_infos": [
+              {
+                "public_key": {
+                  "@type": "/cosmos.crypto.secp256k1.PubKey",
+                  "key": "A4YnSwcEVVcSNTM83gPEKQtfKWiWh4/w9OcMGR3ckhl1"
+                },
+                "mode_info": {
+                  "single": {
+                    "mode": "SIGN_MODE_DIRECT"
+                  }
+                },
+                "sequence": "0"
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas_limit": "200000",
+              "payer": "",
+              "granter": ""
+            },
+            "tip": null
+          },
+          "signatures": [
+            "zq8sLr98iLt5yPS492TcL5CUE/sjBzxUQequ/PFzlGhF7EF9pzJG2GVT7GFsYESWREy2NcA2t7SeXAhgQCku0A=="
+          ]
+        }
+      ]
+    },
+    "gov": {
+      "starting_proposal_id": "1",
+      "deposits": [],
+      "votes": [],
+      "proposals": [],
+      "deposit_params": {
+        "min_deposit": [
+          {
+            "denom": "umpwr",
+            "amount": "10000000"
+          }
+        ],
+        "max_deposit_period": "604800s"
+      },
+      "voting_params": {
+        "voting_period": "259200s"
+      },
+      "tally_params": {
+        "quorum": "0.334000000000000000",
+        "threshold": "0.500000000000000000",
+        "veto_threshold": "0.334000000000000000"
+      }
+    },
+    "ibc": {
+      "client_genesis": {
+        "clients": [],
+        "clients_consensus": [],
+        "clients_metadata": [],
+        "params": {
+          "allowed_clients": [
+            "06-solomachine",
+            "07-tendermint"
+          ]
+        },
+        "create_localhost": false,
+        "next_client_sequence": "0"
+      },
+      "connection_genesis": {
+        "connections": [],
+        "client_connection_paths": [],
+        "next_connection_sequence": "0",
+        "params": {
+          "max_expected_time_per_block": "30000000000"
+        }
+      },
+      "channel_genesis": {
+        "channels": [],
+        "acknowledgements": [],
+        "commitments": [],
+        "receipts": [],
+        "send_sequences": [],
+        "recv_sequences": [],
+        "ack_sequences": [],
+        "next_channel_sequence": "0"
+      }
+    },
+    "mint": {
+      "minter": {
+        "inflation": "0.130000000000000000",
+        "annual_provisions": "0.000000000000000000"
+      },
+      "params": {
+        "mint_denom": "umpwr",
+        "inflation_rate_change": "0.130000000000000000",
+        "inflation_max": "0.200000000000000000",
+        "inflation_min": "0.070000000000000000",
+        "goal_bonded": "0.670000000000000000",
+        "blocks_per_year": "6311520"
+      }
+    },
+    "params": null,
+    "proofofexistence": {
+      "proofList": []
+    },
+    "slashing": {
+      "params": {
+        "signed_blocks_window": "100",
+        "min_signed_per_window": "0.500000000000000000",
+        "downtime_jail_duration": "600s",
+        "slash_fraction_double_sign": "0.050000000000000000",
+        "slash_fraction_downtime": "0.010000000000000000"
+      },
+      "signing_infos": [],
+      "missed_blocks": []
+    },
+    "staking": {
+      "params": {
+        "unbonding_time": "1814400s",
+        "max_validators": 50,
+        "max_entries": 7,
+        "historical_entries": 10000,
+        "bond_denom": "umpwr",
+        "min_commission_rate": "0.000000000000000000"
+      },
+      "last_total_power": "0",
+      "last_validator_powers": [],
+      "validators": [],
+      "delegations": [],
+      "unbonding_delegations": [],
+      "redelegations": [],
+      "exported": false
+    },
+    "transfer": {
+      "port_id": "transfer",
+      "denom_traces": [],
+      "params": {
+        "send_enabled": true,
+        "receive_enabled": true
+      }
+    },
+    "upgrade": {},
+    "vesting": {}
+  }
+}
