@@ -103,6 +103,9 @@ import (
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 
+	plasticcreditmodule "github.com/empowerchain/empowerchain/x/plasticcredit"
+	plasticcreditmodulekeeper "github.com/empowerchain/empowerchain/x/plasticcredit/keeper"
+	plasticcreditmoduletypes "github.com/empowerchain/empowerchain/x/plasticcredit/types"
 	proofofexistencemodule "github.com/empowerchain/empowerchain/x/proofofexistence"
 	proofofexistencemodulekeeper "github.com/empowerchain/empowerchain/x/proofofexistence/keeper"
 	proofofexistencemoduletypes "github.com/empowerchain/empowerchain/x/proofofexistence/types"
@@ -154,6 +157,7 @@ var (
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		proofofexistencemodule.AppModuleBasic{},
+		plasticcreditmodule.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -221,6 +225,7 @@ type EmpowerApp struct {
 
 	// Custom module keepers
 	ProofofexistenceKeeper proofofexistencemodulekeeper.Keeper
+	PlasticcreditKeeper    plasticcreditmodulekeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper        capabilitykeeper.ScopedKeeper
@@ -260,7 +265,7 @@ func New(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		proofofexistencemoduletypes.StoreKey,
+		proofofexistencemoduletypes.StoreKey, plasticcreditmoduletypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -381,6 +386,12 @@ func New(
 		keys[proofofexistencemoduletypes.StoreKey],
 	)
 
+	app.PlasticcreditKeeper = *plasticcreditmodulekeeper.NewKeeper(appCodec,
+		keys[plasticcreditmoduletypes.StoreKey],
+		keys[plasticcreditmoduletypes.MemStoreKey],
+		app.GetSubspace(plasticcreditmoduletypes.ModuleName),
+	)
+
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
@@ -418,6 +429,7 @@ func New(
 		sdkparams.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		proofofexistencemodule.NewAppModule(app.ProofofexistenceKeeper),
+		plasticcreditmodule.NewAppModule(appCodec, app.PlasticcreditKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -444,6 +456,7 @@ func New(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		proofofexistencemoduletypes.ModuleName,
+		plasticcreditmoduletypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -466,6 +479,7 @@ func New(
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		proofofexistencemoduletypes.ModuleName,
+		plasticcreditmoduletypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -493,6 +507,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		feegrant.ModuleName,
 		proofofexistencemoduletypes.ModuleName,
+		plasticcreditmoduletypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -520,6 +535,7 @@ func New(
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		proofofexistencemodule.NewAppModule(app.ProofofexistenceKeeper),
+		plasticcreditmodule.NewAppModule(appCodec, app.PlasticcreditKeeper),
 	)
 	app.sm.RegisterStoreDecoders()
 
@@ -742,6 +758,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(proofofexistencemoduletypes.ModuleName)
+	paramsKeeper.Subspace(plasticcreditmoduletypes.ModuleName)
 
 	return paramsKeeper
 }

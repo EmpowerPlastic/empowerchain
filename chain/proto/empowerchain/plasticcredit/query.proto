@@ -1,0 +1,247 @@
+syntax = "proto3";
+package empowerchain.empowerchain.plasticcredit;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "empowerchain/plasticcredit/params.proto";
+import "empowerchain/plasticcredit/id_counters.proto";
+import "empowerchain/plasticcredit/issuer.proto";
+import "empowerchain/plasticcredit/credit_class.proto";
+import "empowerchain/plasticcredit/project.proto";
+import "empowerchain/plasticcredit/collector.proto";
+import "empowerchain/plasticcredit/credit_batch.proto";
+import "empowerchain/plasticcredit/credit_balance.proto";
+import "empowerchain/plasticcredit/credit_denom.proto";
+// this line is used by starport scaffolding # 1
+import "empowerchain/plasticcredit/credit_amount.proto";
+import "empowerchain/plasticcredit/proven_data.proto";
+import "empowerchain/plasticcredit/collector_info.proto";
+
+option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/params";
+  }
+  // Queries a IdCounters by index.
+	rpc IdCounters(QueryGetIdCountersRequest) returns (QueryGetIdCountersResponse) {
+		option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/id_counters";
+	}
+// Queries a Issuer by index.
+	rpc Issuer(QueryGetIssuerRequest) returns (QueryGetIssuerResponse) {
+		option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/issuer/{issuer_id}";
+	}
+
+	// Queries a list of Issuer items.
+	rpc IssuerAll(QueryAllIssuerRequest) returns (QueryAllIssuerResponse) {
+		option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/issuer";
+	}
+
+// Queries a CreditClass by index.
+	rpc CreditClass(QueryGetCreditClassRequest) returns (QueryGetCreditClassResponse) {
+		option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit_class/{credit_class_id}";
+	}
+
+	// Queries a list of CreditClass items.
+	rpc CreditClassAll(QueryAllCreditClassRequest) returns (QueryAllCreditClassResponse) {
+		option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit_class";
+	}
+
+// Queries a Project by index.
+	rpc Project(QueryGetProjectRequest) returns (QueryGetProjectResponse) {
+		option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/project/{project_id}";
+	}
+
+	// Queries a list of Project items.
+	rpc ProjectAll(QueryAllProjectRequest) returns (QueryAllProjectResponse) {
+		option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/project";
+	}
+
+// Queries a Collector by index.
+	rpc Collector(QueryGetCollectorRequest) returns (QueryGetCollectorResponse) {
+		option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/collector/{collector_id}";
+	}
+
+	// Queries a list of Collector items.
+	rpc CollectorAll(QueryAllCollectorRequest) returns (QueryAllCollectorResponse) {
+		option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/collector";
+	}
+
+// Queries a CreditBatch by index.
+	rpc CreditBatch(QueryGetCreditBatchRequest) returns (QueryGetCreditBatchResponse) {
+		option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit_batch/{batch_denom}";
+	}
+
+	// Queries a list of CreditBatch items.
+	rpc CreditBatchAll(QueryAllCreditBatchRequest) returns (QueryAllCreditBatchResponse) {
+		option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit_batch";
+	}
+
+// Queries a CreditBalance by index.
+	rpc CreditBalance(QueryGetCreditBalanceRequest) returns (QueryGetCreditBalanceResponse) {
+		option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit_balance/{batch_denom}/{owner}";
+	}
+
+	// Queries a list of CreditBalance items.
+	rpc CreditBalanceAll(QueryAllCreditBalanceRequest) returns (QueryAllCreditBalanceResponse) {
+		option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit_balance";
+	}
+
+// Queries a CreditDenom by id.
+	rpc CreditDenom(QueryGetCreditDenomRequest) returns (QueryGetCreditDenomResponse) {
+		option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit_denom/{batch_denom}";
+	}
+
+	// Queries a list of CreditDenom items.
+	rpc CreditDenomAll(QueryAllCreditDenomRequest) returns (QueryAllCreditDenomResponse) {
+		option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit_denom";
+	}
+
+// this line is used by starport scaffolding # 2
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetIdCountersRequest {}
+
+message QueryGetIdCountersResponse {
+	IdCounters id_counters = 1 [(gogoproto.nullable) = false];
+}
+message QueryGetIssuerRequest {
+	  uint64 issuer_id = 1;
+
+}
+
+message QueryGetIssuerResponse {
+	Issuer issuer = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllIssuerRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllIssuerResponse {
+	repeated Issuer issuer = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetCreditClassRequest {
+	  uint64 credit_class_id = 1;
+
+}
+
+message QueryGetCreditClassResponse {
+	CreditClass credit_class = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllCreditClassRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllCreditClassResponse {
+	repeated CreditClass credit_class = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetProjectRequest {
+	  uint64 project_id = 1;
+
+}
+
+message QueryGetProjectResponse {
+	Project project = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllProjectRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllProjectResponse {
+	repeated Project project = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetCollectorRequest {
+	  uint64 collector_id = 1;
+
+}
+
+message QueryGetCollectorResponse {
+	Collector collector = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllCollectorRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllCollectorResponse {
+	repeated Collector collector = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetCreditBatchRequest {
+	  string batch_denom = 1;
+
+}
+
+message QueryGetCreditBatchResponse {
+	CreditBatch credit_batch = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllCreditBatchRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllCreditBatchResponse {
+	repeated CreditBatch credit_batch = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetCreditBalanceRequest {
+	  string batch_denom = 1;
+	  string owner = 2;
+
+}
+
+message QueryGetCreditBalanceResponse {
+	CreditBalance creditBalance = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllCreditBalanceRequest {
+	string batch_denom = 1;
+	cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryAllCreditBalanceResponse {
+	repeated CreditBalance creditBalance = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetCreditDenomRequest {
+	string batch_denom = 1;
+}
+
+message QueryGetCreditDenomResponse {
+	CreditDenom CreditDenom = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllCreditDenomRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllCreditDenomResponse {
+	repeated CreditDenom CreditDenom = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// this line is used by starport scaffolding # 3

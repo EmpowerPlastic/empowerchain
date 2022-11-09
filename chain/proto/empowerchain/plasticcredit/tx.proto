@@ -1,0 +1,64 @@
+syntax = "proto3";
+package empowerchain.empowerchain.plasticcredit;
+
+// this line is used by starport scaffolding # proto/tx/import
+import "empowerchain/plasticcredit/proven_data.proto";
+
+option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit/types";
+
+// Msg defines the Msg service.
+service Msg {
+      rpc CreateIssuer(MsgCreateIssuer) returns (MsgCreateIssuerResponse);
+  rpc CreateCollector(MsgCreateCollector) returns (MsgCreateCollectorResponse);
+  rpc CreateProject(MsgCreateProject) returns (MsgCreateProjectResponse);
+  rpc CreateCreditClass(MsgCreateCreditClass) returns (MsgCreateCreditClassResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgCreateIssuer {
+  string creator = 1;
+  string name = 2;
+  string description = 3;
+  string admin = 4;
+  repeated string accounts = 5;
+}
+
+message MsgCreateIssuerResponse {
+  uint64 issuer_id = 1;
+}
+
+message MsgCreateCollector {
+  string creator = 1;
+  string name = 2;
+  string admin = 3;
+  repeated string accounts = 4;
+}
+
+message MsgCreateCollectorResponse {
+  uint64 collector_id = 1;
+}
+
+message MsgCreateProject {
+  string creator = 1;
+  uint64 credit_class_id = 2;
+  uint64 collector_id = 3;
+  string name = 4;
+  ProvenData project_data = 5;
+}
+
+message MsgCreateProjectResponse {
+  uint64 project_id = 1;
+}
+
+message MsgCreateCreditClass {
+  string creator = 1;
+  uint64 issuer_id = 2;
+  string denom = 3;
+  ProvenData credit_class_data = 4;
+}
+
+message MsgCreateCreditClassResponse {
+  uint64 credit_class_id = 1;
+}
+
+// this line is used by starport scaffolding # proto/tx/message

@@ -1,0 +1,14 @@
+syntax = "proto3";
+package empowerchain.empowerchain.plasticcredit;
+
+option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit/types";
+import "empowerchain/plasticcredit/proven_data.proto"; 
+
+message CreditClass {
+  uint64 credit_class_id = 1; 
+  uint64 issuer_id = 2; 
+  string denom = 3; 
+  ProvenData credit_class_data = 4; 
+  
+}
+

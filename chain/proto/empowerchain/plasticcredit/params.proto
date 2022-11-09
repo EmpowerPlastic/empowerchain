@@ -1,0 +1,13 @@
+syntax = "proto3";
+package empowerchain.empowerchain.plasticcredit;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+  
+  repeated string createissuerAllowlist = 1 [(gogoproto.moretags) = "yaml:\"createissuer_allowlist\""];
+}

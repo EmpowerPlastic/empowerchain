@@ -1,0 +1,9 @@
+syntax = "proto3";
+package empowerchain.empowerchain.plasticcredit;
+
+option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit/types";
+
+message CreditDenom {
+  string batch_denom = 2; 
+  
+}

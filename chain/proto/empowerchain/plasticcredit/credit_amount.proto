@@ -1,0 +1,10 @@
+syntax = "proto3";
+package empowerchain.empowerchain.plasticcredit;
+
+option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit/types";
+
+message CreditAmount {
+  
+  uint64 active = 1; 
+  uint64 retired = 2; 
+}

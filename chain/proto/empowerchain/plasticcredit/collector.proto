@@ -1,0 +1,16 @@
+syntax = "proto3";
+package empowerchain.empowerchain.plasticcredit;
+
+option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit/types";
+import "empowerchain/plasticcredit/collector_info.proto"; 
+
+message Collector {
+  uint64 collector_id = 1; 
+  string admin = 2; 
+  repeated string accounts = 3; 
+  string name = 4; 
+  repeated CollectorInfo collector_infos = 5;
+  string credit_recipient = 6;
+  
+}
+
