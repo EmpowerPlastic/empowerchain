@@ -12,6 +12,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCreateCollector{}, "plasticcredit/CreateCollector", nil)
 	cdc.RegisterConcrete(&MsgCreateProject{}, "plasticcredit/CreateProject", nil)
 	cdc.RegisterConcrete(&MsgCreateCreditClass{}, "plasticcredit/CreateCreditClass", nil)
+	cdc.RegisterConcrete(&MsgIssueCredits{}, "plasticcredit/IssueCredits", nil)
 	// this line is used by starport scaffolding # 2
 }
 
@@ -28,6 +29,10 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgCreateCreditClass{},
 	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgIssueCredits{},
+	)
+
 	// this line is used by starport scaffolding # 3
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

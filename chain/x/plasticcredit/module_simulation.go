@@ -40,6 +40,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgCreateCreditClass int = 100
 
+	opWeightMsgIssueCredits = "op_weight_msg_issue_credits"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgIssueCredits int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -120,6 +124,17 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgCreateCreditClass,
 		plasticcreditsimulation.SimulateMsgCreateCreditClass(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgIssueCredits int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgIssueCredits, &weightMsgIssueCredits, nil,
+		func(_ *rand.Rand) {
+			weightMsgIssueCredits = defaultWeightMsgIssueCredits
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgIssueCredits,
+		plasticcreditsimulation.SimulateMsgIssueCredits(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

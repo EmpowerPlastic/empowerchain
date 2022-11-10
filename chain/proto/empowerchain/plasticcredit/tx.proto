@@ -3,6 +3,7 @@ package empowerchain.empowerchain.plasticcredit;
 
 // this line is used by starport scaffolding # proto/tx/import
 import "empowerchain/plasticcredit/proven_data.proto";
+import "empowerchain/plasticcredit/credit_batch_issuance.proto";
 
 option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit/types";
 
@@ -12,6 +13,7 @@ service Msg {
   rpc CreateCollector(MsgCreateCollector) returns (MsgCreateCollectorResponse);
   rpc CreateProject(MsgCreateProject) returns (MsgCreateProjectResponse);
   rpc CreateCreditClass(MsgCreateCreditClass) returns (MsgCreateCreditClassResponse);
+  rpc IssueCredits(MsgIssueCredits) returns (MsgIssueCreditsResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -59,6 +61,17 @@ message MsgCreateCreditClass {
 
 message MsgCreateCreditClassResponse {
   uint64 credit_class_id = 1;
+}
+
+message MsgIssueCredits {
+  string creator = 1;
+  uint64 issuer_id = 2;
+  string recipient = 3;
+  CreditBatchIssuance credit_batch_issuance = 4;
+}
+
+message MsgIssueCreditsResponse {
+  string batch_denom = 1;
 }
 
 // this line is used by starport scaffolding # proto/tx/message
