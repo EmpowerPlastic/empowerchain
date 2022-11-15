@@ -16,7 +16,7 @@ jobs:
         with:
           version: v0.6.22
 
-      - run: earthly --ci --output +build-all --VERSION_NUMBER=${{ github.ref_name }}
+      - run: earthly --ci --output +build-all --VERSION=${{ github.ref_name }}
         working-directory: ./chain
 
       - run: |

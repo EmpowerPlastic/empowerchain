@@ -38,15 +38,15 @@ build:
 build-all:
     FROM +build-prep
     RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-linux-amd64
-    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-$(VERSION_NUMBER)-linux-amd64
+    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-"$VERSION"-linux-amd64
     RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-linux-arm64
-    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-$(VERSION_NUMBER)-linux-arm64
+    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-"$VERSION"-linux-arm64
     RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-darwin-amd64
-    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-$(VERSION_NUMBER)-darwin-amd64
+    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-"$VERSION"-darwin-amd64
     RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-darwin-arm64
-    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-$(VERSION_NUMBER)-darwin-arm64
+    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-"$VERSION"-darwin-arm64
     RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-windows-amd64
-    SAVE ARTIFACT build/empowerd.exe AS LOCAL build/empowerd-$(VERSION_NUMBER).exe
+    SAVE ARTIFACT build/empowerd.exe AS LOCAL build/empowerd-"$VERSION".exe
 
 
     
