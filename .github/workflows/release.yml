@@ -21,6 +21,8 @@ jobs:
 
       - run: mv ./chain/build/empowerd ./chain/build/empowerd-${{ github.ref_name }}-amd64
 
+      - run: zip -q empowerd-${{ github.ref_name }}-amd64.zip empowerd-${{ github.ref_name }}-amd64 && rm empowerd-${{ github.ref_name }}-amd64
+        working-directory: ./chain/build
       # TODO: 1. Generate release notes
       # TODO: 2. Build darwin + darwin arm version (maybe windows too)
 
