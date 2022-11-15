@@ -24,7 +24,7 @@ jobs:
           zip -q empowerd-${{ github.ref_name }}-linux-arm64.zip empowerd-${{ github.ref_name }}-linux-arm64 && rm empowerd-${{ github.ref_name }}-linux-arm64 \
           zip -q empowerd-${{ github.ref_name }}-darwin-amd64.zip empowerd-${{ github.ref_name }}-darwin-amd64 && rm empowerd-${{ github.ref_name }}-darwin-amd64 \
           zip -q empowerd-${{ github.ref_name }}-darwin-arm64.zip empowerd-${{ github.ref_name }}-darwin-arm64 && rm empowerd-${{ github.ref_name }}-darwin-arm64 \
-          zip -q empowerd-${{ github.ref_name }}-windows-amd64.zip empowerd-${{ github.ref_name }}-windows-amd64 && rm empowerd-${{ github.ref_name }}-windows-amd64
+          zip -q empowerd-${{ github.ref_name }}-windows-amd64.zip empowerd-${{ github.ref_name }}.exe && rm empowerd-${{ github.ref_name }}.exe
               
         working-directory: ./chain/build
       # TODO: 1. Generate release notes
