@@ -98,8 +98,20 @@ $(BUILD_TARGETS): go.sum $(BUILD_DIR)/
 $(BUILD_DIR)/:
 	mkdir -p $(BUILD_DIR)/
 
-build-linux: go.sum
+build-linux-amd64: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
+
+build-linux-arm64: go.sum
+	LEDGER_ENABLED=false GOOS=linux GOARCH=arm64 $(MAKE) build
+
+build-darwin-amd64: go.sum
+	LEDGER_ENABLED=false GOOS=darwin GOARCH=amd64 $(MAKE) build
+
+build-darwin-arm64: go.sum
+	LEDGER_ENABLED=false GOOS=darwin GOARCH=arm64 $(MAKE) build
+
+build-windows-amd64: go.sum
+	LEDGER_ENABLED=false GOOS=windows GOARCH=amd64 $(MAKE) build
 
 go-mod-cache: go.sum
 	@echo "--> Download go modules to local cache"

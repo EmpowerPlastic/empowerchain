@@ -9,7 +9,7 @@ docker:
     RUN wget -qO- https://go.dev/dl/go1.18.6.linux-amd64.tar.gz | tar -v -C /usr/local -xz
     ENV PATH $PATH:/usr/local/go/bin:/root/go/bin
 
-build:
+build-prep:
     ARG EARTHLY_GIT_HASH
     ARG EARTHLY_GIT_SHORT_HASH
     ARG VERSION=dev-$EARTHLY_GIT_SHORT_HASH
@@ -27,6 +27,29 @@ build:
     SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd
     SAVE ARTIFACT go.mod AS LOCAL go.mod
     SAVE ARTIFACT go.sum AS LOCAL go.sum
+
+build:
+    FROM +build-prep
+    RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build
+    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd
+    SAVE ARTIFACT go.mod AS LOCAL go.mod
+    SAVE ARTIFACT go.sum AS LOCAL go.sum
+
+build-all:
+    FROM +build-prep
+    RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-linux-amd64
+    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-$(VERSION_NUMBER)-linux-amd64
+    RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-linux-arm64
+    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-$(VERSION_NUMBER)-linux-arm64
+    RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-darwin-amd64
+    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-$(VERSION_NUMBER)-darwin-amd64
+    RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-darwin-arm64
+    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-$(VERSION_NUMBER)-darwin-arm64
+    RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-windows-amd64
+    SAVE ARTIFACT build/empowerd.exe AS LOCAL build/empowerd-$(VERSION_NUMBER).exe
+
+
+    
 
 test:
     FROM +build
