@@ -1,5 +1,5 @@
 syntax = "proto3";
-package empowerchain.empowerchain.plasticcredit;
+package empowerchain.plasticcredit;
 
 import "gogoproto/gogo.proto";
 
