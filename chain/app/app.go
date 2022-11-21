@@ -9,6 +9,7 @@ import (
 
 	"github.com/empowerchain/empowerchain/app/upgrades"
 	v2 "github.com/empowerchain/empowerchain/app/upgrades/v2"
+	v3 "github.com/empowerchain/empowerchain/app/upgrades/v3"
 
 	"github.com/empowerchain/empowerchain/app/params"
 	"github.com/gorilla/mux"
@@ -167,7 +168,7 @@ var (
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 	}
 
-	Upgrades = []upgrades.Upgrade{v2.Upgrade}
+	Upgrades = []upgrades.Upgrade{v2.Upgrade, v3.Upgrade}
 )
 
 var (
