@@ -103,6 +103,9 @@ import (
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 
+	accesscontrolmodule "github.com/empowerchain/empowerchain/x/accesscontrol"
+	accesscontrolmodulekeeper "github.com/empowerchain/empowerchain/x/accesscontrol/keeper"
+	accesscontrolmoduletypes "github.com/empowerchain/empowerchain/x/accesscontrol/types"
 	plasticcreditmodule "github.com/empowerchain/empowerchain/x/plasticcredit"
 	plasticcreditmodulekeeper "github.com/empowerchain/empowerchain/x/plasticcredit/keeper"
 	plasticcreditmoduletypes "github.com/empowerchain/empowerchain/x/plasticcredit/types"
@@ -158,6 +161,7 @@ var (
 		vesting.AppModuleBasic{},
 		proofofexistencemodule.AppModuleBasic{},
 		plasticcreditmodule.AppModuleBasic{},
+		accesscontrolmodule.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -226,6 +230,7 @@ type EmpowerApp struct {
 	// Custom module keepers
 	ProofofexistenceKeeper proofofexistencemodulekeeper.Keeper
 	PlasticcreditKeeper    plasticcreditmodulekeeper.Keeper
+	AccessControlKeeper    accesscontrolmodulekeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper        capabilitykeeper.ScopedKeeper
@@ -265,7 +270,7 @@ func New(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		proofofexistencemoduletypes.StoreKey, plasticcreditmoduletypes.StoreKey,
+		proofofexistencemoduletypes.StoreKey, plasticcreditmoduletypes.StoreKey, accesscontrolmoduletypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -282,6 +287,7 @@ func New(
 	}
 
 	app.ParamsKeeper = initParamsKeeper(appCodec, cdc, keys[paramstypes.StoreKey], tkeys[paramstypes.TStoreKey])
+	app.AccessControlKeeper = initAccessControlKeeper(appCodec, keys[accesscontrolmoduletypes.StoreKey])
 
 	// set the BaseApp's parameter store
 	bApp.SetParamStore(app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable()))
@@ -390,6 +396,7 @@ func New(
 		keys[plasticcreditmoduletypes.StoreKey],
 		keys[plasticcreditmoduletypes.MemStoreKey],
 		app.GetSubspace(plasticcreditmoduletypes.ModuleName),
+		app.GetPermStore(accesscontrolmoduletypes.ModuleName),
 	)
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -430,6 +437,7 @@ func New(
 		transferModule,
 		proofofexistencemodule.NewAppModule(app.ProofofexistenceKeeper),
 		plasticcreditmodule.NewAppModule(appCodec, app.PlasticcreditKeeper),
+		accesscontrolmodule.NewAppModule(app.AccessControlKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -457,6 +465,7 @@ func New(
 		paramstypes.ModuleName,
 		proofofexistencemoduletypes.ModuleName,
 		plasticcreditmoduletypes.ModuleName,
+		accesscontrolmoduletypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -480,6 +489,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		proofofexistencemoduletypes.ModuleName,
 		plasticcreditmoduletypes.ModuleName,
+		accesscontrolmoduletypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -508,6 +518,7 @@ func New(
 		feegrant.ModuleName,
 		proofofexistencemoduletypes.ModuleName,
 		plasticcreditmoduletypes.ModuleName,
+		accesscontrolmoduletypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -536,6 +547,7 @@ func New(
 		transferModule,
 		proofofexistencemodule.NewAppModule(app.ProofofexistenceKeeper),
 		plasticcreditmodule.NewAppModule(appCodec, app.PlasticcreditKeeper),
+		accesscontrolmodule.NewAppModule(app.AccessControlKeeper),
 	)
 	app.sm.RegisterStoreDecoders()
 
@@ -667,6 +679,11 @@ func (app *EmpowerApp) GetSubspace(moduleName string) paramstypes.Subspace {
 	return subspace
 }
 
+func (app *EmpowerApp) GetPermStore(moduleName string) accesscontrolmoduletypes.PermStore {
+	permStore, _ := app.AccessControlKeeper.GetPermStore(moduleName)
+	return permStore
+}
+
 // RegisterAPIRoutes registers all application module routes with the provided
 // API server.
 func (app *EmpowerApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
@@ -761,6 +778,14 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(plasticcreditmoduletypes.ModuleName)
 
 	return paramsKeeper
+}
+
+func initAccessControlKeeper(appCodec codec.BinaryCodec, key storetypes.StoreKey) accesscontrolmodulekeeper.Keeper {
+	accessControlKeeper := accesscontrolmodulekeeper.NewKeeper(appCodec, key)
+
+	accessControlKeeper.PermStore(plasticcreditmoduletypes.ModuleName)
+
+	return accessControlKeeper
 }
 
 // SimulationManager implements the SimulationApp interface

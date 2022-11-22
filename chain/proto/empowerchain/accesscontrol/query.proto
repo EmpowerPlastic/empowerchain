@@ -1,0 +1,11 @@
+syntax = "proto3";
+package empowerchain.accesscontrol;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+option go_package = "github.com/empowerchain/empowerchain/x/accesscontrol/types";
+
+service Query {
+
+}
