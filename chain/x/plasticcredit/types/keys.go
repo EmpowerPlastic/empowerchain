@@ -19,5 +19,5 @@ func KeyPrefix(p string) []byte {
 }
 
 const (
-	IdCountersKey = "IdCounters/value/"
+	IDCountersKey = "IDCounters/value/"
 )

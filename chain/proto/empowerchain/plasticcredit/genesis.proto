@@ -1,31 +1,12 @@
 syntax = "proto3";
-package empowerchain.empowerchain.plasticcredit;
+package empowerchain.plasticcredit;
 
 import "gogoproto/gogo.proto";
 import "empowerchain/plasticcredit/params.proto";
-import "empowerchain/plasticcredit/id_counters.proto";
-import "empowerchain/plasticcredit/issuer.proto";
-import "empowerchain/plasticcredit/credit_class.proto";
-import "empowerchain/plasticcredit/project.proto";
-import "empowerchain/plasticcredit/collector.proto";
-import "empowerchain/plasticcredit/credit_batch.proto";
-import "empowerchain/plasticcredit/credit_balance.proto";
-import "empowerchain/plasticcredit/credit_denom.proto";
-// this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit/types";
 
 // GenesisState defines the plasticcredit module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
-  IdCounters id_counters = 2 [(gogoproto.nullable) = false];
-  repeated Issuer issuer_list = 3 [(gogoproto.nullable) = false];
-  repeated CreditClass credit_class_list = 4 [(gogoproto.nullable) = false];
-  repeated Project project_list = 5 [(gogoproto.nullable) = false];
-  repeated Collector collector_list = 6 [(gogoproto.nullable) = false];
-  repeated CreditBatch credit_batch_list = 7 [(gogoproto.nullable) = false];
-  repeated BatchDenomToCreditBalance batch_denom_to_credit_balance = 8 [(gogoproto.nullable) = false];
-  repeated CreditDenom credit_denom_list = 9 [(gogoproto.nullable) = false];
-  uint64 credit_denom_count = 10;
-  // this line is used by starport scaffolding # genesis/proto/state
 }

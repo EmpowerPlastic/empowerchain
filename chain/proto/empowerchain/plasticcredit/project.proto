@@ -1,5 +1,5 @@
 syntax = "proto3";
-package empowerchain.empowerchain.plasticcredit;
+package empowerchain.plasticcredit;
 
 option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit/types";
 import "empowerchain/plasticcredit/proven_data.proto"; 
