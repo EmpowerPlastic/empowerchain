@@ -2,6 +2,12 @@
 
 The `plasticcredit` module keeps track of plastic credits issued, traded/transferred and retired on-chain. 
 
+## Params
+
+The plasticcredit module stores it's params in state with the prefix of 0x00, it can be updated with governance or the address with authority.
+
+- Params: `0x00 | ProtocolBuffer(Params)`
+
 ## Issuer
 
 An Issuer is an entity that is allowed to create Credit Classes and issue Credits under their own Classes.
@@ -15,7 +21,7 @@ An issue consists of the following fields: `id`, `name`, `description`, `admin`,
 
 `accounts` is a list of addresses that has the privilege to issue credits.
 
-- Issuer `0x01 | issuerID | -> ProtocolBuffer(Issuer)`
+- Issuer: `0x01 | issuerID | -> ProtocolBuffer(Issuer)`
 
 ## Collector
 

@@ -2,6 +2,7 @@ syntax = "proto3";
 package empowerchain.plasticcredit;
 
 import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit/types";
 
@@ -9,5 +10,5 @@ option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit/types"
 message Params {
   option (gogoproto.goproto_stringer) = false;
   
-  repeated string createissuerAllowlist = 1 [(gogoproto.moretags) = "yaml:\"createissuer_allowlist\""];
+  string issuer_creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }

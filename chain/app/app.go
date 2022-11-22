@@ -389,7 +389,7 @@ func New(
 	app.PlasticcreditKeeper = *plasticcreditmodulekeeper.NewKeeper(appCodec,
 		keys[plasticcreditmoduletypes.StoreKey],
 		keys[plasticcreditmoduletypes.MemStoreKey],
-		app.GetSubspace(plasticcreditmoduletypes.ModuleName),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	// Create static IBC router, add transfer route, then set and seal it

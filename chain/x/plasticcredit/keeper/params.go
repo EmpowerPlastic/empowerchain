@@ -5,20 +5,25 @@ import (
 	"github.com/empowerchain/empowerchain/x/plasticcredit/types"
 )
 
-// GetParams get all parameters as types.Params
-func (k Keeper) GetParams(ctx sdk.Context) types.Params {
-	return types.NewParams(
-		k.CreateissuerAllowlist(ctx),
-	)
+func (k Keeper) getParams(ctx sdk.Context) (p types.Params, err error) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.ParamsKey)
+	if bz == nil {
+		return p, nil
+	}
+
+	err = k.cdc.Unmarshal(bz, &p)
+	return p, err
 }
 
-// SetParams set the params
-func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
-	k.paramstore.SetParamSet(ctx, &params)
-}
+func (k Keeper) setParams(ctx sdk.Context, p types.Params) error {
+	if err := p.Validate(); err != nil {
+		return err
+	}
 
-// CreateissuerAllowlist returns the CreateissuerAllowlist param
-func (k Keeper) CreateissuerAllowlist(ctx sdk.Context) (res []string) {
-	k.paramstore.Get(ctx, types.KeyCreateissuerAllowlist, &res)
-	return
+	store := ctx.KVStore(k.storeKey)
+	bz := k.cdc.MustMarshal(&p)
+	store.Set(types.ParamsKey, bz)
+
+	return nil
 }
