@@ -40,3 +40,32 @@ func (s *TestSuite) TestHasAccess() {
 		})
 	}
 }
+
+func (s *TestSuite) TestRevokeAccess() {
+	testCases := map[string]struct {
+		account string
+		msgType string
+	}{
+		"revoke": {
+			account: "empower1euf0uzgegfvyvwy6935pm82er5q3zkj5yytcrx",
+			msgType: "msgType1",
+		},
+	}
+
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			s.SetupTest()
+
+			ctx := s.ctx
+			addr, _ := sdk.AccAddressFromBech32("empower1euf0uzgegfvyvwy6935pm82er5q3zkj5yytcrx")
+			tcAddr, _ := sdk.AccAddressFromBech32(tc.account)
+			permStore, _ := s.empowerApp.AccessControlKeeper.GetPermStore("mockmodule1")
+			permStore.GrantAccess(ctx, addr, "msgType1")
+			access := permStore.HasAccess(ctx, tcAddr, tc.msgType)
+			s.Require().Equal(true, access)
+			permStore.RevokeAccess(ctx, tcAddr, tc.msgType)
+			access = permStore.HasAccess(ctx, tcAddr, tc.msgType)
+			s.Require().Equal(false, access)
+		})
+	}
+}
