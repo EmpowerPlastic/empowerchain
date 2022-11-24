@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/empowerchain/empowerchain/app"
 	"github.com/empowerchain/empowerchain/app/params"
+	"github.com/empowerchain/empowerchain/x/accesscontrol/keeper"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtime "github.com/tendermint/tendermint/types/time"
@@ -17,6 +18,7 @@ type TestSuite struct {
 	empowerApp *app.EmpowerApp
 	ctx        sdk.Context
 	addrs      []sdk.AccAddress
+	k          []keeper.IAccessControlSubKeeper
 }
 
 func (s *TestSuite) SetupTest() {
@@ -32,8 +34,7 @@ func (s *TestSuite) SetupTest() {
 	s.empowerApp = empowerApp
 	s.ctx = ctx
 	s.addrs = app.CreateRandomAccounts(1)
-	s.empowerApp.AccessControlKeeper.PermStore("mockmodule1")
-	s.empowerApp.AccessControlKeeper.PermStore("mockmodule2")
+	s.k = *app.InitAccessControlSubKeepers(&empowerApp.AccessControlKeeper)
 }
 
 func TestTestSuite(t *testing.T) {

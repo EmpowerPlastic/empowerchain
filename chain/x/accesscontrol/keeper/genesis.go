@@ -7,12 +7,12 @@ import (
 
 func (k Keeper) InitGenesis(ctx sdk.Context, genState types.GenesisState) error {
 	for _, ps := range genState.PermStores {
-		permStore, ok := k.permStores[ps.ModuleName]
-		if !ok {
+		_, found := k.subKeys[ps.ModuleName]
+		if !found {
 			panic("store not found for module " + ps.ModuleName)
 		}
 		for _, access := range ps.Accesses {
-			permStore.GrantAccess(ctx, sdk.AccAddress(access.Address), access.MsgType)
+			k.grantAccess(ctx, ps.ModuleName, sdk.AccAddress(access.Address), access.MsgType)
 		}
 	}
 	return nil
@@ -21,9 +21,9 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState types.GenesisState) error 
 func (k Keeper) ExportGenesis(ctx sdk.Context) (*types.GenesisState, error) {
 	genesis := types.DefaultGenesis()
 
-	for name, permStore := range k.permStores {
+	for name, _ := range k.subKeys {
 		var accesses []types.Access
-		permStore.IteratePermissions(ctx, func(account sdk.AccAddress, msgType string) bool {
+		k.IteratePermissions(ctx, name, func(account sdk.AccAddress, msgType string) bool {
 			accesses = append(accesses, types.Access{
 				Address: account.String(),
 				MsgType: msgType,

@@ -23,6 +23,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	accesscontrolmodulekeeper "github.com/empowerchain/empowerchain/x/accesscontrol/keeper"
 )
 
 var DefaultConsensusParams = &abci.ConsensusParams{
@@ -75,6 +76,9 @@ func Setup(t *testing.T, isCheckTx bool) *EmpowerApp {
 	}
 
 	app := SetupWithGenesisValSet(t, valSet, []authtypes.GenesisAccount{acc}, balance)
+
+	// accesscontrolkeeper.NewSubKeeper(&app.AccessControlKeeper, "mockmodule1")
+	// accesscontrolkeeper.NewSubKeeper(&app.AccessControlKeeper, "mockmodule2")
 
 	return app
 }
@@ -180,4 +184,11 @@ func CreateRandomAccounts(accNum int) []sdk.AccAddress {
 	}
 
 	return testAddrs
+}
+
+func InitAccessControlSubKeepers(keeper *accesscontrolmodulekeeper.Keeper) *[]accesscontrolmodulekeeper.IAccessControlSubKeeper {
+	var sk []accesscontrolmodulekeeper.IAccessControlSubKeeper
+	sk = append(sk, accesscontrolmodulekeeper.NewSubKeeper(keeper, "mockmodule1"))
+	sk = append(sk, accesscontrolmodulekeeper.NewSubKeeper(keeper, "mockmodule2"))
+	return &sk
 }

@@ -1,6 +1,8 @@
 package keeper_test
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
 
 func (s *TestSuite) TestHasAccess() {
 	testCases := map[string]struct {
@@ -32,10 +34,9 @@ func (s *TestSuite) TestHasAccess() {
 			ctx := s.ctx
 			addr, _ := sdk.AccAddressFromBech32("empower1euf0uzgegfvyvwy6935pm82er5q3zkj5yytcrx")
 			tcAddr, _ := sdk.AccAddressFromBech32(tc.account)
-			permStore, _ := s.empowerApp.AccessControlKeeper.GetPermStore("mockmodule1")
-			permStore.GrantAccess(ctx, addr, "msgType1")
+			s.k[0].GrantAccess(ctx, addr, "msgType1")
 
-			access := permStore.HasAccess(ctx, tcAddr, tc.msgType)
+			access := s.k[0].HasAccess(ctx, tcAddr, tc.msgType)
 			s.Require().Equal(tc.expected, access)
 		})
 	}
@@ -59,12 +60,11 @@ func (s *TestSuite) TestRevokeAccess() {
 			ctx := s.ctx
 			addr, _ := sdk.AccAddressFromBech32("empower1euf0uzgegfvyvwy6935pm82er5q3zkj5yytcrx")
 			tcAddr, _ := sdk.AccAddressFromBech32(tc.account)
-			permStore, _ := s.empowerApp.AccessControlKeeper.GetPermStore("mockmodule1")
-			permStore.GrantAccess(ctx, addr, "msgType1")
-			access := permStore.HasAccess(ctx, tcAddr, tc.msgType)
+			s.k[0].GrantAccess(ctx, addr, "msgType1")
+			access := s.k[0].HasAccess(ctx, tcAddr, tc.msgType)
 			s.Require().Equal(true, access)
-			permStore.RevokeAccess(ctx, tcAddr, tc.msgType)
-			access = permStore.HasAccess(ctx, tcAddr, tc.msgType)
+			s.k[0].RevokeAccess(ctx, tcAddr, tc.msgType)
+			access = s.k[0].HasAccess(ctx, tcAddr, tc.msgType)
 			s.Require().Equal(false, access)
 		})
 	}

@@ -287,10 +287,11 @@ func New(
 	}
 
 	app.ParamsKeeper = initParamsKeeper(appCodec, cdc, keys[paramstypes.StoreKey], tkeys[paramstypes.TStoreKey])
-	app.AccessControlKeeper = initAccessControlKeeper(appCodec, keys[accesscontrolmoduletypes.StoreKey])
 
 	// set the BaseApp's parameter store
 	bApp.SetParamStore(app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable()))
+
+	app.AccessControlKeeper = *accesscontrolmodulekeeper.NewKeeper(appCodec, keys[accesscontrolmoduletypes.StoreKey])
 
 	// add capability keeper and ScopeToModule for ibc module
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(appCodec, keys[capabilitytypes.StoreKey], memKeys[capabilitytypes.MemStoreKey])
@@ -396,7 +397,7 @@ func New(
 		keys[plasticcreditmoduletypes.StoreKey],
 		keys[plasticcreditmoduletypes.MemStoreKey],
 		app.GetSubspace(plasticcreditmoduletypes.ModuleName),
-		app.GetPermStore(accesscontrolmoduletypes.ModuleName),
+		accesscontrolmodulekeeper.NewSubKeeper(&app.AccessControlKeeper, plasticcreditmoduletypes.ModuleName),
 	)
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -679,11 +680,6 @@ func (app *EmpowerApp) GetSubspace(moduleName string) paramstypes.Subspace {
 	return subspace
 }
 
-func (app *EmpowerApp) GetPermStore(moduleName string) accesscontrolmoduletypes.PermStore {
-	permStore, _ := app.AccessControlKeeper.GetPermStore(moduleName)
-	return permStore
-}
-
 // RegisterAPIRoutes registers all application module routes with the provided
 // API server.
 func (app *EmpowerApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
@@ -778,14 +774,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(plasticcreditmoduletypes.ModuleName)
 
 	return paramsKeeper
-}
-
-func initAccessControlKeeper(appCodec codec.BinaryCodec, key storetypes.StoreKey) accesscontrolmodulekeeper.Keeper {
-	accessControlKeeper := accesscontrolmodulekeeper.NewKeeper(appCodec, key)
-
-	accessControlKeeper.PermStore(plasticcreditmoduletypes.ModuleName)
-
-	return accessControlKeeper
 }
 
 // SimulationManager implements the SimulationApp interface

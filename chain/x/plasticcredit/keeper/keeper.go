@@ -7,18 +7,17 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	accesscontroltypes "github.com/empowerchain/empowerchain/x/accesscontrol/types"
 	"github.com/empowerchain/empowerchain/x/plasticcredit/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
 
 type (
 	Keeper struct {
-		cdc        codec.BinaryCodec
-		storeKey   storetypes.StoreKey
-		memKey     storetypes.StoreKey
-		paramstore paramtypes.Subspace
-		permstore  accesscontroltypes.PermStore
+		cdc                 codec.BinaryCodec
+		storeKey            storetypes.StoreKey
+		memKey              storetypes.StoreKey
+		paramstore          paramtypes.Subspace
+		accessControlKeeper types.AccessControlKeeper
 	}
 )
 
@@ -27,7 +26,7 @@ func NewKeeper(
 	storeKey,
 	memKey storetypes.StoreKey,
 	ps paramtypes.Subspace,
-	permStore accesscontroltypes.PermStore,
+	accessControlKeeper types.AccessControlKeeper,
 
 ) *Keeper {
 	// set KeyTable if it has not already been set
@@ -37,11 +36,11 @@ func NewKeeper(
 
 	return &Keeper{
 
-		cdc:        cdc,
-		storeKey:   storeKey,
-		memKey:     memKey,
-		paramstore: ps,
-		permstore:  permStore,
+		cdc:                 cdc,
+		storeKey:            storeKey,
+		memKey:              memKey,
+		paramstore:          ps,
+		accessControlKeeper: accessControlKeeper,
 	}
 }
 
