@@ -4,7 +4,7 @@ package empowerchain.plasticcredit;
 option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit/types";
 
 message Issuer {
-  uint64 issuer_id = 1;
+  uint64 id = 1;
   string name = 2;
   string description = 3;
   string admin = 4;
