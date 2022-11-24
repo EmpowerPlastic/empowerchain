@@ -8,24 +8,46 @@ import (
 )
 
 func TestGenesisState_Validate(t *testing.T) {
-	for _, tc := range []struct {
-		desc     string
+	testCases := map[string]struct {
 		genState *types.GenesisState
-		valid    bool
+		err      error
 	}{
-		{
-			desc:     "default is valid",
+		"default is valid": {
 			genState: types.DefaultGenesis(),
-			valid:    true,
+			err:      nil,
 		},
-	} {
-		t.Run(tc.desc, func(t *testing.T) {
+		"invalid params fail": {
+			genState: &types.GenesisState{
+				Params: types.Params{
+					IssuerCreator: "invalid",
+				},
+				IdCounters: types.DefaultGenesis().IdCounters,
+				Issuers:    types.DefaultGenesis().Issuers,
+			},
+			err: types.ErrInvalidParams,
+		},
+		"invalid id counters fail": {
+			genState: &types.GenesisState{
+				Params:     types.DefaultGenesis().Params,
+				IdCounters: types.IDCounters{},
+				Issuers:    types.DefaultGenesis().Issuers,
+			},
+			err: types.ErrInvalidValue,
+		},
+		"invalid issuers fail": {
+			genState: &types.GenesisState{
+				Params:     types.DefaultGenesis().Params,
+				IdCounters: types.DefaultGenesis().IdCounters,
+				Issuers:    []types.Issuer{{}},
+			},
+			err: types.ErrInvalidValue,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
 			err := tc.genState.Validate()
-			if tc.valid {
-				require.NoError(t, err)
-			} else {
-				require.Error(t, err)
-			}
+			require.ErrorIs(t, err, tc.err)
 		})
 	}
 }

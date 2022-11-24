@@ -1,13 +1,14 @@
 package keeper_test
 
 import (
+	"testing"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/empowerchain/empowerchain/app"
 	"github.com/empowerchain/empowerchain/app/params"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtime "github.com/tendermint/tendermint/types/time"
-	"testing"
 )
 
 type TestSuite struct {

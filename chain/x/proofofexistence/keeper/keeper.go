@@ -9,10 +9,6 @@ import (
 	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
 )
 
-const (
-	ProofStoreKeyPrefix = "Proof/value/"
-)
-
 type Keeper struct {
 	cdc      codec.BinaryCodec
 	storeKey storetypes.StoreKey

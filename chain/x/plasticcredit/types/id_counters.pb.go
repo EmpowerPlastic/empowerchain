@@ -22,25 +22,25 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type IdCounters struct {
-	IssuerId      uint64 `protobuf:"varint,1,opt,name=issuer_id,json=issuerId,proto3" json:"issuer_id,omitempty"`
-	CollectorId   uint64 `protobuf:"varint,2,opt,name=collector_id,json=collectorId,proto3" json:"collector_id,omitempty"`
-	ProjectId     uint64 `protobuf:"varint,3,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
-	CreditClassId uint64 `protobuf:"varint,4,opt,name=credit_class_id,json=creditClassId,proto3" json:"credit_class_id,omitempty"`
+type IDCounters struct {
+	NextIssuerId      uint64 `protobuf:"varint,1,opt,name=next_issuer_id,json=nextIssuerId,proto3" json:"next_issuer_id,omitempty"`
+	NextCollectorId   uint64 `protobuf:"varint,2,opt,name=next_collector_id,json=nextCollectorId,proto3" json:"next_collector_id,omitempty"`
+	NextProjectId     uint64 `protobuf:"varint,3,opt,name=next_project_id,json=nextProjectId,proto3" json:"next_project_id,omitempty"`
+	NextCreditClassId uint64 `protobuf:"varint,4,opt,name=next_credit_class_id,json=nextCreditClassId,proto3" json:"next_credit_class_id,omitempty"`
 }
 
-func (m *IdCounters) Reset()         { *m = IdCounters{} }
-func (m *IdCounters) String() string { return proto.CompactTextString(m) }
-func (*IdCounters) ProtoMessage()    {}
-func (*IdCounters) Descriptor() ([]byte, []int) {
+func (m *IDCounters) Reset()         { *m = IDCounters{} }
+func (m *IDCounters) String() string { return proto.CompactTextString(m) }
+func (*IDCounters) ProtoMessage()    {}
+func (*IDCounters) Descriptor() ([]byte, []int) {
 	return fileDescriptor_86d579c033e84200, []int{0}
 }
-func (m *IdCounters) XXX_Unmarshal(b []byte) error {
+func (m *IDCounters) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *IdCounters) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *IDCounters) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_IdCounters.Marshal(b, m, deterministic)
+		return xxx_messageInfo_IDCounters.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -50,48 +50,48 @@ func (m *IdCounters) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *IdCounters) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_IdCounters.Merge(m, src)
+func (m *IDCounters) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_IDCounters.Merge(m, src)
 }
-func (m *IdCounters) XXX_Size() int {
+func (m *IDCounters) XXX_Size() int {
 	return m.Size()
 }
-func (m *IdCounters) XXX_DiscardUnknown() {
-	xxx_messageInfo_IdCounters.DiscardUnknown(m)
+func (m *IDCounters) XXX_DiscardUnknown() {
+	xxx_messageInfo_IDCounters.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_IdCounters proto.InternalMessageInfo
+var xxx_messageInfo_IDCounters proto.InternalMessageInfo
 
-func (m *IdCounters) GetIssuerId() uint64 {
+func (m *IDCounters) GetNextIssuerId() uint64 {
 	if m != nil {
-		return m.IssuerId
+		return m.NextIssuerId
 	}
 	return 0
 }
 
-func (m *IdCounters) GetCollectorId() uint64 {
+func (m *IDCounters) GetNextCollectorId() uint64 {
 	if m != nil {
-		return m.CollectorId
+		return m.NextCollectorId
 	}
 	return 0
 }
 
-func (m *IdCounters) GetProjectId() uint64 {
+func (m *IDCounters) GetNextProjectId() uint64 {
 	if m != nil {
-		return m.ProjectId
+		return m.NextProjectId
 	}
 	return 0
 }
 
-func (m *IdCounters) GetCreditClassId() uint64 {
+func (m *IDCounters) GetNextCreditClassId() uint64 {
 	if m != nil {
-		return m.CreditClassId
+		return m.NextCreditClassId
 	}
 	return 0
 }
 
 func init() {
-	proto.RegisterType((*IdCounters)(nil), "empowerchain.plasticcredit.IdCounters")
+	proto.RegisterType((*IDCounters)(nil), "empowerchain.plasticcredit.IDCounters")
 }
 
 func init() {
@@ -99,25 +99,27 @@ func init() {
 }
 
 var fileDescriptor_86d579c033e84200 = []byte{
-	// 238 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xd2, 0x49, 0xcd, 0x2d, 0xc8,
-	0x2f, 0x4f, 0x2d, 0x4a, 0xce, 0x48, 0xcc, 0xcc, 0xd3, 0x2f, 0xc8, 0x49, 0x2c, 0x2e, 0xc9, 0x4c,
-	0x4e, 0x2e, 0x4a, 0x4d, 0xc9, 0x2c, 0xd1, 0xcf, 0x4c, 0x89, 0x4f, 0xce, 0x2f, 0xcd, 0x2b, 0x49,
-	0x2d, 0x2a, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x92, 0x42, 0x56, 0xad, 0x87, 0xa2, 0x5a,
-	0x69, 0x32, 0x23, 0x17, 0x97, 0x67, 0x8a, 0x33, 0x54, 0x83, 0x90, 0x34, 0x17, 0x67, 0x66, 0x71,
-	0x71, 0x69, 0x6a, 0x51, 0x7c, 0x66, 0x8a, 0x04, 0xa3, 0x02, 0xa3, 0x06, 0x4b, 0x10, 0x07, 0x44,
-	0xc0, 0x33, 0x45, 0x48, 0x91, 0x8b, 0x27, 0x39, 0x3f, 0x27, 0x27, 0x35, 0xb9, 0x24, 0x1f, 0x2c,
-	0xcf, 0x04, 0x96, 0xe7, 0x86, 0x8b, 0x79, 0xa6, 0x08, 0xc9, 0x72, 0x71, 0x15, 0x14, 0xe5, 0x67,
-	0xa5, 0x26, 0x97, 0x80, 0x14, 0x30, 0x83, 0x15, 0x70, 0x42, 0x45, 0x3c, 0x53, 0x84, 0xd4, 0xb8,
-	0xf8, 0x21, 0xf6, 0xc6, 0x27, 0xe7, 0x24, 0x16, 0x17, 0x83, 0xd4, 0xb0, 0x80, 0xd5, 0xf0, 0x42,
-	0x84, 0x9d, 0x41, 0xa2, 0x9e, 0x29, 0x4e, 0x21, 0x27, 0x1e, 0xc9, 0x31, 0x5e, 0x78, 0x24, 0xc7,
-	0xf8, 0xe0, 0x91, 0x1c, 0xe3, 0x84, 0xc7, 0x72, 0x0c, 0x17, 0x1e, 0xcb, 0x31, 0xdc, 0x78, 0x2c,
-	0xc7, 0x10, 0x65, 0x95, 0x9e, 0x59, 0x92, 0x51, 0x9a, 0xa4, 0x97, 0x9c, 0x9f, 0xab, 0x8f, 0x12,
-	0x08, 0x28, 0x9c, 0x0a, 0xb4, 0x30, 0x29, 0xa9, 0x2c, 0x48, 0x2d, 0x4e, 0x62, 0x03, 0x07, 0x87,
-	0x31, 0x20, 0x00, 0x00, 0xff, 0xff, 0x92, 0x22, 0x16, 0x83, 0x3e, 0x01, 0x00, 0x00,
+	// 258 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x5c, 0x90, 0xbf, 0x4a, 0x04, 0x31,
+	0x10, 0xc6, 0x2f, 0x7a, 0x58, 0x04, 0xff, 0x60, 0xb0, 0x10, 0x8b, 0x20, 0x22, 0x22, 0x22, 0xbb,
+	0x85, 0x9d, 0xa5, 0x6b, 0x93, 0x4e, 0xc4, 0xca, 0x26, 0xec, 0x25, 0x83, 0x17, 0xd9, 0xdb, 0x84,
+	0x64, 0x16, 0xcf, 0xb7, 0xf0, 0x6d, 0x7c, 0x05, 0xcb, 0x2b, 0x2d, 0x65, 0xf7, 0x45, 0x24, 0x73,
+	0x0a, 0xae, 0x65, 0x7e, 0xdf, 0x2f, 0x33, 0xc3, 0xc7, 0x2f, 0x61, 0x11, 0xfc, 0x0b, 0x44, 0x33,
+	0xaf, 0x5d, 0x5b, 0x86, 0xa6, 0x4e, 0xe8, 0x8c, 0x89, 0x60, 0x1d, 0x96, 0xce, 0x6a, 0xe3, 0xbb,
+	0x16, 0x21, 0xa6, 0x22, 0x44, 0x8f, 0x5e, 0x1c, 0xfd, 0xb5, 0x8b, 0x91, 0x7d, 0xf2, 0xce, 0x38,
+	0x57, 0xb7, 0xd5, 0xcf, 0x07, 0x71, 0xca, 0x77, 0x5b, 0x58, 0xa2, 0x76, 0x29, 0x75, 0x10, 0xb5,
+	0xb3, 0x87, 0xec, 0x98, 0x9d, 0x4f, 0xef, 0xb7, 0x33, 0x55, 0x04, 0x95, 0x15, 0x17, 0x7c, 0x9f,
+	0x2c, 0xe3, 0x9b, 0x06, 0x0c, 0x7a, 0x12, 0x37, 0x48, 0xdc, 0xcb, 0x41, 0xf5, 0xcb, 0x95, 0x15,
+	0x67, 0x9c, 0x90, 0x0e, 0xd1, 0x3f, 0x83, 0xc1, 0x6c, 0x6e, 0x92, 0xb9, 0x93, 0xf1, 0xdd, 0x9a,
+	0x2a, 0x2b, 0x4a, 0x7e, 0xb0, 0x9e, 0x49, 0x77, 0x69, 0xd3, 0xd4, 0x29, 0x65, 0x79, 0x4a, 0x32,
+	0xed, 0xab, 0x28, 0xaa, 0x72, 0xa2, 0xec, 0xcd, 0xc3, 0x47, 0x2f, 0xd9, 0xaa, 0x97, 0xec, 0xab,
+	0x97, 0xec, 0x6d, 0x90, 0x93, 0xd5, 0x20, 0x27, 0x9f, 0x83, 0x9c, 0x3c, 0x5e, 0x3f, 0x39, 0x9c,
+	0x77, 0xb3, 0xc2, 0xf8, 0x45, 0x39, 0x2a, 0x6a, 0xf4, 0x58, 0xfe, 0xeb, 0x0d, 0x5f, 0x03, 0xa4,
+	0xd9, 0x16, 0x55, 0x76, 0xf5, 0x1d, 0x00, 0x00, 0xff, 0xff, 0xbf, 0x82, 0xa2, 0xeb, 0x62, 0x01,
+	0x00, 0x00,
 }
 
-func (m *IdCounters) Marshal() (dAtA []byte, err error) {
+func (m *IDCounters) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -127,33 +129,33 @@ func (m *IdCounters) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *IdCounters) MarshalTo(dAtA []byte) (int, error) {
+func (m *IDCounters) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *IdCounters) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *IDCounters) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.CreditClassId != 0 {
-		i = encodeVarintIdCounters(dAtA, i, uint64(m.CreditClassId))
+	if m.NextCreditClassId != 0 {
+		i = encodeVarintIdCounters(dAtA, i, uint64(m.NextCreditClassId))
 		i--
 		dAtA[i] = 0x20
 	}
-	if m.ProjectId != 0 {
-		i = encodeVarintIdCounters(dAtA, i, uint64(m.ProjectId))
+	if m.NextProjectId != 0 {
+		i = encodeVarintIdCounters(dAtA, i, uint64(m.NextProjectId))
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.CollectorId != 0 {
-		i = encodeVarintIdCounters(dAtA, i, uint64(m.CollectorId))
+	if m.NextCollectorId != 0 {
+		i = encodeVarintIdCounters(dAtA, i, uint64(m.NextCollectorId))
 		i--
 		dAtA[i] = 0x10
 	}
-	if m.IssuerId != 0 {
-		i = encodeVarintIdCounters(dAtA, i, uint64(m.IssuerId))
+	if m.NextIssuerId != 0 {
+		i = encodeVarintIdCounters(dAtA, i, uint64(m.NextIssuerId))
 		i--
 		dAtA[i] = 0x8
 	}
@@ -171,23 +173,23 @@ func encodeVarintIdCounters(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *IdCounters) Size() (n int) {
+func (m *IDCounters) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.IssuerId != 0 {
-		n += 1 + sovIdCounters(uint64(m.IssuerId))
+	if m.NextIssuerId != 0 {
+		n += 1 + sovIdCounters(uint64(m.NextIssuerId))
 	}
-	if m.CollectorId != 0 {
-		n += 1 + sovIdCounters(uint64(m.CollectorId))
+	if m.NextCollectorId != 0 {
+		n += 1 + sovIdCounters(uint64(m.NextCollectorId))
 	}
-	if m.ProjectId != 0 {
-		n += 1 + sovIdCounters(uint64(m.ProjectId))
+	if m.NextProjectId != 0 {
+		n += 1 + sovIdCounters(uint64(m.NextProjectId))
 	}
-	if m.CreditClassId != 0 {
-		n += 1 + sovIdCounters(uint64(m.CreditClassId))
+	if m.NextCreditClassId != 0 {
+		n += 1 + sovIdCounters(uint64(m.NextCreditClassId))
 	}
 	return n
 }
@@ -198,7 +200,7 @@ func sovIdCounters(x uint64) (n int) {
 func sozIdCounters(x uint64) (n int) {
 	return sovIdCounters(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *IdCounters) Unmarshal(dAtA []byte) error {
+func (m *IDCounters) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -221,17 +223,17 @@ func (m *IdCounters) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: IdCounters: wiretype end group for non-group")
+			return fmt.Errorf("proto: IDCounters: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: IdCounters: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: IDCounters: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field IssuerId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field NextIssuerId", wireType)
 			}
-			m.IssuerId = 0
+			m.NextIssuerId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowIdCounters
@@ -241,16 +243,16 @@ func (m *IdCounters) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.IssuerId |= uint64(b&0x7F) << shift
+				m.NextIssuerId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CollectorId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field NextCollectorId", wireType)
 			}
-			m.CollectorId = 0
+			m.NextCollectorId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowIdCounters
@@ -260,16 +262,16 @@ func (m *IdCounters) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.CollectorId |= uint64(b&0x7F) << shift
+				m.NextCollectorId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 3:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProjectId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field NextProjectId", wireType)
 			}
-			m.ProjectId = 0
+			m.NextProjectId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowIdCounters
@@ -279,16 +281,16 @@ func (m *IdCounters) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ProjectId |= uint64(b&0x7F) << shift
+				m.NextProjectId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 4:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CreditClassId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field NextCreditClassId", wireType)
 			}
-			m.CreditClassId = 0
+			m.NextCreditClassId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowIdCounters
@@ -298,7 +300,7 @@ func (m *IdCounters) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.CreditClassId |= uint64(b&0x7F) << shift
+				m.NextCreditClassId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}

@@ -96,7 +96,7 @@ func (k Keeper) GetProof(ctx sdk.Context, sha256hex string) (types.ProofMetadata
 
 func (k Keeper) getProofStore(ctx sdk.Context) prefix.Store {
 	store := ctx.KVStore(k.storeKey)
-	proofStore := prefix.NewStore(store, []byte(ProofStoreKeyPrefix))
+	proofStore := prefix.NewStore(store, types.ProofStorePrefixKey)
 
 	return proofStore
 }

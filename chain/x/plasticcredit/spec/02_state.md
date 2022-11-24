@@ -6,22 +6,33 @@ The `plasticcredit` module keeps track of plastic credits issued, traded/transfe
 
 The plasticcredit module stores it's params in state with the prefix of 0x00, it can be updated with governance or the address with authority.
 
+Params have the `issuer_creator` which is a field that controls who is allowed to create new issuers. 
+If the issuer_creator is empty (is it is by default), the controlling entity is the gov module.
+
 - Params: `0x00 | ProtocolBuffer(Params)`
+
+## ID Counters
+
+ID Counters is a global object to keep track of ID indexes. It keeps at all times the next id for the entities that need it: 
+`next_issuer_id`, `next_collector_id`, `next_project_id` and `next_credit_class_id`.
+
+- ID Counters: `0x01 | ProtocolBuffer(IDCounters)`
 
 ## Issuer
 
 An Issuer is an entity that is allowed to create Credit Classes and issue Credits under their own Classes.
 They are the entity responsible for the data, quality and trust of the plastic credits they issue.
 
-An issue consists of the following fields: `id`, `name`, `description`, `admin`, `accounts`, with `id` being the unique identifier for an issuer.
+An issue consists of the following fields: `id`, `name`, `description`, `admin`, with `id` being the unique identifier for an issuer.
 
 `name` and `description` is mainly for identifying and letting clients get information on issuers.
 
 `admin` is the address of the administrative account that controls the issuer and can update information and `accounts`. 
 
-`accounts` is a list of addresses that has the privilege to issue credits.
+Only the `issuer_creator` from `Params` is allowed to create new issuers.
+This is typically either directly through governance or through a sub-dao or group.
 
-- Issuer: `0x01 | issuerID | -> ProtocolBuffer(Issuer)`
+- Issuer: `0x02 | issuerID | -> ProtocolBuffer(Issuer)`
 
 ## Collector
 
