@@ -7,7 +7,7 @@ The `plasticcredit` module keeps track of plastic credits issued, traded/transfe
 The plasticcredit module stores it's params in state with the prefix of 0x00, it can be updated with governance or the address with authority.
 
 Params have the `issuer_creator` which is a field that controls who is allowed to create new issuers. 
-If the issuer_creator is empty (is it is by default), the controlling entity is the gov module.
+If the issuer_creator is empty (it is by default), the controlling entity is the gov module.
 
 - Params: `0x00 | ProtocolBuffer(Params)`
 
