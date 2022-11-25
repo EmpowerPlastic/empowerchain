@@ -1,7 +1,7 @@
 package types
 
 import (
-	"fmt"
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"gopkg.in/yaml.v2"
 )
@@ -23,7 +23,7 @@ func (p Params) Validate() error {
 	if p.IssuerCreator != "" {
 		_, err := sdk.AccAddressFromBech32(p.IssuerCreator)
 		if err != nil {
-			return fmt.Errorf("%s is not a valid address. Err: %w", p.IssuerCreator, err)
+			return errors.Wrapf(ErrInvalidParams, "%s is not a valid address. Err: %v", p.IssuerCreator, err)
 		}
 	}
 

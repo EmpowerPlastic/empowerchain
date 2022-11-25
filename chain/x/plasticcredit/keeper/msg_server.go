@@ -2,8 +2,9 @@ package keeper
 
 import (
 	"context"
+
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/empowerchain/empowerchain/x/plasticcredit/types"
 )
@@ -31,4 +32,31 @@ func (m msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParam
 	}
 
 	return &types.MsgUpdateParamsResponse{}, nil
+}
+
+func (m msgServer) CreateIssuer(goCtx context.Context, req *types.MsgCreateIssuer) (*types.MsgCreateIssuerResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	p, err := m.GetParams(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	issuerCreator := p.IssuerCreator
+	if issuerCreator == "" {
+		issuerCreator = m.authority
+	}
+
+	if issuerCreator != req.Creator {
+		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid issue creator; expected %s, got %s", issuerCreator, req.Creator)
+	}
+
+	id, err := m.createIssuer(ctx, req.Name, req.Description, req.Admin)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.MsgCreateIssuerResponse{
+		IssuerId: id,
+	}, nil
 }

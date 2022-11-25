@@ -101,11 +101,11 @@ func (am AppModule) LegacyQuerierHandler(*codec.LegacyAmino) sdk.Querier {
 // RegisterServices registers a GRPC query service to respond to the
 // module-specific GRPC queries.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
-	querier := keeper.Querier{Keeper: am.keeper}
-	types.RegisterQueryServer(cfg.QueryServer(), querier)
-
 	msgServer := keeper.NewMsgServerImpl(am.keeper)
 	types.RegisterMsgServer(cfg.MsgServer(), msgServer)
+
+	querier := keeper.Querier{Keeper: am.keeper}
+	types.RegisterQueryServer(cfg.QueryServer(), querier)
 
 	m := keeper.NewMigrator(am.keeper)
 	// For some reason this was hardcoded to 2 in the previous version https://github.com/empowerchain/empowerchain/blob/f7e68c0cd2901c9a60bd2ce00b43cf0db2c33f0e/chain/x/proofofexistence/module.go#L171

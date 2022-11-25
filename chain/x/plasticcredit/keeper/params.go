@@ -5,14 +5,15 @@ import (
 	"github.com/empowerchain/empowerchain/x/plasticcredit/types"
 )
 
-func (k Keeper) getParams(ctx sdk.Context) (p types.Params, err error) {
+func (k Keeper) GetParams(ctx sdk.Context) (types.Params, error) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.ParamsKey)
 	if bz == nil {
-		return p, nil
+		return types.Params{}, nil
 	}
 
-	err = k.cdc.Unmarshal(bz, &p)
+	var p types.Params
+	err := k.cdc.Unmarshal(bz, &p)
 	return p, err
 }
 
@@ -22,7 +23,10 @@ func (k Keeper) setParams(ctx sdk.Context, p types.Params) error {
 	}
 
 	store := ctx.KVStore(k.storeKey)
-	bz := k.cdc.MustMarshal(&p)
+	bz, err := k.cdc.Marshal(&p)
+	if err != nil {
+		return err
+	}
 	store.Set(types.ParamsKey, bz)
 
 	return nil

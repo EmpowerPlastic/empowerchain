@@ -18,7 +18,8 @@ func (s *TestSuite) TestParamsQuery() {
 	})
 	s.Require().NoError(err)
 
-	response, err := k.Params(goCtx, &types.QueryParamsRequest{})
+	querier := keeper.Querier{Keeper: k}
+	response, err := querier.Params(goCtx, &types.QueryParamsRequest{})
 	s.Require().NoError(err)
 	s.Require().Equal(&types.QueryParamsResponse{Params: params}, response)
 }

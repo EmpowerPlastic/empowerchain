@@ -1,5 +1,7 @@
 package types
 
+var ProofStorePrefixKey = []byte{0x00}
+
 const (
 	// ModuleName defines the name of the x/consensus module.
 	ModuleName = "proofofexistence"

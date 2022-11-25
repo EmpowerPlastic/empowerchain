@@ -1,8 +1,9 @@
 package types
 
 var (
-	ParamsKey = []byte{0x00}
-	IssuerKey = []byte{0x01}
+	ParamsKey     = []byte{0x00}
+	IDCountersKey = []byte{0x01}
+	IssuerKey     = []byte{0x02}
 )
 
 const (

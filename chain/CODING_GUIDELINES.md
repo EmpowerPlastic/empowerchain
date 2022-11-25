@@ -30,3 +30,22 @@ Setter and getters are for the storage layer.
 
 This is the layer where storage is updated. Setters and getters might make sense here. 
 The functions should be private and can make assumptions about correctness of data it is being sent.
+
+## Coding tips
+
+### Typical order of making changes (especially new things)
+
+1. Make changes in the proto files
+    - Update any changes in spec
+2. Generate proto `$ make proto`
+3. Implement/Update `Validate()` on any non-rpc messages (i.e. data structures to be persisted in the keeper and in genesis)
+4. If you created any new rpc messages:
+    - Implement the `sdk.Msg` interface in `msgs.go` (`_ sdk.Msg = &MsgName{}`)
+    - Don't forget to create tests for `ValidateBasic`!
+5. Implement `MsgServer`/`Querier` and `Keeper` methods
+    - Don't forget integration tests
+    - Also: if you create public Keeper tests, they need to be tested as well
+6. Update genesis if necessary (in types/genesis and keeper/genesis)
+7. Update the client/cli if necessary
+8. Create e2e tests
+9. Format and lint your code before committing: `$ make format` and `$ make lint`
