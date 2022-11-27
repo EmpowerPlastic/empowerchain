@@ -53,6 +53,7 @@ func (k Keeper) grantAccess(ctx sdk.Context, subKey string, account sdk.AccAddre
 		return err
 	}
 	store.Set(key, b)
+	return nil
 }
 
 func (k Keeper) revokeAccess(ctx sdk.Context, subKey string, account sdk.AccAddress, msgType string) {

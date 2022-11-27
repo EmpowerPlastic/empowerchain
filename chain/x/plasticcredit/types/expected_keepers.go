@@ -19,6 +19,6 @@ type BankKeeper interface {
 
 type AccessControlKeeper interface {
 	HasAccess(ctx sdk.Context, account sdk.AccAddress, msgType string) bool
-	GrantAccess(ctx sdk.Context, account sdk.AccAddress, msgType string)
+	GrantAccess(ctx sdk.Context, account sdk.AccAddress, msgType string) error
 	RevokeAccess(ctx sdk.Context, account sdk.AccAddress, msgType string)
 }

@@ -1,10 +1,10 @@
 # State
 
-`accesscontrol` tracks Cosmos SDK addresses allowed to execute specific messages . It creates a sub-KVStore for every module that injects accesscontrol's keeper.
+`accesscontrol` tracks Cosmos SDK addresses allowed to execute specific messages . It creates a sub-KVStore for every module that injects `accesscontrol's` keeper.
 
 ## SubKeepers
 
-Usage of `accesscontrol` is a bit different from what we may know from standard SDK modules. Because of creating and using sub-stores for every module that registers `accesscontrol's` keeper, the concept of a `SubKeeper` was introduced. `SubKeeper` allows a module to access it's `accesscontrol's` sub-store and at the same time protects sub-stores of other modules from unprivilleged access. Below is an xample of initializing `accesscontrol's` keeper and injecting a subkeeper in `app.go`:
+Usage of `accesscontrol` is a bit different from what we may know from standard SDK modules. Because of creating and using sub-stores for every module that registers `accesscontrol's` keeper, the concept of a `SubKeeper` was introduced. `SubKeeper` allows a module to access it's `accesscontrol's` sub-store and at the same time protects sub-stores of other modules from unprivilleged access. Below is an example of initializing `accesscontrol's` keeper and injecting a subkeeper in `app.go`:
 
 ```golang
 	app.AccessControlKeeper = *accesscontrolmodulekeeper.NewKeeper(appCodec, keys[accesscontrolmoduletypes.StoreKey])
@@ -21,10 +21,9 @@ Initializing a SubKeeper requires a unique prefix, that will be used to access t
 ```golang
 type AccessControlKeeper interface {
 	HasAccess(ctx sdk.Context, account sdk.AccAddress, msgType string) bool
-	GrantAccess(ctx sdk.Context, account sdk.AccAddress, msgType string)
+	GrantAccess(ctx sdk.Context, account sdk.AccAddress, msgType string) error
 	RevokeAccess(ctx sdk.Context, account sdk.AccAddress, msgType string)
 }
 ```
-## API
 
-
+It is recommended to maintain a list of message types as constants instead of passing _magic variables_ to Access Control Keeper's functions.
