@@ -26,4 +26,8 @@ type AccessControlKeeper interface {
 }
 ```
 
-It is recommended to maintain a list of message types as constants instead of passing _magic variables_ to Access Control Keeper's functions.
+It is recommended to maintain a list of message types as constants instead of passing *magic variables* to Access Control Keeper's functions:
+
+```golang
+k.accesscontrol.keeper.HasAccess(msg.Creator, types.MsgListUsersTypes)
+```
