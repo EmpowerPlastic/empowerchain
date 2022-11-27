@@ -77,9 +77,6 @@ func Setup(t *testing.T, isCheckTx bool) *EmpowerApp {
 
 	app := SetupWithGenesisValSet(t, valSet, []authtypes.GenesisAccount{acc}, balance)
 
-	// accesscontrolkeeper.NewSubKeeper(&app.AccessControlKeeper, "mockmodule1")
-	// accesscontrolkeeper.NewSubKeeper(&app.AccessControlKeeper, "mockmodule2")
-
 	return app
 }
 

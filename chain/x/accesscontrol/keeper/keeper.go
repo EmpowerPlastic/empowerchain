@@ -44,11 +44,14 @@ func (k Keeper) hasAccess(ctx sdk.Context, subKey string, account sdk.AccAddress
 	return store.Has(key)
 }
 
-func (k Keeper) grantAccess(ctx sdk.Context, subKey string, account sdk.AccAddress, msgType string) {
+func (k Keeper) grantAccess(ctx sdk.Context, subKey string, account sdk.AccAddress, msgType string) error {
 	store := k.kvStore(ctx, subKey)
 	key := types.PermissionStoreKey(account, msgType)
 
-	b := k.cdc.MustMarshal(&types.Permission{})
+	b, err := k.cdc.Marshal(&types.Permission{})
+	if err != nil {
+		return err
+	}
 	store.Set(key, b)
 }
 
