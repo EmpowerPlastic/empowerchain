@@ -6,13 +6,10 @@ if [ -z "$1" ]; then
     echo "Cosmos SDK version missing as first argument"
 fi
 
-
 COSMOS_SDK_VERSION=$1
 
-
-
 # Get protoc executions
-go get github.com/regen-network/cosmos-proto/protoc-gen-gocosmos 2>/dev/null
+go install github.com/regen-network/cosmos-proto/protoc-gen-gocosmos 2>/dev/null
 
 # Get cosmos sdk from github
 go get github.com/cosmos/cosmos-sdk@"$COSMOS_SDK_VERSION" 2>/dev/null

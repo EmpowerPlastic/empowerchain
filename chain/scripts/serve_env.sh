@@ -6,8 +6,11 @@ ROOT_DIR=/tmp
 
 CHAIN_DIR=$ROOT_DIR/$CHAIN_ID
 LOG_FILE_PATH=$CHAIN_DIR/$CHAIN_ID.log
+# empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7
 ALICE_MNEMONIC="clock post desk civil pottery foster expand merit dash seminar song memory figure uniform spice circle try happy obvious trash crime hybrid hood cushion"
+# empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m
 BOB_MNEMONIC="angry twist harsh drastic left brass behave host shove marriage fall update business leg direct reward object ugly security warm tuna model broccoli choice"
+# empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn
 VALIDATOR_MNEMONIC="banner spread envelope side kite person disagree path silver will brother under couch edit food venture squirrel civil budget number acquire point work mass"
 P2P_PORT=26656
 RPC_PORT=26657

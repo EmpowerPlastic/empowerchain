@@ -13,9 +13,9 @@ import (
 	"github.com/empowerchain/empowerchain/app"
 	"github.com/empowerchain/empowerchain/app/params"
 	"github.com/empowerchain/empowerchain/testutil/sample"
+	"github.com/empowerchain/empowerchain/x/proofofexistence"
 	v1 "github.com/empowerchain/empowerchain/x/proofofexistence/migrations/v1"
 	v2 "github.com/empowerchain/empowerchain/x/proofofexistence/migrations/v2"
-	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto"
 )
@@ -55,7 +55,7 @@ func TestMigrateStore(t *testing.T) {
 	iter := store.Iterator(nil, nil)
 	for ; iter.Valid(); iter.Next() {
 		numberOfItems++
-		var newProof types.ProofMetadata
+		var newProof proofofexistence.ProofMetadata
 		require.NoError(t, cdc.Unmarshal(iter.Value(), &newProof))
 
 		switch numberOfItems {

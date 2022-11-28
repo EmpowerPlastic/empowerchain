@@ -2,23 +2,32 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/empowerchain/empowerchain/x/plasticcredit/types"
+	"github.com/empowerchain/empowerchain/x/plasticcredit"
 )
 
-// GetParams get all parameters as types.Params
-func (k Keeper) GetParams(ctx sdk.Context) types.Params {
-	return types.NewParams(
-		k.CreateissuerAllowlist(ctx),
-	)
+func (k Keeper) GetParams(ctx sdk.Context) (plasticcredit.Params, error) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(plasticcredit.ParamsKey)
+	if bz == nil {
+		return plasticcredit.Params{}, nil
+	}
+
+	var p plasticcredit.Params
+	err := k.cdc.Unmarshal(bz, &p)
+	return p, err
 }
 
-// SetParams set the params
-func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
-	k.paramstore.SetParamSet(ctx, &params)
-}
+func (k Keeper) setParams(ctx sdk.Context, p plasticcredit.Params) error {
+	if err := p.Validate(); err != nil {
+		return err
+	}
 
-// CreateissuerAllowlist returns the CreateissuerAllowlist param
-func (k Keeper) CreateissuerAllowlist(ctx sdk.Context) (res []string) {
-	k.paramstore.Get(ctx, types.KeyCreateissuerAllowlist, &res)
-	return
+	store := ctx.KVStore(k.storeKey)
+	bz, err := k.cdc.Marshal(&p)
+	if err != nil {
+		return err
+	}
+	store.Set(plasticcredit.ParamsKey, bz)
+
+	return nil
 }

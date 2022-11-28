@@ -6,42 +6,42 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
+	"github.com/empowerchain/empowerchain/x/proofofexistence"
 )
 
 // CreateNewProof create a new proof from its hash
 func (k Keeper) CreateNewProof(ctx sdk.Context, sha256hex string, creator sdk.AccAddress) error {
 	if sha256hex == "" {
-		return sdkerrors.Wrap(types.ErrInvalidProof, "sha256hex cannot be empty")
+		return sdkerrors.Wrap(proofofexistence.ErrInvalidProof, "sha256hex cannot be empty")
 	}
 
 	if sdk.VerifyAddressFormat(creator) != nil {
-		return types.ErrInvalidCreator
+		return proofofexistence.ErrInvalidCreator
 	}
 
-	proofMetadata := types.ProofMetadata{
+	proofMetadata := proofofexistence.ProofMetadata{
 		Timestamp: ctx.BlockTime(),
 		Creator:   creator.String(),
 	}
 
 	hash, err := hex.DecodeString(sha256hex)
 	if err != nil {
-		return sdkerrors.Wrapf(types.ErrInvalidProof, "sha256hex is %s not hex", sha256hex)
+		return sdkerrors.Wrapf(proofofexistence.ErrInvalidProof, "sha256hex is %s not hex", sha256hex)
 	}
 
 	if len(hash) != 32 {
-		return sdkerrors.Wrapf(types.ErrInvalidProof, "sha256hex %s is not SHA-256", sha256hex)
+		return sdkerrors.Wrapf(proofofexistence.ErrInvalidProof, "sha256hex %s is not SHA-256", sha256hex)
 	}
 
 	store := k.getProofStore(ctx)
 	if store.Has(hash) {
-		return sdkerrors.Wrap(types.ErrHashExists, sha256hex)
+		return sdkerrors.Wrap(proofofexistence.ErrHashExists, sha256hex)
 	}
 
 	return k.setProof(ctx, hash, proofMetadata)
 }
 
-func (k Keeper) setProof(ctx sdk.Context, hash []byte, proofMetadata types.ProofMetadata) error {
+func (k Keeper) setProof(ctx sdk.Context, hash []byte, proofMetadata proofofexistence.ProofMetadata) error {
 	store := k.getProofStore(ctx)
 
 	b, err := k.cdc.Marshal(&proofMetadata)
@@ -53,15 +53,15 @@ func (k Keeper) setProof(ctx sdk.Context, hash []byte, proofMetadata types.Proof
 	return nil
 }
 
-func (k Keeper) getAllProof(ctx sdk.Context) (map[string]types.ProofMetadata, error) {
-	proofs := make(map[string]types.ProofMetadata)
+func (k Keeper) getAllProof(ctx sdk.Context) (map[string]proofofexistence.ProofMetadata, error) {
+	proofs := make(map[string]proofofexistence.ProofMetadata)
 	store := k.getProofStore(ctx)
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var md types.ProofMetadata
+		var md proofofexistence.ProofMetadata
 		if err := k.cdc.Unmarshal(iterator.Value(), &md); err != nil {
 			return nil, err
 		}
@@ -73,22 +73,22 @@ func (k Keeper) getAllProof(ctx sdk.Context) (map[string]types.ProofMetadata, er
 	return proofs, nil
 }
 
-func (k Keeper) GetProof(ctx sdk.Context, sha256hex string) (types.ProofMetadata, error) {
+func (k Keeper) GetProof(ctx sdk.Context, sha256hex string) (proofofexistence.ProofMetadata, error) {
 	store := k.getProofStore(ctx)
 
 	hash, err := hex.DecodeString(sha256hex)
 	if err != nil {
-		return types.ProofMetadata{}, sdkerrors.Wrapf(types.ErrInvalidProof, "sha256hex is %s not hex", sha256hex)
+		return proofofexistence.ProofMetadata{}, sdkerrors.Wrapf(proofofexistence.ErrInvalidProof, "sha256hex is %s not hex", sha256hex)
 	}
 
 	bz := store.Get(hash)
 	if bz == nil {
-		return types.ProofMetadata{}, sdkerrors.Wrap(types.ErrProofNotFound, sha256hex)
+		return proofofexistence.ProofMetadata{}, sdkerrors.Wrap(proofofexistence.ErrProofNotFound, sha256hex)
 	}
 
-	var md types.ProofMetadata
+	var md proofofexistence.ProofMetadata
 	if err := k.cdc.Unmarshal(bz, &md); err != nil {
-		return types.ProofMetadata{}, err
+		return proofofexistence.ProofMetadata{}, err
 	}
 
 	return md, nil
@@ -96,7 +96,7 @@ func (k Keeper) GetProof(ctx sdk.Context, sha256hex string) (types.ProofMetadata
 
 func (k Keeper) getProofStore(ctx sdk.Context) prefix.Store {
 	store := ctx.KVStore(k.storeKey)
-	proofStore := prefix.NewStore(store, []byte(ProofStoreKeyPrefix))
+	proofStore := prefix.NewStore(store, proofofexistence.ProofStorePrefixKey)
 
 	return proofStore
 }

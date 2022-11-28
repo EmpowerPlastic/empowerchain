@@ -106,12 +106,12 @@ import (
 	"github.com/empowerchain/empowerchain/x/accesscontrol"
 	accesscontrolmodulekeeper "github.com/empowerchain/empowerchain/x/accesscontrol/keeper"
 	accesscontrolmodule "github.com/empowerchain/empowerchain/x/accesscontrol/module"
-	plasticcreditmodule "github.com/empowerchain/empowerchain/x/plasticcredit"
+	plasticcreditmoduletypes "github.com/empowerchain/empowerchain/x/plasticcredit"
 	plasticcreditmodulekeeper "github.com/empowerchain/empowerchain/x/plasticcredit/keeper"
-	plasticcreditmoduletypes "github.com/empowerchain/empowerchain/x/plasticcredit/types"
-	proofofexistencemodule "github.com/empowerchain/empowerchain/x/proofofexistence"
+	plasticcreditmodule "github.com/empowerchain/empowerchain/x/plasticcredit/module"
+	proofofexistencemoduletypes "github.com/empowerchain/empowerchain/x/proofofexistence"
 	proofofexistencemodulekeeper "github.com/empowerchain/empowerchain/x/proofofexistence/keeper"
-	proofofexistencemoduletypes "github.com/empowerchain/empowerchain/x/proofofexistence/types"
+	proofofexistencemodule "github.com/empowerchain/empowerchain/x/proofofexistence/module"
 )
 
 const (
@@ -396,8 +396,8 @@ func New(
 	app.PlasticcreditKeeper = *plasticcreditmodulekeeper.NewKeeper(appCodec,
 		keys[plasticcreditmoduletypes.StoreKey],
 		keys[plasticcreditmoduletypes.MemStoreKey],
-		app.GetSubspace(plasticcreditmoduletypes.ModuleName),
 		accesscontrolmodulekeeper.NewSubKeeper(&app.AccessControlKeeper, plasticcreditmoduletypes.ModuleName),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	// Create static IBC router, add transfer route, then set and seal it

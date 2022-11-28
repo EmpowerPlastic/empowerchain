@@ -122,7 +122,9 @@ test:
 	@go test -v ./x/...
 
 smoketest: install
-	./scripts/test/smoke.sh
+	./scripts/test/smoke_gov_proposals.sh
+	./scripts/test/smoke_poe.sh
+	./scripts/test/smoke_plastic_credit.sh
 
 ###############################################################################
 ###                                  Proto                                  ###
