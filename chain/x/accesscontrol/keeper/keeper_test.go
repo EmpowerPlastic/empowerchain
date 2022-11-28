@@ -34,7 +34,8 @@ func (s *TestSuite) TestHasAccess() {
 			ctx := s.ctx
 			addr, _ := sdk.AccAddressFromBech32("empower1euf0uzgegfvyvwy6935pm82er5q3zkj5yytcrx")
 			tcAddr, _ := sdk.AccAddressFromBech32(tc.account)
-			s.k[0].GrantAccess(ctx, addr, "msgType1")
+			err := s.k[0].GrantAccess(ctx, addr, "msgType1")
+			s.Require().NoError(err)
 
 			access := s.k[0].HasAccess(ctx, tcAddr, tc.msgType)
 			s.Require().Equal(tc.expected, access)
@@ -60,7 +61,8 @@ func (s *TestSuite) TestRevokeAccess() {
 			ctx := s.ctx
 			addr, _ := sdk.AccAddressFromBech32("empower1euf0uzgegfvyvwy6935pm82er5q3zkj5yytcrx")
 			tcAddr, _ := sdk.AccAddressFromBech32(tc.account)
-			s.k[0].GrantAccess(ctx, addr, "msgType1")
+			err := s.k[0].GrantAccess(ctx, addr, "msgType1")
+			s.Require().NoError(err)
 			access := s.k[0].HasAccess(ctx, tcAddr, tc.msgType)
 			s.Require().Equal(true, access)
 			s.k[0].RevokeAccess(ctx, tcAddr, tc.msgType)
