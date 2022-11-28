@@ -2,7 +2,7 @@ package keeper_test
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
+	"github.com/empowerchain/empowerchain/x/proofofexistence"
 )
 
 func (s *TestSuite) TestCreateNewProof() {
@@ -18,17 +18,17 @@ func (s *TestSuite) TestCreateNewProof() {
 		},
 		"empty hash": {
 			creator:       s.addrs[0],
-			expectedError: types.ErrInvalidProof,
+			expectedError: proofofexistence.ErrInvalidProof,
 		},
 		"invalid hex hash": {
 			hash:          "invalid",
 			creator:       s.addrs[0],
-			expectedError: types.ErrInvalidProof,
+			expectedError: proofofexistence.ErrInvalidProof,
 		},
 		"invalid hash (hex, but not sha256hex)": {
 			hash:          "4d4f544845524655434b4552",
 			creator:       s.addrs[0],
-			expectedError: types.ErrInvalidProof,
+			expectedError: proofofexistence.ErrInvalidProof,
 		},
 		"duplicate hash": {
 			hash:    "2feca43664769f70935eb2495eb0e7436b0ea0c7ccfddc0d6f029d8a33b09781",
@@ -37,11 +37,11 @@ func (s *TestSuite) TestCreateNewProof() {
 				err := s.empowerApp.ProofofexistenceKeeper.CreateNewProof(s.ctx, "2feca43664769f70935eb2495eb0e7436b0ea0c7ccfddc0d6f029d8a33b09781", s.addrs[0])
 				s.Require().NoError(err)
 			},
-			expectedError: types.ErrHashExists,
+			expectedError: proofofexistence.ErrHashExists,
 		},
 		"missing creator": {
 			hash:          "2feca43664769f70935eb2495eb0e7436b0ea0c7ccfddc0d6f029d8a33b09781",
-			expectedError: types.ErrInvalidCreator,
+			expectedError: proofofexistence.ErrInvalidCreator,
 		},
 	}
 
@@ -79,11 +79,11 @@ func (s *TestSuite) TestGetProof() {
 		},
 		"not found": {
 			hashToGet:     "ffb5ff85bf44c95908f7965d9d379a378ab93bc3e9c14eb99c9980e3c41ae270",
-			expectedError: types.ErrProofNotFound,
+			expectedError: proofofexistence.ErrProofNotFound,
 		},
 		"invalid hash": {
 			hashToGet:     "invalid",
-			expectedError: types.ErrInvalidProof,
+			expectedError: proofofexistence.ErrInvalidProof,
 		},
 	}
 

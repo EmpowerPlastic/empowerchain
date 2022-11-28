@@ -6,13 +6,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/empowerchain/empowerchain/x/plasticcredit/types"
+	"github.com/empowerchain/empowerchain/x/plasticcredit"
 )
 
-func (k Keeper) GetIssuer(ctx sdk.Context, id uint64) (types.Issuer, error) {
+func (k Keeper) GetIssuer(ctx sdk.Context, id uint64) (plasticcredit.Issuer, error) {
 	store := k.getIssuerStore(ctx)
 
-	var issuer types.Issuer
+	var issuer plasticcredit.Issuer
 	key := createKey(id)
 	bz := store.Get(key)
 	err := k.cdc.Unmarshal(bz, &issuer)
@@ -20,15 +20,15 @@ func (k Keeper) GetIssuer(ctx sdk.Context, id uint64) (types.Issuer, error) {
 	return issuer, err
 }
 
-func (k Keeper) getAllIssuers(ctx sdk.Context) ([]types.Issuer, error) {
+func (k Keeper) getAllIssuers(ctx sdk.Context) ([]plasticcredit.Issuer, error) {
 	store := k.getIssuerStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
 	defer iterator.Close()
 
-	var issuers []types.Issuer
+	var issuers []plasticcredit.Issuer
 	for ; iterator.Valid(); iterator.Next() {
-		var issuer types.Issuer
+		var issuer plasticcredit.Issuer
 		if err := k.cdc.Unmarshal(iterator.Value(), &issuer); err != nil {
 			return nil, err
 		}
@@ -46,7 +46,7 @@ func (k Keeper) createIssuer(ctx sdk.Context, name string, description string, a
 
 	nextID := idc.NextIssuerId
 
-	issuer := types.Issuer{
+	issuer := plasticcredit.Issuer{
 		Id:          nextID,
 		Name:        name,
 		Description: description,
@@ -69,7 +69,7 @@ func (k Keeper) createIssuer(ctx sdk.Context, name string, description string, a
 	return nextID, nil
 }
 
-func (k Keeper) setIssuer(ctx sdk.Context, issuer types.Issuer) error {
+func (k Keeper) setIssuer(ctx sdk.Context, issuer plasticcredit.Issuer) error {
 	store := k.getIssuerStore(ctx)
 
 	b, err := k.cdc.Marshal(&issuer)
@@ -85,7 +85,7 @@ func (k Keeper) setIssuer(ctx sdk.Context, issuer types.Issuer) error {
 
 func (k Keeper) getIssuerStore(ctx sdk.Context) storetypes.KVStore {
 	store := ctx.KVStore(k.storeKey)
-	issuerStore := prefix.NewStore(store, types.IssuerKey)
+	issuerStore := prefix.NewStore(store, plasticcredit.IssuerKey)
 
 	return issuerStore
 }

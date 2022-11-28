@@ -6,7 +6,7 @@ import (
 	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/empowerchain/empowerchain/x/plasticcredit/types"
+	"github.com/empowerchain/empowerchain/x/plasticcredit"
 )
 
 type msgServer struct {
@@ -15,13 +15,13 @@ type msgServer struct {
 
 // NewMsgServerImpl returns an implementation of the MsgServer interface
 // for the provided Keeper.
-func NewMsgServerImpl(keeper Keeper) types.MsgServer {
+func NewMsgServerImpl(keeper Keeper) plasticcredit.MsgServer {
 	return &msgServer{Keeper: keeper}
 }
 
-var _ types.MsgServer = msgServer{}
+var _ plasticcredit.MsgServer = msgServer{}
 
-func (m msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
+func (m msgServer) UpdateParams(goCtx context.Context, req *plasticcredit.MsgUpdateParams) (*plasticcredit.MsgUpdateParamsResponse, error) {
 	if m.authority != req.Authority {
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", m.authority, req.Authority)
 	}
@@ -31,10 +31,10 @@ func (m msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParam
 		return nil, err
 	}
 
-	return &types.MsgUpdateParamsResponse{}, nil
+	return &plasticcredit.MsgUpdateParamsResponse{}, nil
 }
 
-func (m msgServer) CreateIssuer(goCtx context.Context, req *types.MsgCreateIssuer) (*types.MsgCreateIssuerResponse, error) {
+func (m msgServer) CreateIssuer(goCtx context.Context, req *plasticcredit.MsgCreateIssuer) (*plasticcredit.MsgCreateIssuerResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	p, err := m.GetParams(ctx)
@@ -56,7 +56,7 @@ func (m msgServer) CreateIssuer(goCtx context.Context, req *types.MsgCreateIssue
 		return nil, err
 	}
 
-	return &types.MsgCreateIssuerResponse{
+	return &plasticcredit.MsgCreateIssuerResponse{
 		IssuerId: id,
 	}, nil
 }

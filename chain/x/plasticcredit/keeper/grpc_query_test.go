@@ -2,8 +2,8 @@ package keeper_test
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/empowerchain/empowerchain/x/plasticcredit"
 	"github.com/empowerchain/empowerchain/x/plasticcredit/keeper"
-	"github.com/empowerchain/empowerchain/x/plasticcredit/types"
 )
 
 func (s *TestSuite) TestParamsQuery() {
@@ -11,15 +11,15 @@ func (s *TestSuite) TestParamsQuery() {
 	ms := keeper.NewMsgServerImpl(k)
 	goCtx := sdk.WrapSDKContext(s.ctx)
 
-	params := types.DefaultParams()
-	_, err := ms.UpdateParams(goCtx, &types.MsgUpdateParams{
+	params := plasticcredit.DefaultParams()
+	_, err := ms.UpdateParams(goCtx, &plasticcredit.MsgUpdateParams{
 		Authority: k.Authority(),
-		Params:    types.Params{},
+		Params:    plasticcredit.Params{},
 	})
 	s.Require().NoError(err)
 
 	querier := keeper.Querier{Keeper: k}
-	response, err := querier.Params(goCtx, &types.QueryParamsRequest{})
+	response, err := querier.Params(goCtx, &plasticcredit.QueryParamsRequest{})
 	s.Require().NoError(err)
-	s.Require().Equal(&types.QueryParamsResponse{Params: params}, response)
+	s.Require().Equal(&plasticcredit.QueryParamsResponse{Params: params}, response)
 }

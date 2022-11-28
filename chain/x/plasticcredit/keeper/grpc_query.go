@@ -4,7 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/empowerchain/empowerchain/x/plasticcredit/types"
+	"github.com/empowerchain/empowerchain/x/plasticcredit"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -13,9 +13,9 @@ type Querier struct {
 	Keeper
 }
 
-var _ types.QueryServer = Querier{}
+var _ plasticcredit.QueryServer = Querier{}
 
-func (k Querier) Params(c context.Context, req *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+func (k Querier) Params(c context.Context, req *plasticcredit.QueryParamsRequest) (*plasticcredit.QueryParamsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -26,5 +26,5 @@ func (k Querier) Params(c context.Context, req *types.QueryParamsRequest) (*type
 		return nil, err
 	}
 
-	return &types.QueryParamsResponse{Params: params}, nil
+	return &plasticcredit.QueryParamsResponse{Params: params}, nil
 }

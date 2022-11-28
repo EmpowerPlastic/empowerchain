@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/empowerchain/empowerchain/x/plasticcredit/types"
+	"github.com/empowerchain/empowerchain/x/plasticcredit"
 	"github.com/spf13/cobra"
 )
 
@@ -17,9 +17,9 @@ func CmdQueryParams() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
-			queryClient := types.NewQueryClient(clientCtx)
+			queryClient := plasticcredit.NewQueryClient(clientCtx)
 
-			res, err := queryClient.Params(context.Background(), &types.QueryParamsRequest{})
+			res, err := queryClient.Params(context.Background(), &plasticcredit.QueryParamsRequest{})
 			if err != nil {
 				return err
 			}
