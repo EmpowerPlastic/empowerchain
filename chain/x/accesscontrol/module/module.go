@@ -1,4 +1,4 @@
-package accesscontrol
+package module
 
 import (
 	"encoding/json"
@@ -15,8 +15,8 @@ import (
 	"github.com/spf13/cobra"
 
 	// "github.com/empowerchain/empowerchain/x/accesscontrol/client/cli"
+	"github.com/empowerchain/empowerchain/x/accesscontrol"
 	"github.com/empowerchain/empowerchain/x/accesscontrol/keeper"
-	"github.com/empowerchain/empowerchain/x/accesscontrol/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
@@ -45,23 +45,23 @@ func NewAppModule(keeper keeper.Keeper) AppModule {
 }
 
 // Name returns the name of the module
-func (AppModuleBasic) Name() string { return types.ModuleName }
+func (AppModuleBasic) Name() string { return accesscontrol.ModuleName }
 
 func (AppModuleBasic) RegisterLegacyAminoCodec(*codec.LegacyAmino) {}
 
 // RegisterInterfaces registers the module's interface types
 func (AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
-	types.RegisterInterfaces(registry)
+	accesscontrol.RegisterInterfaces(registry)
 }
 
 func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	return cdc.MustMarshalJSON(types.DefaultGenesis())
+	return cdc.MustMarshalJSON(accesscontrol.DefaultGenesis())
 }
 
 func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, bz json.RawMessage) error {
-	var data types.GenesisState
+	var data accesscontrol.GenesisState
 	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
-		return sdkerrors.Wrapf(err, "failed to unmarshal %s genesis state", types.ModuleName)
+		return sdkerrors.Wrapf(err, "failed to unmarshal %s genesis state", accesscontrol.ModuleName)
 	}
 
 	return data.Validate()
@@ -87,7 +87,7 @@ func (AppModule) Route() sdk.Route {
 }
 
 // Deprecated: QuerierRoute returns the accesscontrol module's query routing key.
-func (AppModule) QuerierRoute() string { return types.ModuleName }
+func (AppModule) QuerierRoute() string { return accesscontrol.ModuleName }
 
 // Deprecated: LegacyQuerierHandler returns the accesscontrol module's Querier.
 func (am AppModule) LegacyQuerierHandler(*codec.LegacyAmino) sdk.Querier {
@@ -107,7 +107,7 @@ func (AppModule) ConsensusVersion() uint64 {
 // It returns no validator updates.
 func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, gs json.RawMessage) []abci.ValidatorUpdate {
 
-	var genState types.GenesisState
+	var genState accesscontrol.GenesisState
 	// Initialize global index to index in genesis state
 	cdc.MustUnmarshalJSON(gs, &genState)
 	if err := am.keeper.InitGenesis(ctx, genState); err != nil {

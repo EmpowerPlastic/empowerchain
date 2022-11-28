@@ -1,28 +1,28 @@
 package keeper_test
 
 import (
-	"github.com/empowerchain/empowerchain/x/accesscontrol/types"
+	"github.com/empowerchain/empowerchain/x/accesscontrol"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func (s *TestSuite) TestGenesis() {
 	testCases := map[string]struct {
-		genesis  types.GenesisState
+		genesis  accesscontrol.GenesisState
 		expErr   bool
 		expPanic bool
 	}{
 		"default genesis": {
-			genesis:  *types.DefaultGenesis(),
+			genesis:  *accesscontrol.DefaultGenesis(),
 			expErr:   false,
 			expPanic: false,
 		},
 		"proper genesis": {
-			genesis: types.GenesisState{
-				PermStores: []types.ModulePermStore{
+			genesis: accesscontrol.GenesisState{
+				PermStores: []accesscontrol.ModulePermStore{
 					{
 						ModuleName: "mockmodule1",
-						Accesses: []types.Access{
+						Accesses: []accesscontrol.Access{
 							{
 								Address: "empower1euf0uzgegfvyvwy6935pm82er5q3zkj5yytcrx",
 								MsgType: "msgType11",
@@ -39,7 +39,7 @@ func (s *TestSuite) TestGenesis() {
 					},
 					{
 						ModuleName: "mockmodule2",
-						Accesses: []types.Access{
+						Accesses: []accesscontrol.Access{
 							{
 								Address: "empower1euf0uzgegfvyvwy6935pm82er5q3zkj5yytcrx",
 								MsgType: "msgType21",
@@ -56,11 +56,11 @@ func (s *TestSuite) TestGenesis() {
 			expPanic: false,
 		},
 		"wrong address": {
-			genesis: types.GenesisState{
-				PermStores: []types.ModulePermStore{
+			genesis: accesscontrol.GenesisState{
+				PermStores: []accesscontrol.ModulePermStore{
 					{
 						ModuleName: "mockmodule1",
-						Accesses: []types.Access{
+						Accesses: []accesscontrol.Access{
 							{
 								Address: "empower1euf0uzgegfvyvwy6935pm82er5q3zkj5yytcry",
 								MsgType: "msgType11",
@@ -73,11 +73,11 @@ func (s *TestSuite) TestGenesis() {
 			expPanic: false,
 		},
 		"module store not registered": {
-			genesis: types.GenesisState{
-				PermStores: []types.ModulePermStore{
+			genesis: accesscontrol.GenesisState{
+				PermStores: []accesscontrol.ModulePermStore{
 					{
 						ModuleName: "mockmodule3",
-						Accesses: []types.Access{
+						Accesses: []accesscontrol.Access{
 							{
 								Address: "empower1euf0uzgegfvyvwy6935pm82er5q3zkj5yytcrx",
 								MsgType: "msgType11",
@@ -114,7 +114,7 @@ func (s *TestSuite) TestGenesis() {
 				var storeFound bool
 				for _, givenStore := range export.PermStores {
 					if expectedStore.ModuleName == givenStore.ModuleName {
-						comparator := func(a, b types.Access) bool { return a.Address < b.Address || a.MsgType < b.MsgType }
+						comparator := func(a, b accesscontrol.Access) bool { return a.Address < b.Address || a.MsgType < b.MsgType }
 						s.Require().True(cmp.Diff(expectedStore.Accesses, givenStore.Accesses, cmpopts.SortSlices(comparator)) == "")
 						storeFound = true
 					}

@@ -103,9 +103,10 @@ import (
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 
-	accesscontrolmodule "github.com/empowerchain/empowerchain/x/accesscontrol"
+	"github.com/empowerchain/empowerchain/x/accesscontrol"
+	accesscontrolmoduletypes "github.com/empowerchain/empowerchain/x/accesscontrol"
 	accesscontrolmodulekeeper "github.com/empowerchain/empowerchain/x/accesscontrol/keeper"
-	accesscontrolmoduletypes "github.com/empowerchain/empowerchain/x/accesscontrol/types"
+	accesscontrolmodule "github.com/empowerchain/empowerchain/x/accesscontrol/module"
 	plasticcreditmodule "github.com/empowerchain/empowerchain/x/plasticcredit"
 	plasticcreditmodulekeeper "github.com/empowerchain/empowerchain/x/plasticcredit/keeper"
 	plasticcreditmoduletypes "github.com/empowerchain/empowerchain/x/plasticcredit/types"
@@ -270,7 +271,7 @@ func New(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		proofofexistencemoduletypes.StoreKey, plasticcreditmoduletypes.StoreKey, accesscontrolmoduletypes.StoreKey,
+		proofofexistencemoduletypes.StoreKey, plasticcreditmoduletypes.StoreKey, accesscontrol.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)

@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/empowerchain/empowerchain/x/accesscontrol/types"
+	"github.com/empowerchain/empowerchain/x/accesscontrol"
 	"github.com/tendermint/tendermint/libs/log"
 )
 
@@ -34,21 +34,21 @@ func NewKeeper(
 }
 
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
-	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
+	return ctx.Logger().With("module", fmt.Sprintf("x/%s", accesscontrol.ModuleName))
 }
 
 func (k Keeper) hasAccess(ctx sdk.Context, subKey string, account sdk.AccAddress, msgType string) bool {
 	store := k.kvStore(ctx, subKey)
-	key := types.PermissionStoreKey(account, msgType)
+	key := accesscontrol.PermissionStoreKey(account, msgType)
 
 	return store.Has(key)
 }
 
 func (k Keeper) grantAccess(ctx sdk.Context, subKey string, account sdk.AccAddress, msgType string) error {
 	store := k.kvStore(ctx, subKey)
-	key := types.PermissionStoreKey(account, msgType)
+	key := accesscontrol.PermissionStoreKey(account, msgType)
 
-	b, err := k.cdc.Marshal(&types.Permission{})
+	b, err := k.cdc.Marshal(&accesscontrol.Permission{})
 	if err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func (k Keeper) grantAccess(ctx sdk.Context, subKey string, account sdk.AccAddre
 
 func (k Keeper) revokeAccess(ctx sdk.Context, subKey string, account sdk.AccAddress, msgType string) {
 	store := k.kvStore(ctx, subKey)
-	key := types.PermissionStoreKey(account, msgType)
+	key := accesscontrol.PermissionStoreKey(account, msgType)
 
 	store.Delete(key)
 }
@@ -70,7 +70,7 @@ func (k Keeper) iteratePermissions(ctx sdk.Context, subKey string,
 	iter := k.permissionIterator(ctx, subKey)
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		account, msgType, err := types.ParsePermissionStoreKey(iter.Key())
+		account, msgType, err := accesscontrol.ParsePermissionStoreKey(iter.Key())
 		if err != nil {
 			panic("Cannot parse permission store key")
 		}
