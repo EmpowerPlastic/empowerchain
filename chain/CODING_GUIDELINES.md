@@ -1,5 +1,9 @@
 # Coding Guidelines
 
+## Module structure
+
+We try to follow the structure outline in the Cosmos SDK docs: https://docs.cosmos.network/main/building-modules/structure
+
 ## Keeper structure
 
 To keep a clean separation of concerns in our modules, we construct our keeper this way:

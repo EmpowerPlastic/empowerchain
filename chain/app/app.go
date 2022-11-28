@@ -103,12 +103,12 @@ import (
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 
-	plasticcreditmodule "github.com/empowerchain/empowerchain/x/plasticcredit"
+	plasticcreditmoduletypes "github.com/empowerchain/empowerchain/x/plasticcredit"
 	plasticcreditmodulekeeper "github.com/empowerchain/empowerchain/x/plasticcredit/keeper"
-	plasticcreditmoduletypes "github.com/empowerchain/empowerchain/x/plasticcredit/types"
-	proofofexistencemodule "github.com/empowerchain/empowerchain/x/proofofexistence"
+	plasticcreditmodule "github.com/empowerchain/empowerchain/x/plasticcredit/module"
+	proofofexistencemoduletypes "github.com/empowerchain/empowerchain/x/proofofexistence"
 	proofofexistencemodulekeeper "github.com/empowerchain/empowerchain/x/proofofexistence/keeper"
-	proofofexistencemoduletypes "github.com/empowerchain/empowerchain/x/proofofexistence/types"
+	proofofexistencemodule "github.com/empowerchain/empowerchain/x/proofofexistence/module"
 )
 
 const (

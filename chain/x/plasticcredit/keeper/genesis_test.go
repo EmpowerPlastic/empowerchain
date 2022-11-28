@@ -2,21 +2,21 @@ package keeper_test
 
 import (
 	"github.com/empowerchain/empowerchain/testutil/sample"
-	"github.com/empowerchain/empowerchain/x/plasticcredit/types"
+	"github.com/empowerchain/empowerchain/x/plasticcredit"
 )
 
 func (s *TestSuite) TestGenesis() {
-	genesisState := types.GenesisState{
-		Params: types.Params{
+	genesisState := plasticcredit.GenesisState{
+		Params: plasticcredit.Params{
 			IssuerCreator: sample.AccAddress(),
 		},
-		IdCounters: types.IDCounters{
+		IdCounters: plasticcredit.IDCounters{
 			NextIssuerId:      3,
 			NextCollectorId:   1,
 			NextProjectId:     1,
 			NextCreditClassId: 1,
 		},
-		Issuers: []types.Issuer{
+		Issuers: []plasticcredit.Issuer{
 			{
 				Id:          1,
 				Name:        "Empower",

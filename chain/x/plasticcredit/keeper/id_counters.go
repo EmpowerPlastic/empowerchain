@@ -2,22 +2,22 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/empowerchain/empowerchain/x/plasticcredit/types"
+	"github.com/empowerchain/empowerchain/x/plasticcredit"
 )
 
-func (k Keeper) GetIDCounters(ctx sdk.Context) (types.IDCounters, error) {
+func (k Keeper) GetIDCounters(ctx sdk.Context) (plasticcredit.IDCounters, error) {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.IDCountersKey)
+	bz := store.Get(plasticcredit.IDCountersKey)
 	if bz == nil {
-		return types.IDCounters{}, nil
+		return plasticcredit.IDCounters{}, nil
 	}
 
-	var idc types.IDCounters
+	var idc plasticcredit.IDCounters
 	err := k.cdc.Unmarshal(bz, &idc)
 	return idc, err
 }
 
-func (k Keeper) setIDCounters(ctx sdk.Context, idc types.IDCounters) error {
+func (k Keeper) setIDCounters(ctx sdk.Context, idc plasticcredit.IDCounters) error {
 	if err := idc.Validate(); err != nil {
 		return err
 	}
@@ -27,7 +27,7 @@ func (k Keeper) setIDCounters(ctx sdk.Context, idc types.IDCounters) error {
 	if err != nil {
 		return err
 	}
-	store.Set(types.IDCountersKey, bz)
+	store.Set(plasticcredit.IDCountersKey, bz)
 
 	return nil
 }

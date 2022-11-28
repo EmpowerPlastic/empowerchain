@@ -4,7 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
+	"github.com/empowerchain/empowerchain/x/proofofexistence"
 	"github.com/spf13/cobra"
 )
 
@@ -21,7 +21,7 @@ func MsgCreateProof() *cobra.Command {
 				return err
 			}
 
-			msg := types.MsgCreateProof{
+			msg := proofofexistence.MsgCreateProof{
 				Hash:    argHash,
 				Creator: clientCtx.GetFromAddress().String(),
 			}

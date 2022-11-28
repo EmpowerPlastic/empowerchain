@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
+	"github.com/empowerchain/empowerchain/x/proofofexistence"
 	"github.com/spf13/cobra"
 )
 
@@ -17,11 +17,11 @@ func QueryProofCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
-			queryClient := types.NewQueryClient(clientCtx)
+			queryClient := proofofexistence.NewQueryClient(clientCtx)
 
 			argHash := args[0]
 
-			params := &types.QueryProofRequest{
+			params := &proofofexistence.QueryProofRequest{
 				Hash: argHash,
 			}
 

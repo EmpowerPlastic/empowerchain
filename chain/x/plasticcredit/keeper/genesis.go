@@ -2,10 +2,10 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/empowerchain/empowerchain/x/plasticcredit/types"
+	"github.com/empowerchain/empowerchain/x/plasticcredit"
 )
 
-func (k Keeper) InitGenesis(ctx sdk.Context, genState types.GenesisState) error {
+func (k Keeper) InitGenesis(ctx sdk.Context, genState plasticcredit.GenesisState) error {
 	if err := k.setParams(ctx, genState.Params); err != nil {
 		return err
 	}
@@ -23,8 +23,8 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState types.GenesisState) error 
 	return nil
 }
 
-func (k Keeper) ExportGenesis(ctx sdk.Context) (*types.GenesisState, error) {
-	genesis := types.DefaultGenesis()
+func (k Keeper) ExportGenesis(ctx sdk.Context) (*plasticcredit.GenesisState, error) {
+	genesis := plasticcredit.DefaultGenesis()
 	var err error
 	genesis.Params, err = k.GetParams(ctx)
 	if err != nil {

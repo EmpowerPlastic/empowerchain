@@ -5,20 +5,20 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/empowerchain/empowerchain/app"
 	"github.com/empowerchain/empowerchain/testutil/sample"
+	"github.com/empowerchain/empowerchain/x/plasticcredit"
 	"github.com/empowerchain/empowerchain/x/plasticcredit/keeper"
-	"github.com/empowerchain/empowerchain/x/plasticcredit/types"
 )
 
 func (s *TestSuite) TestUpdateParams() {
 	testCases := map[string]struct {
-		msg func(*app.EmpowerApp) *types.MsgUpdateParams
+		msg func(*app.EmpowerApp) *plasticcredit.MsgUpdateParams
 		err error
 	}{
 		"happy path": {
-			msg: func(empowerApp *app.EmpowerApp) *types.MsgUpdateParams {
-				return &types.MsgUpdateParams{
+			msg: func(empowerApp *app.EmpowerApp) *plasticcredit.MsgUpdateParams {
+				return &plasticcredit.MsgUpdateParams{
 					Authority: empowerApp.PlasticcreditKeeper.Authority(),
-					Params: types.Params{
+					Params: plasticcredit.Params{
 						IssuerCreator: sample.AccAddress(),
 					},
 				}
@@ -26,24 +26,24 @@ func (s *TestSuite) TestUpdateParams() {
 			err: nil,
 		},
 		"unauthorized caller": {
-			msg: func(empowerApp *app.EmpowerApp) *types.MsgUpdateParams {
-				return &types.MsgUpdateParams{
+			msg: func(empowerApp *app.EmpowerApp) *plasticcredit.MsgUpdateParams {
+				return &plasticcredit.MsgUpdateParams{
 					Authority: s.addrs[0].String(), // Just a random address, should not have access!
-					Params:    types.Params{},
+					Params:    plasticcredit.Params{},
 				}
 			},
 			err: govtypes.ErrInvalidSigner,
 		},
 		"invalid params": {
-			msg: func(empowerApp *app.EmpowerApp) *types.MsgUpdateParams {
-				return &types.MsgUpdateParams{
+			msg: func(empowerApp *app.EmpowerApp) *plasticcredit.MsgUpdateParams {
+				return &plasticcredit.MsgUpdateParams{
 					Authority: empowerApp.PlasticcreditKeeper.Authority(),
-					Params: types.Params{
+					Params: plasticcredit.Params{
 						IssuerCreator: "invalid",
 					},
 				}
 			},
-			err: types.ErrInvalidParams,
+			err: plasticcredit.ErrInvalidParams,
 		},
 	}
 
@@ -77,7 +77,7 @@ func (s *TestSuite) TestCreateIssuerWithGov() {
 
 	govAcc := s.empowerApp.AccountKeeper.GetModuleAccount(s.ctx, govtypes.ModuleName)
 
-	resp, err := ms.CreateIssuer(goCtx, &types.MsgCreateIssuer{
+	resp, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     govAcc.GetAddress().String(),
 		Name:        "Empower",
 		Description: "Empower is cool",
@@ -91,11 +91,11 @@ func (s *TestSuite) TestCreateIssuer() {
 	issuerCreator := sample.AccAddress()
 
 	testCases := map[string]struct {
-		msg *types.MsgCreateIssuer
+		msg *plasticcredit.MsgCreateIssuer
 		err error
 	}{
 		"happy path": {
-			msg: &types.MsgCreateIssuer{
+			msg: &plasticcredit.MsgCreateIssuer{
 				Creator:     issuerCreator,
 				Name:        "Empower",
 				Description: "Empower is cool",
@@ -104,7 +104,7 @@ func (s *TestSuite) TestCreateIssuer() {
 			err: nil,
 		},
 		"unauthorized caller": {
-			msg: &types.MsgCreateIssuer{
+			msg: &plasticcredit.MsgCreateIssuer{
 				Creator:     sample.AccAddress(), // not allowed!
 				Name:        "Empower",
 				Description: "Empower is cool",
@@ -121,9 +121,9 @@ func (s *TestSuite) TestCreateIssuer() {
 			k := s.empowerApp.PlasticcreditKeeper
 			goCtx := sdk.WrapSDKContext(s.ctx)
 			ms := keeper.NewMsgServerImpl(k)
-			_, err := ms.UpdateParams(goCtx, &types.MsgUpdateParams{
+			_, err := ms.UpdateParams(goCtx, &plasticcredit.MsgUpdateParams{
 				Authority: k.Authority(),
-				Params: types.Params{
+				Params: plasticcredit.Params{
 					IssuerCreator: issuerCreator,
 				},
 			})
@@ -141,7 +141,7 @@ func (s *TestSuite) TestCreateIssuer() {
 
 				issuer, err := k.GetIssuer(s.ctx, resp.IssuerId)
 				s.Require().NoError(err)
-				s.Require().Equal(types.Issuer{
+				s.Require().Equal(plasticcredit.Issuer{
 					Id:          resp.IssuerId,
 					Name:        tc.msg.Name,
 					Description: tc.msg.Description,
