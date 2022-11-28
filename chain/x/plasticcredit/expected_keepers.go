@@ -16,3 +16,9 @@ type BankKeeper interface {
 	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	// Methods imported from bank should be defined here
 }
+
+type AccessControlKeeper interface {
+	HasAccess(ctx sdk.Context, account sdk.AccAddress, msgType string) bool
+	GrantAccess(ctx sdk.Context, account sdk.AccAddress, msgType string) error
+	RevokeAccess(ctx sdk.Context, account sdk.AccAddress, msgType string)
+}

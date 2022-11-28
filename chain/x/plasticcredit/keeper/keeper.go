@@ -12,9 +12,10 @@ import (
 
 type (
 	Keeper struct {
-		cdc      codec.BinaryCodec
-		storeKey storetypes.StoreKey
-		memKey   storetypes.StoreKey
+		cdc                 codec.BinaryCodec
+		storeKey            storetypes.StoreKey
+		memKey              storetypes.StoreKey
+		accessControlKeeper plasticcredit.AccessControlKeeper
 
 		// the address capable of executing a MsgUpdateParams message. Typically, this
 		// should be the x/gov module account.
@@ -26,13 +27,15 @@ func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey,
 	memKey storetypes.StoreKey,
+	accessControlKeeper plasticcredit.AccessControlKeeper,
 	authority string,
 ) *Keeper {
 	return &Keeper{
-		cdc:       cdc,
-		storeKey:  storeKey,
-		memKey:    memKey,
-		authority: authority,
+		cdc:                 cdc,
+		storeKey:            storeKey,
+		memKey:              memKey,
+		authority:           authority,
+		accessControlKeeper: accessControlKeeper,
 	}
 }
 
