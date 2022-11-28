@@ -11,8 +11,6 @@ type IAccessControlSubKeeper interface {
 type SubKeeper struct {
 	*Keeper
 	subKey string
-	kaddr  string
-	skaddr string
 }
 
 func NewSubKeeper(keeper *Keeper, subKey string) IAccessControlSubKeeper {
@@ -20,8 +18,6 @@ func NewSubKeeper(keeper *Keeper, subKey string) IAccessControlSubKeeper {
 		Keeper: keeper,
 		subKey: subKey,
 	}
-	sk.kaddr = keeper.storeKey.String()
-	sk.skaddr = sk.storeKey.String()
 	sk.initSubStore()
 	return sk
 }

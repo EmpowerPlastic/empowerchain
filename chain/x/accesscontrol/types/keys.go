@@ -13,6 +13,7 @@ const (
 	ModuleName = "accesscontrol"
 
 	// Workaround for key collision
+	// SDK modules use store with prefix "acc"
 	StoreKey = "x" + ModuleName
 )
 

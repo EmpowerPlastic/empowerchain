@@ -23,7 +23,7 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) (*types.GenesisState, error) {
 
 	for name, _ := range k.subKeys {
 		var accesses []types.Access
-		k.IteratePermissions(ctx, name, func(account sdk.AccAddress, msgType string) bool {
+		k.iteratePermissions(ctx, name, func(account sdk.AccAddress, msgType string) bool {
 			accesses = append(accesses, types.Access{
 				Address: account.String(),
 				MsgType: msgType,

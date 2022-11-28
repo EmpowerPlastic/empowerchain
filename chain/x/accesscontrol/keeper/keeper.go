@@ -64,7 +64,7 @@ func (k Keeper) revokeAccess(ctx sdk.Context, subKey string, account sdk.AccAddr
 }
 
 // Should be used only for genesis export!
-func (k Keeper) IteratePermissions(ctx sdk.Context, subKey string,
+func (k Keeper) iteratePermissions(ctx sdk.Context, subKey string,
 	handler func(address sdk.AccAddress, msgType string) bool,
 ) {
 	iter := k.permissionIterator(ctx, subKey)
