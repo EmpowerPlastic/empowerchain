@@ -104,7 +104,6 @@ import (
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 
 	"github.com/empowerchain/empowerchain/x/accesscontrol"
-	accesscontrolmoduletypes "github.com/empowerchain/empowerchain/x/accesscontrol"
 	accesscontrolmodulekeeper "github.com/empowerchain/empowerchain/x/accesscontrol/keeper"
 	accesscontrolmodule "github.com/empowerchain/empowerchain/x/accesscontrol/module"
 	plasticcreditmodule "github.com/empowerchain/empowerchain/x/plasticcredit"
@@ -292,7 +291,7 @@ func New(
 	// set the BaseApp's parameter store
 	bApp.SetParamStore(app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable()))
 
-	app.AccessControlKeeper = *accesscontrolmodulekeeper.NewKeeper(appCodec, keys[accesscontrolmoduletypes.StoreKey])
+	app.AccessControlKeeper = *accesscontrolmodulekeeper.NewKeeper(appCodec, keys[accesscontrol.StoreKey])
 
 	// add capability keeper and ScopeToModule for ibc module
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(appCodec, keys[capabilitytypes.StoreKey], memKeys[capabilitytypes.MemStoreKey])
@@ -467,7 +466,7 @@ func New(
 		paramstypes.ModuleName,
 		proofofexistencemoduletypes.ModuleName,
 		plasticcreditmoduletypes.ModuleName,
-		accesscontrolmoduletypes.ModuleName,
+		accesscontrol.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -491,7 +490,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		proofofexistencemoduletypes.ModuleName,
 		plasticcreditmoduletypes.ModuleName,
-		accesscontrolmoduletypes.ModuleName,
+		accesscontrol.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -520,7 +519,7 @@ func New(
 		feegrant.ModuleName,
 		proofofexistencemoduletypes.ModuleName,
 		plasticcreditmoduletypes.ModuleName,
-		accesscontrolmoduletypes.ModuleName,
+		accesscontrol.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)

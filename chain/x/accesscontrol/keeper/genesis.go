@@ -12,7 +12,10 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState accesscontrol.GenesisState
 			panic("store not found for module " + ps.ModuleName)
 		}
 		for _, access := range ps.Accesses {
-			k.grantAccess(ctx, ps.ModuleName, sdk.AccAddress(access.Address), access.MsgType)
+			err := k.grantAccess(ctx, ps.ModuleName, sdk.AccAddress(access.Address), access.MsgType)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -21,7 +24,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState accesscontrol.GenesisState
 func (k Keeper) ExportGenesis(ctx sdk.Context) (*accesscontrol.GenesisState, error) {
 	genesis := accesscontrol.DefaultGenesis()
 
-	for name, _ := range k.subKeys {
+	for name := range k.subKeys {
 		var accesses []accesscontrol.Access
 		k.iteratePermissions(ctx, name, func(account sdk.AccAddress, msgType string) bool {
 			accesses = append(accesses, accesscontrol.Access{
@@ -34,7 +37,6 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) (*accesscontrol.GenesisState, err
 			ModuleName: name,
 			Accesses:   accesses,
 		})
-
 	}
 
 	return genesis, nil

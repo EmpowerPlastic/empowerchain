@@ -17,9 +17,7 @@ const (
 	StoreKey = "x" + ModuleName
 )
 
-var (
-	PermissionKey = []byte{0x01}
-)
+var PermissionKey = []byte{0x01}
 
 func PermissionStoreKey(account sdk.AccAddress, msgType string) []byte {
 	m := []byte(msgType)

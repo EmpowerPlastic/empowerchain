@@ -22,11 +22,8 @@ type (
 func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey storetypes.StoreKey,
-
 ) *Keeper {
-
 	return &Keeper{
-
 		cdc:      cdc,
 		storeKey: storeKey,
 		subKeys:  make(map[string][]byte),
