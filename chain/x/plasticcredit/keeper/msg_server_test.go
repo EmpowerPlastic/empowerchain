@@ -139,8 +139,8 @@ func (s *TestSuite) TestCreateIssuer() {
 				s.Require().NoError(err)
 				s.Require().Equal(uint64(2), idCounters.NextIssuerId)
 
-				issuer, err := k.GetIssuer(s.ctx, resp.IssuerId)
-				s.Require().NoError(err)
+				issuer, found := k.GetIssuer(s.ctx, resp.IssuerId)
+				s.Require().True(found)
 				s.Require().Equal(plasticcredit.Issuer{
 					Id:          resp.IssuerId,
 					Name:        tc.msg.Name,
