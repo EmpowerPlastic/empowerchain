@@ -17,8 +17,10 @@ if pgrep -x "$BINARY" >/dev/null; then
     pkill $BINARY
 fi
 
-echo "Removing previous data..."
-rm -rf $CHAIN_DIR &> /dev/null
+if [ -d $CHAIN_DIR ]; then
+  echo "Removing previous data..."
+  rm -rf $CHAIN_DIR &> /dev/null
+fi
 
 # Add directories for chain(s), exit if an error occurs
 if ! mkdir -p $CHAIN_DIR 2>/dev/null; then
