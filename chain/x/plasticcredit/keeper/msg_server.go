@@ -42,13 +42,13 @@ func (m msgServer) CreateIssuer(goCtx context.Context, req *plasticcredit.MsgCre
 		return nil, err
 	}
 
-	issuerCreator := p.IssuerCreator
-	if issuerCreator == "" {
-		issuerCreator = m.authority
+	authorizedIssuerCreator := p.IssuerCreator
+	if authorizedIssuerCreator == "" {
+		authorizedIssuerCreator = m.authority
 	}
 
-	if issuerCreator != req.Creator {
-		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid issue creator; expected %s, got %s", issuerCreator, req.Creator)
+	if authorizedIssuerCreator != req.Creator {
+		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid issue creator; expected %s, got %s", authorizedIssuerCreator, req.Creator)
 	}
 
 	id, err := m.createIssuer(ctx, req.Name, req.Description, req.Admin)

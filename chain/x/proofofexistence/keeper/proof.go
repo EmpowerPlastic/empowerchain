@@ -1,18 +1,17 @@
 package keeper
 
 import (
+	"cosmossdk.io/errors"
 	"encoding/hex"
-
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/empowerchain/empowerchain/x/proofofexistence"
 )
 
 // CreateNewProof create a new proof from its hash
 func (k Keeper) CreateNewProof(ctx sdk.Context, sha256hex string, creator sdk.AccAddress) error {
 	if sha256hex == "" {
-		return sdkerrors.Wrap(proofofexistence.ErrInvalidProof, "sha256hex cannot be empty")
+		return errors.Wrap(proofofexistence.ErrInvalidProof, "sha256hex cannot be empty")
 	}
 
 	if sdk.VerifyAddressFormat(creator) != nil {
@@ -26,16 +25,16 @@ func (k Keeper) CreateNewProof(ctx sdk.Context, sha256hex string, creator sdk.Ac
 
 	hash, err := hex.DecodeString(sha256hex)
 	if err != nil {
-		return sdkerrors.Wrapf(proofofexistence.ErrInvalidProof, "sha256hex is %s not hex", sha256hex)
+		return errors.Wrapf(proofofexistence.ErrInvalidProof, "sha256hex is %s not hex", sha256hex)
 	}
 
 	if len(hash) != 32 {
-		return sdkerrors.Wrapf(proofofexistence.ErrInvalidProof, "sha256hex %s is not SHA-256", sha256hex)
+		return errors.Wrapf(proofofexistence.ErrInvalidProof, "sha256hex %s is not SHA-256", sha256hex)
 	}
 
 	store := k.getProofStore(ctx)
 	if store.Has(hash) {
-		return sdkerrors.Wrap(proofofexistence.ErrHashExists, sha256hex)
+		return errors.Wrap(proofofexistence.ErrHashExists, sha256hex)
 	}
 
 	return k.setProof(ctx, hash, proofMetadata)
@@ -78,12 +77,12 @@ func (k Keeper) GetProof(ctx sdk.Context, sha256hex string) (proofofexistence.Pr
 
 	hash, err := hex.DecodeString(sha256hex)
 	if err != nil {
-		return proofofexistence.ProofMetadata{}, sdkerrors.Wrapf(proofofexistence.ErrInvalidProof, "sha256hex is %s not hex", sha256hex)
+		return proofofexistence.ProofMetadata{}, errors.Wrapf(proofofexistence.ErrInvalidProof, "sha256hex is %s not hex", sha256hex)
 	}
 
 	bz := store.Get(hash)
 	if bz == nil {
-		return proofofexistence.ProofMetadata{}, sdkerrors.Wrap(proofofexistence.ErrProofNotFound, sha256hex)
+		return proofofexistence.ProofMetadata{}, errors.Wrap(proofofexistence.ErrProofNotFound, sha256hex)
 	}
 
 	var md proofofexistence.ProofMetadata

@@ -1,6 +1,7 @@
 package proofofexistence
 
 import (
+	"cosmossdk.io/errors"
 	"encoding/hex"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -33,12 +34,12 @@ func (m *MsgCreateProof) GetSignBytes() []byte {
 func (m *MsgCreateProof) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Creator)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
 
 	_, err = hex.DecodeString(m.Hash)
 	if err != nil {
-		return sdkerrors.Wrapf(ErrInvalidProof, "Hash %s is not hex encoded", m.Hash)
+		return errors.Wrapf(ErrInvalidProof, "Hash %s is not hex encoded", m.Hash)
 	}
 
 	return nil

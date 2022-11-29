@@ -1,7 +1,11 @@
 package cli
 
 import (
+	"context"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"strconv"
+
 	// "strings"
 
 	"github.com/spf13/cobra"
@@ -25,6 +29,91 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	}
 
 	cmd.AddCommand(CmdQueryParams())
+	cmd.AddCommand(CmdQueryIssuer())
+	cmd.AddCommand(CmdQueryIssuers())
+
+	return cmd
+}
+
+func CmdQueryParams() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "params",
+		Short: "shows the parameters of the module",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+
+			queryClient := plasticcredit.NewQueryClient(clientCtx)
+
+			res, err := queryClient.Params(context.Background(), &plasticcredit.QueryParamsRequest{})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdQueryIssuer() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "issuer [issuer-id]",
+		Short: "query for an issuer by its issuer id",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+			queryClient := plasticcredit.NewQueryClient(clientCtx)
+
+			issuerId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			res, err := queryClient.Issuer(context.Background(), &plasticcredit.QueryIssuerRequest{
+				IssuerId: issuerId,
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdQueryIssuers() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "issuers",
+		Short: "query all issuers",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+			queryClient := plasticcredit.NewQueryClient(clientCtx)
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := queryClient.Issuers(context.Background(), &plasticcredit.QueryIssuersRequest{
+				Pagination: pageReq,
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }

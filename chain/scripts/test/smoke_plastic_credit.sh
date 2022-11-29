@@ -17,6 +17,14 @@ if [ "$GOV_RESULT" != "PROPOSAL_STATUS_PASSED" ]; then
   exit 1
 fi
 
+empowerd q plasticcredit issuer 1
+empowerd q plasticcredit issuers
+NUM_ISSUERS=$(empowerd q plasticcredit issuers -o json | jq ".issuers | length")
+if [ "$NUM_ISSUERS" != "1" ]; then
+  echo "Error: number of issuers from issuers query was: $NUM_ISSUERS"
+  exit 1
+fi
+
 echo "Tests completed successfully!"
 
 make kill
