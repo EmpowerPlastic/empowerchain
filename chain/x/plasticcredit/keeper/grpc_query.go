@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"cosmossdk.io/errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/empowerchain/empowerchain/x/plasticcredit"
@@ -52,9 +53,9 @@ func (k Querier) Issuer(goCtx context.Context, req *plasticcredit.QueryIssuerReq
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	issuer, err := k.GetIssuer(ctx, req.IssuerId)
-	if err != nil {
-		return nil, err
+	issuer, found := k.GetIssuer(ctx, req.IssuerId)
+	if !found {
+		return nil, errors.Wrapf(plasticcredit.ErrIssuerNotFound, "issuer with id: %d was not found", req.IssuerId)
 	}
 
 	return &plasticcredit.QueryIssuerResponse{

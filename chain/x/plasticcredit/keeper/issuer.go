@@ -3,7 +3,6 @@ package keeper
 import (
 	"encoding/binary"
 
-	"cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -12,19 +11,18 @@ import (
 	"github.com/empowerchain/empowerchain/x/plasticcredit"
 )
 
-func (k Keeper) GetIssuer(ctx sdk.Context, id uint64) (plasticcredit.Issuer, error) {
+func (k Keeper) GetIssuer(ctx sdk.Context, id uint64) (issuer plasticcredit.Issuer, found bool) {
 	store := k.getIssuerStore(ctx)
 
-	var issuer plasticcredit.Issuer
 	key := createKey(id)
 	bz := store.Get(key)
 	if len(bz) == 0 {
-		return issuer, errors.Wrapf(plasticcredit.ErrIssuerNotFound, "issuer with id: %d was not found", id)
+		return issuer, false
 	}
 
-	err := k.cdc.Unmarshal(bz, &issuer)
+	k.cdc.MustUnmarshal(bz, &issuer)
 
-	return issuer, err
+	return issuer, true
 }
 
 func (k Keeper) GetIssuers(ctx sdk.Context, pageReq *query.PageRequest) ([]*plasticcredit.Issuer, *query.PageResponse, error) {
