@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	errors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/empowerchain/empowerchain/testutil/sample"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto"
@@ -32,7 +32,7 @@ func TestMsgCreateProof_ValidateBasic(t *testing.T) {
 				Creator: "invalid_address",
 				Hash:    sha256hex,
 			},
-			err: sdkerrors.ErrInvalidAddress,
+			err: errors.ErrInvalidAddress,
 		},
 		"invalid hex": {
 			msg: MsgCreateProof{

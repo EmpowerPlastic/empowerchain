@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	errors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/empowerchain/empowerchain/testutil/sample"
 	"github.com/stretchr/testify/require"
 )
@@ -32,7 +32,7 @@ func TestMsgUpdateParamsValidateBasic(t *testing.T) {
 					IssuerCreator: sample.AccAddress(),
 				},
 			},
-			expectedError: sdkerrors.ErrInvalidAddress,
+			expectedError: errors.ErrInvalidAddress,
 		},
 		"invalid params": {
 			msgUnderTest: &MsgUpdateParams{
@@ -72,7 +72,7 @@ func TestMsgCreateIssuerValidateBasic(t *testing.T) {
 				Description: "Empower is the first and coolest plastic credit issuer!",
 				Admin:       sample.AccAddress(),
 			},
-			expectedError: sdkerrors.ErrInvalidAddress,
+			expectedError: errors.ErrInvalidAddress,
 		},
 		"invalid admin": {
 			msgUnderTest: &MsgCreateIssuer{
@@ -81,7 +81,7 @@ func TestMsgCreateIssuerValidateBasic(t *testing.T) {
 				Description: "Empower is the first and coolest plastic credit issuer!",
 				Admin:       "invalid",
 			},
-			expectedError: sdkerrors.ErrInvalidAddress,
+			expectedError: errors.ErrInvalidAddress,
 		},
 		"empty name - not allowed": {
 			msgUnderTest: &MsgCreateIssuer{

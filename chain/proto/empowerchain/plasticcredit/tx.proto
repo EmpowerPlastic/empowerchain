@@ -45,3 +45,18 @@ message MsgCreateIssuer {
 message MsgCreateIssuerResponse {
   uint64 issuer_id = 1;
 }
+
+message MsgIssueCredits {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  uint64 project_id = 2;
+  string denom_suffix = 3;
+  CreditAmount credit_amount = 4;
+  repeated ProvenData credit_data = 5;
+}
+
+message MsgIssueCreditsResponse {
+  string denom = 1;
+}

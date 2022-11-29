@@ -3,7 +3,7 @@ package plasticcredit
 import (
 	"testing"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	errors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/empowerchain/empowerchain/testutil/sample"
 	"github.com/stretchr/testify/require"
 )
@@ -122,7 +122,7 @@ func TestIssuerValidation(t *testing.T) {
 				Description: "Something something",
 				Admin:       "invalid",
 			},
-			err: sdkerrors.ErrInvalidAddress,
+			err: errors.ErrInvalidAddress,
 		},
 	}
 

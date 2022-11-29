@@ -29,11 +29,11 @@ message Issuer {
 
 message Collector {
   uint64 collector_id = 1; 
-  string admin = 2; 
+  string admin = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"]; 
   repeated string accounts = 3; 
   string name = 4; 
   repeated CollectorInfo collector_infos = 5;
-  string credit_recipient = 6;
+  string credit_recipient = 6 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
 message Project {
@@ -51,33 +51,14 @@ message CreditClass {
   ProvenData credit_class_data = 4;  
 }
 
-message CreditBatch {
-  string batch_denom = 1; 
+message CreditCollection {
   uint64 project_id = 2; 
   CreditAmount total_amount = 3; 
   repeated ProvenData credit_data = 4; 
-  repeated ProvenData additional_data = 5;  
 }
 
 message CreditBalance {
-  string owner = 1; 
-  CreditAmount balance = 2;   
-}
-
-message BatchDenomToCreditBalance {
-  string batch_denom = 1;
-  repeated CreditBalance credit_balances = 2;
-}
-
-message CreditBatchIssuance {
-  uint64 project_id = 1; 
-  CreditAmount total_amount = 2; 
-  repeated ProvenData credit_data = 3; 
-  repeated ProvenData additional_data = 4;  
-}
-
-message CreditDenom {
-  string batch_denom = 2; 
+  CreditAmount balance = 1;   
 }
 
 message CollectorInfo {
