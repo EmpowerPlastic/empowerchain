@@ -9,6 +9,7 @@ LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 DOCKER := $(shell which docker)
 BUILD_DIR ?= $(CURDIR)/build
+COSMOS_SDK_VERSION := $(shell go list -m -f '{{ .Version }}' github.com/cosmos/cosmos-sdk)
 
 export GO111MODULE = on
 
@@ -133,7 +134,9 @@ test:
 	@go test -v ./x/...
 
 smoketest: install
-	./scripts/test/smoke.sh
+	./scripts/test/smoke_gov_proposals.sh
+	./scripts/test/smoke_poe.sh
+	./scripts/test/smoke_plastic_credit.sh
 
 ###############################################################################
 ###                                  Proto                                  ###
@@ -143,7 +146,7 @@ proto:
 	@echo
 	@echo "=========== Generate Message ============"
 	@echo
-	./scripts/protocgen.sh
+	./scripts/protocgen.sh $(COSMOS_SDK_VERSION)
 	@echo
 	@echo "=========== Generate Complete ============"
 	@echo

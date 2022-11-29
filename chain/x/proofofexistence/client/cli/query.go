@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
+	"github.com/empowerchain/empowerchain/x/proofofexistence"
 	"github.com/spf13/cobra"
 )
 
@@ -12,9 +12,9 @@ import (
 func GetQueryCmd() *cobra.Command {
 	// Group proofofexistence queries under a subcommand
 	cmd := &cobra.Command{
-		Use:                        types.ModuleName,
+		Use:                        proofofexistence.ModuleName,
 		Aliases:                    []string{"poe"},
-		Short:                      fmt.Sprintf("Querying commands for the %s module", types.ModuleName),
+		Short:                      fmt.Sprintf("Querying commands for the %s module", proofofexistence.ModuleName),
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,

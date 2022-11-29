@@ -2,5 +2,4 @@
 .vscode/
 .DS_Store
 *.code-workspace
-.devcontainer
 *.iml

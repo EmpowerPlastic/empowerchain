@@ -3,9 +3,9 @@ package empowerchain.proofofexistence;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "empowerchain/proofofexistence/proof.proto";
+import "empowerchain/proofofexistence/types.proto";
 
-option go_package = "github.com/empowerchain/empowerchain/x/proofofexistence/types";
+option go_package = "github.com/empowerchain/empowerchain/x/proofofexistence";
 
 service Query {
     rpc Proof(QueryProofRequest) returns (QueryProofResponse) {

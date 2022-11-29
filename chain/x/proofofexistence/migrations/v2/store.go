@@ -7,8 +7,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/empowerchain/empowerchain/x/proofofexistence"
 	v1 "github.com/empowerchain/empowerchain/x/proofofexistence/migrations/v1"
-	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
 )
 
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey, cdc codec.BinaryCodec) error {
@@ -30,7 +30,7 @@ func migrateProofs(store sdk.KVStore, cdc codec.BinaryCodec) error {
 			return err
 		}
 
-		proofMetadata := types.ProofMetadata{
+		proofMetadata := proofofexistence.ProofMetadata{
 			Timestamp: oldProof.Timestamp,
 			Creator:   oldProof.Reporter,
 		}

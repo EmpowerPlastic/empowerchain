@@ -14,7 +14,7 @@ source scripts/serve_env.sh
 # Stop if it is already running
 if pgrep -x "$BINARY" >/dev/null; then
     echo "Terminating $BINARY..."
-    killall $BINARY
+    pkill $BINARY
 fi
 
 echo "Removing previous data..."

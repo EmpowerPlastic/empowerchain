@@ -23,6 +23,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	accesscontrolmodulekeeper "github.com/empowerchain/empowerchain/x/accesscontrol/keeper"
 )
 
 var DefaultConsensusParams = &abci.ConsensusParams{
@@ -180,4 +181,11 @@ func CreateRandomAccounts(accNum int) []sdk.AccAddress {
 	}
 
 	return testAddrs
+}
+
+func InitAccessControlSubKeepers(keeper *accesscontrolmodulekeeper.Keeper) *[]accesscontrolmodulekeeper.IAccessControlSubKeeper {
+	var sk []accesscontrolmodulekeeper.IAccessControlSubKeeper
+	sk = append(sk, accesscontrolmodulekeeper.NewSubKeeper(keeper, "mockmodule1"))
+	sk = append(sk, accesscontrolmodulekeeper.NewSubKeeper(keeper, "mockmodule2"))
+	return &sk
 }

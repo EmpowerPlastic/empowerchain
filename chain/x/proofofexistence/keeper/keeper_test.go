@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/empowerchain/empowerchain/app"
 	"github.com/empowerchain/empowerchain/app/params"
-	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
+	"github.com/empowerchain/empowerchain/x/proofofexistence"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtime "github.com/tendermint/tendermint/types/time"
@@ -44,33 +44,33 @@ func TestTestSuite(t *testing.T) {
 
 func (s *TestSuite) TestGenesis() {
 	testCases := map[string]struct {
-		genesis types.GenesisState
+		genesis proofofexistence.GenesisState
 		expErr  bool
 	}{
 		"default genesis": {
-			genesis: *types.DefaultGenesisState(),
+			genesis: *proofofexistence.DefaultGenesisState(),
 			expErr:  false,
 		},
 		"custom genesis": {
-			genesis: types.GenesisState{
-				ProofList: []types.Proof{
+			genesis: proofofexistence.GenesisState{
+				ProofList: []proofofexistence.Proof{
 					{
 						Hash: "2feca43664769f70935eb2495eb0e7436b0ea0c7ccfddc0d6f029d8a33b09781",
-						Metadata: &types.ProofMetadata{
+						Metadata: &proofofexistence.ProofMetadata{
 							Timestamp: time.UnixMilli(42).UTC(),
 							Creator:   "empower1euf0uzgegfvyvwy6935pm82er5q3zkj5yytcrx",
 						},
 					},
 					{
 						Hash: "ffb5ff85bf44c95908f7965d9d379a378ab93bc3e9c14eb99c9980e3c41ae270",
-						Metadata: &types.ProofMetadata{
+						Metadata: &proofofexistence.ProofMetadata{
 							Timestamp: time.UnixMilli(123).UTC(),
 							Creator:   "empower1euf0uzgegfvyvwy6935pm82er5q3zkj5yytcrx",
 						},
 					},
 					{
 						Hash: "84ae5dfc89d073f7bc8dd48d64adeae462e01b020f9765f2531dfc70e9724cf2",
-						Metadata: &types.ProofMetadata{
+						Metadata: &proofofexistence.ProofMetadata{
 							Timestamp: time.UnixMilli(124).UTC(),
 							Creator:   "empower1jzds0k6d04zu52paldgzlav7dtvd2lflx6rmar",
 						},
@@ -80,11 +80,11 @@ func (s *TestSuite) TestGenesis() {
 			expErr: false,
 		},
 		"invalid genesis": {
-			genesis: types.GenesisState{
-				ProofList: []types.Proof{
+			genesis: proofofexistence.GenesisState{
+				ProofList: []proofofexistence.Proof{
 					{
 						Hash: "invalidhash",
-						Metadata: &types.ProofMetadata{
+						Metadata: &proofofexistence.ProofMetadata{
 							Timestamp: time.Now().UTC(),
 							Creator:   "empower1euf0uzgegfvyvwy6935pm82er5q3zkj5yytcrx",
 						},
