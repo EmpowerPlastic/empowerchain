@@ -2,9 +2,10 @@ package module
 
 import (
 	"context"
-	"cosmossdk.io/errors"
 	"encoding/json"
 	"math/rand"
+
+	"cosmossdk.io/errors"
 
 	"github.com/empowerchain/empowerchain/x/proofofexistence"
 	"github.com/empowerchain/empowerchain/x/proofofexistence/client/cli"

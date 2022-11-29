@@ -3,8 +3,9 @@ package cli
 import (
 	"context"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"strconv"
+
+	"github.com/cosmos/cosmos-sdk/client/flags"
 
 	// "strings"
 
@@ -68,13 +69,13 @@ func CmdQueryIssuer() *cobra.Command {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 			queryClient := plasticcredit.NewQueryClient(clientCtx)
 
-			issuerId, err := strconv.ParseUint(args[0], 10, 64)
+			issuerID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
 			res, err := queryClient.Issuer(context.Background(), &plasticcredit.QueryIssuerRequest{
-				IssuerId: issuerId,
+				IssuerId: issuerID,
 			})
 			if err != nil {
 				return err

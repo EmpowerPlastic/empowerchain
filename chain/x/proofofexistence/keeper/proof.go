@@ -1,8 +1,9 @@
 package keeper
 
 import (
-	"cosmossdk.io/errors"
 	"encoding/hex"
+
+	"cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/empowerchain/empowerchain/x/proofofexistence"

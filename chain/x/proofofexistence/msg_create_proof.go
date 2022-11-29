@@ -1,8 +1,9 @@
 package proofofexistence
 
 import (
-	"cosmossdk.io/errors"
 	"encoding/hex"
+
+	"cosmossdk.io/errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"

@@ -1,8 +1,9 @@
 package keeper
 
 import (
-	"cosmossdk.io/errors"
 	"encoding/binary"
+
+	"cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
