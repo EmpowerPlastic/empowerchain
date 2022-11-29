@@ -3,21 +3,46 @@ package keeper
 import (
 	"encoding/binary"
 
+	"github.com/cosmos/cosmos-sdk/types/query"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/empowerchain/empowerchain/x/plasticcredit"
 )
 
-func (k Keeper) GetIssuer(ctx sdk.Context, id uint64) (plasticcredit.Issuer, error) {
+func (k Keeper) GetIssuer(ctx sdk.Context, id uint64) (issuer plasticcredit.Issuer, found bool) {
 	store := k.getIssuerStore(ctx)
 
-	var issuer plasticcredit.Issuer
 	key := createKey(id)
 	bz := store.Get(key)
-	err := k.cdc.Unmarshal(bz, &issuer)
+	if len(bz) == 0 {
+		return issuer, false
+	}
 
-	return issuer, err
+	k.cdc.MustUnmarshal(bz, &issuer)
+
+	return issuer, true
+}
+
+func (k Keeper) GetIssuers(ctx sdk.Context, pageReq *query.PageRequest) ([]*plasticcredit.Issuer, *query.PageResponse, error) {
+	store := k.getIssuerStore(ctx)
+
+	var issuers []*plasticcredit.Issuer
+	pageRes, err := query.Paginate(store, pageReq, func(_ []byte, value []byte) error {
+		var issuer plasticcredit.Issuer
+		if err := k.cdc.Unmarshal(value, &issuer); err != nil {
+			return err
+		}
+		issuers = append(issuers, &issuer)
+
+		return nil
+	})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return issuers, pageRes, nil
 }
 
 func (k Keeper) getAllIssuers(ctx sdk.Context) ([]plasticcredit.Issuer, error) {
