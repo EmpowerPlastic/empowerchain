@@ -8,7 +8,7 @@ A Proof consists of a hash, a timestamp and a reporter address. This gives you e
 a hash existed at a specific point in time. You can prove you knew the hash at said time (if you can also prove 
 that you are the owner of the reporter address).
 
-- Proof `0x01 | hash | -> ProtocolBuffer(Proof)`
+- Proof `hash | -> ProtocolBuffer(Proof)`
 
 The hash is not made on-chain to avoid the privacy issues that would entail. Instead, the hash is just checked to
 be a valid SHA-256 hash.

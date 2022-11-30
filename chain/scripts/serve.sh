@@ -14,11 +14,14 @@ source scripts/serve_env.sh
 # Stop if it is already running
 if pgrep -x "$BINARY" >/dev/null; then
     echo "Terminating $BINARY..."
-    killall $BINARY
+    pkill $BINARY
+    sleep 5 # To avoid removing the folder to be any issue
 fi
 
-echo "Removing previous data..."
-rm -rf $CHAIN_DIR &> /dev/null
+if [ -d $CHAIN_DIR ]; then
+  echo "Removing previous data..."
+  rm -rf $CHAIN_DIR &> /dev/null
+fi
 
 # Add directories for chain(s), exit if an error occurs
 if ! mkdir -p $CHAIN_DIR 2>/dev/null; then

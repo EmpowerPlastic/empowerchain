@@ -6,11 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
-)
-
-const (
-	ProofStoreKeyPrefix = "Proof/value/"
+	"github.com/empowerchain/empowerchain/x/proofofexistence"
 )
 
 type Keeper struct {
@@ -25,7 +21,7 @@ func NewKeeper(cdc codec.BinaryCodec, storeKey storetypes.StoreKey) Keeper {
 	}
 }
 
-func (k Keeper) InitGenesis(ctx sdk.Context, genState types.GenesisState) error {
+func (k Keeper) InitGenesis(ctx sdk.Context, genState proofofexistence.GenesisState) error {
 	// Set all the proof
 	for _, elem := range genState.ProofList {
 		hash, err := hex.DecodeString(elem.Hash)
@@ -46,8 +42,8 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState types.GenesisState) error 
 	return nil
 }
 
-func (k Keeper) ExportGenesis(ctx sdk.Context) (*types.GenesisState, error) {
-	genesis := types.DefaultGenesisState()
+func (k Keeper) ExportGenesis(ctx sdk.Context) (*proofofexistence.GenesisState, error) {
+	genesis := proofofexistence.DefaultGenesisState()
 
 	proofMap, err := k.getAllProof(ctx)
 	if err != nil {
@@ -55,7 +51,7 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) (*types.GenesisState, error) {
 	}
 
 	for hash, metadata := range proofMap {
-		genesis.ProofList = append(genesis.ProofList, types.Proof{Hash: hash, Metadata: &types.ProofMetadata{
+		genesis.ProofList = append(genesis.ProofList, proofofexistence.Proof{Hash: hash, Metadata: &proofofexistence.ProofMetadata{
 			Timestamp: metadata.Timestamp,
 			Creator:   metadata.Creator,
 		}})

@@ -4,10 +4,10 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
+	"github.com/empowerchain/empowerchain/x/proofofexistence"
 )
 
-var _ types.MsgServer = msgServer{}
+var _ proofofexistence.MsgServer = msgServer{}
 
 type msgServer struct {
 	Keeper
@@ -15,11 +15,11 @@ type msgServer struct {
 
 // NewMsgServerImpl returns an implementation of the MsgServer interface
 // for the provided Keeper.
-func NewMsgServerImpl(keeper Keeper) types.MsgServer {
+func NewMsgServerImpl(keeper Keeper) proofofexistence.MsgServer {
 	return &msgServer{Keeper: keeper}
 }
 
-func (k msgServer) CreateProof(goCtx context.Context, msg *types.MsgCreateProof) (*types.MsgCreateProofResponse, error) {
+func (k msgServer) CreateProof(goCtx context.Context, msg *proofofexistence.MsgCreateProof) (*proofofexistence.MsgCreateProofResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	if err := msg.ValidateBasic(); err != nil {
@@ -35,5 +35,5 @@ func (k msgServer) CreateProof(goCtx context.Context, msg *types.MsgCreateProof)
 		return nil, err
 	}
 
-	return &types.MsgCreateProofResponse{}, nil
+	return &proofofexistence.MsgCreateProofResponse{}, nil
 }
