@@ -60,3 +60,4 @@ message MsgIssueCredits {
 message MsgIssueCreditsResponse {
   string denom = 1;
 }
+

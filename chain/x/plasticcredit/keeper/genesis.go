@@ -20,6 +20,22 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState plasticcredit.GenesisState
 		}
 	}
 
+	for _, creditCollection := range genState.CreditCollections {
+		if err := k.setCreditCollection(ctx, creditCollection.Denom, *creditCollection.CreditCollection); err != nil {
+			return err
+		}
+	}
+
+	for _, creditBalance := range genState.CreditBalances {
+		ownerAddr, err := sdk.AccAddressFromBech32(creditBalance.Owner)
+		if err != nil {
+			return err
+		}
+		if err := k.setCreditBalance(ctx, ownerAddr, creditBalance.Denom, *creditBalance.CreditBalance); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -40,6 +56,10 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) (*plasticcredit.GenesisState, err
 	if err != nil {
 		return nil, err
 	}
+
+	genesis.CreditCollections = k.getAllCreditCollections(ctx)
+
+	genesis.CreditBalances = k.getAllCreditBalances(ctx)
 
 	return genesis, err
 }

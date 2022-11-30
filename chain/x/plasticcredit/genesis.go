@@ -13,7 +13,9 @@ func DefaultGenesis() *GenesisState {
 			NextProjectId:     DefaultIndex,
 			NextCreditClassId: DefaultIndex,
 		},
-		Issuers: []Issuer{},
+		Issuers:           []Issuer{},
+		CreditCollections: []*IDCreditCollection{},
+		CreditBalances:    []*IDCreditBalance{},
 	}
 }
 
@@ -30,6 +32,18 @@ func (gs GenesisState) Validate() error {
 
 	for _, issuer := range gs.Issuers {
 		if err := issuer.Validate(); err != nil {
+			return err
+		}
+	}
+
+	for _, creditCollection := range gs.CreditCollections {
+		if err := creditCollection.Validate(); err != nil {
+			return err
+		}
+	}
+
+	for _, creditBalance := range gs.CreditBalances {
+		if err := creditBalance.Validate(); err != nil {
 			return err
 		}
 	}

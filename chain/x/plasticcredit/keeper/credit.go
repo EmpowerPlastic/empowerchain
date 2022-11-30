@@ -37,10 +37,10 @@ func (k Keeper) GetCreditBalance(ctx sdk.Context, owner sdk.AccAddress, denom st
 func (k Keeper) retireCredits(ctx sdk.Context, denom string, amount uint64) error {
 	creditCollection, found := k.GetCreditCollection(ctx, denom)
 	if !found {
-		return errors.Wrapf(plasticcredit.ErrCreditCollectionNotFound, "credit collection with denom %d not found", denom)
+		return errors.Wrapf(plasticcredit.ErrCreditCollectionNotFound, "credit collection with denom %s not found", denom)
 	}
 	if creditCollection.TotalAmount.Active < amount {
-		return errors.Wrapf(plasticcredit.ErrNotEnoughActiveCredits, "only %d credits active for denom %d", amount, denom)
+		return errors.Wrapf(plasticcredit.ErrNotEnoughActiveCredits, "only %d credits active for denom %s", amount, denom)
 	}
 	creditCollection.TotalAmount.Active -= amount
 	creditCollection.TotalAmount.Retired += amount
@@ -116,7 +116,7 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectId uint64, 
 
 	denom := createCreditDenom(creditClass.Denom, denomSuffix)
 	creditCollection, found := k.GetCreditCollection(ctx, denom)
-	// If collection doesn't exist, create new one
+	// If collection doesn't exist, create a new one
 	if !found {
 		creditCollection = plasticcredit.CreditCollection{
 			ProjectId:   projectId,
@@ -196,28 +196,32 @@ func (k Keeper) setCreditBalance(ctx sdk.Context, owner sdk.AccAddress, denom st
 	return nil
 }
 
-func (k Keeper) iterateCreditCollections(ctx sdk.Context, handler func(denom string, collection plasticcredit.CreditCollection) bool) {
+func (k Keeper) getAllCreditCollections(ctx sdk.Context) []*plasticcredit.IDCreditCollection {
 	store := k.getCreditCollectionStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
 	defer iterator.Close()
 
+	var creditCollections []*plasticcredit.IDCreditCollection
 	for ; iterator.Valid(); iterator.Next() {
 		var creditCollection plasticcredit.CreditCollection
 		k.cdc.MustUnmarshal(iterator.Value(), &creditCollection)
 		denom := string(iterator.Key())
-		if handler(denom, creditCollection) {
-			break
-		}
+		creditCollections = append(creditCollections, &plasticcredit.IDCreditCollection{
+			Denom:            denom,
+			CreditCollection: &creditCollection,
+		})
 	}
+	return creditCollections
 }
 
-func (k Keeper) iterateCreditBalances(ctx sdk.Context, handler func(owner sdk.AccAddress, denom string, balance plasticcredit.CreditBalance) bool) {
+func (k Keeper) getAllCreditBalances(ctx sdk.Context) []*plasticcredit.IDCreditBalance {
 	store := k.getCreditBalanceStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
 	defer iterator.Close()
 
+	var creditBalances []*plasticcredit.IDCreditBalance
 	for ; iterator.Valid(); iterator.Next() {
 		var creditBalance plasticcredit.CreditBalance
 		k.cdc.MustUnmarshal(iterator.Value(), &creditBalance)
@@ -225,10 +229,13 @@ func (k Keeper) iterateCreditBalances(ctx sdk.Context, handler func(owner sdk.Ac
 		if err != nil {
 			panic("Cannot parse credit balance key")
 		}
-		if handler(owner, denom, creditBalance) {
-			break
-		}
+		creditBalances = append(creditBalances, &plasticcredit.IDCreditBalance{
+			Owner:         owner.String(),
+			Denom:         denom,
+			CreditBalance: &creditBalance,
+		})
 	}
+	return creditBalances
 }
 
 func (k Keeper) getCreditCollectionStore(ctx sdk.Context) storetypes.KVStore {

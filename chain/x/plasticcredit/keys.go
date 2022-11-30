@@ -55,10 +55,7 @@ func ParseCreditBalanceKey(key []byte) (owner sdk.AccAddress, denom string, err 
 	ownerLen, ownerLenEndIndex := sdk.ParseLengthPrefixedBytes(key, 0, 1)
 	ownerAddr, ownerAddrEndIndex := sdk.ParseLengthPrefixedBytes(key, ownerLenEndIndex+1, int(ownerLen[0]))
 	kv.AssertKeyAtLeastLength(key, ownerAddrEndIndex+1)
-	ownerAddr, err = sdk.AccAddressFromBech32(string(ownerAddr))
-	if err != nil {
-		return nil, "", err
-	}
+	owner = sdk.AccAddress(ownerAddr)
 
-	return ownerAddr, string(key[(ownerAddrEndIndex + 1):]), nil
+	return owner, string(key[(ownerAddrEndIndex + 1):]), nil
 }

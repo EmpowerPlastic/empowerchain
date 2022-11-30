@@ -57,8 +57,19 @@ message CreditCollection {
   repeated ProvenData credit_data = 4; 
 }
 
+message IDCreditCollection {
+  string denom = 1;
+  CreditCollection credit_collection = 2;
+}
+
 message CreditBalance {
   CreditAmount balance = 1;   
+}
+
+message IDCreditBalance {
+  string owner = 1;
+  string denom = 2;
+  CreditBalance credit_balance = 3;
 }
 
 message CollectorInfo {

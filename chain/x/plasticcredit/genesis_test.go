@@ -21,24 +21,63 @@ func TestGenesisState_Validate(t *testing.T) {
 				Params: plasticcredit.Params{
 					IssuerCreator: "invalid",
 				},
-				IdCounters: plasticcredit.DefaultGenesis().IdCounters,
-				Issuers:    plasticcredit.DefaultGenesis().Issuers,
+				IdCounters:        plasticcredit.DefaultGenesis().IdCounters,
+				Issuers:           plasticcredit.DefaultGenesis().Issuers,
+				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
+				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
 			},
 			err: plasticcredit.ErrInvalidParams,
 		},
 		"invalid id counters fail": {
 			genState: &plasticcredit.GenesisState{
-				Params:     plasticcredit.DefaultGenesis().Params,
-				IdCounters: plasticcredit.IDCounters{},
-				Issuers:    plasticcredit.DefaultGenesis().Issuers,
+				Params:            plasticcredit.DefaultGenesis().Params,
+				IdCounters:        plasticcredit.IDCounters{},
+				Issuers:           plasticcredit.DefaultGenesis().Issuers,
+				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
+				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
 			},
 			err: plasticcredit.ErrInvalidValue,
 		},
 		"invalid issuers fail": {
 			genState: &plasticcredit.GenesisState{
+				Params:            plasticcredit.DefaultGenesis().Params,
+				IdCounters:        plasticcredit.DefaultGenesis().IdCounters,
+				Issuers:           []plasticcredit.Issuer{{}},
+				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
+				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
+			},
+			err: plasticcredit.ErrInvalidValue,
+		},
+		"invalid credit collections fail": {
+			genState: &plasticcredit.GenesisState{
 				Params:     plasticcredit.DefaultGenesis().Params,
 				IdCounters: plasticcredit.DefaultGenesis().IdCounters,
-				Issuers:    []plasticcredit.Issuer{{}},
+				Issuers:    plasticcredit.DefaultGenesis().Issuers,
+				CreditCollections: []*plasticcredit.IDCreditCollection{
+					{
+						Denom: "",
+						CreditCollection: &plasticcredit.CreditCollection{
+							ProjectId: 1,
+						},
+					},
+				},
+				CreditBalances: plasticcredit.DefaultGenesis().CreditBalances,
+			},
+			err: plasticcredit.ErrInvalidValue,
+		},
+		"invalid credit balances fail": {
+			genState: &plasticcredit.GenesisState{
+				Params:            plasticcredit.DefaultGenesis().Params,
+				IdCounters:        plasticcredit.DefaultGenesis().IdCounters,
+				Issuers:           plasticcredit.DefaultGenesis().Issuers,
+				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
+				CreditBalances: []*plasticcredit.IDCreditBalance{
+					{
+						Owner:         "emp123",
+						Denom:         "EMP/123",
+						CreditBalance: &plasticcredit.CreditBalance{},
+					},
+				},
 			},
 			err: plasticcredit.ErrInvalidValue,
 		},

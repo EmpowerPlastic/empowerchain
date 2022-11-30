@@ -63,3 +63,23 @@ func (cc CreditCollection) Validate() error {
 	}
 	return nil
 }
+
+func (icb IDCreditBalance) Validate() error {
+	if _, err := sdk.AccAddressFromBech32(icb.Owner); err != nil {
+		return errors.Wrapf(ErrInvalidValue, "invalid credit owner address (%s)", err)
+	}
+	if icb.Denom == "" {
+		return errors.Wrap(ErrInvalidValue, "denom is empty")
+	}
+	return nil
+}
+
+func (icc IDCreditCollection) Validate() error {
+	if icc.Denom == "" {
+		return errors.Wrap(ErrInvalidValue, "denom is empty")
+	}
+	if icc.CreditCollection.ProjectId == 0 {
+		return errors.Wrap(ErrInvalidValue, "project id is 0")
+	}
+	return nil
+}
