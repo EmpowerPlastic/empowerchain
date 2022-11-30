@@ -19,3 +19,8 @@ func NewMigrator(keeper Keeper) Migrator {
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
 	return v2.MigrateStore(ctx, m.keeper.storeKey, m.keeper.cdc)
 }
+
+// Handler for no store changes
+func (m Migrator) NoOp(ctx sdk.Context) error {
+	return nil
+}

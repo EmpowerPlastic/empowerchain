@@ -16,12 +16,16 @@ jobs:
         with:
           version: v0.6.22
 
-      - run: earthly --ci --output +build --VERSION=${{ github.ref_name }}
+      - run: earthly --ci --output +build-all --VERSION=${{ github.ref_name }}
         working-directory: ./chain
 
-      - run: mv ./chain/build/empowerd ./chain/build/empowerd-${{ github.ref_name }}-amd64
-
-      - run: zip -q empowerd-${{ github.ref_name }}-amd64.zip empowerd-${{ github.ref_name }}-amd64 && rm empowerd-${{ github.ref_name }}-amd64
+      - run: |
+          zip -q empowerd-${{ github.ref_name }}-linux-amd64.zip empowerd-${{ github.ref_name }}-linux-amd64 && rm empowerd-${{ github.ref_name }}-linux-amd64 && \
+          zip -q empowerd-${{ github.ref_name }}-linux-arm64.zip empowerd-${{ github.ref_name }}-linux-arm64 && rm empowerd-${{ github.ref_name }}-linux-arm64 && \
+          zip -q empowerd-${{ github.ref_name }}-darwin-amd64.zip empowerd-${{ github.ref_name }}-darwin-amd64 && rm empowerd-${{ github.ref_name }}-darwin-amd64 && \
+          zip -q empowerd-${{ github.ref_name }}-darwin-arm64.zip empowerd-${{ github.ref_name }}-darwin-arm64 && rm empowerd-${{ github.ref_name }}-darwin-arm64 && \
+          zip -q empowerd-${{ github.ref_name }}-windows-amd64.zip empowerd-${{ github.ref_name }}.exe && rm empowerd-${{ github.ref_name }}.exe
+              
         working-directory: ./chain/build
       # TODO: 1. Generate release notes
       # TODO: 2. Build darwin + darwin arm version (maybe windows too)
