@@ -1,25 +1,46 @@
 syntax = "proto3";
 package empowerchain.plasticcredit;
 
+import "empowerchain/plasticcredit/types.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "empowerchain/plasticcredit/types.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit";
 
-// Query defines the gRPC querier service.
 service Query {
-  // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/params";
   }
+
+  rpc Issuers(QueryIssuersRequest) returns (QueryIssuersResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/issuers";
+  }
+
+  rpc Issuer(QueryIssuerRequest) returns (QueryIssuerResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/issuers/{issuer_id}";
+  }
 }
 
-// QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
 
-// QueryParamsResponse is response type for the Query/Params RPC method.
 message QueryParamsResponse {
-  // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryIssuersRequest{
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryIssuersResponse{
+  repeated Issuer issuers = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryIssuerRequest {
+  uint64 issuer_id = 1;
+}
+
+message QueryIssuerResponse {
+  Issuer issuer = 1;
 }

@@ -46,8 +46,8 @@ func (s *TestSuite) TestGenesis() {
 	s.Require().Equal(genesisState.IdCounters, idCounter)
 
 	for _, issuer := range genesisState.Issuers {
-		actualIssuer, err := k.GetIssuer(s.ctx, issuer.Id)
-		s.Require().NoError(err)
+		actualIssuer, found := k.GetIssuer(s.ctx, issuer.Id)
+		s.Require().True(found)
 		s.Require().Equal(issuer, actualIssuer)
 	}
 
