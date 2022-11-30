@@ -16,7 +16,7 @@ var (
 	CreditBalanceKey    = []byte{0x04}
 	CreditClassKey      = []byte{0x05}
 	ProjectKey          = []byte{0x06}
-	CollectorKey        = []byte{0x07}
+	ApplicantKey        = []byte{0x07}
 )
 
 const (

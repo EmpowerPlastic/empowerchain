@@ -7,17 +7,17 @@ import (
 	"github.com/empowerchain/empowerchain/x/plasticcredit"
 )
 
-func (k Keeper) GetCreditClass(ctx sdk.Context, creditClassId uint64) (creditClass plasticcredit.CreditClass, found bool, err error) {
+func (k Keeper) GetCreditClass(ctx sdk.Context, creditClassId uint64) (creditClass plasticcredit.CreditClass, found bool) {
 	store := k.getCreditClassStore(ctx)
 
 	key := plasticcredit.CreateKeyFromUint64(creditClassId)
 	bz := store.Get(key)
 	if bz == nil {
-		return creditClass, false, nil
+		return creditClass, false
 	}
-	err = k.cdc.Unmarshal(bz, &creditClass)
+	k.cdc.MustUnmarshal(bz, &creditClass)
 
-	return creditClass, true, err
+	return creditClass, true
 }
 
 func (k Keeper) getCreditClassStore(ctx sdk.Context) storetypes.KVStore {
