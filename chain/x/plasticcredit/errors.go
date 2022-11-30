@@ -19,4 +19,6 @@ var (
 	ErrCreaditBalanceNotFound   = errors.Register(ModuleName, 1107, "credit balance not found")
 	ErrNotEnoughCredits         = errors.Register(ModuleName, 1108, "not enough credits")
 	ErrNotEnoughActiveCredits   = errors.Register(ModuleName, 1108, "not enough active credits")
+	ErrIssuerNotFound           = errors.Register(ModuleName, 1109, "issuer not found")
+	ErrNotIssuer                = errors.Register(ModuleName, 1110, "address is not an issuer")
 )

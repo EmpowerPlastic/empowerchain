@@ -88,7 +88,7 @@ func (k Keeper) transferCredits(ctx sdk.Context, denom string, from sdk.AccAddre
 	return nil
 }
 
-func (k Keeper) issueCredits(ctx sdk.Context, projectId uint64, denomSuffix string, amount *plasticcredit.CreditAmount, data []*plasticcredit.ProvenData) error {
+func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectId uint64, denomSuffix string, amount *plasticcredit.CreditAmount, data []*plasticcredit.ProvenData) error {
 
 	project, found := k.GetProject(ctx, projectId)
 	if !found {
@@ -98,6 +98,15 @@ func (k Keeper) issueCredits(ctx sdk.Context, projectId uint64, denomSuffix stri
 	creditClass, found := k.GetCreditClass(ctx, project.CreditClassId)
 	if !found {
 		return errors.Wrapf(plasticcredit.ErrCreditClassNotFound, "credit class with id %d not found", project.CreditClassId)
+	}
+
+	issuer, found := k.GetIssuer(ctx, creditClass.IssuerId)
+	if !found {
+		return errors.Wrapf(plasticcredit.ErrIssuerNotFound, "issuer with id %d not found", creditClass.IssuerId)
+	}
+	// Check if creator is issuer admin
+	if issuer.Admin != creator {
+		return errors.Wrapf(plasticcredit.ErrNotIssuer, "%s is not allowed to issue credits for class with id %d", creator, creditClass.CreditClassId)
 	}
 
 	applicant, found := k.GetApplicant(ctx, project.ApplicantId)
