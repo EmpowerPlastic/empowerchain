@@ -5,6 +5,7 @@ make serve
 
 source scripts/serve_env.sh
 
+echo "--- Test: Plastic Credit Issuer ---"
 empowerd tx gov submit-proposal scripts/test/testdata/proposal_create_issuer.json --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
 sleep 5
 empowerd tx gov vote 1 yes --from validator --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
@@ -25,8 +26,18 @@ if [ "$NUM_ISSUERS" != "1" ]; then
   exit 1
 fi
 
+echo "--- Test: Plastic Credit Applicants ---"
+empowerd tx plasticcredit create-applicant empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m "First applicant" "With description" --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd tx plasticcredit create-applicant bob "Second applicant" "With description" --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+
+sleep 5
+
+empowerd q plasticcredit applicant 1
+empowerd q plasticcredit applicant 2
+
 echo "Tests completed successfully!"
 
-make kill
+#make kill
 
 echo "Serve killed"

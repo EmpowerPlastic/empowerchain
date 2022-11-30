@@ -16,7 +16,7 @@ func TestIDCountersValidation(t *testing.T) {
 		"happy path": {
 			idc: IDCounters{
 				NextIssuerId:      1,
-				NextCollectorId:   235,
+				NextApplicantId:   235,
 				NextProjectId:     1337,
 				NextCreditClassId: 42,
 			},
@@ -24,7 +24,7 @@ func TestIDCountersValidation(t *testing.T) {
 		},
 		"next issuer id not set": {
 			idc: IDCounters{
-				NextCollectorId:   235,
+				NextApplicantId:   235,
 				NextProjectId:     1337,
 				NextCreditClassId: 42,
 			},
@@ -41,7 +41,7 @@ func TestIDCountersValidation(t *testing.T) {
 		"next project id not set": {
 			idc: IDCounters{
 				NextIssuerId:      1,
-				NextCollectorId:   235,
+				NextApplicantId:   235,
 				NextCreditClassId: 42,
 			},
 			err: ErrInvalidValue,
@@ -49,7 +49,7 @@ func TestIDCountersValidation(t *testing.T) {
 		"next credit class id not set": {
 			idc: IDCounters{
 				NextIssuerId:    1,
-				NextCollectorId: 235,
+				NextApplicantId: 235,
 				NextProjectId:   1337,
 			},
 			err: ErrInvalidValue,
@@ -129,6 +129,76 @@ func TestIssuerValidation(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			err := tc.idc.Validate()
+
+			require.ErrorIs(t, err, tc.err)
+		})
+	}
+}
+
+func TestApplicantValidation(t *testing.T) {
+	testCases := map[string]struct {
+		applicant Applicant
+		err       error
+	}{
+		"happy path": {
+			applicant: Applicant{
+				Id:          42,
+				Name:        "Empower",
+				Description: "Something something",
+				Admin:       sample.AccAddress(),
+			},
+			err: nil,
+		},
+		"empty description is OK": {
+			applicant: Applicant{
+				Id:          1337,
+				Name:        "MyOrg",
+				Description: "",
+				Admin:       sample.AccAddress(),
+			},
+			err: nil,
+		},
+		"invalid id": {
+			applicant: Applicant{
+				Id:          0,
+				Name:        "Empower",
+				Description: "Something something",
+				Admin:       sample.AccAddress(),
+			},
+			err: ErrInvalidValue,
+		},
+		"empty name": {
+			applicant: Applicant{
+				Id:          1,
+				Name:        "",
+				Description: "Something something",
+				Admin:       sample.AccAddress(),
+			},
+			err: ErrInvalidValue,
+		},
+		"empty admin": {
+			applicant: Applicant{
+				Id:          37,
+				Name:        "EmpowerChain",
+				Description: "Something something",
+				Admin:       "",
+			},
+			err: ErrInvalidValue,
+		},
+		"invalid admin address": {
+			applicant: Applicant{
+				Id:          100,
+				Name:        "Hertogz",
+				Description: "Something something",
+				Admin:       "invalid",
+			},
+			err: sdkerrors.ErrInvalidAddress,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			err := tc.applicant.Validate()
 
 			require.ErrorIs(t, err, tc.err)
 		})

@@ -23,18 +23,28 @@ ID Counters is a global object to keep track of ID indexes. It keeps at all time
 An Issuer is an entity that is allowed to create Credit Classes and issue Credits under their own Classes.
 They are the entity responsible for the data, quality and trust of the plastic credits they issue.
 
-An issue consists of the following fields: `id`, `name`, `description`, `admin`, with `id` being the unique identifier for an issuer.
+An issuer consists of the following fields: `id`, `name`, `description`, `admin`, with `id` being the unique identifier for an issuer.
 
 `name` and `description` is mainly for identifying and letting clients get information on issuers.
 
-`admin` is the address of the administrative account that controls the issuer and can update information and `accounts`. 
+`admin` is the address of the administrative account that controls the issuer and can update information.
 
 Only the `issuer_creator` from `Params` is allowed to create new issuers.
 This is typically either directly through governance or through a sub-dao or group.
 
 - Issuer: `0x02 | issuerID | -> ProtocolBuffer(Issuer)`
 
-## Collector
+## Applicant
+
+An Applicant is an entity that can apply for - and get issued by an issuer - plastic credits.
+
+An Applicant consists of the following fields: `id`, `name`, `description`, `admin`, with `id` being the unique identifier for an applicant.
+
+`name` and `description` is mainly for identifying and letting  clients get information on applicants.
+
+`admin` is the address of the administrative account that controls the applicant and can update information.
+
+- Issuer: `0x03 | applicantID | -> ProtocolBuffer(Applicant)`
 
 ## Credit Balance
 

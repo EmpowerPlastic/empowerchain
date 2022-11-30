@@ -51,6 +51,7 @@ func (s *TestSuite) TestIssuerQuery() {
 	resp, err := querier.Issuer(goCtx, &plasticcredit.QueryIssuerRequest{
 		IssuerId: 1,
 	})
+
 	s.Require().NoError(err)
 	s.Require().Equal(uint64(1), resp.Issuer.Id)
 	s.Require().Equal(createMsg.Name, resp.Issuer.Name)
@@ -105,4 +106,33 @@ func (s *TestSuite) TestIssuersQuery() {
 	})
 	s.Require().NoError(err)
 	s.Require().Len(resp3.Issuers, 10)
+}
+
+func (s *TestSuite) TestApplicantQuery() {
+	k := s.empowerApp.PlasticcreditKeeper
+	goCtx := sdk.WrapSDKContext(s.ctx)
+
+	querier := keeper.Querier{Keeper: k}
+	_, err := querier.Applicant(goCtx, &plasticcredit.QueryApplicantRequest{
+		ApplicantId: 1,
+	})
+	s.Require().ErrorIs(err, plasticcredit.ErrApplicantNotFound)
+
+	ms := keeper.NewMsgServerImpl(k)
+	createMsg := plasticcredit.MsgCreateApplicant{
+		Name:        "Empower",
+		Description: "Seomthing",
+		Admin:       sample.AccAddress(),
+	}
+	_, err = ms.CreateApplicant(goCtx, &createMsg)
+	s.Require().NoError(err)
+
+	resp, err := querier.Applicant(goCtx, &plasticcredit.QueryApplicantRequest{
+		ApplicantId: 1,
+	})
+	s.Require().NoError(err)
+	s.Require().Equal(uint64(1), resp.Applicant.Id)
+	s.Require().Equal(createMsg.Name, resp.Applicant.Name)
+	s.Require().Equal(createMsg.Description, resp.Applicant.Description)
+	s.Require().Equal(createMsg.Admin, resp.Applicant.Admin)
 }

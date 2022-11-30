@@ -19,7 +19,7 @@ func (idc IDCounters) Validate() error {
 		return errors.Wrap(ErrInvalidValue, "next_project_id is zero")
 	}
 
-	if idc.NextCollectorId == 0 {
+	if idc.NextApplicantId == 0 {
 		return errors.Wrap(ErrInvalidValue, "next_collector_id is zero")
 	}
 
@@ -40,6 +40,26 @@ func (is Issuer) Validate() error {
 	}
 
 	if _, err := sdk.AccAddressFromBech32(is.Admin); err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid admin address (%s)", err)
+	}
+
+	return nil
+}
+
+func (a Applicant) Validate() error {
+	if a.Id == 0 {
+		return errors.Wrap(ErrInvalidValue, "id is zero")
+	}
+
+	if a.Name == "" {
+		return errors.Wrap(ErrInvalidValue, "name is empty")
+	}
+
+	if a.Admin == "" {
+		return errors.Wrap(ErrInvalidValue, "admin is empty")
+	}
+
+	if _, err := sdk.AccAddressFromBech32(a.Admin); err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid admin address (%s)", err)
 	}
 

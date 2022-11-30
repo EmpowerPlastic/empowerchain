@@ -9,6 +9,7 @@ import (
 var (
 	_ sdk.Msg = &MsgUpdateParams{}
 	_ sdk.Msg = &MsgCreateIssuer{}
+	_ sdk.Msg = &MsgCreateApplicant{}
 )
 
 func (m *MsgUpdateParams) ValidateBasic() error {
@@ -52,4 +53,25 @@ func (m *MsgCreateIssuer) GetSigners() []sdk.AccAddress {
 		panic(err)
 	}
 	return []sdk.AccAddress{creator}
+}
+
+func (m *MsgCreateApplicant) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid admin address (%s)", err)
+	}
+
+	if m.Name == "" {
+		return errors.Wrap(ErrInvalidApplicantName, "applicant name cannot be empty")
+	}
+
+	return nil
+}
+
+func (m *MsgCreateApplicant) GetSigners() []sdk.AccAddress {
+	admin, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{admin}
 }

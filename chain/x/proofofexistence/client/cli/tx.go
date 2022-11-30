@@ -30,7 +30,7 @@ func GetTxCmd() *cobra.Command {
 func MsgCreateProof() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-proof [hash]",
-		Short: "Broadcast message create",
+		Short: "Create new proof of existence from hash",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argHash := args[0]

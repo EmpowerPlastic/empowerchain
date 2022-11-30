@@ -42,6 +42,15 @@ func TestGenesisState_Validate(t *testing.T) {
 			},
 			err: plasticcredit.ErrInvalidValue,
 		},
+		"invalid applicants fail": {
+			genState: &plasticcredit.GenesisState{
+				Params:     plasticcredit.DefaultGenesis().Params,
+				IdCounters: plasticcredit.DefaultGenesis().IdCounters,
+				Issuers:    plasticcredit.DefaultGenesis().Issuers,
+				Applicants: []plasticcredit.Applicant{{}},
+			},
+			err: plasticcredit.ErrInvalidValue,
+		},
 	}
 
 	for name, tc := range testCases {

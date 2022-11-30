@@ -151,3 +151,49 @@ func (s *TestSuite) TestCreateIssuer() {
 		})
 	}
 }
+
+func (s *TestSuite) TestCreateApplicant() {
+	testCases := map[string]struct {
+		msg *plasticcredit.MsgCreateApplicant
+		err error
+	}{
+		"happy path": {
+			msg: &plasticcredit.MsgCreateApplicant{
+				Name:        "Empower",
+				Description: "Empower is cool",
+				Admin:       sample.AccAddress(),
+			},
+			err: nil,
+		},
+	}
+
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			s.SetupTest()
+
+			k := s.empowerApp.PlasticcreditKeeper
+			goCtx := sdk.WrapSDKContext(s.ctx)
+			ms := keeper.NewMsgServerImpl(k)
+
+			resp, err := ms.CreateApplicant(goCtx, tc.msg)
+			s.Require().ErrorIs(err, tc.err)
+
+			if err == nil {
+				s.Require().Equal(uint64(1), resp.ApplicantId)
+
+				idCounters, err := k.GetIDCounters(s.ctx)
+				s.Require().NoError(err)
+				s.Require().Equal(uint64(2), idCounters.NextApplicantId)
+
+				issuer, found := k.GetApplicant(s.ctx, resp.ApplicantId)
+				s.Require().True(found)
+				s.Require().Equal(plasticcredit.Applicant{
+					Id:          resp.ApplicantId,
+					Name:        tc.msg.Name,
+					Description: tc.msg.Description,
+					Admin:       tc.msg.Admin,
+				}, issuer)
+			}
+		})
+	}
+}
