@@ -60,3 +60,16 @@ func (m msgServer) CreateIssuer(goCtx context.Context, req *plasticcredit.MsgCre
 		IssuerId: id,
 	}, nil
 }
+
+func (m msgServer) CreateApplicant(goCtx context.Context, req *plasticcredit.MsgCreateApplicant) (*plasticcredit.MsgCreateApplicantResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	id, err := m.createApplicant(ctx, req.Name, req.Description, req.Admin)
+	if err != nil {
+		return nil, err
+	}
+
+	return &plasticcredit.MsgCreateApplicantResponse{
+		ApplicantId: id,
+	}, nil
+}

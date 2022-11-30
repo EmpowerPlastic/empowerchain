@@ -4,6 +4,7 @@ var (
 	ParamsKey     = []byte{0x00}
 	IDCountersKey = []byte{0x01}
 	IssuerKey     = []byte{0x02}
+	ApplicantKey  = []byte{0x03}
 )
 
 const (

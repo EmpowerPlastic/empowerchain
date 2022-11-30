@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"encoding/binary"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -45,4 +46,11 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 
 func (k Keeper) Authority() string {
 	return k.authority
+}
+
+func createKey(id uint64) []byte {
+	key := make([]byte, 8)
+	binary.LittleEndian.PutUint64(key, id)
+
+	return key
 }

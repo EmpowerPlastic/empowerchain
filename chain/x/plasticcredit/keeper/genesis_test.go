@@ -12,7 +12,7 @@ func (s *TestSuite) TestGenesis() {
 		},
 		IdCounters: plasticcredit.IDCounters{
 			NextIssuerId:      3,
-			NextCollectorId:   1,
+			NextApplicantId:   1,
 			NextProjectId:     1,
 			NextCreditClassId: 1,
 		},
@@ -27,6 +27,26 @@ func (s *TestSuite) TestGenesis() {
 				Id:          2,
 				Name:        "SomeoneElse",
 				Description: "They are probably cool too!",
+				Admin:       sample.AccAddress(),
+			},
+		},
+		Applicants: []plasticcredit.Applicant{
+			{
+				Id:          1,
+				Name:        "Cleanup inc.",
+				Description: "We clean up plastics!",
+				Admin:       sample.AccAddress(),
+			},
+			{
+				Id:          2,
+				Name:        "Recycler coop",
+				Description: "We recycle plastics!",
+				Admin:       sample.AccAddress(),
+			},
+			{
+				Id:          3,
+				Name:        "Who me?",
+				Description: "I don't know what I'm doing",
 				Admin:       sample.AccAddress(),
 			},
 		},
@@ -51,6 +71,12 @@ func (s *TestSuite) TestGenesis() {
 		s.Require().Equal(issuer, actualIssuer)
 	}
 
+	for _, applicant := range genesisState.Applicants {
+		actualApplicant, found := k.GetApplicant(s.ctx, applicant.Id)
+		s.Require().True(found)
+		s.Require().Equal(applicant, actualApplicant)
+	}
+
 	export, err := s.empowerApp.PlasticcreditKeeper.ExportGenesis(s.ctx)
 	s.Require().NoError(err)
 
@@ -61,5 +87,11 @@ func (s *TestSuite) TestGenesis() {
 	for i, issuer := range genesisState.Issuers {
 		actualIssuer := export.Issuers[i]
 		s.Require().Equal(issuer, actualIssuer)
+	}
+
+	s.Require().Equal(len(genesisState.Applicants), len(export.Applicants))
+	for i, applicant := range genesisState.Applicants {
+		actualApplicant := export.Applicants[i]
+		s.Require().Equal(applicant, actualApplicant)
 	}
 }
