@@ -59,5 +59,42 @@ message MsgIssueCredits {
 
 message MsgIssueCreditsResponse {
   string denom = 1;
+  CreditAmount total_amount = 2;
 }
 
+message MsgTransferCredits {
+  option (cosmos.msg.v1.signer) = "from";
+
+  string from = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  string to = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+ 
+  string denom = 3;
+
+  uint64 amount = 4;
+
+  bool retire = 5;
+  
+}
+
+message MsgTransferCreditsResponse {
+
+}
+
+message MsgRetireCredits {
+  option (cosmos.msg.v1.signer) = "owner";
+
+  string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  string denom = 2;
+  uint64 amount = 3;
+
+}
+
+message MsgRetireCreditsResponse {
+  string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  string denom = 2;
+  CreditAmount balance = 3;
+
+}

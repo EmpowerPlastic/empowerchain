@@ -2,8 +2,6 @@ package keeper_test
 
 import (
 	"github.com/empowerchain/empowerchain/x/accesscontrol"
-	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func (s *TestSuite) TestGenesis() {
@@ -114,8 +112,7 @@ func (s *TestSuite) TestGenesis() {
 				var storeFound bool
 				for _, givenStore := range export.PermStores {
 					if expectedStore.ModuleName == givenStore.ModuleName {
-						comparator := func(a, b accesscontrol.Access) bool { return a.Address < b.Address || a.MsgType < b.MsgType }
-						s.Require().True(cmp.Diff(expectedStore.Accesses, givenStore.Accesses, cmpopts.SortSlices(comparator)) == "")
+						s.Require().ElementsMatch(expectedStore.Accesses, givenStore.Accesses)
 						storeFound = true
 					}
 				}

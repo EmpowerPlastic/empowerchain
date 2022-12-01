@@ -1,8 +1,6 @@
 package keeper_test
 
 import (
-	"sort"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/empowerchain/empowerchain/testutil/sample"
 	"github.com/empowerchain/empowerchain/x/plasticcredit"
@@ -169,18 +167,8 @@ func (s *TestSuite) TestGenesis() {
 	}
 
 	s.Require().Equal(len(genesisState.CreditCollections), len(export.CreditCollections))
-	sort.Slice(export.CreditCollections, func(a, b int) bool {
-		return export.CreditCollections[a].Denom < export.CreditCollections[b].Denom
-	})
-	// s.Require().Equal(export.CreditCollections, genesisState.CreditCollections)
+	s.Require().ElementsMatch(export.CreditCollections, genesisState.CreditCollections)
 
 	s.Require().Equal(len(genesisState.CreditBalances), len(export.CreditBalances))
-	sort.Slice(export.CreditBalances, func(a, b int) bool {
-		return export.CreditBalances[a].Owner < export.CreditBalances[b].Owner || export.CreditBalances[a].Denom < export.CreditBalances[b].Denom
-	})
-	sort.Slice(genesisState.CreditBalances, func(a, b int) bool {
-		return genesisState.CreditBalances[a].Owner < genesisState.CreditBalances[b].Owner || genesisState.CreditBalances[a].Denom < genesisState.CreditBalances[b].Denom
-	})
-	// TODO why no sortin?!
-	// s.Require().Equal(export.CreditBalances, genesisState.CreditBalances)
+	s.Require().ElementsMatch(export.CreditBalances, genesisState.CreditBalances)
 }
