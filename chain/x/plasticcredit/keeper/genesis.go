@@ -35,6 +35,11 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState plasticcredit.GenesisState
 			return err
 		}
 	}
+	for _, applicant := range genState.Applicants {
+		if err := k.setApplicant(ctx, applicant); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
@@ -60,6 +65,10 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) (*plasticcredit.GenesisState, err
 	genesis.CreditCollections = k.getAllCreditCollections(ctx)
 
 	genesis.CreditBalances = k.getAllCreditBalances(ctx)
+	genesis.Applicants, err = k.getAllApplicants(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	return genesis, err
 }

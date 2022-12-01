@@ -1,10 +1,10 @@
 syntax = "proto3";
 package empowerchain.plasticcredit;
 
+import "cosmos/base/query/v1beta1/pagination.proto";
 import "empowerchain/plasticcredit/types.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit";
 
@@ -20,6 +20,10 @@ service Query {
   rpc Issuer(QueryIssuerRequest) returns (QueryIssuerResponse) {
     option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/issuers/{issuer_id}";
   }
+
+  rpc Applicant(QueryApplicantRequest) returns (QueryApplicantResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/applicants/{applicant_id}";
+  }
 }
 
 message QueryParamsRequest {}
@@ -28,11 +32,11 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryIssuersRequest{
+message QueryIssuersRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryIssuersResponse{
+message QueryIssuersResponse {
   repeated Issuer issuers = 1;
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
@@ -43,4 +47,12 @@ message QueryIssuerRequest {
 
 message QueryIssuerResponse {
   Issuer issuer = 1;
+}
+
+message QueryApplicantRequest {
+  uint64 applicant_id = 1;
+}
+
+message QueryApplicantResponse {
+  Applicant applicant = 1;
 }

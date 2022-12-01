@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	errors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/empowerchain/empowerchain/testutil/sample"
 	"github.com/stretchr/testify/require"
 )
@@ -32,7 +32,7 @@ func TestMsgUpdateParamsValidateBasic(t *testing.T) {
 					IssuerCreator: sample.AccAddress(),
 				},
 			},
-			expectedError: errors.ErrInvalidAddress,
+			expectedError: sdkerrors.ErrInvalidAddress,
 		},
 		"invalid params": {
 			msgUnderTest: &MsgUpdateParams{
@@ -72,7 +72,7 @@ func TestMsgCreateIssuerValidateBasic(t *testing.T) {
 				Description: "Empower is the first and coolest plastic credit issuer!",
 				Admin:       sample.AccAddress(),
 			},
-			expectedError: errors.ErrInvalidAddress,
+			expectedError: sdkerrors.ErrInvalidAddress,
 		},
 		"invalid admin": {
 			msgUnderTest: &MsgCreateIssuer{
@@ -81,9 +81,9 @@ func TestMsgCreateIssuerValidateBasic(t *testing.T) {
 				Description: "Empower is the first and coolest plastic credit issuer!",
 				Admin:       "invalid",
 			},
-			expectedError: errors.ErrInvalidAddress,
+			expectedError: sdkerrors.ErrInvalidAddress,
 		},
-		"empty name - not allowed": {
+		"empty name not allowed": {
 			msgUnderTest: &MsgCreateIssuer{
 				Creator:     sample.AccAddress(),
 				Name:        "",
@@ -92,9 +92,54 @@ func TestMsgCreateIssuerValidateBasic(t *testing.T) {
 			},
 			expectedError: ErrInvalidIssuerName,
 		},
-		"empty description - allowed": {
+		"empty description allowed": {
 			msgUnderTest: &MsgCreateIssuer{
 				Creator:     sample.AccAddress(),
+				Name:        "Empower",
+				Description: "",
+				Admin:       sample.AccAddress(),
+			},
+			expectedError: nil,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			err := tc.msgUnderTest.ValidateBasic()
+
+			require.ErrorIs(t, err, tc.expectedError)
+		})
+	}
+}
+
+func TestMsgCreateApplicantValidateBasic(t *testing.T) {
+	testCases := map[string]validateTest{
+		"happy path": {
+			msgUnderTest: &MsgCreateApplicant{
+				Name:        "Empower",
+				Description: "Empower is the first and coolest plastic credit issuer!",
+				Admin:       sample.AccAddress(),
+			},
+			expectedError: nil,
+		},
+		"invalid admin": {
+			msgUnderTest: &MsgCreateApplicant{
+				Name:        "Empower",
+				Description: "Empower is the first and coolest plastic credit issuer!",
+				Admin:       "invalid",
+			},
+			expectedError: sdkerrors.ErrInvalidAddress,
+		},
+		"empty name not allowed": {
+			msgUnderTest: &MsgCreateApplicant{
+				Name:        "",
+				Description: "Empower is the first and coolest plastic credit issuer!",
+				Admin:       sample.AccAddress(),
+			},
+			expectedError: ErrInvalidApplicantName,
+		},
+		"empty description allowed": {
+			msgUnderTest: &MsgCreateApplicant{
 				Name:        "Empower",
 				Description: "",
 				Admin:       sample.AccAddress(),

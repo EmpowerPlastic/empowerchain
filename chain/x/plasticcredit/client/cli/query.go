@@ -32,6 +32,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	cmd.AddCommand(CmdQueryParams())
 	cmd.AddCommand(CmdQueryIssuer())
 	cmd.AddCommand(CmdQueryIssuers())
+	cmd.AddCommand(CmdQueryApplicant())
 
 	return cmd
 }
@@ -63,7 +64,7 @@ func CmdQueryParams() *cobra.Command {
 func CmdQueryIssuer() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "issuer [issuer-id]",
-		Short: "query for an issuer by its issuer id",
+		Short: "query for an issuer by its [issuer-id]",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -105,6 +106,36 @@ func CmdQueryIssuers() *cobra.Command {
 
 			res, err := queryClient.Issuers(context.Background(), &plasticcredit.QueryIssuersRequest{
 				Pagination: pageReq,
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdQueryApplicant() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "applicant [applicant-id]",
+		Short: "query for an applicant by its [applicant-id]",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+			queryClient := plasticcredit.NewQueryClient(clientCtx)
+
+			applicantID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			res, err := queryClient.Applicant(context.Background(), &plasticcredit.QueryApplicantRequest{
+				ApplicantId: applicantID,
 			})
 			if err != nil {
 				return err

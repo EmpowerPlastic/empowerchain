@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"encoding/binary"
-
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -113,11 +111,4 @@ func (k Keeper) getIssuerStore(ctx sdk.Context) storetypes.KVStore {
 	issuerStore := prefix.NewStore(store, plasticcredit.IssuerKey)
 
 	return issuerStore
-}
-
-func createKey(id uint64) []byte {
-	key := make([]byte, 8)
-	binary.LittleEndian.PutUint64(key, id)
-
-	return key
 }

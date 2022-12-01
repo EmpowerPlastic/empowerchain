@@ -1,0 +1,14 @@
+{
+        "members": [
+                {
+                        "address": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m",
+                        "weight": "1",
+                        "metadata": "bob"
+                },
+		{
+			"address": "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
+			"weight": "1",
+			"metadata": "validator"
+		}
+	]
+}

@@ -15,6 +15,7 @@ source scripts/serve_env.sh
 if pgrep -x "$BINARY" >/dev/null; then
     echo "Terminating $BINARY..."
     pkill $BINARY
+    sleep 5 # To avoid removing the folder to be any issue
 fi
 
 if [ -d $CHAIN_DIR ]; then

@@ -63,3 +63,19 @@ func (k Querier) Issuer(goCtx context.Context, req *plasticcredit.QueryIssuerReq
 		Issuer: &issuer,
 	}, nil
 }
+
+func (k Querier) Applicant(goCtx context.Context, req *plasticcredit.QueryApplicantRequest) (*plasticcredit.QueryApplicantResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	applicant, found := k.GetApplicant(ctx, req.ApplicantId)
+	if !found {
+		return nil, errors.Wrapf(plasticcredit.ErrApplicantNotFound, "applicant with id: %d was not found", req.ApplicantId)
+	}
+
+	return &plasticcredit.QueryApplicantResponse{
+		Applicant: &applicant,
+	}, nil
+}

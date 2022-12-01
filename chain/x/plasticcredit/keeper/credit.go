@@ -169,18 +169,10 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectId uint64, 
 
 	k.setCreditCollection(ctx, denom, creditCollection)
 
-	// Use credit recipient or admin if recipient is absent
 	var recipient sdk.AccAddress
-	if applicant.CreditRecipient != "" {
-		recipient, err = sdk.AccAddressFromBech32(applicant.CreditRecipient)
-		if err != nil {
-			return "", totalAmount, err
-		}
-	} else {
-		recipient, err = sdk.AccAddressFromBech32(applicant.Admin)
-		if err != nil {
-			return "", totalAmount, err
-		}
+	recipient, err = sdk.AccAddressFromBech32(applicant.Admin)
+	if err != nil {
+		return "", totalAmount, err
 	}
 
 	recipientBalance, found := k.GetCreditBalance(ctx, recipient, denom)

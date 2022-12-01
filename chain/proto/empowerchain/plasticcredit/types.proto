@@ -3,6 +3,7 @@ package empowerchain.plasticcredit;
 
 import "gogoproto/gogo.proto";
 import "cosmos_proto/cosmos.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit";
 
@@ -15,7 +16,7 @@ message Params {
 
 message IDCounters {
   uint64 next_issuer_id = 1;
-  uint64 next_collector_id = 2;
+  uint64 next_applicant_id = 2;
   uint64 next_project_id = 3;
   uint64 next_credit_class_id = 4;
 }
@@ -28,13 +29,14 @@ message Issuer {
 }
 
 message Applicant {
-  uint64 applicant_id = 1; 
-  string admin = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"]; 
-  repeated string accounts = 3; 
-  string name = 4; 
-  repeated CollectorInfo applicant_infos = 5;
-  string credit_recipient = 6 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 id = 1;
+  string name = 2;
+  string description = 3;
+  string admin = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
+
+// Above this line is implemented
+// Below this line are drafts that needs to be implemented still
 
 message Project {
   uint64 project_id = 1; 
@@ -72,12 +74,7 @@ message IDCreditBalance {
   CreditBalance credit_balance = 3;
 }
 
-message CollectorInfo {
-  uint64 issuer_id = 1; 
-  string metadata = 2; 
-}
-
-message ProvenData {  
+message ProvenData {
   string uri = 1; 
   string hash = 2; 
 }
