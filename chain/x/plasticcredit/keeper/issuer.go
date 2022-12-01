@@ -12,7 +12,7 @@ import (
 func (k Keeper) GetIssuer(ctx sdk.Context, id uint64) (issuer plasticcredit.Issuer, found bool) {
 	store := k.getIssuerStore(ctx)
 
-	key := createKey(id)
+	key := plasticcredit.CreateKeyFromUint64(id)
 	bz := store.Get(key)
 	if len(bz) == 0 {
 		return issuer, false
@@ -100,7 +100,7 @@ func (k Keeper) setIssuer(ctx sdk.Context, issuer plasticcredit.Issuer) error {
 		return err
 	}
 
-	key := createKey(issuer.Id)
+	key := plasticcredit.CreateKeyFromUint64(issuer.Id)
 	store.Set(key, b)
 
 	return nil

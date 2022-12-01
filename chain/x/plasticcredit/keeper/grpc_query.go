@@ -79,3 +79,42 @@ func (k Querier) Applicant(goCtx context.Context, req *plasticcredit.QueryApplic
 		Applicant: &applicant,
 	}, nil
 }
+
+func (k Querier) CreditCollection(goCtx context.Context, req *plasticcredit.QueryCreditCollectionRequest) (*plasticcredit.QueryCreditCollectionResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	creditCollection, found := k.GetCreditCollection(ctx, req.Denom)
+	if !found {
+		return nil, errors.Wrapf(plasticcredit.ErrCreditCollectionNotFound, "credit collection with denom %s nom found", req.Denom)
+	}
+
+	return &plasticcredit.QueryCreditCollectionResponse{
+		Denom:            req.Denom,
+		CreditCollection: &creditCollection,
+	}, nil
+}
+
+func (k Querier) CreditBalance(goCtx context.Context, req *plasticcredit.QueryCreditBalanceRequest) (*plasticcredit.QueryCreditBalanceResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	owner, err := sdk.AccAddressFromBech32(req.Owner)
+	if err != nil {
+		return &plasticcredit.QueryCreditBalanceResponse{}, err
+	}
+	creditBalance, found := k.GetCreditBalance(ctx, owner, req.Denom)
+	if !found {
+		return nil, errors.Wrapf(plasticcredit.ErrCreaditBalanceNotFound, "balance for address %s and denom %s not found", req.Owner, req.Denom)
+	}
+
+	return &plasticcredit.QueryCreditBalanceResponse{
+		Owner:        req.Owner,
+		Denom:        req.Denom,
+		CreditAmount: &creditBalance,
+	}, nil
+}

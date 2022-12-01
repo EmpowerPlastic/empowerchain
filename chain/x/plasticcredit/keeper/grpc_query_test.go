@@ -136,3 +136,5 @@ func (s *TestSuite) TestApplicantQuery() {
 	s.Require().Equal(createMsg.Description, resp.Applicant.Description)
 	s.Require().Equal(createMsg.Admin, resp.Applicant.Admin)
 }
+
+// TODO credit balance, credit collection queries

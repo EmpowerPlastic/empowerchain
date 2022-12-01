@@ -84,7 +84,7 @@ func (m *MsgIssueCredits) ValidateBasic() error {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
 	if m.ProjectId == 0 {
-		return errors.Wrap(ErrInvalidProjectId, "invalid project id")
+		return errors.Wrap(ErrInvalidProjectID, "invalid project id")
 	}
 	if m.DenomSuffix == "" {
 		return errors.Wrap(ErrInvalidDenomSuffix, "invalid denom suffix")
@@ -98,7 +98,7 @@ func (m *MsgIssueCredits) ValidateBasic() error {
 			return errors.Wrapf(ErrInvalidHash, "Invalid hash: %s", data.Hash)
 		}
 		if data.Uri == "" {
-			return errors.Wrap(ErrInvalidUri, "Invalid uri")
+			return errors.Wrap(ErrInvalidURI, "Invalid uri")
 		}
 	}
 	return nil

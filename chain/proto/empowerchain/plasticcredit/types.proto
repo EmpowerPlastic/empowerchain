@@ -55,17 +55,13 @@ message CreditClass {
 
 message CreditCollection {
   uint64 project_id = 2; 
-  CreditAmount total_amount = 3; 
+  CreditBalance total_amount = 3; 
   repeated ProvenData credit_data = 4; 
 }
 
 message IDCreditCollection {
   string denom = 1;
   CreditCollection credit_collection = 2;
-}
-
-message CreditBalance {
-  CreditAmount balance = 1;   
 }
 
 message IDCreditBalance {
@@ -79,7 +75,7 @@ message ProvenData {
   string hash = 2; 
 }
 
-message CreditAmount {
+message CreditBalance {
   uint64 active = 1; 
   uint64 retired = 2; 
 }

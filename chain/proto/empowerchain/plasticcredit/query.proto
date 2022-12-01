@@ -24,6 +24,14 @@ service Query {
   rpc Applicant(QueryApplicantRequest) returns (QueryApplicantResponse) {
     option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/applicants/{applicant_id}";
   }
+
+  rpc CreditCollection(QueryCreditCollectionRequest) returns (QueryCreditCollectionResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/creditcollections/{denom}";
+  }
+
+  rpc CreditBalance(QueryCreditBalanceRequest) returns (QueryCreditBalanceResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/creditbalances/{owner}/{denom}";
+  }
 }
 
 message QueryParamsRequest {}
@@ -55,4 +63,24 @@ message QueryApplicantRequest {
 
 message QueryApplicantResponse {
   Applicant applicant = 1;
+}
+
+message QueryCreditCollectionRequest {
+  string denom = 1;
+}
+
+message QueryCreditCollectionResponse {
+  string denom = 1;
+  CreditCollection credit_collection = 2;
+}
+
+message QueryCreditBalanceRequest {
+  string owner = 1;
+  string denom = 2;
+}
+
+message QueryCreditBalanceResponse {
+  string owner = 1;
+  string denom = 2;
+  CreditBalance credit_amount = 3;
 }

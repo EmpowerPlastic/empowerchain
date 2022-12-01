@@ -36,29 +36,27 @@ func (k Keeper) GetCreditBalance(ctx sdk.Context, owner sdk.AccAddress, denom st
 	return creditBalance, true
 }
 
-func (k Keeper) retireCreditsForAddress(ctx sdk.Context, owner sdk.AccAddress, denom string, amount uint64) (*plasticcredit.CreditAmount, error) {
+func (k Keeper) retireCreditsForAddress(ctx sdk.Context, owner sdk.AccAddress, denom string, amount uint64) (*plasticcredit.CreditBalance, error) {
 	creditBalance, found := k.GetCreditBalance(ctx, owner, denom)
 	if !found {
-		return &plasticcredit.CreditAmount{}, errors.Wrapf(plasticcredit.ErrNotEnoughCredits, "user %s doesn't have credits of denom %s", owner.String(), denom)
+		return &plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrNotEnoughCredits, "user %s doesn't have credits of denom %s", owner.String(), denom)
 	}
-	if creditBalance.Balance.Active < amount {
-		return &plasticcredit.CreditAmount{}, errors.Wrapf(plasticcredit.ErrNotEnoughActiveCredits, "user %s has only %d credits", owner.String(), amount)
+	if creditBalance.Active < amount {
+		return &plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrNotEnoughActiveCredits, "user %s has only %d credits", owner.String(), amount)
 	}
-	creditBalance.Balance.Active -= amount
-	creditBalance.Balance.Retired += amount
+	creditBalance.Active -= amount
+	creditBalance.Retired += amount
 
 	err := k.setCreditBalance(ctx, owner, denom, creditBalance)
 	if err != nil {
-		return &plasticcredit.CreditAmount{}, err
+		return &plasticcredit.CreditBalance{}, err
 	}
 
 	err = k.retireCreditsInCollection(ctx, denom, amount)
 	if err != nil {
-		return &plasticcredit.CreditAmount{}, err
+		return &plasticcredit.CreditBalance{}, err
 	}
-
-	return creditBalance.Balance, nil
-
+	return &creditBalance, nil
 }
 
 func (k Keeper) retireCreditsInCollection(ctx sdk.Context, denom string, amount uint64) error {
@@ -81,35 +79,32 @@ func (k Keeper) retireCreditsInCollection(ctx sdk.Context, denom string, amount 
 }
 
 func (k Keeper) transferCredits(ctx sdk.Context, denom string, from sdk.AccAddress, to sdk.AccAddress, amount uint64, retire bool) error {
-
 	balanceSender, found := k.GetCreditBalance(ctx, from, denom)
 	if !found {
 		return errors.Wrapf(plasticcredit.ErrCreaditBalanceNotFound, "no balance for denom %s and address %s found", denom, from)
 	}
 	// Check if sender has enough credits
-	if balanceSender.Balance.Active < amount {
-		return errors.Wrapf(plasticcredit.ErrNotEnoughCredits, "sender only has %d credits of denom %s", balanceSender.Balance.Active, denom)
+	if balanceSender.Active < amount {
+		return errors.Wrapf(plasticcredit.ErrNotEnoughCredits, "sender only has %d credits of denom %s", balanceSender.Active, denom)
 	}
 
 	balanceRecipient, found := k.GetCreditBalance(ctx, to, denom)
 	if !found {
 		balanceRecipient = plasticcredit.CreditBalance{
-			Balance: &plasticcredit.CreditAmount{
-				Active:  0,
-				Retired: 0,
-			},
+			Active:  0,
+			Retired: 0,
 		}
 	}
-	balanceSender.Balance.Active -= amount
+	balanceSender.Active -= amount
 	// If retiring credits, retire and update retired balance, if not, update active balance
 	if retire {
 		err := k.retireCreditsInCollection(ctx, denom, amount)
 		if err != nil {
 			return err
 		}
-		balanceRecipient.Balance.Retired += amount
+		balanceRecipient.Retired += amount
 	} else {
-		balanceRecipient.Balance.Active += amount
+		balanceRecipient.Active += amount
 	}
 	err := k.setCreditBalance(ctx, from, denom, balanceSender)
 	if err != nil {
@@ -123,11 +118,10 @@ func (k Keeper) transferCredits(ctx sdk.Context, denom string, from sdk.AccAddre
 	return nil
 }
 
-func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectId uint64, denomSuffix string, amount *plasticcredit.CreditAmount, data []*plasticcredit.ProvenData) (denom string, totalAmount plasticcredit.CreditAmount, err error) {
-
-	project, found := k.GetProject(ctx, projectId)
+func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, denomSuffix string, amount *plasticcredit.CreditBalance, data []*plasticcredit.ProvenData) (denom string, totalAmount plasticcredit.CreditBalance, err error) {
+	project, found := k.GetProject(ctx, projectID)
 	if !found {
-		return "", totalAmount, errors.Wrapf(plasticcredit.ErrProjectNotFound, "project with id %d not found", projectId)
+		return "", totalAmount, errors.Wrapf(plasticcredit.ErrProjectNotFound, "project with id %d not found", projectID)
 	}
 
 	creditClass, found := k.GetCreditClass(ctx, project.CreditClassId)
@@ -146,15 +140,15 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectId uint64, 
 
 	applicant, found := k.GetApplicant(ctx, project.ApplicantId)
 	if !found {
-		return "", totalAmount, errors.Wrapf(plasticcredit.ErrApplicantNotFound, "applicant with id %d not found", project.ApplicantId)
+		return "", plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrApplicantNotFound, "applicant with id %d not found", project.ApplicantId)
 	}
 
-	denom = createCreditDenom(creditClass.Denom, denomSuffix)
+	denom = CreateCreditDenom(creditClass.Denom, denomSuffix)
 	creditCollection, found := k.GetCreditCollection(ctx, denom)
 	// If collection doesn't exist, create a new one
 	if !found {
 		creditCollection = plasticcredit.CreditCollection{
-			ProjectId:   projectId,
+			ProjectId:   projectID,
 			TotalAmount: amount,
 			CreditData:  data,
 		}
@@ -167,24 +161,25 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectId uint64, 
 		}
 	}
 
-	k.setCreditCollection(ctx, denom, creditCollection)
+	err = k.setCreditCollection(ctx, denom, creditCollection)
+	if err != nil {
+		return "", plasticcredit.CreditBalance{}, err
+	}
 
 	var recipient sdk.AccAddress
 	recipient, err = sdk.AccAddressFromBech32(applicant.Admin)
 	if err != nil {
-		return "", totalAmount, err
+		return "", plasticcredit.CreditBalance{}, err
 	}
 
 	recipientBalance, found := k.GetCreditBalance(ctx, recipient, denom)
 	// Recipient doesn't have any credits from collection
 	if !found {
-		recipientBalance = plasticcredit.CreditBalance{
-			Balance: amount,
-		}
+		recipientBalance = *amount
 	} else {
 		// Recipient already have credits from collection
-		recipientBalance.Balance.Active += amount.Active
-		recipientBalance.Balance.Retired += amount.Retired
+		recipientBalance.Active += amount.Active
+		recipientBalance.Retired += amount.Retired
 	}
 
 	err = k.setCreditBalance(ctx, recipient, denom, recipientBalance)
@@ -270,6 +265,7 @@ func (k Keeper) getCreditCollectionStore(ctx sdk.Context) storetypes.KVStore {
 
 	return creditCollectionStore
 }
+
 func (k Keeper) getCreditBalanceStore(ctx sdk.Context) storetypes.KVStore {
 	store := ctx.KVStore(k.storeKey)
 	creditBalanceStore := prefix.NewStore(store, plasticcredit.CreditBalanceKey)
@@ -277,6 +273,6 @@ func (k Keeper) getCreditBalanceStore(ctx sdk.Context) storetypes.KVStore {
 	return creditBalanceStore
 }
 
-func createCreditDenom(creditClassDenom string, creditCollectionSuffix string) string {
+func CreateCreditDenom(creditClassDenom string, creditCollectionSuffix string) string {
 	return creditClassDenom + "/" + creditCollectionSuffix
 }

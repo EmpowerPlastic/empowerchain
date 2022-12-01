@@ -39,19 +39,18 @@ func MsgIssueCreditsCmd() *cobra.Command {
 		Long:  `Issue credits.`,
 		Args:  cobra.MinimumNArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
 			creator := clientCtx.GetFromAddress()
-			projectId, err := cast.ToUint64E(args[0])
+			projectID, err := cast.ToUint64E(args[0])
 			if err != nil {
 				return err
 			}
 			denomSuffix := args[1]
-			creditAmount := new(plasticcredit.CreditAmount)
+			creditAmount := new(plasticcredit.CreditBalance)
 			err = json.Unmarshal([]byte(args[2]), creditAmount)
 			if err != nil {
 				return err
@@ -68,7 +67,7 @@ func MsgIssueCreditsCmd() *cobra.Command {
 
 			msg := plasticcredit.MsgIssueCredits{
 				Creator:      creator.String(),
-				ProjectId:    projectId,
+				ProjectId:    projectID,
 				DenomSuffix:  denomSuffix,
 				CreditAmount: creditAmount,
 				CreditData:   creditData,
@@ -90,7 +89,6 @@ func MsgTransferCreditsCmd() *cobra.Command {
 		Long:  `Transfer credits from one address to another. Retire is optional and is set to false by default`,
 		Args:  cobra.MinimumNArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -132,12 +130,10 @@ func MsgRetireCreditsCmd() *cobra.Command {
 		Long:  `Retire credits`,
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
-
 			owner := clientCtx.GetFromAddress()
 			denom := args[0]
 			amount, err := cast.ToUint64E(args[2])

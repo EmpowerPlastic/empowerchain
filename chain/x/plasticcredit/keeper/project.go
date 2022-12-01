@@ -7,10 +7,10 @@ import (
 	"github.com/empowerchain/empowerchain/x/plasticcredit"
 )
 
-func (k Keeper) GetProject(ctx sdk.Context, projectId uint64) (project plasticcredit.Project, found bool) {
-	store := k.getCreditCollectionStore(ctx)
+func (k Keeper) GetProject(ctx sdk.Context, projectID uint64) (project plasticcredit.Project, found bool) {
+	store := k.getProjectStore(ctx)
 
-	key := plasticcredit.CreateKeyFromUint64(projectId)
+	key := plasticcredit.CreateKeyFromUint64(projectID)
 	bz := store.Get(key)
 	if bz == nil {
 		return project, false

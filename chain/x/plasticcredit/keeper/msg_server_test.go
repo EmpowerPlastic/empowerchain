@@ -197,3 +197,114 @@ func (s *TestSuite) TestCreateApplicant() {
 		})
 	}
 }
+
+// TODO mock or after adding project and credit class?
+// func (s *TestSuite) TestIssueCredits() {
+// 	testCases := map[string]struct {
+// 		msg *plasticcredit.MsgIssueCredits
+// 		err error
+// 	}{
+// 		"happy path": {
+// 			msg: &plasticcredit.MsgIssueCredits{
+// 				Creator:     sample.AccAddress(),
+// 				ProjectId:   1,
+// 				DenomSuffix: "123",
+// 				CreditAmount: &plasticcredit.CreditAmount{
+// 					Active:  100,
+// 					Retired: 50,
+// 				},
+// 				CreditData: []*plasticcredit.ProvenData{
+// 					{
+// 						Uri:  "https://empower.eco",
+// 						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
+// 					},
+// 				},
+// 			},
+// 			err: nil,
+// 		},
+// 	}
+
+// 	for name, tc := range testCases {
+// 		s.Run(name, func() {
+// 			s.SetupTest()
+
+// 			k := s.empowerApp.PlasticcreditKeeper
+// 			goCtx := sdk.WrapSDKContext(s.ctx)
+// 			ms := keeper.NewMsgServerImpl(k)
+
+// 			resp, err := ms.IssueCredits(goCtx, tc.msg)
+// 			s.Require().ErrorIs(err, tc.err)
+
+// 			if err == nil {
+// 				project, found := k.GetProject(s.ctx, tc.msg.ProjectId)
+// 				s.Require().True(found)
+// 				creditClass, found := k.GetCreditClass(s.ctx, project.CreditClassId)
+// 				s.Require().True(found)
+// 				denom := keeper.CreateCreditDenom(creditClass.Denom, tc.msg.DenomSuffix)
+// 				s.Require().Equal(resp.Denom, denom)
+// 				s.Require().Equal(tc.msg.CreditAmount, resp.TotalAmount)
+// 				creditCollection, found := k.GetCreditCollection(s.ctx, denom)
+// 				s.Require().True(found)
+// 				s.Require().Equal(tc.msg.ProjectId, creditCollection.ProjectId)
+// 				s.Require().Equal(tc.msg.CreditAmount, creditCollection.TotalAmount)
+// 				s.Require().Equal(tc.msg.CreditData, creditCollection.CreditData)
+// 			}
+// 		})
+// 	}
+// }
+
+// func (s *TestSuite) TestTransferCredits() {
+// 	testCases := map[string]struct {
+// 		msg *plasticcredit.MsgTransferCredits
+// 		err error
+// 	}{
+// 		"happy path": {
+// 			msg: &plasticcredit.MsgTransferCredits{
+// 				From:   sample.AccAddress(),
+// 				To:     sample.AccAddress(),
+// 				Denom:  "EMP/123",
+// 				Amount: 10,
+// 				Retire: false,
+// 			},
+// 			err: nil,
+// 		},
+// 	}
+
+// 	for name, tc := range testCases {
+// 		s.Run(name, func() {
+// 			s.SetupTest()
+
+// 			k := s.empowerApp.PlasticcreditKeeper
+// 			goCtx := sdk.WrapSDKContext(s.ctx)
+// 			ms := keeper.NewMsgServerImpl(k)
+
+// 		})
+// 	}
+// }
+
+// func (s *TestSuite) TestRetireCredits() {
+// 	testCases := map[string]struct {
+// 		msg *plasticcredit.MsgRetireCredits
+// 		err error
+// 	}{
+// 		"happy path": {
+// 			msg: &plasticcredit.MsgRetireCredits{
+// 				Owner:   sample.AccAddress(),
+// 				Denom:  "EMP/123",
+// 				Amount: 10,
+// 			},
+// 			err: nil,
+// 		},
+// 	}
+
+// 	for name, tc := range testCases {
+// 		s.Run(name, func() {
+// 			s.SetupTest()
+
+// 			k := s.empowerApp.PlasticcreditKeeper
+// 			goCtx := sdk.WrapSDKContext(s.ctx)
+// 			ms := keeper.NewMsgServerImpl(k)
+
+// 		})
+// 	}
+// }

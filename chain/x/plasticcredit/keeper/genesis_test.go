@@ -36,7 +36,7 @@ func (s *TestSuite) TestGenesis() {
 				Denom: "ZMP/61361514316",
 				CreditCollection: &plasticcredit.CreditCollection{
 					ProjectId: 2,
-					TotalAmount: &plasticcredit.CreditAmount{
+					TotalAmount: &plasticcredit.CreditBalance{
 						Active:  0,
 						Retired: 100000,
 					},
@@ -52,7 +52,7 @@ func (s *TestSuite) TestGenesis() {
 				Denom: "PLST/123",
 				CreditCollection: &plasticcredit.CreditCollection{
 					ProjectId: 1,
-					TotalAmount: &plasticcredit.CreditAmount{
+					TotalAmount: &plasticcredit.CreditBalance{
 						Active:  123,
 						Retired: 55,
 					},
@@ -74,50 +74,40 @@ func (s *TestSuite) TestGenesis() {
 				Owner: sample.AccAddress(),
 				Denom: "EMP/61361514316",
 				CreditBalance: &plasticcredit.CreditBalance{
-					Balance: &plasticcredit.CreditAmount{
-						Active:  0,
-						Retired: 500000,
-					},
+					Active:  0,
+					Retired: 500000,
 				},
 			},
 			{
 				Owner: sample.AccAddress(),
 				Denom: "EMP/61361514316",
 				CreditBalance: &plasticcredit.CreditBalance{
-					Balance: &plasticcredit.CreditAmount{
-						Active:  0,
-						Retired: 200000,
-					},
+					Active:  0,
+					Retired: 200000,
 				},
 			},
 			{
 				Owner: sample.AccAddress(),
 				Denom: "EMP/61361514316",
 				CreditBalance: &plasticcredit.CreditBalance{
-					Balance: &plasticcredit.CreditAmount{
-						Active:  0,
-						Retired: 300000,
-					},
+					Active:  0,
+					Retired: 300000,
 				},
 			},
 			{
 				Owner: sample.AccAddress(),
 				Denom: "PLST/123",
 				CreditBalance: &plasticcredit.CreditBalance{
-					Balance: &plasticcredit.CreditAmount{
-						Active:  120,
-						Retired: 5,
-					},
+					Active:  120,
+					Retired: 5,
 				},
 			},
 			{
 				Owner: sample.AccAddress(),
 				Denom: "PLST/123",
 				CreditBalance: &plasticcredit.CreditBalance{
-					Balance: &plasticcredit.CreditAmount{
-						Active:  3,
-						Retired: 50,
-					},
+					Active:  3,
+					Retired: 50,
 				},
 			},
 		},
