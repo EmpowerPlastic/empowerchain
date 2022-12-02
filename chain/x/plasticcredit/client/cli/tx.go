@@ -34,7 +34,7 @@ func GetTxCmd() *cobra.Command {
 
 func MsgIssueCreditsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "issue-credits [project-id] [denom-suffix] [amount] [credit-data...]",
+		Use:   "issue-credits [project-id] [serial-number] [amount] [credit-data...]",
 		Short: "Issue credits.",
 		Long:  `Issue credits.`,
 		Args:  cobra.MinimumNArgs(4),
@@ -49,9 +49,8 @@ func MsgIssueCreditsCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			denomSuffix := args[1]
-			creditAmount := new(plasticcredit.CreditBalance)
-			err = json.Unmarshal([]byte(args[2]), creditAmount)
+			serialNumber := args[1]
+			creditAmount, err := cast.ToUint64E(args[2])
 			if err != nil {
 				return err
 			}
@@ -68,7 +67,7 @@ func MsgIssueCreditsCmd() *cobra.Command {
 			msg := plasticcredit.MsgIssueCredits{
 				Creator:      creator.String(),
 				ProjectId:    projectID,
-				DenomSuffix:  denomSuffix,
+				SerialNumber: serialNumber,
 				CreditAmount: creditAmount,
 				CreditData:   creditData,
 			}
@@ -84,30 +83,30 @@ func MsgIssueCreditsCmd() *cobra.Command {
 
 func MsgTransferCreditsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "transfer [receiver] [denom] [amount] [retire?]",
+		Use:   "transfer [sender] [receiver] [denom] [amount] [retire?]",
 		Short: "Transfer credits",
 		Long:  `Transfer credits from one address to another. Retire is optional and is set to false by default`,
-		Args:  cobra.MinimumNArgs(3),
+		Args:  cobra.MinimumNArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			from := clientCtx.GetFromAddress()
-			to := args[0]
-			denom := args[1]
-			amount, err := cast.ToUint64E(args[2])
+			from := args[0]
+			to := args[1]
+			denom := args[2]
+			amount, err := cast.ToUint64E(args[3])
 			if err != nil {
 				return err
 			}
-			retire, err := cast.ToBoolE(args[3])
+			retire, err := cast.ToBoolE(args[4])
 			if err != nil {
 				retire = false
 			}
 
 			msg := plasticcredit.MsgTransferCredits{
-				From:   from.String(),
+				From:   from,
 				To:     to,
 				Denom:  denom,
 				Amount: amount,

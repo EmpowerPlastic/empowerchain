@@ -41,7 +41,7 @@ func TestMsgUpdateParamsValidateBasic(t *testing.T) {
 					IssuerCreator: "invalid",
 				},
 			},
-			expectedError: ErrInvalidParams,
+			expectedError: sdkerrors.ErrInvalidAddress,
 		},
 	}
 
@@ -90,7 +90,7 @@ func TestMsgCreateIssuerValidateBasic(t *testing.T) {
 				Description: "Empower is the first and coolest plastic credit issuer!",
 				Admin:       sample.AccAddress(),
 			},
-			expectedError: ErrInvalidIssuerName,
+			expectedError: sdkerrors.ErrInvalidRequest,
 		},
 		"empty description allowed": {
 			msgUnderTest: &MsgCreateIssuer{
@@ -103,6 +103,217 @@ func TestMsgCreateIssuerValidateBasic(t *testing.T) {
 		},
 	}
 
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			err := tc.msgUnderTest.ValidateBasic()
+
+			require.ErrorIs(t, err, tc.expectedError)
+		})
+	}
+}
+
+func TestMsgIssueCreditsValidateBasic(t *testing.T) {
+	testCases := map[string]validateTest{
+		"happy path": {
+			msgUnderTest: &MsgIssueCredits{
+				Creator:      sample.AccAddress(),
+				ProjectId:    1,
+				SerialNumber: "123",
+				CreditAmount: 10,
+				CreditData: []*ProvenData{
+					{
+						Uri:  "http://empower.eco",
+						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
+					},
+				},
+			},
+			expectedError: nil,
+		},
+		"invalid creator": {
+			msgUnderTest: &MsgIssueCredits{
+				Creator:      "Empower",
+				ProjectId:    1,
+				SerialNumber: "123",
+				CreditAmount: 10,
+				CreditData: []*ProvenData{
+					{
+						Uri:  "http://empower.eco",
+						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
+					},
+				},
+			},
+			expectedError: sdkerrors.ErrInvalidAddress,
+		},
+		"invalid project id": {
+			msgUnderTest: &MsgIssueCredits{
+				Creator:      sample.AccAddress(),
+				SerialNumber: "123",
+				CreditAmount: 10,
+				CreditData: []*ProvenData{
+					{
+						Uri:  "http://empower.eco",
+						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
+					},
+				},
+			},
+			expectedError: sdkerrors.ErrInvalidRequest,
+		},
+		"invalid serial number": {
+			msgUnderTest: &MsgIssueCredits{
+				Creator:      sample.AccAddress(),
+				ProjectId:    1,
+				CreditAmount: 10,
+				CreditData: []*ProvenData{
+					{
+						Uri:  "http://empower.eco",
+						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
+					},
+				},
+			},
+			expectedError: sdkerrors.ErrInvalidRequest,
+		},
+		"invalid credit amount": {
+			msgUnderTest: &MsgIssueCredits{
+				Creator:      sample.AccAddress(),
+				ProjectId:    1,
+				SerialNumber: "123",
+				CreditAmount: 0,
+				CreditData: []*ProvenData{
+					{
+						Uri:  "http://empower.eco",
+						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
+					},
+				},
+			},
+			expectedError: sdkerrors.ErrInvalidRequest,
+		},
+		"invalid data URI": {
+			msgUnderTest: &MsgIssueCredits{
+				Creator:      sample.AccAddress(),
+				ProjectId:    1,
+				SerialNumber: "123",
+				CreditAmount: 10,
+				CreditData: []*ProvenData{
+					{
+						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
+					},
+				},
+			},
+			expectedError: sdkerrors.ErrInvalidRequest,
+		},
+		"invalid data hash": {
+			msgUnderTest: &MsgIssueCredits{
+				Creator:      sample.AccAddress(),
+				ProjectId:    1,
+				SerialNumber: "123",
+				CreditAmount: 10,
+				CreditData: []*ProvenData{
+					{
+						Uri:  "http://empower.eco",
+						Hash: "a b",
+					},
+				},
+			},
+			expectedError: sdkerrors.ErrInvalidRequest,
+		},
+	}
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			err := tc.msgUnderTest.ValidateBasic()
+			require.ErrorIs(t, err, tc.expectedError)
+		})
+	}
+}
+
+func TestMsgTransferCredits(t *testing.T) {
+	testCases := map[string]validateTest{
+		"happy path": {
+			msgUnderTest: &MsgTransferCredits{
+				From:   sample.AccAddress(),
+				To:     sample.AccAddress(),
+				Denom:  "EMP/123",
+				Amount: 100,
+				Retire: false,
+			},
+			expectedError: nil,
+		},
+		"invalid from": {
+			msgUnderTest: &MsgTransferCredits{
+				From:   "Empower",
+				To:     sample.AccAddress(),
+				Denom:  "EMP/123",
+				Amount: 100,
+				Retire: false,
+			},
+			expectedError: sdkerrors.ErrInvalidAddress,
+		},
+		"invalid to": {
+			msgUnderTest: &MsgTransferCredits{
+				From:   sample.AccAddress(),
+				To:     "Empower",
+				Denom:  "EMP/123",
+				Amount: 100,
+				Retire: false,
+			},
+			expectedError: sdkerrors.ErrInvalidAddress,
+		},
+		"invalid denom": {
+			msgUnderTest: &MsgTransferCredits{
+				From:   sample.AccAddress(),
+				To:     sample.AccAddress(),
+				Denom:  "",
+				Amount: 100,
+				Retire: false,
+			},
+			expectedError: sdkerrors.ErrInvalidRequest,
+		},
+		"invalid amount": {
+			msgUnderTest: &MsgTransferCredits{
+				From:   sample.AccAddress(),
+				To:     sample.AccAddress(),
+				Denom:  "EMP/123",
+				Amount: 0,
+				Retire: false,
+			},
+			expectedError: sdkerrors.ErrInvalidRequest,
+		},
+	}
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			err := tc.msgUnderTest.ValidateBasic()
+
+			require.ErrorIs(t, err, tc.expectedError)
+		})
+	}
+}
+
+func TestMsgRetireCredits(t *testing.T) {
+	testCases := map[string]validateTest{
+		"happy path": {
+			msgUnderTest: &MsgRetireCredits{
+				Owner:  sample.AccAddress(),
+				Denom:  "EMP/123",
+				Amount: 100,
+			},
+			expectedError: nil,
+		},
+		"invalid denom": {
+			msgUnderTest: &MsgRetireCredits{
+				Owner:  sample.AccAddress(),
+				Denom:  "",
+				Amount: 100,
+			},
+			expectedError: sdkerrors.ErrInvalidRequest,
+		},
+		"invalid amount": {
+			msgUnderTest: &MsgRetireCredits{
+				Owner:  sample.AccAddress(),
+				Denom:  "EMP/123",
+				Amount: 0,
+			},
+			expectedError: sdkerrors.ErrInvalidRequest,
+		},
+	}
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			err := tc.msgUnderTest.ValidateBasic()
@@ -136,7 +347,7 @@ func TestMsgCreateApplicantValidateBasic(t *testing.T) {
 				Description: "Empower is the first and coolest plastic credit issuer!",
 				Admin:       sample.AccAddress(),
 			},
-			expectedError: ErrInvalidApplicantName,
+			expectedError: sdkerrors.ErrInvalidRequest,
 		},
 		"empty description allowed": {
 			msgUnderTest: &MsgCreateApplicant{

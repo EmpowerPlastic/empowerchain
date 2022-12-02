@@ -70,8 +70,7 @@ message QueryCreditCollectionRequest {
 }
 
 message QueryCreditCollectionResponse {
-  string denom = 1;
-  CreditCollection credit_collection = 2;
+  CreditCollection credit_collection = 1;
 }
 
 message QueryCreditBalanceRequest {
@@ -80,7 +79,5 @@ message QueryCreditBalanceRequest {
 }
 
 message QueryCreditBalanceResponse {
-  string owner = 1;
-  string denom = 2;
-  CreditBalance credit_amount = 3;
+  CreditBalance balance = 1;
 }

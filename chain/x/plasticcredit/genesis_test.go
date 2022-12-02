@@ -3,6 +3,7 @@ package plasticcredit_test
 import (
 	"testing"
 
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/empowerchain/empowerchain/x/plasticcredit"
 	"github.com/stretchr/testify/require"
 )
@@ -53,12 +54,10 @@ func TestGenesisState_Validate(t *testing.T) {
 				Params:     plasticcredit.DefaultGenesis().Params,
 				IdCounters: plasticcredit.DefaultGenesis().IdCounters,
 				Issuers:    plasticcredit.DefaultGenesis().Issuers,
-				CreditCollections: []*plasticcredit.IDCreditCollection{
+				CreditCollections: []*plasticcredit.CreditCollection{
 					{
-						Denom: "",
-						CreditCollection: &plasticcredit.CreditCollection{
-							ProjectId: 1,
-						},
+						Denom:     "",
+						ProjectId: 1,
 					},
 				},
 				CreditBalances: plasticcredit.DefaultGenesis().CreditBalances,
@@ -71,15 +70,15 @@ func TestGenesisState_Validate(t *testing.T) {
 				IdCounters:        plasticcredit.DefaultGenesis().IdCounters,
 				Issuers:           plasticcredit.DefaultGenesis().Issuers,
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
-				CreditBalances: []*plasticcredit.IDCreditBalance{
+				CreditBalances: []*plasticcredit.CreditBalance{
 					{
-						Owner:         "emp123",
-						Denom:         "EMP/123",
-						CreditBalance: &plasticcredit.CreditBalance{},
+						Owner:   "emp123",
+						Denom:   "EMP/123",
+						Balance: &plasticcredit.CreditAmount{},
 					},
 				},
 			},
-			err: plasticcredit.ErrInvalidValue,
+			err: sdkerrors.ErrInvalidAddress,
 		},
 		"invalid applicants fail": {
 			genState: &plasticcredit.GenesisState{

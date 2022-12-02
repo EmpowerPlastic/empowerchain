@@ -19,6 +19,10 @@ func (m *MsgUpdateParams) ValidateBasic() error {
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid authority address (%s)", err)
 	}
+	_, err = sdk.AccAddressFromBech32(m.Params.IssuerCreator)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid issuer creator address (%s)", err)
+	}
 
 	return m.Params.Validate()
 }
@@ -43,7 +47,7 @@ func (m *MsgCreateIssuer) ValidateBasic() error {
 	}
 
 	if m.Name == "" {
-		return errors.Wrap(ErrInvalidIssuerName, "issuer name cannot be empty")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "issuer name cannot be empty")
 	}
 
 	return nil
@@ -64,7 +68,7 @@ func (m *MsgCreateApplicant) ValidateBasic() error {
 	}
 
 	if m.Name == "" {
-		return errors.Wrap(ErrInvalidApplicantName, "applicant name cannot be empty")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "applicant name cannot be empty")
 	}
 
 	return nil
@@ -84,21 +88,21 @@ func (m *MsgIssueCredits) ValidateBasic() error {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
 	if m.ProjectId == 0 {
-		return errors.Wrap(ErrInvalidProjectID, "invalid project id")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid project id")
 	}
-	if m.DenomSuffix == "" {
-		return errors.Wrap(ErrInvalidDenomSuffix, "invalid denom suffix")
+	if m.SerialNumber == "" {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid serial number")
 	}
-	if m.CreditAmount.Active == 0 && m.CreditAmount.Retired == 0 {
-		return errors.Wrap(ErrInvalidCreditAmount, "invalid credit amount")
+	if m.CreditAmount == 0 {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid credit amount")
 	}
 	for _, data := range m.CreditData {
 		_, err = hex.DecodeString(data.Hash)
 		if err != nil {
-			return errors.Wrapf(ErrInvalidHash, "Invalid hash: %s", data.Hash)
+			return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Invalid hash: %s", data.Hash)
 		}
 		if data.Uri == "" {
-			return errors.Wrap(ErrInvalidURI, "Invalid uri")
+			return errors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid uri")
 		}
 	}
 	return nil
@@ -122,10 +126,10 @@ func (m *MsgTransferCredits) ValidateBasic() error {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid recipient address (%s)", err)
 	}
 	if m.Denom == "" {
-		return errors.Wrap(ErrInvalidDenom, "invalid denom")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid denom")
 	}
 	if m.Amount == 0 {
-		return errors.Wrap(ErrInvalidCreditAmount, "invalid credit amount")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid credit amount")
 	}
 	return nil
 }
@@ -144,10 +148,10 @@ func (m *MsgRetireCredits) ValidateBasic() error {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
 	if m.Denom == "" {
-		return errors.Wrap(ErrInvalidDenom, "invalid denom")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid denom")
 	}
 	if m.Amount == 0 {
-		return errors.Wrap(ErrInvalidCreditAmount, "invalid credit amount")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid credit amount")
 	}
 	return nil
 }

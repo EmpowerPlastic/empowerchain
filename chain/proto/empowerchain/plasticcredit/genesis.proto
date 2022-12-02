@@ -11,7 +11,7 @@ message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
   IDCounters id_counters = 2 [(gogoproto.nullable) = false];
   repeated Issuer issuers = 3 [(gogoproto.nullable) = false];
-  repeated IDCreditCollection credit_collections = 4;
-  repeated IDCreditBalance credit_balances = 5;
+  repeated CreditCollection credit_collections = 4;
+  repeated CreditBalance credit_balances = 5;
   repeated Applicant applicants = 6 [(gogoproto.nullable) = false];
 }

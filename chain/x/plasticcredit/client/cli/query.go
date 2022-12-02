@@ -33,6 +33,8 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	cmd.AddCommand(CmdQueryIssuer())
 	cmd.AddCommand(CmdQueryIssuers())
 	cmd.AddCommand(CmdQueryApplicant())
+	cmd.AddCommand(CmdQueryCreditCollection())
+	cmd.AddCommand(CmdQueryCreditBalance())
 
 	return cmd
 }
@@ -136,6 +138,62 @@ func CmdQueryApplicant() *cobra.Command {
 
 			res, err := queryClient.Applicant(context.Background(), &plasticcredit.QueryApplicantRequest{
 				ApplicantId: applicantID,
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdQueryCreditCollection() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "credit-collection [denom]",
+		Short: "Query credit collection by it's denom",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+			queryClient := plasticcredit.NewQueryClient(clientCtx)
+
+			denom := args[0]
+
+			res, err := queryClient.CreditCollection(context.Background(), &plasticcredit.QueryCreditCollectionRequest{
+				Denom: denom,
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdQueryCreditBalance() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "credit-balance [address] [denom]",
+		Short: "Query credit balance by address and denom",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+			queryClient := plasticcredit.NewQueryClient(clientCtx)
+
+			owner := args[0]
+			denom := args[1]
+
+			res, err := queryClient.CreditBalance(context.Background(), &plasticcredit.QueryCreditBalanceRequest{
+				Owner: owner,
+				Denom: denom,
 			})
 			if err != nil {
 				return err

@@ -21,17 +21,13 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState plasticcredit.GenesisState
 	}
 
 	for _, creditCollection := range genState.CreditCollections {
-		if err := k.setCreditCollection(ctx, creditCollection.Denom, *creditCollection.CreditCollection); err != nil {
+		if err := k.setCreditCollection(ctx, *creditCollection); err != nil {
 			return err
 		}
 	}
 
 	for _, creditBalance := range genState.CreditBalances {
-		ownerAddr, err := sdk.AccAddressFromBech32(creditBalance.Owner)
-		if err != nil {
-			return err
-		}
-		if err := k.setCreditBalance(ctx, ownerAddr, creditBalance.Denom, *creditBalance.CreditBalance); err != nil {
+		if err := k.setCreditBalance(ctx, *creditBalance); err != nil {
 			return err
 		}
 	}

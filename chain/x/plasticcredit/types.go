@@ -47,10 +47,13 @@ func (is Issuer) Validate() error {
 }
 
 func (cc CreditCollection) Validate() error {
+	if cc.Denom == "" {
+		return errors.Wrap(ErrInvalidValue, "denom is empty")
+	}
 	if cc.ProjectId == 0 {
 		return errors.Wrap(ErrInvalidValue, "project id is empty or zero")
 	}
-	if cc.TotalAmount.Active == 0 || cc.TotalAmount.Retired == 0 {
+	if cc.TotalAmount.Active == 0 && cc.TotalAmount.Retired == 0 {
 		return errors.Wrap(ErrInvalidValue, "cannot issue 0 credits")
 	}
 	for _, data := range cc.CreditData {
@@ -64,22 +67,12 @@ func (cc CreditCollection) Validate() error {
 	return nil
 }
 
-func (icb IDCreditBalance) Validate() error {
+func (icb CreditBalance) Validate() error {
 	if _, err := sdk.AccAddressFromBech32(icb.Owner); err != nil {
-		return errors.Wrapf(ErrInvalidValue, "invalid credit owner address (%s)", err)
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid credit owner address (%s)", err)
 	}
 	if icb.Denom == "" {
 		return errors.Wrap(ErrInvalidValue, "denom is empty")
-	}
-	return nil
-}
-
-func (icc IDCreditCollection) Validate() error {
-	if icc.Denom == "" {
-		return errors.Wrap(ErrInvalidValue, "denom is empty")
-	}
-	if icc.CreditCollection.ProjectId == 0 {
-		return errors.Wrap(ErrInvalidValue, "project id is 0")
 	}
 	return nil
 }

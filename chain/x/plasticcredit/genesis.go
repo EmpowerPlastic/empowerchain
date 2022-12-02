@@ -14,8 +14,8 @@ func DefaultGenesis() *GenesisState {
 			NextCreditClassId: DefaultIndex,
 		},
 		Issuers:           []Issuer{},
-		CreditCollections: []*IDCreditCollection{},
-		CreditBalances:    []*IDCreditBalance{},
+		CreditCollections: []*CreditCollection{},
+		CreditBalances:    []*CreditBalance{},
 		Applicants:        []Applicant{},
 	}
 }

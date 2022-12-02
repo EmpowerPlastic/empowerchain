@@ -31,49 +31,45 @@ func (s *TestSuite) TestGenesis() {
 				Admin:       sample.AccAddress(),
 			},
 		},
-		CreditCollections: []*plasticcredit.IDCreditCollection{
+		CreditCollections: []*plasticcredit.CreditCollection{
 			{
-				Denom: "ZMP/61361514316",
-				CreditCollection: &plasticcredit.CreditCollection{
-					ProjectId: 2,
-					TotalAmount: &plasticcredit.CreditBalance{
-						Active:  0,
-						Retired: 100000,
-					},
-					CreditData: []*plasticcredit.ProvenData{
-						{
-							Uri:  "ipfs://CID",
-							Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
-						},
+				Denom:     "ZMP/61361514316",
+				ProjectId: 2,
+				TotalAmount: &plasticcredit.CreditAmount{
+					Active:  0,
+					Retired: 100000,
+				},
+				CreditData: []*plasticcredit.ProvenData{
+					{
+						Uri:  "ipfs://CID",
+						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
 					},
 				},
 			},
 			{
-				Denom: "PLST/123",
-				CreditCollection: &plasticcredit.CreditCollection{
-					ProjectId: 1,
-					TotalAmount: &plasticcredit.CreditBalance{
-						Active:  123,
-						Retired: 55,
+				Denom:     "PLST/123",
+				ProjectId: 1,
+				TotalAmount: &plasticcredit.CreditAmount{
+					Active:  123,
+					Retired: 55,
+				},
+				CreditData: []*plasticcredit.ProvenData{
+					{
+						Uri:  "http://example.com",
+						Hash: "0ca0ecabdd9d86217a3230a362e1af0b06bdb85b6aa48602004ef515ee9d4908",
 					},
-					CreditData: []*plasticcredit.ProvenData{
-						{
-							Uri:  "http://example.com",
-							Hash: "0ca0ecabdd9d86217a3230a362e1af0b06bdb85b6aa48602004ef515ee9d4908",
-						},
-						{
-							Uri:  "ipfs://CID",
-							Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
-						},
+					{
+						Uri:  "ipfs://CID",
+						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
 					},
 				},
 			},
 		},
-		CreditBalances: []*plasticcredit.IDCreditBalance{
+		CreditBalances: []*plasticcredit.CreditBalance{
 			{
 				Owner: sample.AccAddress(),
 				Denom: "EMP/61361514316",
-				CreditBalance: &plasticcredit.CreditBalance{
+				Balance: &plasticcredit.CreditAmount{
 					Active:  0,
 					Retired: 500000,
 				},
@@ -81,7 +77,7 @@ func (s *TestSuite) TestGenesis() {
 			{
 				Owner: sample.AccAddress(),
 				Denom: "EMP/61361514316",
-				CreditBalance: &plasticcredit.CreditBalance{
+				Balance: &plasticcredit.CreditAmount{
 					Active:  0,
 					Retired: 200000,
 				},
@@ -89,7 +85,7 @@ func (s *TestSuite) TestGenesis() {
 			{
 				Owner: sample.AccAddress(),
 				Denom: "EMP/61361514316",
-				CreditBalance: &plasticcredit.CreditBalance{
+				Balance: &plasticcredit.CreditAmount{
 					Active:  0,
 					Retired: 300000,
 				},
@@ -97,7 +93,7 @@ func (s *TestSuite) TestGenesis() {
 			{
 				Owner: sample.AccAddress(),
 				Denom: "PLST/123",
-				CreditBalance: &plasticcredit.CreditBalance{
+				Balance: &plasticcredit.CreditAmount{
 					Active:  120,
 					Retired: 5,
 				},
@@ -105,7 +101,7 @@ func (s *TestSuite) TestGenesis() {
 			{
 				Owner: sample.AccAddress(),
 				Denom: "PLST/123",
-				CreditBalance: &plasticcredit.CreditBalance{
+				Balance: &plasticcredit.CreditAmount{
 					Active:  3,
 					Retired: 50,
 				},
@@ -155,13 +151,13 @@ func (s *TestSuite) TestGenesis() {
 	for _, creditCollection := range genesisState.CreditCollections {
 		actualCreditCollection, found := k.GetCreditCollection(s.ctx, creditCollection.Denom)
 		s.Require().True(found)
-		s.Require().Equal(*creditCollection.CreditCollection, actualCreditCollection)
+		s.Require().Equal(*creditCollection, actualCreditCollection)
 	}
 
 	for _, creditBalance := range genesisState.CreditBalances {
 		actualCreditBalance, found := k.GetCreditBalance(s.ctx, sdk.MustAccAddressFromBech32(creditBalance.Owner), creditBalance.Denom)
 		s.Require().True(found)
-		s.Require().Equal(*creditBalance.CreditBalance, actualCreditBalance)
+		s.Require().Equal(*creditBalance, actualCreditBalance)
 	}
 	for _, applicant := range genesisState.Applicants {
 		actualApplicant, found := k.GetApplicant(s.ctx, applicant.Id)

@@ -12,11 +12,11 @@ var (
 	ParamsKey           = []byte{0x00}
 	IDCountersKey       = []byte{0x01}
 	IssuerKey           = []byte{0x02}
-	CreditCollectionKey = []byte{0x03}
-	CreditBalanceKey    = []byte{0x04}
-	CreditClassKey      = []byte{0x05}
-	ProjectKey          = []byte{0x06}
-	ApplicantKey        = []byte{0x07}
+	ApplicantKey        = []byte{0x03}
+	CreditCollectionKey = []byte{0x04}
+	CreditBalanceKey    = []byte{0x05}
+	CreditClassKey      = []byte{0x06}
+	ProjectKey          = []byte{0x07}
 )
 
 const (

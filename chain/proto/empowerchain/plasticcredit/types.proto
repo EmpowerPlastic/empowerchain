@@ -35,6 +35,31 @@ message Applicant {
   string admin = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
+message CreditCollection {
+  // denominator of the credit, store key
+  string denom = 1;
+  // ID of a project related to the collection
+  uint64 project_id = 2; 
+  // Total amount of active and retired credits for the collection
+  CreditAmount total_amount = 3; 
+  // References to formal information about the collection
+  repeated ProvenData credit_data = 4; 
+}
+
+message CreditBalance {
+  // Address of the credits owner, part of compound key
+  string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // denominator of the credit, apart of compound key
+  string denom = 2;
+  // Number of active and retired credits
+  CreditAmount balance = 3;
+}
+
+message CreditAmount {
+  uint64 active = 1;
+  uint64 retired = 2;
+}
+
 // Above this line is implemented
 // Below this line are drafts that needs to be implemented still
 
@@ -47,35 +72,12 @@ message Project {
 }
 
 message CreditClass {
-  uint64 credit_class_id = 1; 
+  string credit_class_id = 1;
   uint64 issuer_id = 2; 
-  string denom = 3; 
-  ProvenData credit_class_data = 4;  
-}
-
-message CreditCollection {
-  uint64 project_id = 2; 
-  CreditBalance total_amount = 3; 
-  repeated ProvenData credit_data = 4; 
-}
-
-message IDCreditCollection {
-  string denom = 1;
-  CreditCollection credit_collection = 2;
-}
-
-message IDCreditBalance {
-  string owner = 1;
-  string denom = 2;
-  CreditBalance credit_balance = 3;
+  ProvenData credit_class_data = 3;  
 }
 
 message ProvenData {
   string uri = 1; 
   string hash = 2; 
-}
-
-message CreditBalance {
-  uint64 active = 1; 
-  uint64 retired = 2; 
 }

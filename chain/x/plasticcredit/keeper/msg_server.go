@@ -37,13 +37,12 @@ func (m msgServer) UpdateParams(goCtx context.Context, req *plasticcredit.MsgUpd
 func (m msgServer) IssueCredits(goCtx context.Context, req *plasticcredit.MsgIssueCredits) (*plasticcredit.MsgIssueCreditsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	denom, totalAmount, err := m.issueCredits(ctx, req.Creator, req.ProjectId, req.DenomSuffix, req.CreditAmount, req.CreditData)
+	collection, err := m.issueCredits(ctx, req.Creator, req.ProjectId, req.SerialNumber, req.CreditAmount, req.CreditData)
 	if err != nil {
 		return nil, err
 	}
 	return &plasticcredit.MsgIssueCreditsResponse{
-		Denom:       denom,
-		TotalAmount: &totalAmount,
+		Collection: &collection,
 	}, nil
 }
 
@@ -75,8 +74,6 @@ func (m msgServer) RetireCredits(goCtx context.Context, req *plasticcredit.MsgRe
 		return &plasticcredit.MsgRetireCreditsResponse{}, err
 	}
 	return &plasticcredit.MsgRetireCreditsResponse{
-		Owner:   req.Owner,
-		Denom:   req.Denom,
 		Balance: newBalance,
 	}, nil
 }
