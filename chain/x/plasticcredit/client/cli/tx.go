@@ -1,10 +1,12 @@
 package cli
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -23,6 +25,132 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(MsgCreateApplicantCmd())
+	cmd.AddCommand(MsgIssueCreditsCmd())
+	cmd.AddCommand(MsgTransferCreditsCmd())
+	cmd.AddCommand(MsgRetireCreditsCmd())
+
+	return cmd
+}
+
+func MsgIssueCreditsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "issue-credits [project-id] [serial-number] [amount] [credit-data...]",
+		Short: "Issue credits.",
+		Long:  `Issue credits.`,
+		Args:  cobra.MinimumNArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			creator := clientCtx.GetFromAddress()
+			projectID, err := cast.ToUint64E(args[0])
+			if err != nil {
+				return err
+			}
+			serialNumber := args[1]
+			creditAmount, err := cast.ToUint64E(args[2])
+			if err != nil {
+				return err
+			}
+			var creditData []*plasticcredit.ProvenData
+			for i := 3; i < len(args); i++ {
+				data := new(plasticcredit.ProvenData)
+				err = json.Unmarshal([]byte(args[i]), data)
+				if err != nil {
+					return err
+				}
+				creditData = append(creditData, data)
+			}
+
+			msg := plasticcredit.MsgIssueCredits{
+				Creator:      creator.String(),
+				ProjectId:    projectID,
+				SerialNumber: serialNumber,
+				CreditAmount: creditAmount,
+				CreditData:   creditData,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func MsgTransferCreditsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "transfer [sender] [receiver] [denom] [amount] [retire?]",
+		Short: "Transfer credits",
+		Long:  `Transfer credits from one address to another. Retire is optional and is set to false by default`,
+		Args:  cobra.MinimumNArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			from := args[0]
+			to := args[1]
+			denom := args[2]
+			amount, err := cast.ToUint64E(args[3])
+			if err != nil {
+				return err
+			}
+			retire, err := cast.ToBoolE(args[4])
+			if err != nil {
+				retire = false
+			}
+
+			msg := plasticcredit.MsgTransferCredits{
+				From:   from,
+				To:     to,
+				Denom:  denom,
+				Amount: amount,
+				Retire: retire,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func MsgRetireCreditsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "retire [denom] [amount]",
+		Short: "Retire credits",
+		Long:  `Retire credits`,
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			owner := clientCtx.GetFromAddress()
+			denom := args[0]
+			amount, err := cast.ToUint64E(args[2])
+			if err != nil {
+				return err
+			}
+
+			msg := plasticcredit.MsgRetireCredits{
+				Owner:  owner.String(),
+				Denom:  denom,
+				Amount: amount,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
 }

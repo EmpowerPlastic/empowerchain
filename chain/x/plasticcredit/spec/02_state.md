@@ -44,15 +44,25 @@ An Applicant consists of the following fields: `id`, `name`, `description`, `adm
 
 `admin` is the address of the administrative account that controls the applicant and can update information.
 
-- Issuer: `0x03 | applicantID | -> ProtocolBuffer(Applicant)`
+- Applicant: `0x03 | applicantID | -> ProtocolBuffer(Applicant)`
+
+## Credit Collection
+
+Credit Collection contains references to formal information about the collection and overall amount of minted and retired credits.
+- `denom` - denomination of the collection, which is unique per collection and consists of `Credit Class` denom and a chosen suffix, e.g. `EMP/123`. Denom is also used as a store key.
+- `Active amount` - amount of credits that are active for a given collection (weren't retired).
+- `Retired amount` - amount of credits that have been retired for a given collection.
+- `Credit data` - URLs and proofs to all the data relevant to a given Credit Collection.
+
+- CreditCollection: `0x04 | denom | -> ProtocolBuffer(CreditColletion)`
 
 ## Credit Balance
 
-## Credit Batch
+Credit Balance stores a balance of credits of a given denom and for a given owner address. Store uses compound key, which is constructed from owner address and credit denom. The value of Credit Balance contains the amount of active and retired credits of a given denom and for a given owner address.
+
+- CreditBalance: `0x05 | owner address | denom | -> ProtocolBuffer(CreditBalance)`
 
 ## Credit Class
-
-## Credit Denom
 
 ## ID Counters
 

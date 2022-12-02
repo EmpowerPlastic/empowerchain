@@ -1,10 +1,8 @@
 package proofofexistence
 
-// DONTCOVER
+import "cosmossdk.io/errors"
 
-import (
-	"cosmossdk.io/errors"
-)
+// DONTCOVER
 
 // x/proofofexistence module sentinel errors
 var (

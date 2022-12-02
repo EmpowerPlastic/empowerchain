@@ -10,7 +10,7 @@ import (
 func (k Keeper) GetApplicant(ctx sdk.Context, id uint64) (applicant plasticcredit.Applicant, found bool) {
 	store := k.getApplicantStore(ctx)
 
-	key := createKey(id)
+	key := plasticcredit.CreateKeyFromUint64(id)
 	bz := store.Get(key)
 	if len(bz) == 0 {
 		return applicant, false
@@ -60,7 +60,7 @@ func (k Keeper) setApplicant(ctx sdk.Context, applicant plasticcredit.Applicant)
 		return err
 	}
 
-	key := createKey(applicant.Id)
+	key := plasticcredit.CreateKeyFromUint64(applicant.Id)
 	store.Set(key, b)
 
 	return nil

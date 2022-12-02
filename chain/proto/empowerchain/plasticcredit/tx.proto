@@ -19,6 +19,15 @@ service Msg {
 
   // CreateApplicant creates a new Applicant that can create and apply for projects, for which plastic credits can be issued
   rpc CreateApplicant(MsgCreateApplicant) returns (MsgCreateApplicantResponse);
+
+  // IssueCredits mints new credits related to given credit class and project
+  rpc IssueCredits(MsgIssueCredits) returns (MsgIssueCreditsResponse);
+
+  // TransferCredits transfers credits from one account to another and can optionally retire them by doing so
+  rpc TransferCredits(MsgTransferCredits) returns (MsgTransferCreditsResponse);
+
+  // RetireCredits retires active credits
+  rpc RetireCredits(MsgRetireCredits) returns (MsgRetireCreditsResponse);
 }
 
 message MsgUpdateParams {
@@ -47,6 +56,55 @@ message MsgCreateIssuer {
 
 message MsgCreateIssuerResponse {
   uint64 issuer_id = 1;
+}
+
+message MsgIssueCredits {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  uint64 project_id = 2;
+  string serial_number = 3;
+  uint64 credit_amount = 4;
+  repeated ProvenData credit_data = 5;
+}
+
+message MsgIssueCreditsResponse {
+  CreditCollection collection = 1;
+}
+
+message MsgTransferCredits {
+  option (cosmos.msg.v1.signer) = "from";
+
+  string from = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  string to = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+ 
+  string denom = 3;
+
+  uint64 amount = 4;
+
+  bool retire = 5;
+  
+}
+
+message MsgTransferCreditsResponse {
+
+}
+
+message MsgRetireCredits {
+  option (cosmos.msg.v1.signer) = "owner";
+
+  string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  string denom = 2;
+  uint64 amount = 3;
+
+}
+
+message MsgRetireCreditsResponse {
+  CreditBalance balance = 1;
+
 }
 
 message MsgCreateApplicant {

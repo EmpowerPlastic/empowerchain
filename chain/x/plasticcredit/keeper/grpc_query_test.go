@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/empowerchain/empowerchain/testutil/sample"
 	"github.com/empowerchain/empowerchain/x/plasticcredit"
@@ -36,7 +37,7 @@ func (s *TestSuite) TestIssuerQuery() {
 	_, err := querier.Issuer(goCtx, &plasticcredit.QueryIssuerRequest{
 		IssuerId: 1,
 	})
-	s.Require().ErrorIs(err, plasticcredit.ErrIssuerNotFound)
+	s.Require().ErrorIs(err, sdkerrors.ErrNotFound)
 
 	ms := keeper.NewMsgServerImpl(k)
 	createMsg := plasticcredit.MsgCreateIssuer{
@@ -116,7 +117,7 @@ func (s *TestSuite) TestApplicantQuery() {
 	_, err := querier.Applicant(goCtx, &plasticcredit.QueryApplicantRequest{
 		ApplicantId: 1,
 	})
-	s.Require().ErrorIs(err, plasticcredit.ErrApplicantNotFound)
+	s.Require().ErrorIs(err, sdkerrors.ErrNotFound)
 
 	ms := keeper.NewMsgServerImpl(k)
 	createMsg := plasticcredit.MsgCreateApplicant{
@@ -136,3 +137,5 @@ func (s *TestSuite) TestApplicantQuery() {
 	s.Require().Equal(createMsg.Description, resp.Applicant.Description)
 	s.Require().Equal(createMsg.Admin, resp.Applicant.Admin)
 }
+
+// TODO credit balance, credit collection queries

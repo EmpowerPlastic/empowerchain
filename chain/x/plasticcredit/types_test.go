@@ -204,3 +204,170 @@ func TestApplicantValidation(t *testing.T) {
 		})
 	}
 }
+
+func TestCreditCollectionValidation(t *testing.T) {
+	testCases := map[string]struct {
+		collection CreditCollection
+		err        error
+	}{
+		"happy path": {
+			collection: CreditCollection{
+				Denom:     "EMP/123",
+				ProjectId: 1,
+				TotalAmount: &CreditAmount{
+					Active:  100,
+					Retired: 50,
+				},
+				CreditData: []*ProvenData{
+					{
+						Uri:  "http://empower.eco",
+						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
+					},
+				},
+			},
+			err: nil,
+		},
+		"invalid denom": {
+			collection: CreditCollection{
+				Denom:     "",
+				ProjectId: 1,
+				TotalAmount: &CreditAmount{
+					Active:  100,
+					Retired: 50,
+				},
+				CreditData: []*ProvenData{
+					{
+						Uri:  "http://empower.eco",
+						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
+					},
+				},
+			},
+			err: ErrInvalidValue,
+		},
+		"invalid project id": {
+			collection: CreditCollection{
+				Denom:     "EMP/123",
+				ProjectId: 0,
+				TotalAmount: &CreditAmount{
+					Active:  100,
+					Retired: 50,
+				},
+				CreditData: []*ProvenData{
+					{
+						Uri:  "http://empower.eco",
+						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
+					},
+				},
+			},
+			err: ErrInvalidValue,
+		},
+		"invalid total amount": {
+			collection: CreditCollection{
+				Denom:     "EMP/123",
+				ProjectId: 1,
+				TotalAmount: &CreditAmount{
+					Active:  0,
+					Retired: 0,
+				},
+				CreditData: []*ProvenData{
+					{
+						Uri:  "http://empower.eco",
+						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
+					},
+				},
+			},
+			err: ErrInvalidValue,
+		},
+		"invalid credit data uri": {
+			collection: CreditCollection{
+				Denom:     "EMP/123",
+				ProjectId: 0,
+				TotalAmount: &CreditAmount{
+					Active:  100,
+					Retired: 50,
+				},
+				CreditData: []*ProvenData{
+					{
+						Uri:  "",
+						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
+					},
+				},
+			},
+			err: ErrInvalidValue,
+		},
+		"invalid credit data hash": {
+			collection: CreditCollection{
+				Denom:     "EMP/123",
+				ProjectId: 0,
+				TotalAmount: &CreditAmount{
+					Active:  100,
+					Retired: 50,
+				},
+				CreditData: []*ProvenData{
+					{
+						Uri:  "http://empower.eco",
+						Hash: "a b",
+					},
+				},
+			},
+			err: ErrInvalidValue,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			err := tc.collection.Validate()
+
+			require.ErrorIs(t, err, tc.err)
+		})
+	}
+}
+
+func TestCreditBalanceValidation(t *testing.T) {
+	testCases := map[string]struct {
+		balance CreditBalance
+		err     error
+	}{
+		"happy path": {
+			balance: CreditBalance{
+				Owner: sample.AccAddress(),
+				Denom: "EMP/123",
+				Balance: &CreditAmount{
+					Active:  0,
+					Retired: 0,
+				},
+			},
+			err: nil,
+		},
+		"invalid owner": {
+			balance: CreditBalance{
+				Owner: "Empower",
+				Denom: "EMP/123",
+				Balance: &CreditAmount{
+					Active:  0,
+					Retired: 0,
+				},
+			},
+			err: sdkerrors.ErrInvalidAddress,
+		},
+		"invalid denom": {
+			balance: CreditBalance{
+				Owner: sample.AccAddress(),
+				Denom: "",
+				Balance: &CreditAmount{
+					Active:  0,
+					Retired: 0,
+				},
+			},
+			err: ErrInvalidValue,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			err := tc.balance.Validate()
+
+			require.ErrorIs(t, err, tc.err)
+		})
+	}
+}
