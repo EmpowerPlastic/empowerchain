@@ -5,16 +5,15 @@ import (
 	"github.com/empowerchain/empowerchain/x/plasticcredit"
 )
 
-func (k Keeper) GetIDCounters(ctx sdk.Context) (plasticcredit.IDCounters, error) {
+func (k Keeper) GetIDCounters(ctx sdk.Context) (idc plasticcredit.IDCounters) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(plasticcredit.IDCountersKey)
 	if bz == nil {
-		return plasticcredit.IDCounters{}, nil
+		panic("id counters not found, should not happen!")
 	}
 
-	var idc plasticcredit.IDCounters
-	err := k.cdc.Unmarshal(bz, &idc)
-	return idc, err
+	k.cdc.MustUnmarshal(bz, &idc)
+	return idc
 }
 
 func (k Keeper) setIDCounters(ctx sdk.Context, idc plasticcredit.IDCounters) error {

@@ -4,18 +4,17 @@ package plasticcredit
 const DefaultIndex uint64 = 1
 
 // DefaultGenesis returns the default genesis state
-func DefaultGenesis() *GenesisState {
-	return &GenesisState{
+func DefaultGenesis() GenesisState {
+	return GenesisState{
 		Params: DefaultParams(),
 		IdCounters: IDCounters{
-			NextIssuerId:      DefaultIndex,
-			NextApplicantId:   DefaultIndex,
-			NextProjectId:     DefaultIndex,
-			NextCreditClassId: DefaultIndex,
+			NextIssuerId:    DefaultIndex,
+			NextApplicantId: DefaultIndex,
+			NextProjectId:   DefaultIndex,
 		},
 		Issuers:           []Issuer{},
-		CreditCollections: []*CreditCollection{},
-		CreditBalances:    []*CreditBalance{},
+		CreditCollections: []CreditCollection{},
+		CreditBalances:    []CreditBalance{},
 		Applicants:        []Applicant{},
 	}
 }

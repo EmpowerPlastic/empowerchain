@@ -3,9 +3,9 @@ package cli
 import (
 	"context"
 	"fmt"
-	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/spf13/cast"
 
 	// "strings"
 
@@ -33,6 +33,8 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	cmd.AddCommand(CmdQueryIssuer())
 	cmd.AddCommand(CmdQueryIssuers())
 	cmd.AddCommand(CmdQueryApplicant())
+	cmd.AddCommand(CmdQueryCreditClass())
+	cmd.AddCommand(CmdQueryCreditClasses())
 	cmd.AddCommand(CmdQueryCreditCollection())
 	cmd.AddCommand(CmdQueryCreditBalance())
 
@@ -72,7 +74,7 @@ func CmdQueryIssuer() *cobra.Command {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 			queryClient := plasticcredit.NewQueryClient(clientCtx)
 
-			issuerID, err := strconv.ParseUint(args[0], 10, 64)
+			issuerID, err := cast.ToUint64E(args[0])
 			if err != nil {
 				return err
 			}
@@ -131,13 +133,69 @@ func CmdQueryApplicant() *cobra.Command {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 			queryClient := plasticcredit.NewQueryClient(clientCtx)
 
-			applicantID, err := strconv.ParseUint(args[0], 10, 64)
+			applicantID, err := cast.ToUint64E(args[0])
 			if err != nil {
 				return err
 			}
 
 			res, err := queryClient.Applicant(context.Background(), &plasticcredit.QueryApplicantRequest{
 				ApplicantId: applicantID,
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdQueryCreditClass() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "credit-class [abbreviation]",
+		Short: "query for a credit class by its [abbreviation]",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+			queryClient := plasticcredit.NewQueryClient(clientCtx)
+
+			abbreviation := args[0]
+
+			res, err := queryClient.CreditClass(context.Background(), &plasticcredit.QueryCreditClassRequest{
+				CreditClassAbbreviation: abbreviation,
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdQueryCreditClasses() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "credit-classes",
+		Short: "query all credit classes",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+			queryClient := plasticcredit.NewQueryClient(clientCtx)
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := queryClient.CreditClasses(context.Background(), &plasticcredit.QueryCreditClassesRequest{
+				Pagination: pageReq,
 			})
 			if err != nil {
 				return err

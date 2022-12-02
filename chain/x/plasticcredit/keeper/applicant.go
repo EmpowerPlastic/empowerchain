@@ -22,10 +22,7 @@ func (k Keeper) GetApplicant(ctx sdk.Context, id uint64) (applicant plasticcredi
 }
 
 func (k Keeper) createApplicant(ctx sdk.Context, name string, description string, admin string) (uint64, error) {
-	idc, err := k.GetIDCounters(ctx)
-	if err != nil {
-		return 0, err
-	}
+	idc := k.GetIDCounters(ctx)
 
 	nextID := idc.NextApplicantId
 
@@ -66,7 +63,7 @@ func (k Keeper) setApplicant(ctx sdk.Context, applicant plasticcredit.Applicant)
 	return nil
 }
 
-func (k Keeper) getAllApplicants(ctx sdk.Context) ([]plasticcredit.Applicant, error) {
+func (k Keeper) getAllApplicants(ctx sdk.Context) []plasticcredit.Applicant {
 	store := k.getApplicantStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
@@ -75,13 +72,11 @@ func (k Keeper) getAllApplicants(ctx sdk.Context) ([]plasticcredit.Applicant, er
 	var applicants []plasticcredit.Applicant
 	for ; iterator.Valid(); iterator.Next() {
 		var applicant plasticcredit.Applicant
-		if err := k.cdc.Unmarshal(iterator.Value(), &applicant); err != nil {
-			return nil, err
-		}
+		k.cdc.MustUnmarshal(iterator.Value(), &applicant)
 		applicants = append(applicants, applicant)
 	}
 
-	return applicants, nil
+	return applicants
 }
 
 func (k Keeper) getApplicantStore(ctx sdk.Context) storetypes.KVStore {

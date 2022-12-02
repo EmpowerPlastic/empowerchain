@@ -20,6 +20,9 @@ service Msg {
   // CreateApplicant creates a new Applicant that can create and apply for projects, for which plastic credits can be issued
   rpc CreateApplicant(MsgCreateApplicant) returns (MsgCreateApplicantResponse);
 
+  // CreateCreditClass creates a new Credit Class for an issuer.
+  rpc CreateCreditClass(MsgCreateCreditClass) returns (MsgCreateCreditClassResponse);
+
   // IssueCredits mints new credits related to given credit class and project
   rpc IssueCredits(MsgIssueCredits) returns (MsgIssueCreditsResponse);
 
@@ -58,6 +61,33 @@ message MsgCreateIssuerResponse {
   uint64 issuer_id = 1;
 }
 
+message MsgCreateApplicant {
+  option (cosmos.msg.v1.signer) = "admin";
+  string name = 1;
+  string description = 2;
+  string admin = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message MsgCreateApplicantResponse{
+  uint64 applicant_id = 1;
+}
+
+message MsgCreateCreditClass {
+  option (cosmos.msg.v1.signer) = "admin";
+
+  // creator is the signer and needs to have permissions on the issuer referenced in issuer_id
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // abbreviation is the short-hand name, as well as the ID of the credit class
+  string abbreviation = 2;
+  // issuer_id is the ID of the issuer creating and owning the credit class
+  uint64 issuer_id = 3;
+  // name is the human friendly name of the credits (e.g. Empower Plastic Credits)
+  string name = 4;
+}
+
+message MsgCreateCreditClassResponse {}
+
 message MsgIssueCredits {
   option (cosmos.msg.v1.signer) = "creator";
 
@@ -79,13 +109,13 @@ message MsgTransferCredits {
   string from = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
   string to = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
- 
+
   string denom = 3;
 
   uint64 amount = 4;
 
   bool retire = 5;
-  
+
 }
 
 message MsgTransferCreditsResponse {
@@ -104,16 +134,4 @@ message MsgRetireCredits {
 
 message MsgRetireCreditsResponse {
   CreditBalance balance = 1;
-
-}
-
-message MsgCreateApplicant {
-  option (cosmos.msg.v1.signer) = "admin";
-  string name = 1;
-  string description = 2;
-  string admin = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-}
-
-message MsgCreateApplicantResponse{
-  uint64 applicant_id = 1;
 }

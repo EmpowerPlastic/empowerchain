@@ -43,7 +43,7 @@ func (k Keeper) GetIssuers(ctx sdk.Context, pageReq *query.PageRequest) ([]*plas
 	return issuers, pageRes, nil
 }
 
-func (k Keeper) getAllIssuers(ctx sdk.Context) ([]plasticcredit.Issuer, error) {
+func (k Keeper) getAllIssuers(ctx sdk.Context) []plasticcredit.Issuer {
 	store := k.getIssuerStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
@@ -52,20 +52,15 @@ func (k Keeper) getAllIssuers(ctx sdk.Context) ([]plasticcredit.Issuer, error) {
 	var issuers []plasticcredit.Issuer
 	for ; iterator.Valid(); iterator.Next() {
 		var issuer plasticcredit.Issuer
-		if err := k.cdc.Unmarshal(iterator.Value(), &issuer); err != nil {
-			return nil, err
-		}
+		k.cdc.MustUnmarshal(iterator.Value(), &issuer)
 		issuers = append(issuers, issuer)
 	}
 
-	return issuers, nil
+	return issuers
 }
 
 func (k Keeper) createIssuer(ctx sdk.Context, name string, description string, admin string) (uint64, error) {
-	idc, err := k.GetIDCounters(ctx)
-	if err != nil {
-		return 0, err
-	}
+	idc := k.GetIDCounters(ctx)
 
 	nextID := idc.NextIssuerId
 

@@ -25,6 +25,14 @@ service Query {
     option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/applicants/{applicant_id}";
   }
 
+  rpc CreditClasses(QueryCreditClassesRequest) returns (QueryCreditClassesResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit-classes";
+  }
+
+  rpc CreditClass(QueryCreditClassRequest) returns (QueryCreditClassResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit-classes/{credit_class_abbreviation}";
+  }
+
   rpc CreditCollection(QueryCreditCollectionRequest) returns (QueryCreditCollectionResponse) {
     option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/creditcollections/{denom}";
   }
@@ -63,6 +71,23 @@ message QueryApplicantRequest {
 
 message QueryApplicantResponse {
   Applicant applicant = 1;
+}
+
+message QueryCreditClassesRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryCreditClassesResponse {
+  repeated CreditClass credit_classes = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryCreditClassRequest {
+  string credit_class_abbreviation = 1;
+}
+
+message QueryCreditClassResponse {
+  CreditClass credit_class = 1;
 }
 
 message QueryCreditCollectionRequest {

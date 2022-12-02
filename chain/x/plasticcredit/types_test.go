@@ -3,6 +3,8 @@ package plasticcredit
 import (
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/empowerchain/empowerchain/testutil/sample"
 	"github.com/stretchr/testify/require"
@@ -15,42 +17,30 @@ func TestIDCountersValidation(t *testing.T) {
 	}{
 		"happy path": {
 			idc: IDCounters{
-				NextIssuerId:      1,
-				NextApplicantId:   235,
-				NextProjectId:     1337,
-				NextCreditClassId: 42,
+				NextIssuerId:    1,
+				NextApplicantId: 235,
+				NextProjectId:   1337,
 			},
 			err: nil,
 		},
 		"next issuer id not set": {
 			idc: IDCounters{
-				NextApplicantId:   235,
-				NextProjectId:     1337,
-				NextCreditClassId: 42,
+				NextApplicantId: 235,
+				NextProjectId:   1337,
 			},
 			err: ErrInvalidValue,
 		},
 		"next collector id not set": {
 			idc: IDCounters{
-				NextIssuerId:      1,
-				NextProjectId:     1337,
-				NextCreditClassId: 42,
+				NextIssuerId:  1,
+				NextProjectId: 1337,
 			},
 			err: ErrInvalidValue,
 		},
 		"next project id not set": {
 			idc: IDCounters{
-				NextIssuerId:      1,
-				NextApplicantId:   235,
-				NextCreditClassId: 42,
-			},
-			err: ErrInvalidValue,
-		},
-		"next credit class id not set": {
-			idc: IDCounters{
 				NextIssuerId:    1,
 				NextApplicantId: 235,
-				NextProjectId:   1337,
 			},
 			err: ErrInvalidValue,
 		},
@@ -135,6 +125,42 @@ func TestIssuerValidation(t *testing.T) {
 	}
 }
 
+func TestAddressHasAuthorization(t *testing.T) {
+	issuer := Issuer{
+		Id:          1,
+		Name:        "Empower",
+		Description: "",
+		Admin:       sample.AccAddress(),
+	}
+	adminAddr, _ := sdk.AccAddressFromBech32(issuer.Admin)
+	someRandomAddr, _ := sdk.AccAddressFromBech32(sample.AccAddress())
+
+	testCases := map[string]struct {
+		addr             sdk.AccAddress
+		hasAuthorization bool
+	}{
+		"admin": {
+			addr:             adminAddr,
+			hasAuthorization: true,
+		},
+		"nil": {
+			addr:             nil,
+			hasAuthorization: false,
+		},
+		"some random address": {
+			addr:             someRandomAddr,
+			hasAuthorization: false,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			hasAuthorization := issuer.AddressHasAuthorization(tc.addr)
+			require.Equal(t, tc.hasAuthorization, hasAuthorization)
+		})
+	}
+}
+
 func TestApplicantValidation(t *testing.T) {
 	testCases := map[string]struct {
 		applicant Applicant
@@ -199,6 +225,54 @@ func TestApplicantValidation(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			err := tc.applicant.Validate()
+
+			require.ErrorIs(t, err, tc.err)
+		})
+	}
+}
+
+func TestCreditClassValidation(t *testing.T) {
+	testCases := map[string]struct {
+		creditClass CreditClass
+		err         error
+	}{
+		"happy path": {
+			creditClass: CreditClass{
+				Abbreviation: "PCRD",
+				IssuerId:     1,
+				Name:         "Empower Plastic Credits",
+			},
+			err: nil,
+		},
+		"invalid abbreviation": {
+			creditClass: CreditClass{
+				Abbreviation: "",
+				IssuerId:     1,
+				Name:         "Empower Plastic Credits",
+			},
+			err: ErrInvalidValue,
+		},
+		"invalid issuer id": {
+			creditClass: CreditClass{
+				Abbreviation: "PCRD",
+				IssuerId:     0,
+				Name:         "Empower Plastic Credits",
+			},
+			err: ErrInvalidValue,
+		},
+		"empty name": {
+			creditClass: CreditClass{
+				Abbreviation: "PCRD",
+				IssuerId:     1,
+				Name:         "",
+			},
+			err: ErrInvalidValue,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			err := tc.creditClass.Validate()
 
 			require.ErrorIs(t, err, tc.err)
 		})
