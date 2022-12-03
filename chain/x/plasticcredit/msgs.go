@@ -12,6 +12,7 @@ var (
 	_ sdk.Msg = &MsgUpdateParams{}
 	_ sdk.Msg = &MsgCreateIssuer{}
 	_ sdk.Msg = &MsgCreateApplicant{}
+	_ sdk.Msg = &MsgCreateCreditClass{}
 )
 
 func (m *MsgUpdateParams) ValidateBasic() error {
@@ -19,6 +20,7 @@ func (m *MsgUpdateParams) ValidateBasic() error {
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid authority address (%s)", err)
 	}
+
 	_, err = sdk.AccAddressFromBech32(m.Params.IssuerCreator)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid issuer creator address (%s)", err)
@@ -80,6 +82,27 @@ func (m *MsgCreateApplicant) GetSigners() []sdk.AccAddress {
 		panic(err)
 	}
 	return []sdk.AccAddress{admin}
+}
+
+func (m *MsgCreateCreditClass) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Creator)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+
+	if m.Name == "" {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "credit class name cannot be empty")
+	}
+
+	return nil
+}
+
+func (m *MsgCreateCreditClass) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(m.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
 }
 
 func (m *MsgIssueCredits) ValidateBasic() error {

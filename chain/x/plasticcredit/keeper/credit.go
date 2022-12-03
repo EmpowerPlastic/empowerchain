@@ -129,9 +129,9 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 		return plasticcredit.CreditCollection{}, errors.Wrapf(sdkerrors.ErrNotFound, "project with id %d not found", projectID)
 	}
 
-	creditClass, found := k.GetCreditClass(ctx, project.CreditClassId)
+	creditClass, found := k.GetCreditClass(ctx, project.CreditClassAbbreviation)
 	if !found {
-		return plasticcredit.CreditCollection{}, errors.Wrapf(sdkerrors.ErrNotFound, "credit class with id %d not found", project.CreditClassId)
+		return plasticcredit.CreditCollection{}, errors.Wrapf(sdkerrors.ErrNotFound, "credit class with abbreviation %s not found", project.CreditClassAbbreviation)
 	}
 
 	issuer, found := k.GetIssuer(ctx, creditClass.IssuerId)
@@ -140,7 +140,7 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 	}
 	// Check if creator is issuer admin
 	if issuer.Admin != creator {
-		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrNotIssuer, "%s is not allowed to issue credits for class with id %s", creator, creditClass.CreditClassId)
+		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrNotIssuer, "%s is not allowed to issue credits for class with abbreviation %s", creator, creditClass.Abbreviation)
 	}
 
 	applicant, found := k.GetApplicant(ctx, project.ApplicantId)
@@ -148,7 +148,7 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 		return plasticcredit.CreditCollection{}, errors.Wrapf(sdkerrors.ErrNotFound, "applicant with id %d not found", project.ApplicantId)
 	}
 
-	denom := CreateCreditDenom(creditClass.CreditClassId, serialNumber)
+	denom := CreateCreditDenom(creditClass.Abbreviation, serialNumber)
 	creditCollection, found := k.GetCreditCollection(ctx, denom)
 	// If collection doesn't exist, create a new one
 	if !found {
@@ -234,32 +234,32 @@ func (k Keeper) setCreditBalance(ctx sdk.Context, balance plasticcredit.CreditBa
 	return nil
 }
 
-func (k Keeper) getAllCreditCollections(ctx sdk.Context) []*plasticcredit.CreditCollection {
+func (k Keeper) getAllCreditCollections(ctx sdk.Context) []plasticcredit.CreditCollection {
 	store := k.getCreditCollectionStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
 	defer iterator.Close()
 
-	var creditCollections []*plasticcredit.CreditCollection
+	var creditCollections []plasticcredit.CreditCollection
 	for ; iterator.Valid(); iterator.Next() {
 		var creditCollection plasticcredit.CreditCollection
 		k.cdc.MustUnmarshal(iterator.Value(), &creditCollection)
-		creditCollections = append(creditCollections, &creditCollection)
+		creditCollections = append(creditCollections, creditCollection)
 	}
 	return creditCollections
 }
 
-func (k Keeper) getAllCreditBalances(ctx sdk.Context) []*plasticcredit.CreditBalance {
+func (k Keeper) getAllCreditBalances(ctx sdk.Context) []plasticcredit.CreditBalance {
 	store := k.getCreditBalanceStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
 	defer iterator.Close()
 
-	var creditBalances []*plasticcredit.CreditBalance
+	var creditBalances []plasticcredit.CreditBalance
 	for ; iterator.Valid(); iterator.Next() {
 		var creditBalance plasticcredit.CreditBalance
 		k.cdc.MustUnmarshal(iterator.Value(), &creditBalance)
-		creditBalances = append(creditBalances, &creditBalance)
+		creditBalances = append(creditBalances, creditBalance)
 	}
 	return creditBalances
 }
@@ -278,6 +278,7 @@ func (k Keeper) getCreditBalanceStore(ctx sdk.Context) storetypes.KVStore {
 	return creditBalanceStore
 }
 
-func CreateCreditDenom(creditClassDenom string, creditCollectionSuffix string) string {
-	return creditClassDenom + "/" + creditCollectionSuffix
+// TODO: Needs test
+func CreateCreditDenom(creditClassAbbreviation string, creditCollectionSuffix string) string {
+	return creditClassAbbreviation + "/" + creditCollectionSuffix
 }

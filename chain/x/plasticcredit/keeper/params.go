@@ -5,16 +5,16 @@ import (
 	"github.com/empowerchain/empowerchain/x/plasticcredit"
 )
 
-func (k Keeper) GetParams(ctx sdk.Context) (plasticcredit.Params, error) {
+func (k Keeper) GetParams(ctx sdk.Context) plasticcredit.Params {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(plasticcredit.ParamsKey)
 	if bz == nil {
-		return plasticcredit.Params{}, nil
+		return plasticcredit.Params{}
 	}
 
 	var p plasticcredit.Params
-	err := k.cdc.Unmarshal(bz, &p)
-	return p, err
+	k.cdc.MustUnmarshal(bz, &p)
+	return p
 }
 
 func (k Keeper) setParams(ctx sdk.Context, p plasticcredit.Params) error {

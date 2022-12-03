@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/empowerchain/empowerchain/app"
 	"github.com/empowerchain/empowerchain/testutil/sample"
@@ -32,7 +33,7 @@ func (s *TestSuite) TestUpdateParams() {
 					Params:    plasticcredit.Params{},
 				}
 			},
-			err: govtypes.ErrInvalidSigner,
+			err: sdkerrors.ErrUnauthorized,
 		},
 		"invalid params": {
 			msg: func(empowerApp *app.EmpowerApp) *plasticcredit.MsgUpdateParams {
@@ -43,7 +44,7 @@ func (s *TestSuite) TestUpdateParams() {
 					},
 				}
 			},
-			err: plasticcredit.ErrInvalidParams,
+			err: sdkerrors.ErrInvalidAddress,
 		},
 	}
 
@@ -62,8 +63,7 @@ func (s *TestSuite) TestUpdateParams() {
 			if err == nil {
 				s.Require().NoError(err)
 
-				params, err := k.GetParams(s.ctx)
-				s.Require().NoError(err)
+				params := k.GetParams(s.ctx)
 				s.Require().Equal(msg.Params, params)
 			}
 		})
@@ -110,7 +110,7 @@ func (s *TestSuite) TestCreateIssuer() {
 				Description: "Empower is cool",
 				Admin:       sample.AccAddress(),
 			},
-			err: govtypes.ErrInvalidSigner,
+			err: sdkerrors.ErrUnauthorized,
 		},
 	}
 
@@ -135,8 +135,7 @@ func (s *TestSuite) TestCreateIssuer() {
 			if err == nil {
 				s.Require().Equal(uint64(1), resp.IssuerId)
 
-				idCounters, err := k.GetIDCounters(s.ctx)
-				s.Require().NoError(err)
+				idCounters := k.GetIDCounters(s.ctx)
 				s.Require().Equal(uint64(2), idCounters.NextIssuerId)
 
 				issuer, found := k.GetIssuer(s.ctx, resp.IssuerId)
@@ -181,21 +180,139 @@ func (s *TestSuite) TestCreateApplicant() {
 			if err == nil {
 				s.Require().Equal(uint64(1), resp.ApplicantId)
 
-				idCounters, err := k.GetIDCounters(s.ctx)
-				s.Require().NoError(err)
+				idCounters := k.GetIDCounters(s.ctx)
 				s.Require().Equal(uint64(2), idCounters.NextApplicantId)
 
-				issuer, found := k.GetApplicant(s.ctx, resp.ApplicantId)
+				applicant, found := k.GetApplicant(s.ctx, resp.ApplicantId)
 				s.Require().True(found)
 				s.Require().Equal(plasticcredit.Applicant{
 					Id:          resp.ApplicantId,
 					Name:        tc.msg.Name,
 					Description: tc.msg.Description,
 					Admin:       tc.msg.Admin,
-				}, issuer)
+				}, applicant)
 			}
 		})
 	}
+}
+
+func (s *TestSuite) TestCreateCreditClass() {
+	issuer := plasticcredit.Issuer{
+		Id:          1,
+		Name:        "Empower",
+		Description: "",
+		Admin:       sample.AccAddress(),
+	}
+
+	testCases := map[string]struct {
+		msg *plasticcredit.MsgCreateCreditClass
+		err error
+	}{
+		"happy path": {
+			msg: &plasticcredit.MsgCreateCreditClass{
+				Creator:      issuer.Admin,
+				Abbreviation: "PCRD",
+				IssuerId:     issuer.Id,
+				Name:         "Empower Plastic Credits",
+			},
+			err: nil,
+		},
+		"unauthorized creator on the issuer": {
+			msg: &plasticcredit.MsgCreateCreditClass{
+				Creator:      sample.AccAddress(),
+				Abbreviation: "PCRD",
+				IssuerId:     issuer.Id,
+				Name:         "Empower Plastic Credits",
+			},
+			err: sdkerrors.ErrUnauthorized,
+		},
+		"invalid abbreviation": {
+			msg: &plasticcredit.MsgCreateCreditClass{
+				Creator:      issuer.Admin,
+				Abbreviation: "",
+				IssuerId:     issuer.Id,
+				Name:         "Empower Plastic Credits",
+			},
+			err: plasticcredit.ErrInvalidValue,
+		},
+		"non-existent issuer": {
+			msg: &plasticcredit.MsgCreateCreditClass{
+				Creator:      issuer.Admin,
+				Abbreviation: "VPC",
+				IssuerId:     42,
+				Name:         "Someone else's PCs",
+			},
+			err: sdkerrors.ErrNotFound,
+		},
+	}
+
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			s.SetupTest()
+			k := s.empowerApp.PlasticcreditKeeper
+			goCtx := sdk.WrapSDKContext(s.ctx)
+			ms := keeper.NewMsgServerImpl(k)
+			_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
+				Creator:     k.Authority(),
+				Name:        issuer.Name,
+				Description: issuer.Description,
+				Admin:       issuer.Admin,
+			})
+			s.Require().NoError(err)
+
+			_, err = ms.CreateCreditClass(goCtx, tc.msg)
+			s.Require().ErrorIs(err, tc.err)
+
+			if err == nil {
+				creditClass, found := k.GetCreditClass(s.ctx, tc.msg.Abbreviation)
+				s.Require().True(found)
+				s.Require().Equal(plasticcredit.CreditClass{
+					Abbreviation: tc.msg.Abbreviation,
+					IssuerId:     tc.msg.IssuerId,
+					Name:         tc.msg.Name,
+				}, creditClass)
+			}
+		})
+	}
+}
+
+func (s *TestSuite) TestCreateDuplicateCreditClass() {
+	k := s.empowerApp.PlasticcreditKeeper
+	goCtx := sdk.WrapSDKContext(s.ctx)
+	ms := keeper.NewMsgServerImpl(k)
+	admin1 := sample.AccAddress()
+	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
+		Creator:     k.Authority(),
+		Name:        "Empower",
+		Description: "",
+		Admin:       admin1,
+	})
+	s.Require().NoError(err)
+
+	admin2 := sample.AccAddress()
+	_, err = ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
+		Creator:     k.Authority(),
+		Name:        "Someone else",
+		Description: "",
+		Admin:       admin2,
+	})
+	s.Require().NoError(err)
+
+	_, err = ms.CreateCreditClass(goCtx, &plasticcredit.MsgCreateCreditClass{
+		Creator:      admin1,
+		Abbreviation: "PCRD",
+		IssuerId:     1,
+		Name:         "My PCRDS",
+	})
+	s.Require().NoError(err)
+
+	_, err = ms.CreateCreditClass(goCtx, &plasticcredit.MsgCreateCreditClass{
+		Creator:      admin2,
+		Abbreviation: "PCRD",
+		IssuerId:     2,
+		Name:         "What about _MY_ PCRDS?",
+	})
+	s.Require().ErrorIs(err, plasticcredit.ErrCreditClassAbbreviationTaken)
 }
 
 // TODO mock or after adding project and credit class?

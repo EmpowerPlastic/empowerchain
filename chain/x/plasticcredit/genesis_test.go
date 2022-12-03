@@ -4,13 +4,14 @@ import (
 	"testing"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/empowerchain/empowerchain/x/plasticcredit"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGenesisState_Validate(t *testing.T) {
 	testCases := map[string]struct {
-		genState *plasticcredit.GenesisState
+		genState plasticcredit.GenesisState
 		err      error
 	}{
 		"default is valid": {
@@ -18,7 +19,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			err:      nil,
 		},
 		"invalid params fail": {
-			genState: &plasticcredit.GenesisState{
+			genState: plasticcredit.GenesisState{
 				Params: plasticcredit.Params{
 					IssuerCreator: "invalid",
 				},
@@ -27,10 +28,10 @@ func TestGenesisState_Validate(t *testing.T) {
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
 			},
-			err: plasticcredit.ErrInvalidParams,
+			err: sdkerrors.ErrInvalidAddress,
 		},
 		"invalid id counters fail": {
-			genState: &plasticcredit.GenesisState{
+			genState: plasticcredit.GenesisState{
 				Params:            plasticcredit.DefaultGenesis().Params,
 				IdCounters:        plasticcredit.IDCounters{},
 				Issuers:           plasticcredit.DefaultGenesis().Issuers,
@@ -40,7 +41,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			err: plasticcredit.ErrInvalidValue,
 		},
 		"invalid issuers fail": {
-			genState: &plasticcredit.GenesisState{
+			genState: plasticcredit.GenesisState{
 				Params:            plasticcredit.DefaultGenesis().Params,
 				IdCounters:        plasticcredit.DefaultGenesis().IdCounters,
 				Issuers:           []plasticcredit.Issuer{{}},
@@ -50,11 +51,11 @@ func TestGenesisState_Validate(t *testing.T) {
 			err: plasticcredit.ErrInvalidValue,
 		},
 		"invalid credit collections fail": {
-			genState: &plasticcredit.GenesisState{
+			genState: plasticcredit.GenesisState{
 				Params:     plasticcredit.DefaultGenesis().Params,
 				IdCounters: plasticcredit.DefaultGenesis().IdCounters,
 				Issuers:    plasticcredit.DefaultGenesis().Issuers,
-				CreditCollections: []*plasticcredit.CreditCollection{
+				CreditCollections: []plasticcredit.CreditCollection{
 					{
 						Denom:     "",
 						ProjectId: 1,
@@ -65,12 +66,12 @@ func TestGenesisState_Validate(t *testing.T) {
 			err: plasticcredit.ErrInvalidValue,
 		},
 		"invalid credit balances fail": {
-			genState: &plasticcredit.GenesisState{
+			genState: plasticcredit.GenesisState{
 				Params:            plasticcredit.DefaultGenesis().Params,
 				IdCounters:        plasticcredit.DefaultGenesis().IdCounters,
 				Issuers:           plasticcredit.DefaultGenesis().Issuers,
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
-				CreditBalances: []*plasticcredit.CreditBalance{
+				CreditBalances: []plasticcredit.CreditBalance{
 					{
 						Owner:   "emp123",
 						Denom:   "EMP/123",
@@ -81,7 +82,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			err: sdkerrors.ErrInvalidAddress,
 		},
 		"invalid applicants fail": {
-			genState: &plasticcredit.GenesisState{
+			genState: plasticcredit.GenesisState{
 				Params:     plasticcredit.DefaultGenesis().Params,
 				IdCounters: plasticcredit.DefaultGenesis().IdCounters,
 				Issuers:    plasticcredit.DefaultGenesis().Issuers,

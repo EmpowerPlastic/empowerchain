@@ -24,10 +24,7 @@ func (k Querier) Params(goCtx context.Context, req *plasticcredit.QueryParamsReq
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	params, err := k.GetParams(ctx)
-	if err != nil {
-		return nil, err
-	}
+	params := k.GetParams(ctx)
 
 	return &plasticcredit.QueryParamsResponse{Params: params}, nil
 }
@@ -78,6 +75,39 @@ func (k Querier) Applicant(goCtx context.Context, req *plasticcredit.QueryApplic
 
 	return &plasticcredit.QueryApplicantResponse{
 		Applicant: &applicant,
+	}, nil
+}
+
+func (k Querier) CreditClasses(goCtx context.Context, req *plasticcredit.QueryCreditClassesRequest) (*plasticcredit.QueryCreditClassesResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	creditClasses, pageRes, err := k.GetCreditClasses(ctx, req.Pagination)
+	if err != nil {
+		return nil, err
+	}
+
+	return &plasticcredit.QueryCreditClassesResponse{
+		CreditClasses: creditClasses,
+		Pagination:    pageRes,
+	}, nil
+}
+
+func (k Querier) CreditClass(goCtx context.Context, req *plasticcredit.QueryCreditClassRequest) (*plasticcredit.QueryCreditClassResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	creditClass, found := k.GetCreditClass(ctx, req.CreditClassAbbreviation)
+	if !found {
+		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "credit class with abbreviation: %s was not found", req.CreditClassAbbreviation)
+	}
+
+	return &plasticcredit.QueryCreditClassResponse{
+		CreditClass: &creditClass,
 	}, nil
 }
 

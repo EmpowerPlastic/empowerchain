@@ -13,10 +13,10 @@ var (
 	IDCountersKey       = []byte{0x01}
 	IssuerKey           = []byte{0x02}
 	ApplicantKey        = []byte{0x03}
-	CreditCollectionKey = []byte{0x04}
-	CreditBalanceKey    = []byte{0x05}
-	CreditClassKey      = []byte{0x06}
-	ProjectKey          = []byte{0x07}
+	CreditClassKey      = []byte{0x04}
+	ProjectKey          = []byte{0x05}
+	CreditCollectionKey = []byte{0x06}
+	CreditBalanceKey    = []byte{0x07}
 )
 
 const (

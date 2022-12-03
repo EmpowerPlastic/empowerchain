@@ -3,9 +3,10 @@ package keeper
 import (
 	"context"
 
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/empowerchain/empowerchain/x/plasticcredit"
 )
 
@@ -23,7 +24,7 @@ var _ plasticcredit.MsgServer = msgServer{}
 
 func (m msgServer) UpdateParams(goCtx context.Context, req *plasticcredit.MsgUpdateParams) (*plasticcredit.MsgUpdateParamsResponse, error) {
 	if m.authority != req.Authority {
-		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", m.authority, req.Authority)
+		return nil, errors.Wrapf(sdkerrors.ErrUnauthorized, "invalid authority; expected %s, got %s", m.authority, req.Authority)
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
@@ -81,18 +82,14 @@ func (m msgServer) RetireCredits(goCtx context.Context, req *plasticcredit.MsgRe
 func (m msgServer) CreateIssuer(goCtx context.Context, req *plasticcredit.MsgCreateIssuer) (*plasticcredit.MsgCreateIssuerResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	p, err := m.GetParams(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	authorizedIssuerCreator := p.IssuerCreator
+	params := m.GetParams(ctx)
+	authorizedIssuerCreator := params.IssuerCreator
 	if authorizedIssuerCreator == "" {
 		authorizedIssuerCreator = m.authority
 	}
 
 	if authorizedIssuerCreator != req.Creator {
-		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid issue creator; expected %s, got %s", authorizedIssuerCreator, req.Creator)
+		return nil, errors.Wrapf(sdkerrors.ErrUnauthorized, "invalid issue creator; expected %s, got %s", authorizedIssuerCreator, req.Creator)
 	}
 
 	id, err := m.createIssuer(ctx, req.Name, req.Description, req.Admin)
@@ -116,4 +113,19 @@ func (m msgServer) CreateApplicant(goCtx context.Context, req *plasticcredit.Msg
 	return &plasticcredit.MsgCreateApplicantResponse{
 		ApplicantId: id,
 	}, nil
+}
+
+func (m msgServer) CreateCreditClass(goCtx context.Context, req *plasticcredit.MsgCreateCreditClass) (*plasticcredit.MsgCreateCreditClassResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	creator, err := sdk.AccAddressFromBech32(req.Creator)
+	if err != nil {
+		return nil, errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address: %s", req.Creator)
+	}
+
+	if err := m.Keeper.CreateCreditClass(ctx, creator, req.Abbreviation, req.IssuerId, req.Name); err != nil {
+		return nil, err
+	}
+
+	return &plasticcredit.MsgCreateCreditClassResponse{}, nil
 }

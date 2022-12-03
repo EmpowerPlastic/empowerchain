@@ -46,6 +46,20 @@ An Applicant consists of the following fields: `id`, `name`, `description`, `adm
 
 - Applicant: `0x03 | applicantID | -> ProtocolBuffer(Applicant)`
 
+## Credit Class
+
+A Credit Class is the description of a type of plastic credit. It is created and owned by a single issuer.
+
+A Credit Class consists of the following fields: `id`, `issuer_id`, `name`, `denom`, with `id` being the unique identifier for a credit class.
+
+The `issuer_id` field is the direct link to the Issuer that has created and operates this Credit Class.
+
+`name` is mainly a human-readable name for a credit class such as "Empower Plastic Credits".
+
+`denom` is the short unique denominator for the plastic credits in this credit class (e.g. "PCRD")
+
+- Credit Class: `0x04 | creditClassID | -> ProtocolBuffer(CreditClass)`
+
 ## Credit Collection
 
 Credit Collection contains references to formal information about the collection and overall amount of minted and retired credits.
@@ -54,15 +68,13 @@ Credit Collection contains references to formal information about the collection
 - `Retired amount` - amount of credits that have been retired for a given collection.
 - `Credit data` - URLs and proofs to all the data relevant to a given Credit Collection.
 
-- CreditCollection: `0x04 | denom | -> ProtocolBuffer(CreditColletion)`
+- CreditCollection: `0x05 | denom | -> ProtocolBuffer(CreditColletion)`
 
 ## Credit Balance
 
 Credit Balance stores a balance of credits of a given denom and for a given owner address. Store uses compound key, which is constructed from owner address and credit denom. The value of Credit Balance contains the amount of active and retired credits of a given denom and for a given owner address.
 
-- CreditBalance: `0x05 | owner address | denom | -> ProtocolBuffer(CreditBalance)`
-
-## Credit Class
+- CreditBalance: `0x06 | owner address | denom | -> ProtocolBuffer(CreditBalance)`
 
 ## ID Counters
 

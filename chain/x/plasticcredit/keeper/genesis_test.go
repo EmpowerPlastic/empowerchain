@@ -12,10 +12,9 @@ func (s *TestSuite) TestGenesis() {
 			IssuerCreator: sample.AccAddress(),
 		},
 		IdCounters: plasticcredit.IDCounters{
-			NextIssuerId:      3,
-			NextApplicantId:   1,
-			NextProjectId:     1,
-			NextCreditClassId: 1,
+			NextIssuerId:    3,
+			NextApplicantId: 1,
+			NextProjectId:   1,
 		},
 		Issuers: []plasticcredit.Issuer{
 			{
@@ -31,7 +30,44 @@ func (s *TestSuite) TestGenesis() {
 				Admin:       sample.AccAddress(),
 			},
 		},
-		CreditCollections: []*plasticcredit.CreditCollection{
+		Applicants: []plasticcredit.Applicant{
+			{
+				Id:          1,
+				Name:        "Cleanup inc.",
+				Description: "We clean up plastics!",
+				Admin:       sample.AccAddress(),
+			},
+			{
+				Id:          2,
+				Name:        "Recycler coop",
+				Description: "We recycle plastics!",
+				Admin:       sample.AccAddress(),
+			},
+			{
+				Id:          3,
+				Name:        "Who me?",
+				Description: "I don't know what I'm doing",
+				Admin:       sample.AccAddress(),
+			},
+		},
+		CreditClasses: []plasticcredit.CreditClass{
+			{
+				Abbreviation: "PCRD",
+				IssuerId:     1,
+				Name:         "Empower Plastic Cleanup Credit",
+			},
+			{
+				Abbreviation: "RCRD",
+				IssuerId:     1,
+				Name:         "Empower Recycling Credit",
+			},
+			{
+				Abbreviation: "WE",
+				IssuerId:     2,
+				Name:         "Whatever",
+			},
+		},
+		CreditCollections: []plasticcredit.CreditCollection{
 			{
 				Denom:     "ZMP/61361514316",
 				ProjectId: 2,
@@ -65,7 +101,7 @@ func (s *TestSuite) TestGenesis() {
 				},
 			},
 		},
-		CreditBalances: []*plasticcredit.CreditBalance{
+		CreditBalances: []plasticcredit.CreditBalance{
 			{
 				Owner: sample.AccAddress(),
 				Denom: "EMP/61361514316",
@@ -107,26 +143,6 @@ func (s *TestSuite) TestGenesis() {
 				},
 			},
 		},
-		Applicants: []plasticcredit.Applicant{
-			{
-				Id:          1,
-				Name:        "Cleanup inc.",
-				Description: "We clean up plastics!",
-				Admin:       sample.AccAddress(),
-			},
-			{
-				Id:          2,
-				Name:        "Recycler coop",
-				Description: "We recycle plastics!",
-				Admin:       sample.AccAddress(),
-			},
-			{
-				Id:          3,
-				Name:        "Who me?",
-				Description: "I don't know what I'm doing",
-				Admin:       sample.AccAddress(),
-			},
-		},
 	}
 
 	err := s.empowerApp.PlasticcreditKeeper.InitGenesis(s.ctx, genesisState)
@@ -134,12 +150,10 @@ func (s *TestSuite) TestGenesis() {
 
 	k := s.empowerApp.PlasticcreditKeeper
 
-	params, err := k.GetParams(s.ctx)
-	s.Require().NoError(err)
+	params := k.GetParams(s.ctx)
 	s.Require().Equal(genesisState.Params, params)
 
-	idCounter, err := k.GetIDCounters(s.ctx)
-	s.Require().NoError(err)
+	idCounter := k.GetIDCounters(s.ctx)
 	s.Require().Equal(genesisState.IdCounters, idCounter)
 
 	for _, issuer := range genesisState.Issuers {
@@ -148,27 +162,34 @@ func (s *TestSuite) TestGenesis() {
 		s.Require().Equal(issuer, actualIssuer)
 	}
 
-	for _, creditCollection := range genesisState.CreditCollections {
-		actualCreditCollection, found := k.GetCreditCollection(s.ctx, creditCollection.Denom)
-		s.Require().True(found)
-		s.Require().Equal(*creditCollection, actualCreditCollection)
-	}
-
-	for _, creditBalance := range genesisState.CreditBalances {
-		actualCreditBalance, found := k.GetCreditBalance(s.ctx, sdk.MustAccAddressFromBech32(creditBalance.Owner), creditBalance.Denom)
-		s.Require().True(found)
-		s.Require().Equal(*creditBalance, actualCreditBalance)
-	}
 	for _, applicant := range genesisState.Applicants {
 		actualApplicant, found := k.GetApplicant(s.ctx, applicant.Id)
 		s.Require().True(found)
 		s.Require().Equal(applicant, actualApplicant)
 	}
 
-	export, err := s.empowerApp.PlasticcreditKeeper.ExportGenesis(s.ctx)
-	s.Require().NoError(err)
+	for _, creditClass := range genesisState.CreditClasses {
+		actualCreditClass, found := k.GetCreditClass(s.ctx, creditClass.Abbreviation)
+		s.Require().True(found)
+		s.Require().Equal(creditClass, actualCreditClass)
+	}
+
+	for _, creditCollection := range genesisState.CreditCollections {
+		actualCreditCollection, found := k.GetCreditCollection(s.ctx, creditCollection.Denom)
+		s.Require().True(found)
+		s.Require().Equal(creditCollection, actualCreditCollection)
+	}
+
+	for _, creditBalance := range genesisState.CreditBalances {
+		actualCreditBalance, found := k.GetCreditBalance(s.ctx, sdk.MustAccAddressFromBech32(creditBalance.Owner), creditBalance.Denom)
+		s.Require().True(found)
+		s.Require().Equal(creditBalance, actualCreditBalance)
+	}
+
+	export := s.empowerApp.PlasticcreditKeeper.ExportGenesis(s.ctx)
 
 	s.Require().Equal(genesisState.Params, export.Params)
+
 	s.Require().Equal(genesisState.IdCounters, export.IdCounters)
 
 	s.Require().Equal(len(genesisState.Issuers), len(export.Issuers))
@@ -177,14 +198,18 @@ func (s *TestSuite) TestGenesis() {
 		s.Require().Equal(issuer, actualIssuer)
 	}
 
-	s.Require().Equal(len(genesisState.CreditCollections), len(export.CreditCollections))
-	s.Require().ElementsMatch(export.CreditCollections, genesisState.CreditCollections)
-
-	s.Require().Equal(len(genesisState.CreditBalances), len(export.CreditBalances))
-	s.Require().ElementsMatch(export.CreditBalances, genesisState.CreditBalances)
 	s.Require().Equal(len(genesisState.Applicants), len(export.Applicants))
 	for i, applicant := range genesisState.Applicants {
 		actualApplicant := export.Applicants[i]
 		s.Require().Equal(applicant, actualApplicant)
 	}
+
+	s.Require().Equal(len(genesisState.CreditClasses), len(export.CreditClasses))
+	s.Require().ElementsMatch(export.CreditClasses, genesisState.CreditClasses)
+
+	s.Require().Equal(len(genesisState.CreditCollections), len(export.CreditCollections))
+	s.Require().ElementsMatch(export.CreditCollections, genesisState.CreditCollections)
+
+	s.Require().Equal(len(genesisState.CreditBalances), len(export.CreditBalances))
+	s.Require().ElementsMatch(export.CreditBalances, genesisState.CreditBalances)
 }

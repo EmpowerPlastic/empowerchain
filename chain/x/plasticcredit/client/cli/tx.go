@@ -25,9 +25,85 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(MsgCreateApplicantCmd())
+	cmd.AddCommand(MsgCreateCreditClassCmd())
 	cmd.AddCommand(MsgIssueCreditsCmd())
 	cmd.AddCommand(MsgTransferCreditsCmd())
 	cmd.AddCommand(MsgRetireCreditsCmd())
+
+	return cmd
+}
+
+func MsgCreateApplicantCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "create-applicant [admin_key_or_address] [name] [description]",
+		Short: "Create new applicant.",
+		Long: `Create new applicant.
+Note, the '--from' flag is ignored as it is implied from [admin_key_or_address].
+`,
+		Args: cobra.MinimumNArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			if err := cmd.Flags().Set(flags.FlagFrom, args[0]); err != nil {
+				return err
+			}
+
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			admin := clientCtx.GetFromAddress()
+			name := args[1]
+			var desc string
+			if len(args) > 2 {
+				desc = args[2]
+			}
+
+			msg := plasticcredit.MsgCreateApplicant{
+				Name:        name,
+				Description: desc,
+				Admin:       admin.String(),
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func MsgCreateCreditClassCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "create-credit-class [abbreviation] [issuer-id] [name]",
+		Short: "Create a new credit class.",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			creator := clientCtx.GetFromAddress()
+			abbreviation := args[0]
+			issuerID, err := cast.ToUint64E(args[1])
+			if err != nil {
+				return err
+			}
+			name := args[2]
+
+			msg := plasticcredit.MsgCreateCreditClass{
+				Creator:      creator.String(),
+				Abbreviation: abbreviation,
+				IssuerId:     issuerID,
+				Name:         name,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
 }
@@ -144,46 +220,6 @@ func MsgRetireCreditsCmd() *cobra.Command {
 				Owner:  owner.String(),
 				Denom:  denom,
 				Amount: amount,
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
-		},
-	}
-
-	flags.AddTxFlagsToCmd(cmd)
-
-	return cmd
-}
-
-func MsgCreateApplicantCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "create-applicant [admin_key_or_address] [name] [description]",
-		Short: "Create new applicant.",
-		Long: `Create new applicant.
-Note, the '--from' flag is ignored as it is implied from [admin_key_or_address].
-`,
-		Args: cobra.MinimumNArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			if err := cmd.Flags().Set(flags.FlagFrom, args[0]); err != nil {
-				return err
-			}
-
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			admin := clientCtx.GetFromAddress()
-			name := args[1]
-			var desc string
-			if len(args) > 2 {
-				desc = args[2]
-			}
-
-			msg := plasticcredit.MsgCreateApplicant{
-				Name:        name,
-				Description: desc,
-				Admin:       admin.String(),
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
