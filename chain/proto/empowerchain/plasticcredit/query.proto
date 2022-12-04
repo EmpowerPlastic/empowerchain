@@ -33,6 +33,10 @@ service Query {
     option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit-classes/{credit_class_abbreviation}";
   }
 
+  rpc Project(QueryProjectRequest) returns (QueryProjectResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/projects/{project_id}";
+  }
+
   rpc CreditCollection(QueryCreditCollectionRequest) returns (QueryCreditCollectionResponse) {
     option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/creditcollections/{denom}";
   }
@@ -49,12 +53,12 @@ message QueryParamsResponse {
 }
 
 message QueryIssuersRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryIssuersResponse {
-  repeated Issuer issuers = 1;
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+  repeated Issuer issuers = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = false];
 }
 
 message QueryIssuerRequest {
@@ -62,7 +66,7 @@ message QueryIssuerRequest {
 }
 
 message QueryIssuerResponse {
-  Issuer issuer = 1;
+  Issuer issuer = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryApplicantRequest {
@@ -70,16 +74,16 @@ message QueryApplicantRequest {
 }
 
 message QueryApplicantResponse {
-  Applicant applicant = 1;
+  Applicant applicant = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryCreditClassesRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryCreditClassesResponse {
-  repeated CreditClass credit_classes = 1;
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+  repeated CreditClass credit_classes = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = false];
 }
 
 message QueryCreditClassRequest {
@@ -87,7 +91,15 @@ message QueryCreditClassRequest {
 }
 
 message QueryCreditClassResponse {
-  CreditClass credit_class = 1;
+  CreditClass credit_class = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryProjectRequest {
+  uint64 project_id = 1;
+}
+
+message QueryProjectResponse {
+  Project project = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryCreditCollectionRequest {
@@ -95,7 +107,7 @@ message QueryCreditCollectionRequest {
 }
 
 message QueryCreditCollectionResponse {
-  CreditCollection credit_collection = 1;
+  CreditCollection credit_collection = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryCreditBalanceRequest {
@@ -104,5 +116,5 @@ message QueryCreditBalanceRequest {
 }
 
 message QueryCreditBalanceResponse {
-  CreditBalance balance = 1;
+  CreditBalance balance = 1 [(gogoproto.nullable) = false];
 }

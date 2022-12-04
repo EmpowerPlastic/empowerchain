@@ -6,6 +6,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/empowerchain/empowerchain/app"
 	"github.com/empowerchain/empowerchain/testutil/sample"
+	"github.com/empowerchain/empowerchain/utils"
 	"github.com/empowerchain/empowerchain/x/plasticcredit"
 	"github.com/empowerchain/empowerchain/x/plasticcredit/keeper"
 )
@@ -233,7 +234,7 @@ func (s *TestSuite) TestCreateCreditClass() {
 				IssuerId:     issuer.Id,
 				Name:         "Empower Plastic Credits",
 			},
-			err: plasticcredit.ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 		"non-existent issuer": {
 			msg: &plasticcredit.MsgCreateCreditClass{
@@ -313,6 +314,123 @@ func (s *TestSuite) TestCreateDuplicateCreditClass() {
 		Name:         "What about _MY_ PCRDS?",
 	})
 	s.Require().ErrorIs(err, plasticcredit.ErrCreditClassAbbreviationTaken)
+}
+
+func (s *TestSuite) TestCreateProject() {
+	issuer := plasticcredit.Issuer{
+		Id:          1,
+		Name:        "Empower",
+		Description: "",
+		Admin:       sample.AccAddress(),
+	}
+	creditClass := plasticcredit.CreditClass{
+		Abbreviation: "PCRD",
+		IssuerId:     1,
+		Name:         "Empower Plastic Credits",
+	}
+	applicant := plasticcredit.Applicant{
+		Id:          1,
+		Name:        "Collector",
+		Description: "",
+		Admin:       sample.AccAddress(),
+	}
+
+	testCases := map[string]struct {
+		msg *plasticcredit.MsgCreateProject
+		err error
+	}{
+		"happy path": {
+			msg: &plasticcredit.MsgCreateProject{
+				Creator:                 applicant.Admin,
+				ApplicantId:             applicant.Id,
+				CreditClassAbbreviation: creditClass.Abbreviation,
+				Name:                    "My happy path project",
+			},
+			err: nil,
+		},
+		"unauthorized creator on the issuer": {
+			msg: &plasticcredit.MsgCreateProject{
+				Creator:                 sample.AccAddress(),
+				ApplicantId:             applicant.Id,
+				CreditClassAbbreviation: creditClass.Abbreviation,
+				Name:                    "My project",
+			},
+			err: sdkerrors.ErrUnauthorized,
+		},
+		"non-existent applicant": {
+			msg: &plasticcredit.MsgCreateProject{
+				Creator:                 applicant.Admin,
+				ApplicantId:             37,
+				CreditClassAbbreviation: creditClass.Abbreviation,
+				Name:                    "My project",
+			},
+			err: sdkerrors.ErrNotFound,
+		},
+		"non-existent credit class": {
+			msg: &plasticcredit.MsgCreateProject{
+				Creator:                 applicant.Admin,
+				ApplicantId:             applicant.Id,
+				CreditClassAbbreviation: "Not here",
+				Name:                    "My project",
+			},
+			err: sdkerrors.ErrNotFound,
+		},
+		"invalid name": {
+			msg: &plasticcredit.MsgCreateProject{
+				Creator:                 applicant.Admin,
+				ApplicantId:             applicant.Id,
+				CreditClassAbbreviation: creditClass.Abbreviation,
+				Name:                    "",
+			},
+			err: utils.ErrInvalidValue,
+		},
+	}
+
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			s.SetupTest()
+			k := s.empowerApp.PlasticcreditKeeper
+			goCtx := sdk.WrapSDKContext(s.ctx)
+			ms := keeper.NewMsgServerImpl(k)
+			_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
+				Creator:     k.Authority(),
+				Name:        issuer.Name,
+				Description: issuer.Description,
+				Admin:       issuer.Admin,
+			})
+			s.Require().NoError(err)
+			_, err = ms.CreateCreditClass(goCtx, &plasticcredit.MsgCreateCreditClass{
+				Creator:      issuer.Admin,
+				Abbreviation: creditClass.Abbreviation,
+				IssuerId:     issuer.Id,
+				Name:         creditClass.Name,
+			})
+			s.Require().NoError(err, tc.err)
+			_, err = ms.CreateApplicant(goCtx, &plasticcredit.MsgCreateApplicant{
+				Name:        applicant.Name,
+				Description: applicant.Description,
+				Admin:       applicant.Admin,
+			})
+			s.Require().NoError(err, tc.err)
+
+			resp, err := ms.CreateProject(goCtx, tc.msg)
+			s.Require().ErrorIs(err, tc.err)
+
+			if err == nil {
+				idCounters := k.GetIDCounters(s.ctx)
+				s.Require().Equal(uint64(2), idCounters.NextIssuerId)
+
+				project, found := k.GetProject(s.ctx, resp.ProjectId)
+				s.Require().True(found)
+				s.Require().Equal(plasticcredit.Project{
+					Id:                      1,
+					ApplicantId:             tc.msg.ApplicantId,
+					CreditClassAbbreviation: tc.msg.CreditClassAbbreviation,
+					Name:                    tc.msg.Name,
+				}, project)
+			}
+		})
+	}
 }
 
 // TODO mock or after adding project and credit class?

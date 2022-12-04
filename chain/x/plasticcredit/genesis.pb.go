@@ -28,10 +28,11 @@ type GenesisState struct {
 	Params            Params             `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
 	IdCounters        IDCounters         `protobuf:"bytes,2,opt,name=id_counters,json=idCounters,proto3" json:"id_counters"`
 	Issuers           []Issuer           `protobuf:"bytes,3,rep,name=issuers,proto3" json:"issuers"`
-	CreditCollections []CreditCollection `protobuf:"bytes,4,rep,name=credit_collections,json=creditCollections,proto3" json:"credit_collections"`
-	CreditBalances    []CreditBalance    `protobuf:"bytes,5,rep,name=credit_balances,json=creditBalances,proto3" json:"credit_balances"`
-	Applicants        []Applicant        `protobuf:"bytes,6,rep,name=applicants,proto3" json:"applicants"`
-	CreditClasses     []CreditClass      `protobuf:"bytes,7,rep,name=credit_classes,json=creditClasses,proto3" json:"credit_classes"`
+	Applicants        []Applicant        `protobuf:"bytes,4,rep,name=applicants,proto3" json:"applicants"`
+	CreditClasses     []CreditClass      `protobuf:"bytes,5,rep,name=credit_classes,json=creditClasses,proto3" json:"credit_classes"`
+	Projects          []Project          `protobuf:"bytes,6,rep,name=projects,proto3" json:"projects"`
+	CreditCollections []CreditCollection `protobuf:"bytes,7,rep,name=credit_collections,json=creditCollections,proto3" json:"credit_collections"`
+	CreditBalances    []CreditBalance    `protobuf:"bytes,8,rep,name=credit_balances,json=creditBalances,proto3" json:"credit_balances"`
 }
 
 func (m *GenesisState) Reset()         { *m = GenesisState{} }
@@ -88,20 +89,6 @@ func (m *GenesisState) GetIssuers() []Issuer {
 	return nil
 }
 
-func (m *GenesisState) GetCreditCollections() []CreditCollection {
-	if m != nil {
-		return m.CreditCollections
-	}
-	return nil
-}
-
-func (m *GenesisState) GetCreditBalances() []CreditBalance {
-	if m != nil {
-		return m.CreditBalances
-	}
-	return nil
-}
-
 func (m *GenesisState) GetApplicants() []Applicant {
 	if m != nil {
 		return m.Applicants
@@ -116,6 +103,27 @@ func (m *GenesisState) GetCreditClasses() []CreditClass {
 	return nil
 }
 
+func (m *GenesisState) GetProjects() []Project {
+	if m != nil {
+		return m.Projects
+	}
+	return nil
+}
+
+func (m *GenesisState) GetCreditCollections() []CreditCollection {
+	if m != nil {
+		return m.CreditCollections
+	}
+	return nil
+}
+
+func (m *GenesisState) GetCreditBalances() []CreditBalance {
+	if m != nil {
+		return m.CreditBalances
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*GenesisState)(nil), "empowerchain.plasticcredit.GenesisState")
 }
@@ -125,31 +133,32 @@ func init() {
 }
 
 var fileDescriptor_3d9a84508647bd6f = []byte{
-	// 374 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x92, 0xc1, 0x4a, 0xeb, 0x40,
-	0x14, 0x86, 0x93, 0xdb, 0xde, 0x16, 0xa6, 0xf7, 0xf6, 0x72, 0x07, 0x17, 0xa1, 0x8b, 0x58, 0x0a,
-	0xd6, 0x0a, 0x92, 0x80, 0xfa, 0x00, 0x9a, 0x0a, 0x52, 0x44, 0x11, 0x75, 0x21, 0x6e, 0xca, 0x74,
-	0x3a, 0xa4, 0x03, 0x69, 0x66, 0xc8, 0x99, 0xa2, 0xbe, 0x85, 0xef, 0xe4, 0xa6, 0xcb, 0x2e, 0x5d,
-	0x89, 0xb4, 0x2f, 0x22, 0x9d, 0x4c, 0x6c, 0x23, 0x98, 0xba, 0x9a, 0x33, 0xff, 0xfc, 0xff, 0x77,
-	0x86, 0xc3, 0x41, 0x1d, 0x36, 0x96, 0xe2, 0x81, 0x25, 0x74, 0x44, 0x78, 0xec, 0xcb, 0x88, 0x80,
-	0xe2, 0x94, 0x26, 0x6c, 0xc8, 0x95, 0x1f, 0xb2, 0x98, 0x01, 0x07, 0x4f, 0x26, 0x42, 0x09, 0xdc,
-	0x58, 0x77, 0x7a, 0x39, 0x67, 0xa3, 0x5d, 0x40, 0x51, 0x4f, 0x92, 0x19, 0x46, 0x63, 0x2b, 0x14,
-	0xa1, 0xd0, 0xa5, 0xbf, 0xac, 0x52, 0xb5, 0xf5, 0x52, 0x46, 0x7f, 0xce, 0xd2, 0x5e, 0x37, 0x8a,
-	0x28, 0x86, 0x8f, 0x51, 0x45, 0x92, 0x84, 0x8c, 0xc1, 0xb1, 0x9b, 0x76, 0xa7, 0x76, 0xd0, 0xf2,
-	0xbe, 0xef, 0xed, 0x5d, 0x69, 0x67, 0x50, 0x9e, 0xbe, 0x6d, 0x5b, 0xd7, 0x26, 0x87, 0x2f, 0x50,
-	0x8d, 0x0f, 0xfb, 0x54, 0x4c, 0x62, 0xc5, 0x12, 0x70, 0x7e, 0x69, 0x4c, 0xbb, 0x08, 0xd3, 0x3b,
-	0xed, 0x1a, 0xb7, 0x41, 0x21, 0x3e, 0xcc, 0x14, 0x1c, 0xa0, 0x2a, 0x07, 0x98, 0x2c, 0x51, 0xa5,
-	0x66, 0x69, 0xd3, 0x8f, 0x7a, 0xda, 0x6a, 0x30, 0x59, 0x10, 0x13, 0x84, 0xd3, 0xf7, 0x3e, 0x15,
-	0x51, 0xc4, 0xa8, 0xe2, 0x22, 0x06, 0xa7, 0xac, 0x71, 0xfb, 0x45, 0xb8, 0xae, 0x3e, 0xba, 0x9f,
-	0x21, 0x03, 0xfe, 0x4f, 0xbf, 0xe8, 0x80, 0xef, 0xd0, 0x3f, 0xd3, 0x62, 0x40, 0x22, 0x12, 0x53,
-	0x06, 0xce, 0x6f, 0xcd, 0xdf, 0xdb, 0xcc, 0x0f, 0xd2, 0x84, 0x81, 0xd7, 0xe9, 0xba, 0x08, 0xf8,
-	0x1c, 0x21, 0x22, 0x65, 0xc4, 0x29, 0x89, 0x15, 0x38, 0x15, 0x0d, 0xdd, 0x29, 0x82, 0x9e, 0x64,
-	0xee, 0x6c, 0x9a, 0xab, 0x38, 0xbe, 0x45, 0xf5, 0x6c, 0x12, 0x11, 0x01, 0x60, 0xe0, 0x54, 0x35,
-	0x70, 0xf7, 0x07, 0x53, 0x58, 0x06, 0x0c, 0xf2, 0x2f, 0x5d, 0x49, 0x0c, 0x82, 0xcb, 0xe9, 0xdc,
-	0xb5, 0x67, 0x73, 0xd7, 0x7e, 0x9f, 0xbb, 0xf6, 0xf3, 0xc2, 0xb5, 0x66, 0x0b, 0xd7, 0x7a, 0x5d,
-	0xb8, 0xd6, 0xfd, 0x51, 0xc8, 0xd5, 0x68, 0x32, 0xf0, 0xa8, 0x18, 0xfb, 0xb9, 0x45, 0xcd, 0x5d,
-	0x1e, 0xf3, 0x7b, 0x3b, 0xa8, 0xe8, 0xe5, 0x3c, 0xfc, 0x08, 0x00, 0x00, 0xff, 0xff, 0xd2, 0xb1,
-	0xcb, 0xaa, 0x22, 0x03, 0x00, 0x00,
+	// 396 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x92, 0x4f, 0x4b, 0xe3, 0x40,
+	0x18, 0xc6, 0x93, 0xed, 0x5f, 0xa6, 0xfb, 0x87, 0x1d, 0xf6, 0x10, 0x7a, 0xc8, 0x96, 0x2e, 0xdb,
+	0xed, 0xc2, 0x92, 0xc0, 0xee, 0x7e, 0x00, 0x4d, 0x15, 0x29, 0xa2, 0x88, 0x7a, 0x10, 0x2f, 0x65,
+	0x3a, 0x1d, 0xd2, 0x91, 0x34, 0x33, 0xe4, 0x9d, 0xa2, 0x7e, 0x05, 0x4f, 0x7e, 0xac, 0x1e, 0x7b,
+	0xf4, 0x24, 0xd2, 0x7e, 0x11, 0xe9, 0x64, 0xd2, 0x1a, 0xc1, 0xd4, 0x53, 0x26, 0x0f, 0xcf, 0xf3,
+	0x7b, 0x1f, 0x5e, 0x5e, 0xd4, 0x65, 0x13, 0x29, 0xae, 0x59, 0x42, 0xc7, 0x84, 0xc7, 0xbe, 0x8c,
+	0x08, 0x28, 0x4e, 0x69, 0xc2, 0x46, 0x5c, 0xf9, 0x21, 0x8b, 0x19, 0x70, 0xf0, 0x64, 0x22, 0x94,
+	0xc0, 0xcd, 0x97, 0x4e, 0x2f, 0xe7, 0x6c, 0x76, 0x0a, 0x28, 0xea, 0x56, 0x32, 0xc3, 0x68, 0x7e,
+	0x0b, 0x45, 0x28, 0xf4, 0xd3, 0x5f, 0xbd, 0x52, 0xb5, 0x7d, 0x57, 0x41, 0x1f, 0x0f, 0xd2, 0x59,
+	0x67, 0x8a, 0x28, 0x86, 0x77, 0x50, 0x55, 0x92, 0x84, 0x4c, 0xc0, 0xb1, 0x5b, 0x76, 0xb7, 0xf1,
+	0xb7, 0xed, 0xbd, 0x3d, 0xdb, 0x3b, 0xd1, 0xce, 0xa0, 0x3c, 0x7b, 0xfc, 0x6e, 0x9d, 0x9a, 0x1c,
+	0x3e, 0x42, 0x0d, 0x3e, 0x1a, 0x50, 0x31, 0x8d, 0x15, 0x4b, 0xc0, 0xf9, 0xa0, 0x31, 0x9d, 0x22,
+	0x4c, 0x7f, 0xaf, 0x67, 0xdc, 0x06, 0x85, 0xf8, 0x28, 0x53, 0x70, 0x80, 0x6a, 0x1c, 0x60, 0xba,
+	0x42, 0x95, 0x5a, 0xa5, 0x6d, 0x8d, 0xfa, 0xda, 0x6a, 0x30, 0x59, 0x10, 0x1f, 0x22, 0x44, 0xa4,
+	0x8c, 0x38, 0x25, 0xb1, 0x02, 0xa7, 0xac, 0x31, 0x3f, 0x8b, 0x30, 0xbb, 0x99, 0x3b, 0x2b, 0xb4,
+	0x89, 0xe3, 0x73, 0xf4, 0x39, 0x75, 0x0d, 0x68, 0x44, 0x00, 0x18, 0x38, 0x15, 0x0d, 0xfc, 0x55,
+	0x04, 0xec, 0xe9, 0x4f, 0x6f, 0x15, 0x30, 0xc8, 0x4f, 0x74, 0x23, 0x31, 0xc0, 0xfb, 0xa8, 0x2e,
+	0x13, 0x71, 0xc5, 0xa8, 0x02, 0xa7, 0xaa, 0x79, 0x3f, 0x0a, 0x37, 0x9f, 0x7a, 0x0d, 0x6b, 0x1d,
+	0xc5, 0x04, 0xe1, 0xac, 0x9c, 0x88, 0x22, 0x46, 0x15, 0x17, 0x31, 0x38, 0x35, 0x0d, 0xfc, 0xf3,
+	0x8e, 0x82, 0xeb, 0x90, 0x21, 0x7f, 0xa5, 0xaf, 0x74, 0xc0, 0x17, 0xe8, 0x8b, 0x19, 0x31, 0x24,
+	0x11, 0x89, 0x29, 0x03, 0xa7, 0xae, 0xf9, 0xbf, 0xb7, 0xf3, 0x83, 0x34, 0x61, 0xe0, 0x66, 0x8f,
+	0x46, 0x84, 0xe0, 0x78, 0xb6, 0x70, 0xed, 0xf9, 0xc2, 0xb5, 0x9f, 0x16, 0xae, 0x7d, 0xbf, 0x74,
+	0xad, 0xf9, 0xd2, 0xb5, 0x1e, 0x96, 0xae, 0x75, 0xf9, 0x3f, 0xe4, 0x6a, 0x3c, 0x1d, 0x7a, 0x54,
+	0x4c, 0xfc, 0xdc, 0xbd, 0xe7, 0x7e, 0x6e, 0xf2, 0xe7, 0x3f, 0xac, 0xea, 0x1b, 0xff, 0xf7, 0x1c,
+	0x00, 0x00, 0xff, 0xff, 0x44, 0xc1, 0x15, 0x87, 0x69, 0x03, 0x00, 0x00,
 }
 
 func (m *GenesisState) Marshal() (dAtA []byte, err error) {
@@ -172,34 +181,6 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.CreditClasses) > 0 {
-		for iNdEx := len(m.CreditClasses) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.CreditClasses[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintGenesis(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x3a
-		}
-	}
-	if len(m.Applicants) > 0 {
-		for iNdEx := len(m.Applicants) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Applicants[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintGenesis(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x32
-		}
-	}
 	if len(m.CreditBalances) > 0 {
 		for iNdEx := len(m.CreditBalances) - 1; iNdEx >= 0; iNdEx-- {
 			{
@@ -211,13 +192,55 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 				i = encodeVarintGenesis(dAtA, i, uint64(size))
 			}
 			i--
-			dAtA[i] = 0x2a
+			dAtA[i] = 0x42
 		}
 	}
 	if len(m.CreditCollections) > 0 {
 		for iNdEx := len(m.CreditCollections) - 1; iNdEx >= 0; iNdEx-- {
 			{
 				size, err := m.CreditCollections[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x3a
+		}
+	}
+	if len(m.Projects) > 0 {
+		for iNdEx := len(m.Projects) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Projects[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x32
+		}
+	}
+	if len(m.CreditClasses) > 0 {
+		for iNdEx := len(m.CreditClasses) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.CreditClasses[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x2a
+		}
+	}
+	if len(m.Applicants) > 0 {
+		for iNdEx := len(m.Applicants) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Applicants[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -292,18 +315,6 @@ func (m *GenesisState) Size() (n int) {
 			n += 1 + l + sovGenesis(uint64(l))
 		}
 	}
-	if len(m.CreditCollections) > 0 {
-		for _, e := range m.CreditCollections {
-			l = e.Size()
-			n += 1 + l + sovGenesis(uint64(l))
-		}
-	}
-	if len(m.CreditBalances) > 0 {
-		for _, e := range m.CreditBalances {
-			l = e.Size()
-			n += 1 + l + sovGenesis(uint64(l))
-		}
-	}
 	if len(m.Applicants) > 0 {
 		for _, e := range m.Applicants {
 			l = e.Size()
@@ -312,6 +323,24 @@ func (m *GenesisState) Size() (n int) {
 	}
 	if len(m.CreditClasses) > 0 {
 		for _, e := range m.CreditClasses {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.Projects) > 0 {
+		for _, e := range m.Projects {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.CreditCollections) > 0 {
+		for _, e := range m.CreditCollections {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.CreditBalances) > 0 {
+		for _, e := range m.CreditBalances {
 			l = e.Size()
 			n += 1 + l + sovGenesis(uint64(l))
 		}
@@ -456,74 +485,6 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CreditCollections", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGenesis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CreditCollections = append(m.CreditCollections, CreditCollection{})
-			if err := m.CreditCollections[len(m.CreditCollections)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CreditBalances", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGenesis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CreditBalances = append(m.CreditBalances, CreditBalance{})
-			if err := m.CreditBalances[len(m.CreditBalances)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 6:
-			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Applicants", wireType)
 			}
 			var msglen int
@@ -556,7 +517,7 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 7:
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CreditClasses", wireType)
 			}
@@ -587,6 +548,108 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 			}
 			m.CreditClasses = append(m.CreditClasses, CreditClass{})
 			if err := m.CreditClasses[len(m.CreditClasses)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Projects", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Projects = append(m.Projects, Project{})
+			if err := m.Projects[len(m.Projects)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CreditCollections", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CreditCollections = append(m.CreditCollections, CreditCollection{})
+			if err := m.CreditCollections[len(m.CreditCollections)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CreditBalances", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CreditBalances = append(m.CreditBalances, CreditBalance{})
+			if err := m.CreditBalances[len(m.CreditBalances)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

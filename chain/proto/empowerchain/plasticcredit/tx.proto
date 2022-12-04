@@ -23,6 +23,9 @@ service Msg {
   // CreateCreditClass creates a new Credit Class for an issuer.
   rpc CreateCreditClass(MsgCreateCreditClass) returns (MsgCreateCreditClassResponse);
 
+  // CreateProject creates a new Project for an applicant that can be approved be an issuer for issuing under a credit class
+  rpc CreateProject(MsgCreateProject) returns(MsgCreateProjectResponse);
+
   // IssueCredits mints new credits related to given credit class and project
   rpc IssueCredits(MsgIssueCredits) returns (MsgIssueCreditsResponse);
 
@@ -88,6 +91,20 @@ message MsgCreateCreditClass {
 
 message MsgCreateCreditClassResponse {}
 
+message MsgCreateProject {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  // creator needs to have access to the applicant references in applicant_id
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 applicant_id = 2;
+  string credit_class_abbreviation = 3;
+  string name = 4;
+}
+
+message MsgCreateProjectResponse {
+  uint64 project_id = 1;
+}
+
 message MsgIssueCredits {
   option (cosmos.msg.v1.signer) = "creator";
 
@@ -96,11 +113,11 @@ message MsgIssueCredits {
   uint64 project_id = 2;
   string serial_number = 3;
   uint64 credit_amount = 4;
-  repeated ProvenData credit_data = 5;
+  repeated ProvenData credit_data = 5 [(gogoproto.nullable) = false];
 }
 
 message MsgIssueCreditsResponse {
-  CreditCollection collection = 1;
+  CreditCollection collection = 1 [(gogoproto.nullable) = false];
 }
 
 message MsgTransferCredits {
@@ -115,12 +132,9 @@ message MsgTransferCredits {
   uint64 amount = 4;
 
   bool retire = 5;
-
 }
 
-message MsgTransferCreditsResponse {
-
-}
+message MsgTransferCreditsResponse {}
 
 message MsgRetireCredits {
   option (cosmos.msg.v1.signer) = "owner";
@@ -133,5 +147,5 @@ message MsgRetireCredits {
 }
 
 message MsgRetireCreditsResponse {
-  CreditBalance balance = 1;
+  CreditBalance balance = 1 [(gogoproto.nullable) = false];
 }

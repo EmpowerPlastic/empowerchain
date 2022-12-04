@@ -35,6 +35,55 @@ Setter and getters are for the storage layer.
 This is the layer where storage is updated. Setters and getters might make sense here. 
 The functions should be private and can make assumptions about correctness of data it is being sent.
 
+## Proto files
+
+### Pointers
+
+The general rule should be to not use pointers. Pointers are ugly, slow (for small data collections) and most of the time unnecessary.
+Use ` [(gogoproto.nullable) = false];` whenever possible.
+
+Example:
+```protobuf
+message QueryResponse {
+  MyEntity entity = 1  [(gogoproto.nullable) = false];
+}
+
+message AnotherQueryResponse {
+  repeated AnotherEntity entities = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgWithNestedTypes {
+  uint64 something = 1;
+  NestedType nestedType = 2 [(gogoproto.nullable) = false];
+}
+```
+
+
+## Errors
+
+To keep testing and debugging as easy as possible, we try to create good errors rather than use generic ones.
+This does not mean we need a unique error for every single error scenario.
+A good rule of thumb is: "if all I had was the error code, would I be able to find some useful information about what happened?".
+
+Error codes are grouped by the different types of entities. The grouping is done with the first digit(s), corresponding to the digit in the storage key.
+Given a key like this in `keys.go`
+```go "test"
+var MyEntity = []byte{0x02}
+```
+The errors could look like in `errors.go`:
+```go
+var ErrAboutMyEntity = errors.Register(ModuleName, 2001, "my first error")
+```
+
+The error number count from 1 by default, but if the error has a close correspondence in http error codes, use that instead.
+For example, for the error code `2404` would indicate that `MyEntity` is not found.
+```go
+var (
+    ErrAboutMyEntity = errors.Register(ModuleName, 2001, "my first error")
+    ErrNotFoundMyEntity = errors.Register(ModuleName, 2404, "my entity was not found")
+)
+```
+
 ## Coding tips
 
 ### Typical order of making changes (especially new things)

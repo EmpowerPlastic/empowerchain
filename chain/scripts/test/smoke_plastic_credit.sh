@@ -50,8 +50,24 @@ if [ "$NUM_CREDIT_CLASSES" != "2" ]; then
   exit 1
 fi
 
-echo "Tests completed successfully!"
+echo "--- Test: Plastic Credit Projects ---"
+empowerd tx plasticcredit create-project 1 PCRD "My Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd tx plasticcredit create-project 1 RCRD "My Recycling Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd tx plasticcredit create-project 2 PCRD "My Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd q plasticcredit project 1
+empowerd q plasticcredit project 2
+empowerd q plasticcredit project 3
 
 make kill
-
 echo "Serve killed"
+
+echo "--- Test: Plastic Credit Genesis Export and Import ---"
+empowerd export --home $CHAIN_DIR > $CHAIN_DIR
+
+# TODO: TEST GENESIS OUTPUT
+# TODO: TEST GENESIS IMPORT
+
+echo "Tests completed successfully!"

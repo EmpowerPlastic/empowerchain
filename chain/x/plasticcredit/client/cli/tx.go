@@ -19,6 +19,7 @@ func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        plasticcredit.ModuleName,
 		Short:                      fmt.Sprintf("%s transactions subcommands", plasticcredit.ModuleName),
+		Aliases:                    []string{"pc"},
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
@@ -29,6 +30,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(MsgIssueCreditsCmd())
 	cmd.AddCommand(MsgTransferCreditsCmd())
 	cmd.AddCommand(MsgRetireCreditsCmd())
+	cmd.AddCommand(MsgCreateProjectCmd())
 
 	return cmd
 }
@@ -130,10 +132,10 @@ func MsgIssueCreditsCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			var creditData []*plasticcredit.ProvenData
+			var creditData []plasticcredit.ProvenData
 			for i := 3; i < len(args); i++ {
-				data := new(plasticcredit.ProvenData)
-				err = json.Unmarshal([]byte(args[i]), data)
+				var data plasticcredit.ProvenData
+				err = json.Unmarshal([]byte(args[i]), &data)
 				if err != nil {
 					return err
 				}
@@ -202,7 +204,6 @@ func MsgRetireCreditsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "retire [denom] [amount]",
 		Short: "Retire credits",
-		Long:  `Retire credits`,
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -220,6 +221,41 @@ func MsgRetireCreditsCmd() *cobra.Command {
 				Owner:  owner.String(),
 				Denom:  denom,
 				Amount: amount,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func MsgCreateProjectCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "create-project [applicant-id] [credit-class-abbreviation] [name]",
+		Short: "Create project",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			creator := clientCtx.GetFromAddress()
+			applicantID, err := cast.ToUint64E(args[0])
+			if err != nil {
+				return err
+			}
+			creditClassAbbreviation := args[1]
+			name := args[2]
+
+			msg := plasticcredit.MsgCreateProject{
+				Creator:                 creator.String(),
+				ApplicantId:             applicantID,
+				CreditClassAbbreviation: creditClassAbbreviation,
+				Name:                    name,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
