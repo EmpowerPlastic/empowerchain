@@ -58,7 +58,7 @@ func (k Querier) Issuer(goCtx context.Context, req *plasticcredit.QueryIssuerReq
 	}
 
 	return &plasticcredit.QueryIssuerResponse{
-		Issuer: &issuer,
+		Issuer: issuer,
 	}, nil
 }
 
@@ -74,7 +74,7 @@ func (k Querier) Applicant(goCtx context.Context, req *plasticcredit.QueryApplic
 	}
 
 	return &plasticcredit.QueryApplicantResponse{
-		Applicant: &applicant,
+		Applicant: applicant,
 	}, nil
 }
 
@@ -107,7 +107,23 @@ func (k Querier) CreditClass(goCtx context.Context, req *plasticcredit.QueryCred
 	}
 
 	return &plasticcredit.QueryCreditClassResponse{
-		CreditClass: &creditClass,
+		CreditClass: creditClass,
+	}, nil
+}
+
+func (k Querier) Project(goCtx context.Context, req *plasticcredit.QueryProjectRequest) (*plasticcredit.QueryProjectResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	project, found := k.GetProject(ctx, req.ProjectId)
+	if !found {
+		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "project with id: %d was not found", req.ProjectId)
+	}
+
+	return &plasticcredit.QueryProjectResponse{
+		Project: project,
 	}, nil
 }
 
@@ -123,7 +139,7 @@ func (k Querier) CreditCollection(goCtx context.Context, req *plasticcredit.Quer
 	}
 
 	return &plasticcredit.QueryCreditCollectionResponse{
-		CreditCollection: &creditCollection,
+		CreditCollection: creditCollection,
 	}, nil
 }
 
@@ -143,6 +159,6 @@ func (k Querier) CreditBalance(goCtx context.Context, req *plasticcredit.QueryCr
 	}
 
 	return &plasticcredit.QueryCreditBalanceResponse{
-		Balance: &creditBalance,
+		Balance: creditBalance,
 	}, nil
 }

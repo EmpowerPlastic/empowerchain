@@ -24,24 +24,24 @@ func (k Keeper) GetCreditClass(ctx sdk.Context, abbreviation string) (creditClas
 	return creditClass, true
 }
 
-func (k Keeper) GetCreditClasses(ctx sdk.Context, pageReq *query.PageRequest) ([]*plasticcredit.CreditClass, *query.PageResponse, error) {
+func (k Keeper) GetCreditClasses(ctx sdk.Context, pageReq query.PageRequest) ([]plasticcredit.CreditClass, query.PageResponse, error) {
 	store := k.getCreditClassStore(ctx)
 
-	var creditClasses []*plasticcredit.CreditClass
-	pageRes, err := query.Paginate(store, pageReq, func(_ []byte, value []byte) error {
+	var creditClasses []plasticcredit.CreditClass
+	pageRes, err := query.Paginate(store, &pageReq, func(_ []byte, value []byte) error {
 		var creditClass plasticcredit.CreditClass
 		if err := k.cdc.Unmarshal(value, &creditClass); err != nil {
 			return err
 		}
-		creditClasses = append(creditClasses, &creditClass)
+		creditClasses = append(creditClasses, creditClass)
 
 		return nil
 	})
 	if err != nil {
-		return nil, nil, err
+		return nil, query.PageResponse{}, err
 	}
 
-	return creditClasses, pageRes, nil
+	return creditClasses, *pageRes, nil
 }
 
 func (k Keeper) CreateCreditClass(ctx sdk.Context, creator sdk.AccAddress, abbreviation string, issuerID uint64, name string) error {

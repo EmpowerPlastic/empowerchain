@@ -23,24 +23,24 @@ func (k Keeper) GetIssuer(ctx sdk.Context, id uint64) (issuer plasticcredit.Issu
 	return issuer, true
 }
 
-func (k Keeper) GetIssuers(ctx sdk.Context, pageReq *query.PageRequest) ([]*plasticcredit.Issuer, *query.PageResponse, error) {
+func (k Keeper) GetIssuers(ctx sdk.Context, pageReq query.PageRequest) ([]plasticcredit.Issuer, query.PageResponse, error) {
 	store := k.getIssuerStore(ctx)
 
-	var issuers []*plasticcredit.Issuer
-	pageRes, err := query.Paginate(store, pageReq, func(_ []byte, value []byte) error {
+	var issuers []plasticcredit.Issuer
+	pageRes, err := query.Paginate(store, &pageReq, func(_ []byte, value []byte) error {
 		var issuer plasticcredit.Issuer
 		if err := k.cdc.Unmarshal(value, &issuer); err != nil {
 			return err
 		}
-		issuers = append(issuers, &issuer)
+		issuers = append(issuers, issuer)
 
 		return nil
 	})
 	if err != nil {
-		return nil, nil, err
+		return nil, query.PageResponse{}, err
 	}
 
-	return issuers, pageRes, nil
+	return issuers, *pageRes, nil
 }
 
 func (k Keeper) getAllIssuers(ctx sdk.Context) []plasticcredit.Issuer {
