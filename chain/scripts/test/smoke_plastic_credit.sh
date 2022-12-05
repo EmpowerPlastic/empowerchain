@@ -62,6 +62,7 @@ empowerd q plasticcredit project 2
 empowerd q plasticcredit project 3
 
 make kill
+sleep 2
 echo "Serve killed"
 
 echo "--- Test: Plastic Credit Genesis Export and Import ---"

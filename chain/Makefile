@@ -167,7 +167,7 @@ serve:
 kill:
 	@echo "Killing empowerd and removing previous data"
 	-@rm -rf ./tmp/empowerchain-local-1
-	-@killall empowerd 2>/dev/null
+	-@pkill empowerd 2>/dev/null
 
 
 ###############################################################################
