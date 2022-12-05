@@ -47,7 +47,7 @@ func (k Keeper) GetCreditClasses(ctx sdk.Context, pageReq query.PageRequest) ([]
 func (k Keeper) CreateCreditClass(ctx sdk.Context, creator sdk.AccAddress, abbreviation string, issuerID uint64, name string) error {
 	issuer, found := k.GetIssuer(ctx, issuerID)
 	if !found {
-		return errors.Wrapf(sdkerrors.ErrNotFound, "issuer for issue ID %d was not found", issuerID)
+		return errors.Wrapf(plasticcredit.ErrNotFoundIssuer, "issuer for issue ID %d was not found", issuerID)
 	}
 
 	if !issuer.AddressHasAuthorization(creator) {
