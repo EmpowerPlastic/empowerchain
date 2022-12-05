@@ -136,7 +136,7 @@ func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, gs json.Ra
 	// Initialize global index to index in genesis state
 	cdc.MustUnmarshalJSON(gs, &genState)
 
-	if err := am.keeper.InitGenesis(ctx, genState); err != nil {
+	if err := am.keeper.InitGenesis(ctx, &genState); err != nil {
 		panic(err)
 	}
 
@@ -146,7 +146,7 @@ func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, gs json.Ra
 // ExportGenesis returns the module's exported genesis state as raw JSON bytes.
 func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
 	genState := am.keeper.ExportGenesis(ctx)
-	return cdc.MustMarshalJSON(&genState)
+	return cdc.MustMarshalJSON(genState)
 }
 
 // ConsensusVersion is a sequence number for state-breaking change of the module. It should be incremented on each consensus-breaking change introduced by the module. To avoid wrong/empty versions, the initial version should be set to 1

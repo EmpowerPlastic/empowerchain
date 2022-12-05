@@ -171,7 +171,7 @@ func (s *TestSuite) TestGenesis() {
 		},
 	}
 
-	err := s.empowerApp.PlasticcreditKeeper.InitGenesis(s.ctx, genesisState)
+	err := s.empowerApp.PlasticcreditKeeper.InitGenesis(s.ctx, &genesisState)
 	s.Require().NoError(err)
 
 	k := s.empowerApp.PlasticcreditKeeper
