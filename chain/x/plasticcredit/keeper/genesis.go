@@ -5,7 +5,7 @@ import (
 	"github.com/empowerchain/empowerchain/x/plasticcredit"
 )
 
-func (k Keeper) InitGenesis(ctx sdk.Context, genState plasticcredit.GenesisState) error {
+func (k Keeper) InitGenesis(ctx sdk.Context, genState *plasticcredit.GenesisState) error {
 	if err := k.setParams(ctx, genState.Params); err != nil {
 		return err
 	}
@@ -32,6 +32,12 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState plasticcredit.GenesisState
 		}
 	}
 
+	for _, project := range genState.Projects {
+		if err := k.setProject(ctx, project); err != nil {
+			return err
+		}
+	}
+
 	for _, creditCollection := range genState.CreditCollections {
 		if err := k.setCreditCollection(ctx, creditCollection); err != nil {
 			return err
@@ -47,7 +53,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState plasticcredit.GenesisState
 	return nil
 }
 
-func (k Keeper) ExportGenesis(ctx sdk.Context) plasticcredit.GenesisState {
+func (k Keeper) ExportGenesis(ctx sdk.Context) *plasticcredit.GenesisState {
 	genesis := plasticcredit.DefaultGenesis()
 
 	genesis.Params = k.GetParams(ctx)
@@ -55,8 +61,9 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) plasticcredit.GenesisState {
 	genesis.Issuers = k.getAllIssuers(ctx)
 	genesis.Applicants = k.getAllApplicants(ctx)
 	genesis.CreditClasses = k.getAllCreditClasses(ctx)
+	genesis.Projects = k.getAllProjects(ctx)
 	genesis.CreditCollections = k.getAllCreditCollections(ctx)
 	genesis.CreditBalances = k.getAllCreditBalances(ctx)
 
-	return genesis
+	return &genesis
 }

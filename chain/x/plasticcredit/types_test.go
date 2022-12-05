@@ -3,6 +3,8 @@ package plasticcredit
 import (
 	"testing"
 
+	"github.com/empowerchain/empowerchain/utils"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -28,21 +30,21 @@ func TestIDCountersValidation(t *testing.T) {
 				NextApplicantId: 235,
 				NextProjectId:   1337,
 			},
-			err: ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 		"next collector id not set": {
 			idc: IDCounters{
 				NextIssuerId:  1,
 				NextProjectId: 1337,
 			},
-			err: ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 		"next project id not set": {
 			idc: IDCounters{
 				NextIssuerId:    1,
 				NextApplicantId: 235,
 			},
-			err: ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 	}
 
@@ -85,7 +87,7 @@ func TestIssuerValidation(t *testing.T) {
 				Description: "Something something",
 				Admin:       sample.AccAddress(),
 			},
-			err: ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 		"empty name": {
 			idc: Issuer{
@@ -94,7 +96,7 @@ func TestIssuerValidation(t *testing.T) {
 				Description: "Something something",
 				Admin:       sample.AccAddress(),
 			},
-			err: ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 		"empty admin": {
 			idc: Issuer{
@@ -103,7 +105,7 @@ func TestIssuerValidation(t *testing.T) {
 				Description: "Something something",
 				Admin:       "",
 			},
-			err: ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 		"invalid admin address": {
 			idc: Issuer{
@@ -125,7 +127,7 @@ func TestIssuerValidation(t *testing.T) {
 	}
 }
 
-func TestAddressHasAuthorization(t *testing.T) {
+func TestIssuer_AddressHasAuthorization(t *testing.T) {
 	issuer := Issuer{
 		Id:          1,
 		Name:        "Empower",
@@ -191,7 +193,7 @@ func TestApplicantValidation(t *testing.T) {
 				Description: "Something something",
 				Admin:       sample.AccAddress(),
 			},
-			err: ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 		"empty name": {
 			applicant: Applicant{
@@ -200,7 +202,7 @@ func TestApplicantValidation(t *testing.T) {
 				Description: "Something something",
 				Admin:       sample.AccAddress(),
 			},
-			err: ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 		"empty admin": {
 			applicant: Applicant{
@@ -209,7 +211,7 @@ func TestApplicantValidation(t *testing.T) {
 				Description: "Something something",
 				Admin:       "",
 			},
-			err: ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 		"invalid admin address": {
 			applicant: Applicant{
@@ -227,6 +229,42 @@ func TestApplicantValidation(t *testing.T) {
 			err := tc.applicant.Validate()
 
 			require.ErrorIs(t, err, tc.err)
+		})
+	}
+}
+
+func TestApplicant_AddressHasAuthorization(t *testing.T) {
+	applicant := Applicant{
+		Id:          1,
+		Name:        "Empower",
+		Description: "",
+		Admin:       sample.AccAddress(),
+	}
+	adminAddr, _ := sdk.AccAddressFromBech32(applicant.Admin)
+	someRandomAddr, _ := sdk.AccAddressFromBech32(sample.AccAddress())
+
+	testCases := map[string]struct {
+		addr             sdk.AccAddress
+		hasAuthorization bool
+	}{
+		"admin": {
+			addr:             adminAddr,
+			hasAuthorization: true,
+		},
+		"nil": {
+			addr:             nil,
+			hasAuthorization: false,
+		},
+		"some random address": {
+			addr:             someRandomAddr,
+			hasAuthorization: false,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			hasAuthorization := applicant.AddressHasAuthorization(tc.addr)
+			require.Equal(t, tc.hasAuthorization, hasAuthorization)
 		})
 	}
 }
@@ -250,7 +288,7 @@ func TestCreditClassValidation(t *testing.T) {
 				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
 			},
-			err: ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 		"invalid issuer id": {
 			creditClass: CreditClass{
@@ -258,7 +296,7 @@ func TestCreditClassValidation(t *testing.T) {
 				IssuerId:     0,
 				Name:         "Empower Plastic Credits",
 			},
-			err: ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 		"empty name": {
 			creditClass: CreditClass{
@@ -266,13 +304,74 @@ func TestCreditClassValidation(t *testing.T) {
 				IssuerId:     1,
 				Name:         "",
 			},
-			err: ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 	}
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			err := tc.creditClass.Validate()
+
+			require.ErrorIs(t, err, tc.err)
+		})
+	}
+}
+
+func TestProjectValidation(t *testing.T) {
+	testCases := map[string]struct {
+		project Project
+		err     error
+	}{
+		"happy path": {
+			project: Project{
+				Id:                      1,
+				ApplicantId:             42,
+				CreditClassAbbreviation: "PCRD",
+				Name:                    "My Project",
+			},
+			err: nil,
+		},
+		"invalid project id": {
+			project: Project{
+				Id:                      0,
+				ApplicantId:             42,
+				CreditClassAbbreviation: "PCRD",
+				Name:                    "My Project",
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"invalid applicant id": {
+			project: Project{
+				Id:                      1337,
+				ApplicantId:             0,
+				CreditClassAbbreviation: "PCRD",
+				Name:                    "My Project",
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"invalid abbreviation": {
+			project: Project{
+				Id:                      1,
+				ApplicantId:             42,
+				CreditClassAbbreviation: "",
+				Name:                    "My Project",
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"empty name": {
+			project: Project{
+				Id:                      1,
+				ApplicantId:             42,
+				CreditClassAbbreviation: "PCRD",
+				Name:                    "",
+			},
+			err: utils.ErrInvalidValue,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			err := tc.project.Validate()
 
 			require.ErrorIs(t, err, tc.err)
 		})
@@ -288,11 +387,11 @@ func TestCreditCollectionValidation(t *testing.T) {
 			collection: CreditCollection{
 				Denom:     "EMP/123",
 				ProjectId: 1,
-				TotalAmount: &CreditAmount{
+				TotalAmount: CreditAmount{
 					Active:  100,
 					Retired: 50,
 				},
-				CreditData: []*ProvenData{
+				CreditData: []ProvenData{
 					{
 						Uri:  "http://empower.eco",
 						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
@@ -305,86 +404,86 @@ func TestCreditCollectionValidation(t *testing.T) {
 			collection: CreditCollection{
 				Denom:     "",
 				ProjectId: 1,
-				TotalAmount: &CreditAmount{
+				TotalAmount: CreditAmount{
 					Active:  100,
 					Retired: 50,
 				},
-				CreditData: []*ProvenData{
+				CreditData: []ProvenData{
 					{
 						Uri:  "http://empower.eco",
 						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
 					},
 				},
 			},
-			err: ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 		"invalid project id": {
 			collection: CreditCollection{
 				Denom:     "EMP/123",
 				ProjectId: 0,
-				TotalAmount: &CreditAmount{
+				TotalAmount: CreditAmount{
 					Active:  100,
 					Retired: 50,
 				},
-				CreditData: []*ProvenData{
+				CreditData: []ProvenData{
 					{
 						Uri:  "http://empower.eco",
 						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
 					},
 				},
 			},
-			err: ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 		"invalid total amount": {
 			collection: CreditCollection{
 				Denom:     "EMP/123",
 				ProjectId: 1,
-				TotalAmount: &CreditAmount{
+				TotalAmount: CreditAmount{
 					Active:  0,
 					Retired: 0,
 				},
-				CreditData: []*ProvenData{
+				CreditData: []ProvenData{
 					{
 						Uri:  "http://empower.eco",
 						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
 					},
 				},
 			},
-			err: ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 		"invalid credit data uri": {
 			collection: CreditCollection{
 				Denom:     "EMP/123",
 				ProjectId: 0,
-				TotalAmount: &CreditAmount{
+				TotalAmount: CreditAmount{
 					Active:  100,
 					Retired: 50,
 				},
-				CreditData: []*ProvenData{
+				CreditData: []ProvenData{
 					{
 						Uri:  "",
 						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
 					},
 				},
 			},
-			err: ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 		"invalid credit data hash": {
 			collection: CreditCollection{
 				Denom:     "EMP/123",
 				ProjectId: 0,
-				TotalAmount: &CreditAmount{
+				TotalAmount: CreditAmount{
 					Active:  100,
 					Retired: 50,
 				},
-				CreditData: []*ProvenData{
+				CreditData: []ProvenData{
 					{
 						Uri:  "http://empower.eco",
 						Hash: "a b",
 					},
 				},
 			},
-			err: ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 	}
 
@@ -406,7 +505,7 @@ func TestCreditBalanceValidation(t *testing.T) {
 			balance: CreditBalance{
 				Owner: sample.AccAddress(),
 				Denom: "EMP/123",
-				Balance: &CreditAmount{
+				Balance: CreditAmount{
 					Active:  0,
 					Retired: 0,
 				},
@@ -417,7 +516,7 @@ func TestCreditBalanceValidation(t *testing.T) {
 			balance: CreditBalance{
 				Owner: "Empower",
 				Denom: "EMP/123",
-				Balance: &CreditAmount{
+				Balance: CreditAmount{
 					Active:  0,
 					Retired: 0,
 				},
@@ -428,12 +527,12 @@ func TestCreditBalanceValidation(t *testing.T) {
 			balance: CreditBalance{
 				Owner: sample.AccAddress(),
 				Denom: "",
-				Balance: &CreditAmount{
+				Balance: CreditAmount{
 					Active:  0,
 					Retired: 0,
 				},
 			},
-			err: ErrInvalidValue,
+			err: utils.ErrInvalidValue,
 		},
 	}
 

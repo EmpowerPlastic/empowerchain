@@ -24,6 +24,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        plasticcredit.ModuleName,
 		Short:                      fmt.Sprintf("Querying commands for the %s module", plasticcredit.ModuleName),
+		Aliases:                    []string{"pc"},
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
@@ -37,7 +38,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	cmd.AddCommand(CmdQueryCreditClasses())
 	cmd.AddCommand(CmdQueryCreditCollection())
 	cmd.AddCommand(CmdQueryCreditBalance())
-
+	cmd.AddCommand(CmdQueryProject())
 	return cmd
 }
 
@@ -109,7 +110,7 @@ func CmdQueryIssuers() *cobra.Command {
 			}
 
 			res, err := queryClient.Issuers(context.Background(), &plasticcredit.QueryIssuersRequest{
-				Pagination: pageReq,
+				Pagination: *pageReq,
 			})
 			if err != nil {
 				return err
@@ -195,7 +196,7 @@ func CmdQueryCreditClasses() *cobra.Command {
 			}
 
 			res, err := queryClient.CreditClasses(context.Background(), &plasticcredit.QueryCreditClassesRequest{
-				Pagination: pageReq,
+				Pagination: *pageReq,
 			})
 			if err != nil {
 				return err
@@ -252,6 +253,36 @@ func CmdQueryCreditBalance() *cobra.Command {
 			res, err := queryClient.CreditBalance(context.Background(), &plasticcredit.QueryCreditBalanceRequest{
 				Owner: owner,
 				Denom: denom,
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdQueryProject() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "project [project-id]",
+		Short: "Query project by project-id",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+			queryClient := plasticcredit.NewQueryClient(clientCtx)
+
+			projectID, err := cast.ToUint64E(args[0])
+			if err != nil {
+				return err
+			}
+
+			res, err := queryClient.Project(context.Background(), &plasticcredit.QueryProjectRequest{
+				ProjectId: projectID,
 			})
 			if err != nil {
 				return err

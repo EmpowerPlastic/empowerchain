@@ -67,15 +67,41 @@ func (s *TestSuite) TestGenesis() {
 				Name:         "Whatever",
 			},
 		},
+		Projects: []plasticcredit.Project{
+			{
+				Id:                      1,
+				ApplicantId:             1,
+				CreditClassAbbreviation: "PCRD",
+				Name:                    "My project",
+			},
+			{
+				Id:                      2,
+				ApplicantId:             1,
+				CreditClassAbbreviation: "RCRD",
+				Name:                    "My other project",
+			},
+			{
+				Id:                      3,
+				ApplicantId:             2,
+				CreditClassAbbreviation: "WE",
+				Name:                    "The I barely care project",
+			},
+			{
+				Id:                      4,
+				ApplicantId:             3,
+				CreditClassAbbreviation: "PCRD",
+				Name:                    "Project 420x",
+			},
+		},
 		CreditCollections: []plasticcredit.CreditCollection{
 			{
 				Denom:     "ZMP/61361514316",
 				ProjectId: 2,
-				TotalAmount: &plasticcredit.CreditAmount{
+				TotalAmount: plasticcredit.CreditAmount{
 					Active:  0,
 					Retired: 100000,
 				},
-				CreditData: []*plasticcredit.ProvenData{
+				CreditData: []plasticcredit.ProvenData{
 					{
 						Uri:  "ipfs://CID",
 						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
@@ -85,11 +111,11 @@ func (s *TestSuite) TestGenesis() {
 			{
 				Denom:     "PLST/123",
 				ProjectId: 1,
-				TotalAmount: &plasticcredit.CreditAmount{
+				TotalAmount: plasticcredit.CreditAmount{
 					Active:  123,
 					Retired: 55,
 				},
-				CreditData: []*plasticcredit.ProvenData{
+				CreditData: []plasticcredit.ProvenData{
 					{
 						Uri:  "http://example.com",
 						Hash: "0ca0ecabdd9d86217a3230a362e1af0b06bdb85b6aa48602004ef515ee9d4908",
@@ -105,7 +131,7 @@ func (s *TestSuite) TestGenesis() {
 			{
 				Owner: sample.AccAddress(),
 				Denom: "EMP/61361514316",
-				Balance: &plasticcredit.CreditAmount{
+				Balance: plasticcredit.CreditAmount{
 					Active:  0,
 					Retired: 500000,
 				},
@@ -113,7 +139,7 @@ func (s *TestSuite) TestGenesis() {
 			{
 				Owner: sample.AccAddress(),
 				Denom: "EMP/61361514316",
-				Balance: &plasticcredit.CreditAmount{
+				Balance: plasticcredit.CreditAmount{
 					Active:  0,
 					Retired: 200000,
 				},
@@ -121,7 +147,7 @@ func (s *TestSuite) TestGenesis() {
 			{
 				Owner: sample.AccAddress(),
 				Denom: "EMP/61361514316",
-				Balance: &plasticcredit.CreditAmount{
+				Balance: plasticcredit.CreditAmount{
 					Active:  0,
 					Retired: 300000,
 				},
@@ -129,7 +155,7 @@ func (s *TestSuite) TestGenesis() {
 			{
 				Owner: sample.AccAddress(),
 				Denom: "PLST/123",
-				Balance: &plasticcredit.CreditAmount{
+				Balance: plasticcredit.CreditAmount{
 					Active:  120,
 					Retired: 5,
 				},
@@ -137,7 +163,7 @@ func (s *TestSuite) TestGenesis() {
 			{
 				Owner: sample.AccAddress(),
 				Denom: "PLST/123",
-				Balance: &plasticcredit.CreditAmount{
+				Balance: plasticcredit.CreditAmount{
 					Active:  3,
 					Retired: 50,
 				},
@@ -145,7 +171,7 @@ func (s *TestSuite) TestGenesis() {
 		},
 	}
 
-	err := s.empowerApp.PlasticcreditKeeper.InitGenesis(s.ctx, genesisState)
+	err := s.empowerApp.PlasticcreditKeeper.InitGenesis(s.ctx, &genesisState)
 	s.Require().NoError(err)
 
 	k := s.empowerApp.PlasticcreditKeeper
@@ -172,6 +198,12 @@ func (s *TestSuite) TestGenesis() {
 		actualCreditClass, found := k.GetCreditClass(s.ctx, creditClass.Abbreviation)
 		s.Require().True(found)
 		s.Require().Equal(creditClass, actualCreditClass)
+	}
+
+	for _, project := range genesisState.Projects {
+		actualProject, found := k.GetProject(s.ctx, project.Id)
+		s.Require().True(found)
+		s.Require().Equal(project, actualProject)
 	}
 
 	for _, creditCollection := range genesisState.CreditCollections {
@@ -206,6 +238,9 @@ func (s *TestSuite) TestGenesis() {
 
 	s.Require().Equal(len(genesisState.CreditClasses), len(export.CreditClasses))
 	s.Require().ElementsMatch(export.CreditClasses, genesisState.CreditClasses)
+
+	s.Require().Equal(len(genesisState.Projects), len(export.Projects))
+	s.Require().ElementsMatch(export.Projects, genesisState.Projects)
 
 	s.Require().Equal(len(genesisState.CreditCollections), len(export.CreditCollections))
 	s.Require().ElementsMatch(export.CreditCollections, genesisState.CreditCollections)

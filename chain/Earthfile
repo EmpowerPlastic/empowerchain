@@ -19,6 +19,7 @@ build-prep:
     COPY proto proto
     COPY scripts scripts
     COPY testutil testutil
+    COPY utils utils
     COPY x x
 
 build:

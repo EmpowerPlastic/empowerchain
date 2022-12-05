@@ -33,10 +33,6 @@ func (k Keeper) createApplicant(ctx sdk.Context, name string, description string
 		Admin:       admin,
 	}
 
-	if err := applicant.Validate(); err != nil {
-		return 0, err
-	}
-
 	if err := k.setApplicant(ctx, applicant); err != nil {
 		return 0, err
 	}
@@ -50,6 +46,9 @@ func (k Keeper) createApplicant(ctx sdk.Context, name string, description string
 }
 
 func (k Keeper) setApplicant(ctx sdk.Context, applicant plasticcredit.Applicant) error {
+	if err := applicant.Validate(); err != nil {
+		return err
+	}
 	store := k.getApplicantStore(ctx)
 
 	b, err := k.cdc.Marshal(&applicant)

@@ -41,15 +41,22 @@ message CreditClass {
   string name = 3;
 }
 
+message Project {
+  uint64 id = 1;
+  uint64 applicant_id = 2;
+  string credit_class_abbreviation = 3;
+  string name = 4;
+}
+
 message CreditCollection {
   // denominator of the credit, store key
   string denom = 1;
   // ID of a project related to the collection
   uint64 project_id = 2;
   // Total amount of active and retired credits for the collection
-  CreditAmount total_amount = 3;
+  CreditAmount total_amount = 3 [(gogoproto.nullable) = false];
   // References to formal information about the collection
-  repeated ProvenData credit_data = 4;
+  repeated ProvenData credit_data = 4 [(gogoproto.nullable) = false];
 }
 
 message CreditBalance {
@@ -58,7 +65,7 @@ message CreditBalance {
   // denominator of the credit, apart of compound key
   string denom = 2;
   // Number of active and retired credits
-  CreditAmount balance = 3;
+  CreditAmount balance = 3 [(gogoproto.nullable) = false];
 }
 
 message CreditAmount {
@@ -69,13 +76,6 @@ message CreditAmount {
 // Above this line is implemented
 // Below this line are drafts that needs to be implemented still
 
-message Project {
-  uint64 project_id = 1; 
-  string credit_class_abbreviation = 2;
-  uint64 applicant_id = 3;
-  string name = 4; 
-  ProvenData project_data = 5;   
-}
 
 message ProvenData {
   string uri = 1; 

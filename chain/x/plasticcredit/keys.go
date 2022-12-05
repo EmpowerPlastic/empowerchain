@@ -5,7 +5,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
-	"github.com/cosmos/cosmos-sdk/types/kv"
 )
 
 var (
@@ -44,18 +43,10 @@ func CreateKeyFromString(key string) []byte {
 	return []byte(key)
 }
 
+// TODO: Test
 func CreateCreditBalanceKey(owner sdk.AccAddress, denom string) []byte {
 	d := []byte(denom)
 	owner = address.MustLengthPrefix(owner)
 	key := sdk.AppendLengthPrefixedBytes(owner, d)
 	return key
-}
-
-func ParseCreditBalanceKey(key []byte) (owner sdk.AccAddress, denom string, err error) {
-	ownerLen, ownerLenEndIndex := sdk.ParseLengthPrefixedBytes(key, 0, 1)
-	ownerAddr, ownerAddrEndIndex := sdk.ParseLengthPrefixedBytes(key, ownerLenEndIndex+1, int(ownerLen[0]))
-	kv.AssertKeyAtLeastLength(key, ownerAddrEndIndex+1)
-	owner = sdk.AccAddress(ownerAddr)
-
-	return owner, string(key[(ownerAddrEndIndex + 1):]), nil
 }

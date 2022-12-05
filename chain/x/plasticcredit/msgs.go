@@ -13,6 +13,7 @@ var (
 	_ sdk.Msg = &MsgCreateIssuer{}
 	_ sdk.Msg = &MsgCreateApplicant{}
 	_ sdk.Msg = &MsgCreateCreditClass{}
+	_ sdk.Msg = &MsgCreateProject{}
 )
 
 func (m *MsgUpdateParams) ValidateBasic() error {
@@ -90,6 +91,14 @@ func (m *MsgCreateCreditClass) ValidateBasic() error {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
 
+	if m.IssuerId == 0 {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "issuer_id cannot be 0")
+	}
+
+	if m.Abbreviation == "" {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "abbreviation cannot be empty")
+	}
+
 	if m.Name == "" {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "credit class name cannot be empty")
 	}
@@ -98,6 +107,35 @@ func (m *MsgCreateCreditClass) ValidateBasic() error {
 }
 
 func (m *MsgCreateCreditClass) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(m.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
+}
+
+func (m *MsgCreateProject) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Creator)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+
+	if m.ApplicantId == 0 {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "applicant_id cannot be 0")
+	}
+
+	if m.CreditClassAbbreviation == "" {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "abbreviation cannot be empty")
+	}
+
+	if m.Name == "" {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "credit class name cannot be empty")
+	}
+
+	return nil
+}
+
+func (m *MsgCreateProject) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(m.Creator)
 	if err != nil {
 		panic(err)

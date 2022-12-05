@@ -3,8 +3,6 @@ package keeper_test
 import (
 	"fmt"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/empowerchain/empowerchain/testutil/sample"
@@ -38,7 +36,7 @@ func (s *TestSuite) TestIssuerQuery() {
 	_, err := querier.Issuer(goCtx, &plasticcredit.QueryIssuerRequest{
 		IssuerId: 1,
 	})
-	s.Require().ErrorIs(err, sdkerrors.ErrNotFound)
+	s.Require().ErrorIs(err, plasticcredit.ErrNotFoundIssuer)
 
 	ms := keeper.NewMsgServerImpl(k)
 	createMsg := plasticcredit.MsgCreateIssuer{
@@ -101,7 +99,7 @@ func (s *TestSuite) TestIssuersQuery() {
 	}
 
 	resp3, err := querier.Issuers(goCtx, &plasticcredit.QueryIssuersRequest{
-		Pagination: &query.PageRequest{
+		Pagination: query.PageRequest{
 			Offset: 0,
 			Limit:  10,
 		},
@@ -118,7 +116,7 @@ func (s *TestSuite) TestApplicantQuery() {
 	_, err := querier.Applicant(goCtx, &plasticcredit.QueryApplicantRequest{
 		ApplicantId: 1,
 	})
-	s.Require().ErrorIs(err, sdkerrors.ErrNotFound)
+	s.Require().ErrorIs(err, plasticcredit.ErrNotFoundApplicant)
 
 	ms := keeper.NewMsgServerImpl(k)
 	createMsg := plasticcredit.MsgCreateApplicant{
@@ -157,7 +155,7 @@ func (s *TestSuite) TestCreditClassQuery() {
 	_, err = querier.CreditClass(goCtx, &plasticcredit.QueryCreditClassRequest{
 		CreditClassAbbreviation: creditClassAbbreviation,
 	})
-	s.Require().ErrorIs(err, sdkerrors.ErrNotFound)
+	s.Require().ErrorIs(err, plasticcredit.ErrNotFoundCreditClass)
 
 	createMsg := plasticcredit.MsgCreateCreditClass{
 		Creator:      issuerAdmin,
@@ -196,7 +194,7 @@ func (s *TestSuite) TestCreditClassesQuery() {
 	s.Require().NoError(err)
 	s.Require().Len(resp.CreditClasses, 0)
 
-	var expectedCreditClasses []*plasticcredit.CreditClass
+	var expectedCreditClasses []plasticcredit.CreditClass
 	for i := 0; i < 11; i++ {
 		abbreviation := fmt.Sprintf("PCRD%d", i)
 		name := fmt.Sprintf("Empower Credits (%s)", abbreviation)
@@ -210,7 +208,7 @@ func (s *TestSuite) TestCreditClassesQuery() {
 		_, err = ms.CreateCreditClass(goCtx, &createMsg)
 		s.Require().NoError(err)
 
-		expectedCreditClasses = append(expectedCreditClasses, &plasticcredit.CreditClass{
+		expectedCreditClasses = append(expectedCreditClasses, plasticcredit.CreditClass{
 			Abbreviation: createMsg.Abbreviation,
 			IssuerId:     createMsg.IssuerId,
 			Name:         createMsg.Name,
@@ -224,13 +222,67 @@ func (s *TestSuite) TestCreditClassesQuery() {
 	s.Require().ElementsMatch(expectedCreditClasses, resp2.CreditClasses)
 
 	resp3, err := querier.CreditClasses(goCtx, &plasticcredit.QueryCreditClassesRequest{
-		Pagination: &query.PageRequest{
+		Pagination: query.PageRequest{
 			Offset: 0,
 			Limit:  10,
 		},
 	})
 	s.Require().NoError(err)
 	s.Require().Len(resp3.CreditClasses, 10)
+}
+
+func (s *TestSuite) TestProjectQuery() {
+	k := s.empowerApp.PlasticcreditKeeper
+	goCtx := sdk.WrapSDKContext(s.ctx)
+	ms := keeper.NewMsgServerImpl(k)
+	issuerAdmin := sample.AccAddress()
+	applicantAdmin := sample.AccAddress()
+	creditClassAbbreviation := "PCRD"
+	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
+		Creator:     k.Authority(),
+		Name:        "Empower",
+		Description: "Something",
+		Admin:       issuerAdmin,
+	})
+	s.Require().NoError(err)
+	_, err = ms.CreateCreditClass(goCtx, &plasticcredit.MsgCreateCreditClass{
+		Creator:      issuerAdmin,
+		Abbreviation: creditClassAbbreviation,
+		IssuerId:     1,
+		Name:         "Empower Plastic Credits",
+	})
+	s.Require().NoError(err)
+	_, err = ms.CreateApplicant(goCtx, &plasticcredit.MsgCreateApplicant{
+		Name:        "Collector co",
+		Description: "smthsmth",
+		Admin:       applicantAdmin,
+	})
+	s.Require().NoError(err)
+
+	querier := keeper.Querier{Keeper: k}
+	_, err = querier.Project(goCtx, &plasticcredit.QueryProjectRequest{
+		ProjectId: 1,
+	})
+	s.Require().ErrorIs(err, plasticcredit.ErrNotFoundProject)
+
+	createMsg := plasticcredit.MsgCreateProject{
+		Creator:                 applicantAdmin,
+		ApplicantId:             1,
+		CreditClassAbbreviation: creditClassAbbreviation,
+		Name:                    "Project 420x",
+	}
+	_, err = ms.CreateProject(goCtx, &createMsg)
+	s.Require().NoError(err)
+
+	resp, err := querier.Project(goCtx, &plasticcredit.QueryProjectRequest{
+		ProjectId: 1,
+	})
+
+	s.Require().NoError(err)
+	s.Require().Equal(uint64(1), resp.Project.Id)
+	s.Require().Equal(createMsg.ApplicantId, resp.Project.ApplicantId)
+	s.Require().Equal(createMsg.CreditClassAbbreviation, resp.Project.CreditClassAbbreviation)
+	s.Require().Equal(createMsg.Name, resp.Project.Name)
 }
 
 // TODO credit balance, credit collection queries

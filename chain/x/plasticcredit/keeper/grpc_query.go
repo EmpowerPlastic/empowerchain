@@ -6,7 +6,6 @@ import (
 	"cosmossdk.io/errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/empowerchain/empowerchain/x/plasticcredit"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -54,11 +53,11 @@ func (k Querier) Issuer(goCtx context.Context, req *plasticcredit.QueryIssuerReq
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	issuer, found := k.GetIssuer(ctx, req.IssuerId)
 	if !found {
-		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "issuer with id: %d was not found", req.IssuerId)
+		return nil, errors.Wrapf(plasticcredit.ErrNotFoundIssuer, "issuer with id: %d was not found", req.IssuerId)
 	}
 
 	return &plasticcredit.QueryIssuerResponse{
-		Issuer: &issuer,
+		Issuer: issuer,
 	}, nil
 }
 
@@ -70,11 +69,11 @@ func (k Querier) Applicant(goCtx context.Context, req *plasticcredit.QueryApplic
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	applicant, found := k.GetApplicant(ctx, req.ApplicantId)
 	if !found {
-		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "applicant with id: %d was not found", req.ApplicantId)
+		return nil, errors.Wrapf(plasticcredit.ErrNotFoundApplicant, "applicant with id: %d was not found", req.ApplicantId)
 	}
 
 	return &plasticcredit.QueryApplicantResponse{
-		Applicant: &applicant,
+		Applicant: applicant,
 	}, nil
 }
 
@@ -103,11 +102,27 @@ func (k Querier) CreditClass(goCtx context.Context, req *plasticcredit.QueryCred
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	creditClass, found := k.GetCreditClass(ctx, req.CreditClassAbbreviation)
 	if !found {
-		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "credit class with abbreviation: %s was not found", req.CreditClassAbbreviation)
+		return nil, errors.Wrapf(plasticcredit.ErrNotFoundCreditClass, "credit class with abbreviation: %s was not found", req.CreditClassAbbreviation)
 	}
 
 	return &plasticcredit.QueryCreditClassResponse{
-		CreditClass: &creditClass,
+		CreditClass: creditClass,
+	}, nil
+}
+
+func (k Querier) Project(goCtx context.Context, req *plasticcredit.QueryProjectRequest) (*plasticcredit.QueryProjectResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	project, found := k.GetProject(ctx, req.ProjectId)
+	if !found {
+		return nil, errors.Wrapf(plasticcredit.ErrNotFoundProject, "project with id: %d was not found", req.ProjectId)
+	}
+
+	return &plasticcredit.QueryProjectResponse{
+		Project: project,
 	}, nil
 }
 
@@ -119,11 +134,11 @@ func (k Querier) CreditCollection(goCtx context.Context, req *plasticcredit.Quer
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	creditCollection, found := k.GetCreditCollection(ctx, req.Denom)
 	if !found {
-		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "credit collection with denom %s nom found", req.Denom)
+		return nil, errors.Wrapf(plasticcredit.ErrNotFoundCreditCollection, "credit collection with denom %s nom found", req.Denom)
 	}
 
 	return &plasticcredit.QueryCreditCollectionResponse{
-		CreditCollection: &creditCollection,
+		CreditCollection: creditCollection,
 	}, nil
 }
 
@@ -139,10 +154,10 @@ func (k Querier) CreditBalance(goCtx context.Context, req *plasticcredit.QueryCr
 	}
 	creditBalance, found := k.GetCreditBalance(ctx, owner, req.Denom)
 	if !found {
-		return nil, errors.Wrapf(sdkerrors.ErrNotFound, "balance for address %s and denom %s not found", req.Owner, req.Denom)
+		return nil, errors.Wrapf(plasticcredit.ErrNotFoundCreditBalance, "balance for address %s and denom %s not found", req.Owner, req.Denom)
 	}
 
 	return &plasticcredit.QueryCreditBalanceResponse{
-		Balance: &creditBalance,
+		Balance: creditBalance,
 	}, nil
 }
