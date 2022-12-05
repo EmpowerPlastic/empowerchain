@@ -65,7 +65,7 @@ make kill
 echo "Serve killed"
 
 echo "--- Test: Plastic Credit Genesis Export and Import ---"
-empowerd export --home $CHAIN_DIR > $CHAIN_DIR
+empowerd export --home $CHAIN_DIR > $CHAIN_DIR/export.json
 
 # TODO: TEST GENESIS OUTPUT
 # TODO: TEST GENESIS IMPORT
