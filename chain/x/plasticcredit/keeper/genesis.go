@@ -5,7 +5,7 @@ import (
 	"github.com/empowerchain/empowerchain/x/plasticcredit"
 )
 
-func (k Keeper) InitGenesis(ctx sdk.Context, genState plasticcredit.GenesisState) error {
+func (k Keeper) InitGenesis(ctx sdk.Context, genState *plasticcredit.GenesisState) error {
 	if err := k.setParams(ctx, genState.Params); err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState plasticcredit.GenesisState
 	return nil
 }
 
-func (k Keeper) ExportGenesis(ctx sdk.Context) plasticcredit.GenesisState {
+func (k Keeper) ExportGenesis(ctx sdk.Context) *plasticcredit.GenesisState {
 	genesis := plasticcredit.DefaultGenesis()
 
 	genesis.Params = k.GetParams(ctx)
@@ -65,5 +65,5 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) plasticcredit.GenesisState {
 	genesis.CreditCollections = k.getAllCreditCollections(ctx)
 	genesis.CreditBalances = k.getAllCreditBalances(ctx)
 
-	return genesis
+	return &genesis
 }
