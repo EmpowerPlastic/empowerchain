@@ -243,7 +243,7 @@ func (s *TestSuite) TestCreateCreditClass() {
 				IssuerId:     42,
 				Name:         "Someone else's PCs",
 			},
-			err: sdkerrors.ErrNotFound,
+			err: plasticcredit.ErrNotFoundIssuer,
 		},
 	}
 
@@ -364,7 +364,7 @@ func (s *TestSuite) TestCreateProject() {
 				CreditClassAbbreviation: creditClass.Abbreviation,
 				Name:                    "My project",
 			},
-			err: sdkerrors.ErrNotFound,
+			err: plasticcredit.ErrNotFoundApplicant,
 		},
 		"non-existent credit class": {
 			msg: &plasticcredit.MsgCreateProject{
@@ -373,7 +373,7 @@ func (s *TestSuite) TestCreateProject() {
 				CreditClassAbbreviation: "Not here",
 				Name:                    "My project",
 			},
-			err: sdkerrors.ErrNotFound,
+			err: plasticcredit.ErrNotFoundCreditClass,
 		},
 		"invalid name": {
 			msg: &plasticcredit.MsgCreateProject{

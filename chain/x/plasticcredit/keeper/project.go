@@ -25,7 +25,7 @@ func (k Keeper) GetProject(ctx sdk.Context, projectID uint64) (project plasticcr
 func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicantID uint64, creditClassAbbreviation string, name string) (uint64, error) {
 	applicant, found := k.GetApplicant(ctx, applicantID)
 	if !found {
-		return 0, errors.Wrapf(sdkerrors.ErrNotFound, "applicant with id %d was not found", applicantID)
+		return 0, errors.Wrapf(plasticcredit.ErrNotFoundApplicant, "applicant with id %d was not found", applicantID)
 	}
 
 	if !applicant.AddressHasAuthorization(creator) {
@@ -33,7 +33,7 @@ func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicant
 	}
 
 	if _, found := k.GetCreditClass(ctx, creditClassAbbreviation); !found {
-		return 0, errors.Wrapf(sdkerrors.ErrNotFound, "credit class with abbreviation %s was not found", creditClassAbbreviation)
+		return 0, errors.Wrapf(plasticcredit.ErrNotFoundCreditClass, "credit class with abbreviation %s was not found", creditClassAbbreviation)
 	}
 
 	idc := k.GetIDCounters(ctx)
