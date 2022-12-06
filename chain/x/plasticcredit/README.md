@@ -31,6 +31,7 @@ sequenceDiagram
     
     Governance->>EmpowerChain: Create Issuer
     Issuer->>EmpowerChain: Create Credit Class
+    Applicant->>EmpowerChain: Create Applicant
     Applicant->>EmpowerChain: Create Project
     activate EmpowerChain
     EmpowerChain->>Issuer: Apply to
