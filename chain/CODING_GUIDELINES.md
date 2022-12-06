@@ -4,6 +4,8 @@
 
 We try to follow the structure outline in the Cosmos SDK docs: https://docs.cosmos.network/main/building-modules/structure
 
+For documentation of a module, we use the `README.md` file under `x/modulename`. The format should conform to the "spec-spec" outlined in the Cosmos SDK docs: https://docs.cosmos.network/main/spec/SPEC-SPEC
+
 ## Keeper structure
 
 To keep a clean separation of concerns in our modules, we construct our keeper this way:
