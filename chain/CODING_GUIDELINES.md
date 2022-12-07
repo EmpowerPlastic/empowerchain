@@ -87,6 +87,17 @@ var (
 
 ## Coding tips
 
+### Where to look for typical ways of doing this
+
+If you are not sure what a good way of doing something in particular, there are a few places that could be good starting points:
+1. The [Cosmos SDK Docs](https://docs.cosmos.network) sometimes have recommendations on how to do things, we try to follow those
+2. Look at code. Try to find a module that does something similar to what you want to do and see if it makes sense.
+    - [Cosmos SDK code](https://github.com/cosmos/cosmos-sdk) is often good (Group module, NFT, Bank are all pretty solid)
+    - [Osmosis](https://github.com/osmosis-labs/osmosis)
+    - [Regen](https://github.com/regen-network/regen-ledger/)
+    - [Cheqd](https://github.com/cheqd/cheqd-node)
+    - [Stargaze](https://github.com/public-awesome/), but mostly CosmWasm or non-module-based things
+
 ### Typical order of making changes (especially new things)
 
 1. Make changes in the proto files
