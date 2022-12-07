@@ -107,7 +107,7 @@ func (m msgServer) CreateProject(goCtx context.Context, req *plasticcredit.MsgCr
 func (m msgServer) IssueCredits(goCtx context.Context, req *plasticcredit.MsgIssueCredits) (*plasticcredit.MsgIssueCreditsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	collection, err := m.issueCredits(ctx, req.Creator, req.ProjectId, req.SerialNumber, req.CreditAmount, req.CreditData)
+	collection, err := m.issueCredits(ctx, req.Creator, req.ProjectId, req.SerialNumber, req.CreditAmount)
 	if err != nil {
 		return nil, err
 	}

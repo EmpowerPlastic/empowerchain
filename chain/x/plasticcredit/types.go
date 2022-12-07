@@ -148,14 +148,6 @@ func (cc CreditCollection) Validate() error {
 	if cc.TotalAmount.Active == 0 && cc.TotalAmount.Retired == 0 {
 		return errors.Wrap(utils.ErrInvalidValue, "cannot issue 0 credits")
 	}
-	for _, data := range cc.CreditData {
-		if data.Uri == "" {
-			return errors.Wrap(utils.ErrInvalidValue, "empty credit data uri")
-		}
-		if data.Hash == "" {
-			return errors.Wrap(utils.ErrInvalidValue, "empty credit data hash")
-		}
-	}
 	return nil
 }
 

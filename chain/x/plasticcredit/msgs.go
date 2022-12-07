@@ -1,8 +1,6 @@
 package plasticcredit
 
 import (
-	"encoding/hex"
-
 	errors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -156,15 +154,6 @@ func (m *MsgIssueCredits) ValidateBasic() error {
 	}
 	if m.CreditAmount == 0 {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid credit amount")
-	}
-	for _, data := range m.CreditData {
-		_, err = hex.DecodeString(data.Hash)
-		if err != nil {
-			return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Invalid hash: %s", data.Hash)
-		}
-		if data.Uri == "" {
-			return errors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid uri")
-		}
 	}
 	return nil
 }

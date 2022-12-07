@@ -113,7 +113,6 @@ message MsgIssueCredits {
   uint64 project_id = 2;
   string serial_number = 3;
   uint64 credit_amount = 4;
-  repeated ProvenData credit_data = 5 [(gogoproto.nullable) = false];
 }
 
 message MsgIssueCreditsResponse {
