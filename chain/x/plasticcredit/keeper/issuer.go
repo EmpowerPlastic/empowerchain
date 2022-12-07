@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"cosmossdk.io/errors"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -59,9 +61,18 @@ func (k Keeper) getAllIssuers(ctx sdk.Context) []plasticcredit.Issuer {
 	return issuers
 }
 
-func (k Keeper) createIssuer(ctx sdk.Context, name string, description string, admin string) (uint64, error) {
-	idc := k.GetIDCounters(ctx)
+func (k Keeper) CreateIssuer(ctx sdk.Context, creator sdk.AccAddress, name string, description string, admin string) (uint64, error) {
+	params := k.GetParams(ctx)
+	authorizedIssuerCreator := params.IssuerCreator
+	if authorizedIssuerCreator == "" {
+		authorizedIssuerCreator = k.authority
+	}
 
+	if authorizedIssuerCreator != creator.String() {
+		return 0, errors.Wrapf(sdkerrors.ErrUnauthorized, "invalid issue creator; expected %s, got %s", authorizedIssuerCreator, creator.String())
+	}
+
+	idc := k.GetIDCounters(ctx)
 	nextID := idc.NextIssuerId
 
 	issuer := plasticcredit.Issuer{
@@ -84,7 +95,13 @@ func (k Keeper) createIssuer(ctx sdk.Context, name string, description string, a
 		return 0, err
 	}
 
-	return nextID, nil
+	return nextID, ctx.EventManager().EmitTypedEvent(&plasticcredit.EventCreateIssuer{
+		IssuerId:    issuer.Id,
+		Creator:     creator.String(),
+		Name:        issuer.Name,
+		Description: issuer.Description,
+		Admin:       issuer.Admin,
+	})
 }
 
 func (k Keeper) setIssuer(ctx sdk.Context, issuer plasticcredit.Issuer) error {

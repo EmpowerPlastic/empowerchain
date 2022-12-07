@@ -133,10 +133,11 @@ func (s *TestSuite) TestCreateIssuer() {
 			resp, err := ms.CreateIssuer(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
 
+			events := s.ctx.EventManager().ABCIEvents()
+			idCounters := k.GetIDCounters(s.ctx)
+
 			if err == nil {
 				s.Require().Equal(uint64(1), resp.IssuerId)
-
-				idCounters := k.GetIDCounters(s.ctx)
 				s.Require().Equal(uint64(2), idCounters.NextIssuerId)
 
 				issuer, found := k.GetIssuer(s.ctx, resp.IssuerId)
@@ -147,6 +148,26 @@ func (s *TestSuite) TestCreateIssuer() {
 					Description: tc.msg.Description,
 					Admin:       tc.msg.Admin,
 				}, issuer)
+
+				s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[0])
+				s.Require().NoError(err)
+				eventCreateIssuer, ok := parsedEvent.(*plasticcredit.EventCreateIssuer)
+				s.Require().True(ok)
+				s.Require().Equal(&plasticcredit.EventCreateIssuer{
+					IssuerId:    issuer.Id,
+					Creator:     tc.msg.Creator,
+					Name:        issuer.Name,
+					Description: issuer.Description,
+					Admin:       issuer.Admin,
+				}, eventCreateIssuer)
+
+			} else {
+				s.Require().Equal(uint64(1), idCounters.NextIssuerId)
+				_, found := k.GetIssuer(s.ctx, 1)
+				s.Require().False(found)
+
+				s.Require().Len(events, 0)
 			}
 		})
 	}
