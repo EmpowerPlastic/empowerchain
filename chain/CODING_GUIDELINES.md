@@ -2,7 +2,7 @@
 
 ## Module structure
 
-We try to follow the structure outline in the Cosmos SDK docs: https://docs.cosmos.network/main/building-modules/structure
+We try to follow the folder structure outline in the Cosmos SDK docs: https://docs.cosmos.network/main/building-modules/structure
 
 For documentation of a module, we use the `README.md` file under `x/modulename`. The format should conform to the "spec-spec" outlined in the Cosmos SDK docs: https://docs.cosmos.network/main/spec/SPEC-SPEC
 
@@ -60,7 +60,6 @@ message MsgWithNestedTypes {
 }
 ```
 
-
 ## Errors
 
 To keep testing and debugging as easy as possible, we try to create good errors rather than use generic ones.
@@ -103,5 +102,9 @@ var (
     - Don't forget events
 6. Update genesis if necessary (in genesis and keeper/genesis)
 7. Update the client/cli if necessary
-8. Create e2e tests
+8. Create e2e tests in  `scripts/test/`
+    - Remember to `$ make install` after every change you make so the binary under test is the correct one.
+    - Hot tip: stop the test at some point before the serve is killed with `exit 0` and run just the script (e.g. `$ ./scripts/test/smoke_plastic_credit.sh`). 
+    - This way the server is still running, and you can manually run your CLI commands in the terminal.
+    - To get access to the environment variables such as `$CHAIN_ID` and `$CHAIN_DIR` you can use the env script like this: `$ source ./scripts/serve_env.sh`.
 9. Format and lint your code before committing: `$ make format` and `$ make lint`
