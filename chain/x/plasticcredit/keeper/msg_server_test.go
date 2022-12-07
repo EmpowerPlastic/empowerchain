@@ -433,6 +433,16 @@ func (s *TestSuite) TestIssueCredits() {
 			expectedAmount: 0,
 			err:            utils.ErrInvalidValue,
 		},
+		"issue zero credits": {
+			msg: &plasticcredit.MsgIssueCredits{
+				Creator:      s.sampleIssuerAdmin,
+				ProjectId:    s.sampleProjectId,
+				SerialNumber: "321",
+				CreditAmount: 0,
+			},
+			expectedAmount: 0,
+			err:            utils.ErrInvalidValue,
+		},
 	}
 
 	for name, tc := range testCases {
@@ -447,13 +457,24 @@ func (s *TestSuite) TestIssueCredits() {
 			s.Require().ErrorIs(err, tc.err)
 
 			if err == nil {
+				denom, err := keeper.CreateCreditDenom(s.sampleCreditClassAbbreviation, tc.msg.SerialNumber)
+				s.Require().NoError(err)
+				creditCollection, found := k.GetCreditCollection(s.ctx, denom)
+				s.Require().True(found)
+				ownerAddress, err := sdk.AccAddressFromBech32(s.sampleApplicantAdmin)
+				s.Require().NoError(err)
+				ownerBalance, found := k.GetCreditBalance(s.ctx, ownerAddress, denom)
+				s.Require().True(found)
 				s.Require().Equal(tc.expectedAmount, resp.Collection.TotalAmount.Active)
+				s.Require().Equal(tc.expectedAmount, creditCollection.TotalAmount.Active)
+				s.Require().Equal(tc.expectedAmount, ownerBalance.Balance.Active)
 			}
 		})
 	}
 }
 
 func (s *TestSuite) TestTransferCredits() {
+	address := sample.AccAddress()
 	testCases := map[string]struct {
 		msg                             *plasticcredit.MsgTransferCredits
 		expectedSenderBalance           uint64
@@ -464,7 +485,7 @@ func (s *TestSuite) TestTransferCredits() {
 		"happy path (no retire)": {
 			msg: &plasticcredit.MsgTransferCredits{
 				From:   s.sampleApplicantAdmin,
-				To:     sample.AccAddress(),
+				To:     address,
 				Denom:  s.sampleCreditDenom,
 				Amount: 100,
 				Retire: false,
@@ -477,7 +498,7 @@ func (s *TestSuite) TestTransferCredits() {
 		"happy path (retire)": {
 			msg: &plasticcredit.MsgTransferCredits{
 				From:   s.sampleApplicantAdmin,
-				To:     sample.AccAddress(),
+				To:     address,
 				Denom:  s.sampleCreditDenom,
 				Amount: 100,
 				Retire: true,
@@ -490,7 +511,7 @@ func (s *TestSuite) TestTransferCredits() {
 		"not enough sender balance": {
 			msg: &plasticcredit.MsgTransferCredits{
 				From:   s.sampleApplicantAdmin,
-				To:     sample.AccAddress(),
+				To:     address,
 				Denom:  s.sampleCreditDenom,
 				Amount: 10000000000,
 				Retire: false,
@@ -503,8 +524,60 @@ func (s *TestSuite) TestTransferCredits() {
 		"non-existing denom": {
 			msg: &plasticcredit.MsgTransferCredits{
 				From:   s.sampleApplicantAdmin,
-				To:     sample.AccAddress(),
+				To:     address,
 				Denom:  "ABC/000",
+				Amount: 100,
+				Retire: false,
+			},
+			expectedSenderBalance:           0,
+			expectedRecipientBalanceActive:  0,
+			expectedRecipientBalanceRetired: 0,
+			err:                             plasticcredit.ErrNotFoundCreditBalance,
+		},
+		"wrong from address": {
+			msg: &plasticcredit.MsgTransferCredits{
+				From:   "emp",
+				To:     address,
+				Denom:  s.sampleCreditDenom,
+				Amount: 100,
+				Retire: false,
+			},
+			expectedSenderBalance:           0,
+			expectedRecipientBalanceActive:  0,
+			expectedRecipientBalanceRetired: 0,
+			err:                             sdkerrors.ErrInvalidAddress,
+		},
+		"wrong to address": {
+			msg: &plasticcredit.MsgTransferCredits{
+				From:   s.sampleApplicantAdmin,
+				To:     "emp",
+				Denom:  s.sampleCreditDenom,
+				Amount: 100,
+				Retire: false,
+			},
+			expectedSenderBalance:           0,
+			expectedRecipientBalanceActive:  0,
+			expectedRecipientBalanceRetired: 0,
+			err:                             sdkerrors.ErrInvalidAddress,
+		},
+		"sending to the same address": {
+			msg: &plasticcredit.MsgTransferCredits{
+				From:   s.sampleApplicantAdmin,
+				To:     s.sampleApplicantAdmin,
+				Denom:  s.sampleCreditDenom,
+				Amount: 100,
+				Retire: false,
+			},
+			expectedSenderBalance:           100000000,
+			expectedRecipientBalanceActive:  100000000,
+			expectedRecipientBalanceRetired: 0,
+			err:                             nil,
+		},
+		"sending to the same address (no balance)": {
+			msg: &plasticcredit.MsgTransferCredits{
+				From:   address,
+				To:     address,
+				Denom:  s.sampleCreditDenom,
 				Amount: 100,
 				Retire: false,
 			},
@@ -523,10 +596,18 @@ func (s *TestSuite) TestTransferCredits() {
 			goCtx := sdk.WrapSDKContext(s.ctx)
 			ms := keeper.NewMsgServerImpl(k)
 
+			var collectionBefore, collectionAfter plasticcredit.CreditCollection
+
+			if tc.err == nil && tc.msg.Retire == true {
+				var found bool
+				collectionBefore, found = k.GetCreditCollection(s.ctx, tc.msg.Denom)
+				s.Require().True(found)
+			}
+
 			_, err := ms.TransferCredits(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
 
-			if err == nil {
+			if tc.err == nil {
 				sender, err := sdk.AccAddressFromBech32(tc.msg.From)
 				s.Require().NoError(err)
 				recipient, err := sdk.AccAddressFromBech32(tc.msg.To)
@@ -538,6 +619,12 @@ func (s *TestSuite) TestTransferCredits() {
 				s.Require().Equal(tc.expectedSenderBalance, senderBalance.Balance.Active)
 				s.Require().Equal(tc.expectedRecipientBalanceActive, recipientBalance.Balance.Active)
 				s.Require().Equal(tc.expectedRecipientBalanceRetired, recipientBalance.Balance.Retired)
+				if tc.msg.Retire == true {
+					collectionAfter, found = k.GetCreditCollection(s.ctx, tc.msg.Denom)
+					s.Require().True(found)
+					s.Require().Equal(collectionBefore.TotalAmount.Active-tc.msg.Amount, collectionAfter.TotalAmount.Active)
+					s.Require().Equal(collectionBefore.TotalAmount.Retired+tc.msg.Amount, collectionAfter.TotalAmount.Retired)
+				}
 			}
 		})
 	}
@@ -576,6 +663,24 @@ func (s *TestSuite) TestRetireCredits() {
 			expectedBalanceRetired: 0,
 			err:                    plasticcredit.ErrNotEnoughCredits,
 		},
+		"empty denom": {
+			msg: &plasticcredit.MsgRetireCredits{
+				Owner:  s.sampleApplicantAdmin,
+				Denom:  "",
+				Amount: 100,
+			},
+			expectedBalanceRetired: 0,
+			err:                    plasticcredit.ErrNotEnoughCredits,
+		},
+		"invalid owner address": {
+			msg: &plasticcredit.MsgRetireCredits{
+				Owner:  "emp",
+				Denom:  s.sampleCreditDenom,
+				Amount: 100,
+			},
+			expectedBalanceRetired: 0,
+			err:                    sdkerrors.ErrInvalidAddress,
+		},
 	}
 
 	for name, tc := range testCases {
@@ -586,15 +691,35 @@ func (s *TestSuite) TestRetireCredits() {
 			goCtx := sdk.WrapSDKContext(s.ctx)
 			ms := keeper.NewMsgServerImpl(k)
 
+			var collectionBefore, collection plasticcredit.CreditCollection
+			var balanceBefore, balance plasticcredit.CreditBalance
+			var owner sdk.AccAddress
+
+			if tc.err == nil {
+				var found bool
+				var err error
+				owner, err = sdk.AccAddressFromBech32(tc.msg.Owner)
+				s.Require().NoError(err)
+				collectionBefore, found = k.GetCreditCollection(s.ctx, tc.msg.Denom)
+				s.Require().True(found)
+				balanceBefore, found = k.GetCreditBalance(s.ctx, owner, tc.msg.Denom)
+				s.Require().True(found)
+			}
+
 			_, err := ms.RetireCredits(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
 
-			if err == nil {
-				owner, err := sdk.AccAddressFromBech32(tc.msg.Owner)
-				s.Require().NoError(err)
-				balance, found := k.GetCreditBalance(s.ctx, owner, tc.msg.Denom)
+			if tc.err == nil {
+				var found bool
+				balance, found = k.GetCreditBalance(s.ctx, owner, tc.msg.Denom)
+				s.Require().True(found)
+				collection, found = k.GetCreditCollection(s.ctx, tc.msg.Denom)
 				s.Require().True(found)
 				s.Require().Equal(tc.expectedBalanceRetired, balance.Balance.Retired)
+				s.Require().Equal(collectionBefore.TotalAmount.Active-tc.msg.Amount, collection.TotalAmount.Active)
+				s.Require().Equal(collectionBefore.TotalAmount.Retired+tc.msg.Amount, collection.TotalAmount.Retired)
+				s.Require().Equal(balanceBefore.Balance.Active-tc.msg.Amount, balance.Balance.Active)
+				s.Require().Equal(balanceBefore.Balance.Retired+tc.msg.Amount, balance.Balance.Retired)
 			}
 		})
 	}
