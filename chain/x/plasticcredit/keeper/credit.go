@@ -279,7 +279,6 @@ func (k Keeper) getCreditBalanceStore(ctx sdk.Context) storetypes.KVStore {
 	return creditBalanceStore
 }
 
-// TODO: Needs test
 func CreateCreditDenom(creditClassAbbreviation string, serialNumber string) (string, error) {
 	if creditClassAbbreviation == "" || serialNumber == "" {
 		return "", errors.Wrap(utils.ErrInvalidValue, "empty denom part")
