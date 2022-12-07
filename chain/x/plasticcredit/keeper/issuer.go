@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"cosmossdk.io/errors"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -59,7 +61,7 @@ func (k Keeper) getAllIssuers(ctx sdk.Context) []plasticcredit.Issuer {
 	return issuers
 }
 
-func (k Keeper) createIssuer(ctx sdk.Context, name string, description string, admin string) (uint64, error) {
+func (k Keeper) CreateIssuer(ctx sdk.Context, name string, description string, admin string) (uint64, error) {
 	idc := k.GetIDCounters(ctx)
 
 	nextID := idc.NextIssuerId
@@ -69,10 +71,6 @@ func (k Keeper) createIssuer(ctx sdk.Context, name string, description string, a
 		Name:        name,
 		Description: description,
 		Admin:       admin,
-	}
-
-	if err := issuer.Validate(); err != nil {
-		return 0, err
 	}
 
 	if err := k.setIssuer(ctx, issuer); err != nil {
@@ -87,7 +85,27 @@ func (k Keeper) createIssuer(ctx sdk.Context, name string, description string, a
 	return nextID, nil
 }
 
+func (k Keeper) UpdateIssuer(ctx sdk.Context, updater sdk.AccAddress, issuerID uint64, name string, description string, admin string) error {
+	issuer, found := k.GetIssuer(ctx, issuerID)
+	if !found {
+		return errors.Wrapf(plasticcredit.ErrNotFoundIssuer, "issuer with id %d was not found for update", issuerID)
+	}
+
+	if issuer.Admin != updater.String() {
+		return errors.Wrapf(sdkerrors.ErrUnauthorized, "updater %s is not the same as issuer admin %s", updater, issuer.Admin)
+	}
+
+	issuer.Name = name
+	issuer.Description = description
+	issuer.Admin = admin
+
+	return k.setIssuer(ctx, issuer)
+}
+
 func (k Keeper) setIssuer(ctx sdk.Context, issuer plasticcredit.Issuer) error {
+	if err := issuer.Validate(); err != nil {
+		return err
+	}
 	store := k.getIssuerStore(ctx)
 
 	b, err := k.cdc.Marshal(&issuer)

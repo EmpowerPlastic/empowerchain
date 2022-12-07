@@ -152,6 +152,65 @@ func (s *TestSuite) TestCreateIssuer() {
 	}
 }
 
+func (s *TestSuite) TestUpdateIssuer() {
+	issuerAdmin := sample.AccAddress()
+
+	testCases := map[string]struct {
+		msg *plasticcredit.MsgUpdateIssuer
+		err error
+	}{
+		"happy path": {
+			msg: &plasticcredit.MsgUpdateIssuer{
+				Updater:     issuerAdmin,
+				IssuerId:    1,
+				Name:        "EmpowerUpdated",
+				Description: "Empower is cool",
+				Admin:       sample.AccAddress(),
+			},
+			err: nil,
+		},
+	}
+
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			s.SetupTest()
+
+			k := s.empowerApp.PlasticcreditKeeper
+			goCtx := sdk.WrapSDKContext(s.ctx)
+			ms := keeper.NewMsgServerImpl(k)
+			_, err := ms.UpdateParams(goCtx, &plasticcredit.MsgUpdateParams{
+				Authority: k.Authority(),
+				Params: plasticcredit.Params{
+					IssuerCreator: issuerAdmin,
+				},
+			})
+			s.Require().NoError(err)
+
+			_, err = ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
+				Creator:     issuerAdmin,
+				Name:        "Empower",
+				Description: "",
+				Admin:       issuerAdmin,
+			})
+			s.Require().NoError(err)
+
+			_, err = ms.UpdateIssuer(goCtx, tc.msg)
+			s.Require().ErrorIs(err, tc.err)
+
+			if err == nil {
+				issuer, found := k.GetIssuer(s.ctx, tc.msg.IssuerId)
+				s.Require().True(found)
+				s.Require().Equal(plasticcredit.Issuer{
+					Id:          tc.msg.IssuerId,
+					Name:        tc.msg.Name,
+					Description: tc.msg.Description,
+					Admin:       tc.msg.Admin,
+				}, issuer)
+			}
+		})
+	}
+}
+
 func (s *TestSuite) TestCreateApplicant() {
 	testCases := map[string]struct {
 		msg *plasticcredit.MsgCreateApplicant

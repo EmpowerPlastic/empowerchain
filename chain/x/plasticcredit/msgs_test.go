@@ -112,6 +112,79 @@ func TestMsgCreateIssuer_ValidateBasic(t *testing.T) {
 	}
 }
 
+func TestMsgUpdateIssuer_ValidateBasic(t *testing.T) {
+	testCases := map[string]validateTest{
+		"happy path": {
+			msgUnderTest: &MsgUpdateIssuer{
+				Updater:     sample.AccAddress(),
+				IssuerId:    1,
+				Name:        "Empower",
+				Description: "Empower is the first and coolest plastic credit issuer!",
+				Admin:       sample.AccAddress(),
+			},
+			expectedError: nil,
+		},
+		"invalid updater": {
+			msgUnderTest: &MsgUpdateIssuer{
+				Updater:     "invalid",
+				IssuerId:    1,
+				Name:        "Empower",
+				Description: "Empower is the first and coolest plastic credit issuer!",
+				Admin:       sample.AccAddress(),
+			},
+			expectedError: sdkerrors.ErrInvalidAddress,
+		},
+		"invalid issuer id": {
+			msgUnderTest: &MsgUpdateIssuer{
+				Updater:     sample.AccAddress(),
+				IssuerId:    0,
+				Name:        "Empower",
+				Description: "Empower is the first and coolest plastic credit issuer!",
+				Admin:       sample.AccAddress(),
+			},
+			expectedError: sdkerrors.ErrInvalidRequest,
+		},
+		"invalid admin": {
+			msgUnderTest: &MsgUpdateIssuer{
+				Updater:     sample.AccAddress(),
+				IssuerId:    1,
+				Name:        "Empower",
+				Description: "Empower is the first and coolest plastic credit issuer!",
+				Admin:       "invalid",
+			},
+			expectedError: sdkerrors.ErrInvalidAddress,
+		},
+		"empty name not allowed": {
+			msgUnderTest: &MsgUpdateIssuer{
+				Updater:     sample.AccAddress(),
+				IssuerId:    1,
+				Name:        "",
+				Description: "Empower is the first and coolest plastic credit issuer!",
+				Admin:       sample.AccAddress(),
+			},
+			expectedError: sdkerrors.ErrInvalidRequest,
+		},
+		"empty description allowed": {
+			msgUnderTest: &MsgUpdateIssuer{
+				Updater:     sample.AccAddress(),
+				IssuerId:    1,
+				Name:        "Empower",
+				Description: "",
+				Admin:       sample.AccAddress(),
+			},
+			expectedError: nil,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			err := tc.msgUnderTest.ValidateBasic()
+
+			require.ErrorIs(t, err, tc.expectedError)
+		})
+	}
+}
+
 func TestMsgCreateApplicant_ValidateBasic(t *testing.T) {
 	testCases := map[string]validateTest{
 		"happy path": {
