@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "cosmos_proto/cosmos.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit";
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/plasticcredit";
 
 // Params defines the parameters for the module.
 message Params {
@@ -39,6 +39,11 @@ message CreditClass {
   string abbreviation = 1;
   uint64 issuer_id = 2;
   string name = 3;
+}
+
+enum ProjectStatus {
+  PROJECT_NEW = 0;
+  
 }
 
 message Project {

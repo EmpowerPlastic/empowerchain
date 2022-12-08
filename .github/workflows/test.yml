@@ -20,8 +20,13 @@ jobs:
         with:
           version: v0.6.22
 
-      - run: earthly --ci +test
+      - run: earthly --ci +test-with-coverage
         working-directory: ./chain
+
+      - uses: codecov/codecov-action@v3
+        with:
+          files: ./chain/coverage.out
+          flags: chain
 
       - run: earthly --ci +smoketest
         working-directory: ./chain

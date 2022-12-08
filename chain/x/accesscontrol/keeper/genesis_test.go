@@ -1,7 +1,7 @@
 package keeper_test
 
 import (
-	"github.com/empowerchain/empowerchain/x/accesscontrol"
+	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol"
 )
 
 func (s *TestSuite) TestGenesis() {

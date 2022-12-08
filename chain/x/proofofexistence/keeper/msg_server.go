@@ -6,8 +6,8 @@ import (
 	"cosmossdk.io/errors"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/empowerchain/empowerchain/x/proofofexistence"
 )
 
 var _ proofofexistence.MsgServer = msgServer{}

@@ -3,9 +3,9 @@ package plasticcredit
 import (
 	"testing"
 
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/empowerchain/empowerchain/testutil/sample"
 	"github.com/stretchr/testify/require"
 )
 

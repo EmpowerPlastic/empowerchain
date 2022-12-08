@@ -15,9 +15,9 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	// "github.com/empowerchain/empowerchain/x/accesscontrol/client/cli"
-	"github.com/empowerchain/empowerchain/x/accesscontrol"
-	"github.com/empowerchain/empowerchain/x/accesscontrol/keeper"
+	// "github.com/EmpowerPlastic/empowerchain/x/accesscontrol/client/cli"
+	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol"
+	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol/keeper"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 

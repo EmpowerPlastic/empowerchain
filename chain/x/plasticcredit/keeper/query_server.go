@@ -5,8 +5,8 @@ import (
 
 	"cosmossdk.io/errors"
 
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/empowerchain/empowerchain/x/plasticcredit"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

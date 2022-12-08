@@ -1,4 +1,4 @@
-module github.com/empowerchain/empowerchain
+module github.com/EmpowerPlastic/empowerchain
 
 go 1.19
 

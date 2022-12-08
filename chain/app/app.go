@@ -10,9 +10,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/group"
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 
-	"github.com/empowerchain/empowerchain/app/upgrades"
+	"github.com/EmpowerPlastic/empowerchain/app/upgrades"
 
-	"github.com/empowerchain/empowerchain/app/params"
+	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 
@@ -106,15 +106,15 @@ import (
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 
-	"github.com/empowerchain/empowerchain/x/accesscontrol"
-	accesscontrolmodulekeeper "github.com/empowerchain/empowerchain/x/accesscontrol/keeper"
-	accesscontrolmodule "github.com/empowerchain/empowerchain/x/accesscontrol/module"
-	plasticcreditmoduletypes "github.com/empowerchain/empowerchain/x/plasticcredit"
-	plasticcreditmodulekeeper "github.com/empowerchain/empowerchain/x/plasticcredit/keeper"
-	plasticcreditmodule "github.com/empowerchain/empowerchain/x/plasticcredit/module"
-	proofofexistencemoduletypes "github.com/empowerchain/empowerchain/x/proofofexistence"
-	proofofexistencemodulekeeper "github.com/empowerchain/empowerchain/x/proofofexistence/keeper"
-	proofofexistencemodule "github.com/empowerchain/empowerchain/x/proofofexistence/module"
+	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol"
+	accesscontrolmodulekeeper "github.com/EmpowerPlastic/empowerchain/x/accesscontrol/keeper"
+	accesscontrolmodule "github.com/EmpowerPlastic/empowerchain/x/accesscontrol/module"
+	plasticcreditmoduletypes "github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	plasticcreditmodulekeeper "github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
+	plasticcreditmodule "github.com/EmpowerPlastic/empowerchain/x/plasticcredit/module"
+	proofofexistencemoduletypes "github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
+	proofofexistencemodulekeeper "github.com/EmpowerPlastic/empowerchain/x/proofofexistence/keeper"
+	proofofexistencemodule "github.com/EmpowerPlastic/empowerchain/x/proofofexistence/module"
 )
 
 const (

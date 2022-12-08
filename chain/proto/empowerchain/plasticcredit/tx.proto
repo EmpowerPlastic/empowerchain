@@ -6,7 +6,7 @@ import "cosmos_proto/cosmos.proto";
 import "cosmos/msg/v1/msg.proto";
 import "empowerchain/plasticcredit/types.proto";
 
-option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit";
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/plasticcredit";
 
 service Msg {
   // UpdateParams defines a governance operation for updating the x/plasticcredit module parameters.

@@ -10,14 +10,14 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/empowerchain/empowerchain/x/plasticcredit"
-	"github.com/empowerchain/empowerchain/x/plasticcredit/client/cli"
-	"github.com/empowerchain/empowerchain/x/plasticcredit/keeper"
 )
 
 var (

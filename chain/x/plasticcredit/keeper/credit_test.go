@@ -1,8 +1,8 @@
 package keeper_test
 
 import (
-	"github.com/empowerchain/empowerchain/utils"
-	"github.com/empowerchain/empowerchain/x/plasticcredit/keeper"
+	"github.com/EmpowerPlastic/empowerchain/utils"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
 )
 
 func (s *TestSuite) TestCreateCreditDenom() {

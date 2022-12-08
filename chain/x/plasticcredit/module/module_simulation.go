@@ -3,6 +3,7 @@ package module
 import (
 	"math/rand"
 
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,7 +11,6 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/empowerchain/empowerchain/testutil/sample"
 )
 
 // avoid unused import issue

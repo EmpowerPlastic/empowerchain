@@ -5,7 +5,7 @@ import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/empowerchain/empowerchain/x/proofofexistence";
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/proofofexistence";
 
 // ProofMetadata is the metadata attached to a specific data proof
 // Because the proof itself is also the key, the data structure is hash -> ProofMetadata

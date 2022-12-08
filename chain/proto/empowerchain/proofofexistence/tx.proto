@@ -4,7 +4,7 @@ package empowerchain.proofofexistence;
 import "cosmos/msg/v1/msg.proto";
 import "cosmos_proto/cosmos.proto";
 
-option go_package = "github.com/empowerchain/empowerchain/x/proofofexistence";
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/proofofexistence";
 
 // Msg defines the message service
 service Msg {

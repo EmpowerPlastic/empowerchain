@@ -27,7 +27,7 @@ go version
 
 **Install binary empowerd**
 ```bash
-cd $HOME && git clone https://github.com/empowerchain/empowerchain && \
+cd $HOME && git clone https://github.com/EmpowerPlastic/empowerchain && \
 cd empowerchain && \
 git checkout v0.0.1 && \
 cd chain && \

@@ -1,8 +1,8 @@
 package keeper_test
 
 import (
+	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/empowerchain/empowerchain/x/proofofexistence"
 )
 
 func (s *TestSuite) TestCreateNewProof() {

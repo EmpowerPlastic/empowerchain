@@ -3,10 +3,10 @@ package keeper
 import (
 	"encoding/hex"
 
+	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/empowerchain/empowerchain/x/proofofexistence"
 )
 
 type Keeper struct {

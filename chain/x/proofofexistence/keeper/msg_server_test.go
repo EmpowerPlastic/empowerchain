@@ -1,11 +1,11 @@
 package keeper_test
 
 import (
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
+	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
+	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/empowerchain/empowerchain/testutil/sample"
-	"github.com/empowerchain/empowerchain/x/proofofexistence"
-	"github.com/empowerchain/empowerchain/x/proofofexistence/keeper"
 )
 
 func (s *TestSuite) TestCreateProof() {

@@ -4,7 +4,7 @@ package empowerchain.proofofexistence;
 import "empowerchain/proofofexistence/types.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/empowerchain/empowerchain/x/proofofexistence";
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/proofofexistence";
 
 // GenesisState defines the proofofexistence module's genesis state.
 message GenesisState {

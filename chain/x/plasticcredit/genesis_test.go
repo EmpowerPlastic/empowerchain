@@ -3,12 +3,12 @@ package plasticcredit_test
 import (
 	"testing"
 
-	"github.com/empowerchain/empowerchain/testutil/sample"
-	"github.com/empowerchain/empowerchain/utils"
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
+	"github.com/EmpowerPlastic/empowerchain/utils"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/empowerchain/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/stretchr/testify/require"
 )
 
