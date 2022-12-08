@@ -122,14 +122,13 @@ func (k Keeper) UpdateIssuer(ctx sdk.Context, updater sdk.AccAddress, issuerID u
 		return err
 	}
 
-	ctx.EventManager().EmitTypedEvent(&plasticcredit.EventUpdateIssuer{
+	return ctx.EventManager().EmitTypedEvent(&plasticcredit.EventUpdateIssuer{
 		IssuerId:    issuer.Id,
 		Creator:     updater.String(),
 		Name:        issuer.Name,
 		Description: issuer.Description,
 		Admin:       issuer.Admin,
 	})
-	return nil
 }
 
 func (k Keeper) setIssuer(ctx sdk.Context, issuer plasticcredit.Issuer) error {
