@@ -38,17 +38,12 @@ func (m msgServer) UpdateParams(goCtx context.Context, req *plasticcredit.MsgUpd
 func (m msgServer) CreateIssuer(goCtx context.Context, req *plasticcredit.MsgCreateIssuer) (*plasticcredit.MsgCreateIssuerResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	params := m.GetParams(ctx)
-	authorizedIssuerCreator := params.IssuerCreator
-	if authorizedIssuerCreator == "" {
-		authorizedIssuerCreator = m.authority
+	creator, err := sdk.AccAddressFromBech32(req.Creator)
+	if err != nil {
+		return nil, errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address: %s", req.Creator)
 	}
 
-	if authorizedIssuerCreator != req.Creator {
-		return nil, errors.Wrapf(sdkerrors.ErrUnauthorized, "invalid issue creator; expected %s, got %s", authorizedIssuerCreator, req.Creator)
-	}
-
-	id, err := m.Keeper.CreateIssuer(ctx, req.Name, req.Description, req.Admin)
+	id, err := m.Keeper.CreateIssuer(ctx, creator, req.Name, req.Description, req.Admin)
 	if err != nil {
 		return nil, err
 	}
