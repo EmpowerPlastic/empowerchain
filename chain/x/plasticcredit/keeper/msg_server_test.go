@@ -89,7 +89,6 @@ func (s *TestSuite) TestCreateIssuerWithGov() {
 }
 
 func (s *TestSuite) TestCreateIssuer() {
-
 	testCases := map[string]struct {
 		msg *plasticcredit.MsgCreateIssuer
 		err error
@@ -126,6 +125,9 @@ func (s *TestSuite) TestCreateIssuer() {
 			resp, err := ms.CreateIssuer(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
 
+			events := s.ctx.EventManager().ABCIEvents()
+			idCounters := k.GetIDCounters(s.ctx)
+
 			if err == nil {
 				s.Require().Equal(uint64(2), resp.IssuerId)
 
@@ -140,6 +142,26 @@ func (s *TestSuite) TestCreateIssuer() {
 					Description: tc.msg.Description,
 					Admin:       tc.msg.Admin,
 				}, issuer)
+
+				s.Require().Len(events, 2)
+				parsedEvent, err := sdk.ParseTypedEvent(events[1])
+				s.Require().NoError(err)
+				eventCreateIssuer, ok := parsedEvent.(*plasticcredit.EventCreateIssuer)
+				s.Require().True(ok)
+				s.Require().Equal(&plasticcredit.EventCreateIssuer{
+					IssuerId:    issuer.Id,
+					Creator:     tc.msg.Creator,
+					Name:        issuer.Name,
+					Description: issuer.Description,
+					Admin:       issuer.Admin,
+				}, eventCreateIssuer)
+
+			} else {
+				s.Require().Equal(uint64(2), idCounters.NextIssuerId)
+				_, found := k.GetIssuer(s.ctx, 2)
+				s.Require().False(found)
+
+				s.Require().Len(events, 1)
 			}
 		})
 	}
@@ -191,7 +213,6 @@ func (s *TestSuite) TestCreateApplicant() {
 }
 
 func (s *TestSuite) TestCreateCreditClass() {
-
 	testCases := map[string]struct {
 		msg *plasticcredit.MsgCreateCreditClass
 		err error

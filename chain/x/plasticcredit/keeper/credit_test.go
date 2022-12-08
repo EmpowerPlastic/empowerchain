@@ -39,5 +39,4 @@ func (s *TestSuite) TestCreateCreditDenom() {
 			}
 		})
 	}
-
 }
