@@ -391,12 +391,6 @@ func TestCreditCollectionValidation(t *testing.T) {
 					Active:  100,
 					Retired: 50,
 				},
-				CreditData: []ProvenData{
-					{
-						Uri:  "http://empower.eco",
-						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
-					},
-				},
 			},
 			err: nil,
 		},
@@ -407,12 +401,6 @@ func TestCreditCollectionValidation(t *testing.T) {
 				TotalAmount: CreditAmount{
 					Active:  100,
 					Retired: 50,
-				},
-				CreditData: []ProvenData{
-					{
-						Uri:  "http://empower.eco",
-						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
-					},
 				},
 			},
 			err: utils.ErrInvalidValue,
@@ -425,12 +413,6 @@ func TestCreditCollectionValidation(t *testing.T) {
 					Active:  100,
 					Retired: 50,
 				},
-				CreditData: []ProvenData{
-					{
-						Uri:  "http://empower.eco",
-						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
-					},
-				},
 			},
 			err: utils.ErrInvalidValue,
 		},
@@ -441,12 +423,6 @@ func TestCreditCollectionValidation(t *testing.T) {
 				TotalAmount: CreditAmount{
 					Active:  0,
 					Retired: 0,
-				},
-				CreditData: []ProvenData{
-					{
-						Uri:  "http://empower.eco",
-						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
-					},
 				},
 			},
 			err: utils.ErrInvalidValue,
@@ -459,12 +435,6 @@ func TestCreditCollectionValidation(t *testing.T) {
 					Active:  100,
 					Retired: 50,
 				},
-				CreditData: []ProvenData{
-					{
-						Uri:  "",
-						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
-					},
-				},
 			},
 			err: utils.ErrInvalidValue,
 		},
@@ -475,12 +445,6 @@ func TestCreditCollectionValidation(t *testing.T) {
 				TotalAmount: CreditAmount{
 					Active:  100,
 					Retired: 50,
-				},
-				CreditData: []ProvenData{
-					{
-						Uri:  "http://empower.eco",
-						Hash: "a b",
-					},
 				},
 			},
 			err: utils.ErrInvalidValue,

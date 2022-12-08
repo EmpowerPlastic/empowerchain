@@ -352,12 +352,6 @@ func TestMsgIssueCredits_ValidateBasic(t *testing.T) {
 				ProjectId:    1,
 				SerialNumber: "123",
 				CreditAmount: 10,
-				CreditData: []ProvenData{
-					{
-						Uri:  "http://empower.eco",
-						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
-					},
-				},
 			},
 			expectedError: nil,
 		},
@@ -367,12 +361,6 @@ func TestMsgIssueCredits_ValidateBasic(t *testing.T) {
 				ProjectId:    1,
 				SerialNumber: "123",
 				CreditAmount: 10,
-				CreditData: []ProvenData{
-					{
-						Uri:  "http://empower.eco",
-						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
-					},
-				},
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
 		},
@@ -381,12 +369,6 @@ func TestMsgIssueCredits_ValidateBasic(t *testing.T) {
 				Creator:      sample.AccAddress(),
 				SerialNumber: "123",
 				CreditAmount: 10,
-				CreditData: []ProvenData{
-					{
-						Uri:  "http://empower.eco",
-						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
-					},
-				},
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},
@@ -395,12 +377,6 @@ func TestMsgIssueCredits_ValidateBasic(t *testing.T) {
 				Creator:      sample.AccAddress(),
 				ProjectId:    1,
 				CreditAmount: 10,
-				CreditData: []ProvenData{
-					{
-						Uri:  "http://empower.eco",
-						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
-					},
-				},
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},
@@ -410,41 +386,6 @@ func TestMsgIssueCredits_ValidateBasic(t *testing.T) {
 				ProjectId:    1,
 				SerialNumber: "123",
 				CreditAmount: 0,
-				CreditData: []ProvenData{
-					{
-						Uri:  "http://empower.eco",
-						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
-					},
-				},
-			},
-			expectedError: sdkerrors.ErrInvalidRequest,
-		},
-		"invalid data URI": {
-			msgUnderTest: &MsgIssueCredits{
-				Creator:      sample.AccAddress(),
-				ProjectId:    1,
-				SerialNumber: "123",
-				CreditAmount: 10,
-				CreditData: []ProvenData{
-					{
-						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
-					},
-				},
-			},
-			expectedError: sdkerrors.ErrInvalidRequest,
-		},
-		"invalid data hash": {
-			msgUnderTest: &MsgIssueCredits{
-				Creator:      sample.AccAddress(),
-				ProjectId:    1,
-				SerialNumber: "123",
-				CreditAmount: 10,
-				CreditData: []ProvenData{
-					{
-						Uri:  "http://empower.eco",
-						Hash: "a b",
-					},
-				},
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},

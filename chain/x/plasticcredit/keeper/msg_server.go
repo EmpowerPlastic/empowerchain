@@ -117,7 +117,7 @@ func (m msgServer) CreateProject(goCtx context.Context, req *plasticcredit.MsgCr
 func (m msgServer) IssueCredits(goCtx context.Context, req *plasticcredit.MsgIssueCredits) (*plasticcredit.MsgIssueCreditsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	collection, err := m.issueCredits(ctx, req.Creator, req.ProjectId, req.SerialNumber, req.CreditAmount, req.CreditData)
+	collection, err := m.issueCredits(ctx, req.Creator, req.ProjectId, req.SerialNumber, req.CreditAmount)
 	if err != nil {
 		return nil, err
 	}
@@ -130,11 +130,11 @@ func (m msgServer) TransferCredits(goCtx context.Context, req *plasticcredit.Msg
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	from, err := sdk.AccAddressFromBech32(req.From)
 	if err != nil {
-		return &plasticcredit.MsgTransferCreditsResponse{}, err
+		return &plasticcredit.MsgTransferCreditsResponse{}, sdkerrors.ErrInvalidAddress
 	}
 	to, err := sdk.AccAddressFromBech32(req.To)
 	if err != nil {
-		return &plasticcredit.MsgTransferCreditsResponse{}, err
+		return &plasticcredit.MsgTransferCreditsResponse{}, sdkerrors.ErrInvalidAddress
 	}
 	err = m.transferCredits(ctx, req.Denom, from, to, req.Amount, req.Retire)
 	if err != nil {
@@ -147,7 +147,7 @@ func (m msgServer) RetireCredits(goCtx context.Context, req *plasticcredit.MsgRe
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	owner, err := sdk.AccAddressFromBech32(req.Owner)
 	if err != nil {
-		return &plasticcredit.MsgRetireCreditsResponse{}, err
+		return &plasticcredit.MsgRetireCreditsResponse{}, sdkerrors.ErrInvalidAddress
 	}
 	newBalance, err := m.retireCreditsForAddress(ctx, owner, req.Denom, req.Amount)
 	if err != nil {

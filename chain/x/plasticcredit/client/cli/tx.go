@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -159,10 +158,10 @@ func MsgCreateCreditClassCmd() *cobra.Command {
 
 func MsgIssueCreditsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "issue-credits [project-id] [serial-number] [amount] [credit-data...]",
+		Use:   "issue-credits [project-id] [serial-number] [amount]",
 		Short: "Issue credits.",
 		Long:  `Issue credits.`,
-		Args:  cobra.MinimumNArgs(4),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -179,22 +178,12 @@ func MsgIssueCreditsCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			var creditData []plasticcredit.ProvenData
-			for i := 3; i < len(args); i++ {
-				var data plasticcredit.ProvenData
-				err = json.Unmarshal([]byte(args[i]), &data)
-				if err != nil {
-					return err
-				}
-				creditData = append(creditData, data)
-			}
 
 			msg := plasticcredit.MsgIssueCredits{
 				Creator:      creator.String(),
 				ProjectId:    projectID,
 				SerialNumber: serialNumber,
 				CreditAmount: creditAmount,
-				CreditData:   creditData,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
