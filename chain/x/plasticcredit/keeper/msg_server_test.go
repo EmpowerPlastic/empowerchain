@@ -190,6 +190,16 @@ func (s *TestSuite) TestUpdateIssuer() {
 			},
 			err: nil,
 		},
+		"unauthorized caller": {
+			msg: &plasticcredit.MsgUpdateIssuer{
+				Updater:     sample.AccAddress(), // not allowed!
+				IssuerId:    1,
+				Name:        "Empower",
+				Description: "Empower is cool",
+				Admin:       sample.AccAddress(),
+			},
+			err: sdkerrors.ErrUnauthorized,
+		},
 	}
 
 	for name, tc := range testCases {
@@ -218,6 +228,8 @@ func (s *TestSuite) TestUpdateIssuer() {
 			_, err = ms.UpdateIssuer(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
 
+			events := s.ctx.EventManager().ABCIEvents()
+
 			if err == nil {
 				issuer, found := k.GetIssuer(s.ctx, tc.msg.IssuerId)
 				s.Require().True(found)
@@ -227,6 +239,18 @@ func (s *TestSuite) TestUpdateIssuer() {
 					Description: tc.msg.Description,
 					Admin:       tc.msg.Admin,
 				}, issuer)
+				s.Require().Len(events, 2)
+				parsedEvent, err := sdk.ParseTypedEvent(events[1])
+				s.Require().NoError(err)
+				eventUpdateIssuer, ok := parsedEvent.(*plasticcredit.EventUpdateIssuer)
+				s.Require().True(ok)
+				s.Require().Equal(&plasticcredit.EventUpdateIssuer{
+					IssuerId:    tc.msg.IssuerId,
+					Creator:     tc.msg.Updater,
+					Name:        tc.msg.Name,
+					Description: tc.msg.Description,
+					Admin:       tc.msg.Admin,
+				}, eventUpdateIssuer)
 			}
 		})
 	}

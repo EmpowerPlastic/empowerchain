@@ -118,7 +118,18 @@ func (k Keeper) UpdateIssuer(ctx sdk.Context, updater sdk.AccAddress, issuerID u
 	issuer.Description = description
 	issuer.Admin = admin
 
-	return k.setIssuer(ctx, issuer)
+	if err := k.setIssuer(ctx, issuer); err != nil {
+		return err
+	}
+
+	ctx.EventManager().EmitTypedEvent(&plasticcredit.EventUpdateIssuer{
+		IssuerId:    issuer.Id,
+		Creator:     updater.String(),
+		Name:        issuer.Name,
+		Description: issuer.Description,
+		Admin:       issuer.Admin,
+	})
+	return nil
 }
 
 func (k Keeper) setIssuer(ctx sdk.Context, issuer plasticcredit.Issuer) error {
