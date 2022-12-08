@@ -456,7 +456,7 @@ func (s *TestSuite) TestIssueCredits() {
 			resp, err := ms.IssueCredits(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
 
-			if err == nil {
+			if tc.err == nil {
 				denom, err := keeper.CreateCreditDenom(s.sampleCreditClassAbbreviation, tc.msg.SerialNumber)
 				s.Require().NoError(err)
 				creditCollection, found := k.GetCreditCollection(s.ctx, denom)
@@ -468,6 +468,9 @@ func (s *TestSuite) TestIssueCredits() {
 				s.Require().Equal(tc.expectedAmount, resp.Collection.TotalAmount.Active)
 				s.Require().Equal(tc.expectedAmount, creditCollection.TotalAmount.Active)
 				s.Require().Equal(tc.expectedAmount, ownerBalance.Balance.Active)
+				s.Require().Equal(uint64(0), resp.Collection.TotalAmount.Retired)
+				s.Require().Equal(uint64(0), creditCollection.TotalAmount.Retired)
+				s.Require().Equal(uint64(0), ownerBalance.Balance.Retired)
 			}
 		})
 	}
