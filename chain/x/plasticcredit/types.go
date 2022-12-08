@@ -146,24 +146,16 @@ func (cc CreditCollection) Validate() error {
 		return errors.Wrap(utils.ErrInvalidValue, "project id is empty or zero")
 	}
 	if cc.TotalAmount.Active == 0 && cc.TotalAmount.Retired == 0 {
-		return errors.Wrap(utils.ErrInvalidValue, "cannot issue 0 credits")
-	}
-	for _, data := range cc.CreditData {
-		if data.Uri == "" {
-			return errors.Wrap(utils.ErrInvalidValue, "empty credit data uri")
-		}
-		if data.Hash == "" {
-			return errors.Wrap(utils.ErrInvalidValue, "empty credit data hash")
-		}
+		return errors.Wrap(utils.ErrInvalidValue, "cannot have a collection with 0 credits")
 	}
 	return nil
 }
 
-func (icb CreditBalance) Validate() error {
-	if _, err := sdk.AccAddressFromBech32(icb.Owner); err != nil {
+func (cb CreditBalance) Validate() error {
+	if _, err := sdk.AccAddressFromBech32(cb.Owner); err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid credit owner address (%s)", err)
 	}
-	if icb.Denom == "" {
+	if cb.Denom == "" {
 		return errors.Wrap(utils.ErrInvalidValue, "denom is empty")
 	}
 	return nil

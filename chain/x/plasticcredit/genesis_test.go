@@ -130,16 +130,6 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  50,
 							Retired: 50,
 						},
-						CreditData: []plasticcredit.ProvenData{
-							{
-								Uri:  "https://somewhere.com?",
-								Hash: "f9fdea3b0bca9cf34456a49a821981a071809734a060ed25a87714cf888ac527",
-							},
-							{
-								Uri:  "https://somewhereelse.com?",
-								Hash: "8a7f8f80e6ede2062b1b0a5d4103a698c5eedb05be667aa38fef64d868123319",
-							},
-						},
 					},
 					{
 						Denom:     "PCRD/0002",
@@ -148,7 +138,6 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  100,
 							Retired: 0,
 						},
-						CreditData: []plasticcredit.ProvenData{},
 					},
 					{
 						Denom:     "WEC/0001",
@@ -157,7 +146,6 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  1,
 							Retired: 0,
 						},
-						CreditData: []plasticcredit.ProvenData{},
 					},
 					{
 						Denom:     "PCRD/0003",
@@ -166,7 +154,6 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  42,
 							Retired: 0,
 						},
-						CreditData: []plasticcredit.ProvenData{},
 					},
 					{
 						Denom:     "RCRD/0001",
@@ -175,7 +162,6 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  60,
 							Retired: 40,
 						},
-						CreditData: []plasticcredit.ProvenData{},
 					},
 				},
 				CreditBalances: []plasticcredit.CreditBalance{
@@ -627,7 +613,6 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  1,
 							Retired: 0,
 						},
-						CreditData: []plasticcredit.ProvenData{},
 					},
 				},
 				CreditBalances: plasticcredit.DefaultGenesis().CreditBalances,
@@ -677,7 +662,6 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  1,
 							Retired: 0,
 						},
-						CreditData: []plasticcredit.ProvenData{},
 					},
 					{
 						Denom:     "PCRD/1",
@@ -686,7 +670,6 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  0,
 							Retired: 1,
 						},
-						CreditData: []plasticcredit.ProvenData{},
 					},
 				},
 				CreditBalances: plasticcredit.DefaultGenesis().CreditBalances,
@@ -722,7 +705,6 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  1,
 							Retired: 0,
 						},
-						CreditData: []plasticcredit.ProvenData{},
 					},
 				},
 				CreditBalances: plasticcredit.DefaultGenesis().CreditBalances,
@@ -791,7 +773,6 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  1,
 							Retired: 0,
 						},
-						CreditData: []plasticcredit.ProvenData{},
 					},
 				},
 				CreditBalances: []plasticcredit.CreditBalance{

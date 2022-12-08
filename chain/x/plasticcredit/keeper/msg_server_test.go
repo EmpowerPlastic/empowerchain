@@ -89,15 +89,13 @@ func (s *TestSuite) TestCreateIssuerWithGov() {
 }
 
 func (s *TestSuite) TestCreateIssuer() {
-	issuerCreator := sample.AccAddress()
-
 	testCases := map[string]struct {
 		msg *plasticcredit.MsgCreateIssuer
 		err error
 	}{
 		"happy path": {
 			msg: &plasticcredit.MsgCreateIssuer{
-				Creator:     issuerCreator,
+				Creator:     s.issuerCreator,
 				Name:        "Empower",
 				Description: "Empower is cool",
 				Admin:       sample.AccAddress(),
@@ -118,17 +116,11 @@ func (s *TestSuite) TestCreateIssuer() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			s.SetupTest()
+			s.PopulateWithSamples()
 
 			k := s.empowerApp.PlasticcreditKeeper
 			goCtx := sdk.WrapSDKContext(s.ctx)
 			ms := keeper.NewMsgServerImpl(k)
-			_, err := ms.UpdateParams(goCtx, &plasticcredit.MsgUpdateParams{
-				Authority: k.Authority(),
-				Params: plasticcredit.Params{
-					IssuerCreator: issuerCreator,
-				},
-			})
-			s.Require().NoError(err)
 
 			resp, err := ms.CreateIssuer(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
@@ -137,8 +129,10 @@ func (s *TestSuite) TestCreateIssuer() {
 			idCounters := k.GetIDCounters(s.ctx)
 
 			if err == nil {
-				s.Require().Equal(uint64(1), resp.IssuerId)
-				s.Require().Equal(uint64(2), idCounters.NextIssuerId)
+				s.Require().Equal(uint64(2), resp.IssuerId)
+
+				idCounters := k.GetIDCounters(s.ctx)
+				s.Require().Equal(uint64(3), idCounters.NextIssuerId)
 
 				issuer, found := k.GetIssuer(s.ctx, resp.IssuerId)
 				s.Require().True(found)
@@ -149,8 +143,8 @@ func (s *TestSuite) TestCreateIssuer() {
 					Admin:       tc.msg.Admin,
 				}, issuer)
 
-				s.Require().Len(events, 1)
-				parsedEvent, err := sdk.ParseTypedEvent(events[0])
+				s.Require().Len(events, 2)
+				parsedEvent, err := sdk.ParseTypedEvent(events[1])
 				s.Require().NoError(err)
 				eventCreateIssuer, ok := parsedEvent.(*plasticcredit.EventCreateIssuer)
 				s.Require().True(ok)
@@ -163,11 +157,11 @@ func (s *TestSuite) TestCreateIssuer() {
 				}, eventCreateIssuer)
 
 			} else {
-				s.Require().Equal(uint64(1), idCounters.NextIssuerId)
-				_, found := k.GetIssuer(s.ctx, 1)
+				s.Require().Equal(uint64(2), idCounters.NextIssuerId)
+				_, found := k.GetIssuer(s.ctx, 2)
 				s.Require().False(found)
 
-				s.Require().Len(events, 0)
+				s.Require().Len(events, 1)
 			}
 		})
 	}
@@ -219,22 +213,15 @@ func (s *TestSuite) TestCreateApplicant() {
 }
 
 func (s *TestSuite) TestCreateCreditClass() {
-	issuer := plasticcredit.Issuer{
-		Id:          1,
-		Name:        "Empower",
-		Description: "",
-		Admin:       sample.AccAddress(),
-	}
-
 	testCases := map[string]struct {
 		msg *plasticcredit.MsgCreateCreditClass
 		err error
 	}{
 		"happy path": {
 			msg: &plasticcredit.MsgCreateCreditClass{
-				Creator:      issuer.Admin,
+				Creator:      s.sampleIssuerAdmin,
 				Abbreviation: "PCRD",
-				IssuerId:     issuer.Id,
+				IssuerId:     s.sampleIssuerId,
 				Name:         "Empower Plastic Credits",
 			},
 			err: nil,
@@ -243,23 +230,23 @@ func (s *TestSuite) TestCreateCreditClass() {
 			msg: &plasticcredit.MsgCreateCreditClass{
 				Creator:      sample.AccAddress(),
 				Abbreviation: "PCRD",
-				IssuerId:     issuer.Id,
+				IssuerId:     s.sampleIssuerId,
 				Name:         "Empower Plastic Credits",
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
 		"invalid abbreviation": {
 			msg: &plasticcredit.MsgCreateCreditClass{
-				Creator:      issuer.Admin,
+				Creator:      s.sampleIssuerAdmin,
 				Abbreviation: "",
-				IssuerId:     issuer.Id,
+				IssuerId:     s.sampleIssuerId,
 				Name:         "Empower Plastic Credits",
 			},
 			err: utils.ErrInvalidValue,
 		},
 		"non-existent issuer": {
 			msg: &plasticcredit.MsgCreateCreditClass{
-				Creator:      issuer.Admin,
+				Creator:      s.sampleIssuerAdmin,
 				Abbreviation: "VPC",
 				IssuerId:     42,
 				Name:         "Someone else's PCs",
@@ -271,18 +258,12 @@ func (s *TestSuite) TestCreateCreditClass() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			s.SetupTest()
+			s.PopulateWithSamples()
 			k := s.empowerApp.PlasticcreditKeeper
 			goCtx := sdk.WrapSDKContext(s.ctx)
 			ms := keeper.NewMsgServerImpl(k)
-			_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
-				Creator:     k.Authority(),
-				Name:        issuer.Name,
-				Description: issuer.Description,
-				Admin:       issuer.Admin,
-			})
-			s.Require().NoError(err)
 
-			_, err = ms.CreateCreditClass(goCtx, tc.msg)
+			_, err := ms.CreateCreditClass(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
 
 			if err == nil {
@@ -338,33 +319,15 @@ func (s *TestSuite) TestCreateDuplicateCreditClass() {
 }
 
 func (s *TestSuite) TestCreateProject() {
-	issuer := plasticcredit.Issuer{
-		Id:          1,
-		Name:        "Empower",
-		Description: "",
-		Admin:       sample.AccAddress(),
-	}
-	creditClass := plasticcredit.CreditClass{
-		Abbreviation: "PCRD",
-		IssuerId:     1,
-		Name:         "Empower Plastic Credits",
-	}
-	applicant := plasticcredit.Applicant{
-		Id:          1,
-		Name:        "Collector",
-		Description: "",
-		Admin:       sample.AccAddress(),
-	}
-
 	testCases := map[string]struct {
 		msg *plasticcredit.MsgCreateProject
 		err error
 	}{
 		"happy path": {
 			msg: &plasticcredit.MsgCreateProject{
-				Creator:                 applicant.Admin,
-				ApplicantId:             applicant.Id,
-				CreditClassAbbreviation: creditClass.Abbreviation,
+				Creator:                 s.sampleApplicantAdmin,
+				ApplicantId:             s.sampleApplicantId,
+				CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 				Name:                    "My happy path project",
 			},
 			err: nil,
@@ -372,25 +335,25 @@ func (s *TestSuite) TestCreateProject() {
 		"unauthorized creator on the issuer": {
 			msg: &plasticcredit.MsgCreateProject{
 				Creator:                 sample.AccAddress(),
-				ApplicantId:             applicant.Id,
-				CreditClassAbbreviation: creditClass.Abbreviation,
+				ApplicantId:             s.sampleApplicantId,
+				CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 				Name:                    "My project",
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
 		"non-existent applicant": {
 			msg: &plasticcredit.MsgCreateProject{
-				Creator:                 applicant.Admin,
+				Creator:                 s.sampleApplicantAdmin,
 				ApplicantId:             37,
-				CreditClassAbbreviation: creditClass.Abbreviation,
+				CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 				Name:                    "My project",
 			},
 			err: plasticcredit.ErrNotFoundApplicant,
 		},
 		"non-existent credit class": {
 			msg: &plasticcredit.MsgCreateProject{
-				Creator:                 applicant.Admin,
-				ApplicantId:             applicant.Id,
+				Creator:                 s.sampleApplicantAdmin,
+				ApplicantId:             s.sampleApplicantId,
 				CreditClassAbbreviation: "Not here",
 				Name:                    "My project",
 			},
@@ -398,9 +361,9 @@ func (s *TestSuite) TestCreateProject() {
 		},
 		"invalid name": {
 			msg: &plasticcredit.MsgCreateProject{
-				Creator:                 applicant.Admin,
-				ApplicantId:             applicant.Id,
-				CreditClassAbbreviation: creditClass.Abbreviation,
+				Creator:                 s.sampleApplicantAdmin,
+				ApplicantId:             s.sampleApplicantId,
+				CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 				Name:                    "",
 			},
 			err: utils.ErrInvalidValue,
@@ -410,29 +373,10 @@ func (s *TestSuite) TestCreateProject() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			s.SetupTest()
+			s.PopulateWithSamples()
 			k := s.empowerApp.PlasticcreditKeeper
 			goCtx := sdk.WrapSDKContext(s.ctx)
 			ms := keeper.NewMsgServerImpl(k)
-			_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
-				Creator:     k.Authority(),
-				Name:        issuer.Name,
-				Description: issuer.Description,
-				Admin:       issuer.Admin,
-			})
-			s.Require().NoError(err)
-			_, err = ms.CreateCreditClass(goCtx, &plasticcredit.MsgCreateCreditClass{
-				Creator:      issuer.Admin,
-				Abbreviation: creditClass.Abbreviation,
-				IssuerId:     issuer.Id,
-				Name:         creditClass.Name,
-			})
-			s.Require().NoError(err, tc.err)
-			_, err = ms.CreateApplicant(goCtx, &plasticcredit.MsgCreateApplicant{
-				Name:        applicant.Name,
-				Description: applicant.Description,
-				Admin:       applicant.Admin,
-			})
-			s.Require().NoError(err, tc.err)
 
 			resp, err := ms.CreateProject(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
@@ -444,7 +388,7 @@ func (s *TestSuite) TestCreateProject() {
 				project, found := k.GetProject(s.ctx, resp.ProjectId)
 				s.Require().True(found)
 				s.Require().Equal(plasticcredit.Project{
-					Id:                      1,
+					Id:                      2,
 					ApplicantId:             tc.msg.ApplicantId,
 					CreditClassAbbreviation: tc.msg.CreditClassAbbreviation,
 					Name:                    tc.msg.Name,
@@ -454,113 +398,353 @@ func (s *TestSuite) TestCreateProject() {
 	}
 }
 
-// TODO mock or after adding project and credit class?
-// func (s *TestSuite) TestIssueCredits() {
-// 	testCases := map[string]struct {
-// 		msg *plasticcredit.MsgIssueCredits
-// 		err error
-// 	}{
-// 		"happy path": {
-// 			msg: &plasticcredit.MsgIssueCredits{
-// 				Creator:     sample.AccAddress(),
-// 				ProjectId:   1,
-// 				DenomSuffix: "123",
-// 				CreditAmount: &plasticcredit.CreditAmount{
-// 					Active:  100,
-// 					Retired: 50,
-// 				},
-// 				CreditData: []*plasticcredit.ProvenData{
-// 					{
-// 						Uri:  "https://empower.eco",
-// 						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
-// 					},
-// 				},
-// 			},
-// 			err: nil,
-// 		},
-// 	}
+func (s *TestSuite) TestIssueCredits() {
+	testCases := map[string]struct {
+		msg            *plasticcredit.MsgIssueCredits
+		expectedAmount uint64
+		err            error
+	}{
+		"happy path (new collection)": {
+			msg: &plasticcredit.MsgIssueCredits{
+				Creator:      s.sampleIssuerAdmin,
+				ProjectId:    s.sampleProjectId,
+				SerialNumber: "456",
+				CreditAmount: 1000,
+			},
+			expectedAmount: 1000,
+			err:            nil,
+		},
+		"happy path (existing collection)": {
+			msg: &plasticcredit.MsgIssueCredits{
+				Creator:      s.sampleIssuerAdmin,
+				ProjectId:    s.sampleProjectId,
+				SerialNumber: "123",
+				CreditAmount: 1000,
+			},
+			expectedAmount: 100001000,
+			err:            nil,
+		},
+		"wrong issuer address": {
+			msg: &plasticcredit.MsgIssueCredits{
+				Creator:      sample.AccAddress(),
+				ProjectId:    s.sampleProjectId,
+				SerialNumber: "123",
+				CreditAmount: 1000,
+			},
+			expectedAmount: 0,
+			err:            plasticcredit.ErrNotIssuer,
+		},
+		"unexisting project": {
+			msg: &plasticcredit.MsgIssueCredits{
+				Creator:      s.sampleIssuerAdmin,
+				ProjectId:    123,
+				SerialNumber: "123",
+				CreditAmount: 1000,
+			},
+			expectedAmount: 0,
+			err:            plasticcredit.ErrNotFoundProject,
+		},
+		"empty serial number": {
+			msg: &plasticcredit.MsgIssueCredits{
+				Creator:      s.sampleIssuerAdmin,
+				ProjectId:    s.sampleProjectId,
+				SerialNumber: "",
+				CreditAmount: 1000,
+			},
+			expectedAmount: 0,
+			err:            utils.ErrInvalidValue,
+		},
+		"issue zero credits": {
+			msg: &plasticcredit.MsgIssueCredits{
+				Creator:      s.sampleIssuerAdmin,
+				ProjectId:    s.sampleProjectId,
+				SerialNumber: "321",
+				CreditAmount: 0,
+			},
+			expectedAmount: 0,
+			err:            utils.ErrInvalidValue,
+		},
+	}
 
-// 	for name, tc := range testCases {
-// 		s.Run(name, func() {
-// 			s.SetupTest()
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			s.SetupTest()
+			s.PopulateWithSamples()
+			k := s.empowerApp.PlasticcreditKeeper
+			goCtx := sdk.WrapSDKContext(s.ctx)
+			ms := keeper.NewMsgServerImpl(k)
 
-// 			k := s.empowerApp.PlasticcreditKeeper
-// 			goCtx := sdk.WrapSDKContext(s.ctx)
-// 			ms := keeper.NewMsgServerImpl(k)
+			resp, err := ms.IssueCredits(goCtx, tc.msg)
+			s.Require().ErrorIs(err, tc.err)
 
-// 			resp, err := ms.IssueCredits(goCtx, tc.msg)
-// 			s.Require().ErrorIs(err, tc.err)
+			if tc.err == nil {
+				denom, err := keeper.CreateCreditDenom(s.sampleCreditClassAbbreviation, tc.msg.SerialNumber)
+				s.Require().NoError(err)
+				creditCollection, found := k.GetCreditCollection(s.ctx, denom)
+				s.Require().True(found)
+				ownerAddress, err := sdk.AccAddressFromBech32(s.sampleApplicantAdmin)
+				s.Require().NoError(err)
+				ownerBalance, found := k.GetCreditBalance(s.ctx, ownerAddress, denom)
+				s.Require().True(found)
+				s.Require().Equal(tc.expectedAmount, resp.Collection.TotalAmount.Active)
+				s.Require().Equal(tc.expectedAmount, creditCollection.TotalAmount.Active)
+				s.Require().Equal(tc.expectedAmount, ownerBalance.Balance.Active)
+				s.Require().Equal(uint64(0), resp.Collection.TotalAmount.Retired)
+				s.Require().Equal(uint64(0), creditCollection.TotalAmount.Retired)
+				s.Require().Equal(uint64(0), ownerBalance.Balance.Retired)
+			}
+		})
+	}
+}
 
-// 			if err == nil {
-// 				project, found := k.GetProject(s.ctx, tc.msg.ProjectId)
-// 				s.Require().True(found)
-// 				creditClass, found := k.GetCreditClass(s.ctx, project.CreditClassId)
-// 				s.Require().True(found)
-// 				denom := keeper.CreateCreditDenom(creditClass.Denom, tc.msg.DenomSuffix)
-// 				s.Require().Equal(resp.Denom, denom)
-// 				s.Require().Equal(tc.msg.CreditAmount, resp.TotalAmount)
-// 				creditCollection, found := k.GetCreditCollection(s.ctx, denom)
-// 				s.Require().True(found)
-// 				s.Require().Equal(tc.msg.ProjectId, creditCollection.ProjectId)
-// 				s.Require().Equal(tc.msg.CreditAmount, creditCollection.TotalAmount)
-// 				s.Require().Equal(tc.msg.CreditData, creditCollection.CreditData)
-// 			}
-// 		})
-// 	}
-// }
+func (s *TestSuite) TestTransferCredits() {
+	address := sample.AccAddress()
+	testCases := map[string]struct {
+		msg                             *plasticcredit.MsgTransferCredits
+		expectedSenderBalance           uint64
+		expectedRecipientBalanceActive  uint64
+		expectedRecipientBalanceRetired uint64
+		err                             error
+	}{
+		"happy path (no retire)": {
+			msg: &plasticcredit.MsgTransferCredits{
+				From:   s.sampleApplicantAdmin,
+				To:     address,
+				Denom:  s.sampleCreditDenom,
+				Amount: 100,
+				Retire: false,
+			},
+			expectedSenderBalance:           99999900,
+			expectedRecipientBalanceActive:  100,
+			expectedRecipientBalanceRetired: 0,
+			err:                             nil,
+		},
+		"happy path (retire)": {
+			msg: &plasticcredit.MsgTransferCredits{
+				From:   s.sampleApplicantAdmin,
+				To:     address,
+				Denom:  s.sampleCreditDenom,
+				Amount: 100,
+				Retire: true,
+			},
+			expectedSenderBalance:           99999900,
+			expectedRecipientBalanceActive:  0,
+			expectedRecipientBalanceRetired: 100,
+			err:                             nil,
+		},
+		"not enough sender balance": {
+			msg: &plasticcredit.MsgTransferCredits{
+				From:   s.sampleApplicantAdmin,
+				To:     address,
+				Denom:  s.sampleCreditDenom,
+				Amount: 10000000000,
+				Retire: false,
+			},
+			expectedSenderBalance:           0,
+			expectedRecipientBalanceActive:  0,
+			expectedRecipientBalanceRetired: 0,
+			err:                             plasticcredit.ErrNotEnoughCredits,
+		},
+		"non-existing denom": {
+			msg: &plasticcredit.MsgTransferCredits{
+				From:   s.sampleApplicantAdmin,
+				To:     address,
+				Denom:  "ABC/000",
+				Amount: 100,
+				Retire: false,
+			},
+			expectedSenderBalance:           0,
+			expectedRecipientBalanceActive:  0,
+			expectedRecipientBalanceRetired: 0,
+			err:                             plasticcredit.ErrNotFoundCreditBalance,
+		},
+		"wrong from address": {
+			msg: &plasticcredit.MsgTransferCredits{
+				From:   "emp",
+				To:     address,
+				Denom:  s.sampleCreditDenom,
+				Amount: 100,
+				Retire: false,
+			},
+			expectedSenderBalance:           0,
+			expectedRecipientBalanceActive:  0,
+			expectedRecipientBalanceRetired: 0,
+			err:                             sdkerrors.ErrInvalidAddress,
+		},
+		"wrong to address": {
+			msg: &plasticcredit.MsgTransferCredits{
+				From:   s.sampleApplicantAdmin,
+				To:     "emp",
+				Denom:  s.sampleCreditDenom,
+				Amount: 100,
+				Retire: false,
+			},
+			expectedSenderBalance:           0,
+			expectedRecipientBalanceActive:  0,
+			expectedRecipientBalanceRetired: 0,
+			err:                             sdkerrors.ErrInvalidAddress,
+		},
+		"sending to the same address": {
+			msg: &plasticcredit.MsgTransferCredits{
+				From:   s.sampleApplicantAdmin,
+				To:     s.sampleApplicantAdmin,
+				Denom:  s.sampleCreditDenom,
+				Amount: 100,
+				Retire: false,
+			},
+			expectedSenderBalance:           100000000,
+			expectedRecipientBalanceActive:  100000000,
+			expectedRecipientBalanceRetired: 0,
+			err:                             nil,
+		},
+		"sending to the same address (no balance)": {
+			msg: &plasticcredit.MsgTransferCredits{
+				From:   address,
+				To:     address,
+				Denom:  s.sampleCreditDenom,
+				Amount: 100,
+				Retire: false,
+			},
+			expectedSenderBalance:           0,
+			expectedRecipientBalanceActive:  0,
+			expectedRecipientBalanceRetired: 0,
+			err:                             plasticcredit.ErrNotFoundCreditBalance,
+		},
+	}
 
-// func (s *TestSuite) TestTransferCredits() {
-// 	testCases := map[string]struct {
-// 		msg *plasticcredit.MsgTransferCredits
-// 		err error
-// 	}{
-// 		"happy path": {
-// 			msg: &plasticcredit.MsgTransferCredits{
-// 				From:   sample.AccAddress(),
-// 				To:     sample.AccAddress(),
-// 				Denom:  "EMP/123",
-// 				Amount: 10,
-// 				Retire: false,
-// 			},
-// 			err: nil,
-// 		},
-// 	}
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			s.SetupTest()
+			s.PopulateWithSamples()
+			k := s.empowerApp.PlasticcreditKeeper
+			goCtx := sdk.WrapSDKContext(s.ctx)
+			ms := keeper.NewMsgServerImpl(k)
 
-// 	for name, tc := range testCases {
-// 		s.Run(name, func() {
-// 			s.SetupTest()
+			var collectionBefore, collectionAfter plasticcredit.CreditCollection
 
-// 			k := s.empowerApp.PlasticcreditKeeper
-// 			goCtx := sdk.WrapSDKContext(s.ctx)
-// 			ms := keeper.NewMsgServerImpl(k)
+			if tc.err == nil && tc.msg.Retire == true {
+				var found bool
+				collectionBefore, found = k.GetCreditCollection(s.ctx, tc.msg.Denom)
+				s.Require().True(found)
+			}
 
-// 		})
-// 	}
-// }
+			_, err := ms.TransferCredits(goCtx, tc.msg)
+			s.Require().ErrorIs(err, tc.err)
 
-// func (s *TestSuite) TestRetireCredits() {
-// 	testCases := map[string]struct {
-// 		msg *plasticcredit.MsgRetireCredits
-// 		err error
-// 	}{
-// 		"happy path": {
-// 			msg: &plasticcredit.MsgRetireCredits{
-// 				Owner:   sample.AccAddress(),
-// 				Denom:  "EMP/123",
-// 				Amount: 10,
-// 			},
-// 			err: nil,
-// 		},
-// 	}
+			if tc.err == nil {
+				sender, err := sdk.AccAddressFromBech32(tc.msg.From)
+				s.Require().NoError(err)
+				recipient, err := sdk.AccAddressFromBech32(tc.msg.To)
+				s.Require().NoError(err)
+				senderBalance, found := k.GetCreditBalance(s.ctx, sender, tc.msg.Denom)
+				s.Require().True(found)
+				recipientBalance, found := k.GetCreditBalance(s.ctx, recipient, tc.msg.Denom)
+				s.Require().True(found)
+				s.Require().Equal(tc.expectedSenderBalance, senderBalance.Balance.Active)
+				s.Require().Equal(tc.expectedRecipientBalanceActive, recipientBalance.Balance.Active)
+				s.Require().Equal(tc.expectedRecipientBalanceRetired, recipientBalance.Balance.Retired)
+				if tc.msg.Retire == true {
+					collectionAfter, found = k.GetCreditCollection(s.ctx, tc.msg.Denom)
+					s.Require().True(found)
+					s.Require().Equal(collectionBefore.TotalAmount.Active-tc.msg.Amount, collectionAfter.TotalAmount.Active)
+					s.Require().Equal(collectionBefore.TotalAmount.Retired+tc.msg.Amount, collectionAfter.TotalAmount.Retired)
+				}
+			}
+		})
+	}
+}
 
-// 	for name, tc := range testCases {
-// 		s.Run(name, func() {
-// 			s.SetupTest()
+func (s *TestSuite) TestRetireCredits() {
+	testCases := map[string]struct {
+		msg                    *plasticcredit.MsgRetireCredits
+		expectedBalanceRetired uint64
+		err                    error
+	}{
+		"happy path": {
+			msg: &plasticcredit.MsgRetireCredits{
+				Owner:  s.sampleApplicantAdmin,
+				Denom:  s.sampleCreditDenom,
+				Amount: 100,
+			},
+			expectedBalanceRetired: 100,
+			err:                    nil,
+		},
+		"not enough active balance": {
+			msg: &plasticcredit.MsgRetireCredits{
+				Owner:  s.sampleApplicantAdmin,
+				Denom:  s.sampleCreditDenom,
+				Amount: 100000000000,
+			},
+			expectedBalanceRetired: 0,
+			err:                    plasticcredit.ErrNotEnoughActiveCredits,
+		},
+		"non-existing denom": {
+			msg: &plasticcredit.MsgRetireCredits{
+				Owner:  s.sampleApplicantAdmin,
+				Denom:  "ABC/000",
+				Amount: 100,
+			},
+			expectedBalanceRetired: 0,
+			err:                    plasticcredit.ErrNotEnoughCredits,
+		},
+		"empty denom": {
+			msg: &plasticcredit.MsgRetireCredits{
+				Owner:  s.sampleApplicantAdmin,
+				Denom:  "",
+				Amount: 100,
+			},
+			expectedBalanceRetired: 0,
+			err:                    plasticcredit.ErrNotEnoughCredits,
+		},
+		"invalid owner address": {
+			msg: &plasticcredit.MsgRetireCredits{
+				Owner:  "emp",
+				Denom:  s.sampleCreditDenom,
+				Amount: 100,
+			},
+			expectedBalanceRetired: 0,
+			err:                    sdkerrors.ErrInvalidAddress,
+		},
+	}
 
-// 			k := s.empowerApp.PlasticcreditKeeper
-// 			goCtx := sdk.WrapSDKContext(s.ctx)
-// 			ms := keeper.NewMsgServerImpl(k)
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			s.SetupTest()
+			s.PopulateWithSamples()
+			k := s.empowerApp.PlasticcreditKeeper
+			goCtx := sdk.WrapSDKContext(s.ctx)
+			ms := keeper.NewMsgServerImpl(k)
 
-// 		})
-// 	}
-// }
+			var collectionBefore, collection plasticcredit.CreditCollection
+			var balanceBefore, balance plasticcredit.CreditBalance
+			var owner sdk.AccAddress
+
+			if tc.err == nil {
+				var found bool
+				var err error
+				owner, err = sdk.AccAddressFromBech32(tc.msg.Owner)
+				s.Require().NoError(err)
+				collectionBefore, found = k.GetCreditCollection(s.ctx, tc.msg.Denom)
+				s.Require().True(found)
+				balanceBefore, found = k.GetCreditBalance(s.ctx, owner, tc.msg.Denom)
+				s.Require().True(found)
+			}
+
+			_, err := ms.RetireCredits(goCtx, tc.msg)
+			s.Require().ErrorIs(err, tc.err)
+
+			if tc.err == nil {
+				var found bool
+				balance, found = k.GetCreditBalance(s.ctx, owner, tc.msg.Denom)
+				s.Require().True(found)
+				collection, found = k.GetCreditCollection(s.ctx, tc.msg.Denom)
+				s.Require().True(found)
+				s.Require().Equal(tc.expectedBalanceRetired, balance.Balance.Retired)
+				s.Require().Equal(collectionBefore.TotalAmount.Active-tc.msg.Amount, collection.TotalAmount.Active)
+				s.Require().Equal(collectionBefore.TotalAmount.Retired+tc.msg.Amount, collection.TotalAmount.Retired)
+				s.Require().Equal(balanceBefore.Balance.Active-tc.msg.Amount, balance.Balance.Active)
+				s.Require().Equal(balanceBefore.Balance.Retired+tc.msg.Amount, balance.Balance.Retired)
+			}
+		})
+	}
+}

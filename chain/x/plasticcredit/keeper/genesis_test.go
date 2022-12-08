@@ -101,12 +101,6 @@ func (s *TestSuite) TestGenesis() {
 					Active:  0,
 					Retired: 100000,
 				},
-				CreditData: []plasticcredit.ProvenData{
-					{
-						Uri:  "ipfs://CID",
-						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
-					},
-				},
 			},
 			{
 				Denom:     "PLST/123",
@@ -114,16 +108,6 @@ func (s *TestSuite) TestGenesis() {
 				TotalAmount: plasticcredit.CreditAmount{
 					Active:  123,
 					Retired: 55,
-				},
-				CreditData: []plasticcredit.ProvenData{
-					{
-						Uri:  "http://example.com",
-						Hash: "0ca0ecabdd9d86217a3230a362e1af0b06bdb85b6aa48602004ef515ee9d4908",
-					},
-					{
-						Uri:  "ipfs://CID",
-						Hash: "dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545",
-					},
 				},
 			},
 		},

@@ -6,6 +6,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/empowerchain/empowerchain/utils"
 	"github.com/empowerchain/empowerchain/x/plasticcredit"
 )
 
@@ -89,16 +90,22 @@ func (k Keeper) transferCredits(ctx sdk.Context, denom string, from sdk.AccAddre
 		return errors.Wrapf(plasticcredit.ErrNotEnoughCredits, "sender only has %d credits of denom %s", balanceSender.Balance.Active, denom)
 	}
 
-	balanceRecipient, found := k.GetCreditBalance(ctx, to, denom)
-	if !found {
-		balanceRecipient = plasticcredit.CreditBalance{
-			Owner: to.String(),
-			Denom: denom,
-			Balance: plasticcredit.CreditAmount{
-				Active:  0,
-				Retired: 0,
-			},
+	var balanceRecipient *plasticcredit.CreditBalance
+	if from.Equals(to) {
+		balanceRecipient = &balanceSender
+	} else {
+		rec, found := k.GetCreditBalance(ctx, to, denom)
+		if !found {
+			rec = plasticcredit.CreditBalance{
+				Owner: to.String(),
+				Denom: denom,
+				Balance: plasticcredit.CreditAmount{
+					Active:  0,
+					Retired: 0,
+				},
+			}
 		}
+		balanceRecipient = &rec
 	}
 	balanceSender.Balance.Active -= amount
 	// If retiring credits, retire and update retired balance, if not, update active balance
@@ -115,7 +122,7 @@ func (k Keeper) transferCredits(ctx sdk.Context, denom string, from sdk.AccAddre
 	if err != nil {
 		return err
 	}
-	err = k.setCreditBalance(ctx, balanceRecipient)
+	err = k.setCreditBalance(ctx, *balanceRecipient)
 	if err != nil {
 		return err
 	}
@@ -123,7 +130,10 @@ func (k Keeper) transferCredits(ctx sdk.Context, denom string, from sdk.AccAddre
 	return nil
 }
 
-func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, serialNumber string, amount uint64, data []plasticcredit.ProvenData) (collection plasticcredit.CreditCollection, err error) {
+func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, serialNumber string, amount uint64) (collection plasticcredit.CreditCollection, err error) {
+	if amount == 0 {
+		return plasticcredit.CreditCollection{}, errors.Wrapf(utils.ErrInvalidValue, "cannot issue 0 credits")
+	}
 	project, found := k.GetProject(ctx, projectID)
 	if !found {
 		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrNotFoundProject, "project with id %d not found", projectID)
@@ -148,24 +158,24 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrNotFoundApplicant, "applicant with id %d not found", project.ApplicantId)
 	}
 
-	denom := CreateCreditDenom(creditClass.Abbreviation, serialNumber)
+	denom, err := CreateCreditDenom(creditClass.Abbreviation, serialNumber)
+	if err != nil {
+		return plasticcredit.CreditCollection{}, err
+	}
 	creditCollection, found := k.GetCreditCollection(ctx, denom)
 	// If collection doesn't exist, create a new one
 	if !found {
 		creditCollection = plasticcredit.CreditCollection{
+			Denom:     denom,
 			ProjectId: projectID,
 			TotalAmount: plasticcredit.CreditAmount{
 				Active:  amount,
 				Retired: 0,
 			},
-			CreditData: data,
 		}
 	} else {
 		// If collection already exists, add new credits to the total and append new data if present
 		creditCollection.TotalAmount.Active += amount
-		if data != nil {
-			creditCollection.CreditData = append(creditCollection.CreditData, data...)
-		}
 	}
 
 	err = k.setCreditCollection(ctx, creditCollection)
@@ -204,6 +214,10 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 }
 
 func (k Keeper) setCreditCollection(ctx sdk.Context, creditCollection plasticcredit.CreditCollection) error {
+	err := creditCollection.Validate()
+	if err != nil {
+		return err
+	}
 	store := k.getCreditCollectionStore(ctx)
 
 	b, err := k.cdc.Marshal(&creditCollection)
@@ -218,6 +232,10 @@ func (k Keeper) setCreditCollection(ctx sdk.Context, creditCollection plasticcre
 }
 
 func (k Keeper) setCreditBalance(ctx sdk.Context, balance plasticcredit.CreditBalance) error {
+	err := balance.Validate()
+	if err != nil {
+		return err
+	}
 	store := k.getCreditBalanceStore(ctx)
 
 	b, err := k.cdc.Marshal(&balance)
@@ -278,7 +296,9 @@ func (k Keeper) getCreditBalanceStore(ctx sdk.Context) storetypes.KVStore {
 	return creditBalanceStore
 }
 
-// TODO: Needs test
-func CreateCreditDenom(creditClassAbbreviation string, creditCollectionSuffix string) string {
-	return creditClassAbbreviation + "/" + creditCollectionSuffix
+func CreateCreditDenom(creditClassAbbreviation string, serialNumber string) (string, error) {
+	if creditClassAbbreviation == "" || serialNumber == "" {
+		return "", errors.Wrap(utils.ErrInvalidValue, "empty denom part")
+	}
+	return creditClassAbbreviation + "/" + serialNumber, nil
 }
