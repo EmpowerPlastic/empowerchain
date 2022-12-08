@@ -45,10 +45,7 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState proofofexistence.GenesisSt
 func (k Keeper) ExportGenesis(ctx sdk.Context) (*proofofexistence.GenesisState, error) {
 	genesis := proofofexistence.DefaultGenesisState()
 
-	proofMap, err := k.getAllProof(ctx)
-	if err != nil {
-		return nil, err
-	}
+	proofMap := k.getAllProof(ctx)
 
 	for hash, metadata := range proofMap {
 		genesis.ProofList = append(genesis.ProofList, proofofexistence.Proof{Hash: hash, Metadata: &proofofexistence.ProofMetadata{
