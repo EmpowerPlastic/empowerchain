@@ -26,6 +26,11 @@ if [ "$NUM_ISSUERS" != "1" ]; then
   exit 1
 fi
 
+echo "--- Test: Plastic Credit Create Issuer ---"
+ISSUER_ID=$(empowerd q plasticcredit issuer 1 -o json | jq ".issuer.id")
+echo "issuer id: $ISSUER_ID"
+empowerd tx plasticcredit update-issuer empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 1 "updated Empower" "updated Empower issuer" --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+
 echo "--- Test: Plastic Credit Applicants ---"
 empowerd tx plasticcredit create-applicant empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m "First applicant" "With description" --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
 sleep 5
