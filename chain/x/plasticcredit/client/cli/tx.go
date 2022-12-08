@@ -77,14 +77,14 @@ Note, the '--from' flag is ignored as it is implied from [admin_key_or_address].
 
 func MsgUpdateIssuerCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-issuer [admin_key_or_address] [issuer-id] [name] [description] ",
+		Use:   "update-issuer [issuer-id] [name] [description] ",
 		Short: "Update existing Issuer.",
 		Long: `Update existing Issuer.
-Note, the '--from' flag is ignored as it is implied from [admin_key_or_address].
 `,
 		Args: cobra.MinimumNArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			if err := cmd.Flags().Set(flags.FlagFrom, args[0]); err != nil {
+			fromAddr, err := cmd.Flags().GetString(flags.FlagFrom)
+			if err != nil {
 				return err
 			}
 
@@ -94,18 +94,15 @@ Note, the '--from' flag is ignored as it is implied from [admin_key_or_address].
 			}
 
 			admin := clientCtx.GetFromAddress()
-			issuerId, err := cast.ToUint64E(args[1])
+			issuerId, err := cast.ToUint64E(args[0])
 			if err != nil {
 				return err
 			}
-			name := args[2]
-			var desc string
-			if len(args) > 3 {
-				desc = args[3]
-			}
+			name := args[1]
+			desc := args[2]
 
 			msg := plasticcredit.MsgUpdateIssuer{
-				Updater:     admin.String(),
+				Updater:     fromAddr,
 				IssuerId:    issuerId,
 				Name:        name,
 				Description: desc,
