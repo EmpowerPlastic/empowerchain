@@ -81,6 +81,16 @@ func (m msgServer) CreateApplicant(goCtx context.Context, req *plasticcredit.Msg
 	}, nil
 }
 
+func (m msgServer) UpdateApplicant(goCtx context.Context, req *plasticcredit.MsgUpdateApplicant) (*plasticcredit.MsgUpdateApplicantResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	if err := m.Keeper.updateApplicant(ctx, req.ApplicantId, req.Name, req.Description, req.Admin); err != nil {
+		return nil, err
+	}
+
+	return &plasticcredit.MsgUpdateApplicantResponse{}, nil
+}
+
 func (m msgServer) CreateCreditClass(goCtx context.Context, req *plasticcredit.MsgCreateCreditClass) (*plasticcredit.MsgCreateCreditClassResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
