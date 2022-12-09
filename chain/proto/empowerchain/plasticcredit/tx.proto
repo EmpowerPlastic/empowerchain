@@ -18,7 +18,7 @@ service Msg {
   rpc CreateIssuer(MsgCreateIssuer) returns (MsgCreateIssuerResponse);
 
   // UpdateIssuer updates an existing issuer details.
-  // There is only a single signer in the system that is allowed to update issuers and it is defined in Params as "updater"
+  // The only entity that is allowed to change an issue is the address defined in the issuer as "admin"
   rpc UpdateIssuer(MsgUpdateIssuer) returns (MsgUpdateIssuerResponse);
 
   // CreateApplicant creates a new Applicant that can create and apply for projects, for which plastic credits can be issued
