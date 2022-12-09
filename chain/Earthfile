@@ -1,6 +1,6 @@
 VERSION 0.6
 FROM earthly/dind:ubuntu
-WORKDIR /empowerchain
+WORKDIR /empowerchain/chain
 
 docker:
     RUN apt-get update -yq \
@@ -48,12 +48,15 @@ build-all:
     RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-windows-amd64
     SAVE ARTIFACT build/empowerd.exe AS LOCAL build/empowerd-"$VERSION".exe
 
-
-    
-
 test:
     FROM +build
     RUN make test
+
+test-with-coverage:
+    FROM +build
+    RUN make test-with-coverage
+    SAVE ARTIFACT coverage.out AS LOCAL coverage.out
+
 
 smoketest:
     FROM +build

@@ -133,6 +133,9 @@ clean:
 test:
 	@go test -v ./x/...
 
+test-with-coverage:
+	@go test -v -coverprofile=coverage.out -covermode=atomic ./x/...
+
 smoketest: install
 	./scripts/test/smoke_gov_proposals.sh
 	./scripts/test/smoke_poe.sh

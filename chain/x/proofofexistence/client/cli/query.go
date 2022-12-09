@@ -6,8 +6,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
+	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/empowerchain/empowerchain/x/proofofexistence"
 	"github.com/spf13/cobra"
 )
 

@@ -3,10 +3,10 @@ package main
 import (
 	"os"
 
+	"github.com/EmpowerPlastic/empowerchain/app"
+	"github.com/EmpowerPlastic/empowerchain/app/params"
+	"github.com/EmpowerPlastic/empowerchain/cmd/empowerd/cmd"
 	"github.com/cosmos/cosmos-sdk/server"
-	"github.com/empowerchain/empowerchain/app"
-	"github.com/empowerchain/empowerchain/app/params"
-	"github.com/empowerchain/empowerchain/cmd/empowerd/cmd"
 
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 )

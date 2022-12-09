@@ -2,8 +2,8 @@ package plasticcredit
 
 import (
 	"cosmossdk.io/errors"
+	"github.com/EmpowerPlastic/empowerchain/utils"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/empowerchain/empowerchain/utils"
 )
 
 // DefaultIndex is the default global index

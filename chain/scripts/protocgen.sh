@@ -28,5 +28,5 @@ done
 cd ..
 
 
-cp -r ./github.com/empowerchain/empowerchain/* ./
+cp -r ./github.com/EmpowerPlastic/empowerchain/* ./
 rm -rf ./github.com

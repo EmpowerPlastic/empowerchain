@@ -3,12 +3,12 @@ package keeper_test
 import (
 	"testing"
 
+	"github.com/EmpowerPlastic/empowerchain/app"
+	"github.com/EmpowerPlastic/empowerchain/app/params"
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/empowerchain/empowerchain/app"
-	"github.com/empowerchain/empowerchain/app/params"
-	"github.com/empowerchain/empowerchain/testutil/sample"
-	"github.com/empowerchain/empowerchain/x/plasticcredit"
-	"github.com/empowerchain/empowerchain/x/plasticcredit/keeper"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtime "github.com/tendermint/tendermint/types/time"

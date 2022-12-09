@@ -2,9 +2,9 @@ package plasticcredit
 
 import (
 	"cosmossdk.io/errors"
+	"github.com/EmpowerPlastic/empowerchain/utils"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/empowerchain/empowerchain/utils"
 	"gopkg.in/yaml.v2"
 )
 

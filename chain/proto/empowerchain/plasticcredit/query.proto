@@ -6,7 +6,7 @@ import "empowerchain/plasticcredit/types.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 
-option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit";
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/plasticcredit";
 
 service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {

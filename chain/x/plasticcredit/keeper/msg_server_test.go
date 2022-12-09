@@ -1,14 +1,14 @@
 package keeper_test
 
 import (
+	"github.com/EmpowerPlastic/empowerchain/app"
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
+	"github.com/EmpowerPlastic/empowerchain/utils"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/empowerchain/empowerchain/app"
-	"github.com/empowerchain/empowerchain/testutil/sample"
-	"github.com/empowerchain/empowerchain/utils"
-	"github.com/empowerchain/empowerchain/x/plasticcredit"
-	"github.com/empowerchain/empowerchain/x/plasticcredit/keeper"
 )
 
 func (s *TestSuite) TestUpdateParams() {

@@ -4,7 +4,7 @@ package empowerchain.plasticcredit;
 import "empowerchain/plasticcredit/types.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit";
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/plasticcredit";
 
 // GenesisState defines the plasticcredit module's genesis state.
 message GenesisState {

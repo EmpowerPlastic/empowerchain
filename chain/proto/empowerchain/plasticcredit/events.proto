@@ -3,7 +3,7 @@ package empowerchain.plasticcredit;
 
 import "cosmos_proto/cosmos.proto";
 
-option go_package = "github.com/empowerchain/empowerchain/x/plasticcredit";
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/plasticcredit";
 
 // EventCreateIssuer is an event emitted when a new issuer is created
 message EventCreateIssuer {

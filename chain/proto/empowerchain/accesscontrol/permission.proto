@@ -1,7 +1,7 @@
 syntax = "proto3";
 package empowerchain.accesscontrol;
 
-option go_package = "github.com/empowerchain/empowerchain/x/accesscontrol";
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/accesscontrol";
 
 message Permission {
   
