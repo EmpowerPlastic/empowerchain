@@ -194,6 +194,15 @@ func (s *TestSuite) TestUpdateIssuer() {
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
+		"invalid address": {
+			msg: &plasticcredit.MsgUpdateIssuer{
+				Updater:     "Invalid", // invalid
+				Name:        "Empower",
+				Description: "Empower is cool",
+				Admin:       sample.AccAddress(),
+			},
+			err: sdkerrors.ErrInvalidAddress,
+		},
 	}
 
 	for name, tc := range testCases {
