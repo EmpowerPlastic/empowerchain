@@ -61,6 +61,26 @@ empowerd q plasticcredit project 1
 empowerd q plasticcredit project 2
 empowerd q plasticcredit project 3
 
+echo "--- Test: Plastic Credit Issuance ---"
+empowerd tx plasticcredit issue-credits 1 "123" 1000 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd tx plasticcredit issue-credits 2 "00001" 100000 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd tx plasticcredit issue-credits 3 "100001a" 99999999999 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+
+echo "--- Test: Plastic Credit Transfer ---"
+empowerd transfer bob empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m "PCRD/123" 100 false  --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd transfer bob empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m "PCRD/00001" 10 true  --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+
+echo "--- Test: Plastic Credit Retire ---"
+empowerd retire "PCRD/123" 100  --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd retire "PCRD/100001a" 20  --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+
 make kill
 sleep 2
 echo "Serve killed"
