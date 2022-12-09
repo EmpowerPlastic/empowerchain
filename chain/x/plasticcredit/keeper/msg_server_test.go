@@ -203,6 +203,16 @@ func (s *TestSuite) TestUpdateIssuer() {
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
+		"issuer not found": {
+			msg: &plasticcredit.MsgUpdateIssuer{
+				Updater:     issuerAdmin,
+				IssuerId:    2,
+				Name:        "Empower",
+				Description: "Empower is cool",
+				Admin:       sample.AccAddress(),
+			},
+			err: plasticcredit.ErrNotFoundIssuer,
+		},
 	}
 
 	for name, tc := range testCases {
