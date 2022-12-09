@@ -95,7 +95,10 @@ Note, the '--from' flag is ignored as it is implied from [admin_key_or_address].
 			}
 
 			admin := clientCtx.GetFromAddress()
-			applicantId, err := cast.ToUint64E(args[1])
+			applicantID, err := cast.ToUint64E(args[1])
+			if err != nil {
+				return err
+			}
 			name := args[2]
 			var desc string
 			if len(args) > 2 {
@@ -103,7 +106,7 @@ Note, the '--from' flag is ignored as it is implied from [admin_key_or_address].
 			}
 
 			msg := plasticcredit.MsgUpdateApplicant{
-				ApplicantId: applicantId,
+				ApplicantId: applicantID,
 				Name:        name,
 				Description: desc,
 				Admin:       admin.String(),
@@ -137,7 +140,7 @@ func MsgUpdateIssuerCmd() *cobra.Command {
 			}
 
 			admin := clientCtx.GetFromAddress()
-			issuerId, err := cast.ToUint64E(args[0])
+			issuerID, err := cast.ToUint64E(args[0])
 			if err != nil {
 				return err
 			}
@@ -146,7 +149,7 @@ func MsgUpdateIssuerCmd() *cobra.Command {
 
 			msg := plasticcredit.MsgUpdateIssuer{
 				Updater:     fromAddr,
-				IssuerId:    issuerId,
+				IssuerId:    issuerID,
 				Name:        name,
 				Description: desc,
 				Admin:       admin.String(),
