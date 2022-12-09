@@ -13,3 +13,12 @@ message EventCreateIssuer {
   string description = 4;
   string admin = 5 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
+
+// EventUpdateIssuer is an event emitted when an issuer is updated
+message EventUpdateIssuer {
+  uint64 issuer_id = 1;
+  string creator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string name = 3;
+  string description = 4;
+  string admin = 5 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}

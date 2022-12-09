@@ -53,6 +53,21 @@ func (m msgServer) CreateIssuer(goCtx context.Context, req *plasticcredit.MsgCre
 	}, nil
 }
 
+func (m msgServer) UpdateIssuer(goCtx context.Context, req *plasticcredit.MsgUpdateIssuer) (*plasticcredit.MsgUpdateIssuerResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	updater, err := sdk.AccAddressFromBech32(req.Updater)
+	if err != nil {
+		return nil, errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address: %s", req.Updater)
+	}
+
+	if err := m.Keeper.UpdateIssuer(ctx, updater, req.IssuerId, req.Name, req.Description, req.Admin); err != nil {
+		return nil, err
+	}
+
+	return &plasticcredit.MsgUpdateIssuerResponse{}, nil
+}
+
 func (m msgServer) CreateApplicant(goCtx context.Context, req *plasticcredit.MsgCreateApplicant) (*plasticcredit.MsgCreateApplicantResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 

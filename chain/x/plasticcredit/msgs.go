@@ -9,6 +9,7 @@ import (
 var (
 	_ sdk.Msg = &MsgUpdateParams{}
 	_ sdk.Msg = &MsgCreateIssuer{}
+	_ sdk.Msg = &MsgUpdateIssuer{}
 	_ sdk.Msg = &MsgCreateApplicant{}
 	_ sdk.Msg = &MsgCreateCreditClass{}
 	_ sdk.Msg = &MsgCreateProject{}
@@ -60,6 +61,36 @@ func (m *MsgCreateIssuer) GetSigners() []sdk.AccAddress {
 		panic(err)
 	}
 	return []sdk.AccAddress{creator}
+}
+
+func (m *MsgUpdateIssuer) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Updater)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid updater address (%s)", err)
+	}
+
+	if m.IssuerId == 0 {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "issuer_id cannot be 0")
+	}
+
+	if m.Name == "" {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "issuer name cannot be empty")
+	}
+
+	_, err = sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid admin address (%s)", err)
+	}
+
+	return nil
+}
+
+func (m *MsgUpdateIssuer) GetSigners() []sdk.AccAddress {
+	updater, err := sdk.AccAddressFromBech32(m.Updater)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{updater}
 }
 
 func (m *MsgCreateApplicant) ValidateBasic() error {

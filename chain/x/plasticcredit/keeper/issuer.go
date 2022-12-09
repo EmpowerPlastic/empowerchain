@@ -104,7 +104,37 @@ func (k Keeper) CreateIssuer(ctx sdk.Context, creator sdk.AccAddress, name strin
 	})
 }
 
+func (k Keeper) UpdateIssuer(ctx sdk.Context, updater sdk.AccAddress, issuerID uint64, name string, description string, admin string) error {
+	issuer, found := k.GetIssuer(ctx, issuerID)
+	if !found {
+		return errors.Wrapf(plasticcredit.ErrNotFoundIssuer, "issuer with id %d was not found for update", issuerID)
+	}
+
+	if issuer.Admin != updater.String() {
+		return errors.Wrapf(sdkerrors.ErrUnauthorized, "updater %s is not the same as issuer admin %s", updater, issuer.Admin)
+	}
+
+	issuer.Name = name
+	issuer.Description = description
+	issuer.Admin = admin
+
+	if err := k.setIssuer(ctx, issuer); err != nil {
+		return err
+	}
+
+	return ctx.EventManager().EmitTypedEvent(&plasticcredit.EventUpdateIssuer{
+		IssuerId:    issuer.Id,
+		Creator:     updater.String(),
+		Name:        issuer.Name,
+		Description: issuer.Description,
+		Admin:       issuer.Admin,
+	})
+}
+
 func (k Keeper) setIssuer(ctx sdk.Context, issuer plasticcredit.Issuer) error {
+	if err := issuer.Validate(); err != nil {
+		return err
+	}
 	store := k.getIssuerStore(ctx)
 
 	b, err := k.cdc.Marshal(&issuer)

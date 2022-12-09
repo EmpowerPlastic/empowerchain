@@ -30,6 +30,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(MsgTransferCreditsCmd())
 	cmd.AddCommand(MsgRetireCreditsCmd())
 	cmd.AddCommand(MsgCreateProjectCmd())
+	cmd.AddCommand(MsgUpdateIssuerCmd())
 
 	return cmd
 }
@@ -60,6 +61,49 @@ Note, the '--from' flag is ignored as it is implied from [admin_key_or_address].
 			}
 
 			msg := plasticcredit.MsgCreateApplicant{
+				Name:        name,
+				Description: desc,
+				Admin:       admin.String(),
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func MsgUpdateIssuerCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update-issuer [issuer-id] [name] [description] ",
+		Short: "Update existing Issuer.",
+		Long: `Update existing Issuer.
+`,
+		Args: cobra.MinimumNArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			fromAddr, err := cmd.Flags().GetString(flags.FlagFrom)
+			if err != nil {
+				return err
+			}
+
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			admin := clientCtx.GetFromAddress()
+			issuerId, err := cast.ToUint64E(args[0])
+			if err != nil {
+				return err
+			}
+			name := args[1]
+			desc := args[2]
+
+			msg := plasticcredit.MsgUpdateIssuer{
+				Updater:     fromAddr,
+				IssuerId:    issuerId,
 				Name:        name,
 				Description: desc,
 				Admin:       admin.String(),
