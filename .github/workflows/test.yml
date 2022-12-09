@@ -25,7 +25,7 @@ jobs:
 
       - uses: codecov/codecov-action@v3
         with:
-          files: ./chain/coverage.out
+          directory: ./chain
           flags: chain
           fail_ci_if_error: true
 
