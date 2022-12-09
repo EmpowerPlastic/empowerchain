@@ -8,6 +8,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	proto "github.com/gogo/protobuf/proto"
 )
 
 func (k Keeper) GetCreditCollection(ctx sdk.Context, denom string) (plasticcredit.CreditCollection, bool) {
@@ -58,7 +59,11 @@ func (k Keeper) retireCreditsForAddress(ctx sdk.Context, owner sdk.AccAddress, d
 	if err != nil {
 		return plasticcredit.CreditBalance{}, err
 	}
-	return creditBalance, nil
+	return creditBalance, ctx.EventManager().EmitTypedEvent(&plasticcredit.EventRetiredCredits{
+		Owner:  owner.String(),
+		Denom:  denom,
+		Amount: amount,
+	})
 }
 
 func (k Keeper) retireCreditsInCollection(ctx sdk.Context, denom string, amount uint64) error {
@@ -76,7 +81,6 @@ func (k Keeper) retireCreditsInCollection(ctx sdk.Context, denom string, amount 
 	if err != nil {
 		return err
 	}
-	// TODO event retire
 	return nil
 }
 
@@ -126,8 +130,22 @@ func (k Keeper) transferCredits(ctx sdk.Context, denom string, from sdk.AccAddre
 	if err != nil {
 		return err
 	}
-	// TODO event transfer
-	return nil
+	events := []proto.Message{
+		&plasticcredit.EventTransferCredits{
+			Sender:    from.String(),
+			Recipient: to.String(),
+			Denom:     denom,
+			Amount:    amount,
+		},
+	}
+	if retire {
+		events = append(events, &plasticcredit.EventRetiredCredits{
+			Owner:  to.String(),
+			Denom:  denom,
+			Amount: amount,
+		})
+	}
+	return ctx.EventManager().EmitTypedEvents(events...)
 }
 
 func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, serialNumber string, amount uint64) (collection plasticcredit.CreditCollection, err error) {
@@ -209,8 +227,11 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 	if err != nil {
 		return plasticcredit.CreditCollection{}, err
 	}
-	// TODO event issued credits
-	return creditCollection, nil
+	return creditCollection, ctx.EventManager().EmitTypedEvent(&plasticcredit.EventIssuedCredits{
+		ProjectId: projectID,
+		Denom:     denom,
+		Amount:    amount,
+	})
 }
 
 func (k Keeper) setCreditCollection(ctx sdk.Context, creditCollection plasticcredit.CreditCollection) error {
