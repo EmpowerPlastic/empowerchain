@@ -139,6 +139,10 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrNotFoundProject, "project with id %d not found", projectID)
 	}
 
+	if project.Status != plasticcredit.ProjectStatus_APPROVED {
+		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrProjectNotApproved, "project with id %d is not in approved state", projectID)
+	}
+
 	creditClass, found := k.GetCreditClass(ctx, project.CreditClassAbbreviation)
 	if !found {
 		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrNotFoundCreditClass, "credit class with abbreviation %s not found", project.CreditClassAbbreviation)

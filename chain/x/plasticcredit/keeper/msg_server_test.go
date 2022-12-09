@@ -470,12 +470,12 @@ func (s *TestSuite) TestCreateProject() {
 
 			if err == nil {
 				idCounters := k.GetIDCounters(s.ctx)
-				s.Require().Equal(uint64(2), idCounters.NextIssuerId)
+				s.Require().Equal(uint64(4), idCounters.NextProjectId)
 
 				project, found := k.GetProject(s.ctx, resp.ProjectId)
 				s.Require().True(found)
 				s.Require().Equal(plasticcredit.Project{
-					Id:                      2,
+					Id:                      3,
 					ApplicantId:             tc.msg.ApplicantId,
 					CreditClassAbbreviation: tc.msg.CreditClassAbbreviation,
 					Name:                    tc.msg.Name,
@@ -496,28 +496,28 @@ func (s *TestSuite) TestApproveProject() {
 		"happy path": {
 			msg: &plasticcredit.MsgApproveProject{
 				Approver:  s.sampleIssuerAdmin,
-				ProjectId: s.sampleProjectId,
+				ProjectId: s.sampleUnapprovedProjectId,
 			},
 			err: nil,
 		},
 		"unauthorized issuer admin": {
 			msg: &plasticcredit.MsgApproveProject{
 				Approver:  sample.AccAddress(),
-				ProjectId: s.sampleProjectId,
+				ProjectId: s.sampleUnapprovedProjectId,
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
 		"issuer admin on a different issuer": {
 			msg: &plasticcredit.MsgApproveProject{
 				Approver:  extraIssuerAdmin,
-				ProjectId: s.sampleProjectId,
+				ProjectId: s.sampleUnapprovedProjectId,
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
 		"applicant admin cannot approve project": {
 			msg: &plasticcredit.MsgApproveProject{
 				Approver:  s.sampleApplicantAdmin,
-				ProjectId: s.sampleProjectId,
+				ProjectId: s.sampleUnapprovedProjectId,
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
@@ -550,7 +550,7 @@ func (s *TestSuite) TestApproveProject() {
 			s.Require().ErrorIs(err, tc.err)
 
 			events := s.ctx.EventManager().ABCIEvents()
-			project, found := k.GetProject(s.ctx, s.sampleProjectId)
+			project, found := k.GetProject(s.ctx, s.sampleUnapprovedProjectId)
 			s.Require().True(found)
 
 			if err == nil {
@@ -641,6 +641,17 @@ func (s *TestSuite) TestIssueCredits() {
 			expectedAmount: 0,
 			err:            utils.ErrInvalidValue,
 		},
+		"issue credits to unapproved project": {
+			msg: &plasticcredit.MsgIssueCredits{
+				Creator:      s.sampleIssuerAdmin,
+				ProjectId:    s.sampleUnapprovedProjectId,
+				SerialNumber: "456",
+				CreditAmount: 1000,
+			},
+			expectedAmount: 0,
+			err:            plasticcredit.ErrProjectNotApproved,
+		},
+		// TODO: Test rejected project also
 	}
 
 	for name, tc := range testCases {
