@@ -43,6 +43,7 @@ func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicant
 		ApplicantId:             applicantID,
 		CreditClassAbbreviation: creditClassAbbreviation,
 		Name:                    name,
+		Status:                  plasticcredit.ProjectStatus_NEW,
 	}
 
 	if err := k.setProject(ctx, project); err != nil {

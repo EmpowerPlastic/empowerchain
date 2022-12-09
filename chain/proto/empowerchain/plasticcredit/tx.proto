@@ -30,6 +30,8 @@ service Msg {
   // CreateProject creates a new Project for an applicant that can be approved be an issuer for issuing under a credit class
   rpc CreateProject(MsgCreateProject) returns(MsgCreateProjectResponse);
 
+  // ApproveProject
+
   // IssueCredits mints new credits related to given credit class and project
   rpc IssueCredits(MsgIssueCredits) returns (MsgIssueCreditsResponse);
 

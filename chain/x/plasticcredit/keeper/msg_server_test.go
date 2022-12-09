@@ -494,6 +494,7 @@ func (s *TestSuite) TestCreateProject() {
 					ApplicantId:             tc.msg.ApplicantId,
 					CreditClassAbbreviation: tc.msg.CreditClassAbbreviation,
 					Name:                    tc.msg.Name,
+					Status:                  plasticcredit.ProjectStatus_NEW,
 				}, project)
 			}
 		})
