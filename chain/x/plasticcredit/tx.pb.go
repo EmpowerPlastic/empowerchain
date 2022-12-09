@@ -1230,7 +1230,7 @@ type MsgClient interface {
 	UpdateIssuer(ctx context.Context, in *MsgUpdateIssuer, opts ...grpc.CallOption) (*MsgUpdateIssuerResponse, error)
 	// CreateApplicant creates a new Applicant that can create and apply for projects, for which plastic credits can be issued
 	CreateApplicant(ctx context.Context, in *MsgCreateApplicant, opts ...grpc.CallOption) (*MsgCreateApplicantResponse, error)
-	// UpdateApplicant updates an existing Applicant
+	// UpdateApplicant updates an existing Applicant by admin
 	UpdateApplicant(ctx context.Context, in *MsgUpdateApplicant, opts ...grpc.CallOption) (*MsgUpdateApplicantResponse, error)
 	// CreateCreditClass creates a new Credit Class for an issuer.
 	CreateCreditClass(ctx context.Context, in *MsgCreateCreditClass, opts ...grpc.CallOption) (*MsgCreateCreditClassResponse, error)
@@ -1355,7 +1355,7 @@ type MsgServer interface {
 	UpdateIssuer(context.Context, *MsgUpdateIssuer) (*MsgUpdateIssuerResponse, error)
 	// CreateApplicant creates a new Applicant that can create and apply for projects, for which plastic credits can be issued
 	CreateApplicant(context.Context, *MsgCreateApplicant) (*MsgCreateApplicantResponse, error)
-	// UpdateApplicant updates an existing Applicant
+	// UpdateApplicant updates an existing Applicant by admin
 	UpdateApplicant(context.Context, *MsgUpdateApplicant) (*MsgUpdateApplicantResponse, error)
 	// CreateCreditClass creates a new Credit Class for an issuer.
 	CreateCreditClass(context.Context, *MsgCreateCreditClass) (*MsgCreateCreditClassResponse, error)
