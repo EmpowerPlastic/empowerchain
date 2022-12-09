@@ -34,6 +34,8 @@ empowerd tx plasticcredit update-issuer 1 "updated Empower" "updated Empower iss
 echo "--- Test: Plastic Credit Applicants ---"
 empowerd tx plasticcredit create-applicant empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m "First applicant" "With description" --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
 sleep 5
+empowerd tx plasticcredit update-applicant empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m 1 "Updated applicant" "With updated description" --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
 empowerd tx plasticcredit create-applicant bob "Second applicant" "With description" --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
 sleep 5
 

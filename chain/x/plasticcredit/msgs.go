@@ -11,6 +11,7 @@ var (
 	_ sdk.Msg = &MsgCreateIssuer{}
 	_ sdk.Msg = &MsgUpdateIssuer{}
 	_ sdk.Msg = &MsgCreateApplicant{}
+	_ sdk.Msg = &MsgUpdateApplicant{}
 	_ sdk.Msg = &MsgCreateCreditClass{}
 	_ sdk.Msg = &MsgCreateProject{}
 )
@@ -107,6 +108,31 @@ func (m *MsgCreateApplicant) ValidateBasic() error {
 }
 
 func (m *MsgCreateApplicant) GetSigners() []sdk.AccAddress {
+	admin, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{admin}
+}
+
+func (m *MsgUpdateApplicant) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid admin address (%s)", err)
+	}
+
+	if m.ApplicantId == 0 {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "applicant_id cannot be 0")
+	}
+
+	if m.Name == "" {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "applicant name cannot be empty")
+	}
+
+	return nil
+}
+
+func (m *MsgUpdateApplicant) GetSigners() []sdk.AccAddress {
 	admin, err := sdk.AccAddressFromBech32(m.Admin)
 	if err != nil {
 		panic(err)

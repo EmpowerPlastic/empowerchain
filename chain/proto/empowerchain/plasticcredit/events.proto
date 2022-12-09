@@ -22,3 +22,19 @@ message EventUpdateIssuer {
   string description = 4;
   string admin = 5 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
+
+// EventCreateApplicant is an event emitted when a new applicant is created
+message EventCreateApplicant {
+  uint64 applicant_id = 1;
+  string name = 2;
+  string description = 3;
+  string admin = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// EventUpdateApplicant is an event emitted when an applicant is updated
+message EventUpdateApplicant {
+  uint64 applicant_id = 1;
+  string name = 2;
+  string description = 3;
+  string admin = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}

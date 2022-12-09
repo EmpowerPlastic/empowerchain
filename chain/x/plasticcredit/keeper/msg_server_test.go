@@ -294,6 +294,7 @@ func (s *TestSuite) TestCreateApplicant() {
 
 			resp, err := ms.CreateApplicant(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
+			events := s.ctx.EventManager().ABCIEvents()
 
 			if err == nil {
 				s.Require().Equal(uint64(1), resp.ApplicantId)
@@ -309,6 +310,82 @@ func (s *TestSuite) TestCreateApplicant() {
 					Description: tc.msg.Description,
 					Admin:       tc.msg.Admin,
 				}, applicant)
+
+				s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[0])
+				s.Require().NoError(err)
+				eventCreateApplicant, ok := parsedEvent.(*plasticcredit.EventCreateApplicant)
+				s.Require().True(ok)
+				s.Require().Equal(&plasticcredit.EventCreateApplicant{
+					ApplicantId: applicant.Id,
+					Name:        applicant.Name,
+					Description: applicant.Description,
+					Admin:       applicant.Admin,
+				}, eventCreateApplicant)
+			}
+		})
+	}
+}
+
+func (s *TestSuite) TestUpdateApplicant() {
+	testCases := map[string]struct {
+		msg *plasticcredit.MsgUpdateApplicant
+		err error
+	}{
+		"happy path": {
+			msg: &plasticcredit.MsgUpdateApplicant{
+				ApplicantId: s.sampleApplicantId,
+				Name:        "Empower",
+				Description: "Empower is cool",
+				Admin:       sample.AccAddress(),
+			},
+			err: nil,
+		},
+		"applicant not found": {
+			msg: &plasticcredit.MsgUpdateApplicant{
+				ApplicantId: 0,
+				Name:        "Empower",
+				Description: "Empower is cool",
+				Admin:       sample.AccAddress(),
+			},
+			err: plasticcredit.ErrNotFoundApplicant,
+		},
+	}
+
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			s.SetupTest()
+			s.PopulateWithSamples()
+
+			k := s.empowerApp.PlasticcreditKeeper
+			goCtx := sdk.WrapSDKContext(s.ctx)
+			ms := keeper.NewMsgServerImpl(k)
+
+			_, err := ms.UpdateApplicant(goCtx, tc.msg)
+			s.Require().ErrorIs(err, tc.err)
+
+			if err == nil {
+				events := s.ctx.EventManager().ABCIEvents()
+				applicant, found := k.GetApplicant(s.ctx, tc.msg.ApplicantId)
+				s.Require().True(found)
+				s.Require().Equal(plasticcredit.Applicant{
+					Id:          s.sampleApplicantId,
+					Name:        tc.msg.Name,
+					Description: tc.msg.Description,
+					Admin:       tc.msg.Admin,
+				}, applicant)
+
+				s.Require().Len(events, 3)
+				parsedEvent, err := sdk.ParseTypedEvent(events[2])
+				s.Require().NoError(err)
+				eventUpdateApplicant, ok := parsedEvent.(*plasticcredit.EventUpdateApplicant)
+				s.Require().True(ok)
+				s.Require().Equal(&plasticcredit.EventUpdateApplicant{
+					ApplicantId: 1,
+					Name:        tc.msg.Name,
+					Description: tc.msg.Description,
+					Admin:       tc.msg.Admin,
+				}, eventUpdateApplicant)
 			}
 		})
 	}

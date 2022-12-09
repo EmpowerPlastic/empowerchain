@@ -177,9 +177,149 @@ func (m *EventUpdateIssuer) GetAdmin() string {
 	return ""
 }
 
+// EventCreateApplicant is an event emitted when a new applicant is created
+type EventCreateApplicant struct {
+	ApplicantId uint64 `protobuf:"varint,1,opt,name=applicant_id,json=applicantId,proto3" json:"applicant_id,omitempty"`
+	Name        string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	Admin       string `protobuf:"bytes,4,opt,name=admin,proto3" json:"admin,omitempty"`
+}
+
+func (m *EventCreateApplicant) Reset()         { *m = EventCreateApplicant{} }
+func (m *EventCreateApplicant) String() string { return proto.CompactTextString(m) }
+func (*EventCreateApplicant) ProtoMessage()    {}
+func (*EventCreateApplicant) Descriptor() ([]byte, []int) {
+	return fileDescriptor_46edfa2bb37e7891, []int{2}
+}
+func (m *EventCreateApplicant) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventCreateApplicant) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventCreateApplicant.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventCreateApplicant) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventCreateApplicant.Merge(m, src)
+}
+func (m *EventCreateApplicant) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventCreateApplicant) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventCreateApplicant.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventCreateApplicant proto.InternalMessageInfo
+
+func (m *EventCreateApplicant) GetApplicantId() uint64 {
+	if m != nil {
+		return m.ApplicantId
+	}
+	return 0
+}
+
+func (m *EventCreateApplicant) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *EventCreateApplicant) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *EventCreateApplicant) GetAdmin() string {
+	if m != nil {
+		return m.Admin
+	}
+	return ""
+}
+
+// EventUpdateApplicant is an event emitted when an applicant is updated
+type EventUpdateApplicant struct {
+	ApplicantId uint64 `protobuf:"varint,1,opt,name=applicant_id,json=applicantId,proto3" json:"applicant_id,omitempty"`
+	Name        string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	Admin       string `protobuf:"bytes,4,opt,name=admin,proto3" json:"admin,omitempty"`
+}
+
+func (m *EventUpdateApplicant) Reset()         { *m = EventUpdateApplicant{} }
+func (m *EventUpdateApplicant) String() string { return proto.CompactTextString(m) }
+func (*EventUpdateApplicant) ProtoMessage()    {}
+func (*EventUpdateApplicant) Descriptor() ([]byte, []int) {
+	return fileDescriptor_46edfa2bb37e7891, []int{3}
+}
+func (m *EventUpdateApplicant) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventUpdateApplicant) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventUpdateApplicant.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventUpdateApplicant) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventUpdateApplicant.Merge(m, src)
+}
+func (m *EventUpdateApplicant) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventUpdateApplicant) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventUpdateApplicant.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventUpdateApplicant proto.InternalMessageInfo
+
+func (m *EventUpdateApplicant) GetApplicantId() uint64 {
+	if m != nil {
+		return m.ApplicantId
+	}
+	return 0
+}
+
+func (m *EventUpdateApplicant) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *EventUpdateApplicant) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *EventUpdateApplicant) GetAdmin() string {
+	if m != nil {
+		return m.Admin
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*EventCreateIssuer)(nil), "empowerchain.plasticcredit.EventCreateIssuer")
 	proto.RegisterType((*EventUpdateIssuer)(nil), "empowerchain.plasticcredit.EventUpdateIssuer")
+	proto.RegisterType((*EventCreateApplicant)(nil), "empowerchain.plasticcredit.EventCreateApplicant")
+	proto.RegisterType((*EventUpdateApplicant)(nil), "empowerchain.plasticcredit.EventUpdateApplicant")
 }
 
 func init() {
@@ -187,25 +327,28 @@ func init() {
 }
 
 var fileDescriptor_46edfa2bb37e7891 = []byte{
-	// 283 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x4f, 0xcd, 0x2d, 0xc8,
-	0x2f, 0x4f, 0x2d, 0x4a, 0xce, 0x48, 0xcc, 0xcc, 0xd3, 0x2f, 0xc8, 0x49, 0x2c, 0x2e, 0xc9, 0x4c,
-	0x4e, 0x2e, 0x4a, 0x4d, 0xc9, 0x2c, 0xd1, 0x4f, 0x2d, 0x4b, 0xcd, 0x2b, 0x29, 0xd6, 0x2b, 0x28,
-	0xca, 0x2f, 0xc9, 0x17, 0x92, 0x42, 0x56, 0xa8, 0x87, 0xa2, 0x50, 0x4a, 0x32, 0x39, 0xbf, 0x38,
-	0x37, 0xbf, 0x38, 0x1e, 0xac, 0x52, 0x1f, 0xc2, 0x81, 0x68, 0x53, 0x3a, 0xc5, 0xc8, 0x25, 0xe8,
-	0x0a, 0x32, 0xc7, 0xb9, 0x28, 0x35, 0xb1, 0x24, 0xd5, 0xb3, 0xb8, 0xb8, 0x34, 0xb5, 0x48, 0x48,
-	0x9a, 0x8b, 0x33, 0x13, 0xcc, 0x8a, 0xcf, 0x4c, 0x91, 0x60, 0x54, 0x60, 0xd4, 0x60, 0x09, 0xe2,
-	0x80, 0x08, 0x78, 0xa6, 0x08, 0x19, 0x71, 0xb1, 0x27, 0x83, 0x14, 0xe7, 0x17, 0x49, 0x30, 0x29,
-	0x30, 0x6a, 0x70, 0x3a, 0x49, 0x5c, 0xda, 0xa2, 0x2b, 0x02, 0x35, 0xd5, 0x31, 0x25, 0xa5, 0x28,
-	0xb5, 0xb8, 0x38, 0xb8, 0xa4, 0x28, 0x33, 0x2f, 0x3d, 0x08, 0xa6, 0x50, 0x48, 0x88, 0x8b, 0x25,
-	0x2f, 0x31, 0x37, 0x55, 0x82, 0x19, 0xa4, 0x21, 0x08, 0xcc, 0x16, 0x52, 0xe0, 0xe2, 0x4e, 0x49,
-	0x2d, 0x4e, 0x2e, 0xca, 0x2c, 0x28, 0xc9, 0xcc, 0xcf, 0x93, 0x60, 0x01, 0x4b, 0x21, 0x0b, 0x09,
-	0xe9, 0x71, 0xb1, 0x26, 0xa6, 0xe4, 0x66, 0xe6, 0x49, 0xb0, 0x12, 0xb0, 0x07, 0xa2, 0x0c, 0xe1,
-	0x99, 0xd0, 0x82, 0x94, 0xa1, 0xee, 0x19, 0x27, 0xbf, 0x13, 0x8f, 0xe4, 0x18, 0x2f, 0x3c, 0x92,
-	0x63, 0x7c, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x0b, 0x8f, 0xe5, 0x18, 0x6e, 0x3c,
-	0x96, 0x63, 0x88, 0x32, 0x49, 0xcf, 0x2c, 0xc9, 0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x47,
-	0x49, 0x1e, 0x28, 0x9c, 0x0a, 0xd4, 0xd4, 0x92, 0xc4, 0x06, 0x8e, 0x70, 0x63, 0x40, 0x00, 0x00,
-	0x00, 0xff, 0xff, 0x04, 0x34, 0x00, 0x28, 0x52, 0x02, 0x00, 0x00,
+	// 336 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x93, 0xbf, 0x4e, 0x7a, 0x31,
+	0x14, 0xc7, 0x29, 0x5c, 0x7e, 0x3f, 0x29, 0x2e, 0x36, 0x0c, 0x15, 0x93, 0x06, 0x5d, 0x64, 0xf1,
+	0xde, 0x44, 0x13, 0x77, 0x30, 0x0c, 0x6c, 0x04, 0xe3, 0xe2, 0x42, 0x4a, 0xdb, 0x40, 0x13, 0x6e,
+	0xdb, 0xb4, 0x45, 0x7d, 0x0c, 0xdf, 0xc0, 0x97, 0xf0, 0x21, 0x8c, 0x13, 0x71, 0x72, 0x34, 0xf0,
+	0x22, 0x86, 0x5b, 0xf9, 0x73, 0x07, 0x35, 0x6e, 0xba, 0x9d, 0x73, 0xfa, 0x39, 0xa7, 0xdf, 0xd3,
+	0xe6, 0x0b, 0x8f, 0x45, 0x6a, 0xf4, 0xad, 0xb0, 0x6c, 0x4c, 0xa5, 0x4a, 0xcc, 0x84, 0x3a, 0x2f,
+	0x19, 0xb3, 0x82, 0x4b, 0x9f, 0x88, 0x1b, 0xa1, 0xbc, 0x8b, 0x8d, 0xd5, 0x5e, 0xa3, 0xfa, 0x36,
+	0x18, 0xe7, 0xc0, 0xfa, 0x3e, 0xd3, 0x2e, 0xd5, 0x6e, 0x90, 0x91, 0x49, 0x48, 0x42, 0xdb, 0xd1,
+	0x33, 0x80, 0x7b, 0x9d, 0xe5, 0x9c, 0x0b, 0x2b, 0xa8, 0x17, 0x5d, 0xe7, 0xa6, 0xc2, 0xa2, 0x03,
+	0x58, 0x91, 0x59, 0x34, 0x90, 0x1c, 0x83, 0x06, 0x68, 0x46, 0xfd, 0x9d, 0x50, 0xe8, 0x72, 0x74,
+	0x0a, 0xff, 0xb3, 0x25, 0xac, 0x2d, 0x2e, 0x36, 0x40, 0xb3, 0xd2, 0xc6, 0x2f, 0x8f, 0x27, 0xb5,
+	0x8f, 0xa9, 0x2d, 0xce, 0xad, 0x70, 0xee, 0xd2, 0x5b, 0xa9, 0x46, 0xfd, 0x15, 0x88, 0x10, 0x8c,
+	0x14, 0x4d, 0x05, 0x2e, 0x2d, 0x1b, 0xfa, 0x59, 0x8c, 0x1a, 0xb0, 0xca, 0x85, 0x63, 0x56, 0x1a,
+	0x2f, 0xb5, 0xc2, 0x51, 0x76, 0xb4, 0x5d, 0x42, 0x31, 0x2c, 0x53, 0x9e, 0x4a, 0x85, 0xcb, 0xdf,
+	0xdc, 0x13, 0xb0, 0xcd, 0x32, 0x57, 0x86, 0xff, 0xf9, 0x65, 0x1e, 0x00, 0xac, 0x6d, 0xfd, 0x4c,
+	0xcb, 0x98, 0x89, 0x64, 0x54, 0x79, 0x74, 0x08, 0x77, 0xe9, 0x2a, 0xd9, 0xac, 0x54, 0x5d, 0xd7,
+	0xba, 0x7c, 0xad, 0xb0, 0xf8, 0xb9, 0xc2, 0xd2, 0x17, 0x0a, 0xa3, 0x1f, 0x2a, 0x0c, 0xcf, 0xfd,
+	0xfb, 0x14, 0xb6, 0x7b, 0x4f, 0x73, 0x02, 0x66, 0x73, 0x02, 0xde, 0xe6, 0x04, 0xdc, 0x2f, 0x48,
+	0x61, 0xb6, 0x20, 0x85, 0xd7, 0x05, 0x29, 0x5c, 0x9f, 0x8f, 0xa4, 0x1f, 0x4f, 0x87, 0x31, 0xd3,
+	0x69, 0xd2, 0x09, 0xce, 0xe9, 0x05, 0xcf, 0x24, 0x39, 0xc7, 0xdd, 0xe5, 0x3d, 0x37, 0xfc, 0x97,
+	0xd9, 0xe6, 0xec, 0x3d, 0x00, 0x00, 0xff, 0xff, 0x3f, 0xea, 0x94, 0x27, 0x98, 0x03, 0x00, 0x00,
 }
 
 func (m *EventCreateIssuer) Marshal() (dAtA []byte, err error) {
@@ -320,6 +463,104 @@ func (m *EventUpdateIssuer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *EventCreateApplicant) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventCreateApplicant) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventCreateApplicant) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Admin) > 0 {
+		i -= len(m.Admin)
+		copy(dAtA[i:], m.Admin)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Admin)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Name) > 0 {
+		i -= len(m.Name)
+		copy(dAtA[i:], m.Name)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Name)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.ApplicantId != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.ApplicantId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *EventUpdateApplicant) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventUpdateApplicant) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventUpdateApplicant) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Admin) > 0 {
+		i -= len(m.Admin)
+		copy(dAtA[i:], m.Admin)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Admin)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Name) > 0 {
+		i -= len(m.Name)
+		copy(dAtA[i:], m.Name)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Name)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.ApplicantId != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.ApplicantId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintEvents(dAtA []byte, offset int, v uint64) int {
 	offset -= sovEvents(v)
 	base := offset
@@ -371,6 +612,54 @@ func (m *EventUpdateIssuer) Size() (n int) {
 	l = len(m.Creator)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
+	}
+	l = len(m.Name)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	l = len(m.Admin)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	return n
+}
+
+func (m *EventCreateApplicant) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.ApplicantId != 0 {
+		n += 1 + sovEvents(uint64(m.ApplicantId))
+	}
+	l = len(m.Name)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	l = len(m.Admin)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	return n
+}
+
+func (m *EventUpdateApplicant) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.ApplicantId != 0 {
+		n += 1 + sovEvents(uint64(m.ApplicantId))
 	}
 	l = len(m.Name)
 	if l > 0 {
@@ -735,6 +1024,336 @@ func (m *EventUpdateIssuer) Unmarshal(dAtA []byte) error {
 			m.Description = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Admin = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvents(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventCreateApplicant) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvents
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventCreateApplicant: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventCreateApplicant: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ApplicantId", wireType)
+			}
+			m.ApplicantId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ApplicantId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Admin = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvents(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventUpdateApplicant) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvents
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventUpdateApplicant: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventUpdateApplicant: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ApplicantId", wireType)
+			}
+			m.ApplicantId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ApplicantId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
 			}
