@@ -601,9 +601,12 @@ func (s *TestSuite) TestIssueCredits() {
 				eventIssuedCredits, ok := parsedEvent.(*plasticcredit.EventIssuedCredits)
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventIssuedCredits{
-					ProjectId: tc.msg.ProjectId,
-					Denom:     denom,
-					Amount:    tc.msg.CreditAmount,
+					IssuerId:                s.sampleIssuerId,
+					ProjectId:               tc.msg.ProjectId,
+					CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
+					Denom:                   denom,
+					Amount:                  tc.msg.CreditAmount,
+					IssuerAddress:           tc.msg.Creator,
 				}, eventIssuedCredits)
 			} else {
 				s.Require().Len(events, 2)
@@ -770,9 +773,11 @@ func (s *TestSuite) TestTransferCredits() {
 					eventRetiredCredits, ok := parsedEvent.(*plasticcredit.EventRetiredCredits)
 					s.Require().True(ok)
 					s.Require().Equal(&plasticcredit.EventRetiredCredits{
-						Owner:  tc.msg.To,
-						Denom:  tc.msg.Denom,
-						Amount: tc.msg.Amount,
+						Owner:                   tc.msg.To,
+						Denom:                   tc.msg.Denom,
+						Amount:                  tc.msg.Amount,
+						IssuerId:                s.sampleIssuerId,
+						CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 					}, eventRetiredCredits)
 				} else {
 					s.Require().Len(events, 3)
@@ -782,10 +787,12 @@ func (s *TestSuite) TestTransferCredits() {
 				EventTransferCredits, ok := parsedEvent.(*plasticcredit.EventTransferCredits)
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventTransferCredits{
-					Sender:    tc.msg.From,
-					Recipient: tc.msg.To,
-					Denom:     tc.msg.Denom,
-					Amount:    tc.msg.Amount,
+					Sender:                  tc.msg.From,
+					Recipient:               tc.msg.To,
+					Denom:                   tc.msg.Denom,
+					Amount:                  tc.msg.Amount,
+					IssuerId:                s.sampleIssuerId,
+					CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 				}, EventTransferCredits)
 			} else {
 				s.Require().Len(events, 2)
@@ -891,9 +898,11 @@ func (s *TestSuite) TestRetireCredits() {
 				eventRetiredCredits, ok := parsedEvent.(*plasticcredit.EventRetiredCredits)
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventRetiredCredits{
-					Owner:  tc.msg.Owner,
-					Denom:  tc.msg.Denom,
-					Amount: tc.msg.Amount,
+					Owner:                   tc.msg.Owner,
+					Denom:                   tc.msg.Denom,
+					Amount:                  tc.msg.Amount,
+					IssuerId:                s.sampleIssuerId,
+					CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 				}, eventRetiredCredits)
 			} else {
 				s.Require().Len(events, 2)

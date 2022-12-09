@@ -25,9 +25,12 @@ message EventUpdateIssuer {
 
 // EventIssuedCredits is an event emitted when new credits are issued
 message EventIssuedCredits {
-  uint64 project_id = 1;
-  string denom = 2;
-  uint64 amount = 3;
+  uint64 issuer_id = 1;
+  uint64 project_id = 2;
+  string credit_class_abbreviation = 3;
+  string denom = 4;
+  uint64 amount = 5;
+  string issuer_address = 6 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
 // EventTransferCredits is an event emitted when credits are being transfered from one account to another
@@ -36,6 +39,8 @@ message EventTransferCredits {
   string recipient = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   string denom = 3;
   uint64 amount = 4;
+  uint64 issuer_id = 5;
+  string credit_class_abbreviation = 6;
 }
 
 // EventRetiredCredits is an event emitted when credits are retired
@@ -43,4 +48,6 @@ message EventRetiredCredits {
   string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   string denom = 2;
   uint64 amount = 3;
+  uint64 issuer_id = 4;
+  string credit_class_abbreviation = 5;
 }

@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"strings"
+
 	"cosmossdk.io/errors"
 	"github.com/EmpowerPlastic/empowerchain/utils"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
@@ -59,10 +61,17 @@ func (k Keeper) retireCreditsForAddress(ctx sdk.Context, owner sdk.AccAddress, d
 	if err != nil {
 		return plasticcredit.CreditBalance{}, err
 	}
+	abbrev, _ := SplitCreditDenom(denom)
+	creditClass, found := k.GetCreditClass(ctx, abbrev)
+	if !found {
+		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrNotFoundCreditClass, "credit class with abbrev %s not found", abbrev)
+	}
 	return creditBalance, ctx.EventManager().EmitTypedEvent(&plasticcredit.EventRetiredCredits{
-		Owner:  owner.String(),
-		Denom:  denom,
-		Amount: amount,
+		Owner:                   owner.String(),
+		Denom:                   denom,
+		Amount:                  amount,
+		IssuerId:                creditClass.IssuerId,
+		CreditClassAbbreviation: abbrev,
 	})
 }
 
@@ -130,19 +139,28 @@ func (k Keeper) transferCredits(ctx sdk.Context, denom string, from sdk.AccAddre
 	if err != nil {
 		return err
 	}
+	abbrev, _ := SplitCreditDenom(denom)
+	creditClass, found := k.GetCreditClass(ctx, abbrev)
+	if !found {
+		return errors.Wrapf(plasticcredit.ErrNotFoundCreditClass, "credit class with abbrev %s not found", abbrev)
+	}
 	events := []proto.Message{
 		&plasticcredit.EventTransferCredits{
-			Sender:    from.String(),
-			Recipient: to.String(),
-			Denom:     denom,
-			Amount:    amount,
+			Sender:                  from.String(),
+			Recipient:               to.String(),
+			Denom:                   denom,
+			Amount:                  amount,
+			IssuerId:                creditClass.IssuerId,
+			CreditClassAbbreviation: abbrev,
 		},
 	}
 	if retire {
 		events = append(events, &plasticcredit.EventRetiredCredits{
-			Owner:  to.String(),
-			Denom:  denom,
-			Amount: amount,
+			Owner:                   to.String(),
+			Denom:                   denom,
+			Amount:                  amount,
+			IssuerId:                creditClass.IssuerId,
+			CreditClassAbbreviation: abbrev,
 		})
 	}
 	return ctx.EventManager().EmitTypedEvents(events...)
@@ -228,9 +246,12 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 		return plasticcredit.CreditCollection{}, err
 	}
 	return creditCollection, ctx.EventManager().EmitTypedEvent(&plasticcredit.EventIssuedCredits{
-		ProjectId: projectID,
-		Denom:     denom,
-		Amount:    amount,
+		IssuerId:                issuer.Id,
+		ProjectId:               projectID,
+		CreditClassAbbreviation: creditClass.Abbreviation,
+		Denom:                   denom,
+		Amount:                  amount,
+		IssuerAddress:           creator,
 	})
 }
 
@@ -322,4 +343,9 @@ func CreateCreditDenom(creditClassAbbreviation string, serialNumber string) (str
 		return "", errors.Wrap(utils.ErrInvalidValue, "empty denom part")
 	}
 	return creditClassAbbreviation + "/" + serialNumber, nil
+}
+
+func SplitCreditDenom(denom string) (creditClassAbbreviation string, serialNumber string) {
+	delimIndex := strings.Index(denom, "/")
+	return denom[:delimIndex], denom[delimIndex:]
 }
