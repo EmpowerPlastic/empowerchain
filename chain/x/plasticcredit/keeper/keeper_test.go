@@ -114,6 +114,7 @@ func (s *TestSuite) PopulateWithSamples() {
 	})
 	s.Require().NoError(err)
 	s.Require().Equal(s.sampleCreditDenom, respIssue.Collection.Denom)
+	s.ctx = s.ctx.WithEventManager(sdk.NewEventManager())
 }
 
 func TestTestSuite(t *testing.T) {

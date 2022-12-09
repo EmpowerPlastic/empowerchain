@@ -114,6 +114,21 @@ func (m msgServer) CreateProject(goCtx context.Context, req *plasticcredit.MsgCr
 	}, nil
 }
 
+func (m msgServer) ApproveProject(goCtx context.Context, req *plasticcredit.MsgApproveProject) (*plasticcredit.MsgApproveProjectResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	approver, err := sdk.AccAddressFromBech32(req.Approver)
+	if err != nil {
+		return nil, errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid approver address: %s", req.Approver)
+	}
+
+	if err := m.Keeper.ApproveProject(ctx, approver, req.ProjectId); err != nil {
+		return nil, err
+	}
+
+	return &plasticcredit.MsgApproveProjectResponse{}, nil
+}
+
 func (m msgServer) IssueCredits(goCtx context.Context, req *plasticcredit.MsgIssueCredits) (*plasticcredit.MsgIssueCreditsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
