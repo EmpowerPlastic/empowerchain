@@ -143,8 +143,8 @@ func (s *TestSuite) TestCreateIssuer() {
 					Admin:       tc.msg.Admin,
 				}, issuer)
 
-				s.Require().Len(events, 3)
-				parsedEvent, err := sdk.ParseTypedEvent(events[2])
+				s.Require().Len(events, 4)
+				parsedEvent, err := sdk.ParseTypedEvent(events[3])
 				s.Require().NoError(err)
 				eventCreateIssuer, ok := parsedEvent.(*plasticcredit.EventCreateIssuer)
 				s.Require().True(ok)
@@ -161,7 +161,7 @@ func (s *TestSuite) TestCreateIssuer() {
 				_, found := k.GetIssuer(s.ctx, 2)
 				s.Require().False(found)
 
-				s.Require().Len(events, 2)
+				s.Require().Len(events, 3)
 			}
 		})
 	}
@@ -375,8 +375,8 @@ func (s *TestSuite) TestUpdateApplicant() {
 					Admin:       tc.msg.Admin,
 				}, applicant)
 
-				s.Require().Len(events, 3)
-				parsedEvent, err := sdk.ParseTypedEvent(events[2])
+				s.Require().Len(events, 4)
+				parsedEvent, err := sdk.ParseTypedEvent(events[3])
 				s.Require().NoError(err)
 				eventUpdateApplicant, ok := parsedEvent.(*plasticcredit.EventUpdateApplicant)
 				s.Require().True(ok)
@@ -672,8 +672,8 @@ func (s *TestSuite) TestIssueCredits() {
 				s.Require().Equal(uint64(0), resp.Collection.TotalAmount.Retired)
 				s.Require().Equal(uint64(0), creditCollection.TotalAmount.Retired)
 				s.Require().Equal(uint64(0), ownerBalance.Balance.Retired)
-				s.Require().Len(events, 3)
-				parsedEvent, err := sdk.ParseTypedEvent(events[2])
+				s.Require().Len(events, 4)
+				parsedEvent, err := sdk.ParseTypedEvent(events[3])
 				s.Require().NoError(err)
 				eventIssuedCredits, ok := parsedEvent.(*plasticcredit.EventIssuedCredits)
 				s.Require().True(ok)
@@ -686,7 +686,7 @@ func (s *TestSuite) TestIssueCredits() {
 					IssuerAddress:           tc.msg.Creator,
 				}, eventIssuedCredits)
 			} else {
-				s.Require().Len(events, 2)
+				s.Require().Len(events, 3)
 			}
 		})
 	}
@@ -844,8 +844,8 @@ func (s *TestSuite) TestTransferCredits() {
 					s.Require().True(found)
 					s.Require().Equal(collectionBefore.TotalAmount.Active-tc.msg.Amount, collectionAfter.TotalAmount.Active)
 					s.Require().Equal(collectionBefore.TotalAmount.Retired+tc.msg.Amount, collectionAfter.TotalAmount.Retired)
-					s.Require().Len(events, 4)
-					parsedEvent, err := sdk.ParseTypedEvent(events[3])
+					s.Require().Len(events, 5)
+					parsedEvent, err := sdk.ParseTypedEvent(events[4])
 					s.Require().NoError(err)
 					eventRetiredCredits, ok := parsedEvent.(*plasticcredit.EventRetiredCredits)
 					s.Require().True(ok)
@@ -857,9 +857,9 @@ func (s *TestSuite) TestTransferCredits() {
 						CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 					}, eventRetiredCredits)
 				} else {
-					s.Require().Len(events, 3)
+					s.Require().Len(events, 4)
 				}
-				parsedEvent, err := sdk.ParseTypedEvent(events[2])
+				parsedEvent, err := sdk.ParseTypedEvent(events[3])
 				s.Require().NoError(err)
 				EventTransferCredits, ok := parsedEvent.(*plasticcredit.EventTransferCredits)
 				s.Require().True(ok)
@@ -872,7 +872,7 @@ func (s *TestSuite) TestTransferCredits() {
 					CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 				}, EventTransferCredits)
 			} else {
-				s.Require().Len(events, 2)
+				s.Require().Len(events, 3)
 			}
 		})
 	}
@@ -969,8 +969,8 @@ func (s *TestSuite) TestRetireCredits() {
 				s.Require().Equal(collectionBefore.TotalAmount.Retired+tc.msg.Amount, collection.TotalAmount.Retired)
 				s.Require().Equal(balanceBefore.Balance.Active-tc.msg.Amount, balance.Balance.Active)
 				s.Require().Equal(balanceBefore.Balance.Retired+tc.msg.Amount, balance.Balance.Retired)
-				s.Require().Len(events, 3)
-				parsedEvent, err := sdk.ParseTypedEvent(events[2])
+				s.Require().Len(events, 4)
+				parsedEvent, err := sdk.ParseTypedEvent(events[3])
 				s.Require().NoError(err)
 				eventRetiredCredits, ok := parsedEvent.(*plasticcredit.EventRetiredCredits)
 				s.Require().True(ok)
@@ -982,7 +982,7 @@ func (s *TestSuite) TestRetireCredits() {
 					CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 				}, eventRetiredCredits)
 			} else {
-				s.Require().Len(events, 2)
+				s.Require().Len(events, 3)
 			}
 		})
 	}
