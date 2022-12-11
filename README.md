@@ -1,4 +1,4 @@
-# EmpowerChain
+# EmpowerChain.
 
 This is where the code for anything related to EmpowerChain is located. Documentation is being built right now.
 
