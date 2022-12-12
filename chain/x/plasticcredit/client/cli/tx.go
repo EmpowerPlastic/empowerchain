@@ -124,13 +124,14 @@ func MsgUpdateApplicantCmd() *cobra.Command {
 
 func MsgUpdateIssuerCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-issuer [issuer-id] [name] [description] ",
+		Use:   "update-issuer [admin_key_or_address] [issuer-id] [name] [description] ",
 		Short: "Update existing Issuer.",
 		Long: `Update existing Issuer.
+'--from' flag is expected to provide the updater, as it could be different from admin.
 `,
-		Args: cobra.MinimumNArgs(3),
+		Args: cobra.MinimumNArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			fromAddr, err := cmd.Flags().GetString(flags.FlagFrom)
+			updater, err := cmd.Flags().GetString(flags.FlagFrom)
 			if err != nil {
 				return err
 			}
@@ -140,20 +141,20 @@ func MsgUpdateIssuerCmd() *cobra.Command {
 				return err
 			}
 
-			admin := clientCtx.GetFromAddress()
-			issuerID, err := cast.ToUint64E(args[0])
+			admin := args[0]
+			issuerID, err := cast.ToUint64E(args[1])
 			if err != nil {
 				return err
 			}
-			name := args[1]
-			desc := args[2]
+			name := args[2]
+			desc := args[3]
 
 			msg := plasticcredit.MsgUpdateIssuer{
-				Updater:     fromAddr,
+				Updater:     updater,
 				IssuerId:    issuerID,
 				Name:        name,
 				Description: desc,
-				Admin:       admin.String(),
+				Admin:       admin,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
