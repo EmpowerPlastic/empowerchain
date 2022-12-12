@@ -50,14 +50,23 @@ func (k Keeper) grantAccess(ctx sdk.Context, subKey string, account sdk.AccAddre
 		return err
 	}
 	store.Set(key, b)
-	return nil
+	return ctx.EventManager().EmitTypedEvent(&accesscontrol.EventAccessGranted{
+		ModuleName: subKey,
+		Account:    account.String(),
+		MsgType:    msgType,
+	})
 }
 
-func (k Keeper) revokeAccess(ctx sdk.Context, subKey string, account sdk.AccAddress, msgType string) {
+func (k Keeper) revokeAccess(ctx sdk.Context, subKey string, account sdk.AccAddress, msgType string) error {
 	store := k.kvStore(ctx, subKey)
 	key := accesscontrol.PermissionStoreKey(account, msgType)
 
 	store.Delete(key)
+	return ctx.EventManager().EmitTypedEvent(&accesscontrol.EventAccessRevoked{
+		ModuleName: subKey,
+		Account:    account.String(),
+		MsgType:    msgType,
+	})
 }
 
 // Should be used only for genesis export!

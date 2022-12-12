@@ -5,7 +5,7 @@ import sdk "github.com/cosmos/cosmos-sdk/types"
 type IAccessControlSubKeeper interface {
 	HasAccess(ctx sdk.Context, account sdk.AccAddress, msgType string) bool
 	GrantAccess(ctx sdk.Context, account sdk.AccAddress, msgType string) error
-	RevokeAccess(ctx sdk.Context, account sdk.AccAddress, msgType string)
+	RevokeAccess(ctx sdk.Context, account sdk.AccAddress, msgType string) error
 }
 
 type SubKeeper struct {
@@ -30,8 +30,8 @@ func (sk SubKeeper) GrantAccess(ctx sdk.Context, account sdk.AccAddress, msgType
 	return sk.grantAccess(ctx, sk.subKey, account, msgType)
 }
 
-func (sk SubKeeper) RevokeAccess(ctx sdk.Context, account sdk.AccAddress, msgType string) {
-	sk.revokeAccess(ctx, sk.subKey, account, msgType)
+func (sk SubKeeper) RevokeAccess(ctx sdk.Context, account sdk.AccAddress, msgType string) error {
+	return sk.revokeAccess(ctx, sk.subKey, account, msgType)
 }
 
 func (sk SubKeeper) initSubStore() {
