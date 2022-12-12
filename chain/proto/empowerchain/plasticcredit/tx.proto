@@ -97,13 +97,13 @@ message MsgCreateApplicantResponse{
 }
 
 message MsgUpdateApplicant {
-  option (cosmos.msg.v1.signer) = "admin";
-  uint64 applicant_id = 1;
-  string name = 2;
-  string description = 3;
-  string admin = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  option (cosmos.msg.v1.signer) = "updater";
   // updater is the address that is performing the update/sends the tx
-  string updater = 5 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string updater = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 applicant_id = 2;
+  string name = 3;
+  string description = 4;
+  string admin = 5 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
 message MsgUpdateApplicantResponse {}
