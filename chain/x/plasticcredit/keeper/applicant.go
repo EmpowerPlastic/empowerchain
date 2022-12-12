@@ -1,10 +1,12 @@
 package keeper
 
 import (
+	"cosmossdk.io/errors"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k Keeper) GetApplicant(ctx sdk.Context, id uint64) (applicant plasticcredit.Applicant, found bool) {
@@ -42,7 +44,39 @@ func (k Keeper) createApplicant(ctx sdk.Context, name string, description string
 		return 0, err
 	}
 
-	return nextID, nil
+	return nextID, ctx.EventManager().EmitTypedEvent(&plasticcredit.EventCreateApplicant{
+		ApplicantId: applicant.Id,
+		Name:        applicant.Name,
+		Description: applicant.Description,
+		Admin:       applicant.Admin,
+	})
+}
+
+func (k Keeper) updateApplicant(ctx sdk.Context, updater sdk.AccAddress, applicantID uint64, name string, description string, admin string) error {
+	applicant, found := k.GetApplicant(ctx, applicantID)
+	if !found {
+		return errors.Wrapf(plasticcredit.ErrNotFoundApplicant, "applicant with id %d was not found for update", applicantID)
+	}
+
+	if applicant.Admin != updater.String() {
+		return errors.Wrapf(sdkerrors.ErrUnauthorized, "updater %s is not the same as applicant creator admin %s", updater, applicant.Admin)
+	}
+
+	applicant.Name = name
+	applicant.Description = description
+	applicant.Admin = admin
+
+	if err := k.setApplicant(ctx, applicant); err != nil {
+		return err
+	}
+
+	return ctx.EventManager().EmitTypedEvent(&plasticcredit.EventUpdateApplicant{
+		ApplicantId: applicant.Id,
+		Name:        applicant.Name,
+		Description: applicant.Description,
+		Admin:       applicant.Admin,
+		Updater:     updater.String(),
+	})
 }
 
 func (k Keeper) setApplicant(ctx sdk.Context, applicant plasticcredit.Applicant) error {

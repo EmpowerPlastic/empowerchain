@@ -31,6 +31,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(MsgRetireCreditsCmd())
 	cmd.AddCommand(MsgCreateProjectCmd())
 	cmd.AddCommand(MsgUpdateIssuerCmd())
+	cmd.AddCommand(MsgUpdateApplicantCmd())
 
 	return cmd
 }
@@ -75,15 +76,62 @@ Note, the '--from' flag is ignored as it is implied from [admin_key_or_address].
 	return cmd
 }
 
-func MsgUpdateIssuerCmd() *cobra.Command {
+func MsgUpdateApplicantCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-issuer [issuer-id] [name] [description] ",
-		Short: "Update existing Issuer.",
-		Long: `Update existing Issuer.
+		Use:   "update-applicant [admin_key_or_address] [applicant ID] [name] [description]",
+		Short: "Update existing applicant.",
+		Long: `Update existing applicant.
+'--from' flag is expected to provide the updater, as it could be different from admin.
 `,
 		Args: cobra.MinimumNArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			fromAddr, err := cmd.Flags().GetString(flags.FlagFrom)
+			updater, err := cmd.Flags().GetString(flags.FlagFrom)
+			if err != nil {
+				return err
+			}
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			admin := args[0]
+			applicantID, err := cast.ToUint64E(args[1])
+			if err != nil {
+				return err
+			}
+			name := args[2]
+			var desc string
+			if len(args) > 2 {
+				desc = args[3]
+			}
+
+			msg := plasticcredit.MsgUpdateApplicant{
+				ApplicantId: applicantID,
+				Name:        name,
+				Description: desc,
+				Admin:       admin,
+				Updater:     updater,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func MsgUpdateIssuerCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update-issuer [admin_key_or_address] [issuer-id] [name] [description] ",
+		Short: "Update existing Issuer.",
+		Long: `Update existing Issuer.
+'--from' flag is expected to provide the updater, as it could be different from admin.
+`,
+		Args: cobra.MinimumNArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			updater, err := cmd.Flags().GetString(flags.FlagFrom)
 			if err != nil {
 				return err
 			}
@@ -93,20 +141,20 @@ func MsgUpdateIssuerCmd() *cobra.Command {
 				return err
 			}
 
-			admin := clientCtx.GetFromAddress()
-			issuerId, err := cast.ToUint64E(args[0])
+			admin := args[0]
+			issuerID, err := cast.ToUint64E(args[1])
 			if err != nil {
 				return err
 			}
-			name := args[1]
-			desc := args[2]
+			name := args[2]
+			desc := args[3]
 
 			msg := plasticcredit.MsgUpdateIssuer{
-				Updater:     fromAddr,
-				IssuerId:    issuerId,
+				Updater:     updater,
+				IssuerId:    issuerID,
 				Name:        name,
 				Description: desc,
-				Admin:       admin.String(),
+				Admin:       admin,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
