@@ -42,8 +42,9 @@ message CreditClass {
 }
 
 enum ProjectStatus {
-  PROJECT_NEW = 0;
-  
+  NEW = 0;
+  APPROVED = 1;
+  REJECTED = 2;
 }
 
 message Project {
@@ -51,6 +52,7 @@ message Project {
   uint64 applicant_id = 2;
   string credit_class_abbreviation = 3;
   string name = 4;
+  ProjectStatus status = 5;
 }
 
 message CreditCollection {

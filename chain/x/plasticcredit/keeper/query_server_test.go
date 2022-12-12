@@ -283,6 +283,7 @@ func (s *TestSuite) TestProjectQuery() {
 	s.Require().Equal(createMsg.ApplicantId, resp.Project.ApplicantId)
 	s.Require().Equal(createMsg.CreditClassAbbreviation, resp.Project.CreditClassAbbreviation)
 	s.Require().Equal(createMsg.Name, resp.Project.Name)
+	s.Require().Equal(plasticcredit.ProjectStatus_NEW, resp.Project.Status)
 }
 
 // TODO credit balance, credit collection queries

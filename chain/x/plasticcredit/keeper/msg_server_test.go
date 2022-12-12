@@ -143,8 +143,8 @@ func (s *TestSuite) TestCreateIssuer() {
 					Admin:       tc.msg.Admin,
 				}, issuer)
 
-				s.Require().Len(events, 4)
-				parsedEvent, err := sdk.ParseTypedEvent(events[3])
+				s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[0])
 				s.Require().NoError(err)
 				eventCreateIssuer, ok := parsedEvent.(*plasticcredit.EventCreateIssuer)
 				s.Require().True(ok)
@@ -161,55 +161,54 @@ func (s *TestSuite) TestCreateIssuer() {
 				_, found := k.GetIssuer(s.ctx, 2)
 				s.Require().False(found)
 
-				s.Require().Len(events, 3)
+				s.Require().Len(events, 0)
 			}
 		})
 	}
 }
 
 func (s *TestSuite) TestUpdateIssuer() {
-	issuerAdmin := sample.AccAddress()
-
 	testCases := map[string]struct {
 		msg *plasticcredit.MsgUpdateIssuer
 		err error
 	}{
 		"happy path": {
 			msg: &plasticcredit.MsgUpdateIssuer{
-				Updater:     issuerAdmin,
-				IssuerId:    1,
+				Updater:     s.sampleIssuerAdmin,
+				IssuerId:    s.sampleIssuerId,
 				Name:        "EmpowerUpdated",
 				Description: "Empower is cool",
-				Admin:       sample.AccAddress(),
+				Admin:       s.sampleIssuerAdmin,
 			},
 			err: nil,
 		},
 		"unauthorized caller": {
 			msg: &plasticcredit.MsgUpdateIssuer{
 				Updater:     sample.AccAddress(), // not allowed!
-				IssuerId:    1,
+				IssuerId:    s.sampleIssuerId,
 				Name:        "Empower",
 				Description: "Empower is cool",
-				Admin:       sample.AccAddress(),
+				Admin:       s.sampleIssuerAdmin,
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
 		"invalid address": {
 			msg: &plasticcredit.MsgUpdateIssuer{
 				Updater:     "Invalid", // invalid
+				IssuerId:    s.sampleIssuerId,
 				Name:        "Empower",
 				Description: "Empower is cool",
-				Admin:       sample.AccAddress(),
+				Admin:       s.sampleIssuerAdmin,
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
 		"issuer not found": {
 			msg: &plasticcredit.MsgUpdateIssuer{
-				Updater:     issuerAdmin,
-				IssuerId:    2,
+				Updater:     s.sampleIssuerAdmin,
+				IssuerId:    9001,
 				Name:        "Empower",
 				Description: "Empower is cool",
-				Admin:       sample.AccAddress(),
+				Admin:       s.sampleIssuerAdmin,
 			},
 			err: plasticcredit.ErrNotFoundIssuer,
 		},
@@ -218,27 +217,13 @@ func (s *TestSuite) TestUpdateIssuer() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			s.SetupTest()
+			s.PopulateWithSamples()
 
 			k := s.empowerApp.PlasticcreditKeeper
 			goCtx := sdk.WrapSDKContext(s.ctx)
 			ms := keeper.NewMsgServerImpl(k)
-			_, err := ms.UpdateParams(goCtx, &plasticcredit.MsgUpdateParams{
-				Authority: k.Authority(),
-				Params: plasticcredit.Params{
-					IssuerCreator: issuerAdmin,
-				},
-			})
-			s.Require().NoError(err)
 
-			_, err = ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
-				Creator:     issuerAdmin,
-				Name:        "Empower",
-				Description: "",
-				Admin:       issuerAdmin,
-			})
-			s.Require().NoError(err)
-
-			_, err = ms.UpdateIssuer(goCtx, tc.msg)
+			_, err := ms.UpdateIssuer(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
 
 			events := s.ctx.EventManager().ABCIEvents()
@@ -252,8 +237,8 @@ func (s *TestSuite) TestUpdateIssuer() {
 					Description: tc.msg.Description,
 					Admin:       tc.msg.Admin,
 				}, issuer)
-				s.Require().Len(events, 2)
-				parsedEvent, err := sdk.ParseTypedEvent(events[1])
+				s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[0])
 				s.Require().NoError(err)
 				eventUpdateIssuer, ok := parsedEvent.(*plasticcredit.EventUpdateIssuer)
 				s.Require().True(ok)
@@ -397,8 +382,9 @@ func (s *TestSuite) TestUpdateApplicant() {
 			_, err := ms.UpdateApplicant(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
 
+			events := s.ctx.EventManager().ABCIEvents()
+
 			if err == nil {
-				events := s.ctx.EventManager().ABCIEvents()
 				applicant, found := k.GetApplicant(s.ctx, tc.msg.ApplicantId)
 				s.Require().True(found)
 				s.Require().Equal(plasticcredit.Applicant{
@@ -408,8 +394,8 @@ func (s *TestSuite) TestUpdateApplicant() {
 					Admin:       tc.msg.Admin,
 				}, applicant)
 
-				s.Require().Len(events, 4)
-				parsedEvent, err := sdk.ParseTypedEvent(events[3])
+				s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[0])
 				s.Require().NoError(err)
 				eventUpdateApplicant, ok := parsedEvent.(*plasticcredit.EventUpdateApplicant)
 				s.Require().True(ok)
@@ -420,6 +406,8 @@ func (s *TestSuite) TestUpdateApplicant() {
 					Admin:       tc.msg.Admin,
 					Updater:     tc.msg.Updater,
 				}, eventUpdateApplicant)
+			} else {
+				s.Require().Len(events, 0)
 			}
 		})
 	}
@@ -596,16 +584,106 @@ func (s *TestSuite) TestCreateProject() {
 
 			if err == nil {
 				idCounters := k.GetIDCounters(s.ctx)
-				s.Require().Equal(uint64(2), idCounters.NextIssuerId)
+				s.Require().Equal(uint64(4), idCounters.NextProjectId)
 
 				project, found := k.GetProject(s.ctx, resp.ProjectId)
 				s.Require().True(found)
 				s.Require().Equal(plasticcredit.Project{
-					Id:                      2,
+					Id:                      3,
 					ApplicantId:             tc.msg.ApplicantId,
 					CreditClassAbbreviation: tc.msg.CreditClassAbbreviation,
 					Name:                    tc.msg.Name,
+					Status:                  plasticcredit.ProjectStatus_NEW,
 				}, project)
+			}
+		})
+	}
+}
+
+func (s *TestSuite) TestApproveProject() {
+	extraIssuerAdmin := sample.AccAddress()
+
+	testCases := map[string]struct {
+		msg *plasticcredit.MsgApproveProject
+		err error
+	}{
+		"happy path": {
+			msg: &plasticcredit.MsgApproveProject{
+				Approver:  s.sampleIssuerAdmin,
+				ProjectId: s.sampleUnapprovedProjectId,
+			},
+			err: nil,
+		},
+		"unauthorized issuer admin": {
+			msg: &plasticcredit.MsgApproveProject{
+				Approver:  sample.AccAddress(),
+				ProjectId: s.sampleUnapprovedProjectId,
+			},
+			err: sdkerrors.ErrUnauthorized,
+		},
+		"issuer admin on a different issuer": {
+			msg: &plasticcredit.MsgApproveProject{
+				Approver:  extraIssuerAdmin,
+				ProjectId: s.sampleUnapprovedProjectId,
+			},
+			err: sdkerrors.ErrUnauthorized,
+		},
+		"applicant admin cannot approve project": {
+			msg: &plasticcredit.MsgApproveProject{
+				Approver:  s.sampleApplicantAdmin,
+				ProjectId: s.sampleUnapprovedProjectId,
+			},
+			err: sdkerrors.ErrUnauthorized,
+		},
+		"project not found": {
+			msg: &plasticcredit.MsgApproveProject{
+				Approver:  s.sampleIssuerAdmin,
+				ProjectId: 42,
+			},
+			err: plasticcredit.ErrNotFoundProject,
+		},
+	}
+
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			s.SetupTest()
+			s.PopulateWithSamples()
+			k := s.empowerApp.PlasticcreditKeeper
+			goCtx := sdk.WrapSDKContext(s.ctx)
+			ms := keeper.NewMsgServerImpl(k)
+
+			_, err := ms.CreateIssuer(sdk.WrapSDKContext(s.ctx), &plasticcredit.MsgCreateIssuer{
+				Creator:     s.issuerCreator,
+				Name:        "Extra Issuer",
+				Description: "",
+				Admin:       extraIssuerAdmin,
+			})
+			s.Require().NoError(err)
+
+			_, err = ms.ApproveProject(goCtx, tc.msg)
+			s.Require().ErrorIs(err, tc.err)
+
+			events := s.ctx.EventManager().ABCIEvents()
+			project, found := k.GetProject(s.ctx, s.sampleUnapprovedProjectId)
+			s.Require().True(found)
+
+			if err == nil {
+				s.Require().Equal(plasticcredit.ProjectStatus_APPROVED, project.Status)
+				s.Require().Len(events, 2)
+				parsedEvent, err := sdk.ParseTypedEvent(events[1])
+				s.Require().NoError(err)
+				eventUpdateIssuer, ok := parsedEvent.(*plasticcredit.EventProjectApproved)
+				s.Require().True(ok)
+				s.Require().Equal(&plasticcredit.EventProjectApproved{
+					ProjectId:                          project.Id,
+					ApprovedForCreditClassAbbreviation: s.sampleCreditClassAbbreviation,
+					ApprovingIssuerId:                  s.sampleIssuerId,
+					ApprovedBy:                         tc.msg.Approver,
+				}, eventUpdateIssuer)
+
+			} else {
+				s.Require().Equal(plasticcredit.ProjectStatus_NEW, project.Status)
+				s.Require().Len(events, 1)
 			}
 		})
 	}
@@ -677,6 +755,17 @@ func (s *TestSuite) TestIssueCredits() {
 			expectedAmount: 0,
 			err:            utils.ErrInvalidValue,
 		},
+		"issue credits to unapproved project": {
+			msg: &plasticcredit.MsgIssueCredits{
+				Creator:      s.sampleIssuerAdmin,
+				ProjectId:    s.sampleUnapprovedProjectId,
+				SerialNumber: "456",
+				CreditAmount: 1000,
+			},
+			expectedAmount: 0,
+			err:            plasticcredit.ErrProjectNotApproved,
+		},
+		// TODO: Test rejected project also
 	}
 
 	for name, tc := range testCases {
@@ -706,8 +795,8 @@ func (s *TestSuite) TestIssueCredits() {
 				s.Require().Equal(uint64(0), resp.Collection.TotalAmount.Retired)
 				s.Require().Equal(uint64(0), creditCollection.TotalAmount.Retired)
 				s.Require().Equal(uint64(0), ownerBalance.Balance.Retired)
-				s.Require().Len(events, 4)
-				parsedEvent, err := sdk.ParseTypedEvent(events[3])
+				s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[0])
 				s.Require().NoError(err)
 				eventIssuedCredits, ok := parsedEvent.(*plasticcredit.EventIssuedCredits)
 				s.Require().True(ok)
@@ -720,7 +809,7 @@ func (s *TestSuite) TestIssueCredits() {
 					IssuerAddress:           tc.msg.Creator,
 				}, eventIssuedCredits)
 			} else {
-				s.Require().Len(events, 3)
+				s.Require().Len(events, 0)
 			}
 		})
 	}
@@ -878,8 +967,8 @@ func (s *TestSuite) TestTransferCredits() {
 					s.Require().True(found)
 					s.Require().Equal(collectionBefore.TotalAmount.Active-tc.msg.Amount, collectionAfter.TotalAmount.Active)
 					s.Require().Equal(collectionBefore.TotalAmount.Retired+tc.msg.Amount, collectionAfter.TotalAmount.Retired)
-					s.Require().Len(events, 5)
-					parsedEvent, err := sdk.ParseTypedEvent(events[4])
+					s.Require().Len(events, 2)
+					parsedEvent, err := sdk.ParseTypedEvent(events[1])
 					s.Require().NoError(err)
 					eventRetiredCredits, ok := parsedEvent.(*plasticcredit.EventRetiredCredits)
 					s.Require().True(ok)
@@ -891,9 +980,9 @@ func (s *TestSuite) TestTransferCredits() {
 						CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 					}, eventRetiredCredits)
 				} else {
-					s.Require().Len(events, 4)
+					s.Require().Len(events, 1)
 				}
-				parsedEvent, err := sdk.ParseTypedEvent(events[3])
+				parsedEvent, err := sdk.ParseTypedEvent(events[0])
 				s.Require().NoError(err)
 				EventTransferCredits, ok := parsedEvent.(*plasticcredit.EventTransferCredits)
 				s.Require().True(ok)
@@ -906,7 +995,7 @@ func (s *TestSuite) TestTransferCredits() {
 					CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 				}, EventTransferCredits)
 			} else {
-				s.Require().Len(events, 3)
+				s.Require().Len(events, 0)
 			}
 		})
 	}
@@ -1003,8 +1092,8 @@ func (s *TestSuite) TestRetireCredits() {
 				s.Require().Equal(collectionBefore.TotalAmount.Retired+tc.msg.Amount, collection.TotalAmount.Retired)
 				s.Require().Equal(balanceBefore.Balance.Active-tc.msg.Amount, balance.Balance.Active)
 				s.Require().Equal(balanceBefore.Balance.Retired+tc.msg.Amount, balance.Balance.Retired)
-				s.Require().Len(events, 4)
-				parsedEvent, err := sdk.ParseTypedEvent(events[3])
+				s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[0])
 				s.Require().NoError(err)
 				eventRetiredCredits, ok := parsedEvent.(*plasticcredit.EventRetiredCredits)
 				s.Require().True(ok)
@@ -1016,7 +1105,7 @@ func (s *TestSuite) TestRetireCredits() {
 					CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 				}, eventRetiredCredits)
 			} else {
-				s.Require().Len(events, 3)
+				s.Require().Len(events, 0)
 			}
 		})
 	}

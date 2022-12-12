@@ -57,7 +57,6 @@ test-with-coverage:
     RUN make test-with-coverage
     SAVE ARTIFACT coverage.out AS LOCAL coverage.out
 
-
 smoketest:
     FROM +build
     RUN make smoketest
