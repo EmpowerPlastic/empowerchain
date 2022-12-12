@@ -94,7 +94,7 @@ func MsgUpdateIssuerCmd() *cobra.Command {
 			}
 
 			admin := clientCtx.GetFromAddress()
-			issuerId, err := cast.ToUint64E(args[0])
+			issuerID, err := cast.ToUint64E(args[0])
 			if err != nil {
 				return err
 			}
@@ -103,7 +103,7 @@ func MsgUpdateIssuerCmd() *cobra.Command {
 
 			msg := plasticcredit.MsgUpdateIssuer{
 				Updater:     fromAddr,
-				IssuerId:    issuerId,
+				IssuerId:    issuerID,
 				Name:        name,
 				Description: desc,
 				Admin:       admin.String(),
