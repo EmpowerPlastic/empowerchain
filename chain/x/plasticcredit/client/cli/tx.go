@@ -26,10 +26,11 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(MsgCreateApplicantCmd())
 	cmd.AddCommand(MsgCreateCreditClassCmd())
+	cmd.AddCommand(MsgCreateProjectCmd())
+	cmd.AddCommand(MsgApproveProjectCmd())
 	cmd.AddCommand(MsgIssueCreditsCmd())
 	cmd.AddCommand(MsgTransferCreditsCmd())
 	cmd.AddCommand(MsgRetireCreditsCmd())
-	cmd.AddCommand(MsgCreateProjectCmd())
 	cmd.AddCommand(MsgUpdateIssuerCmd())
 	cmd.AddCommand(MsgUpdateApplicantCmd())
 
@@ -201,6 +202,72 @@ func MsgCreateCreditClassCmd() *cobra.Command {
 	return cmd
 }
 
+func MsgCreateProjectCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "create-project [applicant-id] [credit-class-abbreviation] [name]",
+		Short: "Create project",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			creator := clientCtx.GetFromAddress()
+			applicantID, err := cast.ToUint64E(args[0])
+			if err != nil {
+				return err
+			}
+			creditClassAbbreviation := args[1]
+			name := args[2]
+
+			msg := plasticcredit.MsgCreateProject{
+				Creator:                 creator.String(),
+				ApplicantId:             applicantID,
+				CreditClassAbbreviation: creditClassAbbreviation,
+				Name:                    name,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func MsgApproveProjectCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "approve-project [project-id]",
+		Short: "Approve a project for the credit-class they are associated with.",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			approver := clientCtx.GetFromAddress()
+			projectID, err := cast.ToUint64E(args[0])
+			if err != nil {
+				return err
+			}
+
+			msg := plasticcredit.MsgApproveProject{
+				Approver:  approver.String(),
+				ProjectId: projectID,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
 func MsgIssueCreditsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "issue-credits [project-id] [serial-number] [amount]",
@@ -305,41 +372,6 @@ func MsgRetireCreditsCmd() *cobra.Command {
 				Owner:  owner.String(),
 				Denom:  denom,
 				Amount: amount,
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
-		},
-	}
-
-	flags.AddTxFlagsToCmd(cmd)
-
-	return cmd
-}
-
-func MsgCreateProjectCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "create-project [applicant-id] [credit-class-abbreviation] [name]",
-		Short: "Create project",
-		Args:  cobra.ExactArgs(3),
-		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			creator := clientCtx.GetFromAddress()
-			applicantID, err := cast.ToUint64E(args[0])
-			if err != nil {
-				return err
-			}
-			creditClassAbbreviation := args[1]
-			name := args[2]
-
-			msg := plasticcredit.MsgCreateProject{
-				Creator:                 creator.String(),
-				ApplicantId:             applicantID,
-				CreditClassAbbreviation: creditClassAbbreviation,
-				Name:                    name,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)

@@ -135,6 +135,10 @@ func (proj Project) Validate() error {
 		return errors.Wrap(utils.ErrInvalidValue, "name is empty")
 	}
 
+	if _, ok := ProjectStatus_name[int32(proj.Status)]; !ok {
+		return errors.Wrapf(utils.ErrInvalidValue, "status is invalid %d", proj.Status)
+	}
+
 	return nil
 }
 

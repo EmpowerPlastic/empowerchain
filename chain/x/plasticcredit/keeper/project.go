@@ -43,6 +43,7 @@ func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicant
 		ApplicantId:             applicantID,
 		CreditClassAbbreviation: creditClassAbbreviation,
 		Name:                    name,
+		Status:                  plasticcredit.ProjectStatus_NEW,
 	}
 
 	if err := k.setProject(ctx, project); err != nil {
@@ -55,6 +56,39 @@ func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicant
 	}
 
 	return nextID, nil
+}
+
+func (k Keeper) ApproveProject(ctx sdk.Context, approver sdk.AccAddress, projectID uint64) error {
+	project, found := k.GetProject(ctx, projectID)
+	if !found {
+		return errors.Wrapf(plasticcredit.ErrNotFoundProject, "project with id %d was not found", projectID)
+	}
+
+	// At some point, I would like to have some better indexing that would allow us to not have to fetch so many things just to get to the issuer
+	creditClass, found := k.GetCreditClass(ctx, project.CreditClassAbbreviation)
+	if !found {
+		panic("The project was found, the credit class better exist!")
+	}
+	issuer, found := k.GetIssuer(ctx, creditClass.IssuerId)
+	if !found {
+		panic("The credit class was found, the issuer better exist!")
+	}
+
+	if !issuer.AddressHasAuthorization(approver) {
+		return errors.Wrapf(sdkerrors.ErrUnauthorized, "approver %s does not have authorization on issuer with id %d", approver.String(), issuer.Id)
+	}
+
+	project.Status = plasticcredit.ProjectStatus_APPROVED
+	if err := k.setProject(ctx, project); err != nil {
+		return err
+	}
+
+	return ctx.EventManager().EmitTypedEvent(&plasticcredit.EventProjectApproved{
+		ProjectId:                          project.Id,
+		ApprovedForCreditClassAbbreviation: creditClass.Abbreviation,
+		ApprovingIssuerId:                  issuer.Id,
+		ApprovedBy:                         approver.String(),
+	})
 }
 
 func (k Keeper) setProject(ctx sdk.Context, project plasticcredit.Project) error {

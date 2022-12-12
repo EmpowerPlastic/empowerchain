@@ -170,13 +170,16 @@ The `issuer_id` field is the direct link to the Issuer that has created and oper
 
 A Project is the context within credits gets issued. A project is created by an applicant and needs to be approved by an issuer.
 
-A project consists of the following fields: `id`, `applicant_id`, `credit_class_abbreviation` and `name`, with `id` being the unique identifier for an application.
+A project consists of the following fields: `id`, `applicant_id`, `credit_class_abbreviation`, `name` and `status`, with `id` being the unique identifier for an application.
 
 The `applicant_id` field is the direct link to the Applicant that owns the project and will get any issued credits.
 
 `credit_class_abbreviation` is a direct link to the CreditClass which is the type of credits that the project can get issued.
 
 `name` is the name of the project.
+
+`status` is the status of the project in relation to the credit class. Only someone with authorization on the credit class can change this.
+The project can in one of the following states: new, approved or rejected
 
 - Project: `0x05 | projectID | -> ProtocolBuffer(Project)`
 

@@ -108,9 +108,9 @@ If you are not sure what a good way of doing something in particular, there are 
     - Implement the `sdk.Msg` interface in `msgs.go` (`_ sdk.Msg = &MsgName{}`)
     - Don't forget to create tests for `ValidateBasic`!
 5. Implement `MsgServer`/`Querier` and `Keeper` methods
+    - Don't forget events
     - Don't forget integration tests
     - If you create public Keeper methods, they need to be tested as well
-    - Don't forget events
 6. Update genesis if necessary (in genesis and keeper/genesis)
 7. Update the client/cli if necessary
 8. Create e2e tests in  `scripts/test/`
