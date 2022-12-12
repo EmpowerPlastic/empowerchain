@@ -81,20 +81,20 @@ func MsgUpdateApplicantCmd() *cobra.Command {
 		Use:   "update-applicant [admin_key_or_address] [applicant ID] [name] [description]",
 		Short: "Update existing applicant.",
 		Long: `Update existing applicant.
-Note, the '--from' flag is ignored as it is implied from [admin_key_or_address].
+'--from' flag is expected to provide the updater, as it could be different from admin.
 `,
 		Args: cobra.MinimumNArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			if err := cmd.Flags().Set(flags.FlagFrom, args[0]); err != nil {
+			updater, err := cmd.Flags().GetString(flags.FlagFrom)
+			if err != nil {
 				return err
 			}
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			admin := clientCtx.GetFromAddress()
+			admin := args[0]
 			applicantID, err := cast.ToUint64E(args[1])
 			if err != nil {
 				return err
@@ -109,7 +109,8 @@ Note, the '--from' flag is ignored as it is implied from [admin_key_or_address].
 				ApplicantId: applicantID,
 				Name:        name,
 				Description: desc,
-				Admin:       admin.String(),
+				Admin:       admin,
+				Updater:     updater,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)

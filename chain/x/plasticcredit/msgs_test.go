@@ -238,6 +238,7 @@ func TestMsgUpdateApplicant_ValidateBasic(t *testing.T) {
 				Name:        "Empower",
 				Description: "Empower is the first and coolest plastic credit issuer!",
 				Admin:       sample.AccAddress(),
+				Updater:     sample.AccAddress(),
 			},
 			expectedError: nil,
 		},
@@ -247,6 +248,7 @@ func TestMsgUpdateApplicant_ValidateBasic(t *testing.T) {
 				Name:        "Empower",
 				Description: "Empower is the first and coolest plastic credit issuer!",
 				Admin:       "invalid",
+				Updater:     sample.AccAddress(),
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
 		},
@@ -256,6 +258,7 @@ func TestMsgUpdateApplicant_ValidateBasic(t *testing.T) {
 				Name:        "",
 				Description: "Empower is the first and coolest plastic credit issuer!",
 				Admin:       sample.AccAddress(),
+				Updater:     sample.AccAddress(),
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},
@@ -265,6 +268,7 @@ func TestMsgUpdateApplicant_ValidateBasic(t *testing.T) {
 				Name:        "Empower",
 				Description: "",
 				Admin:       sample.AccAddress(),
+				Updater:     sample.AccAddress(),
 			},
 			expectedError: nil,
 		},
@@ -276,6 +280,16 @@ func TestMsgUpdateApplicant_ValidateBasic(t *testing.T) {
 				Admin:       sample.AccAddress(),
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
+		},
+		"invalid updater": {
+			msgUnderTest: &MsgUpdateApplicant{
+				Updater:     "invalid",
+				ApplicantId: 1,
+				Name:        "Empower",
+				Description: "Empower is the first and coolest plastic credit issuer!",
+				Admin:       sample.AccAddress(),
+			},
+			expectedError: sdkerrors.ErrInvalidAddress,
 		},
 	}
 

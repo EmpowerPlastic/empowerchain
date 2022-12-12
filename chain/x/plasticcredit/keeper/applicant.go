@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k Keeper) GetApplicant(ctx sdk.Context, id uint64) (applicant plasticcredit.Applicant, found bool) {
@@ -51,10 +52,14 @@ func (k Keeper) createApplicant(ctx sdk.Context, name string, description string
 	})
 }
 
-func (k Keeper) updateApplicant(ctx sdk.Context, applicantID uint64, name string, description string, admin string) error {
+func (k Keeper) updateApplicant(ctx sdk.Context, applicantID uint64, name string, description string, admin string, updater sdk.AccAddress) error {
 	applicant, found := k.GetApplicant(ctx, applicantID)
 	if !found {
 		return errors.Wrapf(plasticcredit.ErrNotFoundApplicant, "applicant with id %d was not found for update", applicantID)
+	}
+
+	if applicant.Admin != updater.String() {
+		return errors.Wrapf(sdkerrors.ErrUnauthorized, "updater %s is not the same as applicant creator admin %s", updater, applicant.Admin)
 	}
 
 	applicant.Name = name
@@ -70,6 +75,7 @@ func (k Keeper) updateApplicant(ctx sdk.Context, applicantID uint64, name string
 		Name:        applicant.Name,
 		Description: applicant.Description,
 		Admin:       applicant.Admin,
+		Updater:     updater.String(),
 	})
 }
 

@@ -128,16 +128,20 @@ func (m *MsgUpdateApplicant) ValidateBasic() error {
 	if m.Name == "" {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "applicant name cannot be empty")
 	}
+	_, err = sdk.AccAddressFromBech32(m.Updater)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid updater address (%s)", err)
+	}
 
 	return nil
 }
 
 func (m *MsgUpdateApplicant) GetSigners() []sdk.AccAddress {
-	admin, err := sdk.AccAddressFromBech32(m.Admin)
+	updater, err := sdk.AccAddressFromBech32(m.Updater)
 	if err != nil {
 		panic(err)
 	}
-	return []sdk.AccAddress{admin}
+	return []sdk.AccAddress{updater}
 }
 
 func (m *MsgCreateCreditClass) ValidateBasic() error {

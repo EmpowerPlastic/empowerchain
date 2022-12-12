@@ -328,6 +328,7 @@ func (s *TestSuite) TestCreateApplicant() {
 }
 
 func (s *TestSuite) TestUpdateApplicant() {
+	issuerAdmin := s.sampleApplicantAdmin
 	testCases := map[string]struct {
 		msg *plasticcredit.MsgUpdateApplicant
 		err error
@@ -337,7 +338,8 @@ func (s *TestSuite) TestUpdateApplicant() {
 				ApplicantId: s.sampleApplicantId,
 				Name:        "Empower",
 				Description: "Empower is cool",
-				Admin:       sample.AccAddress(),
+				Admin:       issuerAdmin,
+				Updater:     issuerAdmin,
 			},
 			err: nil,
 		},
@@ -347,8 +349,28 @@ func (s *TestSuite) TestUpdateApplicant() {
 				Name:        "Empower",
 				Description: "Empower is cool",
 				Admin:       sample.AccAddress(),
+				Updater:     issuerAdmin,
 			},
 			err: plasticcredit.ErrNotFoundApplicant,
+		},
+		"unauthorized caller": {
+			msg: &plasticcredit.MsgUpdateApplicant{
+				Updater:     sample.AccAddress(), // not allowed!
+				ApplicantId: 1,
+				Name:        "Empower",
+				Description: "Empower is cool",
+				Admin:       sample.AccAddress(),
+			},
+			err: sdkerrors.ErrUnauthorized,
+		},
+		"invalid address": {
+			msg: &plasticcredit.MsgUpdateApplicant{
+				Updater:     "Invalid", // invalid
+				Name:        "Empower",
+				Description: "Empower is cool",
+				Admin:       sample.AccAddress(),
+			},
+			err: sdkerrors.ErrInvalidAddress,
 		},
 	}
 
@@ -385,6 +407,7 @@ func (s *TestSuite) TestUpdateApplicant() {
 					Name:        tc.msg.Name,
 					Description: tc.msg.Description,
 					Admin:       tc.msg.Admin,
+					Updater:     tc.msg.Updater,
 				}, eventUpdateApplicant)
 			}
 		})

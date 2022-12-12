@@ -84,7 +84,12 @@ func (m msgServer) CreateApplicant(goCtx context.Context, req *plasticcredit.Msg
 func (m msgServer) UpdateApplicant(goCtx context.Context, req *plasticcredit.MsgUpdateApplicant) (*plasticcredit.MsgUpdateApplicantResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := m.Keeper.updateApplicant(ctx, req.ApplicantId, req.Name, req.Description, req.Admin); err != nil {
+	updater, err := sdk.AccAddressFromBech32(req.Updater)
+	if err != nil {
+		return nil, errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid updater address: %s", req.Updater)
+	}
+
+	if err := m.Keeper.updateApplicant(ctx, req.ApplicantId, req.Name, req.Description, req.Admin, updater); err != nil {
 		return nil, err
 	}
 
