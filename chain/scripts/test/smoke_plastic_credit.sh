@@ -68,6 +68,123 @@ empowerd q plasticcredit project 1
 empowerd q plasticcredit project 2
 empowerd q plasticcredit project 3
 
+echo "--- Test: Plastic Credit Issuance, Transfer and Retirement ---"
+empowerd tx pc issue-credits 1 123 1000 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd tx pc issue-credits 2 00001 10000 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd tx pc issue-credits 3 987654321 9999999999 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+
+empowerd tx pc transfer empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 PCRD/123 50 false --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd tx pc transfer empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 RCRD/00001 10 true --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd tx pc transfer empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 PCRD/987654321 10 true --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+
+empowerd tx pc retire PCRD/123 5 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd tx pc retire RCRD/00001 2 --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd tx pc retire PCRD/987654321 9999999989 --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+
+CREDITS_1_ACTIVE=$(empowerd q pc credit-collection PCRD/123 -o json | jq .credit_collection.total_amount.active)
+CREDITS_1_RETIRED=$(empowerd q pc credit-collection PCRD/123 -o json | jq .credit_collection.total_amount.retired)
+CREDITS_2_ACTIVE=$(empowerd q pc credit-collection RCRD/00001 -o json | jq .credit_collection.total_amount.active)
+CREDITS_2_RETIRED=$(empowerd q pc credit-collection RCRD/00001 -o json | jq .credit_collection.total_amount.retired)
+CREDITS_3_ACTIVE=$(empowerd q pc credit-collection PCRD/987654321 -o json | jq .credit_collection.total_amount.active)
+CREDITS_3_RETIRED=$(empowerd q pc credit-collection PCRD/987654321 -o json | jq .credit_collection.total_amount.retired)
+if [ "$CREDITS_1_ACTIVE" != "\"995\"" ]; then
+  echo "Error: Expected 995 active PCRD/123, have $CREDITS_1_ACTIVE"
+  exit 1
+fi
+if [ "$CREDITS_1_RETIRED" != "\"5\"" ]; then
+  echo "Error: Expected 5 retired PCRD/123, have $CREDITS_1_RETIRED"
+  exit 1
+fi
+if [ "$CREDITS_2_ACTIVE" != "\"9988\"" ]; then
+  echo "Error: Expected 9988 active RCRD/00001, have $CREDITS_2_ACTIVE"
+  exit 1
+fi
+if [ "$CREDITS_2_RETIRED" != "\"12\"" ]; then
+  echo "Error: Expected 12 retired RCRD/00001, have $CREDITS_2_RETIRED"
+  exit 1
+fi
+if [ "$CREDITS_3_ACTIVE" != "\"0\"" ]; then
+  echo "Error: Expected 0 active PCRD/987654321, have $CREDITS_3_ACTIVE"
+  exit 1
+fi
+if [ "$CREDITS_3_RETIRED" != "\"9999999999\"" ]; then
+  echo "Error: Expected 9999999999 retired PCRD/987654321, have $CREDITS_3_RETIRED"
+  exit 1
+fi
+
+ALICE_BALANCE_1_ACTIVE=$(empowerd q pc credit-balance empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 PCRD/123 -o json | jq .balance.balance.active)
+ALICE_BALANCE_1_RETIRED=$(empowerd q pc credit-balance empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 PCRD/123 -o json | jq .balance.balance.retired)
+ALICE_BALANCE_2_ACTIVE=$(empowerd q pc credit-balance empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 RCRD/00001 -o json | jq .balance.balance.active)
+ALICE_BALANCE_2_RETIRED=$(empowerd q pc credit-balance empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 RCRD/00001 -o json | jq .balance.balance.retired)
+ALICE_BALANCE_3_ACTIVE=$(empowerd q pc credit-balance empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 PCRD/987654321 -o json | jq .balance.balance.active)
+ALICE_BALANCE_3_RETIRED=$(empowerd q pc credit-balance empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 PCRD/987654321 -o json | jq .balance.balance.retired)
+
+BOB_BALANCE_1_ACTIVE=$(empowerd q pc credit-balance empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m PCRD/123 -o json | jq .balance.balance.active)
+BOB_BALANCE_1_RETIRED=$(empowerd q pc credit-balance empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m PCRD/123 -o json | jq .balance.balance.retired)
+BOB_BALANCE_2_ACTIVE=$(empowerd q pc credit-balance empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m RCRD/00001 -o json | jq .balance.balance.active)
+BOB_BALANCE_2_RETIRED=$(empowerd q pc credit-balance empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m RCRD/00001 -o json | jq .balance.balance.retired)
+BOB_BALANCE_3_ACTIVE=$(empowerd q pc credit-balance empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m PCRD/987654321 -o json | jq .balance.balance.active)
+BOB_BALANCE_3_RETIRED=$(empowerd q pc credit-balance empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m PCRD/987654321 -o json | jq .balance.balance.retired)
+
+if [ "$ALICE_BALANCE_1_ACTIVE" != "\"45\"" ]; then
+  echo "Error: (Alice) Expected 45 active PCRD/123, have $ALICE_BALANCE_1_ACTIVE"
+  exit 1
+fi
+if [ "$ALICE_BALANCE_1_RETIRED" != "\"5\"" ]; then
+  echo "Error: (Alice) Expected 5 retired PCRD/123, have $ALICE_BALANCE_1_RETIRED"
+  exit 1
+fi
+if [ "$ALICE_BALANCE_2_ACTIVE" != "\"0\"" ]; then
+  echo "Error: (Alice) Expected 0 active RCRD/00001, have $ALICE_BALANCE_2_ACTIVE"
+  exit 1
+fi
+if [ "$ALICE_BALANCE_2_RETIRED" != "\"10\"" ]; then
+  echo "Error: (Alice) Expected 10 retired RCRD/00001, have $ALICE_BALANCE_2_RETIRED"
+  exit 1
+fi
+if [ "$ALICE_BALANCE_3_ACTIVE" != "\"0\"" ]; then
+  echo "Error: (Alice) Expected 0 active PCRD/987654321, have $ALICE_BALANCE_3_ACTIVE"
+  exit 1
+fi
+if [ "$ALICE_BALANCE_3_RETIRED" != "\"10\"" ]; then
+  echo "Error: (Alice) Expected 10 retired PCRD/987654321, have $ALICE_BALANCE_3_RETIRED"
+  exit 1
+fi
+if [ "$BOB_BALANCE_1_ACTIVE" != "\"950\"" ]; then
+  echo "Error: (Bob) Expected 950 active PCRD/123, have $BOB_BALANCE_1_ACTIVE"
+  exit 1
+fi
+if [ "$BOB_BALANCE_1_RETIRED" != "\"0\"" ]; then
+  echo "Error: (Bob) Expected 0 retired PCRD/123, have $BOB_BALANCE_1_RETIRED"
+  exit 1
+fi
+if [ "$BOB_BALANCE_2_ACTIVE" != "\"9988\"" ]; then
+  echo "Error: (Bob) Expected 9988 active RCRD/00001, have $BOB_BALANCE_2_ACTIVE"
+  exit 1
+fi
+if [ "$BOB_BALANCE_2_RETIRED" != "\"2\"" ]; then
+  echo "Error: (Bob) Expected 2 retired RCRD/00001, have $BOB_BALANCE_2_RETIRED"
+  exit 1
+fi
+if [ "$BOB_BALANCE_3_ACTIVE" != "\"0\"" ]; then
+  echo "Error: (Bob) Expected 0 active PCRD/987654321, have $BOB_BALANCE_3_ACTIVE"
+  exit 1
+fi
+if [ "$BOB_BALANCE_3_RETIRED" != "\"9999999989\"" ]; then
+  echo "Error: (Bob) Expected 9999999989 retired PCRD/987654321, have $BOB_BALANCE_3_RETIRED"
+  exit 1
+fi
+
+
 make kill
 sleep 2
 echo "Serve killed"

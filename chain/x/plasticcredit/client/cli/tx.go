@@ -247,12 +247,15 @@ func MsgTransferCreditsCmd() *cobra.Command {
 		Long:  `Transfer credits from one address to another. Retire is optional and is set to false by default`,
 		Args:  cobra.MinimumNArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			if err := cmd.Flags().Set(flags.FlagFrom, args[0]); err != nil {
+				return err
+			}
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			from := args[0]
+			from := clientCtx.GetFromAddress()
 			to := args[1]
 			denom := args[2]
 			amount, err := cast.ToUint64E(args[3])
@@ -265,7 +268,7 @@ func MsgTransferCreditsCmd() *cobra.Command {
 			}
 
 			msg := plasticcredit.MsgTransferCredits{
-				From:   from,
+				From:   from.String(),
 				To:     to,
 				Denom:  denom,
 				Amount: amount,
@@ -293,7 +296,7 @@ func MsgRetireCreditsCmd() *cobra.Command {
 			}
 			owner := clientCtx.GetFromAddress()
 			denom := args[0]
-			amount, err := cast.ToUint64E(args[2])
+			amount, err := cast.ToUint64E(args[1])
 			if err != nil {
 				return err
 			}
