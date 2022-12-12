@@ -52,7 +52,7 @@ func (k Keeper) createApplicant(ctx sdk.Context, name string, description string
 	})
 }
 
-func (k Keeper) updateApplicant(ctx sdk.Context, applicantID uint64, name string, description string, admin string, updater sdk.AccAddress) error {
+func (k Keeper) updateApplicant(ctx sdk.Context, updater sdk.AccAddress, applicantID uint64, name string, description string, admin string) error {
 	applicant, found := k.GetApplicant(ctx, applicantID)
 	if !found {
 		return errors.Wrapf(plasticcredit.ErrNotFoundApplicant, "applicant with id %d was not found for update", applicantID)

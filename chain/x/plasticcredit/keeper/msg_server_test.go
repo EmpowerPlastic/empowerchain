@@ -365,10 +365,21 @@ func (s *TestSuite) TestUpdateApplicant() {
 		},
 		"invalid address": {
 			msg: &plasticcredit.MsgUpdateApplicant{
+				ApplicantId: 1,
 				Updater:     "Invalid", // invalid
 				Name:        "Empower",
 				Description: "Empower is cool",
 				Admin:       sample.AccAddress(),
+			},
+			err: sdkerrors.ErrInvalidAddress,
+		},
+		"invalid admin address": {
+			msg: &plasticcredit.MsgUpdateApplicant{
+				ApplicantId: 1,
+				Updater:     issuerAdmin,
+				Name:        "Empower",
+				Description: "Empower is cool",
+				Admin:       "invalid", // invalid
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
