@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -37,8 +38,21 @@ func (s *TestSuite) TestHasAccess() {
 			err := s.k[0].GrantAccess(ctx, addr, "msgType1")
 			s.Require().NoError(err)
 
+			events := s.ctx.EventManager().ABCIEvents()
 			access := s.k[0].HasAccess(ctx, tcAddr, tc.msgType)
 			s.Require().Equal(tc.expected, access)
+			if tc.expected == true {
+				s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[0])
+				s.Require().NoError(err)
+				eventAccessGranted, ok := parsedEvent.(*accesscontrol.EventAccessGranted)
+				s.Require().True(ok)
+				s.Require().Equal(&accesscontrol.EventAccessGranted{
+					ModuleName: "mockmodule1",
+					Account:    tc.account,
+					MsgType:    tc.msgType,
+				}, eventAccessGranted)
+			}
 		})
 	}
 }
@@ -65,9 +79,21 @@ func (s *TestSuite) TestRevokeAccess() {
 			s.Require().NoError(err)
 			access := s.k[0].HasAccess(ctx, tcAddr, tc.msgType)
 			s.Require().Equal(true, access)
-			s.k[0].RevokeAccess(ctx, tcAddr, tc.msgType)
+			err = s.k[0].RevokeAccess(ctx, tcAddr, tc.msgType)
+			s.Require().NoError(err)
 			access = s.k[0].HasAccess(ctx, tcAddr, tc.msgType)
 			s.Require().Equal(false, access)
+			events := s.ctx.EventManager().ABCIEvents()
+			s.Require().Len(events, 2)
+			parsedEvent, err := sdk.ParseTypedEvent(events[1])
+			s.Require().NoError(err)
+			EventAccessRevoked, ok := parsedEvent.(*accesscontrol.EventAccessRevoked)
+			s.Require().True(ok)
+			s.Require().Equal(&accesscontrol.EventAccessRevoked{
+				ModuleName: "mockmodule1",
+				Account:    tc.account,
+				MsgType:    tc.msgType,
+			}, EventAccessRevoked)
 		})
 	}
 }
