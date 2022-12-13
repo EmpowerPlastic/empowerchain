@@ -521,6 +521,14 @@ func (s *TestSuite) TestUpdateCreditClass() {
 			},
 			err: plasticcredit.ErrNotFoundCreditClass,
 		},
+		"invalid name": {
+			msg: &plasticcredit.MsgUpdateCreditClass{
+				Updater:      s.sampleIssuerAdmin,
+				Abbreviation: s.sampleCreditClassAbbreviation,
+				Name:         "",
+			},
+			err: utils.ErrInvalidValue,
+		},
 	}
 
 	for name, tc := range testCases {
