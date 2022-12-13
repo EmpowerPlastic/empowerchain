@@ -73,6 +73,31 @@ func (k Keeper) CreateCreditClass(ctx sdk.Context, creator sdk.AccAddress, abbre
 	return nil
 }
 
+func (k Keeper) UpdateCreditClass(ctx sdk.Context, updater sdk.AccAddress, abbreviation string, issuerID uint64, name string) error {
+	issuer, found := k.GetIssuer(ctx, issuerID)
+	if !found {
+		return errors.Wrapf(plasticcredit.ErrNotFoundIssuer, "issuer for issue ID %d was not found", issuerID)
+	}
+
+	if !issuer.AddressHasAuthorization(updater) {
+		return errors.Wrapf(sdkerrors.ErrUnauthorized, "creator %s does not have authorization on issuer with id %d", updater.String(), issuerID)
+	}
+
+	creditClass, err := k.GetCreditClass(ctx, abbreviation)
+	if err {
+		return errors.Wrapf(plasticcredit.ErrNotFoundCreditClass, "the abbreviation %s does not exists", abbreviation)
+	}
+
+	creditClass.Name = name
+
+	if err := k.setCreditClass(ctx, creditClass); err != nil {
+		return err
+	}
+
+	// TODO: Events
+	return nil
+}
+
 func (k Keeper) setCreditClass(ctx sdk.Context, creditClass plasticcredit.CreditClass) error {
 	if err := creditClass.Validate(); err != nil {
 		return err

@@ -50,6 +50,10 @@ sleep 5
 empowerd tx plasticcredit create-credit-class RCRD 1 "Empower Recycling Credits" --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
 sleep 5
 
+empowerd tx plasticcredit update-credit-class PCRD 1 "Updated Empower Recycling Credits" --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+
+
 empowerd q plasticcredit credit-class PCRD
 empowerd q plasticcredit credit-class RCRD
 empowerd q plasticcredit credit-classes

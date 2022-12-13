@@ -26,6 +26,7 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(MsgCreateApplicantCmd())
 	cmd.AddCommand(MsgCreateCreditClassCmd())
+	cmd.AddCommand(MsgUpdateCreditClassCmd())
 	cmd.AddCommand(MsgCreateProjectCmd())
 	cmd.AddCommand(MsgApproveProjectCmd())
 	cmd.AddCommand(MsgIssueCreditsCmd())
@@ -188,6 +189,41 @@ func MsgCreateCreditClassCmd() *cobra.Command {
 
 			msg := plasticcredit.MsgCreateCreditClass{
 				Creator:      creator.String(),
+				Abbreviation: abbreviation,
+				IssuerId:     issuerID,
+				Name:         name,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func MsgUpdateCreditClassCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update-credit-class [abbreviation] [issuer-id] [name]",
+		Short: "Update an existing credit class name.",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			creator := clientCtx.GetFromAddress()
+			abbreviation := args[0]
+			issuerID, err := cast.ToUint64E(args[1])
+			if err != nil {
+				return err
+			}
+			name := args[2]
+
+			msg := plasticcredit.MsgUpdateCreditClass{
+				Updater:      creator.String(),
 				Abbreviation: abbreviation,
 				IssuerId:     issuerID,
 				Name:         name,

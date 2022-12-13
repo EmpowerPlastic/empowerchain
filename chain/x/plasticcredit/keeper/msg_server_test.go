@@ -480,6 +480,74 @@ func (s *TestSuite) TestCreateCreditClass() {
 	}
 }
 
+func (s *TestSuite) TestUpdateCreditClass() {
+	testCases := map[string]struct {
+		msg *plasticcredit.MsgUpdateCreditClass
+		err error
+	}{
+		"happy path": {
+			msg: &plasticcredit.MsgUpdateCreditClass{
+				Updater:      s.sampleIssuerAdmin,
+				Abbreviation: s.sampleCreditClassAbbreviation,
+				IssuerId:     s.sampleIssuerId,
+				Name:         "Empower Plastic Credits",
+			},
+			err: nil,
+		},
+		"unauthorized updater on the issuer": {
+			msg: &plasticcredit.MsgUpdateCreditClass{
+				Updater:      sample.AccAddress(),
+				Abbreviation: s.sampleCreditClassAbbreviation,
+				IssuerId:     s.sampleIssuerId,
+				Name:         "Empower Plastic Credits",
+			},
+			err: sdkerrors.ErrUnauthorized,
+		},
+		"invalid abbreviation": {
+			msg: &plasticcredit.MsgUpdateCreditClass{
+				Updater:      s.sampleIssuerAdmin,
+				Abbreviation: "",
+				IssuerId:     s.sampleIssuerId,
+				Name:         "Empower Plastic Credits",
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"non-existent issuer": {
+			msg: &plasticcredit.MsgUpdateCreditClass{
+				Updater:      s.sampleIssuerAdmin,
+				Abbreviation: s.sampleCreditClassAbbreviation,
+				IssuerId:     42,
+				Name:         "Empower Plastic Credits",
+			},
+			err: plasticcredit.ErrNotFoundIssuer,
+		},
+	}
+
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			s.SetupTest()
+			s.PopulateWithSamples()
+			k := s.empowerApp.PlasticcreditKeeper
+			//		goCtx := sdk.WrapSDKContext(s.ctx)
+			ms := keeper.NewMsgServerImpl(k)
+			creditClass, found := k.GetCreditClass(s.ctx, tc.msg.Abbreviation)
+
+			_, err := ms.UpdateCreditClass(s.ctx, tc.msg)
+			s.Require().ErrorIs(err, tc.err)
+
+			if err == nil {
+				creditClass, found = k.GetCreditClass(s.ctx, tc.msg.Abbreviation)
+				s.Require().True(found)
+				s.Require().Equal(plasticcredit.CreditClass{
+					Abbreviation: tc.msg.Abbreviation,
+					IssuerId:     tc.msg.IssuerId,
+					Name:         tc.msg.Name,
+				}, creditClass)
+			}
+		})
+	}
+}
+
 func (s *TestSuite) TestCreateDuplicateCreditClass() {
 	k := s.empowerApp.PlasticcreditKeeper
 	goCtx := sdk.WrapSDKContext(s.ctx)

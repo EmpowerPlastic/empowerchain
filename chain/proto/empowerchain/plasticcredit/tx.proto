@@ -30,6 +30,9 @@ service Msg {
   // CreateCreditClass creates a new Credit Class for an issuer.
   rpc CreateCreditClass(MsgCreateCreditClass) returns (MsgCreateCreditClassResponse);
 
+  // UpdateCreditClass update an existing Credit Class for an issuer.
+  rpc UpdateCreditClass(MsgUpdateCreditClass) returns (MsgUpdateCreditClassResponse);
+
   // CreateProject creates a new Project for an applicant that can be approved be an issuer for issuing under a credit class
   rpc CreateProject(MsgCreateProject) returns(MsgCreateProjectResponse);
 
@@ -126,6 +129,17 @@ message MsgCreateCreditClass {
 }
 
 message MsgCreateCreditClassResponse {}
+
+message MsgUpdateCreditClass {
+  option (cosmos.msg.v1.signer) = "admin";
+  // abbreviation is the short-hand name, as well as the ID of the credit class
+  string updater = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string abbreviation = 2;
+  uint64 issuer_id = 3;
+  string name = 4;
+}
+
+message MsgUpdateCreditClassResponse {}
 
 message MsgCreateProject {
   option (cosmos.msg.v1.signer) = "creator";
