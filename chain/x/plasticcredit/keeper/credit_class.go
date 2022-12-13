@@ -83,8 +83,8 @@ func (k Keeper) UpdateCreditClass(ctx sdk.Context, updater sdk.AccAddress, abbre
 		return errors.Wrapf(sdkerrors.ErrUnauthorized, "creator %s does not have authorization on issuer with id %d", updater.String(), issuerID)
 	}
 
-	creditClass, err := k.GetCreditClass(ctx, abbreviation)
-	if err {
+	creditClass, found := k.GetCreditClass(ctx, abbreviation)
+	if !found {
 		return errors.Wrapf(plasticcredit.ErrNotFoundCreditClass, "the abbreviation %s does not exists", abbreviation)
 	}
 

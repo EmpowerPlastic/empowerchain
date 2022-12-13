@@ -510,7 +510,7 @@ func (s *TestSuite) TestUpdateCreditClass() {
 				IssuerId:     s.sampleIssuerId,
 				Name:         "Empower Plastic Credits",
 			},
-			err: utils.ErrInvalidValue,
+			err: plasticcredit.ErrNotFoundCreditClass,
 		},
 		"non-existent issuer": {
 			msg: &plasticcredit.MsgUpdateCreditClass{
@@ -528,11 +528,10 @@ func (s *TestSuite) TestUpdateCreditClass() {
 			s.SetupTest()
 			s.PopulateWithSamples()
 			k := s.empowerApp.PlasticcreditKeeper
-			//		goCtx := sdk.WrapSDKContext(s.ctx)
+			goCtx := sdk.WrapSDKContext(s.ctx)
 			ms := keeper.NewMsgServerImpl(k)
 			creditClass, found := k.GetCreditClass(s.ctx, tc.msg.Abbreviation)
-
-			_, err := ms.UpdateCreditClass(s.ctx, tc.msg)
+			_, err := ms.UpdateCreditClass(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
 
 			if err == nil {

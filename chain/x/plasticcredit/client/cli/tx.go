@@ -214,7 +214,7 @@ func MsgUpdateCreditClassCmd() *cobra.Command {
 				return err
 			}
 
-			creator := clientCtx.GetFromAddress()
+			updater := clientCtx.GetFromAddress()
 			abbreviation := args[0]
 			issuerID, err := cast.ToUint64E(args[1])
 			if err != nil {
@@ -223,7 +223,7 @@ func MsgUpdateCreditClassCmd() *cobra.Command {
 			name := args[2]
 
 			msg := plasticcredit.MsgUpdateCreditClass{
-				Updater:      creator.String(),
+				Updater:      updater.String(),
 				Abbreviation: abbreviation,
 				IssuerId:     issuerID,
 				Name:         name,
