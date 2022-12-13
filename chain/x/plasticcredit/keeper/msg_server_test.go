@@ -466,6 +466,7 @@ func (s *TestSuite) TestCreateCreditClass() {
 
 			_, err := ms.CreateCreditClass(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
+			events := s.ctx.EventManager().ABCIEvents()
 
 			if err == nil {
 				creditClass, found := k.GetCreditClass(s.ctx, tc.msg.Abbreviation)
@@ -475,6 +476,16 @@ func (s *TestSuite) TestCreateCreditClass() {
 					IssuerId:     tc.msg.IssuerId,
 					Name:         tc.msg.Name,
 				}, creditClass)
+				s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[0])
+				s.Require().NoError(err)
+				eventCreateCreditClass, ok := parsedEvent.(*plasticcredit.EventCreateCreditClass)
+				s.Require().True(ok)
+				s.Require().Equal(&plasticcredit.EventCreateCreditClass{
+					Abbreviation: creditClass.Abbreviation,
+					IssuerId:     creditClass.IssuerId,
+					Name:         creditClass.Name,
+				}, eventCreateCreditClass)
 			}
 		})
 	}
@@ -533,6 +544,7 @@ func (s *TestSuite) TestUpdateCreditClass() {
 			creditClass, found := k.GetCreditClass(s.ctx, tc.msg.Abbreviation)
 			_, err := ms.UpdateCreditClass(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
+			events := s.ctx.EventManager().ABCIEvents()
 
 			if err == nil {
 				creditClass, found = k.GetCreditClass(s.ctx, tc.msg.Abbreviation)
@@ -542,6 +554,16 @@ func (s *TestSuite) TestUpdateCreditClass() {
 					IssuerId:     tc.msg.IssuerId,
 					Name:         tc.msg.Name,
 				}, creditClass)
+				s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[0])
+				s.Require().NoError(err)
+				eventCreateCreditClass, ok := parsedEvent.(*plasticcredit.EventUpdateCreditClass)
+				s.Require().True(ok)
+				s.Require().Equal(&plasticcredit.EventUpdateCreditClass{
+					Abbreviation: creditClass.Abbreviation,
+					IssuerId:     creditClass.IssuerId,
+					Name:         creditClass.Name,
+				}, eventCreateCreditClass)
 			}
 		})
 	}

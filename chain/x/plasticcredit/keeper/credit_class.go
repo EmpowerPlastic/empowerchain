@@ -69,8 +69,11 @@ func (k Keeper) CreateCreditClass(ctx sdk.Context, creator sdk.AccAddress, abbre
 		return err
 	}
 
-	// TODO: Events
-	return nil
+	return ctx.EventManager().EmitTypedEvent(&plasticcredit.EventCreateCreditClass{
+		Abbreviation: abbreviation,
+		IssuerId:     creditClass.IssuerId,
+		Name:         creditClass.Name,
+	})
 }
 
 func (k Keeper) UpdateCreditClass(ctx sdk.Context, updater sdk.AccAddress, abbreviation string, issuerID uint64, name string) error {
@@ -94,8 +97,11 @@ func (k Keeper) UpdateCreditClass(ctx sdk.Context, updater sdk.AccAddress, abbre
 		return err
 	}
 
-	// TODO: Events
-	return nil
+	return ctx.EventManager().EmitTypedEvent(&plasticcredit.EventUpdateCreditClass{
+		Abbreviation: abbreviation,
+		IssuerId:     creditClass.IssuerId,
+		Name:         creditClass.Name,
+	})
 }
 
 func (k Keeper) setCreditClass(ctx sdk.Context, creditClass plasticcredit.CreditClass) error {
