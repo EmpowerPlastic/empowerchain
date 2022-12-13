@@ -541,13 +541,12 @@ func (s *TestSuite) TestUpdateCreditClass() {
 			k := s.empowerApp.PlasticcreditKeeper
 			goCtx := sdk.WrapSDKContext(s.ctx)
 			ms := keeper.NewMsgServerImpl(k)
-			creditClass, found := k.GetCreditClass(s.ctx, tc.msg.Abbreviation)
 			_, err := ms.UpdateCreditClass(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
 			events := s.ctx.EventManager().ABCIEvents()
 
 			if err == nil {
-				creditClass, found = k.GetCreditClass(s.ctx, tc.msg.Abbreviation)
+				creditClass, found := k.GetCreditClass(s.ctx, tc.msg.Abbreviation)
 				s.Require().True(found)
 				s.Require().Equal(plasticcredit.CreditClass{
 					Abbreviation: tc.msg.Abbreviation,
