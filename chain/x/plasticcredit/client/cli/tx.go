@@ -205,9 +205,9 @@ func MsgCreateCreditClassCmd() *cobra.Command {
 
 func MsgUpdateCreditClassCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-credit-class [abbreviation] [issuer-id] [name]",
+		Use:   "update-credit-class [abbreviation] [name]",
 		Short: "Update an existing credit class name.",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -216,16 +216,14 @@ func MsgUpdateCreditClassCmd() *cobra.Command {
 
 			updater := clientCtx.GetFromAddress()
 			abbreviation := args[0]
-			issuerID, err := cast.ToUint64E(args[1])
 			if err != nil {
 				return err
 			}
-			name := args[2]
+			name := args[1]
 
 			msg := plasticcredit.MsgUpdateCreditClass{
 				Updater:      updater.String(),
 				Abbreviation: abbreviation,
-				IssuerId:     issuerID,
 				Name:         name,
 			}
 

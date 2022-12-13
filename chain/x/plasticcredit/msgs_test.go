@@ -365,7 +365,6 @@ func TestMsgUpdateCreditClass_ValidateBasic(t *testing.T) {
 			msgUnderTest: &MsgUpdateCreditClass{
 				Updater:      sample.AccAddress(),
 				Abbreviation: "PCRD",
-				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
 			},
 			expectedError: nil,
@@ -374,7 +373,6 @@ func TestMsgUpdateCreditClass_ValidateBasic(t *testing.T) {
 			msgUnderTest: &MsgUpdateCreditClass{
 				Updater:      "hoppsasa",
 				Abbreviation: "PCRD",
-				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
@@ -383,7 +381,6 @@ func TestMsgUpdateCreditClass_ValidateBasic(t *testing.T) {
 			msgUnderTest: &MsgUpdateCreditClass{
 				Updater:      sample.AccAddress(),
 				Abbreviation: "",
-				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
@@ -392,17 +389,7 @@ func TestMsgUpdateCreditClass_ValidateBasic(t *testing.T) {
 			msgUnderTest: &MsgUpdateCreditClass{
 				Updater:      sample.AccAddress(),
 				Abbreviation: "PCRD",
-				IssuerId:     1,
 				Name:         "",
-			},
-			expectedError: sdkerrors.ErrInvalidRequest,
-		},
-		"empty issuer": {
-			msgUnderTest: &MsgUpdateCreditClass{
-				Updater:      sample.AccAddress(),
-				Abbreviation: "PCRD",
-				IssuerId:     0,
-				Name:         "Empower Plastic Credits",
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},

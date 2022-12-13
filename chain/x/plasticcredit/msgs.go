@@ -183,9 +183,6 @@ func (m *MsgUpdateCreditClass) ValidateBasic() error {
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
-	if m.IssuerId == 0 {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "issuer_id cannot be 0")
-	}
 	if m.Abbreviation == "" {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "abbreviation cannot be empty")
 	}

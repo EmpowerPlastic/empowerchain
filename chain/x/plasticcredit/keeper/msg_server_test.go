@@ -482,6 +482,7 @@ func (s *TestSuite) TestCreateCreditClass() {
 				eventCreateCreditClass, ok := parsedEvent.(*plasticcredit.EventCreateCreditClass)
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventCreateCreditClass{
+					Creator:      tc.msg.Creator,
 					Abbreviation: creditClass.Abbreviation,
 					IssuerId:     creditClass.IssuerId,
 					Name:         creditClass.Name,
@@ -500,8 +501,7 @@ func (s *TestSuite) TestUpdateCreditClass() {
 			msg: &plasticcredit.MsgUpdateCreditClass{
 				Updater:      s.sampleIssuerAdmin,
 				Abbreviation: s.sampleCreditClassAbbreviation,
-				IssuerId:     s.sampleIssuerId,
-				Name:         "Empower Plastic Credits",
+				Name:         "Updated Empower Plastic Credits",
 			},
 			err: nil,
 		},
@@ -509,7 +509,6 @@ func (s *TestSuite) TestUpdateCreditClass() {
 			msg: &plasticcredit.MsgUpdateCreditClass{
 				Updater:      sample.AccAddress(),
 				Abbreviation: s.sampleCreditClassAbbreviation,
-				IssuerId:     s.sampleIssuerId,
 				Name:         "Empower Plastic Credits",
 			},
 			err: sdkerrors.ErrUnauthorized,
@@ -518,19 +517,9 @@ func (s *TestSuite) TestUpdateCreditClass() {
 			msg: &plasticcredit.MsgUpdateCreditClass{
 				Updater:      s.sampleIssuerAdmin,
 				Abbreviation: "",
-				IssuerId:     s.sampleIssuerId,
 				Name:         "Empower Plastic Credits",
 			},
 			err: plasticcredit.ErrNotFoundCreditClass,
-		},
-		"non-existent issuer": {
-			msg: &plasticcredit.MsgUpdateCreditClass{
-				Updater:      s.sampleIssuerAdmin,
-				Abbreviation: s.sampleCreditClassAbbreviation,
-				IssuerId:     42,
-				Name:         "Empower Plastic Credits",
-			},
-			err: plasticcredit.ErrNotFoundIssuer,
 		},
 	}
 
@@ -548,19 +537,15 @@ func (s *TestSuite) TestUpdateCreditClass() {
 			if err == nil {
 				creditClass, found := k.GetCreditClass(s.ctx, tc.msg.Abbreviation)
 				s.Require().True(found)
-				s.Require().Equal(plasticcredit.CreditClass{
-					Abbreviation: tc.msg.Abbreviation,
-					IssuerId:     tc.msg.IssuerId,
-					Name:         tc.msg.Name,
-				}, creditClass)
+				s.Require().Equal(tc.msg.Name, creditClass.Name)
 				s.Require().Len(events, 1)
 				parsedEvent, err := sdk.ParseTypedEvent(events[0])
 				s.Require().NoError(err)
 				eventCreateCreditClass, ok := parsedEvent.(*plasticcredit.EventUpdateCreditClass)
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventUpdateCreditClass{
+					Updater:      tc.msg.Updater,
 					Abbreviation: creditClass.Abbreviation,
-					IssuerId:     creditClass.IssuerId,
 					Name:         creditClass.Name,
 				}, eventCreateCreditClass)
 			}

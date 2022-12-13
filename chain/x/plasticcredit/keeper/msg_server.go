@@ -116,10 +116,10 @@ func (m msgServer) UpdateCreditClass(goCtx context.Context, req *plasticcredit.M
 
 	admin, err := sdk.AccAddressFromBech32(req.Updater)
 	if err != nil {
-		return nil, errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid admin address: %s", req.Updater)
+		return nil, errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid updater address: %s", req.Updater)
 	}
 
-	if err := m.Keeper.UpdateCreditClass(ctx, admin, req.Abbreviation, req.IssuerId, req.Name); err != nil {
+	if err := m.Keeper.UpdateCreditClass(ctx, admin, req.Abbreviation, req.Name); err != nil {
 		return nil, err
 	}
 

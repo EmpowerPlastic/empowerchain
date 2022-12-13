@@ -131,12 +131,11 @@ message MsgCreateCreditClass {
 message MsgCreateCreditClassResponse {}
 
 message MsgUpdateCreditClass {
-  option (cosmos.msg.v1.signer) = "admin";
+  option (cosmos.msg.v1.signer) = "updater";
   // abbreviation is the short-hand name, as well as the ID of the credit class
   string updater = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   string abbreviation = 2;
-  uint64 issuer_id = 3;
-  string name = 4;
+  string name = 3;
 }
 
 message MsgUpdateCreditClassResponse {}
