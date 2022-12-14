@@ -87,7 +87,7 @@ func (k Keeper) UpdateCreditClass(ctx sdk.Context, updater sdk.AccAddress, abbre
 		return errors.Wrapf(plasticcredit.ErrNotFoundIssuer, "issuer for issue ID %d was not found", creditClass.IssuerId)
 	}
 	if !issuer.AddressHasAuthorization(updater) {
-		return errors.Wrapf(sdkerrors.ErrUnauthorized, "creator %s does not have authorization on issuer with id %d", updater.String(), creditClass.IssuerId)
+		return errors.Wrapf(sdkerrors.ErrUnauthorized, "updater %s does not have authorization on issuer with id %d", updater.String(), creditClass.IssuerId)
 	}
 
 	creditClass.Name = name

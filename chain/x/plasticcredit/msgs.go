@@ -181,7 +181,7 @@ func (m *MsgCreateCreditClass) GetSigners() []sdk.AccAddress {
 func (m *MsgUpdateCreditClass) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Updater)
 	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid updater address (%s)", err)
 	}
 	if m.Abbreviation == "" {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "abbreviation cannot be empty")
