@@ -144,6 +144,22 @@ func (m msgServer) CreateProject(goCtx context.Context, req *plasticcredit.MsgCr
 	}, nil
 }
 
+func (m msgServer) UpdateProject(goCtx context.Context, req *plasticcredit.MsgUpdateProject) (*plasticcredit.MsgUpdateProjectResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	updater, err := sdk.AccAddressFromBech32(req.Updater)
+	if err != nil {
+		return nil, errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid updater address: %s", req.Updater)
+	}
+
+	err = m.Keeper.UpdateProject(ctx, updater, req.ProjectId, req.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	return &plasticcredit.MsgUpdateProjectResponse{}, nil
+}
+
 func (m msgServer) ApproveProject(goCtx context.Context, req *plasticcredit.MsgApproveProject) (*plasticcredit.MsgApproveProjectResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 

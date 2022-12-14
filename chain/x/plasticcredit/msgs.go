@@ -15,6 +15,7 @@ var (
 	_ sdk.Msg = &MsgCreateCreditClass{}
 	_ sdk.Msg = &MsgUpdateCreditClass{}
 	_ sdk.Msg = &MsgCreateProject{}
+	_ sdk.Msg = &MsgUpdateProject{}
 	_ sdk.Msg = &MsgApproveProject{}
 	_ sdk.Msg = &MsgIssueCredits{}
 	_ sdk.Msg = &MsgTransferCredits{}
@@ -228,6 +229,31 @@ func (m *MsgCreateProject) GetSigners() []sdk.AccAddress {
 		panic(err)
 	}
 	return []sdk.AccAddress{creator}
+}
+
+func (m *MsgUpdateProject) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Updater)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid updater address (%s)", err)
+	}
+
+	if m.ProjectId == 0 {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "project_id cannot be 0")
+	}
+
+	if m.Name == "" {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "credit class name cannot be empty")
+	}
+
+	return nil
+}
+
+func (m *MsgUpdateProject) GetSigners() []sdk.AccAddress {
+	updater, err := sdk.AccAddressFromBech32(m.Updater)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{updater}
 }
 
 func (m *MsgApproveProject) ValidateBasic() error {
