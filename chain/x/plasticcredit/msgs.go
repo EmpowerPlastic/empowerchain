@@ -13,6 +13,7 @@ var (
 	_ sdk.Msg = &MsgCreateApplicant{}
 	_ sdk.Msg = &MsgUpdateApplicant{}
 	_ sdk.Msg = &MsgCreateCreditClass{}
+	_ sdk.Msg = &MsgUpdateCreditClass{}
 	_ sdk.Msg = &MsgCreateProject{}
 	_ sdk.Msg = &MsgApproveProject{}
 	_ sdk.Msg = &MsgIssueCredits{}
@@ -171,6 +172,29 @@ func (m *MsgCreateCreditClass) ValidateBasic() error {
 
 func (m *MsgCreateCreditClass) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(m.Creator)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{creator}
+}
+
+func (m *MsgUpdateCreditClass) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Updater)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid updater address (%s)", err)
+	}
+	if m.Abbreviation == "" {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "abbreviation cannot be empty")
+	}
+	if m.Name == "" {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "credit class name cannot be empty")
+	}
+
+	return nil
+}
+
+func (m *MsgUpdateCreditClass) GetSigners() []sdk.AccAddress {
+	creator, err := sdk.AccAddressFromBech32(m.Updater)
 	if err != nil {
 		panic(err)
 	}

@@ -111,6 +111,21 @@ func (m msgServer) CreateCreditClass(goCtx context.Context, req *plasticcredit.M
 	return &plasticcredit.MsgCreateCreditClassResponse{}, nil
 }
 
+func (m msgServer) UpdateCreditClass(goCtx context.Context, req *plasticcredit.MsgUpdateCreditClass) (*plasticcredit.MsgUpdateCreditClassResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	updater, err := sdk.AccAddressFromBech32(req.Updater)
+	if err != nil {
+		return nil, errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid updater address: %s", req.Updater)
+	}
+
+	if err := m.Keeper.UpdateCreditClass(ctx, updater, req.Abbreviation, req.Name); err != nil {
+		return nil, err
+	}
+
+	return &plasticcredit.MsgUpdateCreditClassResponse{}, nil
+}
+
 func (m msgServer) CreateProject(goCtx context.Context, req *plasticcredit.MsgCreateProject) (*plasticcredit.MsgCreateProjectResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 

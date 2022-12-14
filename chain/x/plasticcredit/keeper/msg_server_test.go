@@ -466,6 +466,7 @@ func (s *TestSuite) TestCreateCreditClass() {
 
 			_, err := ms.CreateCreditClass(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
+			events := s.ctx.EventManager().ABCIEvents()
 
 			if err == nil {
 				creditClass, found := k.GetCreditClass(s.ctx, tc.msg.Abbreviation)
@@ -475,6 +476,86 @@ func (s *TestSuite) TestCreateCreditClass() {
 					IssuerId:     tc.msg.IssuerId,
 					Name:         tc.msg.Name,
 				}, creditClass)
+				s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[0])
+				s.Require().NoError(err)
+				eventCreateCreditClass, ok := parsedEvent.(*plasticcredit.EventCreateCreditClass)
+				s.Require().True(ok)
+				s.Require().Equal(&plasticcredit.EventCreateCreditClass{
+					Creator:      tc.msg.Creator,
+					Abbreviation: creditClass.Abbreviation,
+					IssuerId:     creditClass.IssuerId,
+					Name:         creditClass.Name,
+				}, eventCreateCreditClass)
+			}
+		})
+	}
+}
+
+func (s *TestSuite) TestUpdateCreditClass() {
+	testCases := map[string]struct {
+		msg *plasticcredit.MsgUpdateCreditClass
+		err error
+	}{
+		"happy path": {
+			msg: &plasticcredit.MsgUpdateCreditClass{
+				Updater:      s.sampleIssuerAdmin,
+				Abbreviation: s.sampleCreditClassAbbreviation,
+				Name:         "Updated Empower Plastic Credits",
+			},
+			err: nil,
+		},
+		"unauthorized updater on the issuer": {
+			msg: &plasticcredit.MsgUpdateCreditClass{
+				Updater:      sample.AccAddress(),
+				Abbreviation: s.sampleCreditClassAbbreviation,
+				Name:         "Empower Plastic Credits",
+			},
+			err: sdkerrors.ErrUnauthorized,
+		},
+		"invalid abbreviation": {
+			msg: &plasticcredit.MsgUpdateCreditClass{
+				Updater:      s.sampleIssuerAdmin,
+				Abbreviation: "",
+				Name:         "Empower Plastic Credits",
+			},
+			err: plasticcredit.ErrNotFoundCreditClass,
+		},
+		"invalid name": {
+			msg: &plasticcredit.MsgUpdateCreditClass{
+				Updater:      s.sampleIssuerAdmin,
+				Abbreviation: s.sampleCreditClassAbbreviation,
+				Name:         "",
+			},
+			err: utils.ErrInvalidValue,
+		},
+	}
+
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			s.SetupTest()
+			s.PopulateWithSamples()
+			k := s.empowerApp.PlasticcreditKeeper
+			goCtx := sdk.WrapSDKContext(s.ctx)
+			ms := keeper.NewMsgServerImpl(k)
+			_, err := ms.UpdateCreditClass(goCtx, tc.msg)
+			s.Require().ErrorIs(err, tc.err)
+			events := s.ctx.EventManager().ABCIEvents()
+
+			if err == nil {
+				creditClass, found := k.GetCreditClass(s.ctx, tc.msg.Abbreviation)
+				s.Require().True(found)
+				s.Require().Equal(tc.msg.Name, creditClass.Name)
+				s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[0])
+				s.Require().NoError(err)
+				eventCreateCreditClass, ok := parsedEvent.(*plasticcredit.EventUpdateCreditClass)
+				s.Require().True(ok)
+				s.Require().Equal(&plasticcredit.EventUpdateCreditClass{
+					Updater:      tc.msg.Updater,
+					Abbreviation: creditClass.Abbreviation,
+					Name:         creditClass.Name,
+				}, eventCreateCreditClass)
 			}
 		})
 	}

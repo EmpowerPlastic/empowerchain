@@ -77,3 +77,19 @@ message EventUpdateApplicant {
   string admin = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   string updater = 5 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
+
+// EventCreateCreditClass is an event emitted when a new Credit Class is created
+message EventCreateCreditClass {
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string abbreviation = 2;
+  uint64 issuer_id = 3;
+  string name = 4;
+
+}
+
+// EventUpdateCreditClass is an event emitted when a Credit Class is updated
+message EventUpdateCreditClass {
+  string updater = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string abbreviation = 2;
+  string name = 3;
+}

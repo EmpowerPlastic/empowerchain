@@ -359,6 +359,50 @@ func TestMsgCreateCreditClass_ValidateBasic(t *testing.T) {
 	}
 }
 
+func TestMsgUpdateCreditClass_ValidateBasic(t *testing.T) {
+	testCases := map[string]validateTest{
+		"happy path": {
+			msgUnderTest: &MsgUpdateCreditClass{
+				Updater:      sample.AccAddress(),
+				Abbreviation: "PCRD",
+				Name:         "Empower Plastic Credits",
+			},
+			expectedError: nil,
+		},
+		"invalid creator": {
+			msgUnderTest: &MsgUpdateCreditClass{
+				Updater:      "hoppsasa",
+				Abbreviation: "PCRD",
+				Name:         "Empower Plastic Credits",
+			},
+			expectedError: sdkerrors.ErrInvalidAddress,
+		},
+		"empty abbreviation": {
+			msgUnderTest: &MsgUpdateCreditClass{
+				Updater:      sample.AccAddress(),
+				Abbreviation: "",
+				Name:         "Empower Plastic Credits",
+			},
+			expectedError: sdkerrors.ErrInvalidRequest,
+		},
+		"empty name": {
+			msgUnderTest: &MsgUpdateCreditClass{
+				Updater:      sample.AccAddress(),
+				Abbreviation: "PCRD",
+				Name:         "",
+			},
+			expectedError: sdkerrors.ErrInvalidRequest,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			err := tc.msgUnderTest.ValidateBasic()
+			require.ErrorIs(t, err, tc.expectedError)
+		})
+	}
+}
+
 func TestMsgCreateProject_ValidateBasic(t *testing.T) {
 	testCases := map[string]validateTest{
 		"happy path": {
