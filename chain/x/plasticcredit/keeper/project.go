@@ -25,7 +25,7 @@ func (k Keeper) GetProject(ctx sdk.Context, projectID uint64) (project plasticcr
 func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicantID uint64, creditClassAbbreviation string, name string) (uint64, error) {
 	applicant, found := k.GetApplicant(ctx, applicantID)
 	if !found {
-		return 0, errors.Wrapf(plasticcredit.ErrNotFoundApplicant, "applicant with id %d was not found", applicantID)
+		return 0, errors.Wrapf(plasticcredit.ErrApplicantNotFound, "applicant with id %d was not found", applicantID)
 	}
 
 	if !applicant.AddressHasAuthorization(creator) {
@@ -33,7 +33,7 @@ func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicant
 	}
 
 	if _, found := k.GetCreditClass(ctx, creditClassAbbreviation); !found {
-		return 0, errors.Wrapf(plasticcredit.ErrNotFoundCreditClass, "credit class with abbreviation %s was not found", creditClassAbbreviation)
+		return 0, errors.Wrapf(plasticcredit.ErrCreditClassNotFound, "credit class with abbreviation %s was not found", creditClassAbbreviation)
 	}
 
 	idc := k.GetIDCounters(ctx)
@@ -66,11 +66,11 @@ func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicant
 func (k Keeper) UpdateProject(ctx sdk.Context, updater sdk.AccAddress, projectID uint64, name string) error {
 	project, found := k.GetProject(ctx, projectID)
 	if !found {
-		return errors.Wrapf(plasticcredit.ErrNotFoundProject, "the project %d does not exists", projectID)
+		return errors.Wrapf(plasticcredit.ErrProjectNotFound, "the project %d does not exists", projectID)
 	}
 	applicant, found := k.GetApplicant(ctx, project.ApplicantId)
 	if !found {
-		return errors.Wrapf(plasticcredit.ErrNotFoundApplicant, "applicant with id %d was not found", project.ApplicantId)
+		return errors.Wrapf(plasticcredit.ErrApplicantNotFound, "applicant with id %d was not found", project.ApplicantId)
 	}
 
 	if !applicant.AddressHasAuthorization(updater) {
@@ -92,7 +92,7 @@ func (k Keeper) UpdateProject(ctx sdk.Context, updater sdk.AccAddress, projectID
 func (k Keeper) ApproveProject(ctx sdk.Context, approver sdk.AccAddress, projectID uint64) error {
 	project, found := k.GetProject(ctx, projectID)
 	if !found {
-		return errors.Wrapf(plasticcredit.ErrNotFoundProject, "project with id %d was not found", projectID)
+		return errors.Wrapf(plasticcredit.ErrProjectNotFound, "project with id %d was not found", projectID)
 	}
 
 	// At some point, I would like to have some better indexing that would allow us to not have to fetch so many things just to get to the issuer
