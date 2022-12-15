@@ -36,7 +36,7 @@ func (s *TestSuite) TestIssuerQuery() {
 	_, err := querier.Issuer(goCtx, &plasticcredit.QueryIssuerRequest{
 		IssuerId: 1,
 	})
-	s.Require().ErrorIs(err, plasticcredit.ErrNotFoundIssuer)
+	s.Require().ErrorIs(err, plasticcredit.ErrIssuerNotFound)
 
 	ms := keeper.NewMsgServerImpl(k)
 	createMsg := plasticcredit.MsgCreateIssuer{
@@ -116,7 +116,7 @@ func (s *TestSuite) TestApplicantQuery() {
 	_, err := querier.Applicant(goCtx, &plasticcredit.QueryApplicantRequest{
 		ApplicantId: 1,
 	})
-	s.Require().ErrorIs(err, plasticcredit.ErrNotFoundApplicant)
+	s.Require().ErrorIs(err, plasticcredit.ErrApplicantNotFound)
 
 	ms := keeper.NewMsgServerImpl(k)
 	createMsg := plasticcredit.MsgCreateApplicant{
@@ -155,7 +155,7 @@ func (s *TestSuite) TestCreditClassQuery() {
 	_, err = querier.CreditClass(goCtx, &plasticcredit.QueryCreditClassRequest{
 		CreditClassAbbreviation: creditClassAbbreviation,
 	})
-	s.Require().ErrorIs(err, plasticcredit.ErrNotFoundCreditClass)
+	s.Require().ErrorIs(err, plasticcredit.ErrCreditClassNotFound)
 
 	createMsg := plasticcredit.MsgCreateCreditClass{
 		Creator:      issuerAdmin,
@@ -263,7 +263,7 @@ func (s *TestSuite) TestProjectQuery() {
 	_, err = querier.Project(goCtx, &plasticcredit.QueryProjectRequest{
 		ProjectId: 1,
 	})
-	s.Require().ErrorIs(err, plasticcredit.ErrNotFoundProject)
+	s.Require().ErrorIs(err, plasticcredit.ErrProjectNotFound)
 
 	createMsg := plasticcredit.MsgCreateProject{
 		Creator:                 applicantAdmin,

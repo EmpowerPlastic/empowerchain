@@ -47,7 +47,7 @@ func (gs GenesisState) Validate() error {
 		}
 
 		if _, exists := issuers[issuer.Id]; exists {
-			return errors.Wrapf(ErrDuplicateIssuer, "duplicate issuer with id %d was found", issuer.Id)
+			return errors.Wrapf(ErrIssuerDuplicate, "duplicate issuer with id %d was found", issuer.Id)
 		}
 		issuers[issuer.Id] = issuer
 	}
@@ -58,7 +58,7 @@ func (gs GenesisState) Validate() error {
 		}
 
 		if _, exists := applicants[applicant.Id]; exists {
-			return errors.Wrapf(ErrDuplicateApplicant, "duplicate applicant with id %d was found", applicant.Id)
+			return errors.Wrapf(ErrApplicantDuplicate, "duplicate applicant with id %d was found", applicant.Id)
 		}
 		applicants[applicant.Id] = applicant
 	}
@@ -69,11 +69,11 @@ func (gs GenesisState) Validate() error {
 		}
 
 		if _, exists := issuers[creditClass.IssuerId]; !exists {
-			return errors.Wrapf(ErrNotFoundIssuer, "credit class with abbreviation %s had issuer_id %d that was not found", creditClass.Abbreviation, creditClass.IssuerId)
+			return errors.Wrapf(ErrIssuerNotFound, "credit class with abbreviation %s had issuer_id %d that was not found", creditClass.Abbreviation, creditClass.IssuerId)
 		}
 
 		if _, exists := creditClasses[creditClass.Abbreviation]; exists {
-			return errors.Wrapf(ErrDuplicateCreditClass, "duplicate credit class with abbreviation %s was found", creditClass.Abbreviation)
+			return errors.Wrapf(ErrCreditClassDuplicate, "duplicate credit class with abbreviation %s was found", creditClass.Abbreviation)
 		}
 		creditClasses[creditClass.Abbreviation] = creditClass
 	}
@@ -84,15 +84,15 @@ func (gs GenesisState) Validate() error {
 		}
 
 		if _, exists := applicants[project.ApplicantId]; !exists {
-			return errors.Wrapf(ErrNotFoundApplicant, "project with id %d had applicant_id %d that was not found", project.Id, project.ApplicantId)
+			return errors.Wrapf(ErrApplicantNotFound, "project with id %d had applicant_id %d that was not found", project.Id, project.ApplicantId)
 		}
 
 		if _, exists := creditClasses[project.CreditClassAbbreviation]; !exists {
-			return errors.Wrapf(ErrNotFoundCreditClass, "project with id %d had credit class abbreviation %s that was not found", project.Id, project.CreditClassAbbreviation)
+			return errors.Wrapf(ErrCreditClassNotFound, "project with id %d had credit class abbreviation %s that was not found", project.Id, project.CreditClassAbbreviation)
 		}
 
 		if _, exists := projects[project.Id]; exists {
-			return errors.Wrapf(ErrDuplicateProject, "duplicate project ith id %d was found", project.Id)
+			return errors.Wrapf(ErrProjectDuplicate, "duplicate project ith id %d was found", project.Id)
 		}
 		projects[project.Id] = project
 	}
@@ -103,11 +103,11 @@ func (gs GenesisState) Validate() error {
 		}
 
 		if _, exists := projects[creditCollection.ProjectId]; !exists {
-			return errors.Wrapf(ErrNotFoundProject, "credit collection with denom %s had project_id %d that was not found", creditCollection.Denom, creditCollection.ProjectId)
+			return errors.Wrapf(ErrProjectNotFound, "credit collection with denom %s had project_id %d that was not found", creditCollection.Denom, creditCollection.ProjectId)
 		}
 
 		if _, exists := creditCollections[creditCollection.Denom]; exists {
-			return errors.Wrapf(ErrDuplicateCreditCollection, "duplicate credit collection with denom %s was found", creditCollection.Denom)
+			return errors.Wrapf(ErrCreditCollectionDuplicate, "duplicate credit collection with denom %s was found", creditCollection.Denom)
 		}
 		creditCollections[creditCollection.Denom] = creditCollection
 	}
@@ -118,13 +118,13 @@ func (gs GenesisState) Validate() error {
 		}
 
 		if _, exists := creditCollections[creditBalance.Denom]; !exists {
-			return errors.Wrapf(ErrNotFoundCreditCollection, "credit balance with owner %s and denom %s had credit collection that was not found with that denom", creditBalance.Owner, creditBalance.Denom)
+			return errors.Wrapf(ErrCreditCollectionNotFound, "credit balance with owner %s and denom %s had credit collection that was not found with that denom", creditBalance.Owner, creditBalance.Denom)
 		}
 
 		ownerAddr := sdk.MustAccAddressFromBech32(creditBalance.Owner)
 		key := string(CreateCreditBalanceKey(ownerAddr, creditBalance.Denom))
 		if _, exists := creditBalances[key]; exists {
-			return errors.Wrapf(ErrDuplicateCreditBalance, "duplicate credit balance with owner %s and denom %s was found", creditBalance.Owner, creditBalance.Denom)
+			return errors.Wrapf(ErrCreditBalanceDuplicate, "duplicate credit balance with owner %s and denom %s was found", creditBalance.Owner, creditBalance.Denom)
 		}
 		creditBalances[key] = creditBalance
 	}

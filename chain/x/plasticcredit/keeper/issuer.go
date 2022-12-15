@@ -107,7 +107,7 @@ func (k Keeper) CreateIssuer(ctx sdk.Context, creator sdk.AccAddress, name strin
 func (k Keeper) UpdateIssuer(ctx sdk.Context, updater sdk.AccAddress, issuerID uint64, name string, description string, admin string) error {
 	issuer, found := k.GetIssuer(ctx, issuerID)
 	if !found {
-		return errors.Wrapf(plasticcredit.ErrNotFoundIssuer, "issuer with id %d was not found for update", issuerID)
+		return errors.Wrapf(plasticcredit.ErrIssuerNotFound, "issuer with id %d was not found for update", issuerID)
 	}
 
 	if issuer.Admin != updater.String() {
