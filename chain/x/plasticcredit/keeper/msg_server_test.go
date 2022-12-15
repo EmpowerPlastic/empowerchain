@@ -728,7 +728,7 @@ func (s *TestSuite) TestUpdateProject() {
 				ProjectId: 42,
 				Name:      "My project",
 			},
-			err: plasticcredit.ErrNotFoundProject,
+			err: plasticcredit.ErrProjectNotFound,
 		},
 	}
 
