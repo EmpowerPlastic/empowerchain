@@ -66,11 +66,11 @@ func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicant
 func (k Keeper) UpdateProject(ctx sdk.Context, updater sdk.AccAddress, projectID uint64, name string) error {
 	project, found := k.GetProject(ctx, projectID)
 	if !found {
-		return errors.Wrapf(plasticcredit.ErrNotFoundProject, "the project %d does not exists", projectID)
+		return errors.Wrapf(plasticcredit.ErrProjectNotFound, "the project %d does not exists", projectID)
 	}
 	applicant, found := k.GetApplicant(ctx, project.ApplicantId)
 	if !found {
-		return errors.Wrapf(plasticcredit.ErrNotFoundApplicant, "applicant with id %d was not found", project.ApplicantId)
+		return errors.Wrapf(plasticcredit.ErrApplicantNotFound, "applicant with id %d was not found", project.ApplicantId)
 	}
 
 	if !applicant.AddressHasAuthorization(updater) {
