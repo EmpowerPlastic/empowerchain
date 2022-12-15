@@ -55,7 +55,38 @@ func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicant
 		return 0, err
 	}
 
-	return nextID, nil
+	return nextID, ctx.EventManager().EmitTypedEvent(&plasticcredit.EventCreateProject{
+		Creator:                 creator.String(),
+		ApplicantId:             applicantID,
+		CreditClassAbbreviation: creditClassAbbreviation,
+		Name:                    name,
+	})
+}
+
+func (k Keeper) UpdateProject(ctx sdk.Context, updater sdk.AccAddress, projectID uint64, name string) error {
+	project, found := k.GetProject(ctx, projectID)
+	if !found {
+		return errors.Wrapf(plasticcredit.ErrNotFoundProject, "the project %d does not exists", projectID)
+	}
+	applicant, found := k.GetApplicant(ctx, project.ApplicantId)
+	if !found {
+		return errors.Wrapf(plasticcredit.ErrNotFoundApplicant, "applicant with id %d was not found", project.ApplicantId)
+	}
+
+	if !applicant.AddressHasAuthorization(updater) {
+		return errors.Wrapf(sdkerrors.ErrUnauthorized, "%s does not have authorization for applicant with id %d", updater.String(), project.ApplicantId)
+	}
+
+	project.Name = name
+	if err := k.setProject(ctx, project); err != nil {
+		return err
+	}
+
+	return ctx.EventManager().EmitTypedEvent(&plasticcredit.EventUpdateProject{
+		Updater:   updater.String(),
+		ProjectId: projectID,
+		Name:      name,
+	})
 }
 
 func (k Keeper) ApproveProject(ctx sdk.Context, approver sdk.AccAddress, projectID uint64) error {

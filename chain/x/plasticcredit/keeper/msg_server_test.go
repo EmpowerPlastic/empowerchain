@@ -662,6 +662,7 @@ func (s *TestSuite) TestCreateProject() {
 
 			resp, err := ms.CreateProject(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
+			events := s.ctx.EventManager().ABCIEvents()
 
 			if err == nil {
 				idCounters := k.GetIDCounters(s.ctx)
@@ -676,6 +677,88 @@ func (s *TestSuite) TestCreateProject() {
 					Name:                    tc.msg.Name,
 					Status:                  plasticcredit.ProjectStatus_NEW,
 				}, project)
+				s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[0])
+				s.Require().NoError(err)
+				eventCreateProject, ok := parsedEvent.(*plasticcredit.EventCreateProject)
+				s.Require().True(ok)
+				s.Require().Equal(&plasticcredit.EventCreateProject{
+					Creator:                 s.sampleApplicantAdmin,
+					ApplicantId:             project.ApplicantId,
+					CreditClassAbbreviation: project.CreditClassAbbreviation,
+					Name:                    project.Name,
+				}, eventCreateProject)
+			}
+		})
+	}
+}
+
+func (s *TestSuite) TestUpdateProject() {
+	testCases := map[string]struct {
+		msg *plasticcredit.MsgUpdateProject
+		err error
+	}{
+		"happy path": {
+			msg: &plasticcredit.MsgUpdateProject{
+				Updater:   s.sampleApplicantAdmin,
+				ProjectId: s.sampleUnapprovedProjectId,
+				Name:      "Updated project name",
+			},
+			err: nil,
+		},
+		"unauthorized creator on the issuer": {
+			msg: &plasticcredit.MsgUpdateProject{
+				Updater:   sample.AccAddress(),
+				ProjectId: s.sampleUnapprovedProjectId,
+				Name:      "My project",
+			},
+			err: sdkerrors.ErrUnauthorized,
+		},
+		"invalid name": {
+			msg: &plasticcredit.MsgUpdateProject{
+				Updater:   s.sampleApplicantAdmin,
+				ProjectId: s.sampleUnapprovedProjectId,
+				Name:      "",
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"project not found": {
+			msg: &plasticcredit.MsgUpdateProject{
+				Updater:   s.sampleApplicantAdmin,
+				ProjectId: 42,
+				Name:      "My project",
+			},
+			err: plasticcredit.ErrNotFoundProject,
+		},
+	}
+
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			s.SetupTest()
+			s.PopulateWithSamples()
+			k := s.empowerApp.PlasticcreditKeeper
+			goCtx := sdk.WrapSDKContext(s.ctx)
+			ms := keeper.NewMsgServerImpl(k)
+
+			_, err := ms.UpdateProject(goCtx, tc.msg)
+			s.Require().ErrorIs(err, tc.err)
+
+			events := s.ctx.EventManager().ABCIEvents()
+			project, found := k.GetProject(s.ctx, s.sampleUnapprovedProjectId)
+			s.Require().True(found)
+
+			if err == nil {
+				s.Require().Equal(tc.msg.Name, project.Name)
+				s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[0])
+				s.Require().NoError(err)
+				eventUpdateProject, ok := parsedEvent.(*plasticcredit.EventUpdateProject)
+				s.Require().True(ok)
+				s.Require().Equal(&plasticcredit.EventUpdateProject{
+					Updater:   s.sampleApplicantAdmin,
+					ProjectId: project.Id,
+					Name:      project.Name,
+				}, eventUpdateProject)
 			}
 		})
 	}
