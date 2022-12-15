@@ -121,20 +121,19 @@ func (k Keeper) setCreditClass(ctx sdk.Context, creditClass plasticcredit.Credit
 	return nil
 }
 
-func (k Keeper) getAllCreditClasses(ctx sdk.Context) []plasticcredit.CreditClass {
+func (k Keeper) iterateCreditClasses(ctx sdk.Context, handler func(creditClass plasticcredit.CreditClass) bool) {
 	store := k.getCreditClassStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
 	defer iterator.Close()
 
-	var creditClasses []plasticcredit.CreditClass
 	for ; iterator.Valid(); iterator.Next() {
 		var creditClass plasticcredit.CreditClass
 		k.cdc.MustUnmarshal(iterator.Value(), &creditClass)
-		creditClasses = append(creditClasses, creditClass)
+		if handler(creditClass) {
+			break
+		}
 	}
-
-	return creditClasses
 }
 
 func (k Keeper) getCreditClassStore(ctx sdk.Context) storetypes.KVStore {

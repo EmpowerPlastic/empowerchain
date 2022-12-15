@@ -108,20 +108,19 @@ func (k Keeper) setProject(ctx sdk.Context, project plasticcredit.Project) error
 	return nil
 }
 
-func (k Keeper) getAllProjects(ctx sdk.Context) []plasticcredit.Project {
+func (k Keeper) iterateProjects(ctx sdk.Context, handler func(project plasticcredit.Project) bool) {
 	store := k.getProjectStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
 	defer iterator.Close()
 
-	var projects []plasticcredit.Project
 	for ; iterator.Valid(); iterator.Next() {
 		var project plasticcredit.Project
 		k.cdc.MustUnmarshal(iterator.Value(), &project)
-		projects = append(projects, project)
+		if handler(project) {
+			break
+		}
 	}
-
-	return projects
 }
 
 func (k Keeper) getProjectStore(ctx sdk.Context) storetypes.KVStore {
