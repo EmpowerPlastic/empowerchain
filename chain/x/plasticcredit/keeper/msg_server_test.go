@@ -706,7 +706,7 @@ func (s *TestSuite) TestUpdateProject() {
 			},
 			err: nil,
 		},
-		"unauthorized updater": {
+		"unauthorized creator on the issuer": {
 			msg: &plasticcredit.MsgUpdateProject{
 				Updater:   sample.AccAddress(),
 				ProjectId: s.sampleUnapprovedProjectId,
@@ -721,14 +721,6 @@ func (s *TestSuite) TestUpdateProject() {
 				Name:      "",
 			},
 			err: utils.ErrInvalidValue,
-		},
-		"project not found": {
-			msg: &plasticcredit.MsgUpdateProject{
-				Updater:   s.sampleApplicantAdmin,
-				ProjectId: 5,
-				Name:      "My project",
-			},
-			err: plasticcredit.ErrNotFoundProject,
 		},
 	}
 
