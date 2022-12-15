@@ -73,6 +73,8 @@ sleep 5
 empowerd q plasticcredit project 1
 empowerd q plasticcredit project 2
 empowerd q plasticcredit project 3
+empowerd tx plasticcredit update-project 1 "My Updated Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
 
 echo "--- Test: Plastic Credit Approve Projects ---"
 

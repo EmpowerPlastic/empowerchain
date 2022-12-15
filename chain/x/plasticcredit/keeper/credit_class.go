@@ -47,7 +47,7 @@ func (k Keeper) GetCreditClasses(ctx sdk.Context, pageReq query.PageRequest) ([]
 func (k Keeper) CreateCreditClass(ctx sdk.Context, creator sdk.AccAddress, abbreviation string, issuerID uint64, name string) error {
 	issuer, found := k.GetIssuer(ctx, issuerID)
 	if !found {
-		return errors.Wrapf(plasticcredit.ErrNotFoundIssuer, "issuer for issue ID %d was not found", issuerID)
+		return errors.Wrapf(plasticcredit.ErrIssuerNotFound, "issuer for issue ID %d was not found", issuerID)
 	}
 
 	if !issuer.AddressHasAuthorization(creator) {
@@ -80,11 +80,11 @@ func (k Keeper) CreateCreditClass(ctx sdk.Context, creator sdk.AccAddress, abbre
 func (k Keeper) UpdateCreditClass(ctx sdk.Context, updater sdk.AccAddress, abbreviation string, name string) error {
 	creditClass, found := k.GetCreditClass(ctx, abbreviation)
 	if !found {
-		return errors.Wrapf(plasticcredit.ErrNotFoundCreditClass, "the abbreviation %s does not exists", abbreviation)
+		return errors.Wrapf(plasticcredit.ErrCreditClassNotFound, "the abbreviation %s does not exists", abbreviation)
 	}
 	issuer, found := k.GetIssuer(ctx, creditClass.IssuerId)
 	if !found {
-		return errors.Wrapf(plasticcredit.ErrNotFoundIssuer, "issuer for issue ID %d was not found", creditClass.IssuerId)
+		return errors.Wrapf(plasticcredit.ErrIssuerNotFound, "issuer for issue ID %d was not found", creditClass.IssuerId)
 	}
 	if !issuer.AddressHasAuthorization(updater) {
 		return errors.Wrapf(sdkerrors.ErrUnauthorized, "updater %s does not have authorization on issuer with id %d", updater.String(), creditClass.IssuerId)

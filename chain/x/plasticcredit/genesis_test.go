@@ -374,7 +374,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
 			},
-			err: plasticcredit.ErrDuplicateIssuer,
+			err: plasticcredit.ErrIssuerDuplicate,
 		},
 		"invalid applicants": {
 			genState: plasticcredit.GenesisState{
@@ -413,7 +413,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
 			},
-			err: plasticcredit.ErrDuplicateApplicant,
+			err: plasticcredit.ErrApplicantDuplicate,
 		},
 		"invalid credit class": {
 			genState: plasticcredit.GenesisState{
@@ -457,7 +457,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
 			},
-			err: plasticcredit.ErrDuplicateCreditClass,
+			err: plasticcredit.ErrCreditClassDuplicate,
 		},
 		"credit class with non-existent issuer id": {
 			genState: plasticcredit.GenesisState{
@@ -476,7 +476,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
 			},
-			err: plasticcredit.ErrNotFoundIssuer,
+			err: plasticcredit.ErrIssuerNotFound,
 		},
 		"invalid projects": {
 			genState: plasticcredit.GenesisState{
@@ -535,7 +535,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
 			},
-			err: plasticcredit.ErrDuplicateProject,
+			err: plasticcredit.ErrProjectDuplicate,
 		},
 		"project with not found applicant": {
 			genState: plasticcredit.GenesisState{
@@ -568,7 +568,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
 			},
-			err: plasticcredit.ErrNotFoundApplicant,
+			err: plasticcredit.ErrApplicantNotFound,
 		},
 		"project with not found credit class": {
 			genState: plasticcredit.GenesisState{
@@ -595,7 +595,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
 			},
-			err: plasticcredit.ErrNotFoundCreditClass,
+			err: plasticcredit.ErrCreditClassNotFound,
 		},
 		"invalid credit collections": {
 			genState: plasticcredit.GenesisState{
@@ -674,7 +674,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				},
 				CreditBalances: plasticcredit.DefaultGenesis().CreditBalances,
 			},
-			err: plasticcredit.ErrDuplicateCreditCollection,
+			err: plasticcredit.ErrCreditCollectionDuplicate,
 		},
 		"credit collection with not found project": {
 			genState: plasticcredit.GenesisState{
@@ -709,7 +709,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				},
 				CreditBalances: plasticcredit.DefaultGenesis().CreditBalances,
 			},
-			err: plasticcredit.ErrNotFoundProject,
+			err: plasticcredit.ErrProjectNotFound,
 		},
 		"invalid credit balances": {
 			genState: plasticcredit.GenesisState{
@@ -788,7 +788,7 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 			},
-			err: plasticcredit.ErrDuplicateCreditBalance,
+			err: plasticcredit.ErrCreditBalanceDuplicate,
 		},
 		"credit balance with not found credit collection": {
 			genState: plasticcredit.GenesisState{
@@ -807,7 +807,7 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 			},
-			err: plasticcredit.ErrNotFoundCreditCollection,
+			err: plasticcredit.ErrCreditCollectionNotFound,
 		},
 	}
 

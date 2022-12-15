@@ -210,7 +210,7 @@ func (s *TestSuite) TestUpdateIssuer() {
 				Description: "Empower is cool",
 				Admin:       s.sampleIssuerAdmin,
 			},
-			err: plasticcredit.ErrNotFoundIssuer,
+			err: plasticcredit.ErrIssuerNotFound,
 		},
 	}
 
@@ -336,7 +336,7 @@ func (s *TestSuite) TestUpdateApplicant() {
 				Admin:       sample.AccAddress(),
 				Updater:     issuerAdmin,
 			},
-			err: plasticcredit.ErrNotFoundApplicant,
+			err: plasticcredit.ErrApplicantNotFound,
 		},
 		"unauthorized caller": {
 			msg: &plasticcredit.MsgUpdateApplicant{
@@ -452,7 +452,7 @@ func (s *TestSuite) TestCreateCreditClass() {
 				IssuerId:     42,
 				Name:         "Someone else's PCs",
 			},
-			err: plasticcredit.ErrNotFoundIssuer,
+			err: plasticcredit.ErrIssuerNotFound,
 		},
 	}
 
@@ -519,7 +519,7 @@ func (s *TestSuite) TestUpdateCreditClass() {
 				Abbreviation: "",
 				Name:         "Empower Plastic Credits",
 			},
-			err: plasticcredit.ErrNotFoundCreditClass,
+			err: plasticcredit.ErrCreditClassNotFound,
 		},
 		"invalid name": {
 			msg: &plasticcredit.MsgUpdateCreditClass{
@@ -630,7 +630,7 @@ func (s *TestSuite) TestCreateProject() {
 				CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 				Name:                    "My project",
 			},
-			err: plasticcredit.ErrNotFoundApplicant,
+			err: plasticcredit.ErrApplicantNotFound,
 		},
 		"non-existent credit class": {
 			msg: &plasticcredit.MsgCreateProject{
@@ -639,7 +639,7 @@ func (s *TestSuite) TestCreateProject() {
 				CreditClassAbbreviation: "Not here",
 				Name:                    "My project",
 			},
-			err: plasticcredit.ErrNotFoundCreditClass,
+			err: plasticcredit.ErrCreditClassNotFound,
 		},
 		"invalid name": {
 			msg: &plasticcredit.MsgCreateProject{
@@ -662,6 +662,7 @@ func (s *TestSuite) TestCreateProject() {
 
 			resp, err := ms.CreateProject(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
+			events := s.ctx.EventManager().ABCIEvents()
 
 			if err == nil {
 				idCounters := k.GetIDCounters(s.ctx)
@@ -676,6 +677,88 @@ func (s *TestSuite) TestCreateProject() {
 					Name:                    tc.msg.Name,
 					Status:                  plasticcredit.ProjectStatus_NEW,
 				}, project)
+				s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[0])
+				s.Require().NoError(err)
+				eventCreateProject, ok := parsedEvent.(*plasticcredit.EventCreateProject)
+				s.Require().True(ok)
+				s.Require().Equal(&plasticcredit.EventCreateProject{
+					Creator:                 s.sampleApplicantAdmin,
+					ApplicantId:             project.ApplicantId,
+					CreditClassAbbreviation: project.CreditClassAbbreviation,
+					Name:                    project.Name,
+				}, eventCreateProject)
+			}
+		})
+	}
+}
+
+func (s *TestSuite) TestUpdateProject() {
+	testCases := map[string]struct {
+		msg *plasticcredit.MsgUpdateProject
+		err error
+	}{
+		"happy path": {
+			msg: &plasticcredit.MsgUpdateProject{
+				Updater:   s.sampleApplicantAdmin,
+				ProjectId: s.sampleUnapprovedProjectId,
+				Name:      "Updated project name",
+			},
+			err: nil,
+		},
+		"unauthorized creator on the issuer": {
+			msg: &plasticcredit.MsgUpdateProject{
+				Updater:   sample.AccAddress(),
+				ProjectId: s.sampleUnapprovedProjectId,
+				Name:      "My project",
+			},
+			err: sdkerrors.ErrUnauthorized,
+		},
+		"invalid name": {
+			msg: &plasticcredit.MsgUpdateProject{
+				Updater:   s.sampleApplicantAdmin,
+				ProjectId: s.sampleUnapprovedProjectId,
+				Name:      "",
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"project not found": {
+			msg: &plasticcredit.MsgUpdateProject{
+				Updater:   s.sampleApplicantAdmin,
+				ProjectId: 42,
+				Name:      "My project",
+			},
+			err: plasticcredit.ErrProjectNotFound,
+		},
+	}
+
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			s.SetupTest()
+			s.PopulateWithSamples()
+			k := s.empowerApp.PlasticcreditKeeper
+			goCtx := sdk.WrapSDKContext(s.ctx)
+			ms := keeper.NewMsgServerImpl(k)
+
+			_, err := ms.UpdateProject(goCtx, tc.msg)
+			s.Require().ErrorIs(err, tc.err)
+
+			events := s.ctx.EventManager().ABCIEvents()
+			project, found := k.GetProject(s.ctx, s.sampleUnapprovedProjectId)
+			s.Require().True(found)
+
+			if err == nil {
+				s.Require().Equal(tc.msg.Name, project.Name)
+				s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[0])
+				s.Require().NoError(err)
+				eventUpdateProject, ok := parsedEvent.(*plasticcredit.EventUpdateProject)
+				s.Require().True(ok)
+				s.Require().Equal(&plasticcredit.EventUpdateProject{
+					Updater:   s.sampleApplicantAdmin,
+					ProjectId: project.Id,
+					Name:      project.Name,
+				}, eventUpdateProject)
 			}
 		})
 	}
@@ -721,7 +804,7 @@ func (s *TestSuite) TestApproveProject() {
 				Approver:  s.sampleIssuerAdmin,
 				ProjectId: 42,
 			},
-			err: plasticcredit.ErrNotFoundProject,
+			err: plasticcredit.ErrProjectNotFound,
 		},
 	}
 
@@ -804,7 +887,7 @@ func (s *TestSuite) TestIssueCredits() {
 				CreditAmount: 1000,
 			},
 			expectedAmount: 0,
-			err:            plasticcredit.ErrNotIssuer,
+			err:            plasticcredit.ErrIssuerNotAllowed,
 		},
 		"unexisting project": {
 			msg: &plasticcredit.MsgIssueCredits{
@@ -814,7 +897,7 @@ func (s *TestSuite) TestIssueCredits() {
 				CreditAmount: 1000,
 			},
 			expectedAmount: 0,
-			err:            plasticcredit.ErrNotFoundProject,
+			err:            plasticcredit.ErrProjectNotFound,
 		},
 		"empty serial number": {
 			msg: &plasticcredit.MsgIssueCredits{
@@ -942,7 +1025,7 @@ func (s *TestSuite) TestTransferCredits() {
 			expectedSenderBalance:           0,
 			expectedRecipientBalanceActive:  0,
 			expectedRecipientBalanceRetired: 0,
-			err:                             plasticcredit.ErrNotEnoughCredits,
+			err:                             plasticcredit.ErrCreditsNotEnough,
 		},
 		"non-existing denom": {
 			msg: &plasticcredit.MsgTransferCredits{
@@ -955,7 +1038,7 @@ func (s *TestSuite) TestTransferCredits() {
 			expectedSenderBalance:           0,
 			expectedRecipientBalanceActive:  0,
 			expectedRecipientBalanceRetired: 0,
-			err:                             plasticcredit.ErrNotFoundCreditBalance,
+			err:                             plasticcredit.ErrCreditBalanceNotFound,
 		},
 		"wrong from address": {
 			msg: &plasticcredit.MsgTransferCredits{
@@ -1007,7 +1090,7 @@ func (s *TestSuite) TestTransferCredits() {
 			expectedSenderBalance:           0,
 			expectedRecipientBalanceActive:  0,
 			expectedRecipientBalanceRetired: 0,
-			err:                             plasticcredit.ErrNotFoundCreditBalance,
+			err:                             plasticcredit.ErrCreditBalanceNotFound,
 		},
 	}
 
@@ -1104,7 +1187,7 @@ func (s *TestSuite) TestRetireCredits() {
 				Amount: 100000000000,
 			},
 			expectedBalanceRetired: 0,
-			err:                    plasticcredit.ErrNotEnoughActiveCredits,
+			err:                    plasticcredit.ErrActiveCreditsNotEnough,
 		},
 		"non-existing denom": {
 			msg: &plasticcredit.MsgRetireCredits{
@@ -1113,7 +1196,7 @@ func (s *TestSuite) TestRetireCredits() {
 				Amount: 100,
 			},
 			expectedBalanceRetired: 0,
-			err:                    plasticcredit.ErrNotEnoughCredits,
+			err:                    plasticcredit.ErrCreditsNotEnough,
 		},
 		"empty denom": {
 			msg: &plasticcredit.MsgRetireCredits{
@@ -1122,7 +1205,7 @@ func (s *TestSuite) TestRetireCredits() {
 				Amount: 100,
 			},
 			expectedBalanceRetired: 0,
-			err:                    plasticcredit.ErrNotEnoughCredits,
+			err:                    plasticcredit.ErrCreditsNotEnough,
 		},
 		"invalid owner address": {
 			msg: &plasticcredit.MsgRetireCredits{
