@@ -160,7 +160,7 @@ message MsgCreateProjectResponse {
 message MsgUpdateProject {
   option (cosmos.msg.v1.signer) = "updater";
 
-  // creator needs to have access to the applicant references in applicant_id
+  // updater needs to have access to the applicant references in applicant_id
   string updater = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   uint64 project_id = 2;
   string name = 3;

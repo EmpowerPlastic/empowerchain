@@ -217,7 +217,7 @@ func (m *MsgCreateProject) ValidateBasic() error {
 	}
 
 	if m.Name == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "credit class name cannot be empty")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "project name cannot be empty")
 	}
 
 	return nil
@@ -242,7 +242,7 @@ func (m *MsgUpdateProject) ValidateBasic() error {
 	}
 
 	if m.Name == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "credit class name cannot be empty")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "project name cannot be empty")
 	}
 
 	return nil
