@@ -28,6 +28,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(MsgCreateCreditClassCmd())
 	cmd.AddCommand(MsgUpdateCreditClassCmd())
 	cmd.AddCommand(MsgCreateProjectCmd())
+	cmd.AddCommand(MsgUpdateProjectCmd())
 	cmd.AddCommand(MsgApproveProjectCmd())
 	cmd.AddCommand(MsgIssueCreditsCmd())
 	cmd.AddCommand(MsgTransferCreditsCmd())
@@ -260,6 +261,39 @@ func MsgCreateProjectCmd() *cobra.Command {
 				ApplicantId:             applicantID,
 				CreditClassAbbreviation: creditClassAbbreviation,
 				Name:                    name,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func MsgUpdateProjectCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update-project [project-id] [name]",
+		Short: "Update project",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			updater := clientCtx.GetFromAddress()
+			projectID, err := cast.ToUint64E(args[0])
+			if err != nil {
+				return err
+			}
+			name := args[1]
+
+			msg := plasticcredit.MsgUpdateProject{
+				Updater:   updater.String(),
+				ProjectId: projectID,
+				Name:      name,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
