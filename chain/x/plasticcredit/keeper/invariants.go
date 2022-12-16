@@ -34,6 +34,10 @@ func TotalSupply(k Keeper) sdk.Invariant {
 				totalSupply.Active += creditBalance.Balance.Active
 				totalSupply.Retired += creditBalance.Balance.Retired
 				totalSupplies[creditBalance.Denom] = totalSupply
+			} else {
+				totalSupply.Active = creditBalance.Balance.Active
+				totalSupply.Retired = creditBalance.Balance.Retired
+				totalSupplies[creditBalance.Denom] = totalSupply
 			}
 			return false
 		})
