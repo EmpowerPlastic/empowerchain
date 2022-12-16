@@ -537,6 +537,39 @@ func TestMsgApproveProject_ValidateBasic(t *testing.T) {
 	}
 }
 
+func TestMsgRejectProject_ValidateBasic(t *testing.T) {
+	testCases := map[string]validateTest{
+		"happy path": {
+			msgUnderTest: &MsgRejectProject{
+				Rejector:  sample.AccAddress(),
+				ProjectId: 1,
+			},
+			expectedError: nil,
+		},
+		"invalid rejector": {
+			msgUnderTest: &MsgRejectProject{
+				Rejector:  "invalid",
+				ProjectId: 1,
+			},
+			expectedError: sdkerrors.ErrInvalidAddress,
+		},
+		"invalid project id": {
+			msgUnderTest: &MsgRejectProject{
+				Rejector:  sample.AccAddress(),
+				ProjectId: 0,
+			},
+			expectedError: sdkerrors.ErrInvalidRequest,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			err := tc.msgUnderTest.ValidateBasic()
+			require.ErrorIs(t, err, tc.expectedError)
+		})
+	}
+}
+
 func TestMsgIssueCredits_ValidateBasic(t *testing.T) {
 	testCases := map[string]validateTest{
 		"happy path": {

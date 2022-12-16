@@ -47,6 +47,14 @@ message EventProjectApproved {
   string approved_by = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
+// EventProjectRejected is an event emitted when a project is rejected by the issuer associated with the projects credit class
+message EventProjectRejected {
+  uint64 project_id = 1;
+  string rejected_for_credit_class_abbreviation = 2;
+  uint64 rejecting_issuer_id = 3;
+  string rejected_by = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
 // EventIssuedCredits is an event emitted when new credits are issued
 message EventIssuedCredits {
   uint64 issuer_id = 1;
