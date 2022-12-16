@@ -53,6 +53,5 @@ func TotalSupply(k Keeper) sdk.Invariant {
 		return sdk.FormatInvariant(plasticcredit.ModuleName, "total supply",
 			fmt.Sprintf("amount of invalid supplies found %d\n%s", count, msg),
 		), broken
-
 	}
 }

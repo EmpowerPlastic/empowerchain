@@ -60,6 +60,5 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 		message, broken := invariant(s.ctx)
 		s.Require().Equal(message, message)
 		s.Require().False(broken)
-
 	})
 }
