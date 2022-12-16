@@ -94,8 +94,8 @@ func (k Keeper) ApproveProject(ctx sdk.Context, approver sdk.AccAddress, project
 	if !found {
 		return errors.Wrapf(plasticcredit.ErrProjectNotFound, "project with id %d was not found", projectID)
 	}
-	if project.Status == plasticcredit.ProjectStatus_REJECTED {
-		return errors.Wrapf(plasticcredit.ErrProjectRejected, "project with id %d is rejected, and not allowed to approve", projectID)
+	if project.Status != plasticcredit.ProjectStatus_NEW {
+		return errors.Wrapf(plasticcredit.ErrProjectNotNew, "project with id %d is %s, and not allowed to approve", projectID, project.Status)
 	}
 	// At some point, I would like to have some better indexing that would allow us to not have to fetch so many things just to get to the issuer
 	creditClass, found := k.GetCreditClass(ctx, project.CreditClassAbbreviation)
@@ -129,8 +129,8 @@ func (k Keeper) RejectProject(ctx sdk.Context, rejector sdk.AccAddress, projectI
 	if !found {
 		return errors.Wrapf(plasticcredit.ErrProjectNotFound, "project with id %d was not found", projectID)
 	}
-	if project.Status == plasticcredit.ProjectStatus_REJECTED {
-		return errors.Wrapf(plasticcredit.ErrProjectRejected, "project with id %d is rejected, and not allowed to reject", projectID)
+	if project.Status != plasticcredit.ProjectStatus_NEW {
+		return errors.Wrapf(plasticcredit.ErrProjectNotNew, "project with id %d is %s, and not allowed to reject", projectID, project.Status)
 	}
 
 	// At some point, I would like to have some better indexing that would allow us to not have to fetch so many things just to get to the issuer

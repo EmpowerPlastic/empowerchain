@@ -811,7 +811,7 @@ func (s *TestSuite) TestApproveProject() {
 				Approver:  s.sampleIssuerAdmin,
 				ProjectId: s.sampleRejectionProjectId,
 			},
-			err: plasticcredit.ErrProjectRejected,
+			err: plasticcredit.ErrProjectNotNew,
 		},
 	}
 
@@ -907,7 +907,14 @@ func (s *TestSuite) TestRejectProject() {
 				Rejector:  s.sampleIssuerAdmin,
 				ProjectId: s.sampleRejectionProjectId,
 			},
-			err: plasticcredit.ErrProjectRejected,
+			err: plasticcredit.ErrProjectNotNew,
+		},
+		"project already approved": {
+			msg: &plasticcredit.MsgRejectProject{
+				Rejector:  s.sampleIssuerAdmin,
+				ProjectId: s.sampleProjectId,
+			},
+			err: plasticcredit.ErrProjectNotNew,
 		},
 	}
 
