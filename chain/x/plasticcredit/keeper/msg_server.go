@@ -175,6 +175,21 @@ func (m msgServer) ApproveProject(goCtx context.Context, req *plasticcredit.MsgA
 	return &plasticcredit.MsgApproveProjectResponse{}, nil
 }
 
+func (m msgServer) RejectProject(goCtx context.Context, req *plasticcredit.MsgRejectProject) (*plasticcredit.MsgRejectProjectResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	rejector, err := sdk.AccAddressFromBech32(req.Rejector)
+	if err != nil {
+		return nil, errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid rejector address: %s", req.Rejector)
+	}
+
+	if err := m.Keeper.RejectProject(ctx, rejector, req.ProjectId); err != nil {
+		return nil, err
+	}
+
+	return &plasticcredit.MsgRejectProjectResponse{}, nil
+}
+
 func (m msgServer) IssueCredits(goCtx context.Context, req *plasticcredit.MsgIssueCredits) (*plasticcredit.MsgIssueCreditsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 

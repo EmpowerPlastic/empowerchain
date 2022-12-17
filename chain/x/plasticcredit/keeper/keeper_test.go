@@ -29,6 +29,7 @@ type TestSuite struct {
 	sampleApplicantAdmin          string
 	sampleProjectId               uint64
 	sampleUnapprovedProjectId     uint64
+	sampleRejectionProjectId      uint64
 	sampleCreditDenom             string
 }
 
@@ -42,6 +43,7 @@ func NewTestSuite() suite.TestingSuite {
 	t.sampleApplicantAdmin = sample.AccAddress()
 	t.sampleProjectId = 1
 	t.sampleUnapprovedProjectId = 2
+	t.sampleRejectionProjectId = 3
 	t.sampleCreditDenom = "EMP/123"
 	return t
 }
@@ -117,9 +119,24 @@ func (s *TestSuite) PopulateWithSamples() {
 	s.Require().NoError(err)
 	s.Require().Equal(s.sampleUnapprovedProjectId, respUnapprovedProject.ProjectId)
 
+	respRejectionProject, err := ms.CreateProject(goCtx, &plasticcredit.MsgCreateProject{
+		Creator:                 s.sampleApplicantAdmin,
+		ApplicantId:             s.sampleApplicantId,
+		CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
+		Name:                    "no bueno project",
+	})
+	s.Require().NoError(err)
+	s.Require().Equal(s.sampleRejectionProjectId, respRejectionProject.ProjectId)
+
 	_, err = ms.ApproveProject(goCtx, &plasticcredit.MsgApproveProject{
 		Approver:  s.sampleIssuerAdmin,
 		ProjectId: s.sampleProjectId,
+	})
+	s.Require().NoError(err)
+
+	_, err = ms.RejectProject(goCtx, &plasticcredit.MsgRejectProject{
+		Rejector:  s.sampleIssuerAdmin,
+		ProjectId: s.sampleRejectionProjectId,
 	})
 	s.Require().NoError(err)
 

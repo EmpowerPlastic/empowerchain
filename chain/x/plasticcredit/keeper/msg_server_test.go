@@ -666,12 +666,12 @@ func (s *TestSuite) TestCreateProject() {
 
 			if err == nil {
 				idCounters := k.GetIDCounters(s.ctx)
-				s.Require().Equal(uint64(4), idCounters.NextProjectId)
+				s.Require().Equal(uint64(5), idCounters.NextProjectId)
 
 				project, found := k.GetProject(s.ctx, resp.ProjectId)
 				s.Require().True(found)
 				s.Require().Equal(plasticcredit.Project{
-					Id:                      3,
+					Id:                      4,
 					ApplicantId:             tc.msg.ApplicantId,
 					CreditClassAbbreviation: tc.msg.CreditClassAbbreviation,
 					Name:                    tc.msg.Name,
@@ -806,6 +806,13 @@ func (s *TestSuite) TestApproveProject() {
 			},
 			err: plasticcredit.ErrProjectNotFound,
 		},
+		"project already rejected": {
+			msg: &plasticcredit.MsgApproveProject{
+				Approver:  s.sampleIssuerAdmin,
+				ProjectId: s.sampleRejectionProjectId,
+			},
+			err: plasticcredit.ErrProjectNotNew,
+		},
 	}
 
 	for name, tc := range testCases {
@@ -836,14 +843,117 @@ func (s *TestSuite) TestApproveProject() {
 				s.Require().Len(events, 2)
 				parsedEvent, err := sdk.ParseTypedEvent(events[1])
 				s.Require().NoError(err)
-				eventUpdateIssuer, ok := parsedEvent.(*plasticcredit.EventProjectApproved)
+				eventProjectApproved, ok := parsedEvent.(*plasticcredit.EventProjectApproved)
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventProjectApproved{
 					ProjectId:                          project.Id,
 					ApprovedForCreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 					ApprovingIssuerId:                  s.sampleIssuerId,
 					ApprovedBy:                         tc.msg.Approver,
-				}, eventUpdateIssuer)
+				}, eventProjectApproved)
+
+			} else {
+				s.Require().Equal(plasticcredit.ProjectStatus_NEW, project.Status)
+				s.Require().Len(events, 1)
+			}
+		})
+	}
+}
+
+func (s *TestSuite) TestRejectProject() {
+	extraIssuerAdmin := sample.AccAddress()
+
+	testCases := map[string]struct {
+		msg *plasticcredit.MsgRejectProject
+		err error
+	}{
+		"happy path": {
+			msg: &plasticcredit.MsgRejectProject{
+				Rejector:  s.sampleIssuerAdmin,
+				ProjectId: s.sampleUnapprovedProjectId,
+			},
+			err: nil,
+		},
+		"unauthorized issuer admin": {
+			msg: &plasticcredit.MsgRejectProject{
+				Rejector:  sample.AccAddress(),
+				ProjectId: s.sampleUnapprovedProjectId,
+			},
+			err: sdkerrors.ErrUnauthorized,
+		},
+		"issuer admin on a different issuer": {
+			msg: &plasticcredit.MsgRejectProject{
+				Rejector:  extraIssuerAdmin,
+				ProjectId: s.sampleUnapprovedProjectId,
+			},
+			err: sdkerrors.ErrUnauthorized,
+		},
+		"applicant admin cannot reject project": {
+			msg: &plasticcredit.MsgRejectProject{
+				Rejector:  s.sampleApplicantAdmin,
+				ProjectId: s.sampleUnapprovedProjectId,
+			},
+			err: sdkerrors.ErrUnauthorized,
+		},
+		"project not found": {
+			msg: &plasticcredit.MsgRejectProject{
+				Rejector:  s.sampleIssuerAdmin,
+				ProjectId: 42,
+			},
+			err: plasticcredit.ErrProjectNotFound,
+		},
+		"project already rejected": {
+			msg: &plasticcredit.MsgRejectProject{
+				Rejector:  s.sampleIssuerAdmin,
+				ProjectId: s.sampleRejectionProjectId,
+			},
+			err: plasticcredit.ErrProjectNotNew,
+		},
+		"project already approved": {
+			msg: &plasticcredit.MsgRejectProject{
+				Rejector:  s.sampleIssuerAdmin,
+				ProjectId: s.sampleProjectId,
+			},
+			err: plasticcredit.ErrProjectNotNew,
+		},
+	}
+
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			s.SetupTest()
+			s.PopulateWithSamples()
+			k := s.empowerApp.PlasticcreditKeeper
+			goCtx := sdk.WrapSDKContext(s.ctx)
+			ms := keeper.NewMsgServerImpl(k)
+
+			_, err := ms.CreateIssuer(sdk.WrapSDKContext(s.ctx), &plasticcredit.MsgCreateIssuer{
+				Creator:     s.issuerCreator,
+				Name:        "Extra Issuer",
+				Description: "",
+				Admin:       extraIssuerAdmin,
+			})
+			s.Require().NoError(err)
+
+			_, err = ms.RejectProject(goCtx, tc.msg)
+			s.Require().ErrorIs(err, tc.err)
+
+			events := s.ctx.EventManager().ABCIEvents()
+			project, found := k.GetProject(s.ctx, s.sampleUnapprovedProjectId)
+			s.Require().True(found)
+
+			if err == nil {
+				s.Require().Equal(plasticcredit.ProjectStatus_REJECTED, project.Status)
+				s.Require().Len(events, 2)
+				parsedEvent, err := sdk.ParseTypedEvent(events[1])
+				s.Require().NoError(err)
+				eventProjectRejected, ok := parsedEvent.(*plasticcredit.EventProjectRejected)
+				s.Require().True(ok)
+				s.Require().Equal(&plasticcredit.EventProjectRejected{
+					ProjectId:                          project.Id,
+					RejectedForCreditClassAbbreviation: s.sampleCreditClassAbbreviation,
+					RejectingIssuerId:                  s.sampleIssuerId,
+					RejectedBy:                         tc.msg.Rejector,
+				}, eventProjectRejected)
 
 			} else {
 				s.Require().Equal(plasticcredit.ProjectStatus_NEW, project.Status)
@@ -929,7 +1039,16 @@ func (s *TestSuite) TestIssueCredits() {
 			expectedAmount: 0,
 			err:            plasticcredit.ErrProjectNotApproved,
 		},
-		// TODO: Test rejected project also
+		"issue credits to rejected project": {
+			msg: &plasticcredit.MsgIssueCredits{
+				Creator:      s.sampleIssuerAdmin,
+				ProjectId:    s.sampleRejectionProjectId,
+				SerialNumber: "456",
+				CreditAmount: 1000,
+			},
+			expectedAmount: 0,
+			err:            plasticcredit.ErrProjectNotApproved,
+		},
 	}
 
 	for name, tc := range testCases {

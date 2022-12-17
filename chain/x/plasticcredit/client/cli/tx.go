@@ -30,6 +30,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(MsgCreateProjectCmd())
 	cmd.AddCommand(MsgUpdateProjectCmd())
 	cmd.AddCommand(MsgApproveProjectCmd())
+	cmd.AddCommand(MsgRejectProjectCmd())
 	cmd.AddCommand(MsgIssueCreditsCmd())
 	cmd.AddCommand(MsgTransferCreditsCmd())
 	cmd.AddCommand(MsgRetireCreditsCmd())
@@ -324,6 +325,37 @@ func MsgApproveProjectCmd() *cobra.Command {
 
 			msg := plasticcredit.MsgApproveProject{
 				Approver:  approver.String(),
+				ProjectId: projectID,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func MsgRejectProjectCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "reject-project [project-id]",
+		Short: "Reject a project for the credit-class they are associated with.",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			rejector := clientCtx.GetFromAddress()
+			projectID, err := cast.ToUint64E(args[0])
+			if err != nil {
+				return err
+			}
+
+			msg := plasticcredit.MsgRejectProject{
+				Rejector:  rejector.String(),
 				ProjectId: projectID,
 			}
 

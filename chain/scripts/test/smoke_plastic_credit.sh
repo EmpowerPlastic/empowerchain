@@ -100,6 +100,39 @@ if [ "$STATUS" != "APPROVED" ]; then
   exit 1
 fi
 
+echo "--- Test: Plastic Credit Reject Projects ---"
+empowerd tx plasticcredit create-project 1 PCRD "My Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd tx plasticcredit create-project 2 PCRD "My Other Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd q plasticcredit project 4
+empowerd q plasticcredit project 5
+empowerd tx pc reject-project 4 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+STATUS=$(empowerd q plasticcredit project 4 -o json | jq -r ".project.status")
+if [ "$STATUS" != "REJECTED" ]; then
+  echo "Error: project was not rejected, it was: $STATUS"
+  exit 1
+fi
+empowerd tx pc reject-project 5 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+STATUS=$(empowerd q plasticcredit project 5 -o json | jq -r ".project.status")
+if [ "$STATUS" != "REJECTED" ]; then
+  echo "Error: project was not rejected, it was: $STATUS"
+  exit 1
+fi
+{
+  empowerd tx pc approve-project 5 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+  sleep 5
+} || {
+  echo "Unable to approve a rejected project, it was: $STATUS"
+}
+STATUS=$(empowerd q plasticcredit project 5 -o json | jq -r ".project.status")
+if [ "$STATUS" != "REJECTED" ]; then
+  echo "Error: shouldn't be able to approve a rejected project, it was: $STATUS"
+  exit 1
+fi
+
 echo "--- Test: Plastic Credit Issuance, Transfer and Retirement ---"
 empowerd tx pc issue-credits 1 123 1000 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
 sleep 5
