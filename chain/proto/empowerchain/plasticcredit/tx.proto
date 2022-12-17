@@ -42,6 +42,9 @@ service Msg {
   // ApproveProject
   rpc ApproveProject(MsgApproveProject) returns(MsgApproveProjectResponse);
 
+  // RejectProject
+  rpc RejectProject(MsgRejectProject) returns(MsgRejectProjectResponse);
+
   // IssueCredits mints new credits related to given credit class and project
   rpc IssueCredits(MsgIssueCredits) returns (MsgIssueCreditsResponse);
 
@@ -178,6 +181,17 @@ message MsgApproveProject {
 }
 
 message MsgApproveProjectResponse {}
+
+message MsgRejectProject {
+  option (cosmos.msg.v1.signer) = "rejector";
+
+  // Rejector needs to be someone who has the authority to approve/ reject for the credit class of the project
+  string rejector = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  uint64 project_id = 2;
+}
+
+message MsgRejectProjectResponse {}
 
 message MsgIssueCredits {
   option (cosmos.msg.v1.signer) = "creator";

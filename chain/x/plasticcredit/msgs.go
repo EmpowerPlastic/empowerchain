@@ -17,6 +17,7 @@ var (
 	_ sdk.Msg = &MsgCreateProject{}
 	_ sdk.Msg = &MsgUpdateProject{}
 	_ sdk.Msg = &MsgApproveProject{}
+	_ sdk.Msg = &MsgRejectProject{}
 	_ sdk.Msg = &MsgIssueCredits{}
 	_ sdk.Msg = &MsgTransferCredits{}
 	_ sdk.Msg = &MsgRetireCredits{}
@@ -275,6 +276,27 @@ func (m *MsgApproveProject) GetSigners() []sdk.AccAddress {
 		panic(err)
 	}
 	return []sdk.AccAddress{approver}
+}
+
+func (m *MsgRejectProject) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Rejector)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid rejector address (%s)", err)
+	}
+
+	if m.ProjectId == 0 {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "project_id cannot be 0")
+	}
+
+	return nil
+}
+
+func (m *MsgRejectProject) GetSigners() []sdk.AccAddress {
+	rejector, err := sdk.AccAddressFromBech32(m.Rejector)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{rejector}
 }
 
 func (m *MsgIssueCredits) ValidateBasic() error {

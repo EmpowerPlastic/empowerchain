@@ -37,6 +37,7 @@ var (
 	ErrCreditClassDuplicate         = errors.Register(ModuleName, 4409, "duplicate credit class detected")
 
 	ErrProjectNotApproved = errors.Register(ModuleName, 5001, "project is not approved")
+	ErrProjectNotNew      = errors.Register(ModuleName, 5002, "project is approved / rejected")
 	ErrProjectNotFound    = errors.Register(ModuleName, 5404, "project not found")
 	ErrProjectDuplicate   = errors.Register(ModuleName, 5409, "duplicate project detected")
 
