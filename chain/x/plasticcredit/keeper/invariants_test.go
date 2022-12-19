@@ -56,7 +56,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 		})
 		s.Require().NoError(err)
 
-		invariant := keeper.TotalSupply(k)
+		invariant := keeper.TotalSupplyInvariant(k)
 		_, broken := invariant(s.ctx)
 		s.Require().False(broken)
 	})

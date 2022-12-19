@@ -139,7 +139,7 @@ func (k Keeper) setProject(ctx sdk.Context, project plasticcredit.Project) error
 	return nil
 }
 
-func (k Keeper) iterateProjects(ctx sdk.Context, handler func(project plasticcredit.Project) bool) {
+func (k Keeper) iterateProjects(ctx sdk.Context, handler func(project plasticcredit.Project)) {
 	store := k.getProjectStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
@@ -148,9 +148,7 @@ func (k Keeper) iterateProjects(ctx sdk.Context, handler func(project plasticcre
 	for ; iterator.Valid(); iterator.Next() {
 		var project plasticcredit.Project
 		k.cdc.MustUnmarshal(iterator.Value(), &project)
-		if handler(project) {
-			break
-		}
+		handler(project)
 	}
 }
 

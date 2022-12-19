@@ -298,7 +298,7 @@ func (k Keeper) setCreditBalance(ctx sdk.Context, balance plasticcredit.CreditBa
 	return nil
 }
 
-func (k Keeper) iterateCreditCollections(ctx sdk.Context, handler func(creditCollection plasticcredit.CreditCollection) bool) {
+func (k Keeper) iterateCreditCollections(ctx sdk.Context, handler func(creditCollection plasticcredit.CreditCollection)) {
 	store := k.getCreditCollectionStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
@@ -307,13 +307,11 @@ func (k Keeper) iterateCreditCollections(ctx sdk.Context, handler func(creditCol
 	for ; iterator.Valid(); iterator.Next() {
 		var creditCollection plasticcredit.CreditCollection
 		k.cdc.MustUnmarshal(iterator.Value(), &creditCollection)
-		if handler(creditCollection) {
-			break
-		}
+		handler(creditCollection)
 	}
 }
 
-func (k Keeper) iterateCreditBalances(ctx sdk.Context, handler func(creditBalance plasticcredit.CreditBalance) bool) {
+func (k Keeper) iterateCreditBalances(ctx sdk.Context, handler func(creditBalance plasticcredit.CreditBalance)) {
 	store := k.getCreditBalanceStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
@@ -322,9 +320,7 @@ func (k Keeper) iterateCreditBalances(ctx sdk.Context, handler func(creditBalanc
 	for ; iterator.Valid(); iterator.Next() {
 		var creditBalance plasticcredit.CreditBalance
 		k.cdc.MustUnmarshal(iterator.Value(), &creditBalance)
-		if handler(creditBalance) {
-			break
-		}
+		handler(creditBalance)
 	}
 }
 

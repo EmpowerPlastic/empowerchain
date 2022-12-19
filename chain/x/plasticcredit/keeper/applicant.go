@@ -96,7 +96,7 @@ func (k Keeper) setApplicant(ctx sdk.Context, applicant plasticcredit.Applicant)
 	return nil
 }
 
-func (k Keeper) iterateApplicants(ctx sdk.Context, handler func(applicant plasticcredit.Applicant) bool) {
+func (k Keeper) iterateApplicants(ctx sdk.Context, handler func(applicant plasticcredit.Applicant)) {
 	store := k.getApplicantStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
@@ -105,9 +105,7 @@ func (k Keeper) iterateApplicants(ctx sdk.Context, handler func(applicant plasti
 	for ; iterator.Valid(); iterator.Next() {
 		var applicant plasticcredit.Applicant
 		k.cdc.MustUnmarshal(iterator.Value(), &applicant)
-		if handler(applicant) {
-			break
-		}
+		handler(applicant)
 	}
 }
 

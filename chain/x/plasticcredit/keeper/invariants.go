@@ -9,17 +9,17 @@ import (
 )
 
 func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
-	ir.RegisterRoute(types.ModuleName, "total-supply", TotalSupply(k))
+	ir.RegisterRoute(types.ModuleName, "total-supply", TotalSupplyInvariant(k))
 }
 
 func AllInvariants(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		return TotalSupply(k)(ctx)
+		return TotalSupplyInvariant(k)(ctx)
 	}
 }
 
 // TotalSupply checks that the total supply reflects all the credits held in accounts
-func TotalSupply(k Keeper) sdk.Invariant {
+func TotalSupplyInvariant(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		var (
 			msg   string
@@ -29,7 +29,7 @@ func TotalSupply(k Keeper) sdk.Invariant {
 			Active  uint64
 			Retired uint64
 		})
-		k.iterateCreditBalances(ctx, func(creditBalance plasticcredit.CreditBalance) bool {
+		k.iterateCreditBalances(ctx, func(creditBalance plasticcredit.CreditBalance) {
 			if totalSupply, ok := totalSupplies[creditBalance.Denom]; ok {
 				totalSupply.Active += creditBalance.Balance.Active
 				totalSupply.Retired += creditBalance.Balance.Retired
@@ -39,15 +39,13 @@ func TotalSupply(k Keeper) sdk.Invariant {
 				totalSupply.Retired = creditBalance.Balance.Retired
 				totalSupplies[creditBalance.Denom] = totalSupply
 			}
-			return false
 		})
 
-		k.iterateCreditCollections(ctx, func(creditCollection plasticcredit.CreditCollection) bool {
+		k.iterateCreditCollections(ctx, func(creditCollection plasticcredit.CreditCollection) {
 			if totalSupplies[creditCollection.Denom].Active != creditCollection.TotalAmount.Active || totalSupplies[creditCollection.Denom].Retired != creditCollection.TotalAmount.Retired {
 				count++
 				msg += fmt.Sprintf("%s collection has %d active and %d retired credits, but the total of active is %d and retired is %d\n", creditCollection.Denom, creditCollection.TotalAmount.Active, creditCollection.TotalAmount.Retired, totalSupplies[creditCollection.Denom].Active, totalSupplies[creditCollection.Denom].Retired)
 			}
-			return false
 		})
 		broken := count != 0
 		return sdk.FormatInvariant(plasticcredit.ModuleName, "total supply",

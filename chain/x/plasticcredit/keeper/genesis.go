@@ -58,29 +58,23 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *plasticcredit.GenesisState {
 
 	genesis.Params = k.GetParams(ctx)
 	genesis.IdCounters = k.GetIDCounters(ctx)
-	k.iterateIssuers(ctx, func(issuer plasticcredit.Issuer) bool {
+	k.iterateIssuers(ctx, func(issuer plasticcredit.Issuer) {
 		genesis.Issuers = append(genesis.Issuers, issuer)
-		return false
 	})
-	k.iterateApplicants(ctx, func(applicant plasticcredit.Applicant) bool {
+	k.iterateApplicants(ctx, func(applicant plasticcredit.Applicant) {
 		genesis.Applicants = append(genesis.Applicants, applicant)
-		return false
 	})
-	k.iterateCreditClasses(ctx, func(creditClass plasticcredit.CreditClass) bool {
+	k.iterateCreditClasses(ctx, func(creditClass plasticcredit.CreditClass) {
 		genesis.CreditClasses = append(genesis.CreditClasses, creditClass)
-		return false
 	})
-	k.iterateProjects(ctx, func(project plasticcredit.Project) bool {
+	k.iterateProjects(ctx, func(project plasticcredit.Project) {
 		genesis.Projects = append(genesis.Projects, project)
-		return false
 	})
-	k.iterateCreditCollections(ctx, func(creditCollection plasticcredit.CreditCollection) bool {
+	k.iterateCreditCollections(ctx, func(creditCollection plasticcredit.CreditCollection) {
 		genesis.CreditCollections = append(genesis.CreditCollections, creditCollection)
-		return false
 	})
-	k.iterateCreditBalances(ctx, func(creditBalance plasticcredit.CreditBalance) bool {
+	k.iterateCreditBalances(ctx, func(creditBalance plasticcredit.CreditBalance) {
 		genesis.CreditBalances = append(genesis.CreditBalances, creditBalance)
-		return false
 	})
 
 	return &genesis
