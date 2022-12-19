@@ -94,7 +94,9 @@ func (k Keeper) ApproveProject(ctx sdk.Context, approver sdk.AccAddress, project
 	if !found {
 		return errors.Wrapf(plasticcredit.ErrProjectNotFound, "project with id %d was not found", projectID)
 	}
-
+	if project.Status != plasticcredit.ProjectStatus_NEW {
+		return errors.Wrapf(plasticcredit.ErrProjectNotNew, "project with id %d is %s, and not allowed to approve", projectID, project.Status)
+	}
 	// At some point, I would like to have some better indexing that would allow us to not have to fetch so many things just to get to the issuer
 	creditClass, found := k.GetCreditClass(ctx, project.CreditClassAbbreviation)
 	if !found {
@@ -119,6 +121,42 @@ func (k Keeper) ApproveProject(ctx sdk.Context, approver sdk.AccAddress, project
 		ApprovedForCreditClassAbbreviation: creditClass.Abbreviation,
 		ApprovingIssuerId:                  issuer.Id,
 		ApprovedBy:                         approver.String(),
+	})
+}
+
+func (k Keeper) RejectProject(ctx sdk.Context, rejector sdk.AccAddress, projectID uint64) error {
+	project, found := k.GetProject(ctx, projectID)
+	if !found {
+		return errors.Wrapf(plasticcredit.ErrProjectNotFound, "project with id %d was not found", projectID)
+	}
+	if project.Status != plasticcredit.ProjectStatus_NEW {
+		return errors.Wrapf(plasticcredit.ErrProjectNotNew, "project with id %d is %s, and not allowed to reject", projectID, project.Status)
+	}
+
+	// At some point, I would like to have some better indexing that would allow us to not have to fetch so many things just to get to the issuer
+	creditClass, found := k.GetCreditClass(ctx, project.CreditClassAbbreviation)
+	if !found {
+		panic("The project was found, the credit class better exist!")
+	}
+	issuer, found := k.GetIssuer(ctx, creditClass.IssuerId)
+	if !found {
+		panic("The credit class was found, the issuer better exist!")
+	}
+
+	if !issuer.AddressHasAuthorization(rejector) {
+		return errors.Wrapf(sdkerrors.ErrUnauthorized, "rejector %s does not have authorization on issuer with id %d", rejector.String(), issuer.Id)
+	}
+
+	project.Status = plasticcredit.ProjectStatus_REJECTED
+	if err := k.setProject(ctx, project); err != nil {
+		return err
+	}
+
+	return ctx.EventManager().EmitTypedEvent(&plasticcredit.EventProjectRejected{
+		ProjectId:                          project.Id,
+		RejectedForCreditClassAbbreviation: creditClass.Abbreviation,
+		RejectingIssuerId:                  issuer.Id,
+		RejectedBy:                         rejector.String(),
 	})
 }
 
