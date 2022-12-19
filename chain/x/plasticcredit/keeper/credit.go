@@ -298,7 +298,7 @@ func (k Keeper) setCreditBalance(ctx sdk.Context, balance plasticcredit.CreditBa
 	return nil
 }
 
-func (k Keeper) iterateCreditCollections(ctx sdk.Context, handler func(creditCollection plasticcredit.CreditCollection)) {
+func (k Keeper) IterateCreditCollections(ctx sdk.Context, handler func(creditCollection plasticcredit.CreditCollection)) {
 	store := k.getCreditCollectionStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
@@ -311,7 +311,7 @@ func (k Keeper) iterateCreditCollections(ctx sdk.Context, handler func(creditCol
 	}
 }
 
-func (k Keeper) iterateCreditBalances(ctx sdk.Context, handler func(creditBalance plasticcredit.CreditBalance)) {
+func (k Keeper) IterateCreditBalances(ctx sdk.Context, handler func(creditBalance plasticcredit.CreditBalance)) {
 	store := k.getCreditBalanceStore(ctx)
 
 	iterator := store.Iterator(nil, nil)

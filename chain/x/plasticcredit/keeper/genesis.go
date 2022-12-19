@@ -70,10 +70,10 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *plasticcredit.GenesisState {
 	k.iterateProjects(ctx, func(project plasticcredit.Project) {
 		genesis.Projects = append(genesis.Projects, project)
 	})
-	k.iterateCreditCollections(ctx, func(creditCollection plasticcredit.CreditCollection) {
+	k.IterateCreditCollections(ctx, func(creditCollection plasticcredit.CreditCollection) {
 		genesis.CreditCollections = append(genesis.CreditCollections, creditCollection)
 	})
-	k.iterateCreditBalances(ctx, func(creditBalance plasticcredit.CreditBalance) {
+	k.IterateCreditBalances(ctx, func(creditBalance plasticcredit.CreditBalance) {
 		genesis.CreditBalances = append(genesis.CreditBalances, creditBalance)
 	})
 

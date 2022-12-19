@@ -7,57 +7,224 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+type HappyInvariantKeeper struct {
+}
+
+func (k HappyInvariantKeeper) IterateCreditCollections(ctx sdk.Context, handler func(creditCollection plasticcredit.CreditCollection)) {
+	creditCollections := []plasticcredit.CreditCollection{
+		{
+			Denom:     "EMP/123",
+			ProjectId: 1,
+			TotalAmount: plasticcredit.CreditAmount{
+				Active:  1000,
+				Retired: 200,
+			},
+		},
+		{
+			Denom:     "PCRD/0001",
+			ProjectId: 2,
+			TotalAmount: plasticcredit.CreditAmount{
+				Active:  100,
+				Retired: 0,
+			},
+		},
+	}
+	for _, creditCollection := range creditCollections {
+		handler(creditCollection)
+	}
+}
+
+func (k HappyInvariantKeeper) IterateCreditBalances(ctx sdk.Context, handler func(creditBalance plasticcredit.CreditBalance)) {
+	creditBalances := []plasticcredit.CreditBalance{
+		{
+			Owner: sample.AccAddress(),
+			Denom: "EMP/123",
+			Balance: plasticcredit.CreditAmount{
+				Active:  200,
+				Retired: 0,
+			},
+		},
+		{
+			Owner: sample.AccAddress(),
+			Denom: "EMP/123",
+			Balance: plasticcredit.CreditAmount{
+				Active:  800,
+				Retired: 100,
+			},
+		},
+		{
+			Owner: sample.AccAddress(),
+			Denom: "EMP/123",
+			Balance: plasticcredit.CreditAmount{
+				Active:  0,
+				Retired: 100,
+			},
+		},
+		{
+			Owner: sample.AccAddress(),
+			Denom: "PCRD/0001",
+			Balance: plasticcredit.CreditAmount{
+				Active:  100,
+				Retired: 0,
+			},
+		},
+	}
+	for _, creditBalance := range creditBalances {
+		handler(creditBalance)
+	}
+}
+
+type InvalidActiveBalanceInvariantKeeper struct {
+}
+
+func (k InvalidActiveBalanceInvariantKeeper) IterateCreditCollections(ctx sdk.Context, handler func(creditCollection plasticcredit.CreditCollection)) {
+	creditCollections := []plasticcredit.CreditCollection{
+		{
+			Denom:     "EMP/123",
+			ProjectId: 1,
+			TotalAmount: plasticcredit.CreditAmount{
+				Active:  1000,
+				Retired: 200,
+			},
+		},
+		{
+			Denom:     "PCRD/0001",
+			ProjectId: 2,
+			TotalAmount: plasticcredit.CreditAmount{
+				Active:  100,
+				Retired: 0,
+			},
+		},
+	}
+	for _, creditCollection := range creditCollections {
+		handler(creditCollection)
+	}
+}
+
+func (k InvalidActiveBalanceInvariantKeeper) IterateCreditBalances(ctx sdk.Context, handler func(creditBalance plasticcredit.CreditBalance)) {
+	creditBalances := []plasticcredit.CreditBalance{
+		{
+			Owner: sample.AccAddress(),
+			Denom: "EMP/123",
+			Balance: plasticcredit.CreditAmount{
+				Active:  180,
+				Retired: 0,
+			},
+		},
+		{
+			Owner: sample.AccAddress(),
+			Denom: "EMP/123",
+			Balance: plasticcredit.CreditAmount{
+				Active:  800,
+				Retired: 100,
+			},
+		},
+		{
+			Owner: sample.AccAddress(),
+			Denom: "EMP/123",
+			Balance: plasticcredit.CreditAmount{
+				Active:  0,
+				Retired: 100,
+			},
+		},
+		{
+			Owner: sample.AccAddress(),
+			Denom: "PCRD/0001",
+			Balance: plasticcredit.CreditAmount{
+				Active:  100,
+				Retired: 0,
+			},
+		},
+	}
+	for _, creditBalance := range creditBalances {
+		handler(creditBalance)
+	}
+}
+
+type InvalidRetiredBalanceInvariantKeeper struct {
+}
+
+func (k InvalidRetiredBalanceInvariantKeeper) IterateCreditCollections(ctx sdk.Context, handler func(creditCollection plasticcredit.CreditCollection)) {
+	creditCollections := []plasticcredit.CreditCollection{
+		{
+			Denom:     "EMP/123",
+			ProjectId: 1,
+			TotalAmount: plasticcredit.CreditAmount{
+				Active:  1000,
+				Retired: 200,
+			},
+		},
+		{
+			Denom:     "PCRD/0001",
+			ProjectId: 2,
+			TotalAmount: plasticcredit.CreditAmount{
+				Active:  100,
+				Retired: 0,
+			},
+		},
+	}
+	for _, creditCollection := range creditCollections {
+		handler(creditCollection)
+	}
+}
+
+func (k InvalidRetiredBalanceInvariantKeeper) IterateCreditBalances(ctx sdk.Context, handler func(creditBalance plasticcredit.CreditBalance)) {
+	creditBalances := []plasticcredit.CreditBalance{
+		{
+			Owner: sample.AccAddress(),
+			Denom: "EMP/123",
+			Balance: plasticcredit.CreditAmount{
+				Active:  200,
+				Retired: 100,
+			},
+		},
+		{
+			Owner: sample.AccAddress(),
+			Denom: "EMP/123",
+			Balance: plasticcredit.CreditAmount{
+				Active:  800,
+				Retired: 100,
+			},
+		},
+		{
+			Owner: sample.AccAddress(),
+			Denom: "EMP/123",
+			Balance: plasticcredit.CreditAmount{
+				Active:  0,
+				Retired: 100,
+			},
+		},
+		{
+			Owner: sample.AccAddress(),
+			Denom: "PCRD/0001",
+			Balance: plasticcredit.CreditAmount{
+				Active:  100,
+				Retired: 0,
+			},
+		},
+	}
+	for _, creditBalance := range creditBalances {
+		handler(creditBalance)
+	}
+}
+
 func (s *TestSuite) TestTotalSuppliesInvariant() {
 	s.Run("happy path", func() {
-		s.SetupTest()
-		s.PopulateWithSamples()
-		k := s.empowerApp.PlasticcreditKeeper
-		goCtx := sdk.WrapSDKContext(s.ctx)
-		ms := keeper.NewMsgServerImpl(k)
-
-		_, err := ms.IssueCredits(goCtx, &plasticcredit.MsgIssueCredits{
-			Creator:      s.sampleIssuerAdmin,
-			ProjectId:    s.sampleProjectId,
-			SerialNumber: "123",
-			CreditAmount: 10000,
-		})
-		s.Require().NoError(err)
-
-		_, err = ms.IssueCredits(goCtx, &plasticcredit.MsgIssueCredits{
-			Creator:      s.sampleIssuerAdmin,
-			ProjectId:    s.sampleProjectId,
-			SerialNumber: "00001",
-			CreditAmount: 10000,
-		})
-		s.Require().NoError(err)
-
-		_, err = ms.TransferCredits(goCtx, &plasticcredit.MsgTransferCredits{
-			From:   s.sampleApplicantAdmin,
-			To:     sample.AccAddress(),
-			Denom:  s.sampleCreditClassAbbreviation + "/123",
-			Amount: 25,
-			Retire: false,
-		})
-		s.Require().NoError(err)
-
-		_, err = ms.TransferCredits(goCtx, &plasticcredit.MsgTransferCredits{
-			From:   s.sampleApplicantAdmin,
-			To:     sample.AccAddress(),
-			Denom:  s.sampleCreditClassAbbreviation + "/00001",
-			Amount: 510,
-			Retire: true,
-		})
-		s.Require().NoError(err)
-
-		_, err = ms.RetireCredits(goCtx, &plasticcredit.MsgRetireCredits{
-			Owner:  s.sampleApplicantAdmin,
-			Denom:  s.sampleCreditClassAbbreviation + "/00001",
-			Amount: 15,
-		})
-		s.Require().NoError(err)
-
+		k := HappyInvariantKeeper{}
 		invariant := keeper.TotalSupplyInvariant(k)
 		_, broken := invariant(s.ctx)
 		s.Require().False(broken)
+	})
+	s.Run("invalid active balance", func() {
+		k := InvalidActiveBalanceInvariantKeeper{}
+		invariant := keeper.TotalSupplyInvariant(k)
+		_, broken := invariant(s.ctx)
+		s.Require().True(broken)
+	})
+	s.Run("invalid retired balance", func() {
+		k := InvalidRetiredBalanceInvariantKeeper{}
+		invariant := keeper.TotalSupplyInvariant(k)
+		_, broken := invariant(s.ctx)
+		s.Require().True(broken)
 	})
 }
