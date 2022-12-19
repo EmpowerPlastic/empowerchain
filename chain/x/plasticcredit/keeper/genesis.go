@@ -58,12 +58,24 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *plasticcredit.GenesisState {
 
 	genesis.Params = k.GetParams(ctx)
 	genesis.IdCounters = k.GetIDCounters(ctx)
-	genesis.Issuers = k.getAllIssuers(ctx)
-	genesis.Applicants = k.getAllApplicants(ctx)
-	genesis.CreditClasses = k.getAllCreditClasses(ctx)
-	genesis.Projects = k.getAllProjects(ctx)
-	genesis.CreditCollections = k.getAllCreditCollections(ctx)
-	genesis.CreditBalances = k.getAllCreditBalances(ctx)
+	k.iterateIssuers(ctx, func(issuer plasticcredit.Issuer) {
+		genesis.Issuers = append(genesis.Issuers, issuer)
+	})
+	k.iterateApplicants(ctx, func(applicant plasticcredit.Applicant) {
+		genesis.Applicants = append(genesis.Applicants, applicant)
+	})
+	k.iterateCreditClasses(ctx, func(creditClass plasticcredit.CreditClass) {
+		genesis.CreditClasses = append(genesis.CreditClasses, creditClass)
+	})
+	k.iterateProjects(ctx, func(project plasticcredit.Project) {
+		genesis.Projects = append(genesis.Projects, project)
+	})
+	k.IterateCreditCollections(ctx, func(creditCollection plasticcredit.CreditCollection) {
+		genesis.CreditCollections = append(genesis.CreditCollections, creditCollection)
+	})
+	k.IterateCreditBalances(ctx, func(creditBalance plasticcredit.CreditBalance) {
+		genesis.CreditBalances = append(genesis.CreditBalances, creditBalance)
+	})
 
 	return &genesis
 }

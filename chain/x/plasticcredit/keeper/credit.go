@@ -298,34 +298,30 @@ func (k Keeper) setCreditBalance(ctx sdk.Context, balance plasticcredit.CreditBa
 	return nil
 }
 
-func (k Keeper) getAllCreditCollections(ctx sdk.Context) []plasticcredit.CreditCollection {
+func (k Keeper) IterateCreditCollections(ctx sdk.Context, handler func(creditCollection plasticcredit.CreditCollection)) {
 	store := k.getCreditCollectionStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
 	defer iterator.Close()
 
-	var creditCollections []plasticcredit.CreditCollection
 	for ; iterator.Valid(); iterator.Next() {
 		var creditCollection plasticcredit.CreditCollection
 		k.cdc.MustUnmarshal(iterator.Value(), &creditCollection)
-		creditCollections = append(creditCollections, creditCollection)
+		handler(creditCollection)
 	}
-	return creditCollections
 }
 
-func (k Keeper) getAllCreditBalances(ctx sdk.Context) []plasticcredit.CreditBalance {
+func (k Keeper) IterateCreditBalances(ctx sdk.Context, handler func(creditBalance plasticcredit.CreditBalance)) {
 	store := k.getCreditBalanceStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
 	defer iterator.Close()
 
-	var creditBalances []plasticcredit.CreditBalance
 	for ; iterator.Valid(); iterator.Next() {
 		var creditBalance plasticcredit.CreditBalance
 		k.cdc.MustUnmarshal(iterator.Value(), &creditBalance)
-		creditBalances = append(creditBalances, creditBalance)
+		handler(creditBalance)
 	}
-	return creditBalances
 }
 
 func (k Keeper) getCreditCollectionStore(ctx sdk.Context) storetypes.KVStore {
