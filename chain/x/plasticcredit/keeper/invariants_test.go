@@ -1,6 +1,8 @@
 package keeper_test
 
 import (
+	"strings"
+
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
@@ -29,6 +31,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 		creditCollections []plasticcredit.CreditCollection
 		creditBalances    []plasticcredit.CreditBalance
 		expBroken         bool
+		messageBroken     string
 	}{
 		"happy path": {
 			creditCollections: []plasticcredit.CreditCollection{
@@ -83,7 +86,8 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 					},
 				},
 			},
-			expBroken: false,
+			expBroken:     false,
+			messageBroken: "amount of invalid supplies found 0",
 		},
 		"invalid active balance": {
 			creditCollections: []plasticcredit.CreditCollection{
@@ -138,7 +142,8 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 					},
 				},
 			},
-			expBroken: true,
+			expBroken:     true,
+			messageBroken: "amount of invalid supplies found 1\nPCRD/0001 collection has 80 active and 0 retired credits, but the total of active is 100 and retired is 0",
 		},
 		"invalid retired balance": {
 			creditCollections: []plasticcredit.CreditCollection{
@@ -193,14 +198,16 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 					},
 				},
 			},
-			expBroken: true,
+			expBroken:     true,
+			messageBroken: "amount of invalid supplies found 1\nPCRD/0001 collection has 100 active and 20 retired credits, but the total of active is 100 and retired is 0",
 		},
 	}
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			k := MockInvariantKeeper{creditCollections: tc.creditCollections, creditBalances: tc.creditBalances}
 			invariant := keeper.TotalSupplyInvariant(k)
-			_, broken := invariant(s.ctx)
+			message, broken := invariant(s.ctx)
+			s.Require().True(strings.Contains(message, tc.messageBroken))
 			s.Require().Equal(tc.expBroken, broken)
 		})
 	}
