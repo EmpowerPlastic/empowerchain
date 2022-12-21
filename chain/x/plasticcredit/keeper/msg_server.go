@@ -190,6 +190,21 @@ func (m msgServer) RejectProject(goCtx context.Context, req *plasticcredit.MsgRe
 	return &plasticcredit.MsgRejectProjectResponse{}, nil
 }
 
+func (m msgServer) SuspendProject(goCtx context.Context, req *plasticcredit.MsgSuspendProject) (*plasticcredit.MsgSuspendProjectResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	updater, err := sdk.AccAddressFromBech32(req.Updater)
+	if err != nil {
+		return nil, errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid updater address: %s", req.Updater)
+	}
+
+	if err := m.Keeper.SuspendProject(ctx, updater, req.ProjectId); err != nil {
+		return nil, err
+	}
+
+	return &plasticcredit.MsgSuspendProjectResponse{}, nil
+}
+
 func (m msgServer) IssueCredits(goCtx context.Context, req *plasticcredit.MsgIssueCredits) (*plasticcredit.MsgIssueCreditsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 

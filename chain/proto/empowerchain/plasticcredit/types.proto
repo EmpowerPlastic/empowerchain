@@ -45,6 +45,7 @@ enum ProjectStatus {
   NEW = 0;
   APPROVED = 1;
   REJECTED = 2;
+  SUSPENDED = 3;
 }
 
 message Project {
