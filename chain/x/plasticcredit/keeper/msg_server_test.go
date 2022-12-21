@@ -744,10 +744,9 @@ func (s *TestSuite) TestUpdateProject() {
 			s.Require().ErrorIs(err, tc.err)
 
 			events := s.ctx.EventManager().ABCIEvents()
-			project, found := k.GetProject(s.ctx, s.sampleUnapprovedProjectId)
-			s.Require().True(found)
-
 			if err == nil {
+				project, found := k.GetProject(s.ctx, tc.msg.ProjectId)
+				s.Require().True(found)
 				s.Require().Equal(tc.msg.Name, project.Name)
 				s.Require().Len(events, 1)
 				parsedEvent, err := sdk.ParseTypedEvent(events[0])
@@ -813,6 +812,13 @@ func (s *TestSuite) TestApproveProject() {
 			},
 			err: plasticcredit.ErrProjectNotNew,
 		},
+		"approve suspended project": {
+			msg: &plasticcredit.MsgApproveProject{
+				Approver:  s.sampleIssuerAdmin,
+				ProjectId: s.sampleSuspendedProjectId,
+			},
+			err: nil,
+		},
 	}
 
 	for name, tc := range testCases {
@@ -835,10 +841,9 @@ func (s *TestSuite) TestApproveProject() {
 			s.Require().ErrorIs(err, tc.err)
 
 			events := s.ctx.EventManager().ABCIEvents()
-			project, found := k.GetProject(s.ctx, s.sampleUnapprovedProjectId)
-			s.Require().True(found)
-
 			if err == nil {
+				project, found := k.GetProject(s.ctx, tc.msg.ProjectId)
+				s.Require().True(found)
 				s.Require().Equal(plasticcredit.ProjectStatus_APPROVED, project.Status)
 				s.Require().Len(events, 2)
 				parsedEvent, err := sdk.ParseTypedEvent(events[1])
@@ -853,7 +858,6 @@ func (s *TestSuite) TestApproveProject() {
 				}, eventProjectApproved)
 
 			} else {
-				s.Require().Equal(plasticcredit.ProjectStatus_NEW, project.Status)
 				s.Require().Len(events, 1)
 			}
 		})
@@ -945,10 +949,9 @@ func (s *TestSuite) TestRejectProject() {
 			s.Require().ErrorIs(err, tc.err)
 
 			events := s.ctx.EventManager().ABCIEvents()
-			project, found := k.GetProject(s.ctx, s.sampleUnapprovedProjectId)
-			s.Require().True(found)
-
 			if err == nil {
+				project, found := k.GetProject(s.ctx, tc.msg.ProjectId)
+				s.Require().True(found)
 				s.Require().Equal(plasticcredit.ProjectStatus_REJECTED, project.Status)
 				s.Require().Len(events, 2)
 				parsedEvent, err := sdk.ParseTypedEvent(events[1])
@@ -963,7 +966,6 @@ func (s *TestSuite) TestRejectProject() {
 				}, eventProjectRejected)
 
 			} else {
-				s.Require().Equal(plasticcredit.ProjectStatus_NEW, project.Status)
 				s.Require().Len(events, 1)
 			}
 		})
@@ -1055,10 +1057,9 @@ func (s *TestSuite) TestSuspendProject() {
 			s.Require().ErrorIs(err, tc.err)
 
 			events := s.ctx.EventManager().ABCIEvents()
-			project, found := k.GetProject(s.ctx, s.sampleProjectId)
-			s.Require().True(found)
-
 			if err == nil {
+				project, found := k.GetProject(s.ctx, tc.msg.ProjectId)
+				s.Require().True(found)
 				s.Require().Equal(plasticcredit.ProjectStatus_SUSPENDED, project.Status)
 				s.Require().Len(events, 2)
 				parsedEvent, err := sdk.ParseTypedEvent(events[1])
