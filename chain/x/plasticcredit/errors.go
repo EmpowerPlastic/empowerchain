@@ -36,10 +36,11 @@ var (
 	ErrCreditClassNotFound          = errors.Register(ModuleName, 4404, "credit class not found")
 	ErrCreditClassDuplicate         = errors.Register(ModuleName, 4409, "duplicate credit class detected")
 
-	ErrProjectNotApproved = errors.Register(ModuleName, 5001, "project is not approved")
-	ErrProjectNotNew      = errors.Register(ModuleName, 5002, "project is approved / rejected")
-	ErrProjectNotFound    = errors.Register(ModuleName, 5404, "project not found")
-	ErrProjectDuplicate   = errors.Register(ModuleName, 5409, "duplicate project detected")
+	ErrProjectNotApproved    = errors.Register(ModuleName, 5001, "project is not approved")
+	ErrProjectNotNew         = errors.Register(ModuleName, 5002, "project is approved / rejected")
+	ErrProjectNotSuspendable = errors.Register(ModuleName, 5003, "project not suspendable")
+	ErrProjectNotFound       = errors.Register(ModuleName, 5404, "project not found")
+	ErrProjectDuplicate      = errors.Register(ModuleName, 5409, "duplicate project detected")
 
 	ErrCreditCollectionNotFound  = errors.Register(ModuleName, 6404, "credit collection not found")
 	ErrCreditCollectionDuplicate = errors.Register(ModuleName, 6409, "duplicate credit collection detected")

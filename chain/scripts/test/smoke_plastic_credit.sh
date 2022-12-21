@@ -133,6 +133,25 @@ if [ "$STATUS" != "REJECTED" ]; then
   exit 1
 fi
 
+echo "--- Test: Plastic Credit Suspend Projects ---"
+empowerd tx plasticcredit create-project 1 PCRD "My Suspendable Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd tx plasticcredit create-project 1 PCRD "My Other Suspendable Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd q plasticcredit project 6
+empowerd q plasticcredit project 7
+empowerd tx pc approve-project 6 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd tx pc approve-project 7 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+empowerd tx pc suspend-project 6 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+sleep 5
+STATUS=$(empowerd q plasticcredit project 6 -o json | jq -r ".project.status")
+if [ "$STATUS" != "SUSPENDED" ]; then
+  echo "Error: project was not suspended, it was: $STATUS"
+  exit 1
+fi
+
 echo "--- Test: Plastic Credit Issuance, Transfer and Retirement ---"
 empowerd tx pc issue-credits 1 123 1000 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
 sleep 5
