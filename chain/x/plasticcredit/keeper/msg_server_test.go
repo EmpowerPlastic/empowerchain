@@ -1055,7 +1055,7 @@ func (s *TestSuite) TestSuspendProject() {
 			s.Require().ErrorIs(err, tc.err)
 
 			events := s.ctx.EventManager().ABCIEvents()
-			project, found := k.GetProject(s.ctx, s.sampleSuspendedProjectId)
+			project, found := k.GetProject(s.ctx, s.sampleProjectId)
 			s.Require().True(found)
 
 			if err == nil {
