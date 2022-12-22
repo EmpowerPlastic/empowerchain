@@ -16,6 +16,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	dbm "github.com/tendermint/tm-db"
 )
 
@@ -50,7 +52,7 @@ func (s *E2ETestSuite) SetupSuite() {
 
 	s.commonFlags = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
@@ -159,10 +161,40 @@ func (s *E2ETestSuite) SetupSuite() {
 			},
 		},
 	}
-
 	plasticcreditGenesisStateBz, err := s.cfg.Codec.MarshalJSON(&plasticcreditGenesisState)
 	s.Require().NoError(err)
 	genesisState[plasticcredit.ModuleName] = plasticcreditGenesisStateBz
+
+	var bankGenesis banktypes.GenesisState
+	var authGenesis authtypes.GenesisState
+	s.Require().NoError(s.cfg.Codec.UnmarshalJSON(genesisState[banktypes.ModuleName], &bankGenesis))
+	s.Require().NoError(s.cfg.Codec.UnmarshalJSON(genesisState[authtypes.ModuleName], &authGenesis))
+
+	balances := sdk.NewCoins(
+		sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens),
+	)
+
+	issuerAddress := "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+	issuerCreatorAddress := "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7"
+	applicantAddress := "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn"
+	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: issuerAddress, Coins: balances})
+	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: issuerCreatorAddress, Coins: balances})
+	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: applicantAddress, Coins: balances})
+	var genAccounts authtypes.GenesisAccounts
+	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(issuerAddress)))
+	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(issuerCreatorAddress)))
+	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(applicantAddress)))
+	accounts, err := authtypes.PackAccounts(genAccounts)
+	s.Require().NoError(err)
+	authGenesis.Accounts = append(authGenesis.Accounts, accounts...)
+
+	bankGenesisStateBz, err := s.cfg.Codec.MarshalJSON(&bankGenesis)
+	s.Require().NoError(err)
+	authGenesisStateBz, err := s.cfg.Codec.MarshalJSON(&authGenesis)
+	s.Require().NoError(err)
+
+	genesisState[banktypes.ModuleName] = bankGenesisStateBz
+	genesisState[authtypes.ModuleName] = authGenesisStateBz
 	s.cfg.GenesisState = genesisState
 
 	s.cfg.AppConstructor = NewAppConstructor()

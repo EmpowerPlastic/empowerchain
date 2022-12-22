@@ -24,11 +24,3 @@ PlasticCredit module testing suite is configured with a predefined genesis state
 	issuer, err := issuerKey.GetAddress()
 	s.Require().NoError(err)
 ```
-
-Only first validator's context can be used to send queries and transactions to the network. If you need multiple accounts, create them in the 1st validator's keyring:
-
-```go
-	newAccount, _, err := val.ClientCtx.Keyring.NewMnemonic("newAccount", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
-	s.Require().NoError(err)
-
-```
