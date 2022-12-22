@@ -805,12 +805,12 @@ func (s *TestSuite) TestApproveProject() {
 			},
 			err: plasticcredit.ErrProjectNotFound,
 		},
-		"project already rejected": {
+		"approve rejected project": {
 			msg: &plasticcredit.MsgApproveProject{
 				Approver:  s.sampleIssuerAdmin,
 				ProjectId: s.sampleRejectionProjectId,
 			},
-			err: plasticcredit.ErrProjectNotNew,
+			err: nil,
 		},
 		"approve suspended project": {
 			msg: &plasticcredit.MsgApproveProject{
