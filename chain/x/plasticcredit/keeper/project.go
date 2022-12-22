@@ -94,7 +94,12 @@ func (k Keeper) ApproveProject(ctx sdk.Context, approver sdk.AccAddress, project
 	if !found {
 		return errors.Wrapf(plasticcredit.ErrProjectNotFound, "project with id %d was not found", projectID)
 	}
-	if project.Status != plasticcredit.ProjectStatus_NEW && project.Status != plasticcredit.ProjectStatus_SUSPENDED {
+	mapAllowedApproveStatuses := map[plasticcredit.ProjectStatus]bool{
+		plasticcredit.ProjectStatus_NEW:       true,
+		plasticcredit.ProjectStatus_SUSPENDED: true,
+		plasticcredit.ProjectStatus_REJECTED:  true,
+	}
+	if !mapAllowedApproveStatuses[project.Status] {
 		return errors.Wrapf(plasticcredit.ErrProjectNotNew, "project with id %d is %s, and not allowed to approve", projectID, project.Status)
 	}
 	// At some point, I would like to have some better indexing that would allow us to not have to fetch so many things just to get to the issuer
