@@ -13,26 +13,25 @@ import (
 
 func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key("issuer")
+	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKey)
 	s.Require().NoError(err)
-	newAdminKey, err := val.ClientCtx.Keyring.Key("issuerCreator")
+	newAdminKey, err := val.ClientCtx.Keyring.Key(issuerCreatorKey)
 	s.Require().NoError(err)
 	newAdmin, err := newAdminKey.GetAddress()
 	s.Require().NoError(err)
 
-	notIssuerKey, err := val.ClientCtx.Keyring.Key("applicant")
+	notIssuerKey, err := val.ClientCtx.Keyring.Key(applicantKey)
 	s.Require().NoError(err)
 
-	testCases := []struct {
-		name              string
+	testCases := map[string]struct {
 		args              []string
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
 		expectedState     proto.Message
 	}{
-		{
-			"update name, description and admin",
+
+		"update name, description and admin": {
 			[]string{newAdmin.String(), "1", "Empower Plastic", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
 			false,
@@ -44,32 +43,32 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 				Admin:       newAdmin.String(),
 			},
 		},
-		{
-			"update non-existing issuer",
+
+		"update non-existing issuer": {
 			[]string{newAdmin.String(), "2", "Plastic Nemesis Ltd", "How do we start?", fmt.Sprintf("--%s=%s", flags.FlagFrom, newAdminKey.Name)},
 			false,
 			true,
 			"issuer not found",
 			nil,
 		},
-		{
-			"wrong singer",
+
+		"wrong singer": {
 			[]string{newAdmin.String(), "1", "Empower Plastic", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, notIssuerKey.Name)},
 			false,
 			true,
 			"",
 			nil,
 		},
-		{
-			"empty name",
+
+		"empty name": {
 			[]string{newAdmin.String(), "1", "", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, newAdminKey.Name)},
 			true,
 			false,
 			"issuer name cannot be empty",
 			nil,
 		},
-		{
-			"empty description",
+
+		"empty description": {
 			[]string{newAdmin.String(), "1", "Empower Plastic", "", fmt.Sprintf("--%s=%s", flags.FlagFrom, newAdminKey.Name)},
 			false,
 			false,
@@ -81,8 +80,8 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 				Admin:       newAdmin.String(),
 			},
 		},
-		{
-			"invalid admin",
+
+		"invalid admin": {
 			[]string{"invalidaddress", "1", "Empower Plastic", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, newAdminKey.Name)},
 			true,
 			false,
@@ -90,8 +89,8 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 			nil,
 		},
 	}
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
+	for name, tc := range testCases {
+		s.Run(name, func() {
 			cmd := cli.MsgUpdateIssuerCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
 

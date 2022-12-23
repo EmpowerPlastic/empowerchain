@@ -15,11 +15,11 @@
 
 ### PlasticCredit Module
 
-PlasticCredit module testing suite is configured with a predefined genesis state that consists of 1 Issuer, 1 Applicant and 4 Projects (2 in Approved status, 1 in New status and the last one in Rejected status). Applicant's admin also holds pre-minted Plastic Credits `EMP/123` and `PCRD/00001`. First validator of the chain (`s.network.Validators[0]`) has issuer's, applicant's and issuer creator's keys imported into it's keyring. To fetch the key use:
+PlasticCredit module testing suite is configured with a predefined genesis state that consists of 1 Issuer, 1 Applicant and 4 Projects (2 in Approved status, 1 in New status and the last one in Rejected status). Applicant's admin also holds pre-minted Plastic Credits `EMP/123` and `PCRD/00001`. First validator of the chain (`s.network.Validators[0]`) has issuer's, applicant's and issuer creator's keys imported into it's keyring. You can access the keys using package-wide constants `issuerKey`, `issuerCreatorKey` and `applicantKey`. Example snippet of fetching issuer's key:
 
 ```go
 	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key("issuer")
+	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKey)
 	s.Require().NoError(err)
 	issuer, err := issuerKey.GetAddress()
 	s.Require().NoError(err)

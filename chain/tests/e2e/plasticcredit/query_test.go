@@ -9,22 +9,19 @@ import (
 
 func (s *E2ETestSuite) TestCmdQueryParams() {
 	val := s.network.Validators[0]
-	issuerCreatorKey, err := val.ClientCtx.Keyring.Key("issuerCreator")
+	issuerCreatorKey, err := val.ClientCtx.Keyring.Key(issuerCreatorKey)
 	s.Require().NoError(err)
 	issuerCreator, err := issuerCreatorKey.GetAddress()
 	s.Require().NoError(err)
-	testCases := []struct {
-		name string
+	testCases := map[string]struct {
 		args []string
 	}{
-		{
-			"happy case",
+		"happy case": {
 			[]string{},
 		},
 	}
-	for _, tc := range testCases {
-		tc := tc
-		s.Run(tc.name, func() {
+	for name, tc := range testCases {
+		s.Run(name, func() {
 			cmd := cli.CmdQueryParams()
 			clientCtx := val.ClientCtx
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
@@ -38,19 +35,18 @@ func (s *E2ETestSuite) TestCmdQueryParams() {
 
 func (s *E2ETestSuite) TestCmdQueryIssuer() {
 	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key("issuer")
+	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKey)
 	s.Require().NoError(err)
 	issuer, err := issuerKey.GetAddress()
 	s.Require().NoError(err)
-	testCases := []struct {
-		name           string
+	testCases := map[string]struct {
 		args           []string
 		expectedErr    bool
 		expectedErrMsg string
 		expectedResp   proto.Message
 	}{
-		{
-			"query existing issuer",
+
+		"query existing issuer": {
 			[]string{"1"},
 			false,
 			"",
@@ -63,16 +59,16 @@ func (s *E2ETestSuite) TestCmdQueryIssuer() {
 				},
 			},
 		},
-		{
-			"query non-existing issuer",
+
+		"query non-existing issuer": {
 			[]string{"2"},
 			true,
 			"issuer not found",
 			nil,
 		},
 	}
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
+	for name, tc := range testCases {
+		s.Run(name, func() {
 			cmd := cli.CmdQueryIssuer()
 			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, tc.args)
 
