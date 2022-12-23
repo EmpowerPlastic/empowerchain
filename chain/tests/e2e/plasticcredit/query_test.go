@@ -61,7 +61,7 @@ func (s *E2ETestSuite) TestCmdQueryIssuer() {
 		},
 
 		"query non-existing issuer": {
-			[]string{"2"},
+			[]string{"3"},
 			true,
 			"issuer not found",
 			nil,

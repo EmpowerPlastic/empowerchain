@@ -3,6 +3,7 @@ package e2e_test
 import (
 	"fmt"
 
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -15,9 +16,9 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 	val := s.network.Validators[0]
 	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKey)
 	s.Require().NoError(err)
-	newAdminKey, err := val.ClientCtx.Keyring.Key(issuerCreatorKey)
+	issuer, err := issuerKey.GetAddress()
 	s.Require().NoError(err)
-	newAdmin, err := newAdminKey.GetAddress()
+	newAdmin := sample.AccAddress()
 	s.Require().NoError(err)
 
 	notIssuerKey, err := val.ClientCtx.Keyring.Key(applicantKey)
@@ -31,8 +32,8 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 		expectedState     proto.Message
 	}{
 
-		"update name, description and admin": {
-			[]string{newAdmin.String(), "1", "Empower Plastic", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+		"update name, description": {
+			[]string{issuer.String(), "1", "Empower Plastic", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
 			false,
 			"",
@@ -40,12 +41,12 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 				Id:          1,
 				Name:        "Empower Plastic",
 				Description: "We fight for a clean planet",
-				Admin:       newAdmin.String(),
+				Admin:       issuer.String(),
 			},
 		},
 
 		"update non-existing issuer": {
-			[]string{newAdmin.String(), "2", "Plastic Nemesis Ltd", "How do we start?", fmt.Sprintf("--%s=%s", flags.FlagFrom, newAdminKey.Name)},
+			[]string{issuer.String(), "3", "Plastic Nemesis Ltd", "How do we start?", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
 			true,
 			"issuer not found",
@@ -53,7 +54,7 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 		},
 
 		"wrong singer": {
-			[]string{newAdmin.String(), "1", "Empower Plastic", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, notIssuerKey.Name)},
+			[]string{issuer.String(), "1", "Empower Plastic", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, notIssuerKey.Name)},
 			false,
 			true,
 			"",
@@ -61,7 +62,7 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 		},
 
 		"empty name": {
-			[]string{newAdmin.String(), "1", "", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, newAdminKey.Name)},
+			[]string{issuer.String(), "1", "", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			true,
 			false,
 			"issuer name cannot be empty",
@@ -69,7 +70,7 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 		},
 
 		"empty description": {
-			[]string{newAdmin.String(), "1", "Empower Plastic", "", fmt.Sprintf("--%s=%s", flags.FlagFrom, newAdminKey.Name)},
+			[]string{issuer.String(), "1", "Empower Plastic", "", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
 			false,
 			"",
@@ -77,23 +78,34 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 				Id:          1,
 				Name:        "Empower Plastic",
 				Description: "",
-				Admin:       newAdmin.String(),
+				Admin:       issuer.String(),
 			},
 		},
 
 		"invalid admin": {
-			[]string{"invalidaddress", "1", "Empower Plastic", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, newAdminKey.Name)},
+			[]string{"invalidaddress", "1", "Empower Plastic", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			true,
 			false,
 			"invalid admin address",
 			nil,
+		},
+		"change admin": {
+			[]string{newAdmin, "2", "Test Issuer", "Purely for testing", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			false,
+			false,
+			"",
+			&plasticcredit.Issuer{
+				Id:          2,
+				Name:        "Test Issuer",
+				Description: "Purely for testing",
+				Admin:       newAdmin,
+			},
 		},
 	}
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgUpdateIssuerCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
-
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else if tc.expectedErrOnExec {

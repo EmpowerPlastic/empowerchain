@@ -69,7 +69,7 @@ func (s *E2ETestSuite) SetupSuite() {
 	plasticcreditGenesisState := plasticcredit.DefaultGenesis()
 	plasticcreditGenesisState.Params.IssuerCreator = "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7"
 	plasticcreditGenesisState.IdCounters = plasticcredit.IDCounters{
-		NextIssuerId:    2,
+		NextIssuerId:    3,
 		NextApplicantId: 2,
 		NextProjectId:   4,
 	}
@@ -78,6 +78,12 @@ func (s *E2ETestSuite) SetupSuite() {
 			Id:          1,
 			Name:        "Empower",
 			Description: "First Issuer",
+			Admin:       "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m",
+		},
+		{
+			Id:          2,
+			Name:        "Test Issuer",
+			Description: "Purely for testing",
 			Admin:       "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m",
 		},
 	}
