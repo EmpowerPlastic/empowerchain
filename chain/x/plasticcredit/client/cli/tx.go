@@ -31,6 +31,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(MsgUpdateProjectCmd())
 	cmd.AddCommand(MsgApproveProjectCmd())
 	cmd.AddCommand(MsgRejectProjectCmd())
+	cmd.AddCommand(MsgSuspendProjectCmd())
 	cmd.AddCommand(MsgIssueCreditsCmd())
 	cmd.AddCommand(MsgTransferCreditsCmd())
 	cmd.AddCommand(MsgRetireCreditsCmd())
@@ -349,6 +350,37 @@ func MsgRejectProjectCmd() *cobra.Command {
 
 			msg := plasticcredit.MsgRejectProject{
 				Rejector:  rejector.String(),
+				ProjectId: projectID,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func MsgSuspendProjectCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "suspend-project [project-id]",
+		Short: "Suspend an approved project.",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			updater := clientCtx.GetFromAddress()
+			projectID, err := cast.ToUint64E(args[0])
+			if err != nil {
+				return err
+			}
+
+			msg := plasticcredit.MsgSuspendProject{
+				Updater:   updater.String(),
 				ProjectId: projectID,
 			}
 

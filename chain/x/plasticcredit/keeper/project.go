@@ -94,7 +94,12 @@ func (k Keeper) ApproveProject(ctx sdk.Context, approver sdk.AccAddress, project
 	if !found {
 		return errors.Wrapf(plasticcredit.ErrProjectNotFound, "project with id %d was not found", projectID)
 	}
-	if project.Status != plasticcredit.ProjectStatus_NEW {
+	mapAllowedApproveStatuses := map[plasticcredit.ProjectStatus]bool{
+		plasticcredit.ProjectStatus_NEW:       true,
+		plasticcredit.ProjectStatus_SUSPENDED: true,
+		plasticcredit.ProjectStatus_REJECTED:  true,
+	}
+	if !mapAllowedApproveStatuses[project.Status] {
 		return errors.Wrapf(plasticcredit.ErrProjectNotNew, "project with id %d is %s, and not allowed to approve", projectID, project.Status)
 	}
 	// At some point, I would like to have some better indexing that would allow us to not have to fetch so many things just to get to the issuer
@@ -157,6 +162,42 @@ func (k Keeper) RejectProject(ctx sdk.Context, rejector sdk.AccAddress, projectI
 		RejectedForCreditClassAbbreviation: creditClass.Abbreviation,
 		RejectingIssuerId:                  issuer.Id,
 		RejectedBy:                         rejector.String(),
+	})
+}
+
+func (k Keeper) SuspendProject(ctx sdk.Context, updater sdk.AccAddress, projectID uint64) error {
+	project, found := k.GetProject(ctx, projectID)
+	if !found {
+		return errors.Wrapf(plasticcredit.ErrProjectNotFound, "project with id %d was not found", projectID)
+	}
+	if project.Status != plasticcredit.ProjectStatus_APPROVED {
+		return errors.Wrapf(plasticcredit.ErrProjectNotSuspendable, "project with id %d is %s, and not allowed to suspend", projectID, project.Status)
+	}
+
+	// At some point, I would like to have some better indexing that would allow us to not have to fetch so many things just to get to the issuer
+	creditClass, found := k.GetCreditClass(ctx, project.CreditClassAbbreviation)
+	if !found {
+		panic("The project was found, the credit class better exist!")
+	}
+	issuer, found := k.GetIssuer(ctx, creditClass.IssuerId)
+	if !found {
+		panic("The credit class was found, the issuer better exist!")
+	}
+
+	if !issuer.AddressHasAuthorization(updater) {
+		return errors.Wrapf(sdkerrors.ErrUnauthorized, "For suspension the updater %s does not have authorization on issuer with id %d", updater.String(), issuer.Id)
+	}
+
+	project.Status = plasticcredit.ProjectStatus_SUSPENDED
+	if err := k.setProject(ctx, project); err != nil {
+		return err
+	}
+
+	return ctx.EventManager().EmitTypedEvent(&plasticcredit.EventProjectSuspended{
+		ProjectId:                           project.Id,
+		SuspendedForCreditClassAbbreviation: creditClass.Abbreviation,
+		SuspendingIssuerId:                  issuer.Id,
+		SuspendedBy:                         updater.String(),
 	})
 }
 

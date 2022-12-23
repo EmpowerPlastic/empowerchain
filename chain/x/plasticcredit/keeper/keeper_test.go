@@ -30,6 +30,7 @@ type TestSuite struct {
 	sampleProjectId               uint64
 	sampleUnapprovedProjectId     uint64
 	sampleRejectionProjectId      uint64
+	sampleSuspendedProjectId      uint64
 	sampleCreditDenom             string
 }
 
@@ -44,6 +45,7 @@ func NewTestSuite() suite.TestingSuite {
 	t.sampleProjectId = 1
 	t.sampleUnapprovedProjectId = 2
 	t.sampleRejectionProjectId = 3
+	t.sampleSuspendedProjectId = 4
 	t.sampleCreditDenom = "EMP/123"
 	return t
 }
@@ -128,6 +130,15 @@ func (s *TestSuite) PopulateWithSamples() {
 	s.Require().NoError(err)
 	s.Require().Equal(s.sampleRejectionProjectId, respRejectionProject.ProjectId)
 
+	respSuspendedProject, err := ms.CreateProject(goCtx, &plasticcredit.MsgCreateProject{
+		Creator:                 s.sampleApplicantAdmin,
+		ApplicantId:             s.sampleApplicantId,
+		CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
+		Name:                    "suspended project",
+	})
+	s.Require().NoError(err)
+	s.Require().Equal(s.sampleSuspendedProjectId, respSuspendedProject.ProjectId)
+
 	_, err = ms.ApproveProject(goCtx, &plasticcredit.MsgApproveProject{
 		Approver:  s.sampleIssuerAdmin,
 		ProjectId: s.sampleProjectId,
@@ -137,6 +148,18 @@ func (s *TestSuite) PopulateWithSamples() {
 	_, err = ms.RejectProject(goCtx, &plasticcredit.MsgRejectProject{
 		Rejector:  s.sampleIssuerAdmin,
 		ProjectId: s.sampleRejectionProjectId,
+	})
+	s.Require().NoError(err)
+
+	_, err = ms.ApproveProject(goCtx, &plasticcredit.MsgApproveProject{
+		Approver:  s.sampleIssuerAdmin,
+		ProjectId: s.sampleSuspendedProjectId,
+	})
+	s.Require().NoError(err)
+
+	_, err = ms.SuspendProject(goCtx, &plasticcredit.MsgSuspendProject{
+		Updater:   s.sampleIssuerAdmin,
+		ProjectId: s.sampleSuspendedProjectId,
 	})
 	s.Require().NoError(err)
 

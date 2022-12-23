@@ -666,12 +666,12 @@ func (s *TestSuite) TestCreateProject() {
 
 			if err == nil {
 				idCounters := k.GetIDCounters(s.ctx)
-				s.Require().Equal(uint64(5), idCounters.NextProjectId)
+				s.Require().Equal(uint64(6), idCounters.NextProjectId)
 
 				project, found := k.GetProject(s.ctx, resp.ProjectId)
 				s.Require().True(found)
 				s.Require().Equal(plasticcredit.Project{
-					Id:                      4,
+					Id:                      5,
 					ApplicantId:             tc.msg.ApplicantId,
 					CreditClassAbbreviation: tc.msg.CreditClassAbbreviation,
 					Name:                    tc.msg.Name,
@@ -744,10 +744,9 @@ func (s *TestSuite) TestUpdateProject() {
 			s.Require().ErrorIs(err, tc.err)
 
 			events := s.ctx.EventManager().ABCIEvents()
-			project, found := k.GetProject(s.ctx, s.sampleUnapprovedProjectId)
-			s.Require().True(found)
-
 			if err == nil {
+				project, found := k.GetProject(s.ctx, tc.msg.ProjectId)
+				s.Require().True(found)
 				s.Require().Equal(tc.msg.Name, project.Name)
 				s.Require().Len(events, 1)
 				parsedEvent, err := sdk.ParseTypedEvent(events[0])
@@ -806,12 +805,19 @@ func (s *TestSuite) TestApproveProject() {
 			},
 			err: plasticcredit.ErrProjectNotFound,
 		},
-		"project already rejected": {
+		"approve rejected project": {
 			msg: &plasticcredit.MsgApproveProject{
 				Approver:  s.sampleIssuerAdmin,
 				ProjectId: s.sampleRejectionProjectId,
 			},
-			err: plasticcredit.ErrProjectNotNew,
+			err: nil,
+		},
+		"approve suspended project": {
+			msg: &plasticcredit.MsgApproveProject{
+				Approver:  s.sampleIssuerAdmin,
+				ProjectId: s.sampleSuspendedProjectId,
+			},
+			err: nil,
 		},
 	}
 
@@ -835,10 +841,9 @@ func (s *TestSuite) TestApproveProject() {
 			s.Require().ErrorIs(err, tc.err)
 
 			events := s.ctx.EventManager().ABCIEvents()
-			project, found := k.GetProject(s.ctx, s.sampleUnapprovedProjectId)
-			s.Require().True(found)
-
 			if err == nil {
+				project, found := k.GetProject(s.ctx, tc.msg.ProjectId)
+				s.Require().True(found)
 				s.Require().Equal(plasticcredit.ProjectStatus_APPROVED, project.Status)
 				s.Require().Len(events, 2)
 				parsedEvent, err := sdk.ParseTypedEvent(events[1])
@@ -853,7 +858,6 @@ func (s *TestSuite) TestApproveProject() {
 				}, eventProjectApproved)
 
 			} else {
-				s.Require().Equal(plasticcredit.ProjectStatus_NEW, project.Status)
 				s.Require().Len(events, 1)
 			}
 		})
@@ -916,6 +920,13 @@ func (s *TestSuite) TestRejectProject() {
 			},
 			err: plasticcredit.ErrProjectNotNew,
 		},
+		"project is suspended": {
+			msg: &plasticcredit.MsgRejectProject{
+				Rejector:  s.sampleIssuerAdmin,
+				ProjectId: s.sampleSuspendedProjectId,
+			},
+			err: plasticcredit.ErrProjectNotNew,
+		},
 	}
 
 	for name, tc := range testCases {
@@ -938,10 +949,9 @@ func (s *TestSuite) TestRejectProject() {
 			s.Require().ErrorIs(err, tc.err)
 
 			events := s.ctx.EventManager().ABCIEvents()
-			project, found := k.GetProject(s.ctx, s.sampleUnapprovedProjectId)
-			s.Require().True(found)
-
 			if err == nil {
+				project, found := k.GetProject(s.ctx, tc.msg.ProjectId)
+				s.Require().True(found)
 				s.Require().Equal(plasticcredit.ProjectStatus_REJECTED, project.Status)
 				s.Require().Len(events, 2)
 				parsedEvent, err := sdk.ParseTypedEvent(events[1])
@@ -956,8 +966,113 @@ func (s *TestSuite) TestRejectProject() {
 				}, eventProjectRejected)
 
 			} else {
-				s.Require().Equal(plasticcredit.ProjectStatus_NEW, project.Status)
 				s.Require().Len(events, 1)
+			}
+		})
+	}
+}
+
+func (s *TestSuite) TestSuspendProject() {
+	extraIssuerAdmin := sample.AccAddress()
+
+	testCases := map[string]struct {
+		msg *plasticcredit.MsgSuspendProject
+		err error
+	}{
+		"happy path": {
+			msg: &plasticcredit.MsgSuspendProject{
+				Updater:   s.sampleIssuerAdmin,
+				ProjectId: s.sampleProjectId,
+			},
+			err: nil,
+		},
+		"unauthorized issuer admin": {
+			msg: &plasticcredit.MsgSuspendProject{
+				Updater:   sample.AccAddress(),
+				ProjectId: s.sampleProjectId,
+			},
+			err: sdkerrors.ErrUnauthorized,
+		},
+		"issuer admin on a different issuer": {
+			msg: &plasticcredit.MsgSuspendProject{
+				Updater:   extraIssuerAdmin,
+				ProjectId: s.sampleProjectId,
+			},
+			err: sdkerrors.ErrUnauthorized,
+		},
+		"applicant admin cannot suspend project": {
+			msg: &plasticcredit.MsgSuspendProject{
+				Updater:   s.sampleApplicantAdmin,
+				ProjectId: s.sampleProjectId,
+			},
+			err: sdkerrors.ErrUnauthorized,
+		},
+		"project not found": {
+			msg: &plasticcredit.MsgSuspendProject{
+				Updater:   s.sampleIssuerAdmin,
+				ProjectId: 42,
+			},
+			err: plasticcredit.ErrProjectNotFound,
+		},
+		"project already rejected": {
+			msg: &plasticcredit.MsgSuspendProject{
+				Updater:   s.sampleIssuerAdmin,
+				ProjectId: s.sampleRejectionProjectId,
+			},
+			err: plasticcredit.ErrProjectNotSuspendable,
+		},
+		"project still in new state": {
+			msg: &plasticcredit.MsgSuspendProject{
+				Updater:   s.sampleIssuerAdmin,
+				ProjectId: s.sampleUnapprovedProjectId,
+			},
+			err: plasticcredit.ErrProjectNotSuspendable,
+		},
+		"project already suspended": {
+			msg: &plasticcredit.MsgSuspendProject{
+				Updater:   s.sampleIssuerAdmin,
+				ProjectId: s.sampleSuspendedProjectId,
+			},
+			err: plasticcredit.ErrProjectNotSuspendable,
+		},
+	}
+
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			s.SetupTest()
+			s.PopulateWithSamples()
+			k := s.empowerApp.PlasticcreditKeeper
+			goCtx := sdk.WrapSDKContext(s.ctx)
+			ms := keeper.NewMsgServerImpl(k)
+
+			_, err := ms.CreateIssuer(sdk.WrapSDKContext(s.ctx), &plasticcredit.MsgCreateIssuer{
+				Creator:     s.issuerCreator,
+				Name:        "Extra Issuer",
+				Description: "",
+				Admin:       extraIssuerAdmin,
+			})
+			s.Require().NoError(err)
+
+			_, err = ms.SuspendProject(goCtx, tc.msg)
+			s.Require().ErrorIs(err, tc.err)
+
+			events := s.ctx.EventManager().ABCIEvents()
+			if err == nil {
+				project, found := k.GetProject(s.ctx, tc.msg.ProjectId)
+				s.Require().True(found)
+				s.Require().Equal(plasticcredit.ProjectStatus_SUSPENDED, project.Status)
+				s.Require().Len(events, 2)
+				parsedEvent, err := sdk.ParseTypedEvent(events[1])
+				s.Require().NoError(err)
+				eventProjectSuspended, ok := parsedEvent.(*plasticcredit.EventProjectSuspended)
+				s.Require().True(ok)
+				s.Require().Equal(&plasticcredit.EventProjectSuspended{
+					ProjectId:                           s.sampleProjectId,
+					SuspendedForCreditClassAbbreviation: s.sampleCreditClassAbbreviation,
+					SuspendingIssuerId:                  s.sampleIssuerId,
+					SuspendedBy:                         tc.msg.Updater,
+				}, eventProjectSuspended)
+
 			}
 		})
 	}
@@ -1043,6 +1158,16 @@ func (s *TestSuite) TestIssueCredits() {
 			msg: &plasticcredit.MsgIssueCredits{
 				Creator:      s.sampleIssuerAdmin,
 				ProjectId:    s.sampleRejectionProjectId,
+				SerialNumber: "456",
+				CreditAmount: 1000,
+			},
+			expectedAmount: 0,
+			err:            plasticcredit.ErrProjectNotApproved,
+		},
+		"issue credits to suspended project": {
+			msg: &plasticcredit.MsgIssueCredits{
+				Creator:      s.sampleIssuerAdmin,
+				ProjectId:    s.sampleSuspendedProjectId,
 				SerialNumber: "456",
 				CreditAmount: 1000,
 			},
