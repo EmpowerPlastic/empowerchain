@@ -1,0 +1,13 @@
+[package]
+name = "plastic_credit_marketplace"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+cosmwasm-std = "1.1.9"
+serde = { version = "1.0.151", features = ["derive"] }
+
+[lib]
+crate-type = ["cdylib", "rlib"]
