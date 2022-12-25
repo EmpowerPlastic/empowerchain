@@ -6,7 +6,7 @@ docker:
     RUN apt-get update -yq \
         && apt-get install --no-install-recommends -yq \
         wget gnupg ca-certificates gcc g++ make
-    RUN wget -qO- https://go.dev/dl/go1.18.6.linux-amd64.tar.gz | tar -v -C /usr/local -xz
+    RUN wget -qO- https://go.dev/dl/go1.19.4.linux-amd64.tar.gz | tar -v -C /usr/local -xz
     ENV PATH $PATH:/usr/local/go/bin:/root/go/bin
 
 build-prep:
@@ -19,6 +19,7 @@ build-prep:
     COPY proto proto
     COPY scripts scripts
     COPY testutil testutil
+    COPY tests tests
     COPY utils utils
     COPY x x
 
