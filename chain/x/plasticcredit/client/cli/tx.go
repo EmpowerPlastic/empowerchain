@@ -90,14 +90,11 @@ func MsgUpdateApplicantCmd() *cobra.Command {
 `,
 		Args: cobra.MinimumNArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			updater, err := cmd.Flags().GetString(flags.FlagFrom)
-			if err != nil {
-				return err
-			}
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
+			updater := clientCtx.GetFromAddress()
 
 			admin := args[0]
 			applicantID, err := cast.ToUint64E(args[1])
@@ -115,7 +112,7 @@ func MsgUpdateApplicantCmd() *cobra.Command {
 				Name:        name,
 				Description: desc,
 				Admin:       admin,
-				Updater:     updater,
+				Updater:     updater.String(),
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
@@ -136,15 +133,11 @@ func MsgUpdateIssuerCmd() *cobra.Command {
 `,
 		Args: cobra.MinimumNArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			updater, err := cmd.Flags().GetString(flags.FlagFrom)
-			if err != nil {
-				return err
-			}
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
+			updater := clientCtx.GetFromAddress()
 
 			admin := args[0]
 			issuerID, err := cast.ToUint64E(args[1])
@@ -155,7 +148,7 @@ func MsgUpdateIssuerCmd() *cobra.Command {
 			desc := args[3]
 
 			msg := plasticcredit.MsgUpdateIssuer{
-				Updater:     updater,
+				Updater:     updater.String(),
 				IssuerId:    issuerID,
 				Name:        name,
 				Description: desc,
