@@ -123,3 +123,55 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 		})
 	}
 }
+
+func (s *E2ETestSuite) TestCmdUpdateProject() {
+	val := s.network.Validators[0]
+
+	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKey)
+	s.Require().NoError(err)
+	applicant, err := applicantKey.GetAddress()
+	s.Require().NoError(err)
+
+	testCases := map[string]struct {
+		args              []string
+		expectedErrOnSend bool
+		expectedErrOnExec bool
+		expectedErrMsg    string
+		expectedState     proto.Message
+	}{
+
+		"update project": {
+			[]string{applicant.String(), "3", "My Updated Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
+			false,
+			false,
+			"",
+			&plasticcredit.Project{
+				Id:                      3,
+				ApplicantId:             1,
+				CreditClassAbbreviation: "EMP",
+				Name:                    "My Updated Project",
+				Status:                  plasticcredit.ProjectStatus_NEW,
+			},
+		},
+	}
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			cmd := cli.MsgUpdateProjectCmd()
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+			if tc.expectedErrOnSend {
+				s.Require().Contains(out.String(), tc.expectedErrMsg)
+			} else if tc.expectedErrOnExec {
+				var txResponse sdk.TxResponse
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResponse))
+				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
+			} else {
+				cmd = cli.CmdQueryProject()
+				out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{tc.args[1]})
+				s.Require().NoError(err)
+				var resp plasticcredit.QueryProjectResponse
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
+				s.Require().Equal(tc.expectedState, &resp.Project)
+			}
+		})
+	}
+}
