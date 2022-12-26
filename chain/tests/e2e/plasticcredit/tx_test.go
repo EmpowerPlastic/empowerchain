@@ -129,8 +129,6 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 
 	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKey)
 	s.Require().NoError(err)
-	applicant, err := applicantKey.GetAddress()
-	s.Require().NoError(err)
 
 	testCases := map[string]struct {
 		args              []string
@@ -141,7 +139,7 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 	}{
 
 		"update project": {
-			[]string{applicant.String(), "3", "My Updated Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
+			[]string{"3", "My Updated Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
 			false,
 			false,
 			"",
@@ -166,7 +164,7 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			} else {
 				cmd = cli.CmdQueryProject()
-				out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{tc.args[1]})
+				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{tc.args[0]})
 				s.Require().NoError(err)
 				var resp plasticcredit.QueryProjectResponse
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
