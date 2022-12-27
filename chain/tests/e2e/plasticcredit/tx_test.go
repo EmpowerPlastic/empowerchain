@@ -129,6 +129,8 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 
 	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKey)
 	s.Require().NoError(err)
+	notApplicantKey, err := val.ClientCtx.Keyring.Key(issuerKey)
+	s.Require().NoError(err)
 
 	testCases := map[string]struct {
 		args              []string
@@ -150,6 +152,27 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 				Name:                    "My Updated Project",
 				Status:                  plasticcredit.ProjectStatus_NEW,
 			},
+		},
+		"update non-existing project": {
+			[]string{"5", "My Updated Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
+			false,
+			true,
+			"project not found",
+			nil,
+		},
+		"invalid applicant": {
+			[]string{"1", "My Updated Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, notApplicantKey.Name)},
+			false,
+			true,
+			"unauthorized",
+			nil,
+		},
+		"empty name": {
+			[]string{"1", "", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
+			true,
+			false,
+			"project name cannot be empty",
+			nil,
 		},
 	}
 	for name, tc := range testCases {
