@@ -71,7 +71,7 @@ func (s *E2ETestSuite) SetupSuite() {
 	plasticcreditGenesisState.IdCounters = plasticcredit.IDCounters{
 		NextIssuerId:    3,
 		NextApplicantId: 2,
-		NextProjectId:   4,
+		NextProjectId:   5,
 	}
 	plasticcreditGenesisState.Issuers = []plasticcredit.Issuer{
 		{

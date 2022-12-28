@@ -171,12 +171,6 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResponse))
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			} else {
-				var txResponse sdk.TxResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResponse))
-				fmt.Println(txResponse.RawLog)
-				//var dataResponse sdk.TxMsgData
-				//s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON([]byte(txResponse.Data), &dataResponse))
-				//fmt.Println(dataResponse)
 				cmd = cli.CmdQueryProject()
 				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{"5"})
 				s.Require().NoError(err)
@@ -218,7 +212,7 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 			},
 		},
 		"update non-existing project": {
-			[]string{"5", "My Updated Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
+			[]string{"65", "My Updated Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
 			false,
 			true,
 			"project not found",
@@ -307,19 +301,6 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 			false,
 			"project is approved / rejected",
 			nil,
-		},
-		"approve rejected project": {
-			[]string{"4", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
-			false,
-			false,
-			"",
-			&plasticcredit.Project{
-				Id:                      4,
-				ApplicantId:             1,
-				CreditClassAbbreviation: "PCRD",
-				Name:                    "Rejected project",
-				Status:                  plasticcredit.ProjectStatus_APPROVED,
-			},
 		},
 	}
 	for name, tc := range testCases {
