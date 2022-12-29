@@ -143,7 +143,7 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 			false,
 			"",
 			&plasticcredit.Project{
-				Id:                      5,
+				Id:                      7,
 				ApplicantId:             1,
 				CreditClassAbbreviation: "EMP",
 				Name:                    "My new Project",
@@ -350,13 +350,6 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 		expectedErrMsg    string
 		expectedState     *plasticcredit.Project
 	}{
-		"invalid admin": {
-			[]string{"5", fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name)},
-			false,
-			true,
-			"unauthorized",
-			nil,
-		},
 		"reject project": {
 			[]string{"5", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
@@ -365,10 +358,17 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 			&plasticcredit.Project{
 				Id:                      5,
 				ApplicantId:             1,
-				CreditClassAbbreviation: "EMP",
-				Name:                    "My new Project",
+				CreditClassAbbreviation: "PCRD",
+				Name:                    "Other New Project",
 				Status:                  plasticcredit.ProjectStatus_REJECTED,
 			},
+		},
+		"invalid admin": {
+			[]string{"6", fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name)},
+			false,
+			true,
+			"unauthorized",
+			nil,
 		},
 		"reject non-existing project": {
 			[]string{"62", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
@@ -420,13 +420,6 @@ func (s *E2ETestSuite) TestCmdSuspendProject() {
 		expectedErrMsg    string
 		expectedState     *plasticcredit.Project
 	}{
-		"invalid admin": {
-			[]string{"3", fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name)},
-			false,
-			true,
-			"unauthorized",
-			nil,
-		},
 		"suspend project": {
 			[]string{"1", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
@@ -439,6 +432,13 @@ func (s *E2ETestSuite) TestCmdSuspendProject() {
 				Name:                    "Approved project",
 				Status:                  plasticcredit.ProjectStatus_SUSPENDED,
 			},
+		},
+		"invalid admin": {
+			[]string{"3", fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name)},
+			false,
+			true,
+			"unauthorized",
+			nil,
 		},
 		"suspending non-existing project": {
 			[]string{"62", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
