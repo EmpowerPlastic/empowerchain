@@ -128,7 +128,7 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 	val := s.network.Validators[0]
 	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKey)
 	s.Require().NoError(err)
-	notApplicantKey, err := val.ClientCtx.Keyring.Key(issuerKey)
+	notApplicantKey, _ := val.ClientCtx.Keyring.Key(issuerKey)
 	testCases := map[string]struct {
 		args              []string
 		expectedErrOnSend bool
@@ -185,7 +185,7 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 
 	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKey)
 	s.Require().NoError(err)
-	notApplicantKey, err := val.ClientCtx.Keyring.Key(issuerKey)
+	notApplicantKey, _ := val.ClientCtx.Keyring.Key(issuerKey)
 	s.Require().NoError(err)
 
 	testCases := map[string]struct {
