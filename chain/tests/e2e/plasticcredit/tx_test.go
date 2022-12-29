@@ -137,6 +137,7 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 		expectedErrOnExec bool
 		expectedErrMsg    string
 		expectedState     proto.Message
+		expectedId        string
 	}{
 
 		"create project": {
@@ -151,6 +152,7 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 				Name:                    "My new Project",
 				Status:                  plasticcredit.ProjectStatus_NEW,
 			},
+			"5",
 		},
 		"admin does not have authorization for applicant": {
 			[]string{"1", "EMP", "My new Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m")},
@@ -158,6 +160,7 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 			false,
 			"unauthorized",
 			nil,
+			"6",
 		},
 	}
 	for name, tc := range testCases {
@@ -172,7 +175,7 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			} else {
 				cmd = cli.CmdQueryProject()
-				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{"5"})
+				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{tc.expectedId})
 				s.Require().NoError(err)
 				var resp plasticcredit.QueryProjectResponse
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
@@ -282,7 +285,7 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 			},
 		},
 		"approve non-existing project": {
-			[]string{"5", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			[]string{"62", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
 			false,
 			true,
 			"project not found",
@@ -306,6 +309,75 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgApproveProjectCmd()
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+			if tc.expectedErrOnSend {
+				s.Require().Contains(out.String(), tc.expectedErrMsg)
+			} else if tc.expectedErrOnExec {
+				var txResponse sdk.TxResponse
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResponse))
+				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
+			} else {
+				cmd = cli.CmdQueryProject()
+				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{tc.args[0]})
+				s.Require().NoError(err)
+				var resp plasticcredit.QueryProjectResponse
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
+				s.Require().Equal(tc.expectedState, &resp.Project)
+			}
+		})
+	}
+}
+
+func (s *E2ETestSuite) TestCmdRejectProject() {
+	val := s.network.Validators[0]
+	admin := "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKey)
+	s.Require().NoError(err)
+	testCases := map[string]struct {
+		args              []string
+		expectedErrOnSend bool
+		expectedErrOnExec bool
+		expectedErrMsg    string
+		expectedState     proto.Message
+	}{
+		"invalid admin": {
+			[]string{"5", fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name)},
+			false,
+			true,
+			"unauthorized",
+			nil,
+		},
+		"reject project": {
+			[]string{"5", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			false,
+			false,
+			"",
+			&plasticcredit.Project{
+				Id:                      5,
+				ApplicantId:             1,
+				CreditClassAbbreviation: "EMP",
+				Name:                    "My new Project",
+				Status:                  plasticcredit.ProjectStatus_REJECTED,
+			},
+		},
+		"reject non-existing project": {
+			[]string{"62", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			false,
+			true,
+			"project not found",
+			nil,
+		},
+		"project already approved": {
+			[]string{"1", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			true,
+			false,
+			"project is approved / rejected",
+			nil,
+		},
+	}
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			cmd := cli.MsgRejectProjectCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
