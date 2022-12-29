@@ -119,7 +119,7 @@ func (s *E2ETestSuite) SetupSuite() {
 			Id:                      2,
 			ApplicantId:             1,
 			CreditClassAbbreviation: "PCRD",
-			Name:                    "Also approved project",
+			Name:                    "Suspended project",
 			Status:                  plasticcredit.ProjectStatus_SUSPENDED,
 		},
 		{

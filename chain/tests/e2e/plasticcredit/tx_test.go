@@ -126,22 +126,19 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 
 func (s *E2ETestSuite) TestCmdCreateProject() {
 	val := s.network.Validators[0]
-
-	/*	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKey)
-		s.Require().NoError(err)*/
-	admin := "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn"
-
+	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKey)
+	s.Require().NoError(err)
+	notApplicantKey, err := val.ClientCtx.Keyring.Key(issuerKey)
 	testCases := map[string]struct {
 		args              []string
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
-		expectedState     proto.Message
-		expectedId        string
+		expectedState     *plasticcredit.Project
 	}{
 
 		"create project": {
-			[]string{"1", "EMP", "My new Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			[]string{"1", "EMP", "My new Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
 			false,
 			false,
 			"",
@@ -152,15 +149,13 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 				Name:                    "My new Project",
 				Status:                  plasticcredit.ProjectStatus_NEW,
 			},
-			"5",
 		},
 		"admin does not have authorization for applicant": {
-			[]string{"1", "EMP", "My new Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m")},
+			[]string{"1", "EMP", "My new Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, notApplicantKey.Name)},
 			true,
 			false,
 			"unauthorized",
 			nil,
-			"6",
 		},
 	}
 	for name, tc := range testCases {
@@ -175,7 +170,7 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			} else {
 				cmd = cli.CmdQueryProject()
-				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{tc.expectedId})
+				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{fmt.Sprint(tc.expectedState.Id)})
 				s.Require().NoError(err)
 				var resp plasticcredit.QueryProjectResponse
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
@@ -198,7 +193,7 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
-		expectedState     proto.Message
+		expectedState     *plasticcredit.Project
 	}{
 
 		"update project": {
@@ -260,7 +255,8 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 
 func (s *E2ETestSuite) TestCmdApproveProject() {
 	val := s.network.Validators[0]
-	admin := "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKey)
+	s.Require().NoError(err)
 	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKey)
 	s.Require().NoError(err)
 	testCases := map[string]struct {
@@ -268,11 +264,11 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
-		expectedState     proto.Message
+		expectedState     *plasticcredit.Project
 	}{
 
 		"approve project": {
-			[]string{"3", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			[]string{"3", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
 			false,
 			"",
@@ -285,7 +281,7 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 			},
 		},
 		"approve suspended project": {
-			[]string{"2", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			[]string{"2", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
 			false,
 			"",
@@ -293,12 +289,12 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 				Id:                      2,
 				ApplicantId:             1,
 				CreditClassAbbreviation: "PCRD",
-				Name:                    "Also approved project",
+				Name:                    "Suspended project",
 				Status:                  plasticcredit.ProjectStatus_APPROVED,
 			},
 		},
 		"approve non-existing project": {
-			[]string{"62", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			[]string{"62", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
 			true,
 			"project not found",
@@ -312,7 +308,7 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 			nil,
 		},
 		"project already approved": {
-			[]string{"1", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			[]string{"1", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			true,
 			false,
 			"project is approved / rejected",
@@ -343,7 +339,8 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 
 func (s *E2ETestSuite) TestCmdRejectProject() {
 	val := s.network.Validators[0]
-	admin := "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKey)
+	s.Require().NoError(err)
 	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKey)
 	s.Require().NoError(err)
 	testCases := map[string]struct {
@@ -351,7 +348,7 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
-		expectedState     proto.Message
+		expectedState     *plasticcredit.Project
 	}{
 		"invalid admin": {
 			[]string{"5", fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name)},
@@ -361,7 +358,7 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 			nil,
 		},
 		"reject project": {
-			[]string{"5", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			[]string{"5", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
 			false,
 			"",
@@ -374,14 +371,14 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 			},
 		},
 		"reject non-existing project": {
-			[]string{"62", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			[]string{"62", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
 			true,
 			"project not found",
 			nil,
 		},
 		"project already approved": {
-			[]string{"1", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			[]string{"1", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			true,
 			false,
 			"project is approved / rejected",
@@ -412,7 +409,8 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 
 func (s *E2ETestSuite) TestCmdSuspendProject() {
 	val := s.network.Validators[0]
-	admin := "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKey)
+	s.Require().NoError(err)
 	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKey)
 	s.Require().NoError(err)
 	testCases := map[string]struct {
@@ -420,7 +418,7 @@ func (s *E2ETestSuite) TestCmdSuspendProject() {
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
-		expectedState     proto.Message
+		expectedState     *plasticcredit.Project
 	}{
 		"invalid admin": {
 			[]string{"3", fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name)},
@@ -430,7 +428,7 @@ func (s *E2ETestSuite) TestCmdSuspendProject() {
 			nil,
 		},
 		"suspend project": {
-			[]string{"1", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			[]string{"1", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
 			false,
 			"",
@@ -443,14 +441,14 @@ func (s *E2ETestSuite) TestCmdSuspendProject() {
 			},
 		},
 		"suspending non-existing project": {
-			[]string{"62", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			[]string{"62", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
 			true,
 			"project not found",
 			nil,
 		},
 		"project already rejected": {
-			[]string{"5", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			[]string{"5", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			true,
 			false,
 			"project not suspendable",
