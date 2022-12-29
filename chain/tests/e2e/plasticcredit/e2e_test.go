@@ -71,7 +71,7 @@ func (s *E2ETestSuite) SetupSuite() {
 	plasticcreditGenesisState.IdCounters = plasticcredit.IDCounters{
 		NextIssuerId:    3,
 		NextApplicantId: 2,
-		NextProjectId:   4,
+		NextProjectId:   7,
 	}
 	plasticcreditGenesisState.Issuers = []plasticcredit.Issuer{
 		{
@@ -119,8 +119,8 @@ func (s *E2ETestSuite) SetupSuite() {
 			Id:                      2,
 			ApplicantId:             1,
 			CreditClassAbbreviation: "PCRD",
-			Name:                    "Also approved project",
-			Status:                  plasticcredit.ProjectStatus_APPROVED,
+			Name:                    "Suspended project",
+			Status:                  plasticcredit.ProjectStatus_SUSPENDED,
 		},
 		{
 			Id:                      3,
@@ -135,6 +135,20 @@ func (s *E2ETestSuite) SetupSuite() {
 			CreditClassAbbreviation: "PCRD",
 			Name:                    "Rejected project",
 			Status:                  plasticcredit.ProjectStatus_REJECTED,
+		},
+		{
+			Id:                      5,
+			ApplicantId:             1,
+			CreditClassAbbreviation: "PCRD",
+			Name:                    "Other New Project",
+			Status:                  plasticcredit.ProjectStatus_NEW,
+		},
+		{
+			Id:                      6,
+			ApplicantId:             1,
+			CreditClassAbbreviation: "PCRD",
+			Name:                    "Another New Project",
+			Status:                  plasticcredit.ProjectStatus_NEW,
 		},
 	}
 	plasticcreditGenesisState.CreditCollections = []plasticcredit.CreditCollection{
