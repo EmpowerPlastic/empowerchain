@@ -134,9 +134,6 @@ func (k Keeper) RejectProject(ctx sdk.Context, rejector sdk.AccAddress, projectI
 	if !found {
 		return errors.Wrapf(plasticcredit.ErrProjectNotFound, "project with id %d was not found", projectID)
 	}
-	if project.Status != plasticcredit.ProjectStatus_NEW {
-		return errors.Wrapf(plasticcredit.ErrProjectNotNew, "project with id %d is %s, and not allowed to reject", projectID, project.Status)
-	}
 
 	// At some point, I would like to have some better indexing that would allow us to not have to fetch so many things just to get to the issuer
 	creditClass, found := k.GetCreditClass(ctx, project.CreditClassAbbreviation)
@@ -147,9 +144,11 @@ func (k Keeper) RejectProject(ctx sdk.Context, rejector sdk.AccAddress, projectI
 	if !found {
 		panic("The credit class was found, the issuer better exist!")
 	}
-
 	if !issuer.AddressHasAuthorization(rejector) {
 		return errors.Wrapf(sdkerrors.ErrUnauthorized, "rejector %s does not have authorization on issuer with id %d", rejector.String(), issuer.Id)
+	}
+	if project.Status != plasticcredit.ProjectStatus_NEW {
+		return errors.Wrapf(plasticcredit.ErrProjectNotNew, "project with id %d is %s, and not allowed to reject", projectID, project.Status)
 	}
 
 	project.Status = plasticcredit.ProjectStatus_REJECTED
@@ -170,9 +169,6 @@ func (k Keeper) SuspendProject(ctx sdk.Context, updater sdk.AccAddress, projectI
 	if !found {
 		return errors.Wrapf(plasticcredit.ErrProjectNotFound, "project with id %d was not found", projectID)
 	}
-	if project.Status != plasticcredit.ProjectStatus_APPROVED {
-		return errors.Wrapf(plasticcredit.ErrProjectNotSuspendable, "project with id %d is %s, and not allowed to suspend", projectID, project.Status)
-	}
 
 	// At some point, I would like to have some better indexing that would allow us to not have to fetch so many things just to get to the issuer
 	creditClass, found := k.GetCreditClass(ctx, project.CreditClassAbbreviation)
@@ -183,11 +179,12 @@ func (k Keeper) SuspendProject(ctx sdk.Context, updater sdk.AccAddress, projectI
 	if !found {
 		panic("The credit class was found, the issuer better exist!")
 	}
-
 	if !issuer.AddressHasAuthorization(updater) {
 		return errors.Wrapf(sdkerrors.ErrUnauthorized, "For suspension the updater %s does not have authorization on issuer with id %d", updater.String(), issuer.Id)
 	}
-
+	if project.Status != plasticcredit.ProjectStatus_APPROVED {
+		return errors.Wrapf(plasticcredit.ErrProjectNotSuspendable, "project with id %d is %s, and not allowed to suspend", projectID, project.Status)
+	}
 	project.Status = plasticcredit.ProjectStatus_SUSPENDED
 	if err := k.setProject(ctx, project); err != nil {
 		return err

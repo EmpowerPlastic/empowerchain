@@ -284,6 +284,19 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 				Status:                  plasticcredit.ProjectStatus_APPROVED,
 			},
 		},
+		"approve suspended project": {
+			[]string{"2", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			false,
+			false,
+			"",
+			&plasticcredit.Project{
+				Id:                      2,
+				ApplicantId:             1,
+				CreditClassAbbreviation: "PCRD",
+				Name:                    "Also approved project",
+				Status:                  plasticcredit.ProjectStatus_APPROVED,
+			},
+		},
 		"approve non-existing project": {
 			[]string{"62", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
 			false,
@@ -378,6 +391,75 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgRejectProjectCmd()
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+			if tc.expectedErrOnSend {
+				s.Require().Contains(out.String(), tc.expectedErrMsg)
+			} else if tc.expectedErrOnExec {
+				var txResponse sdk.TxResponse
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResponse))
+				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
+			} else {
+				cmd = cli.CmdQueryProject()
+				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{tc.args[0]})
+				s.Require().NoError(err)
+				var resp plasticcredit.QueryProjectResponse
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
+				s.Require().Equal(tc.expectedState, &resp.Project)
+			}
+		})
+	}
+}
+
+func (s *E2ETestSuite) TestCmdSuspendProject() {
+	val := s.network.Validators[0]
+	admin := "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKey)
+	s.Require().NoError(err)
+	testCases := map[string]struct {
+		args              []string
+		expectedErrOnSend bool
+		expectedErrOnExec bool
+		expectedErrMsg    string
+		expectedState     proto.Message
+	}{
+		"invalid admin": {
+			[]string{"3", fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name)},
+			false,
+			true,
+			"unauthorized",
+			nil,
+		},
+		"suspend project": {
+			[]string{"1", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			false,
+			false,
+			"",
+			&plasticcredit.Project{
+				Id:                      1,
+				ApplicantId:             1,
+				CreditClassAbbreviation: "EMP",
+				Name:                    "Approved project",
+				Status:                  plasticcredit.ProjectStatus_SUSPENDED,
+			},
+		},
+		"suspending non-existing project": {
+			[]string{"62", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			false,
+			true,
+			"project not found",
+			nil,
+		},
+		"project already rejected": {
+			[]string{"5", fmt.Sprintf("--%s=%s", flags.FlagFrom, admin)},
+			true,
+			false,
+			"project not suspendable",
+			nil,
+		},
+	}
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			cmd := cli.MsgSuspendProjectCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
