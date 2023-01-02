@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"golang.org/x/exp/slices"
 )
 
 func (k Keeper) GetIssuer(ctx sdk.Context, id uint64) (issuer plasticcredit.Issuer, found bool) {
@@ -60,13 +61,13 @@ func (k Keeper) iterateIssuers(ctx sdk.Context, handler func(issuer plasticcredi
 
 func (k Keeper) CreateIssuer(ctx sdk.Context, creator sdk.AccAddress, name string, description string, admin string) (uint64, error) {
 	params := k.GetParams(ctx)
-	authorizedIssuerCreator := params.IssuerCreator
-	if authorizedIssuerCreator == "" {
-		authorizedIssuerCreator = k.authority
+	authorizedIssuerCreators := []string{k.authority}
+	if params.IssuerCreator != "" {
+		authorizedIssuerCreators = append(authorizedIssuerCreators, params.IssuerCreator)
 	}
 
-	if authorizedIssuerCreator != creator.String() {
-		return 0, errors.Wrapf(sdkerrors.ErrUnauthorized, "invalid issue creator; expected %s, got %s", authorizedIssuerCreator, creator.String())
+	if slices.Contains(authorizedIssuerCreators[:], creator.String()) {
+		return 0, errors.Wrapf(sdkerrors.ErrUnauthorized, "invalid issue creator; expected %s or %s, got %s", authorizedIssuerCreators[0], authorizedIssuerCreators[1], creator.String())
 	}
 
 	idc := k.GetIDCounters(ctx)
