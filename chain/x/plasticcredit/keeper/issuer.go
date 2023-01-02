@@ -66,7 +66,7 @@ func (k Keeper) CreateIssuer(ctx sdk.Context, creator sdk.AccAddress, name strin
 		authorizedIssuerCreators = append(authorizedIssuerCreators, params.IssuerCreator)
 	}
 
-	if slices.Contains(authorizedIssuerCreators[:], creator.String()) {
+	if !slices.Contains(authorizedIssuerCreators[:], creator.String()) {
 		return 0, errors.Wrapf(sdkerrors.ErrUnauthorized, "invalid issue creator; expected %s or %s, got %s", authorizedIssuerCreators[0], authorizedIssuerCreators[1], creator.String())
 	}
 

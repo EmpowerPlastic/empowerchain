@@ -76,7 +76,6 @@ func (s *E2ETestSuite) SetupSuite() {
 	genesisState := s.cfg.GenesisState
 
 	plasticcreditGenesisState := plasticcredit.DefaultGenesis()
-	// plasticcreditGenesisState.Params.IssuerCreator = "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7"
 	plasticcreditGenesisState.IdCounters = plasticcredit.IDCounters{
 		NextIssuerId:    3,
 		NextApplicantId: 2,
@@ -316,9 +315,9 @@ func UnpackTxResponseData(ctx client.Context, txJsonResponse []byte, txResponse 
 	return nil
 }
 
-// func TestE2ETestSuite(t *testing.T) {
-// 	cfg := network.DefaultConfig()
-// 	params.SetAddressPrefixes()
-// 	params.RegisterDenoms()
-// 	suite.Run(t, NewE2ETestSuite(cfg))
-// }
+func TestE2ETestSuite(t *testing.T) {
+	cfg := network.DefaultConfig()
+	params.SetAddressPrefixes()
+	params.RegisterDenoms()
+	suite.Run(t, NewE2ETestSuite(cfg))
+}
