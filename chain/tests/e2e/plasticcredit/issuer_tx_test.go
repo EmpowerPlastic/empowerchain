@@ -73,7 +73,8 @@ func (s *E2ETestSuite) TestCmdCreateIssuer() {
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else {
-				UnpackTxResponseData(val.ClientCtx, out.Bytes(), &submitProposalResponse)
+				err = UnpackTxResponseData(val.ClientCtx, out.Bytes(), &submitProposalResponse)
+				s.Require().NoError(err)
 				cmd = govcli.NewCmdVote()
 				out, _ = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{fmt.Sprint(submitProposalResponse.ProposalId), "yes", fmt.Sprintf("--%s=%s", flags.FlagFrom, validatorKey.Name)}, s.commonFlags...))
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResponse))
@@ -260,7 +261,8 @@ func (s *E2ETestSuite) TestCmdUpdateIssuerCreator() {
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else {
-				UnpackTxResponseData(val.ClientCtx, out.Bytes(), &submitProposalResponse)
+				err = UnpackTxResponseData(val.ClientCtx, out.Bytes(), &submitProposalResponse)
+				s.Require().NoError(err)
 				cmd = govcli.NewCmdVote()
 				out, _ = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{fmt.Sprint(submitProposalResponse.ProposalId), "yes", fmt.Sprintf("--%s=%s", flags.FlagFrom, validatorKey.Name)}, s.commonFlags...))
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResponse))
