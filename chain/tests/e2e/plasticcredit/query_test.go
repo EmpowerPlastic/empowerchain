@@ -83,3 +83,98 @@ func (s *E2ETestSuite) TestCmdQueryIssuer() {
 		})
 	}
 }
+
+func (s *E2ETestSuite) TestCmdQueryProject() {
+	val := s.network.Validators[0]
+	testCases := map[string]struct {
+		args           []string
+		expectedErr    bool
+		expectedErrMsg string
+		expectedResp   proto.Message
+	}{
+
+		"query existing project": {
+			[]string{"1"},
+			false,
+			"",
+			&plasticcredit.QueryProjectResponse{
+				Project: plasticcredit.Project{
+					Id:                      1,
+					ApplicantId:             1,
+					CreditClassAbbreviation: "EMP",
+					Name:                    "Approved project",
+					Status:                  plasticcredit.ProjectStatus_APPROVED,
+				},
+			},
+		},
+
+		"query non-existing project": {
+			[]string{"35"},
+			true,
+			"project not found",
+			nil,
+		},
+	}
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			cmd := cli.CmdQueryProject()
+			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, tc.args)
+
+			if tc.expectedErr {
+				s.Require().Contains(out.String(), tc.expectedErrMsg)
+			} else {
+				s.Require().NoError(err)
+				var resp plasticcredit.QueryProjectResponse
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
+				s.Require().Equal(tc.expectedResp, &resp)
+			}
+		})
+	}
+}
+
+func (s *E2ETestSuite) TestCmdQueryApplicant() {
+	val := s.network.Validators[0]
+	testCases := map[string]struct {
+		args           []string
+		expectedErr    bool
+		expectedErrMsg string
+		expectedResp   proto.Message
+	}{
+
+		"query existing applicant": {
+			[]string{"1"},
+			false,
+			"",
+			&plasticcredit.QueryApplicantResponse{
+				Applicant: plasticcredit.Applicant{
+					Id:          1,
+					Name:        "Plastix Inc.",
+					Description: "Grab that bottle",
+					Admin:       "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
+				},
+			},
+		},
+
+		"query non-existing applicant": {
+			[]string{"35"},
+			true,
+			"applicant not found",
+			nil,
+		},
+	}
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			cmd := cli.CmdQueryApplicant()
+			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, tc.args)
+
+			if tc.expectedErr {
+				s.Require().Contains(out.String(), tc.expectedErrMsg)
+			} else {
+				s.Require().NoError(err)
+				var resp plasticcredit.QueryApplicantResponse
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
+				s.Require().Equal(tc.expectedResp, &resp)
+			}
+		})
+	}
+}

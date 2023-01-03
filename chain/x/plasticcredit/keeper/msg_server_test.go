@@ -344,7 +344,7 @@ func (s *TestSuite) TestUpdateApplicant() {
 				ApplicantId: 1,
 				Name:        "Empower",
 				Description: "Empower is cool",
-				Admin:       sample.AccAddress(),
+				Admin:       issuerAdmin,
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},

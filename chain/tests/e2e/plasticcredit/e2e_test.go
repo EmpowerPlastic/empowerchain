@@ -70,7 +70,7 @@ func (s *E2ETestSuite) SetupSuite() {
 	plasticcreditGenesisState.Params.IssuerCreator = "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7"
 	plasticcreditGenesisState.IdCounters = plasticcredit.IDCounters{
 		NextIssuerId:    3,
-		NextApplicantId: 2,
+		NextApplicantId: 4,
 		NextProjectId:   7,
 	}
 	plasticcreditGenesisState.Issuers = []plasticcredit.Issuer{
@@ -92,6 +92,18 @@ func (s *E2ETestSuite) SetupSuite() {
 			Id:          1,
 			Name:        "Plastix Inc.",
 			Description: "Grab that bottle",
+			Admin:       "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
+		},
+		{
+			Id:          2,
+			Name:        "Ocean plastic Inc.",
+			Description: "Grab that net",
+			Admin:       "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
+		},
+		{
+			Id:          3,
+			Name:        "Sea plastic Inc.",
+			Description: "collector",
 			Admin:       "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
 		},
 	}
