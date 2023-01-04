@@ -306,7 +306,7 @@ func (s *E2ETestSuite) TestCmdSuspendProject() {
 		expectedErrMsg    string
 		expectedState     *plasticcredit.Project
 	}{
-		"suspend project": {
+		"suspend approved project": {
 			[]string{"1", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
 			false,
