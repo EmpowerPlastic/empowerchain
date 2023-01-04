@@ -153,7 +153,7 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 		expectedState     *plasticcredit.Project
 	}{
 
-		"approve project": {
+		"approve new project": {
 			[]string{"3", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
 			false,
