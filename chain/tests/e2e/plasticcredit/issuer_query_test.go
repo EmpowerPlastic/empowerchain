@@ -9,10 +9,7 @@ import (
 
 func (s *E2ETestSuite) TestCmdQueryParams() {
 	val := s.network.Validators[0]
-	issuerCreatorKey, err := val.ClientCtx.Keyring.Key(issuerCreatorKey)
-	s.Require().NoError(err)
-	issuerCreator, err := issuerCreatorKey.GetAddress()
-	s.Require().NoError(err)
+	issuerCreator := ""
 	testCases := map[string]struct {
 		args []string
 	}{
@@ -28,7 +25,7 @@ func (s *E2ETestSuite) TestCmdQueryParams() {
 			s.Require().NoError(err)
 			var result plasticcredit.QueryParamsResponse
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &result))
-			s.Require().Equal(issuerCreator.String(), result.Params.IssuerCreator)
+			s.Require().Equal(issuerCreator, result.Params.IssuerCreator)
 		})
 	}
 }
@@ -61,7 +58,7 @@ func (s *E2ETestSuite) TestCmdQueryIssuer() {
 		},
 
 		"query non-existing issuer": {
-			[]string{"3"},
+			[]string{"51"},
 			true,
 			"issuer not found",
 			nil,

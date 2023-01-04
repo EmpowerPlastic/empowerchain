@@ -1,15 +1,19 @@
 package e2e_test
 
 import (
+	"encoding/hex"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/suite"
 
 	"github.com/EmpowerPlastic/empowerchain/app"
 	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -18,6 +22,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	dbm "github.com/tendermint/tm-db"
 )
 
@@ -35,6 +41,9 @@ const (
 	issuerKey        = "issuer"
 	issuerCreatorKey = "issuerCreator"
 	applicantKey     = "applicant"
+	val1Key          = "node0"
+	val2Key          = "node1"
+	val3Key          = "node2"
 )
 
 type E2ETestSuite struct {
@@ -67,7 +76,6 @@ func (s *E2ETestSuite) SetupSuite() {
 	genesisState := s.cfg.GenesisState
 
 	plasticcreditGenesisState := plasticcredit.DefaultGenesis()
-	plasticcreditGenesisState.Params.IssuerCreator = "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7"
 	plasticcreditGenesisState.IdCounters = plasticcredit.IDCounters{
 		NextIssuerId:    3,
 		NextApplicantId: 4,
@@ -205,8 +213,10 @@ func (s *E2ETestSuite) SetupSuite() {
 
 	var bankGenesis banktypes.GenesisState
 	var authGenesis authtypes.GenesisState
+	var govGenesis govtypesv1.GenesisState
 	s.Require().NoError(s.cfg.Codec.UnmarshalJSON(genesisState[banktypes.ModuleName], &bankGenesis))
 	s.Require().NoError(s.cfg.Codec.UnmarshalJSON(genesisState[authtypes.ModuleName], &authGenesis))
+	s.Require().NoError(s.cfg.Codec.UnmarshalJSON(genesisState[govtypes.ModuleName], &govGenesis))
 
 	balances := sdk.NewCoins(
 		sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens),
@@ -218,6 +228,7 @@ func (s *E2ETestSuite) SetupSuite() {
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: issuerAddress, Coins: balances})
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: issuerCreatorAddress, Coins: balances})
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: applicantAddress, Coins: balances})
+
 	var genAccounts authtypes.GenesisAccounts
 	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(issuerAddress)))
 	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(issuerCreatorAddress)))
@@ -226,16 +237,24 @@ func (s *E2ETestSuite) SetupSuite() {
 	s.Require().NoError(err)
 	authGenesis.Accounts = append(authGenesis.Accounts, accounts...)
 
+	*govGenesis.VotingParams.VotingPeriod = 10 * time.Second
+
 	bankGenesisStateBz, err := s.cfg.Codec.MarshalJSON(&bankGenesis)
 	s.Require().NoError(err)
 	authGenesisStateBz, err := s.cfg.Codec.MarshalJSON(&authGenesis)
 	s.Require().NoError(err)
+	govGenesisStateBz, err := s.cfg.Codec.MarshalJSON(&govGenesis)
+	s.Require().NoError(err)
 
 	genesisState[banktypes.ModuleName] = bankGenesisStateBz
 	genesisState[authtypes.ModuleName] = authGenesisStateBz
+	genesisState[govtypes.ModuleName] = govGenesisStateBz
 	s.cfg.GenesisState = genesisState
 
 	s.cfg.AppConstructor = NewAppConstructor()
+	encodingConfig := params.MakeEncodingConfig(app.ModuleBasics)
+	s.cfg.InterfaceRegistry = encodingConfig.InterfaceRegistry
+	s.cfg.Codec = encodingConfig.Codec
 
 	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
 	s.Require().NoError(err)
@@ -267,6 +286,16 @@ func (s *E2ETestSuite) SetupSuite() {
 	)
 	s.Require().NoError(err)
 
+	// Import other validator keys to 1st validator keyring for easier voting
+	validator2Key, err := s.network.Validators[1].ClientCtx.Keyring.ExportPrivKeyArmor("node1", "")
+	s.Require().NoError(err)
+	err = s.network.Validators[0].ClientCtx.Keyring.ImportPrivKey("node1", validator2Key, "")
+	s.Require().NoError(err)
+	validator3Key, err := s.network.Validators[2].ClientCtx.Keyring.ExportPrivKeyArmor("node2", "")
+	s.Require().NoError(err)
+	err = s.network.Validators[0].ClientCtx.Keyring.ImportPrivKey("node2", validator3Key, "")
+	s.Require().NoError(err)
+
 	s.Require().NoError(s.network.WaitForNextBlock())
 
 }
@@ -274,6 +303,28 @@ func (s *E2ETestSuite) SetupSuite() {
 func (s *E2ETestSuite) TearDownSuite() {
 	s.T().Log("tearing down e2e test suite")
 	s.network.Cleanup()
+}
+
+func UnpackTxResponseData(ctx client.Context, txJsonResponse []byte, txResponse codec.ProtoMarshaler) error {
+	var sdkResponse sdk.TxResponse
+	var msgData sdk.TxMsgData
+	err := ctx.Codec.UnmarshalJSON(txJsonResponse, &sdkResponse)
+	if err != nil {
+		return err
+	}
+	respMsgDataHex, err := hex.DecodeString(sdkResponse.Data)
+	if err != nil {
+		return err
+	}
+	err = ctx.Codec.Unmarshal(respMsgDataHex, &msgData)
+	if err != nil {
+		return err
+	}
+	err = ctx.Codec.Unmarshal(msgData.MsgResponses[0].Value, txResponse)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func TestE2ETestSuite(t *testing.T) {

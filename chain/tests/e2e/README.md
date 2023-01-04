@@ -24,3 +24,13 @@ PlasticCredit module testing suite is configured with a predefined genesis state
 	issuer, err := issuerKey.GetAddress()
 	s.Require().NoError(err)
 ```
+
+### Veryfing transaction response
+
+`UnpackTxResponseData()` allows to decode transaction response object and compare it with expected value. Example usage:
+
+```go
+var submitProposalResponse govtypesv1.MsgSubmitProposalResponse
+out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+UnpackTxResponseData(val.ClientCtx, out.Bytes(), &submitProposalResponse)
+```
