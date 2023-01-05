@@ -200,7 +200,7 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 			nil,
 		},
 		"invalid admin": {
-			[]string{"4", fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name)},
+			[]string{"9", fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name)},
 			false,
 			true,
 			"unauthorized",
