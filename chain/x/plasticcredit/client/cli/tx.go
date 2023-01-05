@@ -50,16 +50,12 @@ Note, the '--from' flag is ignored as it is implied from [admin_key_or_address].
 `,
 		Args: cobra.MinimumNArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			if err := cmd.Flags().Set(flags.FlagFrom, args[0]); err != nil {
-				return err
-			}
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			admin := clientCtx.GetFromAddress()
+			admin := args[0]
 			name := args[1]
 			var desc string
 			if len(args) > 2 {
@@ -69,7 +65,7 @@ Note, the '--from' flag is ignored as it is implied from [admin_key_or_address].
 			msg := plasticcredit.MsgCreateApplicant{
 				Name:        name,
 				Description: desc,
-				Admin:       admin.String(),
+				Admin:       admin,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
