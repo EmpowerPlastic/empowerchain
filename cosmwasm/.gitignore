@@ -1,0 +1,9 @@
+# Build results
+target/
+
+
+# Build artifacts
+*.wasm
+hash.txt
+contracts.txt
+artifacts/
