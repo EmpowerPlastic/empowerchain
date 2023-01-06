@@ -23,7 +23,7 @@ func (s *E2ETestSuite) TestCmdCreateApplicant() {
 		expectedState     plasticcredit.Applicant
 	}{
 		"create new applicant": {
-			[]string{issuer.String(), "Empower2", "Description", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			[]string{"Empower2", "Description", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
 			"",
 			plasticcredit.Applicant{
@@ -33,13 +33,13 @@ func (s *E2ETestSuite) TestCmdCreateApplicant() {
 			},
 		},
 		"empty name": {
-			[]string{issuer.String(), "", "Grab that bottle", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			[]string{"", "Grab that bottle", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			true,
 			"invalid request",
 			plasticcredit.Applicant{},
 		},
 		"empty description": {
-			[]string{issuer.String(), "Empower244", "", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			[]string{"Empower244", "", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
 			"",
 			plasticcredit.Applicant{
@@ -47,12 +47,6 @@ func (s *E2ETestSuite) TestCmdCreateApplicant() {
 				Description: "",
 				Admin:       issuer.String(),
 			},
-		},
-		"invalid admin address": {
-			[]string{"invalid", "New", "Grab that bottle", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			true,
-			"invalid admin address",
-			plasticcredit.Applicant{},
 		},
 	}
 	for name, tc := range testCases {

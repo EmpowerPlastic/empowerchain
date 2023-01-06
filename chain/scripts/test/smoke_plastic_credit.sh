@@ -34,11 +34,11 @@ empowerd tx plasticcredit update-issuer empower18hl5c9xn5dze2g50uaw0l2mr02ew57zk
 sleep 5
 
 echo "--- Test: Plastic Credit Create Applicants ---"
-empowerd tx plasticcredit create-applicant empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m "First applicant" "With description" --from empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx plasticcredit create-applicant "First applicant" "With description" --from empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
 sleep 5
 empowerd tx plasticcredit update-applicant empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m 1 "Updated applicant" "With updated description" --from empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
 sleep 5
-empowerd tx plasticcredit create-applicant empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m "Second applicant" "With description" --from empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx plasticcredit create-applicant "Second applicant" "With description" --from empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
 sleep 5
 
 empowerd q plasticcredit applicant 1

@@ -43,29 +43,28 @@ func GetTxCmd() *cobra.Command {
 
 func MsgCreateApplicantCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-applicant [admin_key_or_address] [name] [description]",
+		Use:   "create-applicant [name] [description]",
 		Short: "Create new applicant.",
 		Long: `Create new applicant.
-Note, the '--from' flag is ignored as it is implied from [admin_key_or_address].
 `,
-		Args: cobra.MinimumNArgs(2),
+		Args: cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			admin := args[0]
-			name := args[1]
+			admin := clientCtx.GetFromAddress()
+			name := args[0]
 			var desc string
-			if len(args) > 2 {
-				desc = args[2]
+			if len(args) > 1 {
+				desc = args[1]
 			}
 
 			msg := plasticcredit.MsgCreateApplicant{
 				Name:        name,
 				Description: desc,
-				Admin:       admin,
+				Admin:       admin.String(),
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
