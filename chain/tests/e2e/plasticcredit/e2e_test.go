@@ -78,8 +78,8 @@ func (s *E2ETestSuite) SetupSuite() {
 	plasticcreditGenesisState := plasticcredit.DefaultGenesis()
 	plasticcreditGenesisState.IdCounters = plasticcredit.IDCounters{
 		NextIssuerId:    3,
-		NextApplicantId: 2,
-		NextProjectId:   7,
+		NextApplicantId: 4,
+		NextProjectId:   10,
 	}
 	plasticcreditGenesisState.Issuers = []plasticcredit.Issuer{
 		{
@@ -100,6 +100,18 @@ func (s *E2ETestSuite) SetupSuite() {
 			Id:          1,
 			Name:        "Plastix Inc.",
 			Description: "Grab that bottle",
+			Admin:       "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
+		},
+		{
+			Id:          2,
+			Name:        "Ocean plastic Inc.",
+			Description: "Grab that net",
+			Admin:       "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
+		},
+		{
+			Id:          3,
+			Name:        "Sea plastic Inc.",
+			Description: "collector",
 			Admin:       "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
 		},
 	}
@@ -156,6 +168,27 @@ func (s *E2ETestSuite) SetupSuite() {
 			ApplicantId:             1,
 			CreditClassAbbreviation: "PCRD",
 			Name:                    "Another New Project",
+			Status:                  plasticcredit.ProjectStatus_NEW,
+		},
+		{
+			Id:                      7,
+			ApplicantId:             1,
+			CreditClassAbbreviation: "PCRD",
+			Name:                    "Another Rejected Project",
+			Status:                  plasticcredit.ProjectStatus_REJECTED,
+		},
+		{
+			Id:                      8,
+			ApplicantId:             1,
+			CreditClassAbbreviation: "PCRD",
+			Name:                    "Another Suspended Project",
+			Status:                  plasticcredit.ProjectStatus_SUSPENDED,
+		},
+		{
+			Id:                      9,
+			ApplicantId:             1,
+			CreditClassAbbreviation: "PCRD",
+			Name:                    "New Project to update",
 			Status:                  plasticcredit.ProjectStatus_NEW,
 		},
 	}

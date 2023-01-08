@@ -267,6 +267,14 @@ func (s *TestSuite) TestCreateApplicant() {
 			},
 			err: nil,
 		},
+		"invalid admin": {
+			msg: &plasticcredit.MsgCreateApplicant{
+				Name:        "Empower",
+				Description: "Empower is cool",
+				Admin:       "invalid",
+			},
+			err: sdkerrors.ErrInvalidAddress,
+		},
 	}
 
 	for name, tc := range testCases {
@@ -344,7 +352,7 @@ func (s *TestSuite) TestUpdateApplicant() {
 				ApplicantId: 1,
 				Name:        "Empower",
 				Description: "Empower is cool",
-				Admin:       sample.AccAddress(),
+				Admin:       issuerAdmin,
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
