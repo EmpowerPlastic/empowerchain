@@ -109,6 +109,20 @@ func (s *E2ETestSuite) TestCmdUpdateCreditClass() {
 			"credit class name cannot be empty",
 			nil,
 		},
+		"empty abbreviation": {
+			[]string{"", "Test", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			true,
+			false,
+			"abbreviation cannot be empty: invalid request",
+			nil,
+		},
+		"non-existing abbreviation": {
+			[]string{"JJJ", "Test", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			true,
+			false,
+			"credit class not found",
+			nil,
+		},
 	}
 	for name, tc := range testCases {
 		s.Run(name, func() {
