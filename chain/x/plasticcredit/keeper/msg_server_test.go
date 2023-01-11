@@ -1417,6 +1417,10 @@ func (s *TestSuite) TestTransferCredits() {
 	}
 }
 
+func (s *TestSuite) TestTransferCreditsWithAuthz() {
+	// TODO:
+}
+
 func (s *TestSuite) TestRetireCredits() {
 	testCases := map[string]struct {
 		msg                    *plasticcredit.MsgRetireCredits
