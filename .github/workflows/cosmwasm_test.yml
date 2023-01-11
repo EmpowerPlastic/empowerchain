@@ -1,4 +1,4 @@
-name: "Test"
+name: "Test CosmWasm contracts"
 
 on:
   workflow_dispatch:
@@ -7,11 +7,11 @@ on:
     branches:
       - main
     paths:
-      - 'chain/**'
+      - 'cosmwasm/**'
 
 jobs:
   test:
-    name: Test EmpowerChain
+    name: Test CosmWasm Contracts
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
@@ -21,13 +21,10 @@ jobs:
           version: v0.6.22
 
       - run: earthly --ci --output +test-with-coverage
-        working-directory: ./chain
+        working-directory: ./cosmwasm
 
       - uses: codecov/codecov-action@v3
         with:
-          directory: ./chain
-          flags: chain
+          directory: ./cosmwasm
+          flags: cosmwasm
           fail_ci_if_error: true
-
-      - run: earthly --ci +smoketest
-        working-directory: ./chain
