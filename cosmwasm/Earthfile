@@ -1,0 +1,37 @@
+VERSION 0.6
+FROM earthly/dind:ubuntu
+WORKDIR /empowerchain/cosmwasm
+
+docker:
+    RUN apt-get update -yq \
+        && apt-get install --no-install-recommends -yq \
+        curl wget gnupg ca-certificates gcc g++ make
+    RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    ENV PATH="/root/.cargo/bin:${PATH}"
+    RUN rustup target add wasm32-unknown-unknown
+    RUN cargo install cosmwasm-check
+
+build-prep:
+    FROM +docker
+    COPY Cargo.lock .
+    COPY Cargo.toml .
+    COPY .cargo .cargo
+    COPY contracts contracts
+
+build:
+    FROM +build-prep
+    RUN cargo build
+    RUN cargo wasm
+
+test:
+    FROM +build-prep
+    RUN cargo test
+
+test-with-coverage:
+    FROM +build-prep
+    RUN cargo install grcov
+    RUN rustup component add llvm-tools-preview
+    RUN CARGO_INCREMENTAL=0 RUSTFLAGS='-Cinstrument-coverage' LLVM_PROFILE_FILE='cargo-test-%p-%m.profraw' cargo test
+    RUN mkdir target/coverage
+    RUN grcov . --binary-path ./target/debug/deps/ -s . -t lcov --branch --ignore-not-existing --ignore '../*' --ignore "/*" -o target/coverage/tests.lcov
+    SAVE ARTIFACT target/coverage/tests.lcov AS LOCAL tests.lcov
