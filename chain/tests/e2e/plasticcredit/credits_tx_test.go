@@ -44,6 +44,42 @@ func (s *E2ETestSuite) TestCmdIssueCreditClass() {
 				},
 			},
 		},
+		"unexisting project": {
+			[]string{"15", "123", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			true,
+			"project not found",
+			plasticcredit.CreditCollection{},
+		},
+		"empty serial number": {
+			[]string{"15", "", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			true,
+			"invalid serial number",
+			plasticcredit.CreditCollection{},
+		},
+		"issue zero credits": {
+			[]string{"1", "123", "0", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			true,
+			"invalid credit amount",
+			plasticcredit.CreditCollection{},
+		},
+		"issue credits to unapproved project": {
+			[]string{"6", "123", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			true,
+			"project is not approved",
+			plasticcredit.CreditCollection{},
+		},
+		"issue credits to rejected project": {
+			[]string{"7", "123", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			true,
+			"project is not approved",
+			plasticcredit.CreditCollection{},
+		},
+		"issue credits to suspended project": {
+			[]string{"8", "123", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			true,
+			"project is not approved",
+			plasticcredit.CreditCollection{},
+		},
 	}
 	for name, tc := range testCases {
 		s.Run(name, func() {
