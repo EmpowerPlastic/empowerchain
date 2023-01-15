@@ -6,9 +6,12 @@ import (
 	"github.com/EmpowerPlastic/empowerchain/utils"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/authz"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"time"
 )
 
 func (s *TestSuite) TestUpdateParams() {
@@ -1418,7 +1421,90 @@ func (s *TestSuite) TestTransferCredits() {
 }
 
 func (s *TestSuite) TestTransferCreditsWithAuthz() {
-	// TODO:
+	s.PopulateWithSamples()
+	grantee := sample.AccAddress()
+
+	transfer5Msg, err := codectypes.NewAnyWithValue(&plasticcredit.MsgTransferCredits{
+		From:   s.sampleApplicantAdmin,
+		To:     grantee,
+		Denom:  s.sampleCreditDenom,
+		Amount: 5,
+		Retire: false,
+	})
+	s.Require().NoError(err)
+
+	// Authorization not created yet, should fail:
+	goCtx := sdk.WrapSDKContext(s.ctx)
+	_, err = s.empowerApp.AuthzKeeper.Exec(goCtx, &authz.MsgExec{
+		Grantee: grantee,
+		Msgs:    []*codectypes.Any{transfer5Msg},
+	})
+	s.Require().ErrorIs(err, authz.ErrNoAuthorizationFound)
+
+	// Create custom transfer credits authz authorization
+	expiration := time.Now().AddDate(1, 0, 0)
+	err = s.empowerApp.AuthzKeeper.SaveGrant(
+		s.ctx,
+		sdk.MustAccAddressFromBech32(grantee),
+		sdk.MustAccAddressFromBech32(s.sampleApplicantAdmin),
+		&plasticcredit.TransferAuthorization{
+			Denom:      s.sampleCreditDenom,
+			MaxCredits: 10,
+		},
+		&expiration,
+	)
+	s.Require().NoError(err)
+
+	// Transfer above max credits, should fail
+	transfer11Msg, err := codectypes.NewAnyWithValue(&plasticcredit.MsgTransferCredits{
+		From:   s.sampleApplicantAdmin,
+		To:     grantee,
+		Denom:  s.sampleCreditDenom,
+		Amount: 11,
+		Retire: false,
+	})
+	s.Require().NoError(err)
+	_, err = s.empowerApp.AuthzKeeper.Exec(goCtx, &authz.MsgExec{
+		Grantee: grantee,
+		Msgs:    []*codectypes.Any{transfer11Msg},
+	})
+	s.Require().ErrorIs(err, sdkerrors.ErrUnauthorized)
+
+	// Transfer 5, should work
+	_, err = s.empowerApp.AuthzKeeper.Exec(goCtx, &authz.MsgExec{
+		Grantee: grantee,
+		Msgs:    []*codectypes.Any{transfer5Msg},
+	})
+	s.Require().NoError(err)
+
+	// Transfer 6, which is above the max remaining credits (5 left), should fail
+	transfer6Msg, err := codectypes.NewAnyWithValue(&plasticcredit.MsgTransferCredits{
+		From:   s.sampleApplicantAdmin,
+		To:     grantee,
+		Denom:  s.sampleCreditDenom,
+		Amount: 6,
+		Retire: false,
+	})
+	s.Require().NoError(err)
+	_, err = s.empowerApp.AuthzKeeper.Exec(goCtx, &authz.MsgExec{
+		Grantee: grantee,
+		Msgs:    []*codectypes.Any{transfer6Msg},
+	})
+	s.Require().ErrorIs(err, sdkerrors.ErrUnauthorized)
+
+	// Transfer the last 5 of the MaxCredits, should work
+	_, err = s.empowerApp.AuthzKeeper.Exec(goCtx, &authz.MsgExec{
+		Grantee: grantee,
+		Msgs:    []*codectypes.Any{transfer5Msg},
+	})
+	s.Require().NoError(err)
+
+	// There are no more credits left in the authorization, should fail
+	_, err = s.empowerApp.AuthzKeeper.Exec(goCtx, &authz.MsgExec{
+		Grantee: grantee,
+		Msgs:    []*codectypes.Any{transfer5Msg},
+	})
+	s.Require().ErrorIs(err, authz.ErrNoAuthorizationFound) // Not found because the authorization is deleted when used up
 }
 
 func (s *TestSuite) TestRetireCredits() {
