@@ -55,7 +55,7 @@ func (k Keeper) createApplicant(ctx sdk.Context, name string, description string
 func (k Keeper) updateApplicant(ctx sdk.Context, updater sdk.AccAddress, applicantID uint64, name string, description string, admin string) error {
 	applicant, found := k.GetApplicant(ctx, applicantID)
 	if !found {
-		return errors.Wrapf(plasticcredit.ErrNotFoundApplicant, "applicant with id %d was not found for update", applicantID)
+		return errors.Wrapf(plasticcredit.ErrApplicantNotFound, "applicant with id %d was not found for update", applicantID)
 	}
 
 	if applicant.Admin != updater.String() {
@@ -96,20 +96,17 @@ func (k Keeper) setApplicant(ctx sdk.Context, applicant plasticcredit.Applicant)
 	return nil
 }
 
-func (k Keeper) getAllApplicants(ctx sdk.Context) []plasticcredit.Applicant {
+func (k Keeper) iterateApplicants(ctx sdk.Context, handler func(applicant plasticcredit.Applicant)) {
 	store := k.getApplicantStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
 	defer iterator.Close()
 
-	var applicants []plasticcredit.Applicant
 	for ; iterator.Valid(); iterator.Next() {
 		var applicant plasticcredit.Applicant
 		k.cdc.MustUnmarshal(iterator.Value(), &applicant)
-		applicants = append(applicants, applicant)
+		handler(applicant)
 	}
-
-	return applicants
 }
 
 func (k Keeper) getApplicantStore(ctx sdk.Context) storetypes.KVStore {

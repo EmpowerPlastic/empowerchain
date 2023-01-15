@@ -144,6 +144,22 @@ func (m msgServer) CreateProject(goCtx context.Context, req *plasticcredit.MsgCr
 	}, nil
 }
 
+func (m msgServer) UpdateProject(goCtx context.Context, req *plasticcredit.MsgUpdateProject) (*plasticcredit.MsgUpdateProjectResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	updater, err := sdk.AccAddressFromBech32(req.Updater)
+	if err != nil {
+		return nil, errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid updater address: %s", req.Updater)
+	}
+
+	err = m.Keeper.UpdateProject(ctx, updater, req.ProjectId, req.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	return &plasticcredit.MsgUpdateProjectResponse{}, nil
+}
+
 func (m msgServer) ApproveProject(goCtx context.Context, req *plasticcredit.MsgApproveProject) (*plasticcredit.MsgApproveProjectResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -157,6 +173,36 @@ func (m msgServer) ApproveProject(goCtx context.Context, req *plasticcredit.MsgA
 	}
 
 	return &plasticcredit.MsgApproveProjectResponse{}, nil
+}
+
+func (m msgServer) RejectProject(goCtx context.Context, req *plasticcredit.MsgRejectProject) (*plasticcredit.MsgRejectProjectResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	rejector, err := sdk.AccAddressFromBech32(req.Rejector)
+	if err != nil {
+		return nil, errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid rejector address: %s", req.Rejector)
+	}
+
+	if err := m.Keeper.RejectProject(ctx, rejector, req.ProjectId); err != nil {
+		return nil, err
+	}
+
+	return &plasticcredit.MsgRejectProjectResponse{}, nil
+}
+
+func (m msgServer) SuspendProject(goCtx context.Context, req *plasticcredit.MsgSuspendProject) (*plasticcredit.MsgSuspendProjectResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	updater, err := sdk.AccAddressFromBech32(req.Updater)
+	if err != nil {
+		return nil, errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid updater address: %s", req.Updater)
+	}
+
+	if err := m.Keeper.SuspendProject(ctx, updater, req.ProjectId); err != nil {
+		return nil, err
+	}
+
+	return &plasticcredit.MsgSuspendProjectResponse{}, nil
 }
 
 func (m msgServer) IssueCredits(goCtx context.Context, req *plasticcredit.MsgIssueCredits) (*plasticcredit.MsgIssueCreditsResponse, error) {

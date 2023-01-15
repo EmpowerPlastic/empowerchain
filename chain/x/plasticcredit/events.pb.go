@@ -177,6 +177,136 @@ func (m *EventUpdateIssuer) GetAdmin() string {
 	return ""
 }
 
+// EventCreateProject is an event emitted when a new Project is created
+type EventCreateProject struct {
+	Creator                 string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	ApplicantId             uint64 `protobuf:"varint,2,opt,name=applicant_id,json=applicantId,proto3" json:"applicant_id,omitempty"`
+	CreditClassAbbreviation string `protobuf:"bytes,3,opt,name=credit_class_abbreviation,json=creditClassAbbreviation,proto3" json:"credit_class_abbreviation,omitempty"`
+	Name                    string `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
+}
+
+func (m *EventCreateProject) Reset()         { *m = EventCreateProject{} }
+func (m *EventCreateProject) String() string { return proto.CompactTextString(m) }
+func (*EventCreateProject) ProtoMessage()    {}
+func (*EventCreateProject) Descriptor() ([]byte, []int) {
+	return fileDescriptor_46edfa2bb37e7891, []int{2}
+}
+func (m *EventCreateProject) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventCreateProject) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventCreateProject.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventCreateProject) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventCreateProject.Merge(m, src)
+}
+func (m *EventCreateProject) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventCreateProject) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventCreateProject.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventCreateProject proto.InternalMessageInfo
+
+func (m *EventCreateProject) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *EventCreateProject) GetApplicantId() uint64 {
+	if m != nil {
+		return m.ApplicantId
+	}
+	return 0
+}
+
+func (m *EventCreateProject) GetCreditClassAbbreviation() string {
+	if m != nil {
+		return m.CreditClassAbbreviation
+	}
+	return ""
+}
+
+func (m *EventCreateProject) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+// EventUpdateProject is an event emitted when a Project is updated
+type EventUpdateProject struct {
+	Updater   string `protobuf:"bytes,1,opt,name=updater,proto3" json:"updater,omitempty"`
+	ProjectId uint64 `protobuf:"varint,2,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	Name      string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+}
+
+func (m *EventUpdateProject) Reset()         { *m = EventUpdateProject{} }
+func (m *EventUpdateProject) String() string { return proto.CompactTextString(m) }
+func (*EventUpdateProject) ProtoMessage()    {}
+func (*EventUpdateProject) Descriptor() ([]byte, []int) {
+	return fileDescriptor_46edfa2bb37e7891, []int{3}
+}
+func (m *EventUpdateProject) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventUpdateProject) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventUpdateProject.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventUpdateProject) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventUpdateProject.Merge(m, src)
+}
+func (m *EventUpdateProject) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventUpdateProject) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventUpdateProject.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventUpdateProject proto.InternalMessageInfo
+
+func (m *EventUpdateProject) GetUpdater() string {
+	if m != nil {
+		return m.Updater
+	}
+	return ""
+}
+
+func (m *EventUpdateProject) GetProjectId() uint64 {
+	if m != nil {
+		return m.ProjectId
+	}
+	return 0
+}
+
+func (m *EventUpdateProject) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
 // EventProjectApproved is an event emitted when a project is approved by the issuer associated with the projects credit class
 type EventProjectApproved struct {
 	ProjectId                          uint64 `protobuf:"varint,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
@@ -189,7 +319,7 @@ func (m *EventProjectApproved) Reset()         { *m = EventProjectApproved{} }
 func (m *EventProjectApproved) String() string { return proto.CompactTextString(m) }
 func (*EventProjectApproved) ProtoMessage()    {}
 func (*EventProjectApproved) Descriptor() ([]byte, []int) {
-	return fileDescriptor_46edfa2bb37e7891, []int{2}
+	return fileDescriptor_46edfa2bb37e7891, []int{4}
 }
 func (m *EventProjectApproved) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -246,6 +376,144 @@ func (m *EventProjectApproved) GetApprovedBy() string {
 	return ""
 }
 
+// EventProjectRejected is an event emitted when a project is rejected by the issuer associated with the projects credit class
+type EventProjectRejected struct {
+	ProjectId                          uint64 `protobuf:"varint,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	RejectedForCreditClassAbbreviation string `protobuf:"bytes,2,opt,name=rejected_for_credit_class_abbreviation,json=rejectedForCreditClassAbbreviation,proto3" json:"rejected_for_credit_class_abbreviation,omitempty"`
+	RejectingIssuerId                  uint64 `protobuf:"varint,3,opt,name=rejecting_issuer_id,json=rejectingIssuerId,proto3" json:"rejecting_issuer_id,omitempty"`
+	RejectedBy                         string `protobuf:"bytes,4,opt,name=rejected_by,json=rejectedBy,proto3" json:"rejected_by,omitempty"`
+}
+
+func (m *EventProjectRejected) Reset()         { *m = EventProjectRejected{} }
+func (m *EventProjectRejected) String() string { return proto.CompactTextString(m) }
+func (*EventProjectRejected) ProtoMessage()    {}
+func (*EventProjectRejected) Descriptor() ([]byte, []int) {
+	return fileDescriptor_46edfa2bb37e7891, []int{5}
+}
+func (m *EventProjectRejected) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventProjectRejected) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventProjectRejected.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventProjectRejected) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventProjectRejected.Merge(m, src)
+}
+func (m *EventProjectRejected) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventProjectRejected) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventProjectRejected.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventProjectRejected proto.InternalMessageInfo
+
+func (m *EventProjectRejected) GetProjectId() uint64 {
+	if m != nil {
+		return m.ProjectId
+	}
+	return 0
+}
+
+func (m *EventProjectRejected) GetRejectedForCreditClassAbbreviation() string {
+	if m != nil {
+		return m.RejectedForCreditClassAbbreviation
+	}
+	return ""
+}
+
+func (m *EventProjectRejected) GetRejectingIssuerId() uint64 {
+	if m != nil {
+		return m.RejectingIssuerId
+	}
+	return 0
+}
+
+func (m *EventProjectRejected) GetRejectedBy() string {
+	if m != nil {
+		return m.RejectedBy
+	}
+	return ""
+}
+
+// EventProjectSuspended is an event emitted when a project is suspended by the issuer associated with the projects credit class
+type EventProjectSuspended struct {
+	ProjectId                           uint64 `protobuf:"varint,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	SuspendedForCreditClassAbbreviation string `protobuf:"bytes,2,opt,name=suspended_for_credit_class_abbreviation,json=suspendedForCreditClassAbbreviation,proto3" json:"suspended_for_credit_class_abbreviation,omitempty"`
+	SuspendingIssuerId                  uint64 `protobuf:"varint,3,opt,name=suspending_issuer_id,json=suspendingIssuerId,proto3" json:"suspending_issuer_id,omitempty"`
+	SuspendedBy                         string `protobuf:"bytes,4,opt,name=suspended_by,json=suspendedBy,proto3" json:"suspended_by,omitempty"`
+}
+
+func (m *EventProjectSuspended) Reset()         { *m = EventProjectSuspended{} }
+func (m *EventProjectSuspended) String() string { return proto.CompactTextString(m) }
+func (*EventProjectSuspended) ProtoMessage()    {}
+func (*EventProjectSuspended) Descriptor() ([]byte, []int) {
+	return fileDescriptor_46edfa2bb37e7891, []int{6}
+}
+func (m *EventProjectSuspended) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventProjectSuspended) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventProjectSuspended.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventProjectSuspended) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventProjectSuspended.Merge(m, src)
+}
+func (m *EventProjectSuspended) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventProjectSuspended) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventProjectSuspended.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventProjectSuspended proto.InternalMessageInfo
+
+func (m *EventProjectSuspended) GetProjectId() uint64 {
+	if m != nil {
+		return m.ProjectId
+	}
+	return 0
+}
+
+func (m *EventProjectSuspended) GetSuspendedForCreditClassAbbreviation() string {
+	if m != nil {
+		return m.SuspendedForCreditClassAbbreviation
+	}
+	return ""
+}
+
+func (m *EventProjectSuspended) GetSuspendingIssuerId() uint64 {
+	if m != nil {
+		return m.SuspendingIssuerId
+	}
+	return 0
+}
+
+func (m *EventProjectSuspended) GetSuspendedBy() string {
+	if m != nil {
+		return m.SuspendedBy
+	}
+	return ""
+}
+
 // EventIssuedCredits is an event emitted when new credits are issued
 type EventIssuedCredits struct {
 	IssuerId                uint64 `protobuf:"varint,1,opt,name=issuer_id,json=issuerId,proto3" json:"issuer_id,omitempty"`
@@ -260,7 +528,7 @@ func (m *EventIssuedCredits) Reset()         { *m = EventIssuedCredits{} }
 func (m *EventIssuedCredits) String() string { return proto.CompactTextString(m) }
 func (*EventIssuedCredits) ProtoMessage()    {}
 func (*EventIssuedCredits) Descriptor() ([]byte, []int) {
-	return fileDescriptor_46edfa2bb37e7891, []int{3}
+	return fileDescriptor_46edfa2bb37e7891, []int{7}
 }
 func (m *EventIssuedCredits) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -345,7 +613,7 @@ func (m *EventTransferCredits) Reset()         { *m = EventTransferCredits{} }
 func (m *EventTransferCredits) String() string { return proto.CompactTextString(m) }
 func (*EventTransferCredits) ProtoMessage()    {}
 func (*EventTransferCredits) Descriptor() ([]byte, []int) {
-	return fileDescriptor_46edfa2bb37e7891, []int{4}
+	return fileDescriptor_46edfa2bb37e7891, []int{8}
 }
 func (m *EventTransferCredits) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -429,7 +697,7 @@ func (m *EventRetiredCredits) Reset()         { *m = EventRetiredCredits{} }
 func (m *EventRetiredCredits) String() string { return proto.CompactTextString(m) }
 func (*EventRetiredCredits) ProtoMessage()    {}
 func (*EventRetiredCredits) Descriptor() ([]byte, []int) {
-	return fileDescriptor_46edfa2bb37e7891, []int{5}
+	return fileDescriptor_46edfa2bb37e7891, []int{9}
 }
 func (m *EventRetiredCredits) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -505,7 +773,7 @@ func (m *EventCreateApplicant) Reset()         { *m = EventCreateApplicant{} }
 func (m *EventCreateApplicant) String() string { return proto.CompactTextString(m) }
 func (*EventCreateApplicant) ProtoMessage()    {}
 func (*EventCreateApplicant) Descriptor() ([]byte, []int) {
-	return fileDescriptor_46edfa2bb37e7891, []int{6}
+	return fileDescriptor_46edfa2bb37e7891, []int{10}
 }
 func (m *EventCreateApplicant) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -575,7 +843,7 @@ func (m *EventUpdateApplicant) Reset()         { *m = EventUpdateApplicant{} }
 func (m *EventUpdateApplicant) String() string { return proto.CompactTextString(m) }
 func (*EventUpdateApplicant) ProtoMessage()    {}
 func (*EventUpdateApplicant) Descriptor() ([]byte, []int) {
-	return fileDescriptor_46edfa2bb37e7891, []int{7}
+	return fileDescriptor_46edfa2bb37e7891, []int{11}
 }
 func (m *EventUpdateApplicant) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -651,7 +919,7 @@ func (m *EventCreateCreditClass) Reset()         { *m = EventCreateCreditClass{}
 func (m *EventCreateCreditClass) String() string { return proto.CompactTextString(m) }
 func (*EventCreateCreditClass) ProtoMessage()    {}
 func (*EventCreateCreditClass) Descriptor() ([]byte, []int) {
-	return fileDescriptor_46edfa2bb37e7891, []int{8}
+	return fileDescriptor_46edfa2bb37e7891, []int{12}
 }
 func (m *EventCreateCreditClass) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -719,7 +987,7 @@ func (m *EventUpdateCreditClass) Reset()         { *m = EventUpdateCreditClass{}
 func (m *EventUpdateCreditClass) String() string { return proto.CompactTextString(m) }
 func (*EventUpdateCreditClass) ProtoMessage()    {}
 func (*EventUpdateCreditClass) Descriptor() ([]byte, []int) {
-	return fileDescriptor_46edfa2bb37e7891, []int{9}
+	return fileDescriptor_46edfa2bb37e7891, []int{13}
 }
 func (m *EventUpdateCreditClass) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -772,7 +1040,11 @@ func (m *EventUpdateCreditClass) GetName() string {
 func init() {
 	proto.RegisterType((*EventCreateIssuer)(nil), "empowerchain.plasticcredit.EventCreateIssuer")
 	proto.RegisterType((*EventUpdateIssuer)(nil), "empowerchain.plasticcredit.EventUpdateIssuer")
+	proto.RegisterType((*EventCreateProject)(nil), "empowerchain.plasticcredit.EventCreateProject")
+	proto.RegisterType((*EventUpdateProject)(nil), "empowerchain.plasticcredit.EventUpdateProject")
 	proto.RegisterType((*EventProjectApproved)(nil), "empowerchain.plasticcredit.EventProjectApproved")
+	proto.RegisterType((*EventProjectRejected)(nil), "empowerchain.plasticcredit.EventProjectRejected")
+	proto.RegisterType((*EventProjectSuspended)(nil), "empowerchain.plasticcredit.EventProjectSuspended")
 	proto.RegisterType((*EventIssuedCredits)(nil), "empowerchain.plasticcredit.EventIssuedCredits")
 	proto.RegisterType((*EventTransferCredits)(nil), "empowerchain.plasticcredit.EventTransferCredits")
 	proto.RegisterType((*EventRetiredCredits)(nil), "empowerchain.plasticcredit.EventRetiredCredits")
@@ -787,50 +1059,58 @@ func init() {
 }
 
 var fileDescriptor_46edfa2bb37e7891 = []byte{
-	// 686 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x96, 0x41, 0x6f, 0xd3, 0x3e,
-	0x18, 0xc6, 0x97, 0x36, 0xed, 0xff, 0xdf, 0x77, 0x03, 0x69, 0xde, 0x34, 0xb2, 0x21, 0xaa, 0x91,
-	0x03, 0xec, 0x42, 0x8b, 0x40, 0x9a, 0x04, 0x17, 0xd4, 0x4d, 0x43, 0xea, 0x6d, 0x0a, 0x70, 0xe1,
-	0x12, 0xb9, 0xb1, 0xb7, 0x19, 0x2d, 0x76, 0x64, 0xbb, 0x1b, 0xbb, 0x23, 0x71, 0xe5, 0x1b, 0x20,
-	0xbe, 0x03, 0x1f, 0x02, 0x21, 0x0e, 0x13, 0x5c, 0x38, 0xa2, 0xf5, 0x2b, 0x70, 0xe3, 0x82, 0x6a,
-	0x27, 0x4d, 0x53, 0xb5, 0x69, 0xb9, 0xc1, 0xad, 0x7e, 0xf3, 0xc4, 0x79, 0x7f, 0xcf, 0xeb, 0x3d,
-	0x33, 0xdc, 0xa5, 0x71, 0x22, 0xce, 0xa9, 0x8c, 0x4e, 0x30, 0xe3, 0xed, 0xe4, 0x14, 0x2b, 0xcd,
-	0xa2, 0x48, 0x52, 0xc2, 0x74, 0x9b, 0x9e, 0x51, 0xae, 0x55, 0x2b, 0x91, 0x42, 0x0b, 0xb4, 0x35,
-	0x2e, 0x6c, 0x15, 0x84, 0x5b, 0x9b, 0x91, 0x50, 0xb1, 0x50, 0xa1, 0x51, 0xb6, 0xed, 0xc2, 0xbe,
-	0xe6, 0x7f, 0x76, 0x60, 0xf5, 0x60, 0xb8, 0xcf, 0xbe, 0xa4, 0x58, 0xd3, 0xae, 0x52, 0x7d, 0x2a,
-	0xd1, 0x4d, 0x68, 0x30, 0xf3, 0x2b, 0x64, 0xc4, 0x73, 0xb6, 0x9d, 0x1d, 0x37, 0xf8, 0xdf, 0x16,
-	0xba, 0x04, 0x3d, 0x80, 0xff, 0xa2, 0xa1, 0x58, 0x48, 0xaf, 0xb2, 0xed, 0xec, 0x34, 0xf6, 0xbc,
-	0xaf, 0x1f, 0xef, 0xad, 0xa7, 0xbb, 0x76, 0x08, 0x91, 0x54, 0xa9, 0x67, 0x5a, 0x32, 0x7e, 0x1c,
-	0x64, 0x42, 0x84, 0xc0, 0xe5, 0x38, 0xa6, 0x5e, 0x75, 0xf8, 0x42, 0x60, 0x7e, 0xa3, 0x6d, 0x58,
-	0x26, 0x54, 0x45, 0x92, 0x25, 0x9a, 0x09, 0xee, 0xb9, 0xe6, 0xd1, 0x78, 0x09, 0xb5, 0xa0, 0x86,
-	0x49, 0xcc, 0xb8, 0x57, 0x9b, 0xf3, 0x1d, 0x2b, 0xcb, 0x61, 0x5e, 0x24, 0xe4, 0x9f, 0x87, 0xf9,
-	0xe9, 0xc0, 0xba, 0x81, 0x39, 0x94, 0xe2, 0x15, 0x8d, 0x74, 0x27, 0x49, 0xa4, 0x38, 0xa3, 0x04,
-	0xdd, 0x02, 0x48, 0x6c, 0x29, 0x07, 0x6a, 0xa4, 0x95, 0x2e, 0x41, 0x01, 0xdc, 0xc1, 0xa9, 0x34,
-	0x3c, 0x12, 0x32, 0xb4, 0x67, 0x20, 0x8c, 0x4e, 0xb1, 0x52, 0x21, 0xee, 0xf5, 0x24, 0x3d, 0x63,
-	0xd8, 0x34, 0x69, 0x80, 0x03, 0x3f, 0x53, 0x3f, 0x15, 0x72, 0xdf, 0x68, 0xf7, 0x87, 0xd2, 0xce,
-	0x98, 0x12, 0xb5, 0x60, 0xcd, 0xaa, 0x18, 0x3f, 0x0e, 0x73, 0x33, 0xab, 0xe6, 0xdb, 0xab, 0xa3,
-	0x47, 0xdd, 0xcc, 0xd5, 0x47, 0xb0, 0x3c, 0xea, 0xa1, 0x77, 0x61, 0xdd, 0x28, 0x21, 0x86, 0x4c,
-	0xbc, 0x77, 0xe1, 0xff, 0x72, 0x00, 0x19, 0x6c, 0xb3, 0x19, 0xb1, 0x1d, 0xa9, 0xf2, 0x21, 0x16,
-	0x1d, 0xa9, 0x4c, 0x3a, 0xf2, 0x18, 0x36, 0x67, 0x9b, 0x60, 0x87, 0x78, 0x23, 0x9a, 0x41, 0xbe,
-	0x0e, 0x35, 0x42, 0xb9, 0x88, 0xd3, 0x89, 0xda, 0x05, 0xda, 0x80, 0x3a, 0x8e, 0x45, 0x9f, 0x6b,
-	0x33, 0x4c, 0x37, 0x48, 0x57, 0xe8, 0x09, 0x5c, 0x4f, 0xbb, 0xc4, 0x16, 0xd0, 0xab, 0xcf, 0x41,
-	0xbf, 0x66, 0xf5, 0x69, 0xd1, 0x7f, 0x5b, 0x49, 0x87, 0xfe, 0x5c, 0x62, 0xae, 0x8e, 0xa8, 0xcc,
-	0xf8, 0xef, 0x43, 0x5d, 0x51, 0x4e, 0xa8, 0x34, 0xf0, 0x65, 0x3b, 0xa6, 0x3a, 0xb4, 0x0b, 0x0d,
-	0x49, 0x23, 0x96, 0x30, 0xca, 0xf5, 0xdc, 0xb3, 0x9d, 0x4b, 0x73, 0xe2, 0xea, 0x74, 0x62, 0xb7,
-	0x40, 0x5c, 0x98, 0x4b, 0x6d, 0x62, 0x2e, 0xa5, 0xc6, 0xd7, 0x4b, 0x8d, 0xf7, 0xbf, 0x38, 0xb0,
-	0x66, 0x9c, 0x08, 0xa8, 0x66, 0x32, 0x3f, 0x08, 0x2d, 0xa8, 0x89, 0x73, 0xbe, 0x80, 0x0f, 0x56,
-	0x96, 0xe3, 0x54, 0xa6, 0xe3, 0x54, 0x67, 0xe3, 0xb8, 0x7f, 0x82, 0x53, 0x2b, 0xc7, 0x79, 0x9f,
-	0xfd, 0x35, 0xdb, 0x9c, 0xed, 0x24, 0xc9, 0x29, 0x8b, 0x30, 0xd7, 0xe8, 0x36, 0xac, 0xe0, 0x6c,
-	0x91, 0x9f, 0xed, 0xe5, 0x51, 0xad, 0x4b, 0x46, 0x79, 0x53, 0x99, 0x9d, 0x37, 0xd5, 0x92, 0xbc,
-	0x71, 0x17, 0xcb, 0x9b, 0x6f, 0x59, 0x87, 0x36, 0x3c, 0xff, 0xbe, 0x0e, 0x87, 0x59, 0xdd, 0x37,
-	0xbd, 0xc9, 0xb9, 0x19, 0x9a, 0x09, 0xfd, 0x0f, 0x0e, 0x6c, 0x8c, 0xf9, 0x3e, 0x16, 0x70, 0xe3,
-	0xd1, 0xef, 0x2c, 0x1a, 0xfd, 0x3e, 0xac, 0x4c, 0x89, 0xd0, 0x42, 0xad, 0x78, 0x86, 0xaa, 0x13,
-	0x67, 0x28, 0x73, 0xca, 0xcd, 0x9d, 0xf2, 0xdf, 0x64, 0x3d, 0x5a, 0xe7, 0x27, 0x7a, 0xcc, 0x90,
-	0x9d, 0x05, 0x91, 0x17, 0xea, 0x71, 0xca, 0xbf, 0xb0, 0xbd, 0xc3, 0x4f, 0x57, 0x4d, 0xe7, 0xf2,
-	0xaa, 0xe9, 0xfc, 0xb8, 0x6a, 0x3a, 0xef, 0x06, 0xcd, 0xa5, 0xcb, 0x41, 0x73, 0xe9, 0xfb, 0xa0,
-	0xb9, 0xf4, 0x72, 0xf7, 0x98, 0xe9, 0x93, 0x7e, 0xaf, 0x15, 0x89, 0xb8, 0x7d, 0x60, 0xaf, 0x19,
-	0x87, 0xf6, 0x82, 0xd1, 0x2e, 0x5c, 0x4f, 0x5e, 0x17, 0x2f, 0x28, 0xbd, 0xba, 0xb9, 0x63, 0x3c,
-	0xfc, 0x1d, 0x00, 0x00, 0xff, 0xff, 0xa6, 0x61, 0xaf, 0x1a, 0xc5, 0x08, 0x00, 0x00,
+	// 809 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x96, 0xcf, 0x6e, 0xd3, 0x4a,
+	0x14, 0xc6, 0x3b, 0x89, 0x93, 0x7b, 0x73, 0xd2, 0x7b, 0xa5, 0xba, 0xb9, 0xbd, 0x69, 0x11, 0x51,
+	0x31, 0x12, 0xed, 0x86, 0xa4, 0x02, 0xa9, 0x12, 0xb0, 0x40, 0x49, 0x55, 0xa4, 0xec, 0x2a, 0xb7,
+	0x6c, 0xd8, 0x44, 0x8e, 0x3d, 0x6d, 0x07, 0x35, 0x33, 0xd6, 0x8c, 0xd3, 0x52, 0xb1, 0x45, 0x62,
+	0xcb, 0x1b, 0x20, 0xde, 0x81, 0x1d, 0x2f, 0x80, 0x10, 0x8b, 0x0a, 0x36, 0x2c, 0x51, 0xfb, 0x0a,
+	0xec, 0xd8, 0xa0, 0xcc, 0x8c, 0xff, 0x24, 0x75, 0x1c, 0x17, 0x36, 0xb0, 0x89, 0xe2, 0x99, 0xcf,
+	0x33, 0xdf, 0xef, 0xcc, 0xf8, 0x9c, 0x03, 0x6b, 0x78, 0xe0, 0xb3, 0x13, 0xcc, 0xdd, 0x43, 0x87,
+	0xd0, 0x96, 0x7f, 0xe4, 0x88, 0x80, 0xb8, 0x2e, 0xc7, 0x1e, 0x09, 0x5a, 0xf8, 0x18, 0xd3, 0x40,
+	0x34, 0x7d, 0xce, 0x02, 0x66, 0xae, 0x24, 0x85, 0xcd, 0x31, 0xe1, 0xca, 0xb2, 0xcb, 0xc4, 0x80,
+	0x89, 0x9e, 0x54, 0xb6, 0xd4, 0x83, 0x7a, 0xcd, 0xfa, 0x80, 0x60, 0x61, 0x7b, 0xb4, 0xce, 0x16,
+	0xc7, 0x4e, 0x80, 0xbb, 0x42, 0x0c, 0x31, 0x37, 0xaf, 0x41, 0x85, 0xc8, 0x7f, 0x3d, 0xe2, 0xd5,
+	0xd1, 0x2a, 0x5a, 0x37, 0xec, 0xbf, 0xd5, 0x40, 0xd7, 0x33, 0xef, 0xc0, 0x5f, 0xee, 0x48, 0xcc,
+	0x78, 0xbd, 0xb0, 0x8a, 0xd6, 0x2b, 0x9d, 0xfa, 0xa7, 0xb7, 0xb7, 0x6b, 0x7a, 0xd5, 0xb6, 0xe7,
+	0x71, 0x2c, 0xc4, 0x6e, 0xc0, 0x09, 0x3d, 0xb0, 0x43, 0xa1, 0x69, 0x82, 0x41, 0x9d, 0x01, 0xae,
+	0x17, 0x47, 0x2f, 0xd8, 0xf2, 0xbf, 0xb9, 0x0a, 0x55, 0x0f, 0x0b, 0x97, 0x13, 0x3f, 0x20, 0x8c,
+	0xd6, 0x0d, 0x39, 0x95, 0x1c, 0x32, 0x9b, 0x50, 0x72, 0xbc, 0x01, 0xa1, 0xf5, 0xd2, 0x8c, 0x7d,
+	0x94, 0x2c, 0x86, 0x79, 0xec, 0x7b, 0x7f, 0x3c, 0xcc, 0x3b, 0x04, 0x66, 0xe2, 0x64, 0x76, 0x38,
+	0x7b, 0x8a, 0xdd, 0x20, 0x69, 0x18, 0xe5, 0x35, 0x7c, 0x03, 0xe6, 0x1d, 0xdf, 0x3f, 0x22, 0xae,
+	0x43, 0x83, 0x51, 0x10, 0x0a, 0x32, 0x08, 0xd5, 0x68, 0xac, 0xeb, 0x99, 0xf7, 0x61, 0x59, 0x5d,
+	0x96, 0x9e, 0x7b, 0xe4, 0x08, 0xd1, 0x73, 0xfa, 0x7d, 0x8e, 0x8f, 0x89, 0x23, 0x69, 0x14, 0xe8,
+	0xff, 0x4a, 0xb0, 0x35, 0x9a, 0x6f, 0x27, 0xa6, 0xa3, 0x78, 0x18, 0x71, 0x3c, 0xac, 0xe7, 0xda,
+	0xbc, 0x3a, 0x89, 0x84, 0xf9, 0xa1, 0x1c, 0xc8, 0x61, 0x5e, 0x0b, 0xcd, 0xeb, 0x00, 0xbe, 0x7a,
+	0x3d, 0xb6, 0x5e, 0xd1, 0x23, 0x5d, 0x2f, 0xed, 0x30, 0xac, 0x6f, 0x08, 0x6a, 0x72, 0x77, 0xbd,
+	0x6f, 0xdb, 0xf7, 0x39, 0x3b, 0xc6, 0xde, 0xc4, 0x5a, 0x68, 0x72, 0x2d, 0x1b, 0x6e, 0x39, 0x5a,
+	0xda, 0xdb, 0x67, 0xbc, 0x37, 0x3d, 0x22, 0xf2, 0xae, 0xd8, 0x56, 0xa8, 0x7e, 0xc4, 0xf8, 0xd6,
+	0x94, 0xe0, 0x34, 0x61, 0x51, 0xa9, 0x08, 0x3d, 0xe8, 0xc5, 0xf7, 0xb0, 0x28, 0xf7, 0x5e, 0x88,
+	0xa6, 0xba, 0xe1, 0x85, 0xbc, 0x07, 0xd5, 0xc8, 0x43, 0xff, 0x54, 0xc5, 0x34, 0x23, 0x4c, 0x10,
+	0x8a, 0x3b, 0xa7, 0x97, 0xb0, 0x6d, 0x3c, 0xfa, 0xcd, 0x85, 0xcd, 0xb5, 0x34, 0x1f, 0x76, 0xa8,
+	0xce, 0xc6, 0x56, 0xaa, 0x54, 0xec, 0x68, 0x2a, 0x89, 0x1d, 0x79, 0xc8, 0x83, 0x1d, 0x8a, 0x3b,
+	0xa7, 0xd6, 0x77, 0x04, 0xff, 0x25, 0xb1, 0x77, 0x87, 0xc2, 0xc7, 0xd4, 0x9b, 0xcd, 0xbd, 0x07,
+	0x6b, 0x22, 0xd4, 0xe6, 0x02, 0xbf, 0x19, 0xc9, 0x33, 0xc8, 0x37, 0xa0, 0xa6, 0x65, 0x69, 0xe8,
+	0x66, 0x3c, 0x17, 0xb1, 0x3f, 0x80, 0xf9, 0xd8, 0x47, 0x0e, 0xf8, 0x6a, 0xa4, 0x56, 0xf4, 0xea,
+	0x4b, 0x93, 0xcb, 0x79, 0xca, 0x95, 0xc8, 0x4e, 0x7a, 0x33, 0x3e, 0xa9, 0x5f, 0xc9, 0x05, 0x35,
+	0x28, 0x79, 0x98, 0xb2, 0x81, 0x4e, 0x06, 0xea, 0xc1, 0x5c, 0x82, 0xb2, 0x33, 0x60, 0x43, 0x1a,
+	0xc8, 0xe4, 0x67, 0xd8, 0xfa, 0xc9, 0x7c, 0x08, 0xff, 0x6a, 0x97, 0x8e, 0x22, 0xac, 0x97, 0x67,
+	0xb0, 0xff, 0xa3, 0xf4, 0x7a, 0xd0, 0x7a, 0x59, 0xd0, 0x57, 0x7e, 0x8f, 0x3b, 0x54, 0xec, 0x63,
+	0x1e, 0xf2, 0x6f, 0x40, 0x59, 0x8c, 0x42, 0x34, 0x3b, 0xd1, 0x68, 0x9d, 0xb9, 0x09, 0x15, 0x8e,
+	0x5d, 0xe2, 0x13, 0x4c, 0x83, 0x99, 0xb5, 0x20, 0x96, 0xc6, 0xc4, 0xc5, 0x74, 0x62, 0x63, 0x8c,
+	0x78, 0xec, 0x5c, 0x4a, 0x13, 0xe7, 0x92, 0x19, 0xf8, 0x72, 0x66, 0xe0, 0xad, 0x8f, 0x08, 0x16,
+	0x65, 0x24, 0x6c, 0x1c, 0x10, 0x1e, 0x5f, 0x84, 0x26, 0x94, 0xd8, 0x09, 0xcd, 0x11, 0x07, 0x25,
+	0x8b, 0x71, 0x0a, 0xe9, 0x38, 0xc5, 0xe9, 0x38, 0xc6, 0x55, 0x70, 0x4a, 0xd9, 0x38, 0xaf, 0xc3,
+	0x5c, 0xa6, 0xaa, 0x5f, 0x3b, 0x2c, 0x55, 0x97, 0x6a, 0x19, 0xba, 0x5c, 0xcb, 0xc2, 0x92, 0x50,
+	0x98, 0x5e, 0x9f, 0x8b, 0x19, 0xf5, 0xd9, 0xc8, 0x57, 0x9f, 0x3f, 0x87, 0x0e, 0x55, 0x89, 0xfb,
+	0xfd, 0x1c, 0x26, 0xab, 0x6d, 0x29, 0x67, 0xb5, 0xb5, 0xde, 0x20, 0x58, 0x4a, 0xc4, 0x3d, 0x91,
+	0xe4, 0x7e, 0xaa, 0xf3, 0xb0, 0x60, 0x3e, 0x25, 0x8f, 0x8e, 0x8d, 0x8d, 0xdf, 0xa1, 0xe2, 0xc4,
+	0x1d, 0x4a, 0xeb, 0x2d, 0x5e, 0x84, 0x1e, 0x55, 0xe4, 0x27, 0x3c, 0x5e, 0xb9, 0xc1, 0xc8, 0xe3,
+	0x31, 0xa5, 0xcb, 0xe8, 0xec, 0xbc, 0x3f, 0x6f, 0xa0, 0xb3, 0xf3, 0x06, 0xfa, 0x7a, 0xde, 0x40,
+	0xaf, 0x2e, 0x1a, 0x73, 0x67, 0x17, 0x8d, 0xb9, 0x2f, 0x17, 0x8d, 0xb9, 0x27, 0x9b, 0x07, 0x24,
+	0x38, 0x1c, 0xf6, 0x9b, 0x2e, 0x1b, 0xb4, 0xb6, 0x55, 0x5b, 0xbe, 0xa3, 0x1a, 0xf2, 0xd6, 0x58,
+	0x3b, 0xff, 0x6c, 0xbc, 0xa1, 0xef, 0x97, 0x65, 0x4f, 0x7e, 0xf7, 0x47, 0x00, 0x00, 0x00, 0xff,
+	0xff, 0x7f, 0xaa, 0xf6, 0x70, 0xf5, 0x0b, 0x00, 0x00,
 }
 
 func (m *EventCreateIssuer) Marshal() (dAtA []byte, err error) {
@@ -945,6 +1225,97 @@ func (m *EventUpdateIssuer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *EventCreateProject) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventCreateProject) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventCreateProject) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Name) > 0 {
+		i -= len(m.Name)
+		copy(dAtA[i:], m.Name)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Name)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.CreditClassAbbreviation) > 0 {
+		i -= len(m.CreditClassAbbreviation)
+		copy(dAtA[i:], m.CreditClassAbbreviation)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.CreditClassAbbreviation)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.ApplicantId != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.ApplicantId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *EventUpdateProject) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventUpdateProject) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventUpdateProject) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Name) > 0 {
+		i -= len(m.Name)
+		copy(dAtA[i:], m.Name)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Name)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.ProjectId != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.ProjectId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Updater) > 0 {
+		i -= len(m.Updater)
+		copy(dAtA[i:], m.Updater)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Updater)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *EventProjectApproved) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -981,6 +1352,100 @@ func (m *EventProjectApproved) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i -= len(m.ApprovedForCreditClassAbbreviation)
 		copy(dAtA[i:], m.ApprovedForCreditClassAbbreviation)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.ApprovedForCreditClassAbbreviation)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.ProjectId != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.ProjectId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *EventProjectRejected) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventProjectRejected) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventProjectRejected) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.RejectedBy) > 0 {
+		i -= len(m.RejectedBy)
+		copy(dAtA[i:], m.RejectedBy)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.RejectedBy)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.RejectingIssuerId != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.RejectingIssuerId))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.RejectedForCreditClassAbbreviation) > 0 {
+		i -= len(m.RejectedForCreditClassAbbreviation)
+		copy(dAtA[i:], m.RejectedForCreditClassAbbreviation)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.RejectedForCreditClassAbbreviation)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.ProjectId != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.ProjectId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *EventProjectSuspended) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventProjectSuspended) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventProjectSuspended) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.SuspendedBy) > 0 {
+		i -= len(m.SuspendedBy)
+		copy(dAtA[i:], m.SuspendedBy)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.SuspendedBy)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if m.SuspendingIssuerId != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.SuspendingIssuerId))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.SuspendedForCreditClassAbbreviation) > 0 {
+		i -= len(m.SuspendedForCreditClassAbbreviation)
+		copy(dAtA[i:], m.SuspendedForCreditClassAbbreviation)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.SuspendedForCreditClassAbbreviation)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1431,6 +1896,50 @@ func (m *EventUpdateIssuer) Size() (n int) {
 	return n
 }
 
+func (m *EventCreateProject) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	if m.ApplicantId != 0 {
+		n += 1 + sovEvents(uint64(m.ApplicantId))
+	}
+	l = len(m.CreditClassAbbreviation)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	l = len(m.Name)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	return n
+}
+
+func (m *EventUpdateProject) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Updater)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	if m.ProjectId != 0 {
+		n += 1 + sovEvents(uint64(m.ProjectId))
+	}
+	l = len(m.Name)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	return n
+}
+
 func (m *EventProjectApproved) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1448,6 +1957,52 @@ func (m *EventProjectApproved) Size() (n int) {
 		n += 1 + sovEvents(uint64(m.ApprovingIssuerId))
 	}
 	l = len(m.ApprovedBy)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	return n
+}
+
+func (m *EventProjectRejected) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.ProjectId != 0 {
+		n += 1 + sovEvents(uint64(m.ProjectId))
+	}
+	l = len(m.RejectedForCreditClassAbbreviation)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	if m.RejectingIssuerId != 0 {
+		n += 1 + sovEvents(uint64(m.RejectingIssuerId))
+	}
+	l = len(m.RejectedBy)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	return n
+}
+
+func (m *EventProjectSuspended) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.ProjectId != 0 {
+		n += 1 + sovEvents(uint64(m.ProjectId))
+	}
+	l = len(m.SuspendedForCreditClassAbbreviation)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	if m.SuspendingIssuerId != 0 {
+		n += 1 + sovEvents(uint64(m.SuspendingIssuerId))
+	}
+	l = len(m.SuspendedBy)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
@@ -2039,6 +2594,304 @@ func (m *EventUpdateIssuer) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *EventCreateProject) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvents
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventCreateProject: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventCreateProject: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ApplicantId", wireType)
+			}
+			m.ApplicantId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ApplicantId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CreditClassAbbreviation", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CreditClassAbbreviation = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvents(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventUpdateProject) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvents
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventUpdateProject: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventUpdateProject: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Updater", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Updater = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProjectId", wireType)
+			}
+			m.ProjectId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ProjectId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvents(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *EventProjectApproved) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -2169,6 +3022,310 @@ func (m *EventProjectApproved) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.ApprovedBy = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvents(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventProjectRejected) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvents
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventProjectRejected: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventProjectRejected: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProjectId", wireType)
+			}
+			m.ProjectId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ProjectId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RejectedForCreditClassAbbreviation", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RejectedForCreditClassAbbreviation = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RejectingIssuerId", wireType)
+			}
+			m.RejectingIssuerId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.RejectingIssuerId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RejectedBy", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RejectedBy = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvents(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventProjectSuspended) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvents
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventProjectSuspended: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventProjectSuspended: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProjectId", wireType)
+			}
+			m.ProjectId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ProjectId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SuspendedForCreditClassAbbreviation", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SuspendedForCreditClassAbbreviation = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SuspendingIssuerId", wireType)
+			}
+			m.SuspendingIssuerId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SuspendingIssuerId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SuspendedBy", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SuspendedBy = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"golang.org/x/exp/slices"
 )
 
 func (k Keeper) GetIssuer(ctx sdk.Context, id uint64) (issuer plasticcredit.Issuer, found bool) {
@@ -45,31 +46,28 @@ func (k Keeper) GetIssuers(ctx sdk.Context, pageReq query.PageRequest) ([]plasti
 	return issuers, *pageRes, nil
 }
 
-func (k Keeper) getAllIssuers(ctx sdk.Context) []plasticcredit.Issuer {
+func (k Keeper) iterateIssuers(ctx sdk.Context, handler func(issuer plasticcredit.Issuer)) {
 	store := k.getIssuerStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
 	defer iterator.Close()
 
-	var issuers []plasticcredit.Issuer
 	for ; iterator.Valid(); iterator.Next() {
 		var issuer plasticcredit.Issuer
 		k.cdc.MustUnmarshal(iterator.Value(), &issuer)
-		issuers = append(issuers, issuer)
+		handler(issuer)
 	}
-
-	return issuers
 }
 
 func (k Keeper) CreateIssuer(ctx sdk.Context, creator sdk.AccAddress, name string, description string, admin string) (uint64, error) {
 	params := k.GetParams(ctx)
-	authorizedIssuerCreator := params.IssuerCreator
-	if authorizedIssuerCreator == "" {
-		authorizedIssuerCreator = k.authority
+	authorizedIssuerCreators := []string{k.authority}
+	if params.IssuerCreator != "" {
+		authorizedIssuerCreators = append(authorizedIssuerCreators, params.IssuerCreator)
 	}
 
-	if authorizedIssuerCreator != creator.String() {
-		return 0, errors.Wrapf(sdkerrors.ErrUnauthorized, "invalid issue creator; expected %s, got %s", authorizedIssuerCreator, creator.String())
+	if !slices.Contains(authorizedIssuerCreators[:], creator.String()) {
+		return 0, errors.Wrapf(sdkerrors.ErrUnauthorized, "invalid issue creator; expected %s or %s, got %s", authorizedIssuerCreators[0], authorizedIssuerCreators[1], creator.String())
 	}
 
 	idc := k.GetIDCounters(ctx)
@@ -107,7 +105,7 @@ func (k Keeper) CreateIssuer(ctx sdk.Context, creator sdk.AccAddress, name strin
 func (k Keeper) UpdateIssuer(ctx sdk.Context, updater sdk.AccAddress, issuerID uint64, name string, description string, admin string) error {
 	issuer, found := k.GetIssuer(ctx, issuerID)
 	if !found {
-		return errors.Wrapf(plasticcredit.ErrNotFoundIssuer, "issuer with id %d was not found for update", issuerID)
+		return errors.Wrapf(plasticcredit.ErrIssuerNotFound, "issuer with id %d was not found for update", issuerID)
 	}
 
 	if issuer.Admin != updater.String() {

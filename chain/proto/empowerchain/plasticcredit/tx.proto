@@ -30,14 +30,23 @@ service Msg {
   // CreateCreditClass creates a new Credit Class for an issuer.
   rpc CreateCreditClass(MsgCreateCreditClass) returns (MsgCreateCreditClassResponse);
 
-  // UpdateCreditClass update an existing Credit Class for an issuer.
+  // UpdateCreditClass update an existing Credit Class for an issuer. Only the admin from the Issuer that owns the Credit Class is allowed and only change the name
   rpc UpdateCreditClass(MsgUpdateCreditClass) returns (MsgUpdateCreditClassResponse);
 
   // CreateProject creates a new Project for an applicant that can be approved be an issuer for issuing under a credit class
   rpc CreateProject(MsgCreateProject) returns(MsgCreateProjectResponse);
 
+  // UpdateProject updates an existing Project. Can only be done by the admin from the Applicant that owns the Project and only change the name of the project
+  rpc UpdateProject(MsgUpdateProject) returns(MsgUpdateProjectResponse);
+
   // ApproveProject
   rpc ApproveProject(MsgApproveProject) returns(MsgApproveProjectResponse);
+
+  // RejectProject
+  rpc RejectProject(MsgRejectProject) returns(MsgRejectProjectResponse);
+
+  // SuspendProject suspends an approved project, even if it has already been issued credits. Not allowed to suspend a new or rejected project.
+  rpc SuspendProject(MsgSuspendProject) returns(MsgSuspendProjectResponse);
 
   // IssueCredits mints new credits related to given credit class and project
   rpc IssueCredits(MsgIssueCredits) returns (MsgIssueCreditsResponse);
@@ -154,6 +163,17 @@ message MsgCreateProjectResponse {
   uint64 project_id = 1;
 }
 
+message MsgUpdateProject {
+  option (cosmos.msg.v1.signer) = "updater";
+
+  // updater needs to have access to the applicant references in applicant_id
+  string updater = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 project_id = 2;
+  string name = 3;
+}
+
+message MsgUpdateProjectResponse {}
+
 message MsgApproveProject {
   option (cosmos.msg.v1.signer) = "approver";
 
@@ -164,6 +184,28 @@ message MsgApproveProject {
 }
 
 message MsgApproveProjectResponse {}
+
+message MsgRejectProject {
+  option (cosmos.msg.v1.signer) = "rejector";
+
+  // Rejector needs to be someone who has the authority to approve/ reject for the credit class of the project
+  string rejector = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  uint64 project_id = 2;
+}
+
+message MsgRejectProjectResponse {}
+
+message MsgSuspendProject {
+  option (cosmos.msg.v1.signer) = "Updater";
+
+  // updater needs to be someone who has the authority to update for the credit class of the project
+  string updater = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  uint64 project_id = 2;
+}
+
+message MsgSuspendProjectResponse {}
 
 message MsgIssueCredits {
   option (cosmos.msg.v1.signer) = "creator";

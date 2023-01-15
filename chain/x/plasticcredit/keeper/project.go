@@ -25,7 +25,7 @@ func (k Keeper) GetProject(ctx sdk.Context, projectID uint64) (project plasticcr
 func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicantID uint64, creditClassAbbreviation string, name string) (uint64, error) {
 	applicant, found := k.GetApplicant(ctx, applicantID)
 	if !found {
-		return 0, errors.Wrapf(plasticcredit.ErrNotFoundApplicant, "applicant with id %d was not found", applicantID)
+		return 0, errors.Wrapf(plasticcredit.ErrApplicantNotFound, "applicant with id %d was not found", applicantID)
 	}
 
 	if !applicant.AddressHasAuthorization(creator) {
@@ -33,7 +33,7 @@ func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicant
 	}
 
 	if _, found := k.GetCreditClass(ctx, creditClassAbbreviation); !found {
-		return 0, errors.Wrapf(plasticcredit.ErrNotFoundCreditClass, "credit class with abbreviation %s was not found", creditClassAbbreviation)
+		return 0, errors.Wrapf(plasticcredit.ErrCreditClassNotFound, "credit class with abbreviation %s was not found", creditClassAbbreviation)
 	}
 
 	idc := k.GetIDCounters(ctx)
@@ -55,15 +55,53 @@ func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicant
 		return 0, err
 	}
 
-	return nextID, nil
+	return nextID, ctx.EventManager().EmitTypedEvent(&plasticcredit.EventCreateProject{
+		Creator:                 creator.String(),
+		ApplicantId:             applicantID,
+		CreditClassAbbreviation: creditClassAbbreviation,
+		Name:                    name,
+	})
+}
+
+func (k Keeper) UpdateProject(ctx sdk.Context, updater sdk.AccAddress, projectID uint64, name string) error {
+	project, found := k.GetProject(ctx, projectID)
+	if !found {
+		return errors.Wrapf(plasticcredit.ErrProjectNotFound, "the project %d does not exists", projectID)
+	}
+	applicant, found := k.GetApplicant(ctx, project.ApplicantId)
+	if !found {
+		return errors.Wrapf(plasticcredit.ErrApplicantNotFound, "applicant with id %d was not found", project.ApplicantId)
+	}
+
+	if !applicant.AddressHasAuthorization(updater) {
+		return errors.Wrapf(sdkerrors.ErrUnauthorized, "%s does not have authorization for applicant with id %d", updater.String(), project.ApplicantId)
+	}
+
+	project.Name = name
+	if err := k.setProject(ctx, project); err != nil {
+		return err
+	}
+
+	return ctx.EventManager().EmitTypedEvent(&plasticcredit.EventUpdateProject{
+		Updater:   updater.String(),
+		ProjectId: projectID,
+		Name:      name,
+	})
 }
 
 func (k Keeper) ApproveProject(ctx sdk.Context, approver sdk.AccAddress, projectID uint64) error {
 	project, found := k.GetProject(ctx, projectID)
 	if !found {
-		return errors.Wrapf(plasticcredit.ErrNotFoundProject, "project with id %d was not found", projectID)
+		return errors.Wrapf(plasticcredit.ErrProjectNotFound, "project with id %d was not found", projectID)
 	}
-
+	mapAllowedApproveStatuses := map[plasticcredit.ProjectStatus]bool{
+		plasticcredit.ProjectStatus_NEW:       true,
+		plasticcredit.ProjectStatus_SUSPENDED: true,
+		plasticcredit.ProjectStatus_REJECTED:  true,
+	}
+	if !mapAllowedApproveStatuses[project.Status] {
+		return errors.Wrapf(plasticcredit.ErrProjectNotNew, "project with id %d is %s, and not allowed to approve", projectID, project.Status)
+	}
 	// At some point, I would like to have some better indexing that would allow us to not have to fetch so many things just to get to the issuer
 	creditClass, found := k.GetCreditClass(ctx, project.CreditClassAbbreviation)
 	if !found {
@@ -91,6 +129,75 @@ func (k Keeper) ApproveProject(ctx sdk.Context, approver sdk.AccAddress, project
 	})
 }
 
+func (k Keeper) RejectProject(ctx sdk.Context, rejector sdk.AccAddress, projectID uint64) error {
+	project, found := k.GetProject(ctx, projectID)
+	if !found {
+		return errors.Wrapf(plasticcredit.ErrProjectNotFound, "project with id %d was not found", projectID)
+	}
+	if project.Status != plasticcredit.ProjectStatus_NEW {
+		return errors.Wrapf(plasticcredit.ErrProjectNotNew, "project with id %d is %s, and not allowed to reject", projectID, project.Status)
+	}
+
+	// At some point, I would like to have some better indexing that would allow us to not have to fetch so many things just to get to the issuer
+	creditClass, found := k.GetCreditClass(ctx, project.CreditClassAbbreviation)
+	if !found {
+		panic("The project was found, the credit class better exist!")
+	}
+	issuer, found := k.GetIssuer(ctx, creditClass.IssuerId)
+	if !found {
+		panic("The credit class was found, the issuer better exist!")
+	}
+	if !issuer.AddressHasAuthorization(rejector) {
+		return errors.Wrapf(sdkerrors.ErrUnauthorized, "rejector %s does not have authorization on issuer with id %d", rejector.String(), issuer.Id)
+	}
+
+	project.Status = plasticcredit.ProjectStatus_REJECTED
+	if err := k.setProject(ctx, project); err != nil {
+		return err
+	}
+
+	return ctx.EventManager().EmitTypedEvent(&plasticcredit.EventProjectRejected{
+		ProjectId:                          project.Id,
+		RejectedForCreditClassAbbreviation: creditClass.Abbreviation,
+		RejectingIssuerId:                  issuer.Id,
+		RejectedBy:                         rejector.String(),
+	})
+}
+
+func (k Keeper) SuspendProject(ctx sdk.Context, updater sdk.AccAddress, projectID uint64) error {
+	project, found := k.GetProject(ctx, projectID)
+	if !found {
+		return errors.Wrapf(plasticcredit.ErrProjectNotFound, "project with id %d was not found", projectID)
+	}
+	if project.Status != plasticcredit.ProjectStatus_APPROVED {
+		return errors.Wrapf(plasticcredit.ErrProjectNotSuspendable, "project with id %d is %s, and not allowed to suspend", projectID, project.Status)
+	}
+	// At some point, I would like to have some better indexing that would allow us to not have to fetch so many things just to get to the issuer
+	creditClass, found := k.GetCreditClass(ctx, project.CreditClassAbbreviation)
+	if !found {
+		panic("The project was found, the credit class better exist!")
+	}
+	issuer, found := k.GetIssuer(ctx, creditClass.IssuerId)
+	if !found {
+		panic("The credit class was found, the issuer better exist!")
+	}
+	if !issuer.AddressHasAuthorization(updater) {
+		return errors.Wrapf(sdkerrors.ErrUnauthorized, "For suspension the updater %s does not have authorization on issuer with id %d", updater.String(), issuer.Id)
+	}
+
+	project.Status = plasticcredit.ProjectStatus_SUSPENDED
+	if err := k.setProject(ctx, project); err != nil {
+		return err
+	}
+
+	return ctx.EventManager().EmitTypedEvent(&plasticcredit.EventProjectSuspended{
+		ProjectId:                           project.Id,
+		SuspendedForCreditClassAbbreviation: creditClass.Abbreviation,
+		SuspendingIssuerId:                  issuer.Id,
+		SuspendedBy:                         updater.String(),
+	})
+}
+
 func (k Keeper) setProject(ctx sdk.Context, project plasticcredit.Project) error {
 	if err := project.Validate(); err != nil {
 		return err
@@ -108,20 +215,17 @@ func (k Keeper) setProject(ctx sdk.Context, project plasticcredit.Project) error
 	return nil
 }
 
-func (k Keeper) getAllProjects(ctx sdk.Context) []plasticcredit.Project {
+func (k Keeper) iterateProjects(ctx sdk.Context, handler func(project plasticcredit.Project)) {
 	store := k.getProjectStore(ctx)
 
 	iterator := store.Iterator(nil, nil)
 	defer iterator.Close()
 
-	var projects []plasticcredit.Project
 	for ; iterator.Valid(); iterator.Next() {
 		var project plasticcredit.Project
 		k.cdc.MustUnmarshal(iterator.Value(), &project)
-		projects = append(projects, project)
+		handler(project)
 	}
-
-	return projects
 }
 
 func (k Keeper) getProjectStore(ctx sdk.Context) storetypes.KVStore {

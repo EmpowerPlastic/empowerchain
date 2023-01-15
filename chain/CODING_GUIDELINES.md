@@ -119,3 +119,15 @@ If you are not sure what a good way of doing something in particular, there are 
     - This way the server is still running, and you can manually run your CLI commands in the terminal.
     - To get access to the environment variables such as `$CHAIN_ID` and `$CHAIN_DIR` you can use the env script like this: `$ source ./scripts/serve_env.sh`.
 9. Format and lint your code before committing: `$ make format` and `$ make lint`
+
+## Native modules vs smart contracts
+Short version: core stable functionality/protocol implemented as native Cosmos SDK modules, extra functionality/nice-to-have stuff that can change often as smart contracts.
+
+EmpowerChain has the capability to have both native Cosmos SDK modules and smart contracts in the form of CosmWasm contracts.
+
+We use both and the guiding principles for when to use them are as follows:
+- Core functionality or "protocol level stuff" should always be implemented as native SDK modules
+- Things that are very stable and doesn't need to change often could be considered for a native module
+- Things that will likely need to change very often could also be good candidates for smart contracts (since it is easier to upgrade a smart contract than the protocol)
+- Non-core functionality that just extends the capabilities of the core (but that we would be perfectly fine with anyone else implementing anywhere else if it supported our use cases) can go into smart contracts
+- Nice-to-have and utilities can go into smart contracts

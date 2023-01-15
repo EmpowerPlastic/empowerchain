@@ -28,7 +28,10 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(MsgCreateCreditClassCmd())
 	cmd.AddCommand(MsgUpdateCreditClassCmd())
 	cmd.AddCommand(MsgCreateProjectCmd())
+	cmd.AddCommand(MsgUpdateProjectCmd())
 	cmd.AddCommand(MsgApproveProjectCmd())
+	cmd.AddCommand(MsgRejectProjectCmd())
+	cmd.AddCommand(MsgSuspendProjectCmd())
 	cmd.AddCommand(MsgIssueCreditsCmd())
 	cmd.AddCommand(MsgTransferCreditsCmd())
 	cmd.AddCommand(MsgRetireCreditsCmd())
@@ -40,27 +43,22 @@ func GetTxCmd() *cobra.Command {
 
 func MsgCreateApplicantCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-applicant [admin_key_or_address] [name] [description]",
+		Use:   "create-applicant [name] [description]",
 		Short: "Create new applicant.",
 		Long: `Create new applicant.
-Note, the '--from' flag is ignored as it is implied from [admin_key_or_address].
 `,
-		Args: cobra.MinimumNArgs(2),
+		Args: cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			if err := cmd.Flags().Set(flags.FlagFrom, args[0]); err != nil {
-				return err
-			}
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
 			admin := clientCtx.GetFromAddress()
-			name := args[1]
+			name := args[0]
 			var desc string
-			if len(args) > 2 {
-				desc = args[2]
+			if len(args) > 1 {
+				desc = args[1]
 			}
 
 			msg := plasticcredit.MsgCreateApplicant{
@@ -87,14 +85,11 @@ func MsgUpdateApplicantCmd() *cobra.Command {
 `,
 		Args: cobra.MinimumNArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			updater, err := cmd.Flags().GetString(flags.FlagFrom)
-			if err != nil {
-				return err
-			}
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
+			updater := clientCtx.GetFromAddress()
 
 			admin := args[0]
 			applicantID, err := cast.ToUint64E(args[1])
@@ -112,7 +107,7 @@ func MsgUpdateApplicantCmd() *cobra.Command {
 				Name:        name,
 				Description: desc,
 				Admin:       admin,
-				Updater:     updater,
+				Updater:     updater.String(),
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
@@ -133,15 +128,11 @@ func MsgUpdateIssuerCmd() *cobra.Command {
 `,
 		Args: cobra.MinimumNArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			updater, err := cmd.Flags().GetString(flags.FlagFrom)
-			if err != nil {
-				return err
-			}
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
+			updater := clientCtx.GetFromAddress()
 
 			admin := args[0]
 			issuerID, err := cast.ToUint64E(args[1])
@@ -152,7 +143,7 @@ func MsgUpdateIssuerCmd() *cobra.Command {
 			desc := args[3]
 
 			msg := plasticcredit.MsgUpdateIssuer{
-				Updater:     updater,
+				Updater:     updater.String(),
 				IssuerId:    issuerID,
 				Name:        name,
 				Description: desc,
@@ -271,6 +262,39 @@ func MsgCreateProjectCmd() *cobra.Command {
 	return cmd
 }
 
+func MsgUpdateProjectCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update-project [project-id] [name]",
+		Short: "Update project",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			updater := clientCtx.GetFromAddress()
+			projectID, err := cast.ToUint64E(args[0])
+			if err != nil {
+				return err
+			}
+			name := args[1]
+
+			msg := plasticcredit.MsgUpdateProject{
+				Updater:   updater.String(),
+				ProjectId: projectID,
+				Name:      name,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
 func MsgApproveProjectCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "approve-project [project-id]",
@@ -290,6 +314,68 @@ func MsgApproveProjectCmd() *cobra.Command {
 
 			msg := plasticcredit.MsgApproveProject{
 				Approver:  approver.String(),
+				ProjectId: projectID,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func MsgRejectProjectCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "reject-project [project-id]",
+		Short: "Reject a project for the credit-class they are associated with.",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			rejector := clientCtx.GetFromAddress()
+			projectID, err := cast.ToUint64E(args[0])
+			if err != nil {
+				return err
+			}
+
+			msg := plasticcredit.MsgRejectProject{
+				Rejector:  rejector.String(),
+				ProjectId: projectID,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func MsgSuspendProjectCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "suspend-project [project-id]",
+		Short: "Suspend an approved project.",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			updater := clientCtx.GetFromAddress()
+			projectID, err := cast.ToUint64E(args[0])
+			if err != nil {
+				return err
+			}
+
+			msg := plasticcredit.MsgSuspendProject{
+				Updater:   updater.String(),
 				ProjectId: projectID,
 			}
 
