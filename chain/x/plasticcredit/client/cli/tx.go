@@ -2,6 +2,9 @@ package cli
 
 import (
 	"fmt"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/authz"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -11,6 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	// "github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	authzcli "github.com/cosmos/cosmos-sdk/x/authz/client/cli"
 )
 
 // GetTxCmd returns the transaction commands for this module
@@ -37,6 +41,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(MsgRetireCreditsCmd())
 	cmd.AddCommand(MsgUpdateIssuerCmd())
 	cmd.AddCommand(MsgUpdateApplicantCmd())
+	cmd.AddCommand(MsgGrantTransferAuthorizationCmd())
 
 	return cmd
 }
@@ -501,4 +506,63 @@ func MsgRetireCreditsCmd() *cobra.Command {
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
+}
+
+func MsgGrantTransferAuthorizationCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "grant-transfer-authz [grantee] [denom] [max_credits] --from [granter] ",
+		Short: "Grant transfer authorization",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			granter := clientCtx.GetFromAddress()
+			grantee, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+			denom := args[1]
+			maxCredits, err := cast.ToUint64E(args[2])
+			if err != nil {
+				return err
+			}
+
+			authorization := &plasticcredit.TransferAuthorization{
+				Denom:      denom,
+				MaxCredits: maxCredits,
+			}
+
+			expire, err := getExpireTime(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg, err := authz.NewMsgGrant(granter, grantee, authorization, expire)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	cmd.Flags().Int64(authzcli.FlagExpiration, 0, "Expire time as Unix timestamp. Set zero (0) for no expiry. Default is 0.")
+
+	return cmd
+}
+
+// Copy-pasted from authz tx.go
+func getExpireTime(cmd *cobra.Command) (*time.Time, error) {
+	exp, err := cmd.Flags().GetInt64(authzcli.FlagExpiration)
+	if err != nil {
+		return nil, err
+	}
+	if exp == 0 {
+		return nil, nil
+	}
+	e := time.Unix(exp, 0)
+	return &e, nil
 }
