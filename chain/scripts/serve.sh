@@ -14,11 +14,14 @@ source scripts/serve_env.sh
 # Stop if it is already running
 if pgrep -x "$BINARY" >/dev/null; then
     echo "Terminating $BINARY..."
-    killall $BINARY
+    pkill $BINARY
+    sleep 5 # To avoid removing the folder to be any issue
 fi
 
-echo "Removing previous data..."
-rm -rf $CHAIN_DIR &> /dev/null
+if [ -d $CHAIN_DIR ]; then
+  echo "Removing previous data..."
+  rm -rf $CHAIN_DIR &> /dev/null
+fi
 
 # Add directories for chain(s), exit if an error occurs
 if ! mkdir -p $CHAIN_DIR 2>/dev/null; then
@@ -40,6 +43,9 @@ $BINARY add-genesis-account $($BINARY --home $CHAIN_DIR keys show validator --ke
 
 $BINARY gentx validator 7000000000umpwr --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test
 $BINARY collect-gentxs --home $CHAIN_DIR
+
+sed -i -e 's/stake/umpwr/g' $CHAIN_DIR/config/genesis.json
+sed -i -e 's/"voting_period": "172800s"/"voting_period": "30s"/g' $CHAIN_DIR/config/genesis.json
 
 echo "Changing defaults and ports in app.toml and config.toml files..."
 sed -i -e 's#"tcp://0.0.0.0:26656"#"tcp://0.0.0.0:'"$P2P_PORT"'"#g' $CHAIN_DIR/config/config.toml

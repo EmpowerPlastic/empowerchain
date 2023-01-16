@@ -3,11 +3,14 @@ package keeper
 import (
 	"context"
 
+	"cosmossdk.io/errors"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
 )
 
-var _ types.MsgServer = msgServer{}
+var _ proofofexistence.MsgServer = msgServer{}
 
 type msgServer struct {
 	Keeper
@@ -15,25 +18,21 @@ type msgServer struct {
 
 // NewMsgServerImpl returns an implementation of the MsgServer interface
 // for the provided Keeper.
-func NewMsgServerImpl(keeper Keeper) types.MsgServer {
+func NewMsgServerImpl(keeper Keeper) proofofexistence.MsgServer {
 	return &msgServer{Keeper: keeper}
 }
 
-func (k msgServer) CreateProof(goCtx context.Context, msg *types.MsgCreateProof) (*types.MsgCreateProofResponse, error) {
+func (k msgServer) CreateProof(goCtx context.Context, req *proofofexistence.MsgCreateProof) (*proofofexistence.MsgCreateProofResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := msg.ValidateBasic(); err != nil {
-		return nil, err
-	}
-
-	acc, err := sdk.AccAddressFromBech32(msg.Creator)
+	acc, err := sdk.AccAddressFromBech32(req.Creator)
 	if err != nil {
+		return nil, errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address: %s", req.Creator)
+	}
+
+	if err := k.CreateNewProof(ctx, req.Hash, acc); err != nil {
 		return nil, err
 	}
 
-	if err := k.CreateNewProof(ctx, msg.Hash, acc); err != nil {
-		return nil, err
-	}
-
-	return &types.MsgCreateProofResponse{}, nil
+	return &proofofexistence.MsgCreateProofResponse{}, nil
 }

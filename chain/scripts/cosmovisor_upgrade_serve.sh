@@ -43,7 +43,7 @@ mkdir -p $V1_BINARY_FOLDER
 if [[ ! -f $V1_BINARY ]]
 then
     echo "empowerd v1 does not exist, downloading"
-    wget https://github.com/empowerchain/empowerchain/releases/download/v0.0.1/empowerd-v0.0.1-amd64 -O "$V1_BINARY"
+    wget https://github.com/EmpowerPlastic/empowerchain/releases/download/v0.0.1/empowerd-v0.0.1-amd64 -O "$V1_BINARY"
     chmod +x $V1_BINARY
 fi
 

@@ -1,8 +1,8 @@
 package keeper_test
 
 import (
+	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
 )
 
 func (s *TestSuite) TestCreateNewProof() {
@@ -18,17 +18,17 @@ func (s *TestSuite) TestCreateNewProof() {
 		},
 		"empty hash": {
 			creator:       s.addrs[0],
-			expectedError: types.ErrInvalidProof,
+			expectedError: proofofexistence.ErrInvalidProof,
 		},
 		"invalid hex hash": {
 			hash:          "invalid",
 			creator:       s.addrs[0],
-			expectedError: types.ErrInvalidProof,
+			expectedError: proofofexistence.ErrInvalidProof,
 		},
 		"invalid hash (hex, but not sha256hex)": {
 			hash:          "4d4f544845524655434b4552",
 			creator:       s.addrs[0],
-			expectedError: types.ErrInvalidProof,
+			expectedError: proofofexistence.ErrInvalidProof,
 		},
 		"duplicate hash": {
 			hash:    "2feca43664769f70935eb2495eb0e7436b0ea0c7ccfddc0d6f029d8a33b09781",
@@ -37,11 +37,11 @@ func (s *TestSuite) TestCreateNewProof() {
 				err := s.empowerApp.ProofofexistenceKeeper.CreateNewProof(s.ctx, "2feca43664769f70935eb2495eb0e7436b0ea0c7ccfddc0d6f029d8a33b09781", s.addrs[0])
 				s.Require().NoError(err)
 			},
-			expectedError: types.ErrHashExists,
+			expectedError: proofofexistence.ErrHashExists,
 		},
 		"missing creator": {
 			hash:          "2feca43664769f70935eb2495eb0e7436b0ea0c7ccfddc0d6f029d8a33b09781",
-			expectedError: types.ErrInvalidCreator,
+			expectedError: proofofexistence.ErrInvalidCreator,
 		},
 	}
 
@@ -54,15 +54,31 @@ func (s *TestSuite) TestCreateNewProof() {
 			}
 
 			ctx := s.ctx
-			proofOfExistenceKeeper := s.empowerApp.ProofofexistenceKeeper
+			k := s.empowerApp.ProofofexistenceKeeper
 
-			err := proofOfExistenceKeeper.CreateNewProof(ctx, tc.hash, tc.creator)
-			if tc.expectedError != nil {
-				s.Require().ErrorIs(err, tc.expectedError)
-				return
+			err := k.CreateNewProof(ctx, tc.hash, tc.creator)
+			s.Require().ErrorIs(err, tc.expectedError)
+
+			events := s.ctx.EventManager().ABCIEvents()
+			if err == nil {
+				proof, found, err := k.GetProof(s.ctx, tc.hash)
+				s.Require().NoError(err)
+				s.Require().True(found)
+				s.Require().Equal(proofofexistence.ProofMetadata{
+					Timestamp: s.ctx.BlockTime(),
+					Creator:   tc.creator.String(),
+				}, proof)
+
+				s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[0])
+				s.Require().NoError(err)
+				eventCreateIssuer, ok := parsedEvent.(*proofofexistence.EventCreateProof)
+				s.Require().True(ok)
+				s.Require().Equal(&proofofexistence.EventCreateProof{
+					Hash:    tc.hash,
+					Creator: tc.creator.String(),
+				}, eventCreateIssuer)
 			}
-
-			s.Require().NoError(err)
 		})
 	}
 }
@@ -71,19 +87,23 @@ func (s *TestSuite) TestGetProof() {
 	testHash := "2feca43664769f70935eb2495eb0e7436b0ea0c7ccfddc0d6f029d8a33b09781"
 	testCases := map[string]struct {
 		hashToGet     string
+		found         bool
 		expectedError error
 	}{
 		"happy path": {
 			hashToGet:     testHash,
+			found:         true,
 			expectedError: nil,
 		},
 		"not found": {
 			hashToGet:     "ffb5ff85bf44c95908f7965d9d379a378ab93bc3e9c14eb99c9980e3c41ae270",
-			expectedError: types.ErrProofNotFound,
+			found:         false,
+			expectedError: nil,
 		},
 		"invalid hash": {
 			hashToGet:     "invalid",
-			expectedError: types.ErrInvalidProof,
+			found:         false,
+			expectedError: proofofexistence.ErrInvalidProof,
 		},
 	}
 
@@ -92,18 +112,21 @@ func (s *TestSuite) TestGetProof() {
 			s.SetupTest()
 
 			ctx := s.ctx
-			proofOfExistenceKeeper := s.empowerApp.ProofofexistenceKeeper
-			err := proofOfExistenceKeeper.CreateNewProof(ctx, testHash, s.addrs[0])
+			k := s.empowerApp.ProofofexistenceKeeper
+			err := k.CreateNewProof(ctx, testHash, s.addrs[0])
 			s.Require().NoError(err)
 
-			proof, err := proofOfExistenceKeeper.GetProof(ctx, tc.hashToGet)
-			if tc.expectedError != nil {
-				s.Require().ErrorIs(err, tc.expectedError)
-				return
+			proof, found, err := k.GetProof(ctx, tc.hashToGet)
+			s.Require().ErrorIs(err, tc.expectedError)
+			s.Require().Equal(tc.found, found)
+
+			if found && err == nil {
+				s.Require().True(found)
+				s.Require().Equal(proofofexistence.ProofMetadata{
+					Timestamp: s.ctx.BlockTime(),
+					Creator:   s.addrs[0].String(),
+				}, proof)
 			}
-
-			s.Require().NoError(err)
-			s.Require().Equal(s.addrs[0].String(), proof.Creator)
 		})
 	}
 }

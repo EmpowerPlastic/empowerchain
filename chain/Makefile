@@ -9,6 +9,7 @@ LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 DOCKER := $(shell which docker)
 BUILD_DIR ?= $(CURDIR)/build
+COSMOS_SDK_VERSION := $(shell go list -m -f '{{ .Version }}' github.com/cosmos/cosmos-sdk)
 
 export GO111MODULE = on
 
@@ -98,8 +99,20 @@ $(BUILD_TARGETS): go.sum $(BUILD_DIR)/
 $(BUILD_DIR)/:
 	mkdir -p $(BUILD_DIR)/
 
-build-linux: go.sum
+build-linux-amd64: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
+
+build-linux-arm64: go.sum
+	LEDGER_ENABLED=false GOOS=linux GOARCH=arm64 $(MAKE) build
+
+build-darwin-amd64: go.sum
+	LEDGER_ENABLED=false GOOS=darwin GOARCH=amd64 $(MAKE) build
+
+build-darwin-arm64: go.sum
+	LEDGER_ENABLED=false GOOS=darwin GOARCH=arm64 $(MAKE) build
+
+build-windows-amd64: go.sum
+	LEDGER_ENABLED=false GOOS=windows GOARCH=amd64 $(MAKE) build
 
 go-mod-cache: go.sum
 	@echo "--> Download go modules to local cache"
@@ -118,10 +131,15 @@ clean:
 ###############################################################################
 
 test:
-	@go test -v ./x/...
+	@go test -timeout 120s -v ./...
+
+test-with-coverage:
+	@go test -timeout 140s -v -coverpkg=./... -coverprofile=coverage.out -covermode=atomic ./...
 
 smoketest: install
-	./scripts/test/smoke.sh
+	./scripts/test/smoke_gov_proposals.sh
+	./scripts/test/smoke_poe.sh
+	./scripts/test/smoke_plastic_credit.sh
 
 ###############################################################################
 ###                                  Proto                                  ###
@@ -131,7 +149,7 @@ proto:
 	@echo
 	@echo "=========== Generate Message ============"
 	@echo
-	./scripts/protocgen.sh
+	./scripts/protocgen.sh $(COSMOS_SDK_VERSION)
 	@echo
 	@echo "=========== Generate Complete ============"
 	@echo
@@ -152,7 +170,7 @@ serve:
 kill:
 	@echo "Killing empowerd and removing previous data"
 	-@rm -rf ./tmp/empowerchain-local-1
-	-@killall empowerd 2>/dev/null
+	-@pkill empowerd 2>/dev/null
 
 
 ###############################################################################

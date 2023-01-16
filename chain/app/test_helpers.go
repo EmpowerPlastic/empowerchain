@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/simapp"
-	"github.com/empowerchain/empowerchain/app/params"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -15,6 +15,7 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
+	accesscontrolmodulekeeper "github.com/EmpowerPlastic/empowerchain/x/accesscontrol/keeper"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
@@ -180,4 +181,11 @@ func CreateRandomAccounts(accNum int) []sdk.AccAddress {
 	}
 
 	return testAddrs
+}
+
+func InitAccessControlSubKeepers(keeper *accesscontrolmodulekeeper.Keeper) *[]accesscontrolmodulekeeper.IAccessControlSubKeeper {
+	var sk []accesscontrolmodulekeeper.IAccessControlSubKeeper
+	sk = append(sk, accesscontrolmodulekeeper.NewSubKeeper(keeper, "mockmodule1"))
+	sk = append(sk, accesscontrolmodulekeeper.NewSubKeeper(keeper, "mockmodule2"))
+	return &sk
 }

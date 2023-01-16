@@ -1,6 +1,6 @@
 import {Client} from "empowerchain-empowerchain-client-ts";
 
-const CHAIN_ID = "empowerchain-local-1";
+const CHAIN_ID = "emp-devnet-1";
 
 let client;
 let hash;
@@ -15,8 +15,8 @@ window.hashString = async () => {
 window.createProof = async () => {
     const offlineSigner =  window.keplr.getOfflineSigner(CHAIN_ID);
     client = new Client({
-            apiURL: "http://localhost:8010/proxy",
-            rpcURL: "http://localhost:8011/proxy",
+            apiURL: "https://devnet.empowerchain.io:1317",
+            rpcURL: "https://devnet.empowerchain.io:26657",
             prefix: "empower",
         },
         offlineSigner
@@ -43,8 +43,8 @@ window.onload = async () => {
         await window.keplr.experimentalSuggestChain({
             chainId: CHAIN_ID,
             chainName: "EmpowerChain Testnet",
-            rpc: "http://localhost:8011/proxy",
-            rest: "http://localhost:8010/proxy",
+            rpc: "https://devnet.empowerchain.io:26657",
+            rest: "https://devnet.empowerchain.io:1317",
             bip44: {
                 coinType: 118,
             },

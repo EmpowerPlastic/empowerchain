@@ -1,18 +1,15 @@
 VERSION 0.6
 FROM earthly/dind:ubuntu
-WORKDIR /empowerchain
+WORKDIR /empowerchain/chain
 
 docker:
     RUN apt-get update -yq \
         && apt-get install --no-install-recommends -yq \
         wget gnupg ca-certificates gcc g++ make
-    RUN wget -qO- https://go.dev/dl/go1.18.6.linux-amd64.tar.gz | tar -v -C /usr/local -xz
+    RUN wget -qO- https://go.dev/dl/go1.19.4.linux-amd64.tar.gz | tar -v -C /usr/local -xz
     ENV PATH $PATH:/usr/local/go/bin:/root/go/bin
 
-build:
-    ARG EARTHLY_GIT_HASH
-    ARG EARTHLY_GIT_SHORT_HASH
-    ARG VERSION=dev-$EARTHLY_GIT_SHORT_HASH
+build-prep:
     FROM +docker
     COPY Makefile .
     COPY go.mod .
@@ -22,15 +19,44 @@ build:
     COPY proto proto
     COPY scripts scripts
     COPY testutil testutil
+    COPY tests tests
+    COPY utils utils
     COPY x x
+
+build:
+    ARG EARTHLY_GIT_HASH
+    ARG EARTHLY_GIT_SHORT_HASH
+    ARG VERSION=dev-$EARTHLY_GIT_SHORT_HASH
+    FROM +build-prep
     RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build
     SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd
     SAVE ARTIFACT go.mod AS LOCAL go.mod
     SAVE ARTIFACT go.sum AS LOCAL go.sum
 
+build-all:
+    ARG EARTHLY_GIT_HASH
+    ARG EARTHLY_GIT_SHORT_HASH
+    ARG VERSION=dev-$EARTHLY_GIT_SHORT_HASH
+    FROM +build-prep
+    RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-linux-amd64
+    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-"$VERSION"-linux-amd64
+    RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-linux-arm64
+    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-"$VERSION"-linux-arm64
+    RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-darwin-amd64
+    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-"$VERSION"-darwin-amd64
+    RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-darwin-arm64
+    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-"$VERSION"-darwin-arm64
+    RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-windows-amd64
+    SAVE ARTIFACT build/empowerd.exe AS LOCAL build/empowerd-"$VERSION".exe
+
 test:
     FROM +build
     RUN make test
+
+test-with-coverage:
+    FROM +build
+    RUN make test-with-coverage
+    SAVE ARTIFACT coverage.out AS LOCAL coverage.out
 
 smoketest:
     FROM +build
