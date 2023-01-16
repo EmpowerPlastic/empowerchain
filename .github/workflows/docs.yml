@@ -1,7 +1,7 @@
 name: "Docs"
 
 on:
-  pull_request:
+  push:
     branches:
       - main
     paths:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Build EmpowerChain
+    name: Deploy EmpowerChain docs
     runs-on: ubuntu-20.04
     strategy:
       matrix:
