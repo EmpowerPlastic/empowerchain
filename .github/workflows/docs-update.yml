@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'chain/proto/**' # On updating proto
 
 jobs:
   build:
@@ -25,5 +27,6 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           commit-message: Update Swagger docs
+          title: Update Swagger docs
           branch: update-docs
           labels: docs
