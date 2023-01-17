@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'chain/proto/**' # On updating proto
 
 jobs:
   build:
