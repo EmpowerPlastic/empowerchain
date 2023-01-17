@@ -20,8 +20,9 @@ jobs:
       - run: earthly --ci --output +swagger-gen
         working-directory: ./chain
 
-      - run: mv ./chain/swagger.yaml ./chain/client/docs/swagger-ui/swagger.yaml && \
-             mv ./chain/swagger.md ./docs/api_docs/swagger.md
+      - run: |
+            mv ./chain/swagger.yaml ./chain/client/docs/swagger-ui/swagger.yaml
+            mv ./chain/swagger.md ./docs/api_docs/swagger.md
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
