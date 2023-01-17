@@ -1,4 +1,4 @@
-name: "Docs"
+name: "Docs update"
 
 on:
   push:
@@ -20,10 +20,13 @@ jobs:
       - run: earthly --ci --output +swagger-gen
         working-directory: ./chain
 
-      - run: mv ./chain/swagger.yaml ./chain/client/docs/swagger-ui/swagger.yaml && \
-             mv ./chain/swagger.md ./docs/api_docs/swagger.md
+      - run: |
+            mv ./chain/swagger.yaml ./chain/client/docs/swagger-ui/swagger.yaml
+            mv ./chain/swagger.md ./docs/api_docs/swagger.md
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
           commit-message: Update Swagger docs
+          title: Update Swagger docs
+          branch: update-docs
           labels: docs

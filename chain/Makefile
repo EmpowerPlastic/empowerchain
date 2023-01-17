@@ -158,7 +158,11 @@ swagger-gen:
 	@echo
 	@echo "=========== Generate Message ============"
 	@echo
+<<<<<<< HEAD
 	./scripts/generate-docs.sh $(COSMOS_SDK_VERSION)
+=======
+	./scripts/generate-docs.sh
+>>>>>>> 6983bf8886cd049ef52eef52dd55ea7c98616e42
 	@echo
 	@echo "=========== Generate Complete ============"
 	@echo

@@ -1,7 +1,7 @@
-name: "Docs depoly"
+name: "Docs"
 
 on:
-  push:
+  pull_request:
     branches:
       - main
     paths:
@@ -9,16 +9,22 @@ on:
 
 jobs:
   build:
-    name: Deploy EmpowerChain docs
+    name: Build EmpowerChain
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        node-version: [18.x]
     steps:
       - uses: actions/checkout@v3
-      - uses: earthly/actions/setup-earthly@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
         with:
-          version: v0.6.22
-
-      - run: earthly --ci --output +build
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
         working-directory: ./docs
+      - run: npm run docs:build
+        working-directory: ./docs
+
       - uses: jakejarvis/s3-sync-action@master
         env:
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
@@ -26,4 +32,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: 'fr-par' 
           AWS_S3_ENDPOINT: 'https://s3.fr-par.scw.cloud'
-          SOURCE_DIR: './docs/public'
+          SOURCE_DIR: './docs/.vitepress/dist'
