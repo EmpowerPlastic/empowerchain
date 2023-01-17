@@ -63,6 +63,7 @@ message QueryIssuersResponse {
 
 message QueryIssuerRequest {
   uint64 issuer_id = 1;
+  uint64 mock = 2;
 }
 
 message QueryIssuerResponse {
