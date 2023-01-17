@@ -154,6 +154,15 @@ proto:
 	@echo "=========== Generate Complete ============"
 	@echo
 
+swagger-gen:
+	@echo
+	@echo "=========== Generate Message ============"
+	@echo
+	./scripts/generate-docs.sh $(COSMOS_SDK_VERSION)
+	@echo
+	@echo "=========== Generate Complete ============"
+	@echo
+
 ###############################################################################
 ###                                  Serve                                  ###
 ###############################################################################
