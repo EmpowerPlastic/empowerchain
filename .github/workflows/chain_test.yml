@@ -1,0 +1,34 @@
+name: "Test EmpowerChain"
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+    paths:
+      - 'chain/**'
+
+jobs:
+  test:
+    name: Test EmpowerChain
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: earthly/actions/setup-earthly@v1
+        with:
+          version: v0.6.22
+
+      - run: earthly --ci --output +test-with-coverage
+        working-directory: ./chain
+
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./chain
+          flags: chain
+          fail_ci_if_error: true
+
+      - run: earthly --ci +smoketest
+        working-directory: ./chain

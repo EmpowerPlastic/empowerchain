@@ -1,4 +1,4 @@
-# empowerchain-frontend
+# proof-of-existence
 
 This template should help get you started developing with Vue 3 in Vite.
 
@@ -23,7 +23,9 @@ See [Vite Configuration Reference](https://vitejs.dev/config/).
 
 ## Project Setup
 
-See Setup section in [../README.md](../README.md)
+```sh
+npm install
+```
 
 ### Compile and Hot-Reload for Development
 
@@ -35,4 +37,10 @@ npm run dev
 
 ```sh
 npm run build
+```
+
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
+npm run lint
 ```
