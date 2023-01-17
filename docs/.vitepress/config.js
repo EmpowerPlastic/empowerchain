@@ -7,6 +7,7 @@ export default {
                 text: 'Introduction',
                 items: [
                     { text: 'What is EmpowerChain?', link: '/introduction/what-is-empowerchain' },
+                    { text: 'API docs', link: '/api_docs/swagger' },
                 ]
             },
         ]
