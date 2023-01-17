@@ -25,4 +25,5 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           commit-message: Update Swagger docs
+          branch: update-docs
           labels: docs
