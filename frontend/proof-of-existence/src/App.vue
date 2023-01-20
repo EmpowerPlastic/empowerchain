@@ -1,15 +1,28 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
   <header class="navbar navbar-dark sticky-top flex-md-nowrap p-0">
-    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">
-      <img class="logo" src="src/assets/images/emp-logo.png">
+    <a
+      class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6"
+      href="#"
+    >
+      <img
+        class="logo"
+        src="src/assets/images/emp-logo.png"
+      >
     </a>
-    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
-            data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+    <button
+      class="navbar-toggler position-absolute d-md-none collapsed"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#sidebarMenu"
+      aria-controls="sidebarMenu"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon" />
     </button>
 
     <div class="navbar-nav">
@@ -21,21 +34,34 @@ import { RouterLink, RouterView } from 'vue-router'
 
   <div class="container-fluid">
     <div class="row">
-      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse shadow emp-sidebar">
+      <nav
+        id="sidebarMenu"
+        class="col-md-3 col-lg-2 d-md-block sidebar collapse shadow emp-sidebar"
+      >
         <div class="position-sticky pt-3 sidebar-sticky menu-deck">
           <ul class="nav flex-column">
             <li class="nav-item">
-              <a class="nav-link active home" aria-current="page" href="#">
+              <a
+                class="nav-link active home"
+                aria-current="page"
+                href="#"
+              >
                 Home
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link wallet" href="#">
+              <a
+                class="nav-link wallet"
+                href="#"
+              >
                 My wallet
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link contact" href="#">
+              <a
+                class="nav-link contact"
+                href="#"
+              >
                 Contact
               </a>
             </li>
@@ -45,7 +71,7 @@ import { RouterLink, RouterView } from 'vue-router'
 
       <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
         <div class="emp-content-box emp-astro">
-          <div class="emp-character"></div>
+          <div class="emp-character" />
           <RouterView />
         </div>
       </main>
