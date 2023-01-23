@@ -4,9 +4,10 @@ import (
 	"encoding/hex"
 
 	"cosmossdk.io/errors"
-	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
 )
 
 // CreateNewProof create a new proof from its hash

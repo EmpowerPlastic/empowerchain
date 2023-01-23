@@ -6,11 +6,6 @@ import (
 	"math/rand"
 
 	"cosmossdk.io/errors"
-
-	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
-	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence/client/cli"
-
-	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence/keeper"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -20,6 +15,10 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
+
+	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
+	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence/client/cli"
+	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence/keeper"
 )
 
 // ConsensusVersion defines the current x/proofofexistence module consensus version.

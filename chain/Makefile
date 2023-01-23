@@ -145,7 +145,7 @@ smoketest: install
 ###                                  Proto                                  ###
 ###############################################################################
 
-protoVer=0.11.2
+protoVer=0.11.5
 protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
 protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 
@@ -196,7 +196,6 @@ lint:
 
 format:
 	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./... --fix
-	@go run mvdan.cc/gofumpt -l -w x/ app/ testutil/ cmd/
 
 ###############################################################################
 ###                      Avoid "make: 'x' is up to date.                    ###

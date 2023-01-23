@@ -7,8 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/EmpowerPlastic/empowerchain/app/params"
-	accesscontrolmodulekeeper "github.com/EmpowerPlastic/empowerchain/x/accesscontrol/keeper"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
@@ -28,6 +26,9 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
+
+	"github.com/EmpowerPlastic/empowerchain/app/params"
+	accesscontrolmodulekeeper "github.com/EmpowerPlastic/empowerchain/x/accesscontrol/keeper"
 )
 
 func NewAppConstructor() network.AppConstructor {

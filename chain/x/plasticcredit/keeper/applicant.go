@@ -2,11 +2,12 @@ package keeper
 
 import (
 	"cosmossdk.io/errors"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
 
 func (k Keeper) GetApplicant(ctx sdk.Context, id uint64) (applicant plasticcredit.Applicant, found bool) {

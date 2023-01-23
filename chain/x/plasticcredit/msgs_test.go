@@ -3,10 +3,11 @@ package plasticcredit
 import (
 	"testing"
 
-	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
+
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 )
 
 type validateTest struct {

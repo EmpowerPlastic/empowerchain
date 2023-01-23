@@ -3,10 +3,11 @@ package plasticcredit
 import (
 	"cosmossdk.io/errors"
 	"cosmossdk.io/math"
-	"github.com/EmpowerPlastic/empowerchain/utils"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/authz"
+
+	"github.com/EmpowerPlastic/empowerchain/utils"
 )
 
 var _ authz.Authorization = &TransferAuthorization{}

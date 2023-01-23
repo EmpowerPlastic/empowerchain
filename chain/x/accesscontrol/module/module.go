@@ -5,7 +5,6 @@ import (
 	"math/rand"
 
 	"cosmossdk.io/errors"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -14,11 +13,11 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
+	abci "github.com/tendermint/tendermint/abci/types"
 
 	// "github.com/EmpowerPlastic/empowerchain/x/accesscontrol/client/cli"
 	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol"
 	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol/keeper"
-	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 // ConsensusVersion defines the current x/accesscontrol module consensus version.

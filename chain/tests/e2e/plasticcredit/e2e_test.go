@@ -3,26 +3,26 @@ package e2e_test
 import (
 	"encoding/hex"
 	"fmt"
-	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/suite"
-
-	"github.com/EmpowerPlastic/empowerchain/app"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	"github.com/stretchr/testify/suite"
+
+	"github.com/EmpowerPlastic/empowerchain/app"
+	"github.com/EmpowerPlastic/empowerchain/app/params"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
 
 const (
@@ -323,7 +323,6 @@ func (s *E2ETestSuite) SetupSuite() {
 	s.Require().NoError(err)
 
 	s.Require().NoError(s.network.WaitForNextBlock())
-
 }
 
 func (s *E2ETestSuite) TearDownSuite() {
@@ -331,8 +330,8 @@ func (s *E2ETestSuite) TearDownSuite() {
 	s.network.Cleanup()
 }
 
-func (s *E2ETestSuite) UnpackTxResponseData(ctx client.Context, txJsonResponse []byte, txResponse codec.ProtoMarshaler) error {
-	cliResponse, err := s.getCliResponse(ctx, txJsonResponse)
+func (s *E2ETestSuite) UnpackTxResponseData(ctx client.Context, txJSONResponse []byte, txResponse codec.ProtoMarshaler) error {
+	cliResponse, err := s.getCliResponse(ctx, txJSONResponse)
 	if err != nil {
 		return err
 	}
@@ -356,9 +355,9 @@ func (s *E2ETestSuite) UnpackTxResponseData(ctx client.Context, txJsonResponse [
 	return nil
 }
 
-func (s *E2ETestSuite) getCliResponse(ctx client.Context, txJsonResponse []byte) (sdk.TxResponse, error) {
+func (s *E2ETestSuite) getCliResponse(ctx client.Context, txJSONResponse []byte) (sdk.TxResponse, error) {
 	var initialCliResponse sdk.TxResponse
-	err := ctx.Codec.UnmarshalJSON(txJsonResponse, &initialCliResponse)
+	err := ctx.Codec.UnmarshalJSON(txJSONResponse, &initialCliResponse)
 	if err != nil {
 		return sdk.TxResponse{}, err
 	}

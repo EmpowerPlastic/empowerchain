@@ -2,10 +2,12 @@ package e2e_test
 
 import (
 	"fmt"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *E2ETestSuite) TestCmdCreateApplicant() {
@@ -52,6 +54,7 @@ func (s *E2ETestSuite) TestCmdCreateApplicant() {
 		s.Run(name, func() {
 			cmd := cli.MsgCreateApplicantCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else {
@@ -70,6 +73,7 @@ func (s *E2ETestSuite) TestCmdCreateApplicant() {
 				s.Require().Equal(tc.expectedState.Name, queryResponse.Applicant.Name)
 				s.Require().Equal(tc.expectedState.Description, queryResponse.Applicant.Description)
 				s.Require().Equal(tc.expectedState.Admin, queryResponse.Applicant.Admin)
+
 			}
 		})
 	}
@@ -93,7 +97,6 @@ func (s *E2ETestSuite) TestCmdUpdateApplicant() {
 		expectedErrMsg    string
 		expectedState     *plasticcredit.Applicant
 	}{
-
 		"update name, description": {
 			[]string{issuerAddress.String(), "2", "Plastix Updated Inc.", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
 			false,
@@ -141,14 +144,15 @@ func (s *E2ETestSuite) TestCmdUpdateApplicant() {
 		s.Run(name, func() {
 			cmd := cli.MsgUpdateApplicantCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
-			if tc.expectedErrOnSend {
+			switch {
+			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
-			} else if tc.expectedErrOnExec {
+			case tc.expectedErrOnExec:
 				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
-			} else {
+			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code)

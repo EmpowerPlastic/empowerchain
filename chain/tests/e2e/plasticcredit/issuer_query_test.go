@@ -1,10 +1,11 @@
 package e2e_test
 
 import (
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/gogoproto/proto"
+
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *E2ETestSuite) TestCmdQueryParams() {
@@ -42,7 +43,6 @@ func (s *E2ETestSuite) TestCmdQueryIssuer() {
 		expectedErrMsg string
 		expectedResp   proto.Message
 	}{
-
 		"query existing issuer": {
 			[]string{"1"},
 			false,
@@ -89,7 +89,6 @@ func (s *E2ETestSuite) TestCmdQueryProject() {
 		expectedErrMsg string
 		expectedResp   proto.Message
 	}{
-
 		"query existing project": {
 			[]string{"1"},
 			false,
@@ -137,7 +136,6 @@ func (s *E2ETestSuite) TestCmdQueryApplicant() {
 		expectedErrMsg string
 		expectedResp   proto.Message
 	}{
-
 		"query existing applicant": {
 			[]string{"1"},
 			false,

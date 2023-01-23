@@ -5,15 +5,16 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govcli "github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/gogoproto/proto"
+
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *E2ETestSuite) TestCmdCreateIssuer() {
@@ -70,6 +71,7 @@ func (s *E2ETestSuite) TestCmdCreateIssuer() {
 			var submitProposalResponse govtypesv1.MsgSubmitProposalResponse
 			cmd := govcli.NewCmdSubmitProposal()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else {
@@ -123,7 +125,6 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 		expectedErrMsg    string
 		expectedState     proto.Message
 	}{
-
 		"update name, description": {
 			[]string{issuer.String(), "1", "Empower Plastic", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
@@ -198,14 +199,16 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 		s.Run(name, func() {
 			cmd := cli.MsgUpdateIssuerCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
-			if tc.expectedErrOnSend {
+
+			switch {
+			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
-			} else if tc.expectedErrOnExec {
+			case tc.expectedErrOnExec:
 				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
-			} else {
+			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code)
@@ -263,6 +266,7 @@ func (s *E2ETestSuite) TestCmdUpdateIssuerCreator() {
 			var submitProposalResponse govtypesv1.MsgSubmitProposalResponse
 			cmd := govcli.NewCmdSubmitProposal()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else {

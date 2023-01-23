@@ -3,10 +3,11 @@ package e2e_test
 import (
 	"fmt"
 
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *E2ETestSuite) TestCmdCreateProject() {
@@ -21,7 +22,6 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 		expectedErrMsg    string
 		expectedState     *plasticcredit.Project
 	}{
-
 		"create project": {
 			[]string{"1", "EMP", "My new Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
 			false,
@@ -54,14 +54,16 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 		s.Run(name, func() {
 			cmd := cli.MsgCreateProjectCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
-			if tc.expectedErrOnSend {
+
+			switch {
+			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
-			} else if tc.expectedErrOnExec {
+			case tc.expectedErrOnExec:
 				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
-			} else {
+			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code)
@@ -98,7 +100,6 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 		expectedErrMsg    string
 		expectedState     *plasticcredit.Project
 	}{
-
 		"update project": {
 			[]string{"9", "My Updated Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
 			false,
@@ -138,14 +139,16 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 		s.Run(name, func() {
 			cmd := cli.MsgUpdateProjectCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
-			if tc.expectedErrOnSend {
+
+			switch {
+			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
-			} else if tc.expectedErrOnExec {
+			case tc.expectedErrOnExec:
 				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
-			} else {
+			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code)
@@ -174,7 +177,6 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 		expectedErrMsg    string
 		expectedState     *plasticcredit.Project
 	}{
-
 		"approve new project": {
 			[]string{"3", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
@@ -241,14 +243,15 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 			cmd := cli.MsgApproveProjectCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
 
-			if tc.expectedErrOnSend {
+			switch {
+			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
-			} else if tc.expectedErrOnExec {
+			case tc.expectedErrOnExec:
 				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
-			} else {
+			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code)
@@ -330,14 +333,16 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 		s.Run(name, func() {
 			cmd := cli.MsgRejectProjectCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
-			if tc.expectedErrOnSend {
+
+			switch {
+			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
-			} else if tc.expectedErrOnExec {
+			case tc.expectedErrOnExec:
 				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
-			} else {
+			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code)
@@ -412,14 +417,16 @@ func (s *E2ETestSuite) TestCmdSuspendProject() {
 		s.Run(name, func() {
 			cmd := cli.MsgSuspendProjectCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
-			if tc.expectedErrOnSend {
+
+			switch {
+			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
-			} else if tc.expectedErrOnExec {
+			case tc.expectedErrOnExec:
 				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
-			} else {
+			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code)

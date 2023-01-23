@@ -9,8 +9,6 @@ import (
 
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
-	"github.com/EmpowerPlastic/empowerchain/app/upgrades"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
@@ -96,6 +94,8 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	"github.com/EmpowerPlastic/empowerchain/app/params"
+	"github.com/EmpowerPlastic/empowerchain/app/upgrades"
 	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol"
 	accesscontrolmodulekeeper "github.com/EmpowerPlastic/empowerchain/x/accesscontrol/keeper"
 	accesscontrolmodule "github.com/EmpowerPlastic/empowerchain/x/accesscontrol/module"
