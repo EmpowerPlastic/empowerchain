@@ -32,7 +32,7 @@ func (s *E2ETestSuite) TestCmdQueryParams() {
 
 func (s *E2ETestSuite) TestCmdQueryIssuer() {
 	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKey)
+	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
 	s.Require().NoError(err)
 	issuer, err := issuerKey.GetAddress()
 	s.Require().NoError(err)

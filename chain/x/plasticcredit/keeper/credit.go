@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/cosmos/gogoproto/proto"
 	"strings"
 
 	"cosmossdk.io/errors"
@@ -10,7 +11,6 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	proto "github.com/gogo/protobuf/proto"
 )
 
 func (k Keeper) GetCreditCollection(ctx sdk.Context, denom string) (plasticcredit.CreditCollection, bool) {

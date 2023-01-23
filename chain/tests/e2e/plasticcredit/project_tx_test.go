@@ -7,14 +7,13 @@ import (
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (s *E2ETestSuite) TestCmdCreateProject() {
 	val := s.network.Validators[0]
-	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKey)
+	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
 	s.Require().NoError(err)
-	notApplicantKey, _ := val.ClientCtx.Keyring.Key(issuerKey)
+	notApplicantKey, _ := val.ClientCtx.Keyring.Key(issuerKeyName)
 	testCases := map[string]struct {
 		args              []string
 		expectedErrOnSend bool
@@ -29,7 +28,7 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 			false,
 			"",
 			&plasticcredit.Project{
-				Id:                      10,
+				Id:                      11,
 				ApplicantId:             1,
 				CreditClassAbbreviation: "EMP",
 				Name:                    "My new Project",
@@ -38,8 +37,8 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 		},
 		"admin does not have authorization for applicant": {
 			[]string{"1", "EMP", "My new Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, notApplicantKey.Name)},
-			true,
 			false,
+			true,
 			"unauthorized",
 			nil,
 		},
@@ -58,22 +57,27 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else if tc.expectedErrOnExec {
-				var txResponse sdk.TxResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResponse))
+				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				s.Require().NoError(err)
+				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			} else {
+				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				s.Require().NoError(err)
+				s.Require().Equal(uint32(0), cliResponse.Code)
+
 				var createProjectResp plasticcredit.MsgCreateProjectResponse
-				err = UnpackTxResponseData(val.ClientCtx, out.Bytes(), &createProjectResp)
+				err = s.UnpackTxResponseData(val.ClientCtx, out.Bytes(), &createProjectResp)
 				s.Require().NoError(err)
-				cmd = cli.CmdQueryProject()
-				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{fmt.Sprint(createProjectResp.ProjectId)})
+				queryCmd := cli.CmdQueryProject()
+				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{fmt.Sprint(createProjectResp.ProjectId)})
 				s.Require().NoError(err)
-				var resp plasticcredit.QueryProjectResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				s.Require().Equal(tc.expectedState.Name, resp.Project.Name)
-				s.Require().Equal(tc.expectedState.ApplicantId, resp.Project.ApplicantId)
-				s.Require().Equal(tc.expectedState.Status, resp.Project.Status)
-				s.Require().Equal(tc.expectedState.CreditClassAbbreviation, resp.Project.CreditClassAbbreviation)
+				var queryResponse plasticcredit.QueryProjectResponse
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryResponse))
+				s.Require().Equal(tc.expectedState.Name, queryResponse.Project.Name)
+				s.Require().Equal(tc.expectedState.ApplicantId, queryResponse.Project.ApplicantId)
+				s.Require().Equal(tc.expectedState.Status, queryResponse.Project.Status)
+				s.Require().Equal(tc.expectedState.CreditClassAbbreviation, queryResponse.Project.CreditClassAbbreviation)
 			}
 		})
 	}
@@ -82,9 +86,9 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 func (s *E2ETestSuite) TestCmdUpdateProject() {
 	val := s.network.Validators[0]
 
-	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKey)
+	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
 	s.Require().NoError(err)
-	notApplicantKey, _ := val.ClientCtx.Keyring.Key(issuerKey)
+	notApplicantKey, _ := val.ClientCtx.Keyring.Key(issuerKeyName)
 	s.Require().NoError(err)
 
 	testCases := map[string]struct {
@@ -137,16 +141,21 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else if tc.expectedErrOnExec {
-				var txResponse sdk.TxResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResponse))
+				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				s.Require().NoError(err)
+				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			} else {
-				cmd = cli.CmdQueryProject()
-				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{tc.args[0]})
+				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				var resp plasticcredit.QueryProjectResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				s.Require().Equal(tc.expectedState, &resp.Project)
+				s.Require().Equal(uint32(0), cliResponse.Code)
+
+				queryCmd := cli.CmdQueryProject()
+				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.args[0]})
+				s.Require().NoError(err)
+				var queryResponse plasticcredit.QueryProjectResponse
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryResponse))
+				s.Require().Equal(tc.expectedState, &queryResponse.Project)
 			}
 		})
 	}
@@ -154,9 +163,9 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 
 func (s *E2ETestSuite) TestCmdApproveProject() {
 	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKey)
+	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
 	s.Require().NoError(err)
-	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKey)
+	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
 	s.Require().NoError(err)
 	testCases := map[string]struct {
 		args              []string
@@ -208,8 +217,8 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 		},
 		"project already approved": {
 			[]string{"1", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			true,
 			false,
+			true,
 			"project is approved / rejected",
 			nil,
 		},
@@ -231,19 +240,25 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 		s.Run(name, func() {
 			cmd := cli.MsgApproveProjectCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else if tc.expectedErrOnExec {
-				var txResponse sdk.TxResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResponse))
+				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				s.Require().NoError(err)
+				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			} else {
-				cmd = cli.CmdQueryProject()
-				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{tc.args[0]})
+				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				var resp plasticcredit.QueryProjectResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				s.Require().Equal(tc.expectedState, &resp.Project)
+				s.Require().Equal(uint32(0), cliResponse.Code)
+
+				queryCmd := cli.CmdQueryProject()
+				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.args[0]})
+				s.Require().NoError(err)
+				var queryResponse plasticcredit.QueryProjectResponse
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryResponse))
+				s.Require().Equal(tc.expectedState, &queryResponse.Project)
 			}
 		})
 	}
@@ -251,9 +266,9 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 
 func (s *E2ETestSuite) TestCmdRejectProject() {
 	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKey)
+	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
 	s.Require().NoError(err)
-	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKey)
+	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
 	s.Require().NoError(err)
 	testCases := map[string]struct {
 		args              []string
@@ -291,22 +306,22 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 		},
 		"project already approved": {
 			[]string{"1", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			true,
 			false,
+			true,
 			"project is approved / rejected",
 			nil,
 		},
 		"project already rejected": {
 			[]string{"7", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			true,
 			false,
+			true,
 			"project is approved / rejected",
 			nil,
 		},
 		"project already suspended": {
 			[]string{"8", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			true,
 			false,
+			true,
 			"project is approved / rejected",
 			nil,
 		},
@@ -318,16 +333,21 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else if tc.expectedErrOnExec {
-				var txResponse sdk.TxResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResponse))
+				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				s.Require().NoError(err)
+				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			} else {
-				cmd = cli.CmdQueryProject()
-				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{tc.args[0]})
+				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				var resp plasticcredit.QueryProjectResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				s.Require().Equal(tc.expectedState, &resp.Project)
+				s.Require().Equal(uint32(0), cliResponse.Code)
+
+				queryCmd := cli.CmdQueryProject()
+				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.args[0]})
+				s.Require().NoError(err)
+				var queryResponse plasticcredit.QueryProjectResponse
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryResponse))
+				s.Require().Equal(tc.expectedState, &queryResponse.Project)
 			}
 		})
 	}
@@ -335,9 +355,9 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 
 func (s *E2ETestSuite) TestCmdSuspendProject() {
 	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKey)
+	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
 	s.Require().NoError(err)
-	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKey)
+	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
 	s.Require().NoError(err)
 	testCases := map[string]struct {
 		args              []string
@@ -360,7 +380,7 @@ func (s *E2ETestSuite) TestCmdSuspendProject() {
 			},
 		},
 		"invalid admin": {
-			[]string{"3", fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name)},
+			[]string{"10", fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name)},
 			false,
 			true,
 			"unauthorized",
@@ -375,15 +395,15 @@ func (s *E2ETestSuite) TestCmdSuspendProject() {
 		},
 		"project already rejected": {
 			[]string{"5", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			true,
 			false,
+			true,
 			"project not suspendable",
 			nil,
 		},
 		"project already suspended": {
 			[]string{"8", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			true,
 			false,
+			true,
 			"project not suspendable",
 			nil,
 		},
@@ -395,16 +415,21 @@ func (s *E2ETestSuite) TestCmdSuspendProject() {
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else if tc.expectedErrOnExec {
-				var txResponse sdk.TxResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResponse))
+				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				s.Require().NoError(err)
+				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			} else {
-				cmd = cli.CmdQueryProject()
-				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{tc.args[0]})
+				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				var resp plasticcredit.QueryProjectResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				s.Require().Equal(tc.expectedState, &resp.Project)
+				s.Require().Equal(uint32(0), cliResponse.Code)
+
+				queryCmd := cli.CmdQueryProject()
+				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.args[0]})
+				s.Require().NoError(err)
+				var queryResponse plasticcredit.QueryProjectResponse
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryResponse))
+				s.Require().Equal(tc.expectedState, &queryResponse.Project)
 			}
 		})
 	}

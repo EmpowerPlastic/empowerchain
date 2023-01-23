@@ -2,12 +2,17 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
+	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	"github.com/cosmos/cosmos-sdk/testutil/network"
+	"github.com/cosmos/cosmos-sdk/types/module/testutil"
+	"os"
 	"testing"
 	"time"
 
 	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
-	"github.com/cosmos/cosmos-sdk/simapp"
+	simtestutils "github.com/cosmos/cosmos-sdk/testutil/sims"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -26,8 +31,18 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
-var DefaultConsensusParams = &abci.ConsensusParams{
-	Block: &abci.BlockParams{
+func NewAppConstructor() network.AppConstructor {
+	return func(val network.ValidatorI) servertypes.Application {
+		return New(
+			val.GetCtx().Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.GetCtx().Config.RootDir, 0,
+			params.MakeEncodingConfig(ModuleBasics),
+			simtestutils.EmptyAppOptions{},
+		)
+	}
+}
+
+var DefaultConsensusParams = &tmproto.ConsensusParams{
+	Block: &tmproto.BlockParams{
 		MaxBytes: 200000,
 		MaxGas:   2000000,
 	},
@@ -46,7 +61,7 @@ var DefaultConsensusParams = &abci.ConsensusParams{
 func setup(withGenesis bool, invCheckPeriod uint) (*EmpowerApp, GenesisState) {
 	db := dbm.NewMemDB()
 	encCdc := params.MakeEncodingConfig(ModuleBasics)
-	empowerApp := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, params.MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{})
+	empowerApp := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, params.MakeEncodingConfig(ModuleBasics), simtestutils.EmptyAppOptions{})
 
 	if withGenesis {
 		return empowerApp, NewDefaultGenesisState(encCdc.Codec)
@@ -55,7 +70,7 @@ func setup(withGenesis bool, invCheckPeriod uint) (*EmpowerApp, GenesisState) {
 	return empowerApp, GenesisState{}
 }
 
-// Setup initializes a new SimApp. A Nop logger is set in EmpowerApp.
+// Setup initializes a new EmpowerApp. A Nop logger is set in EmpowerApp.
 func Setup(t *testing.T, isCheckTx bool) *EmpowerApp {
 	t.Helper()
 
@@ -167,7 +182,7 @@ func genesisStateWithValSet(t *testing.T,
 	})
 
 	// update total supply
-	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{})
+	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{}, []banktypes.SendEnabled{})
 	genesisState[banktypes.ModuleName] = empowerApp.AppCodec().MustMarshalJSON(bankGenesis)
 
 	return genesisState
@@ -188,4 +203,30 @@ func InitAccessControlSubKeepers(keeper *accesscontrolmodulekeeper.Keeper) *[]ac
 	sk = append(sk, accesscontrolmodulekeeper.NewSubKeeper(keeper, "mockmodule1"))
 	sk = append(sk, accesscontrolmodulekeeper.NewSubKeeper(keeper, "mockmodule2"))
 	return &sk
+}
+
+// NewTestNetworkFixture returns a new EmpowerApp AppConstructor for network simulation tests
+func NewTestNetworkFixture() network.TestFixture {
+	dir, err := os.MkdirTemp("", "empowerchain_test_app")
+	if err != nil {
+		panic(fmt.Sprintf("failed creating temporary directory: %v", err))
+	}
+	defer os.RemoveAll(dir)
+
+	app := New(
+		log.NewNopLogger(), dbm.NewMemDB(), nil, true, make(map[int64]bool), dir, 0,
+		params.MakeEncodingConfig(ModuleBasics),
+		simtestutils.EmptyAppOptions{},
+	)
+
+	return network.TestFixture{
+		AppConstructor: NewAppConstructor(),
+		GenesisState:   app.DefaultGenesis(),
+		EncodingConfig: testutil.TestEncodingConfig{
+			InterfaceRegistry: app.InterfaceRegistry(),
+			Codec:             app.AppCodec(),
+			TxConfig:          app.TxConfig(),
+			Amino:             app.LegacyAmino(),
+		},
+	}
 }

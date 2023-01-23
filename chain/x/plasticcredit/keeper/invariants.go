@@ -23,7 +23,7 @@ func AllInvariants(k Keeper) sdk.Invariant {
 	}
 }
 
-// TotalSupply checks that the total supply reflects all the credits held in accounts
+// TotalSupplyInvariant checks that the total supply reflects all the credits held in accounts
 func TotalSupplyInvariant(k InvariantKeeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		var (

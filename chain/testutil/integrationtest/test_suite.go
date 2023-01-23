@@ -8,7 +8,7 @@ import (
 	"github.com/EmpowerPlastic/empowerchain/app/params"
 	types "github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/simapp"
+	simtestutils "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -43,14 +43,14 @@ func (s *IntegrationTestSuite) Setup() {
 
 func setupTestEmpowerApp() *app.EmpowerApp {
 	db := dbm.NewMemDB()
-	empowerApp := app.New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, app.DefaultNodeHome, 5, params.MakeEncodingConfig(app.ModuleBasics), simapp.EmptyAppOptions{})
+	empowerApp := app.New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, app.DefaultNodeHome, 5, params.MakeEncodingConfig(app.ModuleBasics), simtestutils.EmptyAppOptions{})
 
 	stateBytes := getDefaultGenesisStateBytes()
 
 	empowerApp.InitChain(
 		abci.RequestInitChain{
 			Validators:      []abci.ValidatorUpdate{},
-			ConsensusParams: simapp.DefaultConsensusParams,
+			ConsensusParams: simtestutils.DefaultConsensusParams,
 			AppStateBytes:   stateBytes,
 		},
 	)

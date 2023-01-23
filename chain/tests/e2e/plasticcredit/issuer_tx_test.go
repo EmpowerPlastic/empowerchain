@@ -18,15 +18,15 @@ import (
 
 func (s *E2ETestSuite) TestCmdCreateIssuer() {
 	val := s.network.Validators[0]
-	issuerCreatorKey, err := val.ClientCtx.Keyring.Key(issuerCreatorKey)
+	issuerCreatorKey, err := val.ClientCtx.Keyring.Key(issuerCreatorKeyName)
 	s.Require().NoError(err)
-	validatorKey, err := val.ClientCtx.Keyring.Key(val1Key)
+	validatorKey, err := val.ClientCtx.Keyring.Key(val1KeyName)
 	s.Require().NoError(err)
-	validator2Key, err := val.ClientCtx.Keyring.Key(val2Key)
+	validator2Key, err := val.ClientCtx.Keyring.Key(val2KeyName)
 	s.Require().NoError(err)
-	validator3Key, err := val.ClientCtx.Keyring.Key(val3Key)
+	validator3Key, err := val.ClientCtx.Keyring.Key(val3KeyName)
 	s.Require().NoError(err)
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKey)
+	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
 	s.Require().NoError(err)
 	issuer, err := issuerKey.GetAddress()
 	s.Require().NoError(err)
@@ -73,7 +73,7 @@ func (s *E2ETestSuite) TestCmdCreateIssuer() {
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else {
-				err = UnpackTxResponseData(val.ClientCtx, out.Bytes(), &submitProposalResponse)
+				err = s.UnpackTxResponseData(val.ClientCtx, out.Bytes(), &submitProposalResponse)
 				s.Require().NoError(err)
 				cmd = govcli.NewCmdVote()
 				out, _ = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{fmt.Sprint(submitProposalResponse.ProposalId), "yes", fmt.Sprintf("--%s=%s", flags.FlagFrom, validatorKey.Name)}, s.commonFlags...))
@@ -106,14 +106,14 @@ func (s *E2ETestSuite) TestCmdCreateIssuer() {
 
 func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKey)
+	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
 	s.Require().NoError(err)
 	issuer, err := issuerKey.GetAddress()
 	s.Require().NoError(err)
 	newAdmin := sample.AccAddress()
 	s.Require().NoError(err)
 
-	notIssuerKey, err := val.ClientCtx.Keyring.Key(applicantKey)
+	notIssuerKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
 	s.Require().NoError(err)
 
 	testCases := map[string]struct {
@@ -201,10 +201,15 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else if tc.expectedErrOnExec {
-				var txResponse sdk.TxResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResponse))
+				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				s.Require().NoError(err)
+				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			} else {
+				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				s.Require().NoError(err)
+				s.Require().Equal(uint32(0), cliResponse.Code)
+
 				cmd = cli.CmdQueryIssuer()
 				out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{tc.args[1]})
 				s.Require().NoError(err)
@@ -218,13 +223,13 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 
 func (s *E2ETestSuite) TestCmdUpdateIssuerCreator() {
 	val := s.network.Validators[0]
-	issuerCreatorKey, err := val.ClientCtx.Keyring.Key(issuerCreatorKey)
+	issuerCreatorKey, err := val.ClientCtx.Keyring.Key(issuerCreatorKeyName)
 	s.Require().NoError(err)
-	validatorKey, err := val.ClientCtx.Keyring.Key(val1Key)
+	validatorKey, err := val.ClientCtx.Keyring.Key(val1KeyName)
 	s.Require().NoError(err)
-	validator2Key, err := val.ClientCtx.Keyring.Key(val2Key)
+	validator2Key, err := val.ClientCtx.Keyring.Key(val2KeyName)
 	s.Require().NoError(err)
-	validator3Key, err := val.ClientCtx.Keyring.Key(val3Key)
+	validator3Key, err := val.ClientCtx.Keyring.Key(val3KeyName)
 	s.Require().NoError(err)
 
 	currentDir, err := filepath.Abs("./")
@@ -261,7 +266,7 @@ func (s *E2ETestSuite) TestCmdUpdateIssuerCreator() {
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else {
-				err = UnpackTxResponseData(val.ClientCtx, out.Bytes(), &submitProposalResponse)
+				err = s.UnpackTxResponseData(val.ClientCtx, out.Bytes(), &submitProposalResponse)
 				s.Require().NoError(err)
 				cmd = govcli.NewCmdVote()
 				out, _ = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{fmt.Sprint(submitProposalResponse.ProposalId), "yes", fmt.Sprintf("--%s=%s", flags.FlagFrom, validatorKey.Name)}, s.commonFlags...))

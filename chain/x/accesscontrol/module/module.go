@@ -82,19 +82,6 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 // RegisterInvariants does nothing, there are no invariants to enforce
 func (AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
-// Deprecated: Route returns the capability module's message routing key.
-func (AppModule) Route() sdk.Route {
-	return sdk.Route{}
-}
-
-// Deprecated: QuerierRoute returns the accesscontrol module's query routing key.
-func (AppModule) QuerierRoute() string { return accesscontrol.ModuleName }
-
-// Deprecated: LegacyQuerierHandler returns the accesscontrol module's Querier.
-func (am AppModule) LegacyQuerierHandler(*codec.LegacyAmino) sdk.Querier {
-	return nil
-}
-
 // RegisterServices registers a GRPC query service to respond to the
 // module-specific GRPC queries.
 func (am AppModule) RegisterServices(cfg module.Configurator) {

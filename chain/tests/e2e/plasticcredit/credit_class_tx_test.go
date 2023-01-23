@@ -6,22 +6,23 @@ import (
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKey)
+	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
 	s.Require().NoError(err)
 
 	testCases := map[string]struct {
 		args              []string
 		expectedErrOnSend bool
+		expectedErrOnExec bool
 		expectedErrMsg    string
 		expectedState     plasticcredit.CreditClass
 	}{
 		"create new credit class": {
 			[]string{"PCRD2", "1", "Test", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			false,
 			false,
 			"",
 			plasticcredit.CreditClass{
@@ -32,6 +33,7 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 		},
 		"non-existent issuer": {
 			[]string{"PCRD2", "5", "Test", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			false,
 			true,
 			"issuer not found",
 			plasticcredit.CreditClass{},
@@ -39,12 +41,14 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 		"empty abbreviation": {
 			[]string{"", "1", "Test", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			true,
+			false,
 			"abbreviation cannot be empty: invalid request",
 			plasticcredit.CreditClass{},
 		},
 		"empty name": {
 			[]string{"PCRD6", "1", "", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			true,
+			false,
 			"credit class name cannot be empty: invalid request",
 			plasticcredit.CreditClass{},
 		},
@@ -55,14 +59,24 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
-			} else {
-				cmd = cli.CmdQueryCreditClass()
-				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{fmt.Sprint(tc.expectedState.Abbreviation)})
+			} else if tc.expectedErrOnExec {
+				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				var resp plasticcredit.QueryCreditClassResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				s.Require().Equal(tc.expectedState.Name, resp.CreditClass.Name)
-				s.Require().Equal(tc.expectedState.IssuerId, resp.CreditClass.IssuerId)
+				s.Require().NotEqual(uint32(0), txResponse.Code)
+				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
+			} else {
+				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				fmt.Println(out.String())
+				s.Require().NoError(err)
+				s.Require().Equal(uint32(0), cliResponse.Code)
+
+				queryCmd := cli.CmdQueryCreditClass()
+				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{fmt.Sprint(tc.expectedState.Abbreviation)})
+				s.Require().NoError(err)
+				var queryResponse plasticcredit.QueryCreditClassResponse
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryResponse))
+				s.Require().Equal(tc.expectedState.Name, queryResponse.CreditClass.Name)
+				s.Require().Equal(tc.expectedState.IssuerId, queryResponse.CreditClass.IssuerId)
 			}
 		})
 	}
@@ -70,10 +84,10 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 
 func (s *E2ETestSuite) TestCmdUpdateCreditClass() {
 	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKey)
+	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
 	s.Require().NoError(err)
 
-	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKey)
+	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
 	s.Require().NoError(err)
 
 	testCases := map[string]struct {
@@ -118,8 +132,8 @@ func (s *E2ETestSuite) TestCmdUpdateCreditClass() {
 		},
 		"non-existing abbreviation": {
 			[]string{"JJJ", "Test", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			true,
 			false,
+			true,
 			"credit class not found",
 			nil,
 		},
@@ -131,15 +145,20 @@ func (s *E2ETestSuite) TestCmdUpdateCreditClass() {
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else if tc.expectedErrOnExec {
-				var txResponse sdk.TxResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResponse))
+				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				s.Require().NoError(err)
+				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			} else {
-				cmd = cli.CmdQueryCreditClass()
-				out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{tc.args[0]})
+				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				s.Require().NoError(err)
+				s.Require().Equal(uint32(0), cliResponse.Code)
+
+				queryCmd := cli.CmdQueryCreditClass()
+				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.args[0]})
 				s.Require().NoError(err)
 				var resp plasticcredit.QueryCreditClassResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &resp))
 				s.Require().Equal(tc.expectedState, &resp.CreditClass)
 			}
 		})

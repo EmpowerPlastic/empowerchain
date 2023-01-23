@@ -34,22 +34,6 @@ type TestSuite struct {
 	sampleCreditDenom             string
 }
 
-func NewTestSuite() suite.TestingSuite {
-	t := &TestSuite{}
-	t.issuerCreator = sample.AccAddress()
-	t.sampleIssuerId = 1
-	t.sampleIssuerAdmin = sample.AccAddress()
-	t.sampleCreditClassAbbreviation = "EMP"
-	t.sampleApplicantId = 1
-	t.sampleApplicantAdmin = sample.AccAddress()
-	t.sampleProjectId = 1
-	t.sampleUnapprovedProjectId = 2
-	t.sampleRejectionProjectId = 3
-	t.sampleSuspendedProjectId = 4
-	t.sampleCreditDenom = "EMP/123"
-	return t
-}
-
 func (s *TestSuite) SetupTest() {
 	empowerApp := app.Setup(s.T(), false)
 	ctx := empowerApp.BaseApp.NewContext(false, tmproto.Header{})
@@ -177,5 +161,19 @@ func (s *TestSuite) PopulateWithSamples() {
 func TestTestSuite(t *testing.T) {
 	params.SetAddressPrefixes()
 	params.RegisterDenoms()
-	suite.Run(t, NewTestSuite())
+
+	ts := &TestSuite{}
+	ts.issuerCreator = sample.AccAddress()
+	ts.sampleIssuerId = 1
+	ts.sampleIssuerAdmin = sample.AccAddress()
+	ts.sampleCreditClassAbbreviation = "EMP"
+	ts.sampleApplicantId = 1
+	ts.sampleApplicantAdmin = sample.AccAddress()
+	ts.sampleProjectId = 1
+	ts.sampleUnapprovedProjectId = 2
+	ts.sampleRejectionProjectId = 3
+	ts.sampleSuspendedProjectId = 4
+	ts.sampleCreditDenom = "EMP/123"
+
+	suite.Run(t, ts)
 }
