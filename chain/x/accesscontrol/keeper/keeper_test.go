@@ -1,8 +1,9 @@
 package keeper_test
 
 import (
-	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol"
 )
 
 func (s *TestSuite) TestHasAccess() {
