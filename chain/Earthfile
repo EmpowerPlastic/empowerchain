@@ -15,7 +15,6 @@ build-prep:
     COPY go.mod .
     COPY go.sum .
     COPY app app
-    COPY client client
     COPY cmd cmd
     COPY proto proto
     COPY scripts scripts
@@ -66,29 +65,3 @@ smoketest:
 lint:
     FROM +build
     RUN make lint
-
-swagger-gen:
-    FROM +build-prep
-    # Install buf
-    RUN BIN="/usr/local/bin" && \
-        VERSION="1.12.0" && \
-        curl -sSL \
-        "https://github.com/bufbuild/buf/releases/download/v${VERSION}/buf-$(uname -s)-$(uname -m)" \
-        -o "${BIN}/buf" && \
-        chmod +x "${BIN}/buf"
-    # Install NodeJS
-    RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-        apt-get install -y nodejs
-    # Install swagger-combine
-    RUN npm install -g swagger-combine
-    # Install GoSwagger
-    RUN download_url=$(curl -s https://api.github.com/repos/go-swagger/go-swagger/releases/latest | \
-        jq -r '.assets[] | select(.name | contains("'"$(uname | tr '[:upper:]' '[:lower:]')"'_amd64")) | .browser_download_url') && \
-        curl -o /usr/local/bin/swagger -L'#' "$download_url" && \
-        chmod +x /usr/local/bin/swagger
-    # Install protoc-gen-swagger
-    RUN go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@latest
-    RUN make swagger-gen
-    RUN cd client/docs/swagger-ui && swagger generate markdown
-    SAVE ARTIFACT client/docs/swagger-ui/swagger.yaml AS LOCAL swagger.yaml
-    SAVE ARTIFACT client/docs/swagger-ui/markdown.md AS LOCAL swagger.md

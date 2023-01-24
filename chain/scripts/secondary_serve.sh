@@ -21,7 +21,7 @@ if ! mkdir -p $SECONDARY_NODE_CHAIN_DIR 2>/dev/null; then
 fi
 
 echo "Initializing secondary node $CHAIN_ID..."
-$BINARY init secondary-test --home $SECONDARY_NODE_CHAIN_DIR --chain-id=$CHAIN_ID --default-denom umpwr
+$BINARY init secondary-test --home $SECONDARY_NODE_CHAIN_DIR --chain-id=$CHAIN_ID --staking-bond-denom umpwr
 
 echo "Changing defaults and ports in app.toml and config.toml files..."
 sed -i -e 's#"tcp://0.0.0.0:26656"#"tcp://0.0.0.0:'"$SECONDARY_NODE_P2P_PORT"'"#g' $SECONDARY_NODE_CHAIN_DIR/config/config.toml

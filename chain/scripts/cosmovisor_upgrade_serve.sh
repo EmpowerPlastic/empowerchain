@@ -56,7 +56,7 @@ make build
 cp ./build/empowerd $TMP_COSMOVISOR_DIR/upgrades/v2/bin/
 
 mkdir -p $DAEMON_HOME
-$V1_BINARY init test --home $CHAIN_DIR --chain-id=$CHAIN_ID --default-denom umpwr
+$V1_BINARY init test --home $CHAIN_DIR --chain-id=$CHAIN_ID --staking-bond-denom umpwr
 echo "Adding genesis accounts..."
 echo "$ALICE_MNEMONIC" | $V1_BINARY keys add alice --home $CHAIN_DIR --recover --keyring-backend=test
 echo "$BOB_MNEMONIC" | $V1_BINARY keys add bob --home $CHAIN_DIR --recover --keyring-backend=test

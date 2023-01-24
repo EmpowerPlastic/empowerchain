@@ -2,11 +2,10 @@ package plasticcredit
 
 import (
 	"cosmossdk.io/errors"
+	"github.com/EmpowerPlastic/empowerchain/utils"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"gopkg.in/yaml.v2"
-
-	"github.com/EmpowerPlastic/empowerchain/utils"
 )
 
 // NewParams creates a new Params instance

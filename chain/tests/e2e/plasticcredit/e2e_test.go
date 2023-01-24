@@ -6,33 +6,44 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/suite"
+
+	"github.com/EmpowerPlastic/empowerchain/app"
+	"github.com/EmpowerPlastic/empowerchain/app/params"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
-	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	"github.com/stretchr/testify/suite"
-
-	"github.com/EmpowerPlastic/empowerchain/app"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	dbm "github.com/tendermint/tm-db"
 )
 
+func NewAppConstructor() network.AppConstructor {
+	return func(val network.Validator) servertypes.Application {
+		return app.New(
+			val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
+			params.MakeEncodingConfig(app.ModuleBasics),
+			simapp.EmptyAppOptions{},
+		)
+	}
+}
+
 const (
-	issuerKeyName        = "issuer"
-	issuerCreatorKeyName = "issuerCreator"
-	applicantKeyName     = "applicant"
-	val1KeyName          = "node0"
-	val2KeyName          = "node1"
-	val3KeyName          = "node2"
-	randomKeyName        = "randomKey"
+	issuerKey        = "issuer"
+	issuerCreatorKey = "issuerCreator"
+	applicantKey     = "applicant"
+	val1Key          = "node0"
+	val2Key          = "node1"
+	val3Key          = "node2"
 )
 
 type E2ETestSuite struct {
@@ -41,6 +52,10 @@ type E2ETestSuite struct {
 	cfg         network.Config
 	network     *network.Network
 	commonFlags []string
+}
+
+func NewE2ETestSuite(cfg network.Config) *E2ETestSuite {
+	return &E2ETestSuite{cfg: cfg}
 }
 
 func (s *E2ETestSuite) SetupSuite() {
@@ -52,7 +67,7 @@ func (s *E2ETestSuite) SetupSuite() {
 
 	s.commonFlags = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
@@ -64,7 +79,7 @@ func (s *E2ETestSuite) SetupSuite() {
 	plasticcreditGenesisState.IdCounters = plasticcredit.IDCounters{
 		NextIssuerId:    3,
 		NextApplicantId: 4,
-		NextProjectId:   11,
+		NextProjectId:   10,
 	}
 	plasticcreditGenesisState.Issuers = []plasticcredit.Issuer{
 		{
@@ -176,13 +191,6 @@ func (s *E2ETestSuite) SetupSuite() {
 			Name:                    "New Project to update",
 			Status:                  plasticcredit.ProjectStatus_NEW,
 		},
-		{
-			Id:                      10,
-			ApplicantId:             1,
-			CreditClassAbbreviation: "EMP",
-			Name:                    "Approved project 2",
-			Status:                  plasticcredit.ProjectStatus_APPROVED,
-		},
 	}
 	plasticcreditGenesisState.CreditCollections = []plasticcredit.CreditCollection{
 		{
@@ -238,22 +246,19 @@ func (s *E2ETestSuite) SetupSuite() {
 	issuerAddress := "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
 	issuerCreatorAddress := "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7"
 	applicantAddress := "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn"
-	randomAddress := "empower15hxwswcmmkasaar65n3vkmp6skurvtas3xzl7s"
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: issuerAddress, Coins: balances})
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: issuerCreatorAddress, Coins: balances})
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: applicantAddress, Coins: balances})
-	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: randomAddress, Coins: balances})
 
 	var genAccounts authtypes.GenesisAccounts
 	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(issuerAddress)))
 	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(issuerCreatorAddress)))
 	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(applicantAddress)))
-	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(randomAddress)))
 	accounts, err := authtypes.PackAccounts(genAccounts)
 	s.Require().NoError(err)
 	authGenesis.Accounts = append(authGenesis.Accounts, accounts...)
 
-	*govGenesis.Params.VotingPeriod = 10 * time.Second
+	*govGenesis.VotingParams.VotingPeriod = 10 * time.Second
 
 	bankGenesisStateBz, err := s.cfg.Codec.MarshalJSON(&bankGenesis)
 	s.Require().NoError(err)
@@ -267,18 +272,17 @@ func (s *E2ETestSuite) SetupSuite() {
 	genesisState[govtypes.ModuleName] = govGenesisStateBz
 	s.cfg.GenesisState = genesisState
 
-	s.cfg.AppConstructor = app.NewAppConstructor()
+	s.cfg.AppConstructor = NewAppConstructor()
 	encodingConfig := params.MakeEncodingConfig(app.ModuleBasics)
 	s.cfg.InterfaceRegistry = encodingConfig.InterfaceRegistry
 	s.cfg.Codec = encodingConfig.Codec
-	s.cfg.TxConfig = encodingConfig.TxConfig
 
 	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
 	s.Require().NoError(err)
 
 	kb := s.network.Validators[0].ClientCtx.Keyring
 	_, err = kb.NewAccount(
-		issuerKeyName,
+		issuerKey,
 		"angry twist harsh drastic left brass behave host shove marriage fall update business leg direct reward object ugly security warm tuna model broccoli choice",
 		keyring.DefaultBIP39Passphrase,
 		sdk.FullFundraiserPath,
@@ -286,7 +290,7 @@ func (s *E2ETestSuite) SetupSuite() {
 	)
 	s.Require().NoError(err)
 	_, err = kb.NewAccount(
-		issuerCreatorKeyName,
+		issuerCreatorKey,
 		"clock post desk civil pottery foster expand merit dash seminar song memory figure uniform spice circle try happy obvious trash crime hybrid hood cushion",
 		keyring.DefaultBIP39Passphrase,
 		sdk.FullFundraiserPath,
@@ -295,17 +299,8 @@ func (s *E2ETestSuite) SetupSuite() {
 	s.Require().NoError(err)
 
 	_, err = kb.NewAccount(
-		applicantKeyName,
+		applicantKey,
 		"banner spread envelope side kite person disagree path silver will brother under couch edit food venture squirrel civil budget number acquire point work mass",
-		keyring.DefaultBIP39Passphrase,
-		sdk.FullFundraiserPath,
-		hd.Secp256k1,
-	)
-	s.Require().NoError(err)
-
-	_, err = kb.NewAccount(
-		randomKeyName,
-		"pony olive still divide actual surge amateur funny marriage lizard radio gift basket supply sense feature early hazard carry smooth garment cream fury afford",
 		keyring.DefaultBIP39Passphrase,
 		sdk.FullFundraiserPath,
 		hd.Secp256k1,
@@ -323,6 +318,7 @@ func (s *E2ETestSuite) SetupSuite() {
 	s.Require().NoError(err)
 
 	s.Require().NoError(s.network.WaitForNextBlock())
+
 }
 
 func (s *E2ETestSuite) TearDownSuite() {
@@ -330,44 +326,31 @@ func (s *E2ETestSuite) TearDownSuite() {
 	s.network.Cleanup()
 }
 
-func (s *E2ETestSuite) UnpackTxResponseData(ctx client.Context, txJSONResponse []byte, txResponse codec.ProtoMarshaler) error {
-	cliResponse, err := s.getCliResponse(ctx, txJSONResponse)
-	if err != nil {
-		return err
-	}
-
-	respMsgDataHex, err := hex.DecodeString(cliResponse.Data)
-	if err != nil {
-		return err
-	}
-
+func UnpackTxResponseData(ctx client.Context, txJsonResponse []byte, txResponse codec.ProtoMarshaler) error {
+	var sdkResponse sdk.TxResponse
 	var msgData sdk.TxMsgData
+	err := ctx.Codec.UnmarshalJSON(txJsonResponse, &sdkResponse)
+	if err != nil {
+		return err
+	}
+	respMsgDataHex, err := hex.DecodeString(sdkResponse.Data)
+	if err != nil {
+		return err
+	}
 	err = ctx.Codec.Unmarshal(respMsgDataHex, &msgData)
 	if err != nil {
 		return err
 	}
-
 	err = ctx.Codec.Unmarshal(msgData.MsgResponses[0].Value, txResponse)
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
-func (s *E2ETestSuite) getCliResponse(ctx client.Context, txJSONResponse []byte) (sdk.TxResponse, error) {
-	var initialCliResponse sdk.TxResponse
-	err := ctx.Codec.UnmarshalJSON(txJSONResponse, &initialCliResponse)
-	if err != nil {
-		return sdk.TxResponse{}, err
-	}
-
-	return clitestutil.GetTxResponse(s.network, ctx, initialCliResponse.TxHash)
-}
-
 func TestE2ETestSuite(t *testing.T) {
+	cfg := network.DefaultConfig()
 	params.SetAddressPrefixes()
 	params.RegisterDenoms()
-	cfg := network.DefaultConfig(app.NewTestNetworkFixture)
-	suite.Run(t, &E2ETestSuite{cfg: cfg})
+	suite.Run(t, NewE2ETestSuite(cfg))
 }

@@ -4,9 +4,8 @@ import (
 	"context"
 
 	"cosmossdk.io/errors"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type Querier struct {

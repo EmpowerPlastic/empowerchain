@@ -3,7 +3,8 @@
   "private": true,
   "workspaces": [
     "ts-client",
-    "proof-of-existence"
+    "poe-demo",
+    "empowerchain-frontend"
   ],
   "devDependencies": {
     "crypto-browserify": "^3.12.0",

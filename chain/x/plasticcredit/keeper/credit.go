@@ -4,14 +4,13 @@ import (
 	"strings"
 
 	"cosmossdk.io/errors"
+	"github.com/EmpowerPlastic/empowerchain/utils"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/gogoproto/proto"
-
-	"github.com/EmpowerPlastic/empowerchain/utils"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	proto "github.com/gogo/protobuf/proto"
 )
 
 func (k Keeper) GetCreditCollection(ctx sdk.Context, denom string) (plasticcredit.CreditCollection, bool) {
