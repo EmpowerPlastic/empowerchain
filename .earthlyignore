@@ -1,0 +1,10 @@
+# This file is mainly needed because we use COPY . .
+# Hopefully we can avoid a lot of this crap when this issue is solved: https://github.com/earthly/earthly/issues/1230
+.git
+.github
+.devcontainer
+.idea
+*.pdf
+**/target/
+**/build/
+**/node_modules/
