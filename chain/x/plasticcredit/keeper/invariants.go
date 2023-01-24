@@ -3,9 +3,10 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank/types"
+
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
 
 type InvariantKeeper interface {
@@ -23,7 +24,7 @@ func AllInvariants(k Keeper) sdk.Invariant {
 	}
 }
 
-// TotalSupply checks that the total supply reflects all the credits held in accounts
+// TotalSupplyInvariant checks that the total supply reflects all the credits held in accounts
 func TotalSupplyInvariant(k InvariantKeeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		var (

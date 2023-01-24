@@ -1,9 +1,10 @@
 package keeper_test
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (s *TestSuite) TestProofQuery() {

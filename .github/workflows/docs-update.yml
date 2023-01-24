@@ -1,0 +1,32 @@
+name: "Docs update"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'chain/proto/**' # On updating proto
+
+jobs:
+  build:
+    name: Update EmpowerChain swagger docs
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: earthly/actions/setup-earthly@v1
+        with:
+          version: v0.6.22
+
+      - run: earthly --ci --output +swagger-gen
+        working-directory: ./chain
+
+      - run: |
+            mv ./chain/swagger.yaml ./chain/client/docs/swagger-ui/swagger.yaml
+            mv ./chain/swagger.md ./docs/api_docs/swagger.md
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          commit-message: Update Swagger docs
+          title: Update Swagger docs
+          branch: update-docs
+          labels: docs

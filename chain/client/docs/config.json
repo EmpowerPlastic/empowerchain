@@ -1,0 +1,26 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Empowerchain - API docs",
+    "description": "A REST interface for state queries",
+    "version": "1.0.0"
+  },
+  "apis": [
+    {
+      "url": "./tmp-swagger-gen/empowerchain/plasticcredit/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "PlasticCreditParams"
+        }
+      }
+    },
+    {
+      "url": "./tmp-swagger-gen/empowerchain/proofofexistence/query.swagger.json",
+      "operationIds": {
+        "rename": {
+          "Params": "ProofOfExistenceParams"
+        }
+      }
+    }
+  ]
+}

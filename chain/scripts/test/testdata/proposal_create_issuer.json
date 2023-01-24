@@ -9,5 +9,7 @@
     }
   ],
   "metadata": "ipfs://CID",
-  "deposit": "10000000umpwr"
+  "deposit": "10000000umpwr",
+  "title": "Create issuer",
+  "summary": "Creates a new issuer"
 }

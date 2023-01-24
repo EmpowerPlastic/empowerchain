@@ -2,17 +2,18 @@
 
 set -euox pipefail
 
-if [ -z "$1" ]; then
-    echo "Cosmos SDK version missing as first argument"
-fi
+#if [ -z "$1" ]; then
+#    echo "Cosmos SDK version missing as first argument"
+#fi
 
-COSMOS_SDK_VERSION=$1
+#COSMOS_SDK_VERSION=$1
 
 # Get protoc executions
-go install github.com/regen-network/cosmos-proto/protoc-gen-gocosmos 2>/dev/null
+#go install github.com/regen-network/cosmos-proto/protoc-gen-gocosmos 2>/dev/null
+#go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.16.0 2>/dev/null
 
 # Get cosmos sdk from github
-go get github.com/cosmos/cosmos-sdk@"$COSMOS_SDK_VERSION" 2>/dev/null
+#go get github.com/cosmos/cosmos-sdk@"$COSMOS_SDK_VERSION" 2>/dev/null
 
 echo "Generating gogo proto code"
 cd proto
