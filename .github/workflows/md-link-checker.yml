@@ -1,0 +1,14 @@
+name: Check Markdown links
+on:
+  schedule:
+    - cron: '0 13 * * *'
+jobs:
+  markdown-link-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: earthly/actions/setup-earthly@v1
+        with:
+          version: v0.6.22
+
+      - run: earthly --ci +check-md-links
