@@ -4,10 +4,11 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto"
+
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 )
 
 const testData = "This is just some random test data to be hashed. 42."
