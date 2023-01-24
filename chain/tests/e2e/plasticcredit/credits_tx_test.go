@@ -11,7 +11,7 @@ import (
 
 func (s *E2ETestSuite) TestCmdIssueCredits() {
 	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKey)
+	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
 	s.Require().NoError(err)
 
 	testCases := map[string]struct {
@@ -91,7 +91,7 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 				var txResponse sdk.TxResponse
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResponse))
 				var issueCreditsResp plasticcredit.MsgIssueCreditsResponse
-				err = UnpackTxResponseData(val.ClientCtx, out.Bytes(), &issueCreditsResp)
+				err = s.UnpackTxResponseData(val.ClientCtx, out.Bytes(), &issueCreditsResp)
 				s.Require().NoError(err)
 				cmd = cli.CmdQueryCreditCollection()
 				queryCollectionResponse, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{fmt.Sprint(issueCreditsResp.Collection.Denom)})
@@ -106,7 +106,7 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 
 func (s *E2ETestSuite) TestCmdTransferCredits() {
 	val := s.network.Validators[0]
-	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKey)
+	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
 	s.Require().NoError(err)
 	applicant, err := applicantKey.GetAddress()
 	s.Require().NoError(err)
@@ -125,7 +125,7 @@ func (s *E2ETestSuite) TestCmdTransferCredits() {
 	}{
 		"happy path (no retire)": {
 			[]string{senderAddress, "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7", "EMP/123", "100", "false", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
-			1900,
+			2000,
 			100,
 			0,
 			false,
