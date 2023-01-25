@@ -58,6 +58,7 @@ func (s *E2ETestSuite) TestCmdCreateApplicant() {
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else {
+				s.Require().NoError(s.network.WaitForNextBlock())
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code)

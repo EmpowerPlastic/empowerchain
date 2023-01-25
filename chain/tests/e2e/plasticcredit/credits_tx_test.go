@@ -134,9 +134,10 @@ func (s *E2ETestSuite) TestCmdTransferCredits() {
 	cmd := cli.MsgIssueCreditsCmd()
 	_, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{"1", "456", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)}, s.commonFlags...))
 	s.Require().NoError(err)
-
+	s.Require().NoError(s.network.WaitForNextBlock())
 	_, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{"1", "123", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)}, s.commonFlags...))
 	s.Require().NoError(err)
+	s.Require().NoError(s.network.WaitForNextBlock())
 
 	testCases := map[string]struct {
 		args                            []string
