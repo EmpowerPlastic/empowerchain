@@ -11,18 +11,7 @@ docker:
 
 build-prep:
     FROM +docker
-    COPY Makefile .
-    COPY go.mod .
-    COPY go.sum .
-    COPY app app
-    COPY client client
-    COPY cmd cmd
-    COPY proto proto
-    COPY scripts scripts
-    COPY testutil testutil
-    COPY tests tests
-    COPY utils utils
-    COPY x x
+    COPY . . # Until https://github.com/earthly/earthly/issues/1230
 
 build:
     ARG EARTHLY_GIT_HASH

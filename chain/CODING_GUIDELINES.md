@@ -4,7 +4,7 @@
 
 We try to follow the folder structure outline in the Cosmos SDK docs: https://docs.cosmos.network/main/building-modules/structure
 
-For documentation of a module, we use the `README.md` file under `x/modulename`. The format should conform to the "spec-spec" outlined in the Cosmos SDK docs: https://docs.cosmos.network/main/spec/SPEC-SPEC
+For documentation of a module, we use the `README.md` file under `x/modulename`. The format should conform to the docs outlined in the Cosmos SDK docs: https://docs.cosmos.network/main/spec/SPEC_MODULE
 
 ## Keeper structure
 
@@ -13,7 +13,7 @@ To keep a clean separation of concerns in our modules, we construct our keeper t
 - Business logic layer: Public Keeper methods
 - Storage layer: Private Keeper methods
 
-![](../docs/static/img/module_structure.png)
+![](../docs/static/img/keeper_structure.png)
 
 ### API Layer: MsgServer and Querier
 
