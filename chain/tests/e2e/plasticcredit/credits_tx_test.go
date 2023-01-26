@@ -16,7 +16,7 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 	s.Require().NoError(err)
 
 	testCases := map[string]struct {
-		projectId         string
+		projectID         string
 		serialNumber      string
 		issueCredits      string
 		fromFlagValue     string
@@ -121,7 +121,7 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgIssueCreditsCmd()
-			cliArgs := []string{tc.projectId, tc.serialNumber, tc.issueCredits, tc.fromFlagValue}
+			cliArgs := []string{tc.projectID, tc.serialNumber, tc.issueCredits, tc.fromFlagValue}
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(cliArgs, s.commonFlags...))
 			s.Require().NoError(s.network.WaitForNextBlock())
 			switch {
