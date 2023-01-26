@@ -95,11 +95,11 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 		s.Run(name, func() {
 			cmd := cli.MsgIssueCreditsCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+			s.Require().NoError(s.network.WaitForNextBlock())
 			switch {
 			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			case tc.expectedErrOnExec:
-				s.Require().NoError(s.network.WaitForNextBlock())
 				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
@@ -189,17 +189,16 @@ func (s *E2ETestSuite) TestCmdTransferCredits() {
 		s.Run(name, func() {
 			cmd := cli.MsgTransferCreditsCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+			s.Require().NoError(s.network.WaitForNextBlock())
 			switch {
 			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			case tc.expectedErrOnExec:
-				s.Require().NoError(s.network.WaitForNextBlock())
 				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			default:
-				s.Require().NoError(s.network.WaitForNextBlock())
 				_, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 
@@ -220,6 +219,67 @@ func (s *E2ETestSuite) TestCmdTransferCredits() {
 				s.Require().NoError(err)
 				var collectionAfter plasticcredit.QueryCreditCollectionResponse
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryCollectionResponse.Bytes(), &collectionAfter))
+			}
+		})
+	}
+}
+
+func (s *E2ETestSuite) TestCmdRetireCredits() {
+	val := s.network.Validators[0]
+	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
+	s.Require().NoError(err)
+	applicant, err := applicantKey.GetAddress()
+	s.Require().NoError(err)
+	senderAddress := applicant.String()
+
+	cmd := cli.MsgIssueCreditsCmd()
+	_, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{"2", "00001", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)}, s.commonFlags...))
+	s.Require().NoError(err)
+	s.Require().NoError(s.network.WaitForNextBlock())
+
+	testCases := map[string]struct {
+		args                   []string
+		expectedBalanceRetired uint64
+		expectedErrOnSend      bool
+		expectedErrOnExec      bool
+		expectedErrMsg         string
+	}{
+		"happy path": {
+			[]string{"PCRD/00001", "100", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
+			300,
+			false,
+			false,
+			"",
+		},
+		"not enough active balance": {
+			[]string{"EMP/777", "100", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
+			0,
+			false,
+			true,
+			"",
+		},
+	}
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			cmd := cli.MsgRetireCreditsCmd()
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+			s.Require().NoError(s.network.WaitForNextBlock())
+			switch {
+			case tc.expectedErrOnSend:
+				s.Require().Contains(out.String(), tc.expectedErrMsg)
+			case tc.expectedErrOnExec:
+				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				s.Require().NoError(err)
+				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
+			default:
+				_, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				s.Require().NoError(err)
+				cmdQueryBalance := cli.CmdQueryCreditBalance()
+				querySenderBalanceResponse, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmdQueryBalance, append([]string{senderAddress}, tc.args[0]))
+				s.Require().NoError(err)
+				var senderBalance plasticcredit.QueryCreditBalanceResponse
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(querySenderBalanceResponse.Bytes(), &senderBalance))
+				s.Require().Equal(tc.expectedBalanceRetired, senderBalance.Balance.Balance.Retired)
 			}
 		})
 	}

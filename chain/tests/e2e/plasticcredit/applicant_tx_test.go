@@ -54,11 +54,10 @@ func (s *E2ETestSuite) TestCmdCreateApplicant() {
 		s.Run(name, func() {
 			cmd := cli.MsgCreateApplicantCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
-
+			s.Require().NoError(s.network.WaitForNextBlock())
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else {
-				s.Require().NoError(s.network.WaitForNextBlock())
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code)
