@@ -281,9 +281,49 @@ func TestCreditClassValidation(t *testing.T) {
 			},
 			err: nil,
 		},
-		"invalid abbreviation": {
+		"happy path 2": {
+			creditClass: CreditClass{
+				Abbreviation: "ABC69",
+				IssuerId:     42,
+				Name:         "thisIsMyNameYo",
+			},
+			err: nil,
+		},
+		"empty abbreviation": {
 			creditClass: CreditClass{
 				Abbreviation: "",
+				IssuerId:     1,
+				Name:         "Empower Plastic Credits",
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"too short abbreviation": {
+			creditClass: CreditClass{
+				Abbreviation: "A",
+				IssuerId:     1,
+				Name:         "Empower Plastic Credits",
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"too long abbreviation": {
+			creditClass: CreditClass{
+				Abbreviation: "PCRDTT",
+				IssuerId:     1,
+				Name:         "Empower Plastic Credits",
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"lower-case abbreviation": {
+			creditClass: CreditClass{
+				Abbreviation: "AbC",
+				IssuerId:     1,
+				Name:         "Empower Plastic Credits",
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"special char abbreviation": {
+			creditClass: CreditClass{
+				Abbreviation: "ABC_",
 				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
 			},
