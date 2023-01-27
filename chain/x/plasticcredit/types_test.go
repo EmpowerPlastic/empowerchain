@@ -70,6 +70,15 @@ func TestIssuerValidation(t *testing.T) {
 			},
 			err: nil,
 		},
+		"happy path name test": {
+			idc: Issuer{
+				Id:          42,
+				Name:        "This is a longer name with spaces and special characters:%$#",
+				Description: "Something something",
+				Admin:       sample.AccAddress(),
+			},
+			err: nil,
+		},
 		"empty description is OK": {
 			idc: Issuer{
 				Id:          1337,
@@ -92,6 +101,33 @@ func TestIssuerValidation(t *testing.T) {
 			idc: Issuer{
 				Id:          1,
 				Name:        "",
+				Description: "Something something",
+				Admin:       sample.AccAddress(),
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"too long name": {
+			idc: Issuer{
+				Id:          1,
+				Name:        "This name is 65 characters long, which is above the limit we set!",
+				Description: "Something something",
+				Admin:       sample.AccAddress(),
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"name starts with space": {
+			idc: Issuer{
+				Id:          1,
+				Name:        " Empower",
+				Description: "Something something",
+				Admin:       sample.AccAddress(),
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"name ends with space": {
+			idc: Issuer{
+				Id:          1,
+				Name:        "Empower ",
 				Description: "Something something",
 				Admin:       sample.AccAddress(),
 			},
@@ -176,6 +212,15 @@ func TestApplicantValidation(t *testing.T) {
 			},
 			err: nil,
 		},
+		"happy path name test": {
+			applicant: Applicant{
+				Id:          42,
+				Name:        "This is a longer name with spaces and special characters:%$#",
+				Description: "Something something",
+				Admin:       sample.AccAddress(),
+			},
+			err: nil,
+		},
 		"empty description is OK": {
 			applicant: Applicant{
 				Id:          1337,
@@ -198,6 +243,33 @@ func TestApplicantValidation(t *testing.T) {
 			applicant: Applicant{
 				Id:          1,
 				Name:        "",
+				Description: "Something something",
+				Admin:       sample.AccAddress(),
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"too long name": {
+			applicant: Applicant{
+				Id:          1,
+				Name:        "This name is 65 characters long, which is above the limit we set!",
+				Description: "Something something",
+				Admin:       sample.AccAddress(),
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"name starts with space": {
+			applicant: Applicant{
+				Id:          1,
+				Name:        " EmpowerChain",
+				Description: "Something something",
+				Admin:       sample.AccAddress(),
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"name ends with space": {
+			applicant: Applicant{
+				Id:          1,
+				Name:        "EmpowerChain ",
 				Description: "Something something",
 				Admin:       sample.AccAddress(),
 			},
@@ -281,6 +353,14 @@ func TestCreditClassValidation(t *testing.T) {
 			},
 			err: nil,
 		},
+		"happy path name test": {
+			creditClass: CreditClass{
+				Abbreviation: "PCRD",
+				IssuerId:     1,
+				Name:         "This is a longer name with spaces and special characters:%$#",
+			},
+			err: nil,
+		},
 		"invalid abbreviation": {
 			creditClass: CreditClass{
 				Abbreviation: "",
@@ -302,6 +382,30 @@ func TestCreditClassValidation(t *testing.T) {
 				Abbreviation: "PCRD",
 				IssuerId:     1,
 				Name:         "",
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"too long name": {
+			creditClass: CreditClass{
+				Abbreviation: "PCRD",
+				IssuerId:     1,
+				Name:         "This name is 65 characters long, which is above the limit we set!",
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"name starts with space": {
+			creditClass: CreditClass{
+				Abbreviation: "PCRD",
+				IssuerId:     1,
+				Name:         " EmpowerChain",
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"name ends with space": {
+			creditClass: CreditClass{
+				Abbreviation: "PCRD",
+				IssuerId:     1,
+				Name:         "EmpowerChain ",
 			},
 			err: utils.ErrInvalidValue,
 		},
@@ -327,6 +431,16 @@ func TestProjectValidation(t *testing.T) {
 				ApplicantId:             42,
 				CreditClassAbbreviation: "PCRD",
 				Name:                    "My Project",
+				Status:                  ProjectStatus_NEW,
+			},
+			err: nil,
+		},
+		"happy path name test": {
+			project: Project{
+				Id:                      1,
+				ApplicantId:             42,
+				CreditClassAbbreviation: "PCRD",
+				Name:                    "This is a longer name with spaces and special characters:%$#",
 				Status:                  ProjectStatus_NEW,
 			},
 			err: nil,
@@ -367,6 +481,36 @@ func TestProjectValidation(t *testing.T) {
 				ApplicantId:             42,
 				CreditClassAbbreviation: "PCRD",
 				Name:                    "",
+				Status:                  ProjectStatus_NEW,
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"too long name": {
+			project: Project{
+				Id:                      1,
+				ApplicantId:             32,
+				CreditClassAbbreviation: "PCRD",
+				Name:                    "This name is 65 characters long, which is above the limit we set!",
+				Status:                  ProjectStatus_NEW,
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"name starts with space": {
+			project: Project{
+				Id:                      1,
+				ApplicantId:             32,
+				CreditClassAbbreviation: "PCRD",
+				Name:                    " EmpowerChain",
+				Status:                  ProjectStatus_NEW,
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"name ends with space": {
+			project: Project{
+				Id:                      1,
+				ApplicantId:             32,
+				CreditClassAbbreviation: "PCRD",
+				Name:                    "EmpowerChain ",
 				Status:                  ProjectStatus_NEW,
 			},
 			err: utils.ErrInvalidValue,

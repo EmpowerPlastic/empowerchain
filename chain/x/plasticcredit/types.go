@@ -60,8 +60,8 @@ func (is Issuer) Validate() error {
 		return errors.Wrap(utils.ErrInvalidValue, "id is zero")
 	}
 
-	if is.Name == "" {
-		return errors.Wrap(utils.ErrInvalidValue, "name is empty")
+	if !utils.IsBasicValidName(is.Name) {
+		return errors.Wrap(utils.ErrInvalidValue, "name is invalid")
 	}
 
 	if is.Admin == "" {
@@ -84,8 +84,8 @@ func (a Applicant) Validate() error {
 		return errors.Wrap(utils.ErrInvalidValue, "id is zero")
 	}
 
-	if a.Name == "" {
-		return errors.Wrap(utils.ErrInvalidValue, "name is empty")
+	if !utils.IsBasicValidName(a.Name) {
+		return errors.Wrap(utils.ErrInvalidValue, "name is invalid")
 	}
 
 	if a.Admin == "" {
@@ -112,8 +112,8 @@ func (cc CreditClass) Validate() error {
 		return errors.Wrap(utils.ErrInvalidValue, "issuer_id is zero")
 	}
 
-	if cc.Name == "" {
-		return errors.Wrap(utils.ErrInvalidValue, "name is empty")
+	if !utils.IsBasicValidName(cc.Name) {
+		return errors.Wrap(utils.ErrInvalidValue, "name is invalid")
 	}
 
 	return nil
@@ -132,8 +132,8 @@ func (proj Project) Validate() error {
 		return errors.Wrap(utils.ErrInvalidValue, "credit_class_abbreviation is empty")
 	}
 
-	if proj.Name == "" {
-		return errors.Wrap(utils.ErrInvalidValue, "name is empty")
+	if !utils.IsBasicValidName(proj.Name) {
+		return errors.Wrap(utils.ErrInvalidValue, "name is invalid")
 	}
 
 	if _, ok := ProjectStatus_name[int32(proj.Status)]; !ok {
