@@ -116,6 +116,15 @@ func (s *TestSuite) TestCreateIssuer() {
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
+		"invalid name": {
+			msg: &plasticcredit.MsgCreateIssuer{
+				Creator:     s.issuerCreator,
+				Name:        "This is has a space at the end ",
+				Description: "Empower is cool",
+				Admin:       sample.AccAddress(),
+			},
+			err: utils.ErrInvalidValue,
+		},
 	}
 
 	for name, tc := range testCases {
@@ -217,6 +226,16 @@ func (s *TestSuite) TestUpdateIssuer() {
 			},
 			err: plasticcredit.ErrIssuerNotFound,
 		},
+		"invalid name": {
+			msg: &plasticcredit.MsgUpdateIssuer{
+				Updater:     s.sampleIssuerAdmin,
+				IssuerId:    s.sampleIssuerID,
+				Name:        "",
+				Description: "Empower is cool",
+				Admin:       s.sampleIssuerAdmin,
+			},
+			err: utils.ErrInvalidValue,
+		},
 	}
 
 	for name, tc := range testCases {
@@ -279,6 +298,14 @@ func (s *TestSuite) TestCreateApplicant() {
 				Admin:       "invalid",
 			},
 			err: sdkerrors.ErrInvalidAddress,
+		},
+		"invalid name": {
+			msg: &plasticcredit.MsgCreateApplicant{
+				Name:        "VeryveryveryVeryveryveryVeryveryveryVeryveryveryVeryveryveryVeryveryverylong",
+				Description: "Empower is cool",
+				Admin:       sample.AccAddress(),
+			},
+			err: utils.ErrInvalidValue,
 		},
 	}
 
@@ -381,6 +408,16 @@ func (s *TestSuite) TestUpdateApplicant() {
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
+		"invalid name": {
+			msg: &plasticcredit.MsgUpdateApplicant{
+				ApplicantId: s.sampleApplicantID,
+				Name:        " Starting with a space is not OK",
+				Description: "Empower is cool",
+				Admin:       issuerAdmin,
+				Updater:     issuerAdmin,
+			},
+			err: utils.ErrInvalidValue,
+		},
 	}
 
 	for name, tc := range testCases {
@@ -475,6 +512,15 @@ func (s *TestSuite) TestCreateCreditClass() {
 				Name:         "Someone else's PCs",
 			},
 			err: plasticcredit.ErrIssuerNotFound,
+		},
+		"invalid name": {
+			msg: &plasticcredit.MsgCreateCreditClass{
+				Creator:      s.sampleIssuerAdmin,
+				Abbreviation: "PCRD",
+				IssuerId:     s.sampleIssuerID,
+				Name:         "",
+			},
+			err: utils.ErrInvalidValue,
 		},
 	}
 
