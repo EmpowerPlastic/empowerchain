@@ -338,6 +338,7 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			case tc.expectedErrOnExec:
+				s.Require().NoError(s.network.WaitForNextBlock())
 				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
