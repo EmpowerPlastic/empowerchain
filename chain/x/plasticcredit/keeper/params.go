@@ -1,8 +1,9 @@
 package keeper
 
 import (
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
 
 func (k Keeper) GetParams(ctx sdk.Context) plasticcredit.Params {

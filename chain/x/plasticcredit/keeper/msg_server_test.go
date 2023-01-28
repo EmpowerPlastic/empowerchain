@@ -1,17 +1,19 @@
 package keeper_test
 
 import (
-	"github.com/EmpowerPlastic/empowerchain/app"
-	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
-	"github.com/EmpowerPlastic/empowerchain/utils"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
+	"time"
+
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"time"
+
+	"github.com/EmpowerPlastic/empowerchain/app"
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
+	"github.com/EmpowerPlastic/empowerchain/utils"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
 )
 
 func (s *TestSuite) TestUpdateParams() {
@@ -114,6 +116,15 @@ func (s *TestSuite) TestCreateIssuer() {
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
+		"invalid name": {
+			msg: &plasticcredit.MsgCreateIssuer{
+				Creator:     s.issuerCreator,
+				Name:        "This is has a space at the end ",
+				Description: "Empower is cool",
+				Admin:       sample.AccAddress(),
+			},
+			err: utils.ErrInvalidValue,
+		},
 	}
 
 	for name, tc := range testCases {
@@ -178,7 +189,7 @@ func (s *TestSuite) TestUpdateIssuer() {
 		"happy path": {
 			msg: &plasticcredit.MsgUpdateIssuer{
 				Updater:     s.sampleIssuerAdmin,
-				IssuerId:    s.sampleIssuerId,
+				IssuerId:    s.sampleIssuerID,
 				Name:        "EmpowerUpdated",
 				Description: "Empower is cool",
 				Admin:       s.sampleIssuerAdmin,
@@ -188,7 +199,7 @@ func (s *TestSuite) TestUpdateIssuer() {
 		"unauthorized caller": {
 			msg: &plasticcredit.MsgUpdateIssuer{
 				Updater:     sample.AccAddress(), // not allowed!
-				IssuerId:    s.sampleIssuerId,
+				IssuerId:    s.sampleIssuerID,
 				Name:        "Empower",
 				Description: "Empower is cool",
 				Admin:       s.sampleIssuerAdmin,
@@ -198,7 +209,7 @@ func (s *TestSuite) TestUpdateIssuer() {
 		"invalid address": {
 			msg: &plasticcredit.MsgUpdateIssuer{
 				Updater:     "Invalid", // invalid
-				IssuerId:    s.sampleIssuerId,
+				IssuerId:    s.sampleIssuerID,
 				Name:        "Empower",
 				Description: "Empower is cool",
 				Admin:       s.sampleIssuerAdmin,
@@ -214,6 +225,16 @@ func (s *TestSuite) TestUpdateIssuer() {
 				Admin:       s.sampleIssuerAdmin,
 			},
 			err: plasticcredit.ErrIssuerNotFound,
+		},
+		"invalid name": {
+			msg: &plasticcredit.MsgUpdateIssuer{
+				Updater:     s.sampleIssuerAdmin,
+				IssuerId:    s.sampleIssuerID,
+				Name:        "",
+				Description: "Empower is cool",
+				Admin:       s.sampleIssuerAdmin,
+			},
+			err: utils.ErrInvalidValue,
 		},
 	}
 
@@ -278,6 +299,14 @@ func (s *TestSuite) TestCreateApplicant() {
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
+		"invalid name": {
+			msg: &plasticcredit.MsgCreateApplicant{
+				Name:        "VeryveryveryVeryveryveryVeryveryveryVeryveryveryVeryveryveryVeryveryverylong",
+				Description: "Empower is cool",
+				Admin:       sample.AccAddress(),
+			},
+			err: utils.ErrInvalidValue,
+		},
 	}
 
 	for name, tc := range testCases {
@@ -331,7 +360,7 @@ func (s *TestSuite) TestUpdateApplicant() {
 	}{
 		"happy path": {
 			msg: &plasticcredit.MsgUpdateApplicant{
-				ApplicantId: s.sampleApplicantId,
+				ApplicantId: s.sampleApplicantID,
 				Name:        "Empower",
 				Description: "Empower is cool",
 				Admin:       issuerAdmin,
@@ -379,6 +408,16 @@ func (s *TestSuite) TestUpdateApplicant() {
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
+		"invalid name": {
+			msg: &plasticcredit.MsgUpdateApplicant{
+				ApplicantId: s.sampleApplicantID,
+				Name:        " Starting with a space is not OK",
+				Description: "Empower is cool",
+				Admin:       issuerAdmin,
+				Updater:     issuerAdmin,
+			},
+			err: utils.ErrInvalidValue,
+		},
 	}
 
 	for name, tc := range testCases {
@@ -399,7 +438,7 @@ func (s *TestSuite) TestUpdateApplicant() {
 				applicant, found := k.GetApplicant(s.ctx, tc.msg.ApplicantId)
 				s.Require().True(found)
 				s.Require().Equal(plasticcredit.Applicant{
-					Id:          s.sampleApplicantId,
+					Id:          s.sampleApplicantID,
 					Name:        tc.msg.Name,
 					Description: tc.msg.Description,
 					Admin:       tc.msg.Admin,
@@ -433,7 +472,7 @@ func (s *TestSuite) TestCreateCreditClass() {
 			msg: &plasticcredit.MsgCreateCreditClass{
 				Creator:      s.sampleIssuerAdmin,
 				Abbreviation: "PCRD",
-				IssuerId:     s.sampleIssuerId,
+				IssuerId:     s.sampleIssuerID,
 				Name:         "Empower Plastic Credits",
 			},
 			err: nil,
@@ -442,16 +481,25 @@ func (s *TestSuite) TestCreateCreditClass() {
 			msg: &plasticcredit.MsgCreateCreditClass{
 				Creator:      sample.AccAddress(),
 				Abbreviation: "PCRD",
-				IssuerId:     s.sampleIssuerId,
+				IssuerId:     s.sampleIssuerID,
 				Name:         "Empower Plastic Credits",
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
-		"invalid abbreviation": {
+		"invalid abbreviation with empty": {
 			msg: &plasticcredit.MsgCreateCreditClass{
 				Creator:      s.sampleIssuerAdmin,
 				Abbreviation: "",
-				IssuerId:     s.sampleIssuerId,
+				IssuerId:     s.sampleIssuerID,
+				Name:         "Empower Plastic Credits",
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"invalid abbreviation with special characters": {
+			msg: &plasticcredit.MsgCreateCreditClass{
+				Creator:      s.sampleIssuerAdmin,
+				Abbreviation: "PCRD!",
+				IssuerId:     s.sampleIssuerID,
 				Name:         "Empower Plastic Credits",
 			},
 			err: utils.ErrInvalidValue,
@@ -464,6 +512,15 @@ func (s *TestSuite) TestCreateCreditClass() {
 				Name:         "Someone else's PCs",
 			},
 			err: plasticcredit.ErrIssuerNotFound,
+		},
+		"invalid name": {
+			msg: &plasticcredit.MsgCreateCreditClass{
+				Creator:      s.sampleIssuerAdmin,
+				Abbreviation: "PCRD",
+				IssuerId:     s.sampleIssuerID,
+				Name:         "",
+			},
+			err: utils.ErrInvalidValue,
 		},
 	}
 
@@ -619,7 +676,7 @@ func (s *TestSuite) TestCreateProject() {
 		"happy path": {
 			msg: &plasticcredit.MsgCreateProject{
 				Creator:                 s.sampleApplicantAdmin,
-				ApplicantId:             s.sampleApplicantId,
+				ApplicantId:             s.sampleApplicantID,
 				CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 				Name:                    "My happy path project",
 			},
@@ -628,7 +685,7 @@ func (s *TestSuite) TestCreateProject() {
 		"unauthorized creator on the issuer": {
 			msg: &plasticcredit.MsgCreateProject{
 				Creator:                 sample.AccAddress(),
-				ApplicantId:             s.sampleApplicantId,
+				ApplicantId:             s.sampleApplicantID,
 				CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 				Name:                    "My project",
 			},
@@ -646,7 +703,7 @@ func (s *TestSuite) TestCreateProject() {
 		"non-existent credit class": {
 			msg: &plasticcredit.MsgCreateProject{
 				Creator:                 s.sampleApplicantAdmin,
-				ApplicantId:             s.sampleApplicantId,
+				ApplicantId:             s.sampleApplicantID,
 				CreditClassAbbreviation: "Not here",
 				Name:                    "My project",
 			},
@@ -655,7 +712,7 @@ func (s *TestSuite) TestCreateProject() {
 		"invalid name": {
 			msg: &plasticcredit.MsgCreateProject{
 				Creator:                 s.sampleApplicantAdmin,
-				ApplicantId:             s.sampleApplicantId,
+				ApplicantId:             s.sampleApplicantID,
 				CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 				Name:                    "",
 			},
@@ -712,7 +769,7 @@ func (s *TestSuite) TestUpdateProject() {
 		"happy path": {
 			msg: &plasticcredit.MsgUpdateProject{
 				Updater:   s.sampleApplicantAdmin,
-				ProjectId: s.sampleUnapprovedProjectId,
+				ProjectId: s.sampleUnapprovedProjectID,
 				Name:      "Updated project name",
 			},
 			err: nil,
@@ -720,7 +777,7 @@ func (s *TestSuite) TestUpdateProject() {
 		"unauthorized creator on the issuer": {
 			msg: &plasticcredit.MsgUpdateProject{
 				Updater:   sample.AccAddress(),
-				ProjectId: s.sampleUnapprovedProjectId,
+				ProjectId: s.sampleUnapprovedProjectID,
 				Name:      "My project",
 			},
 			err: sdkerrors.ErrUnauthorized,
@@ -728,7 +785,7 @@ func (s *TestSuite) TestUpdateProject() {
 		"invalid name": {
 			msg: &plasticcredit.MsgUpdateProject{
 				Updater:   s.sampleApplicantAdmin,
-				ProjectId: s.sampleUnapprovedProjectId,
+				ProjectId: s.sampleUnapprovedProjectID,
 				Name:      "",
 			},
 			err: utils.ErrInvalidValue,
@@ -784,28 +841,28 @@ func (s *TestSuite) TestApproveProject() {
 		"happy path": {
 			msg: &plasticcredit.MsgApproveProject{
 				Approver:  s.sampleIssuerAdmin,
-				ProjectId: s.sampleUnapprovedProjectId,
+				ProjectId: s.sampleUnapprovedProjectID,
 			},
 			err: nil,
 		},
 		"unauthorized issuer admin": {
 			msg: &plasticcredit.MsgApproveProject{
 				Approver:  sample.AccAddress(),
-				ProjectId: s.sampleUnapprovedProjectId,
+				ProjectId: s.sampleUnapprovedProjectID,
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
 		"issuer admin on a different issuer": {
 			msg: &plasticcredit.MsgApproveProject{
 				Approver:  extraIssuerAdmin,
-				ProjectId: s.sampleUnapprovedProjectId,
+				ProjectId: s.sampleUnapprovedProjectID,
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
 		"applicant admin cannot approve project": {
 			msg: &plasticcredit.MsgApproveProject{
 				Approver:  s.sampleApplicantAdmin,
-				ProjectId: s.sampleUnapprovedProjectId,
+				ProjectId: s.sampleUnapprovedProjectID,
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
@@ -819,14 +876,14 @@ func (s *TestSuite) TestApproveProject() {
 		"approve rejected project": {
 			msg: &plasticcredit.MsgApproveProject{
 				Approver:  s.sampleIssuerAdmin,
-				ProjectId: s.sampleRejectionProjectId,
+				ProjectId: s.sampleRejectionProjectID,
 			},
 			err: nil,
 		},
 		"approve suspended project": {
 			msg: &plasticcredit.MsgApproveProject{
 				Approver:  s.sampleIssuerAdmin,
-				ProjectId: s.sampleSuspendedProjectId,
+				ProjectId: s.sampleSuspendedProjectID,
 			},
 			err: nil,
 		},
@@ -864,7 +921,7 @@ func (s *TestSuite) TestApproveProject() {
 				s.Require().Equal(&plasticcredit.EventProjectApproved{
 					ProjectId:                          project.Id,
 					ApprovedForCreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-					ApprovingIssuerId:                  s.sampleIssuerId,
+					ApprovingIssuerId:                  s.sampleIssuerID,
 					ApprovedBy:                         tc.msg.Approver,
 				}, eventProjectApproved)
 
@@ -885,28 +942,28 @@ func (s *TestSuite) TestRejectProject() {
 		"happy path": {
 			msg: &plasticcredit.MsgRejectProject{
 				Rejector:  s.sampleIssuerAdmin,
-				ProjectId: s.sampleUnapprovedProjectId,
+				ProjectId: s.sampleUnapprovedProjectID,
 			},
 			err: nil,
 		},
 		"unauthorized issuer admin": {
 			msg: &plasticcredit.MsgRejectProject{
 				Rejector:  sample.AccAddress(),
-				ProjectId: s.sampleUnapprovedProjectId,
+				ProjectId: s.sampleUnapprovedProjectID,
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
 		"issuer admin on a different issuer": {
 			msg: &plasticcredit.MsgRejectProject{
 				Rejector:  extraIssuerAdmin,
-				ProjectId: s.sampleUnapprovedProjectId,
+				ProjectId: s.sampleUnapprovedProjectID,
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
 		"applicant admin cannot reject project": {
 			msg: &plasticcredit.MsgRejectProject{
 				Rejector:  s.sampleApplicantAdmin,
-				ProjectId: s.sampleUnapprovedProjectId,
+				ProjectId: s.sampleUnapprovedProjectID,
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
@@ -920,21 +977,21 @@ func (s *TestSuite) TestRejectProject() {
 		"project already rejected": {
 			msg: &plasticcredit.MsgRejectProject{
 				Rejector:  s.sampleIssuerAdmin,
-				ProjectId: s.sampleRejectionProjectId,
+				ProjectId: s.sampleRejectionProjectID,
 			},
 			err: plasticcredit.ErrProjectNotNew,
 		},
 		"project already approved": {
 			msg: &plasticcredit.MsgRejectProject{
 				Rejector:  s.sampleIssuerAdmin,
-				ProjectId: s.sampleProjectId,
+				ProjectId: s.sampleProjectID,
 			},
 			err: plasticcredit.ErrProjectNotNew,
 		},
 		"project is suspended": {
 			msg: &plasticcredit.MsgRejectProject{
 				Rejector:  s.sampleIssuerAdmin,
-				ProjectId: s.sampleSuspendedProjectId,
+				ProjectId: s.sampleSuspendedProjectID,
 			},
 			err: plasticcredit.ErrProjectNotNew,
 		},
@@ -972,7 +1029,7 @@ func (s *TestSuite) TestRejectProject() {
 				s.Require().Equal(&plasticcredit.EventProjectRejected{
 					ProjectId:                          project.Id,
 					RejectedForCreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-					RejectingIssuerId:                  s.sampleIssuerId,
+					RejectingIssuerId:                  s.sampleIssuerID,
 					RejectedBy:                         tc.msg.Rejector,
 				}, eventProjectRejected)
 
@@ -993,28 +1050,28 @@ func (s *TestSuite) TestSuspendProject() {
 		"happy path": {
 			msg: &plasticcredit.MsgSuspendProject{
 				Updater:   s.sampleIssuerAdmin,
-				ProjectId: s.sampleProjectId,
+				ProjectId: s.sampleProjectID,
 			},
 			err: nil,
 		},
 		"unauthorized issuer admin": {
 			msg: &plasticcredit.MsgSuspendProject{
 				Updater:   sample.AccAddress(),
-				ProjectId: s.sampleProjectId,
+				ProjectId: s.sampleProjectID,
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
 		"issuer admin on a different issuer": {
 			msg: &plasticcredit.MsgSuspendProject{
 				Updater:   extraIssuerAdmin,
-				ProjectId: s.sampleProjectId,
+				ProjectId: s.sampleProjectID,
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
 		"applicant admin cannot suspend project": {
 			msg: &plasticcredit.MsgSuspendProject{
 				Updater:   s.sampleApplicantAdmin,
-				ProjectId: s.sampleProjectId,
+				ProjectId: s.sampleProjectID,
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
@@ -1028,21 +1085,21 @@ func (s *TestSuite) TestSuspendProject() {
 		"project already rejected": {
 			msg: &plasticcredit.MsgSuspendProject{
 				Updater:   s.sampleIssuerAdmin,
-				ProjectId: s.sampleRejectionProjectId,
+				ProjectId: s.sampleRejectionProjectID,
 			},
 			err: plasticcredit.ErrProjectNotSuspendable,
 		},
 		"project still in new state": {
 			msg: &plasticcredit.MsgSuspendProject{
 				Updater:   s.sampleIssuerAdmin,
-				ProjectId: s.sampleUnapprovedProjectId,
+				ProjectId: s.sampleUnapprovedProjectID,
 			},
 			err: plasticcredit.ErrProjectNotSuspendable,
 		},
 		"project already suspended": {
 			msg: &plasticcredit.MsgSuspendProject{
 				Updater:   s.sampleIssuerAdmin,
-				ProjectId: s.sampleSuspendedProjectId,
+				ProjectId: s.sampleSuspendedProjectID,
 			},
 			err: plasticcredit.ErrProjectNotSuspendable,
 		},
@@ -1078,9 +1135,9 @@ func (s *TestSuite) TestSuspendProject() {
 				eventProjectSuspended, ok := parsedEvent.(*plasticcredit.EventProjectSuspended)
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventProjectSuspended{
-					ProjectId:                           s.sampleProjectId,
+					ProjectId:                           s.sampleProjectID,
 					SuspendedForCreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-					SuspendingIssuerId:                  s.sampleIssuerId,
+					SuspendingIssuerId:                  s.sampleIssuerID,
 					SuspendedBy:                         tc.msg.Updater,
 				}, eventProjectSuspended)
 
@@ -1098,7 +1155,7 @@ func (s *TestSuite) TestIssueCredits() {
 		"happy path (new collection)": {
 			msg: &plasticcredit.MsgIssueCredits{
 				Creator:      s.sampleIssuerAdmin,
-				ProjectId:    s.sampleProjectId,
+				ProjectId:    s.sampleProjectID,
 				SerialNumber: "456",
 				CreditAmount: 1000,
 			},
@@ -1108,7 +1165,7 @@ func (s *TestSuite) TestIssueCredits() {
 		"happy path (existing collection)": {
 			msg: &plasticcredit.MsgIssueCredits{
 				Creator:      s.sampleIssuerAdmin,
-				ProjectId:    s.sampleProjectId,
+				ProjectId:    s.sampleProjectID,
 				SerialNumber: "123",
 				CreditAmount: 1000,
 			},
@@ -1118,7 +1175,7 @@ func (s *TestSuite) TestIssueCredits() {
 		"wrong issuer address": {
 			msg: &plasticcredit.MsgIssueCredits{
 				Creator:      sample.AccAddress(),
-				ProjectId:    s.sampleProjectId,
+				ProjectId:    s.sampleProjectID,
 				SerialNumber: "123",
 				CreditAmount: 1000,
 			},
@@ -1138,7 +1195,7 @@ func (s *TestSuite) TestIssueCredits() {
 		"empty serial number": {
 			msg: &plasticcredit.MsgIssueCredits{
 				Creator:      s.sampleIssuerAdmin,
-				ProjectId:    s.sampleProjectId,
+				ProjectId:    s.sampleProjectID,
 				SerialNumber: "",
 				CreditAmount: 1000,
 			},
@@ -1148,7 +1205,7 @@ func (s *TestSuite) TestIssueCredits() {
 		"issue zero credits": {
 			msg: &plasticcredit.MsgIssueCredits{
 				Creator:      s.sampleIssuerAdmin,
-				ProjectId:    s.sampleProjectId,
+				ProjectId:    s.sampleProjectID,
 				SerialNumber: "321",
 				CreditAmount: 0,
 			},
@@ -1158,7 +1215,7 @@ func (s *TestSuite) TestIssueCredits() {
 		"issue credits to unapproved project": {
 			msg: &plasticcredit.MsgIssueCredits{
 				Creator:      s.sampleIssuerAdmin,
-				ProjectId:    s.sampleUnapprovedProjectId,
+				ProjectId:    s.sampleUnapprovedProjectID,
 				SerialNumber: "456",
 				CreditAmount: 1000,
 			},
@@ -1168,7 +1225,7 @@ func (s *TestSuite) TestIssueCredits() {
 		"issue credits to rejected project": {
 			msg: &plasticcredit.MsgIssueCredits{
 				Creator:      s.sampleIssuerAdmin,
-				ProjectId:    s.sampleRejectionProjectId,
+				ProjectId:    s.sampleRejectionProjectID,
 				SerialNumber: "456",
 				CreditAmount: 1000,
 			},
@@ -1178,7 +1235,7 @@ func (s *TestSuite) TestIssueCredits() {
 		"issue credits to suspended project": {
 			msg: &plasticcredit.MsgIssueCredits{
 				Creator:      s.sampleIssuerAdmin,
-				ProjectId:    s.sampleSuspendedProjectId,
+				ProjectId:    s.sampleSuspendedProjectID,
 				SerialNumber: "456",
 				CreditAmount: 1000,
 			},
@@ -1220,7 +1277,7 @@ func (s *TestSuite) TestIssueCredits() {
 				eventIssuedCredits, ok := parsedEvent.(*plasticcredit.EventIssuedCredits)
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventIssuedCredits{
-					IssuerId:                s.sampleIssuerId,
+					IssuerId:                s.sampleIssuerID,
 					ProjectId:               tc.msg.ProjectId,
 					CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 					Denom:                   denom,
@@ -1395,7 +1452,7 @@ func (s *TestSuite) TestTransferCredits() {
 						Owner:                   tc.msg.To,
 						Denom:                   tc.msg.Denom,
 						Amount:                  tc.msg.Amount,
-						IssuerId:                s.sampleIssuerId,
+						IssuerId:                s.sampleIssuerID,
 						CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 					}, eventRetiredCredits)
 				} else {
@@ -1410,7 +1467,7 @@ func (s *TestSuite) TestTransferCredits() {
 					Recipient:               tc.msg.To,
 					Denom:                   tc.msg.Denom,
 					Amount:                  tc.msg.Amount,
-					IssuerId:                s.sampleIssuerId,
+					IssuerId:                s.sampleIssuerID,
 					CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 				}, EventTransferCredits)
 			} else {
@@ -1607,7 +1664,7 @@ func (s *TestSuite) TestRetireCredits() {
 					Owner:                   tc.msg.Owner,
 					Denom:                   tc.msg.Denom,
 					Amount:                  tc.msg.Amount,
-					IssuerId:                s.sampleIssuerId,
+					IssuerId:                s.sampleIssuerID,
 					CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
 				}, eventRetiredCredits)
 			} else {

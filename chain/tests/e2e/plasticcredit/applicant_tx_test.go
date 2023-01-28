@@ -2,16 +2,17 @@ package e2e_test
 
 import (
 	"fmt"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *E2ETestSuite) TestCmdCreateApplicant() {
 	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKey)
+	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
 	s.Require().NoError(err)
 	issuer, err := issuerKey.GetAddress()
 	s.Require().NoError(err)
@@ -53,20 +54,26 @@ func (s *E2ETestSuite) TestCmdCreateApplicant() {
 		s.Run(name, func() {
 			cmd := cli.MsgCreateApplicantCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+			s.Require().NoError(s.network.WaitForNextBlock())
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else {
+				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				s.Require().NoError(err)
+				s.Require().Equal(uint32(0), cliResponse.Code)
+
 				var createApplicantResp plasticcredit.MsgCreateApplicantResponse
-				err = UnpackTxResponseData(val.ClientCtx, out.Bytes(), &createApplicantResp)
+				err = s.UnpackTxResponseData(val.ClientCtx, out.Bytes(), &createApplicantResp)
 				s.Require().NoError(err)
-				cmd = cli.CmdQueryApplicant()
-				out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{fmt.Sprint(createApplicantResp.ApplicantId)})
+				queryCmd := cli.CmdQueryApplicant()
+				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{fmt.Sprint(createApplicantResp.ApplicantId)})
 				s.Require().NoError(err)
-				var resp plasticcredit.QueryApplicantResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				s.Require().Equal(tc.expectedState.Name, resp.Applicant.Name)
-				s.Require().Equal(tc.expectedState.Description, resp.Applicant.Description)
-				s.Require().Equal(tc.expectedState.Admin, resp.Applicant.Admin)
+				var queryResponse plasticcredit.QueryApplicantResponse
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryResponse))
+				s.Require().Equal(tc.expectedState.Name, queryResponse.Applicant.Name)
+				s.Require().Equal(tc.expectedState.Description, queryResponse.Applicant.Description)
+				s.Require().Equal(tc.expectedState.Admin, queryResponse.Applicant.Admin)
+
 			}
 		})
 	}
@@ -74,12 +81,13 @@ func (s *E2ETestSuite) TestCmdCreateApplicant() {
 
 func (s *E2ETestSuite) TestCmdUpdateApplicant() {
 	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKey)
+	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
 	s.Require().NoError(err)
-	issuer, err := issuerKey.GetAddress()
+	issuerAddress, err := issuerKey.GetAddress()
 	s.Require().NoError(err)
-
-	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKey)
+	randomKey, err := val.ClientCtx.Keyring.Key(randomKeyName)
+	s.Require().NoError(err)
+	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
 	s.Require().NoError(err)
 
 	testCases := map[string]struct {
@@ -89,9 +97,8 @@ func (s *E2ETestSuite) TestCmdUpdateApplicant() {
 		expectedErrMsg    string
 		expectedState     *plasticcredit.Applicant
 	}{
-
 		"update name, description": {
-			[]string{issuer.String(), "2", "Plastix Updated Inc.", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
+			[]string{issuerAddress.String(), "2", "Plastix Updated Inc.", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
 			false,
 			false,
 			"",
@@ -99,26 +106,26 @@ func (s *E2ETestSuite) TestCmdUpdateApplicant() {
 				Id:          2,
 				Name:        "Plastix Updated Inc.",
 				Description: "We fight for a clean planet",
-				Admin:       issuer.String(),
+				Admin:       issuerAddress.String(),
 			},
 		},
 		"update non-existing applicant": {
-			[]string{issuer.String(), "17", "Plastix Inc.", "Grab that bottle", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			[]string{issuerAddress.String(), "17", "Plastix Inc.", "Grab that bottle", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
 			true,
 			"applicant not found",
 			nil,
 		},
 
-		"wrong singer": {
-			[]string{issuer.String(), "3", "Plastix Inc.", "Grab that bottle", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
+		"wrong signer": {
+			[]string{issuerAddress.String(), "3", "Plastix Inc.", "Grab that bottle", fmt.Sprintf("--%s=%s", flags.FlagFrom, randomKey.Name)},
 			false,
 			true,
 			"",
 			nil,
 		},
 		"empty name": {
-			[]string{issuer.String(), "3", "", "Grab that bottle", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			[]string{issuerAddress.String(), "3", "", "Grab that bottle", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			true,
 			false,
 			"applicant name cannot be empty",
@@ -137,19 +144,25 @@ func (s *E2ETestSuite) TestCmdUpdateApplicant() {
 		s.Run(name, func() {
 			cmd := cli.MsgUpdateApplicantCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
-			if tc.expectedErrOnSend {
+			switch {
+			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
-			} else if tc.expectedErrOnExec {
-				var txResponse sdk.TxResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResponse))
-				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
-			} else {
-				cmd = cli.CmdQueryApplicant()
-				out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{tc.args[1]})
+			case tc.expectedErrOnExec:
+				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				var resp plasticcredit.QueryApplicantResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				s.Require().Equal(tc.expectedState, &resp.Applicant)
+				s.Require().NotEqual(uint32(0), txResponse.Code)
+				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
+			default:
+				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				s.Require().NoError(err)
+				s.Require().Equal(uint32(0), cliResponse.Code)
+
+				queryCmd := cli.CmdQueryApplicant()
+				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.args[1]})
+				s.Require().NoError(err)
+				var queryResponse plasticcredit.QueryApplicantResponse
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryResponse))
+				s.Require().Equal(tc.expectedState, &queryResponse.Applicant)
 			}
 		})
 	}

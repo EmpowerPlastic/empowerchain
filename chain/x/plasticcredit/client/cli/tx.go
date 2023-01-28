@@ -2,19 +2,19 @@ package cli
 
 import (
 	"fmt"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/authz"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/authz"
+	authzcli "github.com/cosmos/cosmos-sdk/x/authz/client/cli"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
-	"github.com/cosmos/cosmos-sdk/client"
 	// "github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	authzcli "github.com/cosmos/cosmos-sdk/x/authz/client/cli"
 )
 
 // GetTxCmd returns the transaction commands for this module
@@ -534,9 +534,14 @@ func MsgGrantTransferAuthorizationCmd() *cobra.Command {
 				MaxCredits: maxCredits,
 			}
 
-			expire, err := getExpireTime(cmd)
+			var expire *time.Time
+			expiration, err := cmd.Flags().GetInt64(authzcli.FlagExpiration)
 			if err != nil {
 				return err
+			}
+			if expiration != 0 {
+				e := time.Unix(expiration, 0)
+				expire = &e
 			}
 
 			msg, err := authz.NewMsgGrant(granter, grantee, authorization, expire)
@@ -552,17 +557,4 @@ func MsgGrantTransferAuthorizationCmd() *cobra.Command {
 	cmd.Flags().Int64(authzcli.FlagExpiration, 0, "Expire time as Unix timestamp. Set zero (0) for no expiry. Default is 0.")
 
 	return cmd
-}
-
-// Copy-pasted from authz tx.go
-func getExpireTime(cmd *cobra.Command) (*time.Time, error) {
-	exp, err := cmd.Flags().GetInt64(authzcli.FlagExpiration)
-	if err != nil {
-		return nil, err
-	}
-	if exp == 0 {
-		return nil, nil
-	}
-	e := time.Unix(exp, 0)
-	return &e, nil
 }

@@ -3,10 +3,11 @@ package plasticcredit
 import (
 	"cosmossdk.io/errors"
 	"cosmossdk.io/math"
-	"github.com/EmpowerPlastic/empowerchain/utils"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/authz"
+
+	"github.com/EmpowerPlastic/empowerchain/utils"
 )
 
 var _ authz.Authorization = &TransferAuthorization{}
@@ -35,7 +36,6 @@ func (a TransferAuthorization) Accept(_ sdk.Context, msg sdk.Msg) (authz.AcceptR
 
 	if transferMsg.Denom != a.Denom {
 		return authz.AcceptResponse{}, sdkerrors.ErrUnauthorized.Wrapf("wrong denom, wanted %s, got %s", transferMsg.Denom, a.Denom)
-
 	}
 
 	amountLeft := math.NewIntFromUint64(a.MaxCredits).Sub(math.NewIntFromUint64(transferMsg.Amount))

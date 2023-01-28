@@ -2,14 +2,14 @@ package keeper
 
 import (
 	"cosmossdk.io/errors"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/types/query"
-
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"golang.org/x/exp/slices"
+
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
 
 func (k Keeper) GetIssuer(ctx sdk.Context, id uint64) (issuer plasticcredit.Issuer, found bool) {
@@ -66,7 +66,7 @@ func (k Keeper) CreateIssuer(ctx sdk.Context, creator sdk.AccAddress, name strin
 		authorizedIssuerCreators = append(authorizedIssuerCreators, params.IssuerCreator)
 	}
 
-	if !slices.Contains(authorizedIssuerCreators[:], creator.String()) {
+	if !slices.Contains(authorizedIssuerCreators, creator.String()) {
 		return 0, errors.Wrapf(sdkerrors.ErrUnauthorized, "invalid issue creator; expected %s or %s, got %s", authorizedIssuerCreators[0], authorizedIssuerCreators[1], creator.String())
 	}
 

@@ -133,6 +133,9 @@ clean:
 test:
 	@go test -timeout 10m -v ./...
 
+test-unit:
+	@go test -v -test.short ./...
+
 test-with-coverage:
 	@go test -timeout 10m -v -coverpkg=./... -coverprofile=coverage.out -covermode=atomic ./...
 
@@ -145,11 +148,15 @@ smoketest: install
 ###                                  Proto                                  ###
 ###############################################################################
 
+protoVer=0.11.5
+protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
+protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
+
 proto:
 	@echo
 	@echo "=========== Generate Message ============"
 	@echo
-	./scripts/protocgen.sh $(COSMOS_SDK_VERSION)
+	@$(protoImage) sh ./scripts/protocgen.sh
 	@echo
 	@echo "=========== Generate Complete ============"
 	@echo
@@ -192,7 +199,6 @@ lint:
 
 format:
 	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./... --fix
-	@go run mvdan.cc/gofumpt -l -w x/ app/ testutil/ cmd/
 
 ###############################################################################
 ###                      Avoid "make: 'x' is up to date.                    ###
