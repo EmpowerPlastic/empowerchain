@@ -197,7 +197,7 @@ func (s *TestSuite) TestCreditClassesQuery() {
 
 	var expectedCreditClasses []plasticcredit.CreditClass
 	for i := 0; i < 11; i++ {
-		abbreviation := fmt.Sprintf("PCRD%d", i)
+		abbreviation := fmt.Sprintf("ABC%d", i)
 		name := fmt.Sprintf("Empower Credits (%s)", abbreviation)
 
 		createMsg := plasticcredit.MsgCreateCreditClass{

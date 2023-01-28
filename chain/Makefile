@@ -133,6 +133,9 @@ clean:
 test:
 	@go test -timeout 10m -v ./...
 
+test-unit:
+	@go test -v -test.short ./...
+
 test-with-coverage:
 	@go test -timeout 10m -v -coverpkg=./... -coverprofile=coverage.out -covermode=atomic ./...
 
