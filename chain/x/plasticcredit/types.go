@@ -1,6 +1,8 @@
 package plasticcredit
 
 import (
+	"regexp"
+
 	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -103,9 +105,11 @@ func (a Applicant) AddressHasAuthorization(addr sdk.AccAddress) bool {
 	return a.Admin == addr.String()
 }
 
+var creditClassAbbreviationRegex = regexp.MustCompile(`^[A-Z0-9]{2,5}$`)
+
 func (cc CreditClass) Validate() error {
-	if cc.Abbreviation == "" {
-		return errors.Wrap(utils.ErrInvalidValue, "abbreviation is empty")
+	if !creditClassAbbreviationRegex.MatchString(cc.Abbreviation) {
+		return errors.Wrapf(utils.ErrInvalidValue, "abbreviation is invalid, must match %s", creditClassAbbreviationRegex.String())
 	}
 
 	if cc.IssuerId == 0 {

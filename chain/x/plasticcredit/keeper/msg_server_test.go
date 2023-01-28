@@ -486,10 +486,19 @@ func (s *TestSuite) TestCreateCreditClass() {
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
-		"invalid abbreviation": {
+		"invalid abbreviation with empty": {
 			msg: &plasticcredit.MsgCreateCreditClass{
 				Creator:      s.sampleIssuerAdmin,
 				Abbreviation: "",
+				IssuerId:     s.sampleIssuerID,
+				Name:         "Empower Plastic Credits",
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"invalid abbreviation with special characters": {
+			msg: &plasticcredit.MsgCreateCreditClass{
+				Creator:      s.sampleIssuerAdmin,
+				Abbreviation: "PCRD!",
 				IssuerId:     s.sampleIssuerID,
 				Name:         "Empower Plastic Credits",
 			},
