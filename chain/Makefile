@@ -183,11 +183,34 @@ serve:
 	@echo "===========  Serving now  ============"
 	@echo
 
+serve-extra-ibc-chain:
+	@echo
+	@echo "===========     Serve     ============"
+	@echo
+	./scripts/serve_extra_ibc_chain.sh
+	@echo
+	@echo "===========  Serving now  ============"
+	@echo
+
+serve-ibc:
+	@echo
+	@echo "======= Serve full IBC stack ========="
+	@echo
+	./scripts/serve_ibc.sh
+	@echo
+	@echo "===========  Serving now  ============"
+	@echo
+
+
 kill:
 	@echo "Killing empowerd and removing previous data"
 	-@rm -rf ./tmp/empowerchain-local-1
 	-@pkill empowerd 2>/dev/null
 
+kill-extra-ibc-chain:
+	@echo "Killing gaiad and removing previous data"
+	-@rm -rf ./tmp/gaia-local-1
+	-@pkill gaiad 2>/dev/null
 
 ###############################################################################
 ###                                Linting                                  ###

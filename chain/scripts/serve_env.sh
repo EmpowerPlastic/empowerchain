@@ -12,6 +12,8 @@ ALICE_MNEMONIC="clock post desk civil pottery foster expand merit dash seminar s
 BOB_MNEMONIC="angry twist harsh drastic left brass behave host shove marriage fall update business leg direct reward object ugly security warm tuna model broccoli choice"
 # empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn
 VALIDATOR_MNEMONIC="banner spread envelope side kite person disagree path silver will brother under couch edit food venture squirrel civil budget number acquire point work mass"
+# empower12xhn82e4ykp43grlgq6l52yy9e9lccypmmgxlv
+EMPOWERCHAIN_RELAY_ACCOUNT="minor fetch reward clean pepper agree online oppose enroll claw mimic stable around thrive lyrics deer unknown dutch fee enhance pact horse misery electric"
 P2P_PORT=26656
 RPC_PORT=26657
 REST_PORT=1317
