@@ -2,12 +2,15 @@ package keeper_test
 
 import (
 	"fmt"
+	"math/rand"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
+
+	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/query"
 )
 
 func (s *TestSuite) TestParamsQuery() {
@@ -15,17 +18,18 @@ func (s *TestSuite) TestParamsQuery() {
 	ms := keeper.NewMsgServerImpl(k)
 	goCtx := sdk.WrapSDKContext(s.ctx)
 
-	params := plasticcredit.DefaultParams()
+	updatedParams := plasticcredit.DefaultParams()
+	updatedParams.CreditClassCreationFee = sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63()))
 	_, err := ms.UpdateParams(goCtx, &plasticcredit.MsgUpdateParams{
 		Authority: k.Authority(),
-		Params:    plasticcredit.Params{},
+		Params:    updatedParams,
 	})
 	s.Require().NoError(err)
 
 	querier := keeper.Querier{Keeper: k}
 	response, err := querier.Params(goCtx, &plasticcredit.QueryParamsRequest{})
 	s.Require().NoError(err)
-	s.Require().Equal(&plasticcredit.QueryParamsResponse{Params: params}, response)
+	s.Require().Equal(&plasticcredit.QueryParamsResponse{Params: updatedParams}, response)
 }
 
 func (s *TestSuite) TestIssuerQuery() {

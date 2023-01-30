@@ -1,17 +1,19 @@
 package keeper_test
 
 import (
+	"math/rand"
 	"testing"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/suite"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmtime "github.com/tendermint/tendermint/types/time"
 
 	"github.com/EmpowerPlastic/empowerchain/app"
 	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/suite"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
 )
 
 type TestSuite struct {
@@ -73,7 +75,8 @@ func (s *TestSuite) PopulateWithSamples() {
 	_, err := ms.UpdateParams(goCtx, &plasticcredit.MsgUpdateParams{
 		Authority: k.Authority(),
 		Params: plasticcredit.Params{
-			IssuerCreator: s.issuerCreator,
+			IssuerCreator:          s.issuerCreator,
+			CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 		},
 	})
 	s.Require().NoError(err)

@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"github.com/EmpowerPlastic/empowerchain/app"
+	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"github.com/EmpowerPlastic/empowerchain/utils"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
@@ -11,6 +12,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"math/rand"
 	"time"
 )
 
@@ -24,7 +26,8 @@ func (s *TestSuite) TestUpdateParams() {
 				return &plasticcredit.MsgUpdateParams{
 					Authority: empowerApp.PlasticcreditKeeper.Authority(),
 					Params: plasticcredit.Params{
-						IssuerCreator: sample.AccAddress(),
+						IssuerCreator:          sample.AccAddress(),
+						CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 					},
 				}
 			},
@@ -39,16 +42,29 @@ func (s *TestSuite) TestUpdateParams() {
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
-		"invalid params": {
+		"invalid issuer creator params": {
 			msg: func(empowerApp *app.EmpowerApp) *plasticcredit.MsgUpdateParams {
 				return &plasticcredit.MsgUpdateParams{
 					Authority: empowerApp.PlasticcreditKeeper.Authority(),
 					Params: plasticcredit.Params{
-						IssuerCreator: "invalid",
+						IssuerCreator:          "invalid",
+						CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 					},
 				}
 			},
 			err: sdkerrors.ErrInvalidAddress,
+		},
+		"invalid credit class creation fee params": {
+			msg: func(empowerApp *app.EmpowerApp) *plasticcredit.MsgUpdateParams {
+				return &plasticcredit.MsgUpdateParams{
+					Authority: empowerApp.PlasticcreditKeeper.Authority(),
+					Params: plasticcredit.Params{
+						IssuerCreator:          sample.AccAddress(),
+						CreditClassCreationFee: sdk.Coin{},
+					},
+				}
+			},
+			err: sdkerrors.ErrInvalidCoins,
 		},
 	}
 

@@ -5,11 +5,11 @@ import (
 )
 
 const (
-	HumanCoinUnit = "mpwr"
-	BaseCoinUnit  = "umpwr"
-	CoinExponent  = 6
+	HumanCoinDenom = "mpwr"
+	BaseCoinDenom  = "umpwr"
+	CoinExponent   = 6
 
-	DefaultBondDenom = BaseCoinUnit
+	DefaultBondDenom = BaseCoinDenom
 
 	Bech32AccountPrefix = "empower"
 )
@@ -30,11 +30,11 @@ func SetAddressPrefixes() {
 
 // RegisterDenoms registers token denoms.
 func RegisterDenoms() {
-	err := sdk.RegisterDenom(HumanCoinUnit, sdk.OneDec())
+	err := sdk.RegisterDenom(HumanCoinDenom, sdk.OneDec())
 	if err != nil {
 		panic(err)
 	}
-	err = sdk.RegisterDenom(BaseCoinUnit, sdk.NewDecWithPrec(1, CoinExponent))
+	err = sdk.RegisterDenom(BaseCoinDenom, sdk.NewDecWithPrec(1, CoinExponent))
 	if err != nil {
 		panic(err)
 	}

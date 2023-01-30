@@ -5,15 +5,17 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govcli "github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/gogoproto/proto"
+
+	"github.com/EmpowerPlastic/empowerchain/app/params"
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *E2ETestSuite) TestCmdCreateIssuer() {
@@ -242,7 +244,17 @@ func (s *E2ETestSuite) TestCmdUpdateIssuerCreator() {
 			false,
 			"",
 			plasticcredit.Params{
-				IssuerCreator: "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
+				IssuerCreator:          "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
+				CreditClassCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(69e6)),
+			},
+		},
+		"happy path with human denom coin": {
+			[]string{proposalsDir + "/proposal_update_issuer_creator_valid_with_human_denom.json", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerCreatorKey.Name)},
+			false,
+			"",
+			plasticcredit.Params{
+				IssuerCreator:          "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
+				CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(42)),
 			},
 		},
 		"invalid issuer creator address": {

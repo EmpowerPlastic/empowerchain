@@ -1,6 +1,8 @@
 package plasticcredit
 
 import (
+	"github.com/EmpowerPlastic/empowerchain/app/params"
+	"math/rand"
 	"testing"
 
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
@@ -20,7 +22,8 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: sample.AccAddress(),
 				Params: Params{
-					IssuerCreator: sample.AccAddress(),
+					IssuerCreator:          sample.AccAddress(),
+					CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 			},
 			expectedError: nil,
@@ -29,19 +32,31 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: "invalid",
 				Params: Params{
-					IssuerCreator: sample.AccAddress(),
+					IssuerCreator:          sample.AccAddress(),
+					CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
 		},
-		"invalid params": {
+		"invalid issuer creator params": {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: sample.AccAddress(),
 				Params: Params{
-					IssuerCreator: "invalid",
+					IssuerCreator:          "invalid",
+					CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
+		},
+		"invalid credit class creation fee params": {
+			msgUnderTest: &MsgUpdateParams{
+				Authority: sample.AccAddress(),
+				Params: Params{
+					IssuerCreator:          sample.AccAddress(),
+					CreditClassCreationFee: sdk.Coin{},
+				},
+			},
+			expectedError: sdkerrors.ErrInvalidCoins,
 		},
 	}
 

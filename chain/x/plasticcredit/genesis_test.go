@@ -1,15 +1,17 @@
 package plasticcredit_test
 
 import (
+	"math/rand"
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/stretchr/testify/require"
+
+	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"github.com/EmpowerPlastic/empowerchain/utils"
-
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/stretchr/testify/require"
 )
 
 func TestGenesisState_Validate(t *testing.T) {
@@ -26,7 +28,8 @@ func TestGenesisState_Validate(t *testing.T) {
 		"kitchen sink is valid": {
 			genState: plasticcredit.GenesisState{
 				Params: plasticcredit.Params{
-					IssuerCreator: sample.AccAddress(),
+					IssuerCreator:          sample.AccAddress(),
+					CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 				IdCounters: plasticcredit.IDCounters{
 					NextIssuerId:    3,
@@ -217,10 +220,11 @@ func TestGenesisState_Validate(t *testing.T) {
 			},
 			err: nil,
 		},
-		"invalid params": {
+		"invalid issue creator params": {
 			genState: plasticcredit.GenesisState{
 				Params: plasticcredit.Params{
-					IssuerCreator: "invalid",
+					IssuerCreator:          "invalid",
+					CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 				IdCounters:        plasticcredit.DefaultGenesis().IdCounters,
 				Issuers:           plasticcredit.DefaultGenesis().Issuers,
@@ -231,6 +235,22 @@ func TestGenesisState_Validate(t *testing.T) {
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
 			},
 			err: sdkerrors.ErrInvalidAddress,
+		},
+		"invalid credit class creation fee params": {
+			genState: plasticcredit.GenesisState{
+				Params: plasticcredit.Params{
+					IssuerCreator:          sample.AccAddress(),
+					CreditClassCreationFee: sdk.Coin{},
+				},
+				IdCounters:        plasticcredit.DefaultGenesis().IdCounters,
+				Issuers:           plasticcredit.DefaultGenesis().Issuers,
+				Applicants:        plasticcredit.DefaultGenesis().Applicants,
+				CreditClasses:     plasticcredit.DefaultGenesis().CreditClasses,
+				Projects:          plasticcredit.DefaultGenesis().Projects,
+				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
+				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
+			},
+			err: sdkerrors.ErrInvalidCoins,
 		},
 		"invalid id counters": {
 			genState: plasticcredit.GenesisState{

@@ -2,22 +2,33 @@ package plasticcredit
 
 import (
 	"cosmossdk.io/errors"
-	"github.com/EmpowerPlastic/empowerchain/utils"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"gopkg.in/yaml.v2"
+
+	"github.com/EmpowerPlastic/empowerchain/app/params"
+	"github.com/EmpowerPlastic/empowerchain/utils"
 )
 
+const defaultCreditClassCreationFee = 50 // 50 $mpwr
+
 // NewParams creates a new Params instance
-func NewParams(issuerCreator string) Params {
+func NewParams(issuerCreator string, creditClassCreationFee sdk.Coin) Params {
 	return Params{
-		IssuerCreator: issuerCreator,
+		IssuerCreator:          issuerCreator,
+		CreditClassCreationFee: creditClassCreationFee,
 	}
 }
 
 // DefaultParams returns a default set of parameters
 func DefaultParams() Params {
-	return NewParams("")
+	return NewParams(
+		"",
+		sdk.NewCoin(
+			params.HumanCoinDenom,
+			sdk.NewInt(defaultCreditClassCreationFee),
+		),
+	)
 }
 
 // Validate validates the set of params
@@ -27,6 +38,10 @@ func (p Params) Validate() error {
 		if err != nil {
 			return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid issuer creator address (%s)", err)
 		}
+	}
+
+	if err := p.CreditClassCreationFee.Validate(); err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid creditClassCreationFee: %s", err.Error())
 	}
 
 	return nil

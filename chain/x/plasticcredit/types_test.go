@@ -1,16 +1,53 @@
 package plasticcredit
 
 import (
+	"math/rand"
 	"testing"
 
-	"github.com/EmpowerPlastic/empowerchain/utils"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
+
+	"github.com/EmpowerPlastic/empowerchain/app/params"
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
+	"github.com/EmpowerPlastic/empowerchain/utils"
 )
+
+func TestParamsValidation(t *testing.T) {
+	testCases := map[string]struct {
+		params Params
+		err    error
+	}{
+		"happy path": {
+			params: Params{
+				IssuerCreator:          sample.AccAddress(),
+				CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
+			},
+		},
+		"invalid issuer creator": {
+			params: Params{
+				IssuerCreator:          "invalid",
+				CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
+			},
+			err: sdkerrors.ErrInvalidAddress,
+		},
+		"invalid credit class creation fee": {
+			params: Params{
+				IssuerCreator:          sample.AccAddress(),
+				CreditClassCreationFee: sdk.Coin{},
+			},
+			err: sdkerrors.ErrInvalidCoins,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			err := tc.params.Validate()
+
+			require.ErrorIs(t, err, tc.err)
+		})
+	}
+}
 
 func TestIDCountersValidation(t *testing.T) {
 	testCases := map[string]struct {
