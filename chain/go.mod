@@ -294,5 +294,6 @@ require (
 )
 
 replace (
+	// use informal system fork of tendermint
 	github.com/tendermint/tendermint => github.com/informalsystems/tendermint v0.34.24
 )
