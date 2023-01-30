@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-make serve
+make -B serve
 
 source scripts/serve_env.sh
 
@@ -256,8 +256,10 @@ if [ "$BOB_BALANCE_3_RETIRED" != "\"9999999989\"" ]; then
   exit 1
 fi
 
-make kill
-sleep 2
+echo "Terminating $BINARY..."
+pkill $BINARY
+sleep 5
+
 echo "Serve killed"
 
 echo "--- Test: Plastic Credit Genesis Export and Import ---"

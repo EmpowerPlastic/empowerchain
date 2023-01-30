@@ -144,6 +144,9 @@ smoketest: install
 	./scripts/test/smoke_poe.sh
 	./scripts/test/smoke_plastic_credit.sh
 
+smoketest-ibc: install
+	./scripts/test/smoke_ibc.sh
+
 ###############################################################################
 ###                                  Proto                                  ###
 ###############################################################################
@@ -183,15 +186,6 @@ serve:
 	@echo "===========  Serving now  ============"
 	@echo
 
-serve-extra-ibc-chain:
-	@echo
-	@echo "===========     Serve     ============"
-	@echo
-	./scripts/serve_extra_ibc_chain.sh
-	@echo
-	@echo "===========  Serving now  ============"
-	@echo
-
 serve-ibc:
 	@echo
 	@echo "======= Serve full IBC stack ========="
@@ -201,17 +195,16 @@ serve-ibc:
 	@echo "===========  Serving now  ============"
 	@echo
 
-
-kill:
+kill-all:
 	@echo "Killing empowerd and removing previous data"
-	-@rm -rf ./tmp/empowerchain-local-1
 	-@pkill empowerd 2>/dev/null
-
-kill-extra-ibc-chain:
+	-@rm -rf /tmp/empowerchain-local-1
 	@echo "Killing gaiad and removing previous data"
-	-@rm -rf ./tmp/gaia-local-1
 	-@pkill gaiad 2>/dev/null
-
+	-@rm -rf /tmp/gaia-local-1
+	@echo "Killing relayer and removing previous data"
+	-@pkill rly 2>/dev/null
+	-@rm -rf /tmp/relayer-stuff
 ###############################################################################
 ###                                Linting                                  ###
 ###############################################################################

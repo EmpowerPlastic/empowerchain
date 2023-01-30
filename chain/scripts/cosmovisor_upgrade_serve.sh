@@ -52,7 +52,7 @@ mkdir -p $TMP_COSMOVISOR_DIR/genesis/bin
 mkdir -p $TMP_COSMOVISOR_DIR/upgrades/v2/bin
 cp $V1_BINARY $TMP_COSMOVISOR_DIR/genesis/bin/
 
-make build
+make -B build
 cp ./build/empowerd $TMP_COSMOVISOR_DIR/upgrades/v2/bin/
 
 mkdir -p $DAEMON_HOME

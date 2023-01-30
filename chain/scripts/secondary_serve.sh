@@ -1,7 +1,5 @@
 #!/bin/bash
-#set -e
 set -eE -o functrace
-
 failure() {
   local lineno=$1
   local msg=$2
