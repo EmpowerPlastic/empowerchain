@@ -405,6 +405,7 @@ func New(
 		keys[plasticcreditmoduletypes.StoreKey],
 		keys[plasticcreditmoduletypes.MemStoreKey],
 		accesscontrolmodulekeeper.NewSubKeeper(&app.AccessControlKeeper, plasticcreditmoduletypes.ModuleName),
+		app.DistrKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
