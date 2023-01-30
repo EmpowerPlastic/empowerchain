@@ -2,12 +2,13 @@ package keeper
 
 import (
 	"cosmossdk.io/errors"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
+
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
 
 func (k Keeper) GetCreditClass(ctx sdk.Context, abbreviation string) (creditClass plasticcredit.CreditClass, found bool) {
@@ -63,6 +64,15 @@ func (k Keeper) CreateCreditClass(ctx sdk.Context, creator sdk.AccAddress, abbre
 		Abbreviation: abbreviation,
 		IssuerId:     issuerID,
 		Name:         name,
+	}
+
+	params := k.GetParams(ctx)
+	err := k.distrKeeper.FundCommunityPool(ctx, sdk.NewCoins(params.CreditClassCreationFee), creator)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInsufficientFee,
+			"creator %s does not have enough funds to cover credit class creation fee %s",
+			creator.String(), len(params.CreditClassCreationFee.String()),
+		)
 	}
 
 	if err := k.setCreditClass(ctx, creditClass); err != nil {
