@@ -292,3 +292,8 @@ require (
 	pgregory.net/rapid v0.5.3 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
+
+replace (
+	// use informal system fork of tendermint
+	github.com/tendermint/tendermint => github.com/informalsystems/tendermint v0.34.24
+)
