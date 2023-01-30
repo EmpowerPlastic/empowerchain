@@ -2,9 +2,10 @@ package cli
 
 import (
 	"fmt"
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
-	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -561,7 +562,7 @@ func getExpireTime(cmd *cobra.Command) (*time.Time, error) {
 		return nil, err
 	}
 	if exp == 0 {
-		return nil, nil
+		return nil, nil // nolint: nilnil
 	}
 	e := time.Unix(exp, 0)
 	return &e, nil

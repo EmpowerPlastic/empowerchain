@@ -1,6 +1,9 @@
 package keeper_test
 
 import (
+	"math/rand"
+	"time"
+
 	"github.com/EmpowerPlastic/empowerchain/app"
 	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
@@ -12,8 +15,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"math/rand"
-	"time"
 )
 
 func (s *TestSuite) TestUpdateParams() {

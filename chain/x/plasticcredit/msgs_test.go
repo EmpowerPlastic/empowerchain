@@ -1,9 +1,10 @@
 package plasticcredit
 
 import (
-	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"math/rand"
 	"testing"
+
+	"github.com/EmpowerPlastic/empowerchain/app/params"
 
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	sdk "github.com/cosmos/cosmos-sdk/types"
