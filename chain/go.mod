@@ -293,7 +293,5 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-replace (
-	// use informal system fork of tendermint
-	github.com/tendermint/tendermint => github.com/informalsystems/tendermint v0.34.24
-)
+// use informal system fork of tendermint
+replace github.com/tendermint/tendermint => github.com/informalsystems/tendermint v0.37.0-rc2
