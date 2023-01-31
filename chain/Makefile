@@ -48,7 +48,7 @@ build_tags += $(BUILD_TAGS)
 build_tags := $(strip $(build_tags))
 
 whitespace :=
-whitespace += $(whitespace)
+whitespace := $(whitespace) $(whitespace)
 comma := ,
 build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 
@@ -133,6 +133,9 @@ clean:
 test:
 	@go test -timeout 10m -v ./...
 
+test-unit:
+	@go test -v -test.short ./...
+
 test-with-coverage:
 	@go test -timeout 10m -v -coverpkg=./... -coverprofile=coverage.out -covermode=atomic ./...
 
@@ -141,15 +144,22 @@ smoketest: install
 	./scripts/test/smoke_poe.sh
 	./scripts/test/smoke_plastic_credit.sh
 
+smoketest-ibc: install
+	./scripts/test/smoke_ibc.sh
+
 ###############################################################################
 ###                                  Proto                                  ###
 ###############################################################################
+
+protoVer=0.11.5
+protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
+protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 
 proto:
 	@echo
 	@echo "=========== Generate Message ============"
 	@echo
-	./scripts/protocgen.sh $(COSMOS_SDK_VERSION)
+	@$(protoImage) sh ./scripts/protocgen.sh
 	@echo
 	@echo "=========== Generate Complete ============"
 	@echo
@@ -176,12 +186,25 @@ serve:
 	@echo "===========  Serving now  ============"
 	@echo
 
-kill:
+serve-ibc:
+	@echo
+	@echo "======= Serve full IBC stack ========="
+	@echo
+	./scripts/serve_ibc.sh
+	@echo
+	@echo "===========  Serving now  ============"
+	@echo
+
+kill-all:
 	@echo "Killing empowerd and removing previous data"
-	-@rm -rf ./tmp/empowerchain-local-1
 	-@pkill empowerd 2>/dev/null
-
-
+	-@rm -rf /tmp/empowerchain-local-1
+	@echo "Killing gaiad and removing previous data"
+	-@pkill gaiad 2>/dev/null
+	-@rm -rf /tmp/gaia-local-1
+	@echo "Killing relayer and removing previous data"
+	-@pkill rly 2>/dev/null
+	-@rm -rf /tmp/relayer-stuff
 ###############################################################################
 ###                                Linting                                  ###
 ###############################################################################
@@ -191,12 +214,10 @@ lint:
 	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run --timeout=10m
 
 format:
-	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./... --fix
-	@go run mvdan.cc/gofumpt -l -w x/ app/ testutil/ cmd/
+	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run --fix
 
 ###############################################################################
 ###                      Avoid "make: 'x' is up to date.                    ###
 ###############################################################################
 
-.PHONY: ver all build clean test lint serve kill test smoketest format proto \
-    build-linux go-mod-cache
+.PHONY: *
