@@ -76,6 +76,8 @@ func (s *E2ETestSuite) SetupSuite() {
 	genesisState := s.cfg.GenesisState
 
 	plasticcreditGenesisState := plasticcredit.DefaultGenesis()
+	// use "stake" for testing fee
+	plasticcreditGenesisState.Params.CreditClassCreationFee = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(50000))
 	plasticcreditGenesisState.IdCounters = plasticcredit.IDCounters{
 		NextIssuerId:    3,
 		NextApplicantId: 4,

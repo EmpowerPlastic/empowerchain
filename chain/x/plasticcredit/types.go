@@ -10,7 +10,9 @@ import (
 	"github.com/EmpowerPlastic/empowerchain/utils"
 )
 
-const defaultCreditClassCreationFee = 50 // 50 $mpwr
+const defaultCreditClassCreationFeeAmt = 50 // 50 $mpwr
+
+var DefaultCreditClassCreationFee = sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(defaultCreditClassCreationFeeAmt))
 
 // NewParams creates a new Params instance
 func NewParams(issuerCreator string, creditClassCreationFee sdk.Coin) Params {
@@ -24,10 +26,7 @@ func NewParams(issuerCreator string, creditClassCreationFee sdk.Coin) Params {
 func DefaultParams() Params {
 	return NewParams(
 		"",
-		sdk.NewCoin(
-			params.HumanCoinDenom,
-			sdk.NewInt(defaultCreditClassCreationFee),
-		),
+		DefaultCreditClassCreationFee,
 	)
 }
 

@@ -146,6 +146,7 @@ func (s *TestSuite) TestCreditClassQuery() {
 	goCtx := sdk.WrapSDKContext(s.ctx)
 	ms := keeper.NewMsgServerImpl(k)
 	issuerAdmin := sample.AccAddress()
+	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6))))
 	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),
 		Name:        "Empower",
@@ -185,6 +186,8 @@ func (s *TestSuite) TestCreditClassesQuery() {
 	goCtx := sdk.WrapSDKContext(s.ctx)
 	ms := keeper.NewMsgServerImpl(k)
 	issuerAdmin := sample.AccAddress()
+	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6))))
+
 	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),
 		Name:        "Empower",
@@ -240,8 +243,10 @@ func (s *TestSuite) TestProjectQuery() {
 	goCtx := sdk.WrapSDKContext(s.ctx)
 	ms := keeper.NewMsgServerImpl(k)
 	issuerAdmin := sample.AccAddress()
+	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6))))
 	applicantAdmin := sample.AccAddress()
 	creditClassAbbreviation := "PCRD"
+
 	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),
 		Name:        "Empower",

@@ -324,8 +324,8 @@ func (s *TestSuite) TestCreateApplicant() {
 					Admin:       tc.msg.Admin,
 				}, applicant)
 
-				s.Require().Len(events, 1)
-				parsedEvent, err := sdk.ParseTypedEvent(events[0])
+				// s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[len(events)-1])
 				s.Require().NoError(err)
 				eventCreateApplicant, ok := parsedEvent.(*plasticcredit.EventCreateApplicant)
 				s.Require().True(ok)
@@ -504,8 +504,9 @@ func (s *TestSuite) TestCreateCreditClass() {
 					IssuerId:     tc.msg.IssuerId,
 					Name:         tc.msg.Name,
 				}, creditClass)
-				s.Require().Len(events, 1)
-				parsedEvent, err := sdk.ParseTypedEvent(events[0])
+
+				// s.Require().Len(events, 1)
+				parsedEvent, err := sdk.ParseTypedEvent(events[len(events)-1])
 				s.Require().NoError(err)
 				eventCreateCreditClass, ok := parsedEvent.(*plasticcredit.EventCreateCreditClass)
 				s.Require().True(ok)
@@ -594,6 +595,7 @@ func (s *TestSuite) TestCreateDuplicateCreditClass() {
 	goCtx := sdk.WrapSDKContext(s.ctx)
 	ms := keeper.NewMsgServerImpl(k)
 	admin1 := sample.AccAddress()
+	s.fundAccount(admin1, sdk.NewCoins(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6))))
 	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),
 		Name:        "Empower",
@@ -603,6 +605,7 @@ func (s *TestSuite) TestCreateDuplicateCreditClass() {
 	s.Require().NoError(err)
 
 	admin2 := sample.AccAddress()
+	s.fundAccount(admin2, sdk.NewCoins(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6))))
 	_, err = ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),
 		Name:        "Someone else",

@@ -1,10 +1,10 @@
 package keeper_test
 
 import (
-	"math/rand"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtime "github.com/tendermint/tendermint/types/time"
@@ -65,6 +65,22 @@ func (s *TestSuite) SetupTest() {
 	s.empowerApp = empowerApp
 	s.ctx = ctx
 	s.addrs = app.CreateRandomAccounts(1)
+
+	// TODO:
+	// fund the issuerCreator account for fee
+	s.fundAccount(s.issuerCreator, sdk.NewCoins(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6))))
+	s.fundAccount(s.sampleIssuerAdmin, sdk.NewCoins(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6))))
+}
+
+// fundAccount mints new coins and send them to the given test account
+func (s *TestSuite) fundAccount(acc string, amt sdk.Coins) {
+	s.T().Helper()
+	sdkAddr, err := sdk.AccAddressFromBech32(acc)
+	s.Require().NoError(err)
+	err = s.empowerApp.MintKeeper.MintCoins(s.ctx, amt)
+	s.Require().NoError(err)
+	err = s.empowerApp.BankKeeper.SendCoinsFromModuleToAccount(s.ctx, minttypes.ModuleName, sdkAddr, amt)
+	s.Require().NoError(err)
 }
 
 func (s *TestSuite) PopulateWithSamples() {
@@ -76,7 +92,7 @@ func (s *TestSuite) PopulateWithSamples() {
 		Authority: k.Authority(),
 		Params: plasticcredit.Params{
 			IssuerCreator:          s.issuerCreator,
-			CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
+			CreditClassCreationFee: plasticcredit.DefaultCreditClassCreationFee,
 		},
 	})
 	s.Require().NoError(err)
