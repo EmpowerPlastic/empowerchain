@@ -33,6 +33,13 @@ const (
 	val2KeyName          = "node1"
 	val3KeyName          = "node2"
 	randomKeyName        = "randomKey"
+	noCoinsIssuerName    = "nocoins"
+
+	issuerAddress        = "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+	issuerCreatorAddress = "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7"
+	applicantAddress     = "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn"
+	randomAddress        = "empower15hxwswcmmkasaar65n3vkmp6skurvtas3xzl7s"
+	noCoinsIssuerAddress = "empower1xgsaene8aqfknmldemvl5q0mtgcgjv9svupqwu"
 )
 
 type E2ETestSuite struct {
@@ -64,7 +71,7 @@ func (s *E2ETestSuite) SetupSuite() {
 	// use "stake" for testing fee
 	plasticcreditGenesisState.Params.CreditClassCreationFee = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(50000))
 	plasticcreditGenesisState.IdCounters = plasticcredit.IDCounters{
-		NextIssuerId:    3,
+		NextIssuerId:    4,
 		NextApplicantId: 4,
 		NextProjectId:   11,
 	}
@@ -73,13 +80,19 @@ func (s *E2ETestSuite) SetupSuite() {
 			Id:          1,
 			Name:        "Empower",
 			Description: "First Issuer",
-			Admin:       "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m",
+			Admin:       issuerAddress,
 		},
 		{
 			Id:          2,
 			Name:        "Test Issuer",
 			Description: "Purely for testing",
-			Admin:       "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m",
+			Admin:       issuerAddress,
+		},
+		{
+			Id:          3,
+			Name:        "Test Issuer with no coins",
+			Description: "Purely for testing",
+			Admin:       noCoinsIssuerAddress,
 		},
 	}
 	plasticcreditGenesisState.Applicants = []plasticcredit.Applicant{
@@ -87,19 +100,19 @@ func (s *E2ETestSuite) SetupSuite() {
 			Id:          1,
 			Name:        "Plastix Inc.",
 			Description: "Grab that bottle",
-			Admin:       "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
+			Admin:       applicantAddress,
 		},
 		{
 			Id:          2,
 			Name:        "Ocean plastic Inc.",
 			Description: "Grab that net",
-			Admin:       "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
+			Admin:       applicantAddress,
 		},
 		{
 			Id:          3,
 			Name:        "Sea plastic Inc.",
 			Description: "collector",
-			Admin:       "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
+			Admin:       applicantAddress,
 		},
 	}
 	plasticcreditGenesisState.CreditClasses = []plasticcredit.CreditClass{
@@ -237,20 +250,18 @@ func (s *E2ETestSuite) SetupSuite() {
 		sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens),
 	)
 
-	issuerAddress := "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
-	issuerCreatorAddress := "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7"
-	applicantAddress := "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn"
-	randomAddress := "empower15hxwswcmmkasaar65n3vkmp6skurvtas3xzl7s"
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: issuerAddress, Coins: balances})
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: issuerCreatorAddress, Coins: balances})
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: applicantAddress, Coins: balances})
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: randomAddress, Coins: balances})
+	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: noCoinsIssuerAddress, Coins: sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10)))})
 
 	var genAccounts authtypes.GenesisAccounts
 	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(issuerAddress)))
 	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(issuerCreatorAddress)))
 	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(applicantAddress)))
 	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(randomAddress)))
+	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(noCoinsIssuerAddress)))
 	accounts, err := authtypes.PackAccounts(genAccounts)
 	s.Require().NoError(err)
 	authGenesis.Accounts = append(authGenesis.Accounts, accounts...)
@@ -308,6 +319,15 @@ func (s *E2ETestSuite) SetupSuite() {
 	_, err = kb.NewAccount(
 		randomKeyName,
 		"pony olive still divide actual surge amateur funny marriage lizard radio gift basket supply sense feature early hazard carry smooth garment cream fury afford",
+		keyring.DefaultBIP39Passphrase,
+		sdk.FullFundraiserPath,
+		hd.Secp256k1,
+	)
+	s.Require().NoError(err)
+
+	_, err = kb.NewAccount(
+		noCoinsIssuerName,
+		"venture strong firm clap primary sample record ahead spin inherit skull daughter cherry relief estate maid squeeze charge hair produce animal discover margin edit",
 		keyring.DefaultBIP39Passphrase,
 		sdk.FullFundraiserPath,
 		hd.Secp256k1,

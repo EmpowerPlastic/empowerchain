@@ -14,6 +14,8 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 	val := s.network.Validators[0]
 	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
 	s.Require().NoError(err)
+	noCoinsKey, err := val.ClientCtx.Keyring.Key(noCoinsIssuerName)
+	s.Require().NoError(err)
 
 	testCases := map[string]struct {
 		args              []string
@@ -32,6 +34,13 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 				Name:         "Test",
 				IssuerId:     1,
 			},
+		},
+		"invalid funds to cover fee": {
+			[]string{"PCRD3", "3", "Test", fmt.Sprintf("--%s=%s", flags.FlagFrom, noCoinsKey.Name)},
+			false,
+			true,
+			"insufficient fee",
+			plasticcredit.CreditClass{},
 		},
 		"non-existent issuer": {
 			[]string{"PCRD2", "5", "Test", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
@@ -70,7 +79,6 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
-				fmt.Println(out.String())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code)
 
@@ -90,7 +98,6 @@ func (s *E2ETestSuite) TestCmdUpdateCreditClass() {
 	val := s.network.Validators[0]
 	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
 	s.Require().NoError(err)
-
 	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
 	s.Require().NoError(err)
 
