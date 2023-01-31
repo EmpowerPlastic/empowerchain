@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-make -B serve
+make serve
 
 source scripts/serve_env.sh
 
@@ -15,6 +15,6 @@ $BINARY --home $CHAIN_DIR --node tcp://:$RPC_PORT q poe proof ffb5ff85bf44c95908
 
 echo "Tests completed successfully!"
 
-make -B kill-all
+make kill-all
 
 echo "Serve killed"

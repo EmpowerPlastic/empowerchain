@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-make -B serve
+make serve
 
 source scripts/serve_env.sh
 
@@ -26,6 +26,6 @@ fi
 
 echo "Tests completed successfully!"
 
-make -B kill-all
+make kill-all
 
 echo "Serve killed"

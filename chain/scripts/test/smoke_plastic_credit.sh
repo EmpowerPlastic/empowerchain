@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-make -B serve
+make serve
 
 source scripts/serve_env.sh
 

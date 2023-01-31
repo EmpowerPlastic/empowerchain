@@ -220,5 +220,4 @@ format:
 ###                      Avoid "make: 'x' is up to date.                    ###
 ###############################################################################
 
-.PHONY: ver all build clean test lint serve kill test smoketest format proto \
-    build-linux go-mod-cache
+.PHONY: *

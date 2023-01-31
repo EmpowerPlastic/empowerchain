@@ -7,7 +7,7 @@ failure() {
 }
 trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
 
-make -B kill-all
+make kill-all
 
 source scripts/serve_env.sh
 
@@ -21,7 +21,7 @@ mkdir -p $RELAYER_HOME_DIR/config
 cp scripts/rly-config.yaml $RELAYER_HOME_DIR/config/config.yaml
 
 # Serve empowerchian
-make -B serve
+make serve
 
 # Serve IBC chain (gaiad)
 
