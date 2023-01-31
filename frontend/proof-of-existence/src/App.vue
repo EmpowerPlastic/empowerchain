@@ -77,42 +77,37 @@ import { RouterView } from 'vue-router'
       </main>
     </div>
   </div>
-
-  <!--<nav>
-    <RouterLink to="/">Certify</RouterLink>
-    <RouterLink to="/about">Prove</RouterLink>
-  </nav>-->
 </template>
 
 <style scoped>
-.navbar .navbar-brand {
+.navbar-brand {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
   display: flex;
   justify-content: center;
 }
-.navbar .navbar-brand .logo {
+.logo {
   width: 90%;
   max-width: 200px;
 }
 .container-fluid {
   height: calc(100vh - 75px);
 }
-.container-fluid .emp-sidebar {
+.emp-sidebar {
   background-color: rgba(0, 0, 0, 0.22);
 }
-.container-fluid .emp-sidebar .menu-deck {
+.menu-deck {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.container-fluid .emp-sidebar .menu-deck .nav {
+.nav {
   width: 70%;
 }
-.container-fluid .emp-sidebar .menu-deck .nav .nav-item {
+.nav-item {
   margin: 10px 0;
 }
-.container-fluid .emp-sidebar .menu-deck .nav .nav-item .nav-link {
+.nav-link {
   color: #ffffff;
   font-size: 14px;
   padding-left: 70px;
@@ -124,29 +119,29 @@ import { RouterView } from 'vue-router'
   background-position: 10% center;
   border-radius: 16px;
 }
-.container-fluid .emp-sidebar .menu-deck .nav .nav-item .nav-link.home {
+.nav-link.home {
   background-image: url("src/assets/images/icon-home.svg");
 }
-.container-fluid .emp-sidebar .menu-deck .nav .nav-item .nav-link.wallet {
+.nav-link.wallet {
   background-image: url(src/assets//images/icon-my-wallet.svg);
 }
-.container-fluid .emp-sidebar .menu-deck .nav .nav-item .nav-link.contact {
+.nav-link.contact {
   background-image: url(src/assets//images/icon-contact.svg);
 }
-.container-fluid .emp-sidebar .menu-deck .nav .nav-item .nav-link.active {
+.nav-link.active {
   background-color: rgba(0, 0, 0, 0.4);
 }
-.container-fluid .emp-content-box {
+.emp-content-box {
   background-color: rgba(0, 0, 0, 0.22);
   border-radius: 16px;
   padding: 2rem;
   max-width: 1000px;
 }
-.container-fluid .emp-content-box.emp-astro {
+.emp-content-box.emp-astro {
   margin-top: 160px;
   position: relative;
 }
-.container-fluid .emp-content-box.emp-astro .emp-character {
+.emp-character {
   background-image: url(src/assets//images/emp-astro-1.png);
   background-repeat: no-repeat;
   background-size: contain;
@@ -159,29 +154,29 @@ import { RouterView } from 'vue-router'
   animation: float 6s ease-in-out infinite;
 }
 @media (max-width: 575.98px) {
-  .container-fluid .emp-sidebar {
+  .emp-sidebar {
     background-color: rgba(0, 0, 0, 0.8);
   }
-  .container-fluid .emp-sidebar .menu-deck .nav .nav-item .nav-link.active {
+  .nav-link.active {
     background-color: rgba(255, 255, 255, 0.1);
   }
-  .container-fluid .emp-content-box.emp-astro {
+  .emp-content-box.emp-astro {
     margin-top: 0;
   }
-  .container-fluid .emp-content-box.emp-astro .emp-character {
+  .emp-character {
     background-image: none;
   }
 }
 @media (max-width: 767.98px) {
-  .container-fluid .emp-content-box.emp-astro {
+  .emp-content-box.emp-astro {
     margin-top: 0;
   }
-  .container-fluid .emp-content-box.emp-astro .emp-character {
+  .emp-character {
     background-image: none;
   }
 }
 @media (max-width: 991.98px) {
-  .container-fluid .emp-content-box.emp-astro .emp-character {
+  .emp-character {
     width: 248px;
     height: 194px;
     top: -184px;
@@ -206,22 +201,14 @@ import { RouterView } from 'vue-router'
     top: 4.4rem;
   }
 }
+
 .sidebar-sticky {
   height: calc(100vh - 48px);
   overflow-x: hidden;
   overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
 }
 
-.sidebar .nav-link {
-  font-weight: 500;
-  color: #333;
-}
-
-.sidebar .nav-link.active {
-  color: #2470dc;
-}
-
-.navbar .navbar-toggler {
+.navbar-toggler {
   right: 1rem;
 }
 
