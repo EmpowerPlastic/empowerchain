@@ -26,6 +26,6 @@ fi
 
 echo "Tests completed successfully!"
 
-make kill
+make kill-all
 
 echo "Serve killed"

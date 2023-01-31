@@ -36,10 +36,12 @@ echo "Adding genesis accounts..."
 echo "$ALICE_MNEMONIC" | $BINARY keys add alice --home $CHAIN_DIR --recover --keyring-backend=test
 echo "$BOB_MNEMONIC" | $BINARY keys add bob --home $CHAIN_DIR --recover --keyring-backend=test
 echo "$VALIDATOR_MNEMONIC" | $BINARY keys add validator --home $CHAIN_DIR --recover --keyring-backend=test
+echo "$EMPOWERCHAIN_RELAY_ACCOUNT" | $BINARY keys add empowerchain_relay_account --home $CHAIN_DIR --recover --keyring-backend=test
 
 $BINARY genesis add-genesis-account $($BINARY --home $CHAIN_DIR keys show alice --keyring-backend test -a) 100000000000umpwr  --home $CHAIN_DIR
 $BINARY genesis add-genesis-account $($BINARY --home $CHAIN_DIR keys show bob --keyring-backend test -a) 100000000000umpwr  --home $CHAIN_DIR
 $BINARY genesis add-genesis-account $($BINARY --home $CHAIN_DIR keys show validator --keyring-backend test -a) 100000000000umpwr  --home $CHAIN_DIR
+$BINARY genesis add-genesis-account $($BINARY --home $CHAIN_DIR keys show empowerchain_relay_account --keyring-backend test -a) 100000000000umpwr  --home $CHAIN_DIR
 
 $BINARY genesis gentx validator 7000000000umpwr --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test
 $BINARY genesis collect-gentxs --home $CHAIN_DIR

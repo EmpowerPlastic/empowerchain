@@ -144,6 +144,9 @@ smoketest: install
 	./scripts/test/smoke_poe.sh
 	./scripts/test/smoke_plastic_credit.sh
 
+smoketest-ibc: install
+	./scripts/test/smoke_ibc.sh
+
 ###############################################################################
 ###                                  Proto                                  ###
 ###############################################################################
@@ -183,12 +186,25 @@ serve:
 	@echo "===========  Serving now  ============"
 	@echo
 
-kill:
+serve-ibc:
+	@echo
+	@echo "======= Serve full IBC stack ========="
+	@echo
+	./scripts/serve_ibc.sh
+	@echo
+	@echo "===========  Serving now  ============"
+	@echo
+
+kill-all:
 	@echo "Killing empowerd and removing previous data"
-	-@rm -rf ./tmp/empowerchain-local-1
 	-@pkill empowerd 2>/dev/null
-
-
+	-@rm -rf /tmp/empowerchain-local-1
+	@echo "Killing gaiad and removing previous data"
+	-@pkill gaiad 2>/dev/null
+	-@rm -rf /tmp/gaia-local-1
+	@echo "Killing relayer and removing previous data"
+	-@pkill rly 2>/dev/null
+	-@rm -rf /tmp/relayer-stuff
 ###############################################################################
 ###                                Linting                                  ###
 ###############################################################################
@@ -198,11 +214,10 @@ lint:
 	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run --timeout=10m
 
 format:
-	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./... --fix
+	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run --fix
 
 ###############################################################################
 ###                      Avoid "make: 'x' is up to date.                    ###
 ###############################################################################
 
-.PHONY: ver all build clean test lint serve kill test smoketest format proto \
-    build-linux go-mod-cache
+.PHONY: *
