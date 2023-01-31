@@ -214,7 +214,7 @@ lint:
 	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run --timeout=10m
 
 format:
-	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./... --fix
+	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run --fix
 
 ###############################################################################
 ###                      Avoid "make: 'x' is up to date.                    ###
