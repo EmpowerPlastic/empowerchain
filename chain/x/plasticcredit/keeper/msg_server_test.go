@@ -159,10 +159,10 @@ func (s *TestSuite) TestCreateIssuer() {
 			idCounters := k.GetIDCounters(s.ctx)
 
 			if err == nil {
-				s.Require().Equal(uint64(2), resp.IssuerId)
+				s.Require().Equal(s.numTestIssuers+1, resp.IssuerId)
 
 				idCounters := k.GetIDCounters(s.ctx)
-				s.Require().Equal(uint64(3), idCounters.NextIssuerId)
+				s.Require().Equal(s.numTestIssuers+2, idCounters.NextIssuerId)
 
 				issuer, found := k.GetIssuer(s.ctx, resp.IssuerId)
 				s.Require().True(found)
@@ -187,8 +187,8 @@ func (s *TestSuite) TestCreateIssuer() {
 				}, eventCreateIssuer)
 
 			} else {
-				s.Require().Equal(uint64(2), idCounters.NextIssuerId)
-				_, found := k.GetIssuer(s.ctx, 2)
+				s.Require().Equal(s.numTestIssuers+1, idCounters.NextIssuerId)
+				_, found := k.GetIssuer(s.ctx, s.numTestIssuers+1)
 				s.Require().False(found)
 
 				s.Require().Len(events, 0)
@@ -492,6 +492,15 @@ func (s *TestSuite) TestCreateCreditClass() {
 				Name:         "Empower Plastic Credits",
 			},
 			err: nil,
+		},
+		"unable to cover fee": {
+			msg: &plasticcredit.MsgCreateCreditClass{
+				Creator:      s.noCoinsIssuerAdmin,
+				Abbreviation: "PCRD",
+				IssuerId:     s.noCoinsIssuerID,
+				Name:         "Empower Plastic Credits",
+			},
+			err: sdkerrors.ErrInsufficientFee,
 		},
 		"unauthorized creator on the issuer": {
 			msg: &plasticcredit.MsgCreateCreditClass{

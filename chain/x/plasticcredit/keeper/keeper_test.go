@@ -19,13 +19,16 @@ import (
 type TestSuite struct {
 	suite.Suite
 
-	empowerApp *app.EmpowerApp
-	ctx        sdk.Context
-	addrs      []sdk.AccAddress
+	empowerApp     *app.EmpowerApp
+	ctx            sdk.Context
+	addrs          []sdk.AccAddress
+	numTestIssuers uint64 // number of issuers created in the initial state of the test
 
 	issuerCreator                 string
 	sampleIssuerID                uint64
 	sampleIssuerAdmin             string
+	noCoinsIssuerID               uint64
+	noCoinsIssuerAdmin            string
 	sampleCreditClassAbbreviation string
 	sampleApplicantID             uint64
 	sampleApplicantAdmin          string
@@ -89,6 +92,16 @@ func (s *TestSuite) PopulateWithSamples() {
 	})
 	s.Require().NoError(err)
 	s.Require().Equal(s.sampleIssuerID, respIssuer.IssuerId)
+
+	// create 2nd issuer which will receive no funds
+	respIssuer, err = ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
+		Creator:     s.issuerCreator,
+		Name:        "Empower",
+		Description: "Empower is cool",
+		Admin:       s.noCoinsIssuerAdmin,
+	})
+	s.Require().NoError(err)
+	s.Require().Equal(s.noCoinsIssuerID, respIssuer.IssuerId)
 
 	_, err = ms.CreateCreditClass(goCtx, &plasticcredit.MsgCreateCreditClass{
 		Creator:      s.sampleIssuerAdmin,
@@ -182,9 +195,12 @@ func TestTestSuite(t *testing.T) {
 	params.RegisterDenoms()
 
 	ts := &TestSuite{}
+	ts.numTestIssuers = 2
 	ts.issuerCreator = sample.AccAddress()
 	ts.sampleIssuerID = 1
 	ts.sampleIssuerAdmin = sample.AccAddress()
+	ts.noCoinsIssuerID = 2
+	ts.noCoinsIssuerAdmin = sample.AccAddress()
 	ts.sampleCreditClassAbbreviation = "EMP"
 	ts.sampleApplicantID = 1
 	ts.sampleApplicantAdmin = sample.AccAddress()
