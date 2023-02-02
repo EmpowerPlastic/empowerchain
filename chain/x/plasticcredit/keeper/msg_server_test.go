@@ -352,7 +352,6 @@ func (s *TestSuite) TestCreateApplicant() {
 					Admin:       tc.msg.Admin,
 				}, applicant)
 
-				// s.Require().Len(events, 1)
 				parsedEvent, err := sdk.ParseTypedEvent(events[len(events)-1])
 				s.Require().NoError(err)
 				eventCreateApplicant, ok := parsedEvent.(*plasticcredit.EventCreateApplicant)
@@ -570,7 +569,6 @@ func (s *TestSuite) TestCreateCreditClass() {
 					Name:         tc.msg.Name,
 				}, creditClass)
 
-				// s.Require().Len(events, 1)
 				parsedEvent, err := sdk.ParseTypedEvent(events[len(events)-1])
 				s.Require().NoError(err)
 				eventCreateCreditClass, ok := parsedEvent.(*plasticcredit.EventCreateCreditClass)
