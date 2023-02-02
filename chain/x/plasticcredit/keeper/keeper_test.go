@@ -53,7 +53,6 @@ func (s *TestSuite) SetupTest() {
 	s.ctx = ctx
 	s.addrs = app.CreateRandomAccounts(1)
 
-	// TODO:
 	// fund the issuerCreator account for fee
 	s.fundAccount(s.issuerCreator, sdk.NewCoins(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6))))
 	s.fundAccount(s.sampleIssuerAdmin, sdk.NewCoins(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6))))
