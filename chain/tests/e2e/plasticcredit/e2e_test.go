@@ -3,6 +3,7 @@ package e2e_test
 import (
 	"encoding/hex"
 	"fmt"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"testing"
 	"time"
 
@@ -45,9 +46,10 @@ const (
 type E2ETestSuite struct {
 	suite.Suite
 
-	cfg         network.Config
-	network     *network.Network
-	commonFlags []string
+	cfg                    network.Config
+	network                *network.Network
+	commonFlags            []string
+	creditClassCreationFee sdk.Coin
 }
 
 func (s *E2ETestSuite) SetupSuite() {
@@ -65,11 +67,13 @@ func (s *E2ETestSuite) SetupSuite() {
 
 	s.cfg.NumValidators = 3
 
+	s.creditClassCreationFee = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(50000))
+
 	genesisState := s.cfg.GenesisState
 
 	plasticcreditGenesisState := plasticcredit.DefaultGenesis()
 	// use "stake" for testing fee
-	plasticcreditGenesisState.Params.CreditClassCreationFee = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(50000))
+	plasticcreditGenesisState.Params.CreditClassCreationFee = s.creditClassCreationFee
 	plasticcreditGenesisState.IdCounters = plasticcredit.IDCounters{
 		NextIssuerId:    4,
 		NextApplicantId: 4,
@@ -242,6 +246,7 @@ func (s *E2ETestSuite) SetupSuite() {
 	var bankGenesis banktypes.GenesisState
 	var authGenesis authtypes.GenesisState
 	var govGenesis govtypesv1.GenesisState
+	var distrGenesis distrtypes.GenesisState
 	s.Require().NoError(s.cfg.Codec.UnmarshalJSON(genesisState[banktypes.ModuleName], &bankGenesis))
 	s.Require().NoError(s.cfg.Codec.UnmarshalJSON(genesisState[authtypes.ModuleName], &authGenesis))
 	s.Require().NoError(s.cfg.Codec.UnmarshalJSON(genesisState[govtypes.ModuleName], &govGenesis))
@@ -250,11 +255,15 @@ func (s *E2ETestSuite) SetupSuite() {
 		sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens),
 	)
 
+	distrModuleAcct := authtypes.NewModuleAddress(distrtypes.ModuleName)
+	communityPoolAmt := s.creditClassCreationFee
+
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: issuerAddress, Coins: balances})
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: issuerCreatorAddress, Coins: balances})
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: applicantAddress, Coins: balances})
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: randomAddress, Coins: balances})
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: noCoinsIssuerAdminAddress, Coins: sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10)))})
+	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: distrModuleAcct.String(), Coins: sdk.NewCoins(communityPoolAmt)})
 
 	var genAccounts authtypes.GenesisAccounts
 	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(issuerAddress)))
@@ -268,16 +277,22 @@ func (s *E2ETestSuite) SetupSuite() {
 
 	*govGenesis.Params.VotingPeriod = 10 * time.Second
 
+	// initialize community pool with small amount
+	distrGenesis.FeePool.CommunityPool = sdk.NewDecCoins(sdk.NewDecCoinFromCoin(communityPoolAmt))
+
 	bankGenesisStateBz, err := s.cfg.Codec.MarshalJSON(&bankGenesis)
 	s.Require().NoError(err)
 	authGenesisStateBz, err := s.cfg.Codec.MarshalJSON(&authGenesis)
 	s.Require().NoError(err)
 	govGenesisStateBz, err := s.cfg.Codec.MarshalJSON(&govGenesis)
 	s.Require().NoError(err)
+	distrGenesisStateBz, err := s.cfg.Codec.MarshalJSON(&distrGenesis)
+	s.Require().NoError(err)
 
 	genesisState[banktypes.ModuleName] = bankGenesisStateBz
 	genesisState[authtypes.ModuleName] = authGenesisStateBz
 	genesisState[govtypes.ModuleName] = govGenesisStateBz
+	genesisState[distrtypes.ModuleName] = distrGenesisStateBz
 	s.cfg.GenesisState = genesisState
 
 	s.cfg.AppConstructor = app.NewAppConstructor()
