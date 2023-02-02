@@ -37,6 +37,8 @@ type TestSuite struct {
 	sampleRejectionProjectID      uint64
 	sampleSuspendedProjectID      uint64
 	sampleCreditDenom             string
+
+	creditClassCreationFee sdk.Coin
 }
 
 func (s *TestSuite) SetupTest() {
@@ -78,7 +80,7 @@ func (s *TestSuite) PopulateWithSamples() {
 		Authority: k.Authority(),
 		Params: plasticcredit.Params{
 			IssuerCreator:          s.issuerCreator,
-			CreditClassCreationFee: plasticcredit.DefaultCreditClassCreationFee,
+			CreditClassCreationFee: s.creditClassCreationFee,
 		},
 	})
 	s.Require().NoError(err)
@@ -208,6 +210,7 @@ func TestTestSuite(t *testing.T) {
 	ts.sampleRejectionProjectID = 3
 	ts.sampleSuspendedProjectID = 4
 	ts.sampleCreditDenom = "EMP/123"
+	ts.creditClassCreationFee = plasticcredit.DefaultCreditClassCreationFee
 
 	suite.Run(t, ts)
 }

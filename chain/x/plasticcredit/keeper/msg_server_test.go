@@ -553,6 +553,9 @@ func (s *TestSuite) TestCreateCreditClass() {
 			s.SetupTest()
 			s.PopulateWithSamples()
 			k := s.empowerApp.PlasticcreditKeeper
+			dk := s.empowerApp.DistrKeeper
+			initialCommunityPool := dk.GetFeePool(s.ctx).CommunityPool
+
 			goCtx := sdk.WrapSDKContext(s.ctx)
 			ms := keeper.NewMsgServerImpl(k)
 
@@ -568,6 +571,12 @@ func (s *TestSuite) TestCreateCreditClass() {
 					IssuerId:     tc.msg.IssuerId,
 					Name:         tc.msg.Name,
 				}, creditClass)
+
+				// verify community pool has increased by fee amount
+				communityPool := dk.GetFeePool(s.ctx).CommunityPool
+				diff := communityPool.Sub(initialCommunityPool)
+				feeDiff := diff.AmountOf(s.creditClassCreationFee.Denom)
+				s.Require().Equal(feeDiff, sdk.NewDecFromInt(s.creditClassCreationFee.Amount))
 
 				parsedEvent, err := sdk.ParseTypedEvent(events[len(events)-1])
 				s.Require().NoError(err)
