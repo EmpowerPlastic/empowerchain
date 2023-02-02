@@ -14,7 +14,7 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 	val := s.network.Validators[0]
 	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
 	s.Require().NoError(err)
-	noCoinsKey, err := val.ClientCtx.Keyring.Key(noCoinsIssuerName)
+	noCoinsKey, err := val.ClientCtx.Keyring.Key(noCoinsIssuerAdminName)
 	s.Require().NoError(err)
 
 	testCases := map[string]struct {
