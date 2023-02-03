@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/CosmWasm/wasmd/x/wasm"
 	"os"
 	"testing"
 	"time"
@@ -33,10 +34,12 @@ import (
 
 func NewAppConstructor() network.AppConstructor {
 	return func(val network.ValidatorI) servertypes.Application {
+		var emptyWasmOpts []wasm.Option
 		return New(
 			val.GetCtx().Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.GetCtx().Config.RootDir, 0,
 			params.MakeEncodingConfig(ModuleBasics),
 			simtestutils.EmptyAppOptions{},
+			emptyWasmOpts,
 		)
 	}
 }
@@ -61,7 +64,8 @@ var DefaultConsensusParams = &tmproto.ConsensusParams{
 func setup(withGenesis bool, invCheckPeriod uint) (*EmpowerApp, GenesisState) {
 	db := dbm.NewMemDB()
 	encCdc := params.MakeEncodingConfig(ModuleBasics)
-	empowerApp := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, params.MakeEncodingConfig(ModuleBasics), simtestutils.EmptyAppOptions{})
+	var emptyWasmOpts []wasm.Option
+	empowerApp := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, params.MakeEncodingConfig(ModuleBasics), simtestutils.EmptyAppOptions{}, emptyWasmOpts)
 
 	if withGenesis {
 		return empowerApp, NewDefaultGenesisState(encCdc.Codec)
@@ -213,10 +217,12 @@ func NewTestNetworkFixture() network.TestFixture {
 	}
 	defer os.RemoveAll(dir)
 
+	var emptyWasmOpts []wasm.Option
 	app := New(
 		log.NewNopLogger(), dbm.NewMemDB(), nil, true, make(map[int64]bool), dir, 0,
 		params.MakeEncodingConfig(ModuleBasics),
 		simtestutils.EmptyAppOptions{},
+		emptyWasmOpts,
 	)
 
 	return network.TestFixture{
