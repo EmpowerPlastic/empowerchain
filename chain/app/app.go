@@ -3,8 +3,6 @@ package app
 import (
 	"encoding/json"
 	"fmt"
-	wasmTypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	"io"
 	"os"
 	"path/filepath"
@@ -14,6 +12,7 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmTypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
@@ -118,6 +117,7 @@ import (
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/EmpowerPlastic/empowerchain/app/params"

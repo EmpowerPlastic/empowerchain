@@ -3,11 +3,11 @@ package app
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/CosmWasm/wasmd/x/wasm"
 	"os"
 	"testing"
 	"time"
 
+	"github.com/CosmWasm/wasmd/x/wasm"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
