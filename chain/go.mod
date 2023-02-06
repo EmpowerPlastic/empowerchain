@@ -3,7 +3,7 @@ module github.com/EmpowerPlastic/empowerchain
 go 1.19
 
 require (
-	cosmossdk.io/api v0.2.6
+	cosmossdk.io/api v0.3.0
 	cosmossdk.io/errors v1.0.0-beta.7
 	cosmossdk.io/math v1.0.0-beta.4
 	cosmossdk.io/tools/rosetta v0.2.0
@@ -21,7 +21,7 @@ require (
 	github.com/tendermint/tendermint v0.37.0-rc2
 	github.com/tendermint/tm-db v0.6.7
 	golang.org/x/exp v0.0.0-20221019170559-20944726eadf
-	google.golang.org/genproto v0.0.0-20221227171554-f9683d7f8bef
+	google.golang.org/genproto v0.0.0-20230125152338-dcaf20b6aeaa
 	google.golang.org/grpc v1.52.3
 	google.golang.org/protobuf v1.28.2-0.20220831092852-f930b1dc76e8
 	gopkg.in/yaml.v2 v2.4.0
@@ -271,12 +271,12 @@ require (
 	golang.org/x/crypto v0.4.0 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20220827204233-334a2380cb91 // indirect
 	golang.org/x/mod v0.6.0 // indirect
-	golang.org/x/net v0.4.0 // indirect
+	golang.org/x/net v0.5.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.3.0 // indirect
-	golang.org/x/term v0.3.0 // indirect
-	golang.org/x/text v0.5.0 // indirect
+	golang.org/x/sys v0.4.0 // indirect
+	golang.org/x/term v0.4.0 // indirect
+	golang.org/x/text v0.6.0 // indirect
 	golang.org/x/tools v0.2.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/api v0.107.0 // indirect
