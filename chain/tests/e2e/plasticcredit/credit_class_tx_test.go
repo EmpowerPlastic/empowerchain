@@ -5,12 +5,13 @@ import (
 
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distrcli "github.com/cosmos/cosmos-sdk/x/distribution/client/cli"
+
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *E2ETestSuite) TestCmdCreateCreditClass() {
