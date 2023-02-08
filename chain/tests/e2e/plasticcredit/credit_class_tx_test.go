@@ -4,14 +4,12 @@ import (
 	"fmt"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distrcli "github.com/cosmos/cosmos-sdk/x/distribution/client/cli"
-	"gopkg.in/yaml.v3"
-
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *E2ETestSuite) TestCmdCreateCreditClass() {
@@ -118,27 +116,6 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 			}
 		})
 	}
-}
-
-// parseCommunityPoolYaml will parse bits from proto-printed yaml into sdk.DecCoins
-func (s *E2ETestSuite) parseCommunityPoolYaml(bz []byte) sdk.DecCoins {
-	s.T().Helper()
-
-	var data map[string]interface{}
-	s.Require().NoError(yaml.Unmarshal(bz, &data))
-	pool := data["pool"]
-
-	var coins sdk.DecCoins
-	entries := pool.([]interface{})
-	for _, entry := range entries {
-		amount := entry.(map[string]interface{})["amount"]
-		denom := entry.(map[string]interface{})["denom"]
-		amt, err := sdk.NewDecFromStr(amount.(string))
-		s.Require().NoError(err)
-		coins = coins.Add(sdk.NewDecCoinFromDec(denom.(string), amt))
-	}
-
-	return coins
 }
 
 func (s *E2ETestSuite) TestCmdUpdateCreditClass() {
