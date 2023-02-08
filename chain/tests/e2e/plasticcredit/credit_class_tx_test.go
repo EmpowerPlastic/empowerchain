@@ -2,6 +2,7 @@ package e2e_test
 
 import (
 	"fmt"
+
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"

@@ -3,9 +3,10 @@ package e2e_test
 import (
 	"encoding/hex"
 	"fmt"
-	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"testing"
 	"time"
+
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
