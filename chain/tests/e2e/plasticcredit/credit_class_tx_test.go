@@ -2,6 +2,7 @@ package e2e_test
 
 import (
 	"fmt"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
@@ -21,9 +22,11 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 	s.Require().NoError(err)
 
 	queryCmd := distrcli.GetCmdQueryCommunityPool()
-	queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{})
+	queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{fmt.Sprintf("--%s=%s", flags.FlagOutput, "json")})
 	s.Require().NoError(err)
-	initialCommunityPool := s.parseCommunityPoolYaml(queryOutput.Bytes())
+	var queryPoolResponse distrtypes.QueryCommunityPoolResponse
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryPoolResponse))
+	initialCommunityPool := queryPoolResponse.GetPool()
 
 	testCases := map[string]struct {
 		args              []string
@@ -100,9 +103,12 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 
 				// verify community pool has increased by fee amount
 				queryCmd = distrcli.GetCmdQueryCommunityPool()
-				queryOutput, err = clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{})
+				queryOutput, err = clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{fmt.Sprintf("--%s=%s", flags.FlagOutput, "json")})
 				s.Require().NoError(err)
-				communityPool := s.parseCommunityPoolYaml(queryOutput.Bytes())
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryPoolResponse))
+				communityPool := queryPoolResponse.GetPool()
+
+				// calculate community pool is within error tolerance
 				diff := communityPool.Sub(initialCommunityPool)
 				feeDiff := diff.AmountOf(s.creditClassCreationFee.Denom)
 				delta := feeDiff.Sub(sdk.NewDecFromInt(s.creditClassCreationFee.Amount))
