@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmtime "github.com/tendermint/tendermint/types/time"
@@ -18,13 +19,16 @@ import (
 type TestSuite struct {
 	suite.Suite
 
-	empowerApp *app.EmpowerApp
-	ctx        sdk.Context
-	addrs      []sdk.AccAddress
+	empowerApp     *app.EmpowerApp
+	ctx            sdk.Context
+	addrs          []sdk.AccAddress
+	numTestIssuers uint64 // number of issuers created in the initial state of the test
 
 	issuerCreator                 string
 	sampleIssuerID                uint64
 	sampleIssuerAdmin             string
+	noCoinsIssuerID               uint64
+	noCoinsIssuerAdmin            string
 	sampleCreditClassAbbreviation string
 	sampleApplicantID             uint64
 	sampleApplicantAdmin          string
@@ -33,6 +37,8 @@ type TestSuite struct {
 	sampleRejectionProjectID      uint64
 	sampleSuspendedProjectID      uint64
 	sampleCreditDenom             string
+
+	creditClassCreationFee sdk.Coin
 }
 
 func (s *TestSuite) SetupTest() {
@@ -48,6 +54,21 @@ func (s *TestSuite) SetupTest() {
 	s.empowerApp = empowerApp
 	s.ctx = ctx
 	s.addrs = app.CreateRandomAccounts(1)
+
+	// fund the issuerCreator account for fee
+	s.fundAccount(s.issuerCreator, sdk.NewCoins(sdk.NormalizeCoin(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6)))))
+	s.fundAccount(s.sampleIssuerAdmin, sdk.NewCoins(sdk.NormalizeCoin(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6)))))
+}
+
+// fundAccount mints new coins and send them to the given test account
+func (s *TestSuite) fundAccount(acc string, amt sdk.Coins) {
+	s.T().Helper()
+	sdkAddr, err := sdk.AccAddressFromBech32(acc)
+	s.Require().NoError(err)
+	err = s.empowerApp.MintKeeper.MintCoins(s.ctx, amt)
+	s.Require().NoError(err)
+	err = s.empowerApp.BankKeeper.SendCoinsFromModuleToAccount(s.ctx, minttypes.ModuleName, sdkAddr, amt)
+	s.Require().NoError(err)
 }
 
 func (s *TestSuite) PopulateWithSamples() {
@@ -58,7 +79,8 @@ func (s *TestSuite) PopulateWithSamples() {
 	_, err := ms.UpdateParams(goCtx, &plasticcredit.MsgUpdateParams{
 		Authority: k.Authority(),
 		Params: plasticcredit.Params{
-			IssuerCreator: s.issuerCreator,
+			IssuerCreator:          s.issuerCreator,
+			CreditClassCreationFee: s.creditClassCreationFee,
 		},
 	})
 	s.Require().NoError(err)
@@ -71,6 +93,16 @@ func (s *TestSuite) PopulateWithSamples() {
 	})
 	s.Require().NoError(err)
 	s.Require().Equal(s.sampleIssuerID, respIssuer.IssuerId)
+
+	// create 2nd issuer which will receive no funds
+	respIssuer, err = ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
+		Creator:     s.issuerCreator,
+		Name:        "Empower",
+		Description: "Empower is cool",
+		Admin:       s.noCoinsIssuerAdmin,
+	})
+	s.Require().NoError(err)
+	s.Require().Equal(s.noCoinsIssuerID, respIssuer.IssuerId)
 
 	_, err = ms.CreateCreditClass(goCtx, &plasticcredit.MsgCreateCreditClass{
 		Creator:      s.sampleIssuerAdmin,
@@ -164,9 +196,12 @@ func TestTestSuite(t *testing.T) {
 	params.RegisterDenoms()
 
 	ts := &TestSuite{}
+	ts.numTestIssuers = 2
 	ts.issuerCreator = sample.AccAddress()
 	ts.sampleIssuerID = 1
 	ts.sampleIssuerAdmin = sample.AccAddress()
+	ts.noCoinsIssuerID = 2
+	ts.noCoinsIssuerAdmin = sample.AccAddress()
 	ts.sampleCreditClassAbbreviation = "EMP"
 	ts.sampleApplicantID = 1
 	ts.sampleApplicantAdmin = sample.AccAddress()
@@ -175,6 +210,7 @@ func TestTestSuite(t *testing.T) {
 	ts.sampleRejectionProjectID = 3
 	ts.sampleSuspendedProjectID = 4
 	ts.sampleCreditDenom = "EMP/123"
+	ts.creditClassCreationFee = sdk.NormalizeCoin(plasticcredit.DefaultCreditClassCreationFee)
 
 	suite.Run(t, ts)
 }

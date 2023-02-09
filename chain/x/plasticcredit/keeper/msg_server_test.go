@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"math/rand"
 	"time"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -10,6 +11,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	"github.com/EmpowerPlastic/empowerchain/app"
+	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"github.com/EmpowerPlastic/empowerchain/utils"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
@@ -26,7 +28,8 @@ func (s *TestSuite) TestUpdateParams() {
 				return &plasticcredit.MsgUpdateParams{
 					Authority: empowerApp.PlasticcreditKeeper.Authority(),
 					Params: plasticcredit.Params{
-						IssuerCreator: sample.AccAddress(),
+						IssuerCreator:          sample.AccAddress(),
+						CreditClassCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
 					},
 				}
 			},
@@ -41,16 +44,29 @@ func (s *TestSuite) TestUpdateParams() {
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
-		"invalid params": {
+		"invalid issuer creator params": {
 			msg: func(empowerApp *app.EmpowerApp) *plasticcredit.MsgUpdateParams {
 				return &plasticcredit.MsgUpdateParams{
 					Authority: empowerApp.PlasticcreditKeeper.Authority(),
 					Params: plasticcredit.Params{
-						IssuerCreator: "invalid",
+						IssuerCreator:          "invalid",
+						CreditClassCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
 					},
 				}
 			},
 			err: sdkerrors.ErrInvalidAddress,
+		},
+		"invalid credit class creation fee params": {
+			msg: func(empowerApp *app.EmpowerApp) *plasticcredit.MsgUpdateParams {
+				return &plasticcredit.MsgUpdateParams{
+					Authority: empowerApp.PlasticcreditKeeper.Authority(),
+					Params: plasticcredit.Params{
+						IssuerCreator:          sample.AccAddress(),
+						CreditClassCreationFee: sdk.Coin{},
+					},
+				}
+			},
+			err: sdkerrors.ErrInvalidCoins,
 		},
 	}
 
@@ -143,10 +159,10 @@ func (s *TestSuite) TestCreateIssuer() {
 			idCounters := k.GetIDCounters(s.ctx)
 
 			if err == nil {
-				s.Require().Equal(uint64(2), resp.IssuerId)
+				s.Require().Equal(s.numTestIssuers+1, resp.IssuerId)
 
 				idCounters := k.GetIDCounters(s.ctx)
-				s.Require().Equal(uint64(3), idCounters.NextIssuerId)
+				s.Require().Equal(s.numTestIssuers+2, idCounters.NextIssuerId)
 
 				issuer, found := k.GetIssuer(s.ctx, resp.IssuerId)
 				s.Require().True(found)
@@ -171,8 +187,8 @@ func (s *TestSuite) TestCreateIssuer() {
 				}, eventCreateIssuer)
 
 			} else {
-				s.Require().Equal(uint64(2), idCounters.NextIssuerId)
-				_, found := k.GetIssuer(s.ctx, 2)
+				s.Require().Equal(s.numTestIssuers+1, idCounters.NextIssuerId)
+				_, found := k.GetIssuer(s.ctx, s.numTestIssuers+1)
 				s.Require().False(found)
 
 				s.Require().Len(events, 0)
@@ -336,8 +352,7 @@ func (s *TestSuite) TestCreateApplicant() {
 					Admin:       tc.msg.Admin,
 				}, applicant)
 
-				s.Require().Len(events, 1)
-				parsedEvent, err := sdk.ParseTypedEvent(events[0])
+				parsedEvent, err := sdk.ParseTypedEvent(events[len(events)-1])
 				s.Require().NoError(err)
 				eventCreateApplicant, ok := parsedEvent.(*plasticcredit.EventCreateApplicant)
 				s.Require().True(ok)
@@ -477,6 +492,15 @@ func (s *TestSuite) TestCreateCreditClass() {
 			},
 			err: nil,
 		},
+		"unable to cover fee": {
+			msg: &plasticcredit.MsgCreateCreditClass{
+				Creator:      s.noCoinsIssuerAdmin,
+				Abbreviation: "PCRD",
+				IssuerId:     s.noCoinsIssuerID,
+				Name:         "Empower Plastic Credits",
+			},
+			err: sdkerrors.ErrInsufficientFee,
+		},
 		"unauthorized creator on the issuer": {
 			msg: &plasticcredit.MsgCreateCreditClass{
 				Creator:      sample.AccAddress(),
@@ -529,6 +553,9 @@ func (s *TestSuite) TestCreateCreditClass() {
 			s.SetupTest()
 			s.PopulateWithSamples()
 			k := s.empowerApp.PlasticcreditKeeper
+			dk := s.empowerApp.DistrKeeper
+			initialCommunityPool := dk.GetFeePool(s.ctx).CommunityPool
+
 			goCtx := sdk.WrapSDKContext(s.ctx)
 			ms := keeper.NewMsgServerImpl(k)
 
@@ -544,8 +571,14 @@ func (s *TestSuite) TestCreateCreditClass() {
 					IssuerId:     tc.msg.IssuerId,
 					Name:         tc.msg.Name,
 				}, creditClass)
-				s.Require().Len(events, 1)
-				parsedEvent, err := sdk.ParseTypedEvent(events[0])
+
+				// verify community pool has increased by fee amount
+				communityPool := dk.GetFeePool(s.ctx).CommunityPool
+				diff := communityPool.Sub(initialCommunityPool)
+				feeDiff := diff.AmountOf(s.creditClassCreationFee.Denom)
+				s.Require().Equal(sdk.NewDecFromInt(s.creditClassCreationFee.Amount), feeDiff)
+
+				parsedEvent, err := sdk.ParseTypedEvent(events[len(events)-1])
 				s.Require().NoError(err)
 				eventCreateCreditClass, ok := parsedEvent.(*plasticcredit.EventCreateCreditClass)
 				s.Require().True(ok)
@@ -634,6 +667,7 @@ func (s *TestSuite) TestCreateDuplicateCreditClass() {
 	goCtx := sdk.WrapSDKContext(s.ctx)
 	ms := keeper.NewMsgServerImpl(k)
 	admin1 := sample.AccAddress()
+	s.fundAccount(admin1, sdk.NewCoins(sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(10e12))))
 	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),
 		Name:        "Empower",
@@ -643,6 +677,7 @@ func (s *TestSuite) TestCreateDuplicateCreditClass() {
 	s.Require().NoError(err)
 
 	admin2 := sample.AccAddress()
+	s.fundAccount(admin2, sdk.NewCoins(sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(10e12))))
 	_, err = ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),
 		Name:        "Someone else",
