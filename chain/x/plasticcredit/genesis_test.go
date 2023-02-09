@@ -29,7 +29,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: plasticcredit.GenesisState{
 				Params: plasticcredit.Params{
 					IssuerCreator:          sample.AccAddress(),
-					CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
+					CreditClassCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 				IdCounters: plasticcredit.IDCounters{
 					NextIssuerId:    3,

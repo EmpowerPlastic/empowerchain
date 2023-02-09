@@ -25,7 +25,6 @@ func SetAddressPrefixes() {
 	config.SetBech32PrefixForAccount(Bech32AccountPrefix, accountPubKeyPrefix)
 	config.SetBech32PrefixForValidator(validatorAddressPrefix, validatorPubKeyPrefix)
 	config.SetBech32PrefixForConsensusNode(consNodeAddressPrefix, consNodePubKeyPrefix)
-	config.Seal()
 }
 
 // RegisterDenoms registers token denoms.

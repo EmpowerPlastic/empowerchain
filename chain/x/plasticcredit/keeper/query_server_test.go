@@ -19,7 +19,7 @@ func (s *TestSuite) TestParamsQuery() {
 	goCtx := sdk.WrapSDKContext(s.ctx)
 
 	updatedParams := plasticcredit.DefaultParams()
-	updatedParams.CreditClassCreationFee = sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63()))
+	updatedParams.CreditClassCreationFee = sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63()))
 	_, err := ms.UpdateParams(goCtx, &plasticcredit.MsgUpdateParams{
 		Authority: k.Authority(),
 		Params:    updatedParams,
@@ -146,7 +146,7 @@ func (s *TestSuite) TestCreditClassQuery() {
 	goCtx := sdk.WrapSDKContext(s.ctx)
 	ms := keeper.NewMsgServerImpl(k)
 	issuerAdmin := sample.AccAddress()
-	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6))))
+	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(10e12))))
 	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),
 		Name:        "Empower",
@@ -186,7 +186,7 @@ func (s *TestSuite) TestCreditClassesQuery() {
 	goCtx := sdk.WrapSDKContext(s.ctx)
 	ms := keeper.NewMsgServerImpl(k)
 	issuerAdmin := sample.AccAddress()
-	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6))))
+	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(10e12))))
 
 	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),
@@ -243,7 +243,7 @@ func (s *TestSuite) TestProjectQuery() {
 	goCtx := sdk.WrapSDKContext(s.ctx)
 	ms := keeper.NewMsgServerImpl(k)
 	issuerAdmin := sample.AccAddress()
-	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6))))
+	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(10e12))))
 	applicantAdmin := sample.AccAddress()
 	creditClassAbbreviation := "PCRD"
 

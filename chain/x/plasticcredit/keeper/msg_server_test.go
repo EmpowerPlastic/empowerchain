@@ -29,7 +29,7 @@ func (s *TestSuite) TestUpdateParams() {
 					Authority: empowerApp.PlasticcreditKeeper.Authority(),
 					Params: plasticcredit.Params{
 						IssuerCreator:          sample.AccAddress(),
-						CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
+						CreditClassCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
 					},
 				}
 			},
@@ -50,7 +50,7 @@ func (s *TestSuite) TestUpdateParams() {
 					Authority: empowerApp.PlasticcreditKeeper.Authority(),
 					Params: plasticcredit.Params{
 						IssuerCreator:          "invalid",
-						CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
+						CreditClassCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
 					},
 				}
 			},
@@ -576,7 +576,7 @@ func (s *TestSuite) TestCreateCreditClass() {
 				communityPool := dk.GetFeePool(s.ctx).CommunityPool
 				diff := communityPool.Sub(initialCommunityPool)
 				feeDiff := diff.AmountOf(s.creditClassCreationFee.Denom)
-				s.Require().Equal(feeDiff, sdk.NewDecFromInt(s.creditClassCreationFee.Amount))
+				s.Require().Equal(sdk.NewDecFromInt(s.creditClassCreationFee.Amount), feeDiff)
 
 				parsedEvent, err := sdk.ParseTypedEvent(events[len(events)-1])
 				s.Require().NoError(err)
@@ -667,7 +667,7 @@ func (s *TestSuite) TestCreateDuplicateCreditClass() {
 	goCtx := sdk.WrapSDKContext(s.ctx)
 	ms := keeper.NewMsgServerImpl(k)
 	admin1 := sample.AccAddress()
-	s.fundAccount(admin1, sdk.NewCoins(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6))))
+	s.fundAccount(admin1, sdk.NewCoins(sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(10e12))))
 	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),
 		Name:        "Empower",
@@ -677,7 +677,7 @@ func (s *TestSuite) TestCreateDuplicateCreditClass() {
 	s.Require().NoError(err)
 
 	admin2 := sample.AccAddress()
-	s.fundAccount(admin2, sdk.NewCoins(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6))))
+	s.fundAccount(admin2, sdk.NewCoins(sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(10e12))))
 	_, err = ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),
 		Name:        "Someone else",

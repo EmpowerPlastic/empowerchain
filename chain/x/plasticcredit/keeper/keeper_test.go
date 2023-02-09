@@ -56,8 +56,8 @@ func (s *TestSuite) SetupTest() {
 	s.addrs = app.CreateRandomAccounts(1)
 
 	// fund the issuerCreator account for fee
-	s.fundAccount(s.issuerCreator, sdk.NewCoins(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6))))
-	s.fundAccount(s.sampleIssuerAdmin, sdk.NewCoins(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6))))
+	s.fundAccount(s.issuerCreator, sdk.NewCoins(sdk.NormalizeCoin(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6)))))
+	s.fundAccount(s.sampleIssuerAdmin, sdk.NewCoins(sdk.NormalizeCoin(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6)))))
 }
 
 // fundAccount mints new coins and send them to the given test account
@@ -210,7 +210,7 @@ func TestTestSuite(t *testing.T) {
 	ts.sampleRejectionProjectID = 3
 	ts.sampleSuspendedProjectID = 4
 	ts.sampleCreditDenom = "EMP/123"
-	ts.creditClassCreationFee = plasticcredit.DefaultCreditClassCreationFee
+	ts.creditClassCreationFee = sdk.NormalizeCoin(plasticcredit.DefaultCreditClassCreationFee)
 
 	suite.Run(t, ts)
 }

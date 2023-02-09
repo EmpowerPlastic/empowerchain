@@ -261,7 +261,7 @@ func (s *E2ETestSuite) TestCmdUpdateIssuerCreator() {
 			"",
 			plasticcredit.Params{
 				IssuerCreator:          "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
-				CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(42)),
+				CreditClassCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(42e6)),
 			},
 		},
 		"invalid issuer creator address": {
