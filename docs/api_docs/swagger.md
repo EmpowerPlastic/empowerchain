@@ -1010,7 +1010,30 @@ An unexpected error response.
 
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
+| credit_class_creation_fee | [PlasticCreditParamsOKBodyParamsCreditClassCreationFee](#plastic-credit-params-o-k-body-params-credit-class-creation-fee)| `PlasticCreditParamsOKBodyParamsCreditClassCreationFee` |  | |  |  |
 | issuer_creator | string| `string` |  | |  |  |
+
+
+
+**<span id="plastic-credit-params-o-k-body-params-credit-class-creation-fee"></span> PlasticCreditParamsOKBodyParamsCreditClassCreationFee**
+
+
+> Coin defines a token with a denomination and an amount.
+
+NOTE: The amount field is an Int which implements the custom method
+signatures required by gogoproto.
+  
+
+
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| amount | string| `string` |  | |  |  |
+| denom | string| `string` |  | |  |  |
 
 
 
@@ -1298,6 +1321,28 @@ there are no more results. |  |
 
 
 
+### <span id="cosmos-base-v1beta1-coin"></span> cosmos.base.v1beta1.Coin
+
+
+> Coin defines a token with a denomination and an amount.
+
+NOTE: The amount field is an Int which implements the custom method
+signatures required by gogoproto.
+  
+
+
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| amount | string| `string` |  | |  |  |
+| denom | string| `string` |  | |  |  |
+
+
+
 ### <span id="empowerchain-plasticcredit-applicant"></span> empowerchain.plasticcredit.Applicant
 
 
@@ -1451,7 +1496,32 @@ there are no more results. |  |
 
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
+| credit_class_creation_fee | [EmpowerchainPlasticcreditParamsCreditClassCreationFee](#empowerchain-plasticcredit-params-credit-class-creation-fee)| `EmpowerchainPlasticcreditParamsCreditClassCreationFee` |  | |  |  |
 | issuer_creator | string| `string` |  | |  |  |
+
+
+
+#### Inlined models
+
+**<span id="empowerchain-plasticcredit-params-credit-class-creation-fee"></span> EmpowerchainPlasticcreditParamsCreditClassCreationFee**
+
+
+> Coin defines a token with a denomination and an amount.
+
+NOTE: The amount field is an Int which implements the custom method
+signatures required by gogoproto.
+  
+
+
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| amount | string| `string` |  | |  |  |
+| denom | string| `string` |  | |  |  |
 
 
 
@@ -1845,7 +1915,30 @@ there are no more results. |  |
 
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
+| credit_class_creation_fee | [EmpowerchainPlasticcreditQueryParamsResponseParamsCreditClassCreationFee](#empowerchain-plasticcredit-query-params-response-params-credit-class-creation-fee)| `EmpowerchainPlasticcreditQueryParamsResponseParamsCreditClassCreationFee` |  | |  |  |
 | issuer_creator | string| `string` |  | |  |  |
+
+
+
+**<span id="empowerchain-plasticcredit-query-params-response-params-credit-class-creation-fee"></span> EmpowerchainPlasticcreditQueryParamsResponseParamsCreditClassCreationFee**
+
+
+> Coin defines a token with a denomination and an amount.
+
+NOTE: The amount field is an Int which implements the custom method
+signatures required by gogoproto.
+  
+
+
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| amount | string| `string` |  | |  |  |
+| denom | string| `string` |  | |  |  |
 
 
 
