@@ -125,6 +125,15 @@ func (s *TestSuite) TestCreateIssuer() {
 			},
 			err: utils.ErrInvalidValue,
 		},
+		"invalid description": {
+			msg: &plasticcredit.MsgCreateIssuer{
+				Creator:     s.issuerCreator,
+				Name:        "Empower",
+				Description: sample.String(257),
+				Admin:       sample.AccAddress(),
+			},
+			err: utils.ErrInvalidValue,
+		},
 	}
 
 	for name, tc := range testCases {
@@ -236,6 +245,16 @@ func (s *TestSuite) TestUpdateIssuer() {
 			},
 			err: utils.ErrInvalidValue,
 		},
+		"invalid description": {
+			msg: &plasticcredit.MsgUpdateIssuer{
+				Updater:     s.sampleIssuerAdmin,
+				IssuerId:    s.sampleIssuerID,
+				Name:        "Empower",
+				Description: sample.String(257),
+				Admin:       sample.AccAddress(),
+			},
+			err: utils.ErrInvalidValue,
+		},
 	}
 
 	for name, tc := range testCases {
@@ -303,6 +322,14 @@ func (s *TestSuite) TestCreateApplicant() {
 			msg: &plasticcredit.MsgCreateApplicant{
 				Name:        "VeryveryveryVeryveryveryVeryveryveryVeryveryveryVeryveryveryVeryveryverylong",
 				Description: "Empower is cool",
+				Admin:       sample.AccAddress(),
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"invalid description": {
+			msg: &plasticcredit.MsgCreateApplicant{
+				Name:        "Empower",
+				Description: sample.String(257),
 				Admin:       sample.AccAddress(),
 			},
 			err: utils.ErrInvalidValue,

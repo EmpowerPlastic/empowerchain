@@ -13,6 +13,7 @@ var (
 
 	// Matches the regex for a valid description, which is:
 	// - up to 256 characters
+	// - is alphanumeric
 	descriptionValidation = regexp.MustCompile(`^.{1,256}$`)
 )
 

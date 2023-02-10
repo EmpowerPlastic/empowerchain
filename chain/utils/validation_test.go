@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -67,11 +68,11 @@ func TestIsValidDescription(t *testing.T) {
 			expectedResult: true,
 		},
 		"Happy path full length:": {
-			description:    "aylPbqP5OKRLHZvvt8gMZ1r0D02cJkf4mq7PLY8xOFq1bAQPEHvtH3AY4MqHTnfMHPWgHvhOYpmkndMyRqBvkeDZJjMOPMKtiekk6IaYWLTwHaEXC6723LFtjfCCfMN8LaUxWtsSGSWkyn17LKE3QXZLJ6gGDZe9JKAqsGOhQBF1LN5o9pO3E6hMe7ALBIUMdxSpnElqYzDsqBu4u5eAcswBowKwcSWnYI9U1iXQQjQvXsr3PJoBP83oL5Km1RZv",
+			description:    sample.String(256),
 			expectedResult: true,
 		},
 		"Too long name should fail": {
-			description:    "aylPbqP5OKRLHZvvt8gMZ1r0D02cJkf4mq7PLY8xOFq1bAQPEHvtH3AY4MqHTnfMHPWgHvhOYpmkndMyRqBvkeDZJjMOPMKtiekk6IaYWLTwHaEXC6723LFtjfCCfMN8LaUxWtsSGSWkyn17LKE3QXZLJ6gGDZe9JKAqsGOhQBF1LN5o9pO3E6hMe7ALBIUMdxSpnElqYzDsqBu4u5eAcswBowKwcSWnYI9U1iXQQjQvXsr3PJoBP83oL5Km1RZv+",
+			description:    sample.String(257),
 			expectedResult: false,
 		},
 		"Non-utf8 characters should fail": {
