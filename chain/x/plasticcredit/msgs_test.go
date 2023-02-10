@@ -33,7 +33,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: sample.AccAddress(),
 				Params: Params{
-					IssuerCreator: "",
+					IssuerCreator:          "",
 					CreditClassCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 			},
