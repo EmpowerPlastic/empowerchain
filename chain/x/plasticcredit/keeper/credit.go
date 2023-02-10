@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"strings"
 
 	"cosmossdk.io/errors"
@@ -40,6 +41,26 @@ func (k Keeper) GetCreditBalance(ctx sdk.Context, owner sdk.AccAddress, denom st
 	k.cdc.MustUnmarshal(bz, &creditBalance)
 
 	return creditBalance, true
+}
+
+func (k Keeper) GetCreditBalances(ctx sdk.Context, pageReq query.PageRequest) ([]plasticcredit.CreditBalance, query.PageResponse, error) {
+	store := k.getCreditBalanceStore(ctx)
+
+	var creditBalances []plasticcredit.CreditBalance
+	pageRes, err := query.Paginate(store, &pageReq, func(_ []byte, value []byte) error {
+		var creditBalance plasticcredit.CreditBalance
+		if err := k.cdc.Unmarshal(value, &creditBalance); err != nil {
+			return err
+		}
+		creditBalances = append(creditBalances, creditBalance)
+
+		return nil
+	})
+	if err != nil {
+		return nil, query.PageResponse{}, err
+	}
+
+	return creditBalances, *pageRes, nil
 }
 
 func (k Keeper) retireCreditsForAddress(ctx sdk.Context, owner sdk.AccAddress, denom string, amount uint64) (plasticcredit.CreditBalance, error) {

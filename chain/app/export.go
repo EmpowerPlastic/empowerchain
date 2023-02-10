@@ -27,7 +27,7 @@ func (app *EmpowerApp) ExportAppStateAndValidators(forZeroHeight bool, jailAllow
 		app.prepForZeroHeightGenesis(ctx, jailAllowedAddrs)
 	}
 
-	genState := app.moduleManager.ExportGenesisForModules(ctx, app.appCodec, modulesToExport)
+	genState := app.ModuleManager.ExportGenesisForModules(ctx, app.appCodec, modulesToExport)
 	appState, err := json.MarshalIndent(genState, "", "  ")
 	if err != nil {
 		return servertypes.ExportedApp{}, err

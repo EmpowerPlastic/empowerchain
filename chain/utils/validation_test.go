@@ -19,9 +19,17 @@ func TestIsBasicValidName(t *testing.T) {
 			name:           "also OK_78%$",
 			expectedResult: true,
 		},
+		"Happy path 3": {
+			name: "fx",
+			expectedResult: true,
+		},
 		"Happy path full length:": {
 			name:           "This name is 64 characters long, which is the limit we have set!",
 			expectedResult: true,
+		},
+		"Too short name should fail": {
+			name:           "f",
+			expectedResult: false,
 		},
 		"Too long name should fail": {
 			name:           "This name is 65 characters long, which is above the limit we set!",

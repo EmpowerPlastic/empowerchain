@@ -31,7 +31,7 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type MsgUpdateParams struct {
-	// authority is the address of the governance account.
+	// authority is the address that controls the module (defaults to x/gov unless overwritten in keeper).
 	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
 	// params defines the x/plasitccredit parameters to update.
 	//
