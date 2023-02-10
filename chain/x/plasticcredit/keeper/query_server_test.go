@@ -290,6 +290,8 @@ func (s *TestSuite) TestProjectsQuery() {
 	goCtx := sdk.WrapSDKContext(s.ctx)
 	ms := keeper.NewMsgServerImpl(k)
 	issuerAdmin := sample.AccAddress()
+	// fund the issuerAdmin account for fee
+	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NormalizeCoin(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6)))))
 	applicantAdmin := sample.AccAddress()
 	creditClassAbbreviation := "DRP"
 	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
