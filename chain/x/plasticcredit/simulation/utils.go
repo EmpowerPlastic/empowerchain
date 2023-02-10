@@ -3,11 +3,12 @@ package simulation
 import (
 	"context"
 	"fmt"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
 	"math/rand"
 
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
 )
 
 func createUniqueRandomAbbreviation(ctx context.Context, r *rand.Rand, querier keeper.Querier) string {

@@ -3,14 +3,18 @@ package simulation
 import (
 	"math/rand"
 
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
+	"cosmossdk.io/math"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
 )
 
 const (
 	IssuerCreatorKey     = "issuer-creator"
+	IssuerCreatorFeeKey  = "issuer-creator-fee"
 	IssuersKey           = "issuers"
 	ApplicantsKey        = "applicants"
 	CreditClassesKey     = "credit-classes"
@@ -27,7 +31,13 @@ func RandomizedGenState(simState *module.SimulationState) {
 		func(r *rand.Rand) { issuerCreator = generateIssuerCreator(r, simState.Accounts) },
 	)
 
-	params := plasticcredit.NewParams(issuerCreator)
+	var issuerCreatorFee int
+	simState.AppParams.GetOrGenerate(
+		simState.Cdc, IssuerCreatorFeeKey, &issuerCreatorFee, simState.Rand,
+		func(r *rand.Rand) { issuerCreatorFee = simtypes.RandIntBetween(r, 1, 10000) },
+	)
+
+	params := plasticcredit.NewParams(issuerCreator, sdk.NewCoin(simState.BondDenom, math.NewInt(int64(issuerCreatorFee))))
 
 	var issuers []plasticcredit.Issuer
 	simState.AppParams.GetOrGenerate(
@@ -150,7 +160,7 @@ func generateProjects(r *rand.Rand, applicants []plasticcredit.Applicant, credit
 		return projects
 	}
 
-	nextProjectId := 1
+	nextProjectID := 1
 	for i := 0; i < len(applicants); i++ {
 		numberOfProjectsForApplicant := simtypes.RandIntBetween(r, 1, 3)
 
@@ -158,14 +168,14 @@ func generateProjects(r *rand.Rand, applicants []plasticcredit.Applicant, credit
 			creditClass := creditClasses[simtypes.RandIntBetween(r, 0, len(creditClasses))]
 
 			projects = append(projects, plasticcredit.Project{
-				Id:                      uint64(nextProjectId),
+				Id:                      uint64(nextProjectID),
 				ApplicantId:             applicants[i].Id,
 				CreditClassAbbreviation: creditClass.Abbreviation,
 				Name:                    createRandomName(r),
 				Status:                  plasticcredit.ProjectStatus(simtypes.RandIntBetween(r, 0, 3)),
 			})
 
-			nextProjectId++
+			nextProjectID++
 		}
 	}
 

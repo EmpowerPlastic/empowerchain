@@ -2,13 +2,15 @@ package simulation_test
 
 import (
 	"fmt"
+	"testing"
+
+	"github.com/cosmos/cosmos-sdk/types/kv"
+	"github.com/stretchr/testify/require"
+
 	"github.com/EmpowerPlastic/empowerchain/app"
 	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/simulation"
-	"github.com/cosmos/cosmos-sdk/types/kv"
-	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestNewDecodeStore(t *testing.T) {

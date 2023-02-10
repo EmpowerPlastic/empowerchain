@@ -1,16 +1,17 @@
 package module
 
 import (
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/simulation"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/simulation"
 )
 
 var (
 	_ module.AppModuleSimulation = AppModule{}
-	_ module.HasProposalMsgs	 = AppModule{}
+	_ module.HasProposalMsgs     = AppModule{}
 )
 
 // GenerateGenesisState creates a randomized GenState of the module

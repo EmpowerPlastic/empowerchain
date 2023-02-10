@@ -20,7 +20,7 @@ func TestIsBasicValidName(t *testing.T) {
 			expectedResult: true,
 		},
 		"Happy path 3": {
-			name: "fx",
+			name:           "fx",
 			expectedResult: true,
 		},
 		"Happy path full length:": {

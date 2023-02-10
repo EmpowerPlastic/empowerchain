@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"github.com/cosmos/cosmos-sdk/types/query"
 	"strings"
 
 	"cosmossdk.io/errors"
@@ -9,6 +8,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/cosmos/gogoproto/proto"
 
 	"github.com/EmpowerPlastic/empowerchain/utils"

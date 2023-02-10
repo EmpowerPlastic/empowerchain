@@ -1,15 +1,17 @@
 package simulation
 
 import (
-	"github.com/EmpowerPlastic/empowerchain/app"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
+	"os"
+	"testing"
+
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 	"github.com/stretchr/testify/require"
-	"os"
-	"testing"
+
+	"github.com/EmpowerPlastic/empowerchain/app"
+	"github.com/EmpowerPlastic/empowerchain/app/params"
 )
 
 func TestFullAppSimulation(t *testing.T) {

@@ -89,7 +89,7 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 type AppModule struct {
 	AppModuleBasic
 
-	keeper keeper.Keeper
+	keeper        keeper.Keeper
 	accountKeeper plasticcredit.AccountKeeper
 	bankKeeper    plasticcredit.BankKeeper
 }

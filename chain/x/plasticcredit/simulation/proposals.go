@@ -1,12 +1,14 @@
 package simulation
 
 import (
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"math/rand"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"math/rand"
+
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
 
 // Simulation operation weights constants

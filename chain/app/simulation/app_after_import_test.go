@@ -2,8 +2,9 @@ package simulation
 
 import (
 	"fmt"
-	"github.com/EmpowerPlastic/empowerchain/app"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
+	"os"
+	"testing"
+
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -11,8 +12,9 @@ import (
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
-	"os"
-	"testing"
+
+	"github.com/EmpowerPlastic/empowerchain/app"
+	"github.com/EmpowerPlastic/empowerchain/app/params"
 )
 
 func TestAppSimulationAfterImport(t *testing.T) {

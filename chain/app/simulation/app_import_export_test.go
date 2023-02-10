@@ -3,8 +3,11 @@ package simulation
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/EmpowerPlastic/empowerchain/app"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
+	"os"
+	"runtime/debug"
+	"strings"
+	"testing"
+
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -23,10 +26,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"os"
-	"runtime/debug"
-	"strings"
-	"testing"
+
+	"github.com/EmpowerPlastic/empowerchain/app"
+	"github.com/EmpowerPlastic/empowerchain/app/params"
 )
 
 func TestAppImportExport(t *testing.T) {
@@ -43,8 +45,6 @@ func TestAppImportExport(t *testing.T) {
 		require.NoError(t, db.Close())
 		require.NoError(t, os.RemoveAll(dir))
 	}()
-
-
 	empowerApp := app.New(logger, db, nil, true, map[int64]bool{}, app.DefaultNodeHome, simcli.FlagPeriodValue, params.MakeEncodingConfig(app.ModuleBasics), simtestutil.EmptyAppOptions{}, fauxMerkleModeOpt)
 	require.Equal(t, "empowerchain", empowerApp.Name())
 

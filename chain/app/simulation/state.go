@@ -3,14 +3,10 @@ package simulation
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/EmpowerPlastic/empowerchain/app"
 	"io"
 	"math/rand"
 	"os"
 	"time"
-
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	tmtypes "github.com/tendermint/tendermint/types"
 
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -22,6 +18,10 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	tmjson "github.com/tendermint/tendermint/libs/json"
+	tmtypes "github.com/tendermint/tendermint/types"
+
+	"github.com/EmpowerPlastic/empowerchain/app"
 )
 
 // TODO: Remove this file as soon as a 0.47 release is cut that includes this code in the simtestutil package.

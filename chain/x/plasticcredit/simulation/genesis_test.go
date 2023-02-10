@@ -2,8 +2,6 @@ package simulation_test
 
 import (
 	"encoding/json"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"testing"
 
@@ -13,7 +11,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/stretchr/testify/assert"
 
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/simulation"
 )
 

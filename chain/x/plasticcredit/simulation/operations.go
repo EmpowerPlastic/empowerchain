@@ -1,17 +1,20 @@
 package simulation
 
 import (
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
+	"math/rand"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"math/rand"
+
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
 )
 
+//nolint:gosec
 const (
 	DefaultWeightMsgCreateIssuer      = 10
 	DefaultWeightMsgUpdateIssuer      = 20
@@ -412,9 +415,13 @@ func SimulateMsgCreateCreditClass(cdc *codec.ProtoCodec, ak plasticcredit.Accoun
 			Name:         createRandomName(r),
 		}
 
-		// TODO: Add check to see if the account has funds to cover the creator fee (https://github.com/regen-network/regen-ledger/blob/621713ff75ca8b03e15c32a4bbb21c29588b0878/x/ecocredit/base/simulation/msg_create_class.go#L43-L46)
+		res, _ := querier.Params(ctx, &plasticcredit.QueryParamsRequest{})
+		params := res.Params
 
-		spendable := bk.SpendableCoins(sdkCtx, admin.Address)
+		spendable, neg := bk.SpendableCoins(sdkCtx, admin.Address).SafeSub(params.CreditClassCreationFee)
+		if neg {
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "not enough balance to create credit class"), nil, nil
+		}
 
 		txCtx := simulation.OperationInput{
 			R:               r,
@@ -602,7 +609,7 @@ func SimulateMsgApproveProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKe
 		if err != nil {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, err
 		}
-		if project.Status == plasticcredit.ProjectStatus_APPROVED  {
+		if project.Status == plasticcredit.ProjectStatus_APPROVED {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "project already approved"), nil, nil
 		}
 
@@ -660,7 +667,7 @@ func SimulateMsgRejectProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKee
 		if err != nil {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, err
 		}
-		if project.Status != plasticcredit.ProjectStatus_NEW  {
+		if project.Status != plasticcredit.ProjectStatus_NEW {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "project cannot be rejected"), nil, nil
 		}
 
@@ -680,7 +687,7 @@ func SimulateMsgRejectProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKee
 		}
 
 		msg := &plasticcredit.MsgRejectProject{
-			Rejector: issuerAdmin.Address.String(),
+			Rejector:  issuerAdmin.Address.String(),
 			ProjectId: project.Id,
 		}
 
@@ -718,7 +725,7 @@ func SimulateMsgSuspendProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKe
 		if err != nil {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, err
 		}
-		if project.Status != plasticcredit.ProjectStatus_APPROVED  {
+		if project.Status != plasticcredit.ProjectStatus_APPROVED {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "project cannot be suspended"), nil, nil
 		}
 
@@ -738,7 +745,7 @@ func SimulateMsgSuspendProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKe
 		}
 
 		msg := &plasticcredit.MsgSuspendProject{
-			Updater: issuerAdmin.Address.String(),
+			Updater:   issuerAdmin.Address.String(),
 			ProjectId: project.Id,
 		}
 
@@ -776,7 +783,7 @@ func SimulateMsgIssueCredits(cdc *codec.ProtoCodec, ak plasticcredit.AccountKeep
 		if err != nil {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, err
 		}
-		if project.Status != plasticcredit.ProjectStatus_APPROVED  {
+		if project.Status != plasticcredit.ProjectStatus_APPROVED {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "cannot issue credit for non-approved project"), nil, nil
 		}
 
@@ -812,7 +819,7 @@ func SimulateMsgIssueCredits(cdc *codec.ProtoCodec, ak plasticcredit.AccountKeep
 			Msg:             msg,
 			MsgType:         msgType,
 			Context:         sdkCtx,
-			SimAccount: 	issuerAdmin,
+			SimAccount:      issuerAdmin,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
 			ModuleName:      plasticcredit.ModuleName,

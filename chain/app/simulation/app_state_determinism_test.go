@@ -3,8 +3,10 @@ package simulation
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/EmpowerPlastic/empowerchain/app"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
+	"math/rand"
+	"os"
+	"testing"
+
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -12,9 +14,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
-	"math/rand"
-	"os"
-	"testing"
+
+	"github.com/EmpowerPlastic/empowerchain/app"
+	"github.com/EmpowerPlastic/empowerchain/app/params"
 )
 
 func TestAppStateDeterminism(t *testing.T) {
