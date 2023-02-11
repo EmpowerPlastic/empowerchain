@@ -1,8 +1,11 @@
 package keeper_test
 
 import (
+	"math/rand"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
@@ -10,7 +13,8 @@ import (
 func (s *TestSuite) TestGenesis() {
 	genesisState := plasticcredit.GenesisState{
 		Params: plasticcredit.Params{
-			IssuerCreator: sample.AccAddress(),
+			IssuerCreator:          sample.AccAddress(),
+			CreditClassCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
 		},
 		IdCounters: plasticcredit.IDCounters{
 			NextIssuerId:    3,
@@ -161,8 +165,8 @@ func (s *TestSuite) TestGenesis() {
 
 	k := s.empowerApp.PlasticcreditKeeper
 
-	params := k.GetParams(s.ctx)
-	s.Require().Equal(genesisState.Params, params)
+	fetchedParams := k.GetParams(s.ctx)
+	s.Require().Equal(genesisState.Params, fetchedParams)
 
 	idCounter := k.GetIDCounters(s.ctx)
 	s.Require().Equal(genesisState.IdCounters, idCounter)

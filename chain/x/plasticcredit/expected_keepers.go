@@ -22,3 +22,8 @@ type AccessControlKeeper interface {
 	GrantAccess(ctx sdk.Context, account sdk.AccAddress, msgType string) error
 	RevokeAccess(ctx sdk.Context, account sdk.AccAddress, msgType string) error
 }
+
+// DistrKeeper defines the expected interface needed to fund community pool.
+type DistrKeeper interface {
+	FundCommunityPool(ctx sdk.Context, amount sdk.Coins, sender sdk.AccAddress) error
+}

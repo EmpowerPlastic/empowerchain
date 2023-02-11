@@ -432,6 +432,7 @@ func New(
 		storeKeys[plasticcreditmoduletypes.StoreKey],
 		storeKeys[plasticcreditmoduletypes.MemStoreKey],
 		accesscontrolmodulekeeper.NewSubKeeper(&app.AccessControlKeeper, plasticcreditmoduletypes.ModuleName),
+		app.DistrKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 

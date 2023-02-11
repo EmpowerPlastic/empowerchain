@@ -1,12 +1,14 @@
 package plasticcredit
 
 import (
+	"math/rand"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 
+	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 )
 
@@ -21,7 +23,8 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: sample.AccAddress(),
 				Params: Params{
-					IssuerCreator: sample.AccAddress(),
+					IssuerCreator:          sample.AccAddress(),
+					CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 			},
 			expectedError: nil,
@@ -30,19 +33,31 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: "invalid",
 				Params: Params{
-					IssuerCreator: sample.AccAddress(),
+					IssuerCreator:          sample.AccAddress(),
+					CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
 		},
-		"invalid params": {
+		"invalid issuer creator params": {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: sample.AccAddress(),
 				Params: Params{
-					IssuerCreator: "invalid",
+					IssuerCreator:          "invalid",
+					CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
+		},
+		"invalid credit class creation fee params": {
+			msgUnderTest: &MsgUpdateParams{
+				Authority: sample.AccAddress(),
+				Params: Params{
+					IssuerCreator:          sample.AccAddress(),
+					CreditClassCreationFee: sdk.Coin{},
+				},
+			},
+			expectedError: sdkerrors.ErrInvalidCoins,
 		},
 	}
 
