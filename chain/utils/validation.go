@@ -24,7 +24,7 @@ func IsBasicValidName(name string) bool {
 // IsValidDescription checks descriptionValidation.
 func IsValidDescription(description string) bool {
 	if description == "" {
-		return true // emtpy desc is valid
+		return true // empty desc is valid
 	}
 	return descriptionValidation.MatchString(description) && utf8.ValidString(description)
 }
