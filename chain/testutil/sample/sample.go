@@ -16,18 +16,7 @@ func AccAddress() string {
 
 // String returns a random string of length n
 func String(n int) string {
-	chars := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY0123456789.?!@#$%^&*()[]{}_-+=")
-
-	randomString := make([]rune, n)
-	for i := range randomString {
-		randomString[i] = chars[rand.Intn(len(chars))]
-	}
-	return string(randomString)
-}
-
-// AlphanumericString returns a random alphanumeric string of length n
-func AlphanumericString(n int) string {
-	chars := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	chars := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXY0123456789.?!@#$%^&*()[]{}_-+= ")
 
 	randomString := make([]rune, n)
 	for i := range randomString {
