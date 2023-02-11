@@ -1,10 +1,11 @@
 package utils
 
 import (
-	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 )
 
 func TestIsBasicValidName(t *testing.T) {
