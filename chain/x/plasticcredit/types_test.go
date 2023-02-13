@@ -117,6 +117,15 @@ func TestIssuerValidation(t *testing.T) {
 			},
 			err: nil,
 		},
+		"happy path description test": {
+			idc: Issuer{
+				Id:          42,
+				Name:        "Empower",
+				Description: "Something something with special characters:%$#",
+				Admin:       sample.AccAddress(),
+			},
+			err: nil,
+		},
 		"empty description is OK": {
 			idc: Issuer{
 				Id:          1337,
@@ -167,6 +176,15 @@ func TestIssuerValidation(t *testing.T) {
 				Id:          1,
 				Name:        "Empower ",
 				Description: "Something something",
+				Admin:       sample.AccAddress(),
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"description too long": {
+			idc: Issuer{
+				Id:          1,
+				Name:        "Empower ",
+				Description: sample.String(257),
 				Admin:       sample.AccAddress(),
 			},
 			err: utils.ErrInvalidValue,
@@ -259,6 +277,15 @@ func TestApplicantValidation(t *testing.T) {
 			},
 			err: nil,
 		},
+		"happy path description test": {
+			applicant: Applicant{
+				Id:          42,
+				Name:        "Empower",
+				Description: "Something something with special characters:%$#",
+				Admin:       sample.AccAddress(),
+			},
+			err: nil,
+		},
 		"empty description is OK": {
 			applicant: Applicant{
 				Id:          1337,
@@ -309,6 +336,15 @@ func TestApplicantValidation(t *testing.T) {
 				Id:          1,
 				Name:        "EmpowerChain ",
 				Description: "Something something",
+				Admin:       sample.AccAddress(),
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"description too long": {
+			applicant: Applicant{
+				Id:          1,
+				Name:        "Empower ",
+				Description: sample.String(257),
 				Admin:       sample.AccAddress(),
 			},
 			err: utils.ErrInvalidValue,
