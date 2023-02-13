@@ -50,11 +50,11 @@ test-with-coverage:
 
 test-sim-import-export:
     FROM +build
-    make test-sim-import-export
+    RUN make test-sim-import-export
 
 test-sim-after-import:
     FROM +build
-    make test-sim-after-import
+    RUN make test-sim-after-import
 
 test-sim-multi-seed-short:
     FROM +build
@@ -62,7 +62,7 @@ test-sim-multi-seed-short:
 
 test-sim-multi-seed-long:
     FROM +build
-    make test-sim-multi-seed-long
+    RUN make test-sim-multi-seed-long
 
 test-sim-nondeterminism:
     FROM +build
