@@ -27,7 +27,7 @@ jobs:
         with:
           version: v0.6.22
 
-      - run: earthly --ci +${{ matrix.test }}
+      - run: earthly --ci --output +${{ matrix.test }}
         working-directory: ./chain
 
       - name: Archive production artifacts

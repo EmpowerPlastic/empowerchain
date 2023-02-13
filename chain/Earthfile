@@ -1,4 +1,4 @@
-VERSION 0.6
+VERSION --try 0.6
 FROM earthly/dind:ubuntu
 WORKDIR /empowerchain/chain
 
@@ -50,39 +50,22 @@ test-with-coverage:
 
 test-sim-import-export:
     FROM +build
-    # TODO: When we move to v 0.7 of Earthly, replace this ugly hack with a TRY, FINALLY
-    RUN if make test-sim-import-export; then echo "yay" > res ;else echo "nay" > res; fi
-    IF [ $(cat res) = "nay" ]
-        SAVE ARTIFACT ./simoutput/* AS LOCAL ./simoutput/
-    END
+    make test-sim-import-export
 
 test-sim-after-import:
     FROM +build
-    # TODO: When we move to v 0.7 of Earthly, replace this ugly hack with a TRY, FINALLY
-    RUN if make test-sim-after-import; then echo "yay" > res ;else echo "nay" > res; fi
-    IF [ $(cat res) = "nay" ]
-        SAVE ARTIFACT ./simoutput/* AS LOCAL ./simoutput/
-    END
+    make test-sim-after-import
 
 test-sim-multi-seed-short:
     FROM +build
-    # TODO: When we move to v 0.7 of Earthly, replace this ugly hack with a TRY, FINALLY
-    RUN if make test-sim-multi-seed-short; then echo "yay" > res ;else echo "nay" > res; fi
-    IF [ $(cat res) = "nay" ]
-        SAVE ARTIFACT ./simoutput/* AS LOCAL ./simoutput/
-    END
+    RUN make test-sim-multi-seed-short
 
 test-sim-multi-seed-long:
     FROM +build
-    # TODO: When we move to v 0.7 of Earthly, replace this ugly hack with a TRY, FINALLY
-    RUN if make test-sim-multi-seed-long; then echo "yay" > res ;else echo "nay" > res; fi
-    IF [ $(cat res) = "nay" ]
-        SAVE ARTIFACT ./simoutput/* AS LOCAL ./simoutput/
-    END
+    make test-sim-multi-seed-long
 
 test-sim-nondeterminism:
     FROM +build
-    # We don't do the crazy hack here because we don't use runsim in this test
     RUN make test-sim-nondeterminism
 
 smoketest:
