@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 )
 
 func TestIsBasicValidName(t *testing.T) {
@@ -44,6 +46,45 @@ func TestIsBasicValidName(t *testing.T) {
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			result := IsBasicValidName(tc.name)
+			require.Equal(t, tc.expectedResult, result)
+		})
+	}
+}
+
+func TestIsValidDescription(t *testing.T) {
+	testCases := map[string]struct {
+		description    string
+		expectedResult bool
+	}{
+		"Happy path 1": {
+			description:    "Perfectly valid description",
+			expectedResult: true,
+		},
+		"Happy path 2:": {
+			description:    "also OK_78%$",
+			expectedResult: true,
+		},
+		"Happy path empty string:": {
+			description:    "",
+			expectedResult: true,
+		},
+		"Happy path full length:": {
+			description:    sample.String(256),
+			expectedResult: true,
+		},
+		"Too long name should fail": {
+			description:    sample.String(257),
+			expectedResult: false,
+		},
+		"Non-utf8 characters should fail": {
+			description:    "This name has a non-utf8 character: \x80 and it should fail",
+			expectedResult: false,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			result := IsValidDescription(tc.description)
 			require.Equal(t, tc.expectedResult, result)
 		})
 	}

@@ -79,6 +79,10 @@ func (is Issuer) Validate() error {
 		return errors.Wrap(utils.ErrInvalidValue, "name is invalid")
 	}
 
+	if !utils.IsValidDescription(is.Description) {
+		return errors.Wrap(utils.ErrInvalidValue, "description is invalid")
+	}
+
 	if is.Admin == "" {
 		return errors.Wrap(utils.ErrInvalidValue, "admin is empty")
 	}
@@ -101,6 +105,10 @@ func (a Applicant) Validate() error {
 
 	if !utils.IsBasicValidName(a.Name) {
 		return errors.Wrap(utils.ErrInvalidValue, "name is invalid")
+	}
+
+	if !utils.IsValidDescription(a.Description) {
+		return errors.Wrap(utils.ErrInvalidValue, "description is invalid")
 	}
 
 	if a.Admin == "" {
