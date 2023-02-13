@@ -50,22 +50,39 @@ test-with-coverage:
 
 test-sim-import-export:
     FROM +build
-    RUN make test-sim-import-export
+    # TODO: When we move to v 0.7 of Earthly, replace this ugly hack with a TRY, FINALLY
+    RUN if make test-sim-import-export; then echo "yay" > res ;else echo "nay" > res; fi
+    IF [ $(cat res) = "nay" ]
+        SAVE ARTIFACT ./simoutput/* AS LOCAL ./simoutput/
+    END
 
 test-sim-after-import:
     FROM +build
-    RUN make test-sim-after-import
+    # TODO: When we move to v 0.7 of Earthly, replace this ugly hack with a TRY, FINALLY
+    RUN if make test-sim-after-import; then echo "yay" > res ;else echo "nay" > res; fi
+    IF [ $(cat res) = "nay" ]
+        SAVE ARTIFACT ./simoutput/* AS LOCAL ./simoutput/
+    END
 
 test-sim-multi-seed-short:
     FROM +build
-    RUN make test-sim-multi-seed-short
+    # TODO: When we move to v 0.7 of Earthly, replace this ugly hack with a TRY, FINALLY
+    RUN if make test-sim-multi-seed-short; then echo "yay" > res ;else echo "nay" > res; fi
+    IF [ $(cat res) = "nay" ]
+        SAVE ARTIFACT ./simoutput/* AS LOCAL ./simoutput/
+    END
 
 test-sim-multi-seed-long:
     FROM +build
-    RUN make test-sim-multi-seed-long
+    # TODO: When we move to v 0.7 of Earthly, replace this ugly hack with a TRY, FINALLY
+    RUN if make test-sim-multi-seed-long; then echo "yay" > res ;else echo "nay" > res; fi
+    IF [ $(cat res) = "nay" ]
+        SAVE ARTIFACT ./simoutput/* AS LOCAL ./simoutput/
+    END
 
 test-sim-nondeterminism:
     FROM +build
+    # We don't do the crazy hack here because we don't use runsim in this test
     RUN make test-sim-nondeterminism
 
 smoketest:

@@ -10,6 +10,7 @@ jobs:
     name: Run EmpowerChain simulation tests
     runs-on: ubuntu-20.04
     strategy:
+      fail-fast: false
       matrix:
         test:
           [
@@ -28,3 +29,10 @@ jobs:
 
       - run: earthly --ci +${{ matrix.test }}
         working-directory: ./chain
+
+      - name: Archive production artifacts
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: runsim_log
+          path: chain/simoutput/runsim_log
