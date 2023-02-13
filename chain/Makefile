@@ -170,23 +170,23 @@ BLOCK_SIZE ?= 200
 runsim: $(RUNSIM)
 $(RUNSIM):
 	@echo "Installing runsim..."
-	@go install github.com/gjermundgaraba/tools/cmd/runsim@445d739
+	@go install github.com/cosmos/tools/cmd/runsim@v1.0.0
 
 test-sim-import-export: runsim
 	@echo "Running application import/export simulation. This may take several minutes..."
-	@runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail -OutputDir=./simoutput 50 5 TestAppImportExport
+	@runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 50 5 TestAppImportExport
 
 test-sim-after-import: runsim
 	@echo "Running application simulation-after-import. This may take several minutes..."
-	@runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail -OutputDir=./simoutput 50 5 TestAppSimulationAfterImport
+	@runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 50 5 TestAppSimulationAfterImport
 
 test-sim-multi-seed-short: runsim
 	@echo "Running short multi-seed application simulation. This may take awhile!"
-	@runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail -OutputDir=./simoutput 50 10 TestFullAppSimulation
+	@runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 50 10 TestFullAppSimulation
 
 test-sim-multi-seed-long: runsim
 	@echo "Running long multi-seed application simulation. This may take awhile!"
-	@runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail -OutputDir=./simoutput 500 50 TestFullAppSimulation
+	@runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 500 50 TestFullAppSimulation
 
 test-sim-nondeterminism:
 	@echo "Running non-determinism test..."
