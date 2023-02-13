@@ -27,12 +27,5 @@ jobs:
         with:
           version: v0.6.22
 
-      - run: earthly --ci --output +${{ matrix.test }}
+      - run: earthly --ci +${{ matrix.test }}
         working-directory: ./chain
-
-      - name: Archive production artifacts
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: runsim_log
-          path: chain/simoutput/runsim_log
