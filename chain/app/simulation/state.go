@@ -3,6 +3,7 @@ package simulation
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"io"
 	"math/rand"
 	"os"
@@ -191,6 +192,7 @@ func AppStateRandomizedFn(
 		InitialStake: initialStake,
 		NumBonded:    numInitiallyBonded,
 		GenTimestamp: genesisTimestamp,
+		BondDenom: 	  params.DefaultBondDenom,
 	}
 
 	simManager.GenerateGenesisStates(simState)
