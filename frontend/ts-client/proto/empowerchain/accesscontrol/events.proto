@@ -1,0 +1,20 @@
+syntax = "proto3";
+package empowerchain.accesscontrol;
+
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/accesscontrol";
+
+// EventAccessGranted is an event emitted when access is granted to a given message for a given address
+message EventAccessGranted {
+  string module_name = 1;
+  string account = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string msg_type = 3;
+}
+
+// EventAccessRevoked is an event emitted when access is revoked to a given message for a given address
+message EventAccessRevoked {
+  string module_name = 1;
+  string account = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string msg_type = 3;
+}
