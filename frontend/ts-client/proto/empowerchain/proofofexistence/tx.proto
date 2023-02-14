@@ -1,0 +1,27 @@
+syntax = "proto3";
+package empowerchain.proofofexistence;
+
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/proofofexistence";
+
+// Msg defines the message service
+service Msg {
+  // CreateProof creates a new proof of existence
+  rpc CreateProof(MsgCreateProof) returns (MsgCreateProofResponse);
+}
+
+// MsgCreateProof is the message used for creating a new proof of existence
+message MsgCreateProof {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  // creator is the account address that created the proof
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // hash is the SHA-256 hash in HEX format
+  string hash = 2;
+}
+
+// MsgCreateProofResponse is response from creating a new proof of existence
+message MsgCreateProofResponse {}

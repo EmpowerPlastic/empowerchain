@@ -1,0 +1,125 @@
+syntax = "proto3";
+package empowerchain.plasticcredit;
+
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/plasticcredit";
+
+// EventCreateIssuer is an event emitted when a new issuer is created
+message EventCreateIssuer {
+  uint64 issuer_id = 1;
+  string creator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string name = 3;
+  string description = 4;
+  string admin = 5 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// EventUpdateIssuer is an event emitted when an issuer is updated
+message EventUpdateIssuer {
+  uint64 issuer_id = 1;
+  string creator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string name = 3;
+  string description = 4;
+  string admin = 5 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// EventCreateProject is an event emitted when a new Project is created
+message EventCreateProject {
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 applicant_id = 2;
+  string credit_class_abbreviation = 3;
+  string name = 4;
+}
+
+// EventUpdateProject is an event emitted when a Project is updated
+message EventUpdateProject {
+  string updater = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 project_id = 2;
+  string name = 3;
+}
+
+// EventProjectApproved is an event emitted when a project is approved by the issuer associated with the projects credit class
+message EventProjectApproved {
+  uint64 project_id = 1;
+  string approved_for_credit_class_abbreviation = 2;
+  uint64 approving_issuer_id = 3;
+  string approved_by = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// EventProjectRejected is an event emitted when a project is rejected by the issuer associated with the projects credit class
+message EventProjectRejected {
+  uint64 project_id = 1;
+  string rejected_for_credit_class_abbreviation = 2;
+  uint64 rejecting_issuer_id = 3;
+  string rejected_by = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// EventProjectSuspended is an event emitted when a project is suspended by the issuer associated with the projects credit class
+message EventProjectSuspended {
+  uint64 project_id = 1;
+  string suspended_for_credit_class_abbreviation = 2;
+  uint64 suspending_issuer_id = 3;
+  string suspended_by = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// EventIssuedCredits is an event emitted when new credits are issued
+message EventIssuedCredits {
+  uint64 issuer_id = 1;
+  uint64 project_id = 2;
+  string credit_class_abbreviation = 3;
+  string denom = 4;
+  uint64 amount = 5;
+  string issuer_address = 6 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// EventTransferCredits is an event emitted when credits are being transfered from one account to another
+message EventTransferCredits {
+  string sender = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string recipient = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string denom = 3;
+  uint64 amount = 4;
+  uint64 issuer_id = 5;
+  string credit_class_abbreviation = 6;
+}
+
+// EventRetiredCredits is an event emitted when credits are retired
+message EventRetiredCredits {
+  string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string denom = 2;
+  uint64 amount = 3;
+  uint64 issuer_id = 4;
+  string credit_class_abbreviation = 5;
+}
+
+
+// EventCreateApplicant is an event emitted when a new applicant is created
+message EventCreateApplicant {
+  uint64 applicant_id = 1;
+  string name = 2;
+  string description = 3;
+  string admin = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// EventUpdateApplicant is an event emitted when an applicant is updated
+message EventUpdateApplicant {
+  uint64 applicant_id = 1;
+  string name = 2;
+  string description = 3;
+  string admin = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string updater = 5 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+// EventCreateCreditClass is an event emitted when a new Credit Class is created
+message EventCreateCreditClass {
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string abbreviation = 2;
+  uint64 issuer_id = 3;
+  string name = 4;
+}
+
+// EventUpdateCreditClass is an event emitted when a Credit Class is updated
+message EventUpdateCreditClass {
+  string updater = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string abbreviation = 2;
+  string name = 3;
+}

@@ -1,0 +1,17 @@
+{
+  "protoDirs": [
+    "./proto"
+  ],
+  "outPath": "./src/codegen",
+  "options": {
+    "aminoEncoding": {
+      "enabled": true
+    },
+    "lcdClients": {
+      "enabled": true
+    },
+    "rpcClients": {
+      "enabled": true
+    }
+  }
+}
