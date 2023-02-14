@@ -1,0 +1,96 @@
+syntax = "proto3";
+package empowerchain.plasticcredit;
+
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "google/protobuf/timestamp.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/plasticcredit";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+
+  // issuer_creator is the address that is allowed to create new issuers
+  // defaults to the governance account, but can be changed by governance (to, for instance, a DAO/group/multisig)
+  string issuer_creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // credit_class_creation_fee is the fee that is charged for creating a new credit class
+  // defaults to 50 $MPWR, but can be changed by governance
+  cosmos.base.v1beta1.Coin credit_class_creation_fee = 2 [(gogoproto.nullable) = false];
+}
+
+message IDCounters {
+  uint64 next_issuer_id = 1;
+  uint64 next_applicant_id = 2;
+  uint64 next_project_id = 3;
+}
+
+message Issuer {
+  uint64 id = 1;
+  string name = 2;
+  string description = 3;
+  string admin = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message Applicant {
+  uint64 id = 1;
+  string name = 2;
+  string description = 3;
+  string admin = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message CreditClass {
+  // abbreviation is the short-hand name *and* the identifier for a credit class
+  string abbreviation = 1;
+  uint64 issuer_id = 2;
+  string name = 3;
+}
+
+enum ProjectStatus {
+  NEW = 0;
+  APPROVED = 1;
+  REJECTED = 2;
+  SUSPENDED = 3;
+}
+
+message Project {
+  uint64 id = 1;
+  uint64 applicant_id = 2;
+  string credit_class_abbreviation = 3;
+  string name = 4;
+  ProjectStatus status = 5;
+}
+
+message CreditCollection {
+  // denominator of the credit, store key
+  string denom = 1;
+  // ID of a project related to the collection
+  uint64 project_id = 2;
+  // Total amount of active and retired credits for the collection
+  CreditAmount total_amount = 3 [(gogoproto.nullable) = false];
+}
+
+message CreditBalance {
+  // Address of the credits owner, part of compound key
+  string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  // denominator of the credit, apart of compound key
+  string denom = 2;
+  // Number of active and retired credits
+  CreditAmount balance = 3 [(gogoproto.nullable) = false];
+}
+
+message CreditAmount {
+  uint64 active = 1;
+  uint64 retired = 2;
+}
+
+// Above this line is implemented
+// Below this line are drafts that needs to be implemented still
+
+
+message ProvenData {
+  string uri = 1; 
+  string hash = 2; 
+}

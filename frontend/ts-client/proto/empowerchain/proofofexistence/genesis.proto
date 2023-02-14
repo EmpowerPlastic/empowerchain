@@ -1,0 +1,21 @@
+syntax = "proto3";
+package empowerchain.proofofexistence;
+
+import "empowerchain/proofofexistence/types.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/proofofexistence";
+
+// GenesisState defines the proofofexistence module's genesis state.
+message GenesisState {
+  repeated Proof proof_list = 1 [(gogoproto.nullable) = false];
+}
+
+// Proof is the proof key and the proof metadata
+message Proof {
+  // hash is the key of the proof and the SHA-256 hash that is the proof itself
+  string hash = 1;
+
+  // metadata is the metadata of the proof
+  ProofMetadata metadata = 2;
+}
