@@ -1,0 +1,13 @@
+syntax = "proto3";
+package empowerchain.plasticcredit;
+
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/plasticcredit";
+
+message TransferAuthorization {
+  option (cosmos_proto.implements_interface) = "cosmos.authz.v1beta1.Authorization";
+
+  string denom = 1;
+  uint64 max_credits = 2;
+}

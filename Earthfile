@@ -16,3 +16,8 @@ check-md-links:
     ]
 }" > markdown-link-check-config.json
     RUN find . -name \*.md -print0 | xargs -0 -n1 markdown-link-check --quiet --config markdown-link-check-config.json
+
+get-proto:
+    WORKDIR .
+    COPY chain/proto/empowerchain ./empowerchain
+    SAVE ARTIFACT .
