@@ -16,13 +16,8 @@ export interface MsgVerifyInvariant {
 /** MsgVerifyInvariant represents a message to verify a particular invariance. */
 
 export interface MsgVerifyInvariantSDKType {
-  /** sender is the account address of private key to send coins to fee collector account. */
   sender: string;
-  /** name of the invariant module. */
-
   invariant_module_name: string;
-  /** invariant_route is the msg's invariant route. */
-
   invariant_route: string;
 }
 /** MsgVerifyInvariantResponse defines the Msg/VerifyInvariant response type. */
@@ -51,10 +46,7 @@ export interface MsgUpdateParams {
  */
 
 export interface MsgUpdateParamsSDKType {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
   authority: string;
-  /** constant_fee defines the x/crisis parameter. */
-
   constant_fee?: CoinSDKType;
 }
 /**

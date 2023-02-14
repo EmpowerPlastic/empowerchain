@@ -23,19 +23,8 @@ export interface QueryEvidenceRequest {
 /** QueryEvidenceRequest is the request type for the Query/Evidence RPC method. */
 
 export interface QueryEvidenceRequestSDKType {
-  /**
-   * evidence_hash defines the hash of the requested evidence.
-   * Deprecated: Use hash, a HEX encoded string, instead.
-   */
-
   /** @deprecated */
   evidence_hash: Uint8Array;
-  /**
-   * hash defines the evidence hash of the requested evidence.
-   * 
-   * Since: cosmos-sdk 0.47
-   */
-
   hash: string;
 }
 /** QueryEvidenceResponse is the response type for the Query/Evidence RPC method. */
@@ -47,7 +36,6 @@ export interface QueryEvidenceResponse {
 /** QueryEvidenceResponse is the response type for the Query/Evidence RPC method. */
 
 export interface QueryEvidenceResponseSDKType {
-  /** evidence returns the requested evidence. */
   evidence?: AnySDKType;
 }
 /**
@@ -65,7 +53,6 @@ export interface QueryAllEvidenceRequest {
  */
 
 export interface QueryAllEvidenceRequestSDKType {
-  /** pagination defines an optional pagination for the request. */
   pagination?: PageRequestSDKType;
 }
 /**
@@ -86,10 +73,7 @@ export interface QueryAllEvidenceResponse {
  */
 
 export interface QueryAllEvidenceResponseSDKType {
-  /** evidence returns all evidences. */
   evidence: AnySDKType[];
-  /** pagination defines the pagination in the response. */
-
   pagination?: PageResponseSDKType;
 }
 

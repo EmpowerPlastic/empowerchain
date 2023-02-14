@@ -1,6 +1,6 @@
 import { Any, AnySDKType } from "../../../google/protobuf/any";
-import * as _m0 from "protobufjs/minimal";
 import { Long, DeepPartial } from "../../../helpers";
+import * as _m0 from "protobufjs/minimal";
 /**
  * BaseAccount defines a base account type. It contains all the necessary fields
  * for basic account functionality. Any custom account type should extend this
@@ -62,13 +62,7 @@ export interface ModuleCredential {
  */
 
 export interface ModuleCredentialSDKType {
-  /** module_name is the name of the module used for address derivation (passed into address.Module). */
   module_name: string;
-  /**
-   * derivation_keys is for deriving a module account address (passed into address.Module)
-   * adding more keys creates sub-account addresses (passed into address.Derive)
-   */
-
   derivation_keys: Uint8Array[];
 }
 /** Params defines the parameters for the auth module. */

@@ -9,7 +9,6 @@ export interface GenesisState {
 /** GenesisState defines the raw genesis transaction in JSON. */
 
 export interface GenesisStateSDKType {
-  /** gen_txs defines the genesis transactions. */
   gen_txs: Uint8Array[];
 }
 

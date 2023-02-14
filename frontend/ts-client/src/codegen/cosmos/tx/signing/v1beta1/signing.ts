@@ -64,68 +64,7 @@ export enum SignMode {
   SIGN_MODE_EIP_191 = 191,
   UNRECOGNIZED = -1,
 }
-/**
- * SignMode represents a signing mode with its own security guarantees.
- * 
- * This enum should be considered a registry of all known sign modes
- * in the Cosmos ecosystem. Apps are not expected to support all known
- * sign modes. Apps that would like to support custom  sign modes are
- * encouraged to open a small PR against this file to add a new case
- * to this SignMode enum describing their sign mode so that different
- * apps have a consistent version of this enum.
- */
-
-export enum SignModeSDKType {
-  /**
-   * SIGN_MODE_UNSPECIFIED - SIGN_MODE_UNSPECIFIED specifies an unknown signing mode and will be
-   * rejected.
-   */
-  SIGN_MODE_UNSPECIFIED = 0,
-
-  /**
-   * SIGN_MODE_DIRECT - SIGN_MODE_DIRECT specifies a signing mode which uses SignDoc and is
-   * verified with raw bytes from Tx.
-   */
-  SIGN_MODE_DIRECT = 1,
-
-  /**
-   * SIGN_MODE_TEXTUAL - SIGN_MODE_TEXTUAL is a future signing mode that will verify some
-   * human-readable textual representation on top of the binary representation
-   * from SIGN_MODE_DIRECT. It is currently not supported.
-   */
-  SIGN_MODE_TEXTUAL = 2,
-
-  /**
-   * SIGN_MODE_DIRECT_AUX - SIGN_MODE_DIRECT_AUX specifies a signing mode which uses
-   * SignDocDirectAux. As opposed to SIGN_MODE_DIRECT, this sign mode does not
-   * require signers signing over other signers' `signer_info`. It also allows
-   * for adding Tips in transactions.
-   * 
-   * Since: cosmos-sdk 0.46
-   */
-  SIGN_MODE_DIRECT_AUX = 3,
-
-  /**
-   * SIGN_MODE_LEGACY_AMINO_JSON - SIGN_MODE_LEGACY_AMINO_JSON is a backwards compatibility mode which uses
-   * Amino JSON and will be removed in the future.
-   */
-  SIGN_MODE_LEGACY_AMINO_JSON = 127,
-
-  /**
-   * SIGN_MODE_EIP_191 - SIGN_MODE_EIP_191 specifies the sign mode for EIP 191 signing on the Cosmos
-   * SDK. Ref: https://eips.ethereum.org/EIPS/eip-191
-   * 
-   * Currently, SIGN_MODE_EIP_191 is registered as a SignMode enum variant,
-   * but is not implemented on the SDK by default. To enable EIP-191, you need
-   * to pass a custom `TxConfig` that has an implementation of
-   * `SignModeHandler` for EIP-191. The SDK may decide to fully support
-   * EIP-191 in the future.
-   * 
-   * Since: cosmos-sdk 0.45.2
-   */
-  SIGN_MODE_EIP_191 = 191,
-  UNRECOGNIZED = -1,
-}
+export const SignModeSDKType = SignMode;
 export function signModeFromJSON(object: any): SignMode {
   switch (object) {
     case 0:
@@ -192,7 +131,6 @@ export interface SignatureDescriptors {
 /** SignatureDescriptors wraps multiple SignatureDescriptor's. */
 
 export interface SignatureDescriptorsSDKType {
-  /** signatures are the signature descriptors */
   signatures: SignatureDescriptorSDKType[];
 }
 /**
@@ -222,15 +160,8 @@ export interface SignatureDescriptor {
  */
 
 export interface SignatureDescriptorSDKType {
-  /** public_key is the public key of the signer */
   public_key?: AnySDKType;
   data?: SignatureDescriptor_DataSDKType;
-  /**
-   * sequence is the sequence of the account, which describes the
-   * number of committed transactions signed by a given address. It is used to prevent
-   * replay attacks.
-   */
-
   sequence: Long;
 }
 /** Data represents signature data */
@@ -245,10 +176,7 @@ export interface SignatureDescriptor_Data {
 /** Data represents signature data */
 
 export interface SignatureDescriptor_DataSDKType {
-  /** single represents a single signer */
   single?: SignatureDescriptor_Data_SingleSDKType;
-  /** multi represents a multisig signer */
-
   multi?: SignatureDescriptor_Data_MultiSDKType;
 }
 /** Single is the signature data for a single signer */
@@ -263,10 +191,7 @@ export interface SignatureDescriptor_Data_Single {
 /** Single is the signature data for a single signer */
 
 export interface SignatureDescriptor_Data_SingleSDKType {
-  /** mode is the signing mode of the single signer */
-  mode: SignModeSDKType;
-  /** signature is the raw signature bytes */
-
+  mode: SignMode;
   signature: Uint8Array;
 }
 /** Multi is the signature data for a multisig public key */
@@ -281,10 +206,7 @@ export interface SignatureDescriptor_Data_Multi {
 /** Multi is the signature data for a multisig public key */
 
 export interface SignatureDescriptor_Data_MultiSDKType {
-  /** bitarray specifies which keys within the multisig are signing */
   bitarray?: CompactBitArraySDKType;
-  /** signatures is the signatures of the multi-signature */
-
   signatures: SignatureDescriptor_DataSDKType[];
 }
 

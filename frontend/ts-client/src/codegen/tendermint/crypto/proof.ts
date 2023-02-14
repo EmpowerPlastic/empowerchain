@@ -1,5 +1,5 @@
-import * as _m0 from "protobufjs/minimal";
 import { Long, DeepPartial } from "../../helpers";
+import * as _m0 from "protobufjs/minimal";
 export interface Proof {
   total: Long;
   index: Long;
@@ -20,10 +20,7 @@ export interface ValueOp {
   proof?: Proof;
 }
 export interface ValueOpSDKType {
-  /** Encoded in ProofOp.Key. */
   key: Uint8Array;
-  /** To encode in ProofOp.Data */
-
   proof?: ProofSDKType;
 }
 export interface DominoOp {

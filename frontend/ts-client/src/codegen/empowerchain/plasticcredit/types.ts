@@ -8,13 +8,7 @@ export enum ProjectStatus {
   SUSPENDED = 3,
   UNRECOGNIZED = -1,
 }
-export enum ProjectStatusSDKType {
-  NEW = 0,
-  APPROVED = 1,
-  REJECTED = 2,
-  SUSPENDED = 3,
-  UNRECOGNIZED = -1,
-}
+export const ProjectStatusSDKType = ProjectStatus;
 export function projectStatusFromJSON(object: any): ProjectStatus {
   switch (object) {
     case 0:
@@ -76,16 +70,7 @@ export interface Params {
 /** Params defines the parameters for the module. */
 
 export interface ParamsSDKType {
-  /**
-   * issuer_creator is the address that is allowed to create new issuers
-   * defaults to the governance account, but can be changed by governance (to, for instance, a DAO/group/multisig)
-   */
   issuer_creator: string;
-  /**
-   * credit_class_creation_fee is the fee that is charged for creating a new credit class
-   * defaults to 50 $MPWR, but can be changed by governance
-   */
-
   credit_class_creation_fee?: CoinSDKType;
 }
 export interface IDCounters {
@@ -129,7 +114,6 @@ export interface CreditClass {
   name: string;
 }
 export interface CreditClassSDKType {
-  /** abbreviation is the short-hand name *and* the identifier for a credit class */
   abbreviation: string;
   issuer_id: Long;
   name: string;
@@ -146,7 +130,7 @@ export interface ProjectSDKType {
   applicant_id: Long;
   credit_class_abbreviation: string;
   name: string;
-  status: ProjectStatusSDKType;
+  status: ProjectStatus;
 }
 export interface CreditCollection {
   /** denominator of the credit, store key */
@@ -159,13 +143,8 @@ export interface CreditCollection {
   totalAmount?: CreditAmount;
 }
 export interface CreditCollectionSDKType {
-  /** denominator of the credit, store key */
   denom: string;
-  /** ID of a project related to the collection */
-
   project_id: Long;
-  /** Total amount of active and retired credits for the collection */
-
   total_amount?: CreditAmountSDKType;
 }
 export interface CreditBalance {
@@ -179,13 +158,8 @@ export interface CreditBalance {
   balance?: CreditAmount;
 }
 export interface CreditBalanceSDKType {
-  /** Address of the credits owner, part of compound key */
   owner: string;
-  /** denominator of the credit, apart of compound key */
-
   denom: string;
-  /** Number of active and retired credits */
-
   balance?: CreditAmountSDKType;
 }
 export interface CreditAmount {

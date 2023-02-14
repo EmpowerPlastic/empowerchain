@@ -21,10 +21,7 @@ export interface ProofMetadata {
  */
 
 export interface ProofMetadataSDKType {
-  /** timestamp is the time the proof was added on-chain (block time) */
   timestamp?: Date;
-  /** creator is the account address that created the proof */
-
   creator: string;
 }
 

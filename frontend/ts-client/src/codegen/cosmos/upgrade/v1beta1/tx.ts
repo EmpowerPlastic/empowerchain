@@ -21,10 +21,7 @@ export interface MsgSoftwareUpgrade {
  */
 
 export interface MsgSoftwareUpgradeSDKType {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
   authority: string;
-  /** plan is the upgrade plan. */
-
   plan?: PlanSDKType;
 }
 /**
@@ -58,7 +55,6 @@ export interface MsgCancelUpgrade {
  */
 
 export interface MsgCancelUpgradeSDKType {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
   authority: string;
 }
 /**

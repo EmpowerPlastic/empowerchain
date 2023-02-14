@@ -1,7 +1,7 @@
 import { AminoMsg } from "@cosmjs/amino";
 import { Long } from "../../helpers";
 import { MsgUpdateParams, MsgCreateIssuer, MsgUpdateIssuer, MsgCreateApplicant, MsgUpdateApplicant, MsgCreateCreditClass, MsgUpdateCreditClass, MsgCreateProject, MsgUpdateProject, MsgApproveProject, MsgRejectProject, MsgSuspendProject, MsgIssueCredits, MsgTransferCredits, MsgRetireCredits } from "./tx";
-export interface AminoMsgUpdateParams extends AminoMsg {
+export interface MsgUpdateParamsAminoType extends AminoMsg {
   type: "/empowerchain.plasticcredit.MsgUpdateParams";
   value: {
     authority: string;
@@ -14,7 +14,7 @@ export interface AminoMsgUpdateParams extends AminoMsg {
     };
   };
 }
-export interface AminoMsgCreateIssuer extends AminoMsg {
+export interface MsgCreateIssuerAminoType extends AminoMsg {
   type: "/empowerchain.plasticcredit.MsgCreateIssuer";
   value: {
     creator: string;
@@ -23,7 +23,7 @@ export interface AminoMsgCreateIssuer extends AminoMsg {
     admin: string;
   };
 }
-export interface AminoMsgUpdateIssuer extends AminoMsg {
+export interface MsgUpdateIssuerAminoType extends AminoMsg {
   type: "/empowerchain.plasticcredit.MsgUpdateIssuer";
   value: {
     updater: string;
@@ -33,7 +33,7 @@ export interface AminoMsgUpdateIssuer extends AminoMsg {
     admin: string;
   };
 }
-export interface AminoMsgCreateApplicant extends AminoMsg {
+export interface MsgCreateApplicantAminoType extends AminoMsg {
   type: "/empowerchain.plasticcredit.MsgCreateApplicant";
   value: {
     name: string;
@@ -41,7 +41,7 @@ export interface AminoMsgCreateApplicant extends AminoMsg {
     admin: string;
   };
 }
-export interface AminoMsgUpdateApplicant extends AminoMsg {
+export interface MsgUpdateApplicantAminoType extends AminoMsg {
   type: "/empowerchain.plasticcredit.MsgUpdateApplicant";
   value: {
     updater: string;
@@ -51,7 +51,7 @@ export interface AminoMsgUpdateApplicant extends AminoMsg {
     admin: string;
   };
 }
-export interface AminoMsgCreateCreditClass extends AminoMsg {
+export interface MsgCreateCreditClassAminoType extends AminoMsg {
   type: "/empowerchain.plasticcredit.MsgCreateCreditClass";
   value: {
     creator: string;
@@ -60,7 +60,7 @@ export interface AminoMsgCreateCreditClass extends AminoMsg {
     name: string;
   };
 }
-export interface AminoMsgUpdateCreditClass extends AminoMsg {
+export interface MsgUpdateCreditClassAminoType extends AminoMsg {
   type: "/empowerchain.plasticcredit.MsgUpdateCreditClass";
   value: {
     updater: string;
@@ -68,7 +68,7 @@ export interface AminoMsgUpdateCreditClass extends AminoMsg {
     name: string;
   };
 }
-export interface AminoMsgCreateProject extends AminoMsg {
+export interface MsgCreateProjectAminoType extends AminoMsg {
   type: "/empowerchain.plasticcredit.MsgCreateProject";
   value: {
     creator: string;
@@ -77,7 +77,7 @@ export interface AminoMsgCreateProject extends AminoMsg {
     name: string;
   };
 }
-export interface AminoMsgUpdateProject extends AminoMsg {
+export interface MsgUpdateProjectAminoType extends AminoMsg {
   type: "/empowerchain.plasticcredit.MsgUpdateProject";
   value: {
     updater: string;
@@ -85,28 +85,28 @@ export interface AminoMsgUpdateProject extends AminoMsg {
     name: string;
   };
 }
-export interface AminoMsgApproveProject extends AminoMsg {
+export interface MsgApproveProjectAminoType extends AminoMsg {
   type: "/empowerchain.plasticcredit.MsgApproveProject";
   value: {
     approver: string;
     project_id: string;
   };
 }
-export interface AminoMsgRejectProject extends AminoMsg {
+export interface MsgRejectProjectAminoType extends AminoMsg {
   type: "/empowerchain.plasticcredit.MsgRejectProject";
   value: {
     rejector: string;
     project_id: string;
   };
 }
-export interface AminoMsgSuspendProject extends AminoMsg {
+export interface MsgSuspendProjectAminoType extends AminoMsg {
   type: "/empowerchain.plasticcredit.MsgSuspendProject";
   value: {
     updater: string;
     project_id: string;
   };
 }
-export interface AminoMsgIssueCredits extends AminoMsg {
+export interface MsgIssueCreditsAminoType extends AminoMsg {
   type: "/empowerchain.plasticcredit.MsgIssueCredits";
   value: {
     creator: string;
@@ -115,7 +115,7 @@ export interface AminoMsgIssueCredits extends AminoMsg {
     credit_amount: string;
   };
 }
-export interface AminoMsgTransferCredits extends AminoMsg {
+export interface MsgTransferCreditsAminoType extends AminoMsg {
   type: "/empowerchain.plasticcredit.MsgTransferCredits";
   value: {
     from: string;
@@ -125,7 +125,7 @@ export interface AminoMsgTransferCredits extends AminoMsg {
     retire: boolean;
   };
 }
-export interface AminoMsgRetireCredits extends AminoMsg {
+export interface MsgRetireCreditsAminoType extends AminoMsg {
   type: "/empowerchain.plasticcredit.MsgRetireCredits";
   value: {
     owner: string;
@@ -139,7 +139,7 @@ export const AminoConverter = {
     toAmino: ({
       authority,
       params
-    }: MsgUpdateParams): AminoMsgUpdateParams["value"] => {
+    }: MsgUpdateParams): MsgUpdateParamsAminoType["value"] => {
       return {
         authority,
         params: {
@@ -154,7 +154,7 @@ export const AminoConverter = {
     fromAmino: ({
       authority,
       params
-    }: AminoMsgUpdateParams["value"]): MsgUpdateParams => {
+    }: MsgUpdateParamsAminoType["value"]): MsgUpdateParams => {
       return {
         authority,
         params: {
@@ -174,7 +174,7 @@ export const AminoConverter = {
       name,
       description,
       admin
-    }: MsgCreateIssuer): AminoMsgCreateIssuer["value"] => {
+    }: MsgCreateIssuer): MsgCreateIssuerAminoType["value"] => {
       return {
         creator,
         name,
@@ -187,7 +187,7 @@ export const AminoConverter = {
       name,
       description,
       admin
-    }: AminoMsgCreateIssuer["value"]): MsgCreateIssuer => {
+    }: MsgCreateIssuerAminoType["value"]): MsgCreateIssuer => {
       return {
         creator,
         name,
@@ -204,7 +204,7 @@ export const AminoConverter = {
       name,
       description,
       admin
-    }: MsgUpdateIssuer): AminoMsgUpdateIssuer["value"] => {
+    }: MsgUpdateIssuer): MsgUpdateIssuerAminoType["value"] => {
       return {
         updater,
         issuer_id: issuerId.toString(),
@@ -219,7 +219,7 @@ export const AminoConverter = {
       name,
       description,
       admin
-    }: AminoMsgUpdateIssuer["value"]): MsgUpdateIssuer => {
+    }: MsgUpdateIssuerAminoType["value"]): MsgUpdateIssuer => {
       return {
         updater,
         issuerId: Long.fromString(issuer_id),
@@ -235,7 +235,7 @@ export const AminoConverter = {
       name,
       description,
       admin
-    }: MsgCreateApplicant): AminoMsgCreateApplicant["value"] => {
+    }: MsgCreateApplicant): MsgCreateApplicantAminoType["value"] => {
       return {
         name,
         description,
@@ -246,7 +246,7 @@ export const AminoConverter = {
       name,
       description,
       admin
-    }: AminoMsgCreateApplicant["value"]): MsgCreateApplicant => {
+    }: MsgCreateApplicantAminoType["value"]): MsgCreateApplicant => {
       return {
         name,
         description,
@@ -262,7 +262,7 @@ export const AminoConverter = {
       name,
       description,
       admin
-    }: MsgUpdateApplicant): AminoMsgUpdateApplicant["value"] => {
+    }: MsgUpdateApplicant): MsgUpdateApplicantAminoType["value"] => {
       return {
         updater,
         applicant_id: applicantId.toString(),
@@ -277,7 +277,7 @@ export const AminoConverter = {
       name,
       description,
       admin
-    }: AminoMsgUpdateApplicant["value"]): MsgUpdateApplicant => {
+    }: MsgUpdateApplicantAminoType["value"]): MsgUpdateApplicant => {
       return {
         updater,
         applicantId: Long.fromString(applicant_id),
@@ -294,7 +294,7 @@ export const AminoConverter = {
       abbreviation,
       issuerId,
       name
-    }: MsgCreateCreditClass): AminoMsgCreateCreditClass["value"] => {
+    }: MsgCreateCreditClass): MsgCreateCreditClassAminoType["value"] => {
       return {
         creator,
         abbreviation,
@@ -307,7 +307,7 @@ export const AminoConverter = {
       abbreviation,
       issuer_id,
       name
-    }: AminoMsgCreateCreditClass["value"]): MsgCreateCreditClass => {
+    }: MsgCreateCreditClassAminoType["value"]): MsgCreateCreditClass => {
       return {
         creator,
         abbreviation,
@@ -322,7 +322,7 @@ export const AminoConverter = {
       updater,
       abbreviation,
       name
-    }: MsgUpdateCreditClass): AminoMsgUpdateCreditClass["value"] => {
+    }: MsgUpdateCreditClass): MsgUpdateCreditClassAminoType["value"] => {
       return {
         updater,
         abbreviation,
@@ -333,7 +333,7 @@ export const AminoConverter = {
       updater,
       abbreviation,
       name
-    }: AminoMsgUpdateCreditClass["value"]): MsgUpdateCreditClass => {
+    }: MsgUpdateCreditClassAminoType["value"]): MsgUpdateCreditClass => {
       return {
         updater,
         abbreviation,
@@ -348,7 +348,7 @@ export const AminoConverter = {
       applicantId,
       creditClassAbbreviation,
       name
-    }: MsgCreateProject): AminoMsgCreateProject["value"] => {
+    }: MsgCreateProject): MsgCreateProjectAminoType["value"] => {
       return {
         creator,
         applicant_id: applicantId.toString(),
@@ -361,7 +361,7 @@ export const AminoConverter = {
       applicant_id,
       credit_class_abbreviation,
       name
-    }: AminoMsgCreateProject["value"]): MsgCreateProject => {
+    }: MsgCreateProjectAminoType["value"]): MsgCreateProject => {
       return {
         creator,
         applicantId: Long.fromString(applicant_id),
@@ -376,7 +376,7 @@ export const AminoConverter = {
       updater,
       projectId,
       name
-    }: MsgUpdateProject): AminoMsgUpdateProject["value"] => {
+    }: MsgUpdateProject): MsgUpdateProjectAminoType["value"] => {
       return {
         updater,
         project_id: projectId.toString(),
@@ -387,7 +387,7 @@ export const AminoConverter = {
       updater,
       project_id,
       name
-    }: AminoMsgUpdateProject["value"]): MsgUpdateProject => {
+    }: MsgUpdateProjectAminoType["value"]): MsgUpdateProject => {
       return {
         updater,
         projectId: Long.fromString(project_id),
@@ -400,7 +400,7 @@ export const AminoConverter = {
     toAmino: ({
       approver,
       projectId
-    }: MsgApproveProject): AminoMsgApproveProject["value"] => {
+    }: MsgApproveProject): MsgApproveProjectAminoType["value"] => {
       return {
         approver,
         project_id: projectId.toString()
@@ -409,7 +409,7 @@ export const AminoConverter = {
     fromAmino: ({
       approver,
       project_id
-    }: AminoMsgApproveProject["value"]): MsgApproveProject => {
+    }: MsgApproveProjectAminoType["value"]): MsgApproveProject => {
       return {
         approver,
         projectId: Long.fromString(project_id)
@@ -421,7 +421,7 @@ export const AminoConverter = {
     toAmino: ({
       rejector,
       projectId
-    }: MsgRejectProject): AminoMsgRejectProject["value"] => {
+    }: MsgRejectProject): MsgRejectProjectAminoType["value"] => {
       return {
         rejector,
         project_id: projectId.toString()
@@ -430,7 +430,7 @@ export const AminoConverter = {
     fromAmino: ({
       rejector,
       project_id
-    }: AminoMsgRejectProject["value"]): MsgRejectProject => {
+    }: MsgRejectProjectAminoType["value"]): MsgRejectProject => {
       return {
         rejector,
         projectId: Long.fromString(project_id)
@@ -442,7 +442,7 @@ export const AminoConverter = {
     toAmino: ({
       updater,
       projectId
-    }: MsgSuspendProject): AminoMsgSuspendProject["value"] => {
+    }: MsgSuspendProject): MsgSuspendProjectAminoType["value"] => {
       return {
         updater,
         project_id: projectId.toString()
@@ -451,7 +451,7 @@ export const AminoConverter = {
     fromAmino: ({
       updater,
       project_id
-    }: AminoMsgSuspendProject["value"]): MsgSuspendProject => {
+    }: MsgSuspendProjectAminoType["value"]): MsgSuspendProject => {
       return {
         updater,
         projectId: Long.fromString(project_id)
@@ -465,7 +465,7 @@ export const AminoConverter = {
       projectId,
       serialNumber,
       creditAmount
-    }: MsgIssueCredits): AminoMsgIssueCredits["value"] => {
+    }: MsgIssueCredits): MsgIssueCreditsAminoType["value"] => {
       return {
         creator,
         project_id: projectId.toString(),
@@ -478,7 +478,7 @@ export const AminoConverter = {
       project_id,
       serial_number,
       credit_amount
-    }: AminoMsgIssueCredits["value"]): MsgIssueCredits => {
+    }: MsgIssueCreditsAminoType["value"]): MsgIssueCredits => {
       return {
         creator,
         projectId: Long.fromString(project_id),
@@ -495,7 +495,7 @@ export const AminoConverter = {
       denom,
       amount,
       retire
-    }: MsgTransferCredits): AminoMsgTransferCredits["value"] => {
+    }: MsgTransferCredits): MsgTransferCreditsAminoType["value"] => {
       return {
         from,
         to,
@@ -510,7 +510,7 @@ export const AminoConverter = {
       denom,
       amount,
       retire
-    }: AminoMsgTransferCredits["value"]): MsgTransferCredits => {
+    }: MsgTransferCreditsAminoType["value"]): MsgTransferCredits => {
       return {
         from,
         to,
@@ -526,7 +526,7 @@ export const AminoConverter = {
       owner,
       denom,
       amount
-    }: MsgRetireCredits): AminoMsgRetireCredits["value"] => {
+    }: MsgRetireCredits): MsgRetireCreditsAminoType["value"] => {
       return {
         owner,
         denom,
@@ -537,7 +537,7 @@ export const AminoConverter = {
       owner,
       denom,
       amount
-    }: AminoMsgRetireCredits["value"]): MsgRetireCredits => {
+    }: MsgRetireCreditsAminoType["value"]): MsgRetireCredits => {
       return {
         owner,
         denom,

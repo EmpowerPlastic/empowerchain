@@ -10,11 +10,7 @@ export enum CheckTxType {
   RECHECK = 1,
   UNRECOGNIZED = -1,
 }
-export enum CheckTxTypeSDKType {
-  NEW = 0,
-  RECHECK = 1,
-  UNRECOGNIZED = -1,
-}
+export const CheckTxTypeSDKType = CheckTxType;
 export function checkTxTypeFromJSON(object: any): CheckTxType {
   switch (object) {
     case 0:
@@ -64,26 +60,7 @@ export enum ResponseOfferSnapshot_Result {
   REJECT_SENDER = 5,
   UNRECOGNIZED = -1,
 }
-export enum ResponseOfferSnapshot_ResultSDKType {
-  /** UNKNOWN - Unknown result, abort all snapshot restoration */
-  UNKNOWN = 0,
-
-  /** ACCEPT - Snapshot accepted, apply chunks */
-  ACCEPT = 1,
-
-  /** ABORT - Abort all snapshot restoration */
-  ABORT = 2,
-
-  /** REJECT - Reject this specific snapshot, try others */
-  REJECT = 3,
-
-  /** REJECT_FORMAT - Reject all snapshots of this format, try others */
-  REJECT_FORMAT = 4,
-
-  /** REJECT_SENDER - Reject all snapshots from the sender(s), try others */
-  REJECT_SENDER = 5,
-  UNRECOGNIZED = -1,
-}
+export const ResponseOfferSnapshot_ResultSDKType = ResponseOfferSnapshot_Result;
 export function responseOfferSnapshot_ResultFromJSON(object: any): ResponseOfferSnapshot_Result {
   switch (object) {
     case 0:
@@ -161,26 +138,7 @@ export enum ResponseApplySnapshotChunk_Result {
   REJECT_SNAPSHOT = 5,
   UNRECOGNIZED = -1,
 }
-export enum ResponseApplySnapshotChunk_ResultSDKType {
-  /** UNKNOWN - Unknown result, abort all snapshot restoration */
-  UNKNOWN = 0,
-
-  /** ACCEPT - Chunk successfully accepted */
-  ACCEPT = 1,
-
-  /** ABORT - Abort all snapshot restoration */
-  ABORT = 2,
-
-  /** RETRY - Retry chunk (combine with refetch and reject) */
-  RETRY = 3,
-
-  /** RETRY_SNAPSHOT - Retry snapshot (combine with refetch and reject) */
-  RETRY_SNAPSHOT = 4,
-
-  /** REJECT_SNAPSHOT - Reject this snapshot, try others */
-  REJECT_SNAPSHOT = 5,
-  UNRECOGNIZED = -1,
-}
+export const ResponseApplySnapshotChunk_ResultSDKType = ResponseApplySnapshotChunk_Result;
 export function responseApplySnapshotChunk_ResultFromJSON(object: any): ResponseApplySnapshotChunk_Result {
   switch (object) {
     case 0:
@@ -244,12 +202,7 @@ export enum ResponseProcessProposal_ProposalStatus {
   REJECT = 2,
   UNRECOGNIZED = -1,
 }
-export enum ResponseProcessProposal_ProposalStatusSDKType {
-  UNKNOWN = 0,
-  ACCEPT = 1,
-  REJECT = 2,
-  UNRECOGNIZED = -1,
-}
+export const ResponseProcessProposal_ProposalStatusSDKType = ResponseProcessProposal_ProposalStatus;
 export function responseProcessProposal_ProposalStatusFromJSON(object: any): ResponseProcessProposal_ProposalStatus {
   switch (object) {
     case 0:
@@ -292,12 +245,7 @@ export enum MisbehaviorType {
   LIGHT_CLIENT_ATTACK = 2,
   UNRECOGNIZED = -1,
 }
-export enum MisbehaviorTypeSDKType {
-  UNKNOWN = 0,
-  DUPLICATE_VOTE = 1,
-  LIGHT_CLIENT_ATTACK = 2,
-  UNRECOGNIZED = -1,
-}
+export const MisbehaviorTypeSDKType = MisbehaviorType;
 export function misbehaviorTypeFromJSON(object: any): MisbehaviorType {
   switch (object) {
     case 0:
@@ -436,7 +384,7 @@ export interface RequestCheckTx {
 }
 export interface RequestCheckTxSDKType {
   tx: Uint8Array;
-  type: CheckTxTypeSDKType;
+  type: CheckTxType;
 }
 export interface RequestDeliverTx {
   tx: Uint8Array;
@@ -470,10 +418,7 @@ export interface RequestOfferSnapshot {
 /** offers a snapshot to the application */
 
 export interface RequestOfferSnapshotSDKType {
-  /** snapshot offered by peers */
   snapshot?: SnapshotSDKType;
-  /** light client-verified app hash for snapshot height */
-
   app_hash: Uint8Array;
 }
 /** loads a snapshot chunk */
@@ -523,21 +468,13 @@ export interface RequestPrepareProposal {
   proposerAddress: Uint8Array;
 }
 export interface RequestPrepareProposalSDKType {
-  /** the modified transactions cannot exceed this size. */
   max_tx_bytes: Long;
-  /**
-   * txs is an array of transactions that will be included in a block,
-   * sent to the app for possible modifications.
-   */
-
   txs: Uint8Array[];
   local_last_commit?: ExtendedCommitInfoSDKType;
   misbehavior: MisbehaviorSDKType[];
   height: Long;
   time?: Date;
   next_validators_hash: Uint8Array;
-  /** address of the public key of the validator proposing the block. */
-
   proposer_address: Uint8Array;
 }
 export interface RequestProcessProposal {
@@ -558,14 +495,10 @@ export interface RequestProcessProposalSDKType {
   txs: Uint8Array[];
   proposed_last_commit?: CommitInfoSDKType;
   misbehavior: MisbehaviorSDKType[];
-  /** hash is the merkle root hash of the fields of the proposed block. */
-
   hash: Uint8Array;
   height: Long;
   time?: Date;
   next_validators_hash: Uint8Array;
-  /** address of the public key of the original proposer of the block. */
-
   proposer_address: Uint8Array;
 }
 export interface Response {
@@ -665,11 +598,7 @@ export interface ResponseQuery {
 }
 export interface ResponseQuerySDKType {
   code: number;
-  /** bytes data = 2; // use "value" instead. */
-
   log: string;
-  /** nondeterministic */
-
   info: string;
   index: Long;
   key: Uint8Array;
@@ -709,11 +638,7 @@ export interface ResponseCheckTx {
 export interface ResponseCheckTxSDKType {
   code: number;
   data: Uint8Array;
-  /** nondeterministic */
-
   log: string;
-  /** nondeterministic */
-
   info: string;
   gas_wanted: Long;
   gas_used: Long;
@@ -721,11 +646,6 @@ export interface ResponseCheckTxSDKType {
   codespace: string;
   sender: string;
   priority: Long;
-  /**
-   * mempool_error is set by Tendermint.
-   * ABCI applictions creating a ResponseCheckTX should not set mempool_error.
-   */
-
   mempool_error: string;
 }
 export interface ResponseDeliverTx {
@@ -745,11 +665,7 @@ export interface ResponseDeliverTx {
 export interface ResponseDeliverTxSDKType {
   code: number;
   data: Uint8Array;
-  /** nondeterministic */
-
   log: string;
-  /** nondeterministic */
-
   info: string;
   gas_wanted: Long;
   gas_used: Long;
@@ -772,7 +688,6 @@ export interface ResponseCommit {
   retainHeight: Long;
 }
 export interface ResponseCommitSDKType {
-  /** reserve 1 */
   data: Uint8Array;
   retain_height: Long;
 }
@@ -786,7 +701,7 @@ export interface ResponseOfferSnapshot {
   result: ResponseOfferSnapshot_Result;
 }
 export interface ResponseOfferSnapshotSDKType {
-  result: ResponseOfferSnapshot_ResultSDKType;
+  result: ResponseOfferSnapshot_Result;
 }
 export interface ResponseLoadSnapshotChunk {
   chunk: Uint8Array;
@@ -804,12 +719,8 @@ export interface ResponseApplySnapshotChunk {
   rejectSenders: string[];
 }
 export interface ResponseApplySnapshotChunkSDKType {
-  result: ResponseApplySnapshotChunk_ResultSDKType;
-  /** Chunks to refetch and reapply */
-
+  result: ResponseApplySnapshotChunk_Result;
   refetch_chunks: number[];
-  /** Chunk senders to reject and ban */
-
   reject_senders: string[];
 }
 export interface ResponsePrepareProposal {
@@ -822,7 +733,7 @@ export interface ResponseProcessProposal {
   status: ResponseProcessProposal_ProposalStatus;
 }
 export interface ResponseProcessProposalSDKType {
-  status: ResponseProcessProposal_ProposalStatusSDKType;
+  status: ResponseProcessProposal_ProposalStatus;
 }
 export interface CommitInfo {
   round: number;
@@ -843,13 +754,7 @@ export interface ExtendedCommitInfo {
   votes: ExtendedVoteInfo[];
 }
 export interface ExtendedCommitInfoSDKType {
-  /** The round at which the block proposer decided in the previous height. */
   round: number;
-  /**
-   * List of validators' addresses in the last validator set with their voting
-   * information, including vote extensions.
-   */
-
   votes: ExtendedVoteInfoSDKType[];
 }
 /**
@@ -886,8 +791,6 @@ export interface EventAttribute {
 export interface EventAttributeSDKType {
   key: string;
   value: string;
-  /** nondeterministic */
-
   index: boolean;
 }
 /**
@@ -929,13 +832,7 @@ export interface Validator {
 /** Validator */
 
 export interface ValidatorSDKType {
-  /**
-   * The first 20 bytes of SHA256(public key)
-   * PubKey pub_key = 2 [(gogoproto.nullable)=false];
-   */
   address: Uint8Array;
-  /** The voting power */
-
   power: Long;
 }
 /** ValidatorUpdate */
@@ -972,8 +869,6 @@ export interface ExtendedVoteInfo {
 export interface ExtendedVoteInfoSDKType {
   validator?: ValidatorSDKType;
   signed_last_block: boolean;
-  /** Reserved for future use */
-
   vote_extension: Uint8Array;
 }
 export interface Misbehavior {
@@ -996,22 +891,10 @@ export interface Misbehavior {
   totalVotingPower: Long;
 }
 export interface MisbehaviorSDKType {
-  type: MisbehaviorTypeSDKType;
-  /** The offending validator */
-
+  type: MisbehaviorType;
   validator?: ValidatorSDKType;
-  /** The height when the offense occurred */
-
   height: Long;
-  /** The corresponding time where the offense occurred */
-
   time?: Date;
-  /**
-   * Total voting power of the validator set in case the ABCI application does
-   * not store historical validators.
-   * https://github.com/tendermint/tendermint/issues/4581
-   */
-
   total_voting_power: Long;
 }
 export interface Snapshot {
@@ -1031,19 +914,10 @@ export interface Snapshot {
   metadata: Uint8Array;
 }
 export interface SnapshotSDKType {
-  /** The height at which the snapshot was taken */
   height: Long;
-  /** The application-specific snapshot format */
-
   format: number;
-  /** Number of chunks in the snapshot */
-
   chunks: number;
-  /** Arbitrary snapshot hash, equal only if identical */
-
   hash: Uint8Array;
-  /** Arbitrary application metadata */
-
   metadata: Uint8Array;
 }
 

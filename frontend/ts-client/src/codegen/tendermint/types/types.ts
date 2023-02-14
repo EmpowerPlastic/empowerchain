@@ -3,7 +3,7 @@ import { Consensus, ConsensusSDKType } from "../version/types";
 import { Timestamp } from "../../google/protobuf/timestamp";
 import { ValidatorSet, ValidatorSetSDKType } from "./validator";
 import * as _m0 from "protobufjs/minimal";
-import { DeepPartial, toTimestamp, Long, fromTimestamp } from "../../helpers";
+import { DeepPartial, Long, toTimestamp, fromTimestamp } from "../../helpers";
 /** BlockIdFlag indicates which BlcokID the signature is for */
 
 export enum BlockIDFlag {
@@ -13,15 +13,7 @@ export enum BlockIDFlag {
   BLOCK_ID_FLAG_NIL = 3,
   UNRECOGNIZED = -1,
 }
-/** BlockIdFlag indicates which BlcokID the signature is for */
-
-export enum BlockIDFlagSDKType {
-  BLOCK_ID_FLAG_UNKNOWN = 0,
-  BLOCK_ID_FLAG_ABSENT = 1,
-  BLOCK_ID_FLAG_COMMIT = 2,
-  BLOCK_ID_FLAG_NIL = 3,
-  UNRECOGNIZED = -1,
-}
+export const BlockIDFlagSDKType = BlockIDFlag;
 export function blockIDFlagFromJSON(object: any): BlockIDFlag {
   switch (object) {
     case 0:
@@ -78,19 +70,7 @@ export enum SignedMsgType {
   SIGNED_MSG_TYPE_PROPOSAL = 32,
   UNRECOGNIZED = -1,
 }
-/** SignedMsgType is a type of signed message in the consensus. */
-
-export enum SignedMsgTypeSDKType {
-  SIGNED_MSG_TYPE_UNKNOWN = 0,
-
-  /** SIGNED_MSG_TYPE_PREVOTE - Votes */
-  SIGNED_MSG_TYPE_PREVOTE = 1,
-  SIGNED_MSG_TYPE_PRECOMMIT = 2,
-
-  /** SIGNED_MSG_TYPE_PROPOSAL - Proposals */
-  SIGNED_MSG_TYPE_PROPOSAL = 32,
-  UNRECOGNIZED = -1,
-}
+export const SignedMsgTypeSDKType = SignedMsgType;
 export function signedMsgTypeFromJSON(object: any): SignedMsgType {
   switch (object) {
     case 0:
@@ -206,36 +186,19 @@ export interface Header {
 /** Header defines the structure of a Tendermint block header. */
 
 export interface HeaderSDKType {
-  /** basic block info */
   version?: ConsensusSDKType;
   chain_id: string;
   height: Long;
   time?: Date;
-  /** prev block info */
-
   last_block_id?: BlockIDSDKType;
-  /** hashes of block data */
-
   last_commit_hash: Uint8Array;
   data_hash: Uint8Array;
-  /** hashes from the app output from the prev block */
-
   validators_hash: Uint8Array;
-  /** validators for the next block */
-
   next_validators_hash: Uint8Array;
-  /** consensus params for current block */
-
   consensus_hash: Uint8Array;
-  /** state after txs from the previous block */
-
   app_hash: Uint8Array;
   last_results_hash: Uint8Array;
-  /** consensus info */
-
   evidence_hash: Uint8Array;
-  /** original proposer of the block */
-
   proposer_address: Uint8Array;
 }
 /** Data contains the set of transactions included in the block */
@@ -251,11 +214,6 @@ export interface Data {
 /** Data contains the set of transactions included in the block */
 
 export interface DataSDKType {
-  /**
-   * Txs that will be applied by state @ block.Height+1.
-   * NOTE: not all txs here are valid.  We're just agreeing on the order first.
-   * This means that block.AppHash does not include these txs.
-   */
   txs: Uint8Array[];
 }
 /**
@@ -281,11 +239,9 @@ export interface Vote {
  */
 
 export interface VoteSDKType {
-  type: SignedMsgTypeSDKType;
+  type: SignedMsgType;
   height: Long;
   round: number;
-  /** zero if vote is nil. */
-
   block_id?: BlockIDSDKType;
   timestamp?: Date;
   validator_address: Uint8Array;
@@ -319,7 +275,7 @@ export interface CommitSig {
 /** CommitSig is a part of the Vote included in a Commit. */
 
 export interface CommitSigSDKType {
-  block_id_flag: BlockIDFlagSDKType;
+  block_id_flag: BlockIDFlag;
   validator_address: Uint8Array;
   timestamp?: Date;
   signature: Uint8Array;
@@ -334,7 +290,7 @@ export interface Proposal {
   signature: Uint8Array;
 }
 export interface ProposalSDKType {
-  type: SignedMsgTypeSDKType;
+  type: SignedMsgType;
   height: Long;
   round: number;
   pol_round: number;

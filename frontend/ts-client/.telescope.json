@@ -5,13 +5,13 @@
   "outPath": "./src/codegen",
   "options": {
     "aminoEncoding": {
-      "enabled": "true"
+      "enabled": true
     },
     "lcdClients": {
-      "enabled": "true"
+      "enabled": true
     },
     "rpcClients": {
-      "enabled": "true"
+      "enabled": true
     }
   }
 }

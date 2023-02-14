@@ -21,16 +21,7 @@ export interface MsgUpdateParams {
 /** MsgUpdateParams is the Msg/UpdateParams request type. */
 
 export interface MsgUpdateParamsSDKType {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
   authority: string;
-  /**
-   * params defines the x/consensus parameters to update.
-   * VersionsParams is not included in this Msg because it is tracked
-   * separarately in x/upgrade.
-   * 
-   * NOTE: All parameters must be supplied.
-   */
-
   block?: BlockParamsSDKType;
   evidence?: EvidenceParamsSDKType;
   validator?: ValidatorParamsSDKType;

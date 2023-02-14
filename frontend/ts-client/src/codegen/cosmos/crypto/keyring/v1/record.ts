@@ -26,22 +26,11 @@ export interface Record {
 /** Record is used for representing a key in the keyring. */
 
 export interface RecordSDKType {
-  /** name represents a name of Record */
   name: string;
-  /** pub_key represents a public key in any format */
-
   pub_key?: AnySDKType;
-  /** local stores the private key locally. */
-
   local?: Record_LocalSDKType;
-  /** ledger stores the information about a Ledger key. */
-
   ledger?: Record_LedgerSDKType;
-  /** Multi does not store any other information. */
-
   multi?: Record_MultiSDKType;
-  /** Offline does not store any other information. */
-
   offline?: Record_OfflineSDKType;
 }
 /**

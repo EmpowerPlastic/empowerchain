@@ -65,7 +65,6 @@ export interface MsgWithdrawDelegatorRewardResponse {
  */
 
 export interface MsgWithdrawDelegatorRewardResponseSDKType {
-  /** Since: cosmos-sdk 0.46 */
   amount: CoinSDKType[];
 }
 /**
@@ -99,7 +98,6 @@ export interface MsgWithdrawValidatorCommissionResponse {
  */
 
 export interface MsgWithdrawValidatorCommissionResponseSDKType {
-  /** Since: cosmos-sdk 0.46 */
   amount: CoinSDKType[];
 }
 /**
@@ -150,14 +148,7 @@ export interface MsgUpdateParams {
  */
 
 export interface MsgUpdateParamsSDKType {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
   authority: string;
-  /**
-   * params defines the x/distribution parameters to update.
-   * 
-   * NOTE: All parameters must be supplied.
-   */
-
   params?: ParamsSDKType;
 }
 /**
@@ -199,7 +190,6 @@ export interface MsgCommunityPoolSpend {
  */
 
 export interface MsgCommunityPoolSpendSDKType {
-  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
   authority: string;
   recipient: string;
   amount: CoinSDKType[];

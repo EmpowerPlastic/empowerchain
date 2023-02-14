@@ -12,10 +12,7 @@ export interface MsgCreateProof {
 /** MsgCreateProof is the message used for creating a new proof of existence */
 
 export interface MsgCreateProofSDKType {
-  /** creator is the account address that created the proof */
   creator: string;
-  /** hash is the SHA-256 hash in HEX format */
-
   hash: string;
 }
 /** MsgCreateProofResponse is response from creating a new proof of existence */

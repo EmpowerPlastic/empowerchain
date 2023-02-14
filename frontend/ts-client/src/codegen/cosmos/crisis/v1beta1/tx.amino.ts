@@ -1,7 +1,7 @@
 import { AminoMsg } from "@cosmjs/amino";
 import { Long } from "../../../helpers";
 import { MsgVerifyInvariant, MsgUpdateParams } from "./tx";
-export interface AminoMsgVerifyInvariant extends AminoMsg {
+export interface MsgVerifyInvariantAminoType extends AminoMsg {
   type: "cosmos-sdk/MsgVerifyInvariant";
   value: {
     sender: string;
@@ -9,8 +9,8 @@ export interface AminoMsgVerifyInvariant extends AminoMsg {
     invariant_route: string;
   };
 }
-export interface AminoMsgUpdateParams extends AminoMsg {
-  type: "cosmos-sdk/MsgUpdateParams";
+export interface MsgUpdateParamsAminoType extends AminoMsg {
+  type: "cosmos-sdk/x/crisis/MsgUpdateParams";
   value: {
     authority: string;
     constant_fee: {
@@ -26,7 +26,7 @@ export const AminoConverter = {
       sender,
       invariantModuleName,
       invariantRoute
-    }: MsgVerifyInvariant): AminoMsgVerifyInvariant["value"] => {
+    }: MsgVerifyInvariant): MsgVerifyInvariantAminoType["value"] => {
       return {
         sender,
         invariant_module_name: invariantModuleName,
@@ -37,7 +37,7 @@ export const AminoConverter = {
       sender,
       invariant_module_name,
       invariant_route
-    }: AminoMsgVerifyInvariant["value"]): MsgVerifyInvariant => {
+    }: MsgVerifyInvariantAminoType["value"]): MsgVerifyInvariant => {
       return {
         sender,
         invariantModuleName: invariant_module_name,
@@ -46,11 +46,11 @@ export const AminoConverter = {
     }
   },
   "/cosmos.crisis.v1beta1.MsgUpdateParams": {
-    aminoType: "cosmos-sdk/MsgUpdateParams",
+    aminoType: "cosmos-sdk/x/crisis/MsgUpdateParams",
     toAmino: ({
       authority,
       constantFee
-    }: MsgUpdateParams): AminoMsgUpdateParams["value"] => {
+    }: MsgUpdateParams): MsgUpdateParamsAminoType["value"] => {
       return {
         authority,
         constant_fee: {
@@ -62,7 +62,7 @@ export const AminoConverter = {
     fromAmino: ({
       authority,
       constant_fee
-    }: AminoMsgUpdateParams["value"]): MsgUpdateParams => {
+    }: MsgUpdateParamsAminoType["value"]): MsgUpdateParams => {
       return {
         authority,
         constantFee: {

@@ -28,13 +28,6 @@ export interface SendAuthorization {
 
 export interface SendAuthorizationSDKType {
   spend_limit: CoinSDKType[];
-  /**
-   * allow_list specifies an optional list of addresses to whom the grantee can send tokens on behalf of the
-   * granter. If omitted, any recipient is allowed.
-   * 
-   * Since: cosmos-sdk 0.47
-   */
-
   allow_list: string[];
 }
 
