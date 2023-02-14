@@ -3,9 +3,9 @@ package simulation
 import (
 	"context"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/types/query"
 	"math/rand"
 
+	"github.com/cosmos/cosmos-sdk/types/query"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
@@ -78,15 +78,15 @@ func getRandomIssuer(ctx context.Context, r *rand.Rand, querier keeper.Querier, 
 		return plasticcredit.Issuer{}, fmt.Errorf("no issuers found")
 	}
 
-	var issuerId int
+	var issuerID int
 	if ids.NextIssuerId == 2 {
-		issuerId = 1
+		issuerID = 1
 	} else {
 		simtypes.RandIntBetween(r, 1, int(ids.NextIssuerId-1))
 	}
 
 	resp, err := querier.Issuer(ctx, &plasticcredit.QueryIssuerRequest{
-		IssuerId: uint64(issuerId),
+		IssuerId: uint64(issuerID),
 	})
 	if err != nil {
 		return plasticcredit.Issuer{}, err
@@ -100,15 +100,15 @@ func getRandomApplicant(ctx context.Context, r *rand.Rand, querier keeper.Querie
 		return plasticcredit.Applicant{}, fmt.Errorf("no applicants found")
 	}
 
-	var applicantId int
+	var applicantID int
 	if ids.NextApplicantId == 2 {
-		applicantId = 1
+		applicantID = 1
 	} else {
 		simtypes.RandIntBetween(r, 1, int(ids.NextApplicantId-1))
 	}
 
 	resp, err := querier.Applicant(ctx, &plasticcredit.QueryApplicantRequest{
-		ApplicantId: uint64(applicantId),
+		ApplicantId: uint64(applicantID),
 	})
 	if err != nil {
 		return plasticcredit.Applicant{}, err
@@ -148,15 +148,15 @@ func getRandomProject(ctx context.Context, r *rand.Rand, querier keeper.Querier,
 		return plasticcredit.Project{}, fmt.Errorf("no projects found")
 	}
 
-	var projectId int
+	var projectID int
 	if ids.NextProjectId == 2 {
-		projectId = 1
+		projectID = 1
 	} else {
 		simtypes.RandIntBetween(r, 1, int(ids.NextProjectId-1))
 	}
 
 	resp, err := querier.Project(ctx, &plasticcredit.QueryProjectRequest{
-		ProjectId: uint64(projectId),
+		ProjectId: uint64(projectID),
 	})
 	if err != nil {
 		return plasticcredit.Project{}, err

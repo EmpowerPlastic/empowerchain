@@ -2,7 +2,6 @@ package simulation
 
 import (
 	"fmt"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
 	"math/rand"
 
 	"cosmossdk.io/math"
@@ -11,6 +10,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
 )
 
 const (
@@ -157,7 +157,7 @@ func generateApplicants(r *rand.Rand, accounts []simtypes.Account) []plasticcred
 
 func generateCreditClasses(r *rand.Rand, issuers []plasticcredit.Issuer) []plasticcredit.CreditClass {
 	var creditClasses []plasticcredit.CreditClass
-	var usedAbbreviations = make(map[string]bool)
+	usedAbbreviations := make(map[string]bool)
 
 	for i := 0; i < len(issuers); i++ {
 		numberOfCreditClasses := simtypes.RandIntBetween(r, 1, 3)
@@ -214,7 +214,7 @@ func generateProjects(r *rand.Rand, applicants []plasticcredit.Applicant, credit
 
 func generateCreditCollections(r *rand.Rand, projects []plasticcredit.Project) []plasticcredit.CreditCollection {
 	var creditCollections []plasticcredit.CreditCollection
-	var usedDenom = make(map[string]bool)
+	usedDenom := make(map[string]bool)
 
 	for i := 0; i < len(projects); i++ {
 		numberOfCollectionsForProject := simtypes.RandIntBetween(r, 0, 5)

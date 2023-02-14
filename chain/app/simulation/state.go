@@ -3,7 +3,6 @@ package simulation
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"io"
 	"math/rand"
 	"os"
@@ -23,6 +22,7 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/EmpowerPlastic/empowerchain/app"
+	"github.com/EmpowerPlastic/empowerchain/app/params"
 )
 
 // TODO: Remove this file as soon as a 0.47 release is cut that includes this code in the simtestutil package.
@@ -192,7 +192,7 @@ func AppStateRandomizedFn(
 		InitialStake: initialStake,
 		NumBonded:    numInitiallyBonded,
 		GenTimestamp: genesisTimestamp,
-		BondDenom: 	  params.DefaultBondDenom,
+		BondDenom:    params.DefaultBondDenom,
 	}
 
 	simManager.GenerateGenesisStates(simState)

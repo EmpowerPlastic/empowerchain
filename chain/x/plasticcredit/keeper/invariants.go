@@ -36,7 +36,7 @@ func TotalSupplyInvariant(k InvariantKeeper) sdk.Invariant {
 			Retired uint64
 		})
 		k.IterateCreditBalances(ctx, func(creditBalance plasticcredit.CreditBalance) {
-			totalSupply, _ := totalSupplies[creditBalance.Denom]
+			totalSupply := totalSupplies[creditBalance.Denom]
 			totalSupply.Active += creditBalance.Balance.Active
 			totalSupply.Retired += creditBalance.Balance.Retired
 			totalSupplies[creditBalance.Denom] = totalSupply
