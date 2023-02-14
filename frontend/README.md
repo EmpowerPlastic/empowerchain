@@ -16,4 +16,4 @@ When you have installed and bootstrapped the frontend you can go and start devel
 
 ## Installing dependencies in a specific project
 
-See: https://github.com/lerna/lerna/tree/main/commands/add#readme
+See: https://github.com/lerna/lerna/tree/main/libs/commands/add#readme
