@@ -18,18 +18,18 @@ import (
 const (
 	DefaultWeightMsgCreateIssuer      = 10
 	DefaultWeightMsgUpdateIssuer      = 20
-	DefaultWeightMsgCreateApplicant   = 100
-	DefaultWeightMsgUpdateApplicant   = 100
-	DefaultWeightMsgCreateCreditClass = 20
-	DefaultWeightMsgUpdateCreditClass = 20
-	DefaultWeightMsgCreateProject     = 100
-	DefaultWeightMsgUpdateProject     = 100
-	DefaultWeightMsgApproveProject    = 100
-	DefaultWeightMsgRejectProject     = 100
-	DefaultWeightMsgSuspendProject    = 50
-	DefaultWeightMsgIssueCredits      = 100
-	DefaultWeightMsgTransferCredits   = 100
-	DefaultWeightMsgRetireCredits     = 100
+	DefaultWeightMsgCreateApplicant   = 75
+	DefaultWeightMsgUpdateApplicant   = 50
+	DefaultWeightMsgCreateCreditClass = 10
+	DefaultWeightMsgUpdateCreditClass = 5
+	DefaultWeightMsgCreateProject     = 70
+	DefaultWeightMsgUpdateProject     = 30
+	DefaultWeightMsgApproveProject    = 20
+	DefaultWeightMsgRejectProject     = 30
+	DefaultWeightMsgSuspendProject    = 10
+	DefaultWeightMsgIssueCredits      = 75
+	DefaultWeightMsgTransferCredits   = 15 // Low for now, the lookup is too expensive
+	DefaultWeightMsgRetireCredits     = 15 // Low for now, the lookup is too expensive
 
 	OpWeightMsgCreateIssuer      = "op_weight_msg_create_issuer"
 	OpWeightMsgUpdateIssuer      = "op_weight_msg_update_issuer"
@@ -217,7 +217,7 @@ func SimulateMsgCreateIssuer(cdc *codec.ProtoCodec, ak plasticcredit.AccountKeep
 		ctx := sdk.WrapSDKContext(sdkCtx)
 		res, err := querier.Params(ctx, &plasticcredit.QueryParamsRequest{})
 		if err != nil {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get params"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get params"), nil, nil
 		}
 
 		if res.Params.IssuerCreator == "" {
@@ -266,14 +266,15 @@ func SimulateMsgUpdateIssuer(cdc *codec.ProtoCodec, ak plasticcredit.AccountKeep
 		querier := keeper.Querier{Keeper: k}
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
-		issuer, err := getRandomIssuer(ctx, r, querier)
+		ids := querier.GetIDCounters(sdkCtx)
+		issuer, err := getRandomIssuer(ctx, r, querier, ids)
 		if err != nil {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, nil
 		}
 
 		admin, found := simtypes.FindAccount(accounts, sdk.MustAccAddressFromBech32(issuer.Admin))
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, nil
 		}
 
 		msg := &plasticcredit.MsgUpdateIssuer{
@@ -350,14 +351,15 @@ func SimulateMsgUpdateApplicant(cdc *codec.ProtoCodec, ak plasticcredit.AccountK
 		querier := keeper.Querier{Keeper: k}
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
-		applicant, err := getRandomApplicant(ctx, r, querier)
+		ids := querier.GetIDCounters(sdkCtx)
+		applicant, err := getRandomApplicant(ctx, r, querier, ids)
 		if err != nil {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get applicant"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get applicant"), nil, nil
 		}
 
 		admin, found := simtypes.FindAccount(accounts, sdk.MustAccAddressFromBech32(applicant.Admin))
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, nil
 		}
 
 		msg := &plasticcredit.MsgUpdateApplicant{
@@ -398,14 +400,16 @@ func SimulateMsgCreateCreditClass(cdc *codec.ProtoCodec, ak plasticcredit.Accoun
 		querier := keeper.Querier{Keeper: k}
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
-		issuer, err := getRandomIssuer(ctx, r, querier)
+
+		ids := querier.GetIDCounters(sdkCtx)
+		issuer, err := getRandomIssuer(ctx, r, querier, ids)
 		if err != nil {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, nil
 		}
 
 		admin, found := simtypes.FindAccount(accounts, sdk.MustAccAddressFromBech32(issuer.Admin))
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, nil
 		}
 
 		msg := &plasticcredit.MsgCreateCreditClass{
@@ -453,17 +457,17 @@ func SimulateMsgUpdateCreditClass(cdc *codec.ProtoCodec, ak plasticcredit.Accoun
 		ctx := sdk.WrapSDKContext(sdkCtx)
 		creditClass, err := getRandomCreditClass(ctx, r, querier)
 		if err != nil {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, nil
 		}
 
 		issuer, found := querier.GetIssuer(sdkCtx, creditClass.IssuerId)
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find issuer"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find issuer"), nil, nil
 		}
 
 		admin, found := simtypes.FindAccount(accounts, sdk.MustAccAddressFromBech32(issuer.Admin))
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, nil
 		}
 
 		msg := &plasticcredit.MsgUpdateCreditClass{
@@ -502,19 +506,20 @@ func SimulateMsgCreateProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKee
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
 
-		applicant, err := getRandomApplicant(ctx, r, querier)
+		ids := querier.GetIDCounters(sdkCtx)
+		applicant, err := getRandomApplicant(ctx, r, querier, ids)
 		if err != nil {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get applicant"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get applicant"), nil, nil
 		}
 
 		creditClass, err := getRandomCreditClass(ctx, r, querier)
 		if err != nil {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, nil
 		}
 
 		admin, found := simtypes.FindAccount(accounts, sdk.MustAccAddressFromBech32(applicant.Admin))
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, nil
 		}
 
 		msg := &plasticcredit.MsgCreateProject{
@@ -554,19 +559,20 @@ func SimulateMsgUpdateProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKee
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
 
-		project, err := getRandomProject(ctx, r, querier)
+		ids := querier.GetIDCounters(sdkCtx)
+		project, err := getRandomProject(ctx, r, querier, ids)
 		if err != nil {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, nil
 		}
 
 		applicant, found := querier.GetApplicant(sdkCtx, project.ApplicantId)
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get applicant"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get applicant"), nil, nil
 		}
 
 		admin, found := simtypes.FindAccount(accounts, sdk.MustAccAddressFromBech32(applicant.Admin))
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, nil
 		}
 
 		msg := &plasticcredit.MsgUpdateProject{
@@ -605,9 +611,10 @@ func SimulateMsgApproveProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKe
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
 
-		project, err := getRandomProject(ctx, r, querier)
+		ids := querier.GetIDCounters(sdkCtx)
+		project, err := getRandomProject(ctx, r, querier, ids)
 		if err != nil {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, nil
 		}
 		if project.Status == plasticcredit.ProjectStatus_APPROVED {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "project already approved"), nil, nil
@@ -615,17 +622,17 @@ func SimulateMsgApproveProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKe
 
 		creditClass, found := querier.GetCreditClass(sdkCtx, project.CreditClassAbbreviation)
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, nil
 		}
 
 		issuer, found := querier.GetIssuer(sdkCtx, creditClass.IssuerId)
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, nil
 		}
 
 		issuerAdmin, found := simtypes.FindAccount(accounts, sdk.MustAccAddressFromBech32(issuer.Admin))
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, nil
 		}
 
 		msg := &plasticcredit.MsgApproveProject{
@@ -663,9 +670,10 @@ func SimulateMsgRejectProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKee
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
 
-		project, err := getRandomProject(ctx, r, querier)
+		ids := querier.GetIDCounters(sdkCtx)
+		project, err := getRandomProject(ctx, r, querier, ids)
 		if err != nil {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, nil
 		}
 		if project.Status != plasticcredit.ProjectStatus_NEW {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "project cannot be rejected"), nil, nil
@@ -673,17 +681,17 @@ func SimulateMsgRejectProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKee
 
 		creditClass, found := querier.GetCreditClass(sdkCtx, project.CreditClassAbbreviation)
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, nil
 		}
 
 		issuer, found := querier.GetIssuer(sdkCtx, creditClass.IssuerId)
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, nil
 		}
 
 		issuerAdmin, found := simtypes.FindAccount(accounts, sdk.MustAccAddressFromBech32(issuer.Admin))
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, nil
 		}
 
 		msg := &plasticcredit.MsgRejectProject{
@@ -721,9 +729,10 @@ func SimulateMsgSuspendProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKe
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
 
-		project, err := getRandomProject(ctx, r, querier)
+		ids := querier.GetIDCounters(sdkCtx)
+		project, err := getRandomProject(ctx, r, querier, ids)
 		if err != nil {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, nil
 		}
 		if project.Status != plasticcredit.ProjectStatus_APPROVED {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "project cannot be suspended"), nil, nil
@@ -731,17 +740,17 @@ func SimulateMsgSuspendProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKe
 
 		creditClass, found := querier.GetCreditClass(sdkCtx, project.CreditClassAbbreviation)
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, nil
 		}
 
 		issuer, found := querier.GetIssuer(sdkCtx, creditClass.IssuerId)
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, nil
 		}
 
 		issuerAdmin, found := simtypes.FindAccount(accounts, sdk.MustAccAddressFromBech32(issuer.Admin))
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, nil
 		}
 
 		msg := &plasticcredit.MsgSuspendProject{
@@ -779,9 +788,10 @@ func SimulateMsgIssueCredits(cdc *codec.ProtoCodec, ak plasticcredit.AccountKeep
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
 
-		project, err := getRandomProject(ctx, r, querier)
+		ids := querier.GetIDCounters(sdkCtx)
+		project, err := getRandomProject(ctx, r, querier, ids)
 		if err != nil {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, nil
 		}
 		if project.Status != plasticcredit.ProjectStatus_APPROVED {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "cannot issue credit for non-approved project"), nil, nil
@@ -789,17 +799,17 @@ func SimulateMsgIssueCredits(cdc *codec.ProtoCodec, ak plasticcredit.AccountKeep
 
 		creditClass, found := querier.GetCreditClass(sdkCtx, project.CreditClassAbbreviation)
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, nil
 		}
 
 		issuer, found := querier.GetIssuer(sdkCtx, creditClass.IssuerId)
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, nil
 		}
 
 		issuerAdmin, found := simtypes.FindAccount(accounts, sdk.MustAccAddressFromBech32(issuer.Admin))
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, nil
 		}
 
 		msg := &plasticcredit.MsgIssueCredits{
@@ -841,12 +851,12 @@ func SimulateMsgTransferCredits(cdc *codec.ProtoCodec, ak plasticcredit.AccountK
 
 		creditBalance, err := getRandomCreditBalance(ctx, r, querier)
 		if err != nil {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit balance"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit balance"), nil, nil
 		}
 
 		owner, found := simtypes.FindAccount(accounts, sdk.MustAccAddressFromBech32(creditBalance.Owner))
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find owner"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find owner"), nil, nil
 		}
 		recipient, _ := simtypes.RandomAcc(r, accounts)
 
@@ -899,12 +909,12 @@ func SimulateMsgRetireCredits(cdc *codec.ProtoCodec, ak plasticcredit.AccountKee
 
 		creditBalance, err := getRandomCreditBalance(ctx, r, querier)
 		if err != nil {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit balance"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit balance"), nil, nil
 		}
 
 		owner, found := simtypes.FindAccount(accounts, sdk.MustAccAddressFromBech32(creditBalance.Owner))
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find owner"), nil, err
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find owner"), nil, nil
 		}
 
 		if creditBalance.Balance.Active == 0 {

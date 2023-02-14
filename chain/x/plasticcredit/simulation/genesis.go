@@ -1,6 +1,8 @@
 package simulation
 
 import (
+	"fmt"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
 	"math/rand"
 
 	"cosmossdk.io/math"
@@ -9,7 +11,6 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
 )
 
 const (
@@ -90,6 +91,17 @@ func RandomizedGenState(simState *module.SimulationState) {
 		CreditBalances:    creditBalances,
 	}
 
+	fmt.Println("Number of issuers: ", len(issuers))
+	fmt.Println("Number of applicants: ", len(applicants))
+	fmt.Println("Number of credit classes: ", len(creditClasses))
+	fmt.Println("Number of projects: ", len(projects))
+	fmt.Println("Number of credit collections: ", len(creditCollections))
+	fmt.Println("Number of credit balances: ", len(creditBalances))
+
+	if err := plasticcreditGenesis.Validate(); err != nil {
+		panic(err)
+	}
+
 	simState.GenState[plasticcredit.ModuleName] = simState.Cdc.MustMarshalJSON(&plasticcreditGenesis)
 }
 
@@ -105,7 +117,8 @@ func generateIssuerCreator(r *rand.Rand, accounts []simtypes.Account) string {
 
 func generateIssuers(r *rand.Rand, accounts []simtypes.Account) []plasticcredit.Issuer {
 	var issuers []plasticcredit.Issuer
-	numIssuers := simtypes.RandIntBetween(r, 1, len(accounts))
+
+	numIssuers := simtypes.RandIntBetween(r, 1, Min(20, len(accounts)))
 	for i := 0; i < numIssuers; i++ {
 		acc, _ := simtypes.RandomAcc(r, accounts)
 		issuers = append(issuers, plasticcredit.Issuer{
@@ -119,9 +132,16 @@ func generateIssuers(r *rand.Rand, accounts []simtypes.Account) []plasticcredit.
 	return issuers
 }
 
+func Min(x, y int) int {
+	if x < y {
+		return x
+	}
+	return y
+}
+
 func generateApplicants(r *rand.Rand, accounts []simtypes.Account) []plasticcredit.Applicant {
 	var applicants []plasticcredit.Applicant
-	numApplicants := simtypes.RandIntBetween(r, 1, len(accounts))
+	numApplicants := simtypes.RandIntBetween(r, 1, Min(500, len(accounts)))
 	for i := 0; i < numApplicants; i++ {
 		acc, _ := simtypes.RandomAcc(r, accounts)
 		applicants = append(applicants, plasticcredit.Applicant{
@@ -137,13 +157,23 @@ func generateApplicants(r *rand.Rand, accounts []simtypes.Account) []plasticcred
 
 func generateCreditClasses(r *rand.Rand, issuers []plasticcredit.Issuer) []plasticcredit.CreditClass {
 	var creditClasses []plasticcredit.CreditClass
+	var usedAbbreviations = make(map[string]bool)
 
 	for i := 0; i < len(issuers); i++ {
-		numberOfCreditClasses := simtypes.RandIntBetween(r, 1, 5)
+		numberOfCreditClasses := simtypes.RandIntBetween(r, 1, 3)
 
 		for j := 0; j < numberOfCreditClasses; j++ {
+			var abbreviation string
+			for {
+				abbreviation = createRandomAbbreviation(r)
+				if _, ok := usedAbbreviations[abbreviation]; !ok {
+					usedAbbreviations[abbreviation] = true
+					break
+				}
+			}
+
 			creditClasses = append(creditClasses, plasticcredit.CreditClass{
-				Abbreviation: createRandomAbbreviation(r),
+				Abbreviation: abbreviation,
 				IssuerId:     issuers[i].Id,
 				Name:         createRandomName(r),
 			})
@@ -184,12 +214,22 @@ func generateProjects(r *rand.Rand, applicants []plasticcredit.Applicant, credit
 
 func generateCreditCollections(r *rand.Rand, projects []plasticcredit.Project) []plasticcredit.CreditCollection {
 	var creditCollections []plasticcredit.CreditCollection
+	var usedDenom = make(map[string]bool)
 
 	for i := 0; i < len(projects); i++ {
 		numberOfCollectionsForProject := simtypes.RandIntBetween(r, 0, 5)
 		for j := 0; j < numberOfCollectionsForProject; j++ {
-			serialNumber := createRandomSerialNumber(r)
-			denom, _ := keeper.CreateCreditDenom(projects[i].CreditClassAbbreviation, serialNumber)
+
+			var denom string
+			for {
+				serialNumber := createRandomSerialNumber(r)
+				denom, _ = keeper.CreateCreditDenom(projects[i].CreditClassAbbreviation, serialNumber)
+				if _, ok := usedDenom[denom]; !ok {
+					usedDenom[denom] = true
+					break
+				}
+			}
+
 			creditCollections = append(creditCollections, plasticcredit.CreditCollection{
 				Denom:     denom,
 				ProjectId: projects[i].Id,
@@ -210,7 +250,7 @@ func generateCreditBalances(r *rand.Rand, accounts []simtypes.Account, creditCol
 	for _, creditCollection := range creditCollections {
 		activeLeft := creditCollection.TotalAmount.Active
 		retiredLeft := creditCollection.TotalAmount.Retired
-		numberOfAccounts := simtypes.RandIntBetween(r, 1, len(accounts))
+		numberOfAccounts := simtypes.RandIntBetween(r, 1, Min(500, len(accounts)))
 		var usedAccounts []simtypes.Account
 		for i := 0; i < numberOfAccounts; i++ {
 			acc := getUnusedAccount(r, accounts, usedAccounts)

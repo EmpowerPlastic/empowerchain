@@ -3,6 +3,7 @@ package simulation
 import (
 	"context"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"math/rand"
 
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -72,34 +73,59 @@ func createRandomDescription(r *rand.Rand) string {
 	return simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 256))
 }
 
-func getRandomIssuer(ctx context.Context, r *rand.Rand, querier keeper.Querier) (plasticcredit.Issuer, error) {
-	resp, err := querier.Issuers(ctx, &plasticcredit.QueryIssuersRequest{})
+func getRandomIssuer(ctx context.Context, r *rand.Rand, querier keeper.Querier, ids plasticcredit.IDCounters) (plasticcredit.Issuer, error) {
+	if ids.NextIssuerId == 0 || ids.NextIssuerId == 1 {
+		return plasticcredit.Issuer{}, fmt.Errorf("no issuers found")
+	}
+
+	var issuerId int
+	if ids.NextIssuerId == 2 {
+		issuerId = 1
+	} else {
+		simtypes.RandIntBetween(r, 1, int(ids.NextIssuerId-1))
+	}
+
+	resp, err := querier.Issuer(ctx, &plasticcredit.QueryIssuerRequest{
+		IssuerId: uint64(issuerId),
+	})
 	if err != nil {
 		return plasticcredit.Issuer{}, err
 	}
 
-	if len(resp.Issuers) == 0 {
-		return plasticcredit.Issuer{}, fmt.Errorf("no issuers found")
-	}
-
-	return resp.Issuers[simtypes.RandIntBetween(r, 0, len(resp.Issuers)-1)], nil
+	return resp.Issuer, nil
 }
 
-func getRandomApplicant(ctx context.Context, r *rand.Rand, querier keeper.Querier) (plasticcredit.Applicant, error) {
-	resp, err := querier.Applicants(ctx, &plasticcredit.QueryApplicantsRequest{})
+func getRandomApplicant(ctx context.Context, r *rand.Rand, querier keeper.Querier, ids plasticcredit.IDCounters) (plasticcredit.Applicant, error) {
+	if ids.NextApplicantId == 0 || ids.NextApplicantId == 1 {
+		return plasticcredit.Applicant{}, fmt.Errorf("no applicants found")
+	}
+
+	var applicantId int
+	if ids.NextApplicantId == 2 {
+		applicantId = 1
+	} else {
+		simtypes.RandIntBetween(r, 1, int(ids.NextApplicantId-1))
+	}
+
+	resp, err := querier.Applicant(ctx, &plasticcredit.QueryApplicantRequest{
+		ApplicantId: uint64(applicantId),
+	})
 	if err != nil {
 		return plasticcredit.Applicant{}, err
 	}
 
-	if len(resp.Applicants) == 0 {
-		return plasticcredit.Applicant{}, fmt.Errorf("no applicants found")
-	}
-
-	return resp.Applicants[simtypes.RandIntBetween(r, 0, len(resp.Applicants)-1)], nil
+	return resp.Applicant, nil
 }
 
 func getRandomCreditClass(ctx context.Context, r *rand.Rand, querier keeper.Querier) (plasticcredit.CreditClass, error) {
-	resp, err := querier.CreditClasses(ctx, &plasticcredit.QueryCreditClassesRequest{})
+	resp, err := querier.CreditClasses(ctx, &plasticcredit.QueryCreditClassesRequest{
+		// We max the return to 25 for now, since this lookup is potentially quite expensive
+		// TODO: Get better indexes so we can look these up more directly
+		Pagination: query.PageRequest{
+			Limit:      25,
+			CountTotal: false,
+		},
+	})
 	if err != nil {
 		return plasticcredit.CreditClass{}, err
 	}
@@ -108,30 +134,56 @@ func getRandomCreditClass(ctx context.Context, r *rand.Rand, querier keeper.Quer
 		return plasticcredit.CreditClass{}, fmt.Errorf("no credit classes found")
 	}
 
+	fmt.Println("Found credit classes: ", len(resp.CreditClasses))
+
+	if len(resp.CreditClasses) == 1 {
+		return resp.CreditClasses[0], nil
+	}
+
 	return resp.CreditClasses[simtypes.RandIntBetween(r, 0, len(resp.CreditClasses)-1)], nil
 }
 
-func getRandomProject(ctx context.Context, r *rand.Rand, querier keeper.Querier) (plasticcredit.Project, error) {
-	resp, err := querier.Projects(ctx, &plasticcredit.QueryProjectsRequest{})
+func getRandomProject(ctx context.Context, r *rand.Rand, querier keeper.Querier, ids plasticcredit.IDCounters) (plasticcredit.Project, error) {
+	if ids.NextProjectId == 0 || ids.NextProjectId == 1 {
+		return plasticcredit.Project{}, fmt.Errorf("no projects found")
+	}
+
+	var projectId int
+	if ids.NextProjectId == 2 {
+		projectId = 1
+	} else {
+		simtypes.RandIntBetween(r, 1, int(ids.NextProjectId-1))
+	}
+
+	resp, err := querier.Project(ctx, &plasticcredit.QueryProjectRequest{
+		ProjectId: uint64(projectId),
+	})
 	if err != nil {
 		return plasticcredit.Project{}, err
 	}
 
-	if len(resp.Projects) == 0 {
-		return plasticcredit.Project{}, fmt.Errorf("no projects found")
-	}
-
-	return resp.Projects[simtypes.RandIntBetween(r, 0, len(resp.Projects)-1)], nil
+	return resp.Project, nil
 }
 
 func getRandomCreditBalance(ctx context.Context, r *rand.Rand, querier keeper.Querier) (plasticcredit.CreditBalance, error) {
-	resp, err := querier.CreditBalances(ctx, &plasticcredit.QueryCreditBalancesRequest{})
+	resp, err := querier.CreditBalances(ctx, &plasticcredit.QueryCreditBalancesRequest{
+		// We max the return to 25 for now, since this lookup is potentially quite expensive
+		// TODO: Get better indexes so we can look these up more directly
+		Pagination: query.PageRequest{
+			Limit:      25,
+			CountTotal: false,
+		},
+	})
 	if err != nil {
 		return plasticcredit.CreditBalance{}, err
 	}
 
 	if len(resp.CreditBalances) == 0 {
 		return plasticcredit.CreditBalance{}, fmt.Errorf("no credit balances found")
+	}
+
+	if len(resp.CreditBalances) == 1 {
+		return resp.CreditBalances[0], nil
 	}
 
 	return resp.CreditBalances[simtypes.RandIntBetween(r, 0, len(resp.CreditBalances)-1)], nil

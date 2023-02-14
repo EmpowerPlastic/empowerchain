@@ -125,42 +125,44 @@ func (k Keeper) transferCredits(ctx sdk.Context, denom string, from sdk.AccAddre
 		return errors.Wrapf(plasticcredit.ErrCreditsNotEnough, "sender only has %d credits of denom %s", balanceSender.Balance.Active, denom)
 	}
 
-	var balanceRecipient *plasticcredit.CreditBalance
 	if from.Equals(to) {
-		balanceRecipient = &balanceSender
-	} else {
-		rec, found := k.GetCreditBalance(ctx, to, denom)
-		if !found {
-			rec = plasticcredit.CreditBalance{
-				Owner: to.String(),
-				Denom: denom,
-				Balance: plasticcredit.CreditAmount{
-					Active:  0,
-					Retired: 0,
-				},
-			}
+		return errors.Wrapf(plasticcredit.ErrSameSenderAndRecipient, "sender and recipient are the same")
+	}
+
+	balanceRecipient, found := k.GetCreditBalance(ctx, to, denom)
+	if !found {
+		// Create a new, empty one if not found
+		balanceRecipient = plasticcredit.CreditBalance{
+			Owner: to.String(),
+			Denom: denom,
+			Balance: plasticcredit.CreditAmount{
+				Active:  0,
+				Retired: 0,
+			},
 		}
-		balanceRecipient = &rec
 	}
 	balanceSender.Balance.Active -= amount
+
 	// If retiring credits, retire and update retired balance, if not, update active balance
 	if retire {
-		err := k.retireCreditsInCollection(ctx, denom, amount)
-		if err != nil {
+		if err := k.retireCreditsInCollection(ctx, denom, amount); err != nil {
 			return err
 		}
 		balanceRecipient.Balance.Retired += amount
 	} else {
 		balanceRecipient.Balance.Active += amount
 	}
+
 	err := k.setCreditBalance(ctx, balanceSender)
 	if err != nil {
 		return err
 	}
-	err = k.setCreditBalance(ctx, *balanceRecipient)
+
+	err = k.setCreditBalance(ctx, balanceRecipient)
 	if err != nil {
 		return err
 	}
+
 	abbrev, _ := SplitCreditDenom(denom)
 	creditClass, found := k.GetCreditClass(ctx, abbrev)
 	if !found {
