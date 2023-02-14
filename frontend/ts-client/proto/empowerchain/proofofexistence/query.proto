@@ -1,0 +1,22 @@
+syntax = "proto3";
+package empowerchain.proofofexistence;
+
+import "empowerchain/proofofexistence/types.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/proofofexistence";
+
+service Query {
+  rpc Proof(QueryProofRequest) returns (QueryProofResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/proofofexistence/proof/{hash}";
+  }
+}
+
+message QueryProofRequest {
+  string hash = 1;
+}
+
+message QueryProofResponse {
+  ProofMetadata metadata = 1 [(gogoproto.nullable) = false];
+}
