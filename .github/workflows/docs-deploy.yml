@@ -12,18 +12,12 @@ jobs:
     name: Deploy EmpowerChain docs
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
-      - uses: earthly/actions-setup@v1
+      - uses: actions/checkout@v3   
+      - uses: amondnet/vercel-action@v20
         with:
-          version: v0.6.30
-
-      - run: earthly --ci --output +build
-        working-directory: ./docs
-      - uses: jakejarvis/s3-sync-action@master
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: 'fr-par' 
-          AWS_S3_ENDPOINT: 'https://s3.fr-par.scw.cloud'
-          SOURCE_DIR: './docs/public'
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-args: '--prod'
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}}
+          working-directory: ./docs
