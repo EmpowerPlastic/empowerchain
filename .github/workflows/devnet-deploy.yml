@@ -1,0 +1,29 @@
+name: "Devnet depoly"
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Deploy Devnet
+    runs-on: ubuntu-22.04
+    steps:
+      - name: multiple command
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.DEVNET_HOST }}
+          username: ${{ secrets.DEVNET_USER }}
+          password: ${{ secrets.DEVNET_PASSWORD }}
+          port: ${{ secrets.DEVNET_PORT }}
+          script: |
+            cd ./empowerchain && \
+            git pull && \
+            cd chain && \
+            make install && \
+            sudo systemctl stop empowerd && \
+            empowerd tendermint unsafe-reset-all && \
+            sudo systemctl start empowerd && \
+            sleep 5 && \
+            empowerd status
