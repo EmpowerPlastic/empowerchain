@@ -13,17 +13,16 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-      - uses: earthly/actions-setup@v1
         with:
-          version: v0.6.30
-
-      - run: earthly --ci --output +build
-        working-directory: ./docs
-      - uses: jakejarvis/s3-sync-action@master
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: 'fr-par' 
-          AWS_S3_ENDPOINT: 'https://s3.fr-par.scw.cloud'
-          SOURCE_DIR: './docs/public'
+          working-directoy: ./docs
+      - run: |
+         npm i
+         npm run docs:build
+      
+      - uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
+          vercel-args: '--prod'
+          vercel-org-id: ${{ secrets.ORG_ID}}  #Required
+          vercel-project-id: ${{ secrets.PROJECT_ID}} #Required 
+          working-directory: ./docs/.vitepress/dist
