@@ -10,7 +10,7 @@ jobs:
     name: Deploy Devnet
     runs-on: ubuntu-22.04
     steps:
-      - name: multiple command
+      - name: Deploy Devnet
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.DEVNET_HOST }}
