@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'docs/**' # On updating docs
+    # paths:
+    #   - 'docs/**' # On updating docs
 
 jobs:
   build:
