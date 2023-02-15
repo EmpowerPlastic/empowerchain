@@ -3,9 +3,9 @@ name: "Docs depoly"
 on:
   push:
     branches:
-      - vercel-docs
-    # paths:
-    #   - 'docs/**' # On updating docs
+      - main
+    paths:
+      - 'docs/**' # On updating docs
 
 jobs:
   build:
@@ -15,9 +15,9 @@ jobs:
       - uses: actions/checkout@v3   
       - uses: amondnet/vercel-action@v20
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-args: '--prod'
-          vercel-org-id: ${{ secrets.ORG_ID}}  #Required
-          scope: ${{ secrets.ORG_ID }}
-          vercel-project-id: ${{ secrets.PROJECT_ID}} #Required 
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}}
           working-directory: ./docs
