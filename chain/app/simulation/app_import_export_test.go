@@ -3,6 +3,12 @@ package simulation
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol"
+	plasticcreditmoduletypes "github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	proofofexistencemoduletypes "github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	"os"
 	"runtime/debug"
 	"strings"
@@ -123,13 +129,18 @@ func TestAppImportExport(t *testing.T) {
 		{empowerApp.GetStoreKey(minttypes.StoreKey), newApp.GetStoreKey(minttypes.StoreKey), [][]byte{}},
 		{empowerApp.GetStoreKey(distrtypes.StoreKey), newApp.GetStoreKey(distrtypes.StoreKey), [][]byte{}},
 		{empowerApp.GetStoreKey(banktypes.StoreKey), newApp.GetStoreKey(banktypes.StoreKey), [][]byte{banktypes.BalancesPrefix}},
-		// {empowerApp.GetStoreKey(paramtypes.StoreKey), newApp.GetStoreKey(paramtypes.StoreKey), [][]byte{}}, // TODO: FIXMEH
+		{empowerApp.GetStoreKey(paramstypes.StoreKey), newApp.GetStoreKey(paramstypes.StoreKey), [][]byte{}},
 		{empowerApp.GetStoreKey(govtypes.StoreKey), newApp.GetStoreKey(govtypes.StoreKey), [][]byte{}},
 		{empowerApp.GetStoreKey(evidencetypes.StoreKey), newApp.GetStoreKey(evidencetypes.StoreKey), [][]byte{}},
 		{empowerApp.GetStoreKey(capabilitytypes.StoreKey), newApp.GetStoreKey(capabilitytypes.StoreKey), [][]byte{}},
+		{empowerApp.GetStoreKey(ibcexported.StoreKey), newApp.GetStoreKey(ibcexported.StoreKey), [][]byte{}},
+		{empowerApp.GetStoreKey(ibctransfertypes.StoreKey), newApp.GetStoreKey(ibctransfertypes.StoreKey), [][]byte{}},
+		// TODO: pending some feedback from SDK team, this is also not in simapp, but I don't know why
+		//{empowerApp.GetStoreKey(feegrant.StoreKey), newApp.GetStoreKey(feegrant.StoreKey), [][]byte{}},
 		{empowerApp.GetStoreKey(authzkeeper.StoreKey), newApp.GetStoreKey(authzkeeper.StoreKey), [][]byte{authzkeeper.GrantKey, authzkeeper.GrantQueuePrefix}},
-		// TODO: ADD EMPOWER MODULES
-		// TODO: ADD IBC MODULES
+		{empowerApp.GetStoreKey(proofofexistencemoduletypes.StoreKey), newApp.GetStoreKey(proofofexistencemoduletypes.StoreKey), [][]byte{}},
+		{empowerApp.GetStoreKey(plasticcreditmoduletypes.StoreKey), newApp.GetStoreKey(plasticcreditmoduletypes.StoreKey), [][]byte{}},
+		{empowerApp.GetStoreKey(accesscontrol.StoreKey), newApp.GetStoreKey(accesscontrol.StoreKey), [][]byte{}},
 	}
 
 	for _, skp := range storeKeysPrefixes {

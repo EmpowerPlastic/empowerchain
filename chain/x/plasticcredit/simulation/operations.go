@@ -859,6 +859,9 @@ func SimulateMsgTransferCredits(cdc *codec.ProtoCodec, ak plasticcredit.AccountK
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find owner"), nil, nil
 		}
 		recipient, _ := simtypes.RandomAcc(r, accounts)
+		if owner.Equals(recipient) {
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "cannot transfer credits to self"), nil, nil
+		}
 
 		if creditBalance.Balance.Active == 0 {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "no active credits to transfer"), nil, nil

@@ -24,17 +24,28 @@ func TestProposalMsgs(t *testing.T) {
 
 	// execute ProposalMsgs function
 	weightedProposalMsgs := simulation.ProposalMsgs()
-	require.Len(t, weightedProposalMsgs, 1)
+	require.Len(t, weightedProposalMsgs, 2)
 
-	w0 := weightedProposalMsgs[0]
+	paramsProposalOperation := weightedProposalMsgs[0]
+	// tests paramsProposalOperation interface:
+	require.Equal(t, simulation.OpWeightMsgUpdateParamsProposal, paramsProposalOperation.AppParamsKey())
+	require.Equal(t, simulation.DefaultWeightMsgUpdateParamsProposal, paramsProposalOperation.DefaultWeight())
 
-	// tests w0 interface:
-	require.Equal(t, simulation.OpWeightMsgUpdateParams, w0.AppParamsKey())
-	require.Equal(t, simulation.DefaultWeightMsgUpdateParams, w0.DefaultWeight())
-
-	msg := w0.MsgSimulatorFn()(r, ctx, accounts)
-	msgUpdateParams, ok := msg.(*plasticcredit.MsgUpdateParams)
+	paramsProposalMsg := paramsProposalOperation.MsgSimulatorFn()(r, ctx, accounts)
+	msgUpdateParams, ok := paramsProposalMsg.(*plasticcredit.MsgUpdateParams)
 	require.True(t, ok)
 	require.Equal(t, sdk.AccAddress(address.Module("gov")).String(), msgUpdateParams.Authority)
 	require.Equal(t, "cosmos1p8wcgrjr4pjju90xg6u9cgq55dxwq8j7u4x9a0", msgUpdateParams.Params.IssuerCreator)
+
+
+	createIssuerProposalMessage := weightedProposalMsgs[1]
+	// tests createIssuerProposalMessage interface:
+	require.Equal(t, simulation.OpWeightMsgCreateIssuerProposal, createIssuerProposalMessage.AppParamsKey())
+	require.Equal(t, simulation.DefaultWeightMsgCreateIssuerProposal, createIssuerProposalMessage.DefaultWeight())
+
+	createIssuerProposalMsg := createIssuerProposalMessage.MsgSimulatorFn()(r, ctx, accounts)
+	msgCreateIssuer, ok := createIssuerProposalMsg.(*plasticcredit.MsgCreateIssuer)
+	require.True(t, ok)
+	require.Equal(t, sdk.AccAddress(address.Module("gov")).String(), msgCreateIssuer.Creator)
+	require.Equal(t, "cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3", msgCreateIssuer.Admin)
 }
