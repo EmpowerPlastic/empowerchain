@@ -32,16 +32,22 @@ jobs:
           fail_ci_if_error: true
 
   smoke-test:
-    - uses: actions/checkout@v3
+    name: Smoke tests EmpowerChain
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
 
-    - uses: earthly/actions-setup@v1
-      with:
-        version: v0.6.30
+      - uses: earthly/actions-setup@v1
+        with:
+          version: v0.6.30
 
-    - run: earthly --ci +smoketest
-      working-directory: ./chain
+      - run: earthly --ci +smoketest
+        working-directory: ./chain
 
   non-determinism-test:
+    name: Simulation non-determinism tests EmpowerChain
+    runs-on: ubuntu-22.04
+    steps:
     - uses: actions/checkout@v3
 
     - uses: earthly/actions-setup@v1
