@@ -31,5 +31,22 @@ jobs:
           flags: chain
           fail_ci_if_error: true
 
-      - run: earthly --ci +smoketest
-        working-directory: ./chain
+  smoke-test:
+    - uses: actions/checkout@v3
+
+    - uses: earthly/actions-setup@v1
+      with:
+        version: v0.6.30
+
+    - run: earthly --ci +smoketest
+      working-directory: ./chain
+
+  non-determinism-test:
+    - uses: actions/checkout@v3
+
+    - uses: earthly/actions-setup@v1
+      with:
+        version: v0.6.30
+
+    - run: earthly --ci +test-sim-nondeterminism
+      working-directory: ./chain
