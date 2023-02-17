@@ -37,7 +37,6 @@ func TestProposalMsgs(t *testing.T) {
 	require.Equal(t, sdk.AccAddress(address.Module("gov")).String(), msgUpdateParams.Authority)
 	require.Equal(t, "cosmos1p8wcgrjr4pjju90xg6u9cgq55dxwq8j7u4x9a0", msgUpdateParams.Params.IssuerCreator)
 
-
 	createIssuerProposalMessage := weightedProposalMsgs[1]
 	// tests createIssuerProposalMessage interface:
 	require.Equal(t, simulation.OpWeightMsgCreateIssuerProposal, createIssuerProposalMessage.AppParamsKey())

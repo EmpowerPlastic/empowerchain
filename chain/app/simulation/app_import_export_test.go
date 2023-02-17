@@ -3,12 +3,6 @@ package simulation
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol"
-	plasticcreditmoduletypes "github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	proofofexistencemoduletypes "github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
-	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	"os"
 	"runtime/debug"
 	"strings"
@@ -25,16 +19,22 @@ import (
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	"github.com/EmpowerPlastic/empowerchain/app"
 	"github.com/EmpowerPlastic/empowerchain/app/params"
+	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol"
+	plasticcreditmoduletypes "github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	proofofexistencemoduletypes "github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
 )
 
 func TestAppImportExport(t *testing.T) {
@@ -136,7 +136,7 @@ func TestAppImportExport(t *testing.T) {
 		{empowerApp.GetStoreKey(ibcexported.StoreKey), newApp.GetStoreKey(ibcexported.StoreKey), [][]byte{}},
 		{empowerApp.GetStoreKey(ibctransfertypes.StoreKey), newApp.GetStoreKey(ibctransfertypes.StoreKey), [][]byte{}},
 		// TODO: pending some feedback from SDK team, this is also not in simapp, but I don't know why
-		//{empowerApp.GetStoreKey(feegrant.StoreKey), newApp.GetStoreKey(feegrant.StoreKey), [][]byte{}},
+		// {empowerApp.GetStoreKey(feegrant.StoreKey), newApp.GetStoreKey(feegrant.StoreKey), [][]byte{}},
 		{empowerApp.GetStoreKey(authzkeeper.StoreKey), newApp.GetStoreKey(authzkeeper.StoreKey), [][]byte{authzkeeper.GrantKey, authzkeeper.GrantQueuePrefix}},
 		{empowerApp.GetStoreKey(proofofexistencemoduletypes.StoreKey), newApp.GetStoreKey(proofofexistencemoduletypes.StoreKey), [][]byte{}},
 		{empowerApp.GetStoreKey(plasticcreditmoduletypes.StoreKey), newApp.GetStoreKey(plasticcreditmoduletypes.StoreKey), [][]byte{}},
