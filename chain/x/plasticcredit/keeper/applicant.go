@@ -6,6 +6,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/query"
 
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
@@ -22,6 +23,26 @@ func (k Keeper) GetApplicant(ctx sdk.Context, id uint64) (applicant plasticcredi
 	k.cdc.MustUnmarshal(bz, &applicant)
 
 	return applicant, true
+}
+
+func (k Keeper) GetApplicants(ctx sdk.Context, pageReq query.PageRequest) ([]plasticcredit.Applicant, query.PageResponse, error) {
+	store := k.getApplicantStore(ctx)
+
+	var applicants []plasticcredit.Applicant
+	pageRes, err := query.Paginate(store, &pageReq, func(_ []byte, value []byte) error {
+		var applicant plasticcredit.Applicant
+		if err := k.cdc.Unmarshal(value, &applicant); err != nil {
+			return err
+		}
+		applicants = append(applicants, applicant)
+
+		return nil
+	})
+	if err != nil {
+		return nil, query.PageResponse{}, err
+	}
+
+	return applicants, *pageRes, nil
 }
 
 func (k Keeper) createApplicant(ctx sdk.Context, name string, description string, admin string) (uint64, error) {

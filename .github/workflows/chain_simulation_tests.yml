@@ -2,12 +2,15 @@ name: "Simulation tests on EmpowerChain"
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "0 */2 * * *"
 
 jobs:
   sim-tests:
     name: Run EmpowerChain simulation tests
     runs-on: ubuntu-22.04
     strategy:
+      fail-fast: false
       matrix:
         test:
           [

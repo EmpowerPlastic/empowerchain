@@ -106,19 +106,19 @@ If you are not sure what a good way of doing something in particular, there are 
 3. Implement/Update `Validate()` on any non-rpc messages (i.e. data structures to be persisted in the keeper and in genesis)
 4. If you created any new rpc messages:
     - Implement the `sdk.Msg` interface in `msgs.go` (`_ sdk.Msg = &MsgName{}`)
+    - Update `WeightedOperations` in simulation/operations.go with the new operation
     - Don't forget to create tests for `ValidateBasic`!
 5. Implement `MsgServer`/`Querier` and `Keeper` methods
     - Don't forget events
     - Don't forget integration tests
     - If you create public Keeper methods, they need to be tested as well
-6. Update genesis if necessary (in genesis and keeper/genesis)
-7. Update the client/cli if necessary
-8. Create e2e tests in  `scripts/test/`
-    - Remember to `$ make install` after every change you make so the binary under test is the correct one.
-    - Hot tip: stop the test at some point before the serve is killed with `exit 0` and run just the script (e.g. `$ ./scripts/test/smoke_plastic_credit.sh`). 
-    - This way the server is still running, and you can manually run your CLI commands in the terminal.
-    - To get access to the environment variables such as `$CHAIN_ID` and `$CHAIN_DIR` you can use the env script like this: `$ source ./scripts/serve_env.sh`.
-9. Format and lint your code before committing: `$ make format` and `$ make lint`
+6. If you created a new type to be stored (i.e. you added a new store key in keys.go)
+    - Update `NewDecodeStore` in simulation/decoder.go
+7. Update genesis if necessary (in genesis and keeper/genesis)
+    - Update `RandomizedGenState` in simulation/genesis.go if necessary 
+8. Update the client/cli if necessary
+9. Create e2e tests in `tests/e2e`
+10. Format and lint your code before committing: `$ make format` and `$ make lint`
 
 ## Native modules vs smart contracts
 Short version: core stable functionality/protocol implemented as native Cosmos SDK modules, extra functionality/nice-to-have stuff that can change often as smart contracts.

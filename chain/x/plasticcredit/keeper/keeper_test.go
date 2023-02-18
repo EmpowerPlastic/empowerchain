@@ -46,11 +46,6 @@ func (s *TestSuite) SetupTest() {
 	ctx := empowerApp.BaseApp.NewContext(false, tmproto.Header{})
 	ctx = ctx.WithBlockHeader(tmproto.Header{Time: tmtime.Now()})
 
-	//TODO:
-	/*queryHelper := baseapp.NewQueryServerTestHelper(ctx, app.InterfaceRegistry())
-	nft.RegisterQueryServer(queryHelper, app.NFTKeeper)
-	queryClient := nft.NewQueryClient(queryHelper)*/
-
 	s.empowerApp = empowerApp
 	s.ctx = ctx
 	s.addrs = app.CreateRandomAccounts(1)
