@@ -78,12 +78,7 @@ func getRandomIssuer(ctx context.Context, r *rand.Rand, querier keeper.Querier, 
 		return plasticcredit.Issuer{}, fmt.Errorf("no issuers found")
 	}
 
-	var issuerID int
-	if ids.NextIssuerId == 2 {
-		issuerID = 1
-	} else {
-		simtypes.RandIntBetween(r, 1, int(ids.NextIssuerId-1))
-	}
+	issuerID := safeRandIntBetween(r, 1, int(ids.NextIssuerId-1))
 
 	resp, err := querier.Issuer(ctx, &plasticcredit.QueryIssuerRequest{
 		IssuerId: uint64(issuerID),
@@ -100,13 +95,7 @@ func getRandomApplicant(ctx context.Context, r *rand.Rand, querier keeper.Querie
 		return plasticcredit.Applicant{}, fmt.Errorf("no applicants found")
 	}
 
-	var applicantID int
-	if ids.NextApplicantId == 2 {
-		applicantID = 1
-	} else {
-		simtypes.RandIntBetween(r, 1, int(ids.NextApplicantId-1))
-	}
-
+	applicantID := safeRandIntBetween(r, 1, int(ids.NextApplicantId-1))
 	resp, err := querier.Applicant(ctx, &plasticcredit.QueryApplicantRequest{
 		ApplicantId: uint64(applicantID),
 	})
@@ -134,13 +123,7 @@ func getRandomCreditClass(ctx context.Context, r *rand.Rand, querier keeper.Quer
 		return plasticcredit.CreditClass{}, fmt.Errorf("no credit classes found")
 	}
 
-	fmt.Println("Found credit classes: ", len(resp.CreditClasses))
-
-	if len(resp.CreditClasses) == 1 {
-		return resp.CreditClasses[0], nil
-	}
-
-	return resp.CreditClasses[simtypes.RandIntBetween(r, 0, len(resp.CreditClasses)-1)], nil
+	return resp.CreditClasses[safeRandIntBetween(r, 0, len(resp.CreditClasses)-1)], nil
 }
 
 func getRandomProject(ctx context.Context, r *rand.Rand, querier keeper.Querier, ids plasticcredit.IDCounters) (plasticcredit.Project, error) {
@@ -148,13 +131,7 @@ func getRandomProject(ctx context.Context, r *rand.Rand, querier keeper.Querier,
 		return plasticcredit.Project{}, fmt.Errorf("no projects found")
 	}
 
-	var projectID int
-	if ids.NextProjectId == 2 {
-		projectID = 1
-	} else {
-		simtypes.RandIntBetween(r, 1, int(ids.NextProjectId-1))
-	}
-
+	projectID := safeRandIntBetween(r, 1, int(ids.NextProjectId-1))
 	resp, err := querier.Project(ctx, &plasticcredit.QueryProjectRequest{
 		ProjectId: uint64(projectID),
 	})
@@ -182,9 +159,17 @@ func getRandomCreditBalance(ctx context.Context, r *rand.Rand, querier keeper.Qu
 		return plasticcredit.CreditBalance{}, fmt.Errorf("no credit balances found")
 	}
 
-	if len(resp.CreditBalances) == 1 {
-		return resp.CreditBalances[0], nil
+	return resp.CreditBalances[safeRandIntBetween(r, 0, len(resp.CreditBalances)-1)], nil
+}
+
+// safeRandIntBetween returns a random int between min and max
+// If max is less than or equal to min, it will return min
+// This is to make this kind of code safe:
+// resp.CreditClasses[safeRandIntBetween(r, 0, len(resp.CreditClasses)-1)]
+func safeRandIntBetween(r *rand.Rand, min, max int) int {
+	if min >= max {
+		return min
 	}
 
-	return resp.CreditBalances[simtypes.RandIntBetween(r, 0, len(resp.CreditBalances)-1)], nil
+	return simtypes.RandIntBetween(r, min, max)
 }

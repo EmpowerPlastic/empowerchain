@@ -230,12 +230,24 @@ func generateCreditCollections(r *rand.Rand, projects []plasticcredit.Project) [
 				}
 			}
 
+			active := uint64(simtypes.RandIntBetween(r, 1, 1000000))
+			retired := uint64(simtypes.RandIntBetween(r, 1, 1000000))
+			// 10% chance for all to be active
+			if simtypes.RandIntBetween(r, 1, 10) == 1 {
+				retired = 0
+			}
+
+			// 10% chance for all to be retired (if not all active)
+			if retired != 0 && simtypes.RandIntBetween(r, 1, 10) == 1 {
+				active = 0
+			}
+
 			creditCollections = append(creditCollections, plasticcredit.CreditCollection{
 				Denom:     denom,
 				ProjectId: projects[i].Id,
 				TotalAmount: plasticcredit.CreditAmount{
-					Active:  uint64(simtypes.RandIntBetween(r, 0, 1000000)),
-					Retired: uint64(simtypes.RandIntBetween(r, 0, 1000000)),
+					Active:  active,
+					Retired: retired,
 				},
 			})
 		}
@@ -251,6 +263,11 @@ func generateCreditBalances(r *rand.Rand, accounts []simtypes.Account, creditCol
 		activeLeft := creditCollection.TotalAmount.Active
 		retiredLeft := creditCollection.TotalAmount.Retired
 		numberOfAccounts := simtypes.RandIntBetween(r, 1, Min(500, len(accounts)))
+		// 10% chance for all to be on one account
+		if simtypes.RandIntBetween(r, 1, 10) == 1 {
+			numberOfAccounts = 1
+		}
+
 		var usedAccounts []simtypes.Account
 		for i := 0; i < numberOfAccounts; i++ {
 			acc := getUnusedAccount(r, accounts, usedAccounts)
@@ -261,8 +278,8 @@ func generateCreditBalances(r *rand.Rand, accounts []simtypes.Account, creditCol
 				active = activeLeft
 				retired = retiredLeft
 			} else {
-				active = uint64(simtypes.RandIntBetween(r, 0, int(activeLeft)))
-				retired = uint64(simtypes.RandIntBetween(r, 0, int(retiredLeft)))
+				active = uint64(safeRandIntBetween(r, 0, int(activeLeft)))
+				retired = uint64(safeRandIntBetween(r, 0, int(retiredLeft)))
 			}
 
 			creditBalances = append(creditBalances, plasticcredit.CreditBalance{
