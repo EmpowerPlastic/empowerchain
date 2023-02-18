@@ -35,6 +35,10 @@ export interface MsgMultiSend {
 /** MsgMultiSend represents an arbitrary multi-in, multi-out send message. */
 
 export interface MsgMultiSendSDKType {
+  /**
+   * Inputs, despite being `repeated`, only allows one sender input. This is
+   * checked in MsgMultiSend's ValidateBasic.
+   */
   inputs: InputSDKType[];
   outputs: OutputSDKType[];
 }
@@ -68,7 +72,14 @@ export interface MsgUpdateParams {
  */
 
 export interface MsgUpdateParamsSDKType {
+  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
   authority: string;
+  /**
+   * params defines the x/bank parameters to update.
+   * 
+   * NOTE: All parameters must be supplied.
+   */
+
   params?: ParamsSDKType;
 }
 /**
@@ -123,7 +134,16 @@ export interface MsgSetSendEnabled {
 
 export interface MsgSetSendEnabledSDKType {
   authority: string;
+  /** send_enabled is the list of entries to add or update. */
+
   send_enabled: SendEnabledSDKType[];
+  /**
+   * use_default_for is a list of denoms that should use the params.default_send_enabled value.
+   * Denoms listed here will have their SendEnabled entries deleted.
+   * If a denom is included that doesn't have a SendEnabled entry,
+   * it will be ignored.
+   */
+
   use_default_for: string[];
 }
 /**

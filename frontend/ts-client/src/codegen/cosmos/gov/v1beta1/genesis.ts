@@ -1,6 +1,6 @@
 import { Deposit, DepositSDKType, Vote, VoteSDKType, Proposal, ProposalSDKType, DepositParams, DepositParamsSDKType, VotingParams, VotingParamsSDKType, TallyParams, TallyParamsSDKType } from "./gov";
-import { Long, DeepPartial } from "../../../helpers";
 import * as _m0 from "protobufjs/minimal";
+import { Long, DeepPartial } from "../../../helpers";
 /** GenesisState defines the gov module's genesis state. */
 
 export interface GenesisState {
@@ -28,12 +28,25 @@ export interface GenesisState {
 /** GenesisState defines the gov module's genesis state. */
 
 export interface GenesisStateSDKType {
+  /** starting_proposal_id is the ID of the starting proposal. */
   starting_proposal_id: Long;
+  /** deposits defines all the deposits present at genesis. */
+
   deposits: DepositSDKType[];
+  /** votes defines all the votes present at genesis. */
+
   votes: VoteSDKType[];
+  /** proposals defines all the proposals present at genesis. */
+
   proposals: ProposalSDKType[];
+  /** params defines all the parameters of related to deposit. */
+
   deposit_params?: DepositParamsSDKType;
+  /** params defines all the parameters of related to voting. */
+
   voting_params?: VotingParamsSDKType;
+  /** params defines all the parameters of related to tally. */
+
   tally_params?: TallyParamsSDKType;
 }
 

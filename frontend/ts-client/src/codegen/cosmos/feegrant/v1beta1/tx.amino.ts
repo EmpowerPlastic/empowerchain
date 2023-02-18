@@ -1,6 +1,6 @@
 import { AminoMsg } from "@cosmjs/amino";
 import { MsgGrantAllowance, MsgRevokeAllowance } from "./tx";
-export interface MsgGrantAllowanceAminoType extends AminoMsg {
+export interface AminoMsgGrantAllowance extends AminoMsg {
   type: "cosmos-sdk/MsgGrantAllowance";
   value: {
     granter: string;
@@ -11,7 +11,7 @@ export interface MsgGrantAllowanceAminoType extends AminoMsg {
     };
   };
 }
-export interface MsgRevokeAllowanceAminoType extends AminoMsg {
+export interface AminoMsgRevokeAllowance extends AminoMsg {
   type: "cosmos-sdk/MsgRevokeAllowance";
   value: {
     granter: string;
@@ -25,7 +25,7 @@ export const AminoConverter = {
       granter,
       grantee,
       allowance
-    }: MsgGrantAllowance): MsgGrantAllowanceAminoType["value"] => {
+    }: MsgGrantAllowance): AminoMsgGrantAllowance["value"] => {
       return {
         granter,
         grantee,
@@ -39,7 +39,7 @@ export const AminoConverter = {
       granter,
       grantee,
       allowance
-    }: MsgGrantAllowanceAminoType["value"]): MsgGrantAllowance => {
+    }: AminoMsgGrantAllowance["value"]): MsgGrantAllowance => {
       return {
         granter,
         grantee,
@@ -55,7 +55,7 @@ export const AminoConverter = {
     toAmino: ({
       granter,
       grantee
-    }: MsgRevokeAllowance): MsgRevokeAllowanceAminoType["value"] => {
+    }: MsgRevokeAllowance): AminoMsgRevokeAllowance["value"] => {
       return {
         granter,
         grantee
@@ -64,7 +64,7 @@ export const AminoConverter = {
     fromAmino: ({
       granter,
       grantee
-    }: MsgRevokeAllowanceAminoType["value"]): MsgRevokeAllowance => {
+    }: AminoMsgRevokeAllowance["value"]): MsgRevokeAllowance => {
       return {
         granter,
         grantee

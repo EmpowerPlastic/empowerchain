@@ -23,7 +23,10 @@ export interface Proof {
 /** Proof is the proof key and the proof metadata */
 
 export interface ProofSDKType {
+  /** hash is the key of the proof and the SHA-256 hash that is the proof itself */
   hash: string;
+  /** metadata is the metadata of the proof */
+
   metadata?: ProofMetadataSDKType;
 }
 

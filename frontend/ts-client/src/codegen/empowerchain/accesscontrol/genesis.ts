@@ -22,7 +22,10 @@ export interface ModulePermStore {
 /** All accesses for a given module */
 
 export interface ModulePermStoreSDKType {
+  /** Name - will be used as a name for a PermStore */
   module_name: string;
+  /** List of accesses */
+
   accesses: AccessSDKType[];
 }
 /**

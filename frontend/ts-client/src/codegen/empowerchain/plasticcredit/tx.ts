@@ -2,7 +2,7 @@ import { Params, ParamsSDKType, CreditCollection, CreditCollectionSDKType, Credi
 import * as _m0 from "protobufjs/minimal";
 import { DeepPartial, Long } from "../../helpers";
 export interface MsgUpdateParams {
-  /** authority is the address of the governance account. */
+  /** authority is the address that controls the module (defaults to x/gov unless overwritten in keeper). */
   authority: string;
   /**
    * params defines the x/plasitccredit parameters to update.
@@ -13,7 +13,14 @@ export interface MsgUpdateParams {
   params?: Params;
 }
 export interface MsgUpdateParamsSDKType {
+  /** authority is the address that controls the module (defaults to x/gov unless overwritten in keeper). */
   authority: string;
+  /**
+   * params defines the x/plasitccredit parameters to update.
+   * 
+   * NOTE: All parameters must be supplied.
+   */
+
   params?: ParamsSDKType;
 }
 export interface MsgUpdateParamsResponse {}
@@ -45,6 +52,7 @@ export interface MsgUpdateIssuer {
   admin: string;
 }
 export interface MsgUpdateIssuerSDKType {
+  /** updater is the address that is performing the update/sends the tx */
   updater: string;
   issuer_id: Long;
   name: string;
@@ -78,6 +86,7 @@ export interface MsgUpdateApplicant {
   admin: string;
 }
 export interface MsgUpdateApplicantSDKType {
+  /** updater is the address that is performing the update/sends the tx */
   updater: string;
   applicant_id: Long;
   name: string;
@@ -100,9 +109,16 @@ export interface MsgCreateCreditClass {
   name: string;
 }
 export interface MsgCreateCreditClassSDKType {
+  /** creator is the signer and needs to have permissions on the issuer referenced in issuer_id */
   creator: string;
+  /** abbreviation is the short-hand name, as well as the ID of the credit class */
+
   abbreviation: string;
+  /** issuer_id is the ID of the issuer creating and owning the credit class */
+
   issuer_id: Long;
+  /** name is the human friendly name of the credits (e.g. Empower Plastic Credits) */
+
   name: string;
 }
 export interface MsgCreateCreditClassResponse {}
@@ -114,6 +130,7 @@ export interface MsgUpdateCreditClass {
   name: string;
 }
 export interface MsgUpdateCreditClassSDKType {
+  /** abbreviation is the short-hand name, as well as the ID of the credit class */
   updater: string;
   abbreviation: string;
   name: string;
@@ -128,6 +145,7 @@ export interface MsgCreateProject {
   name: string;
 }
 export interface MsgCreateProjectSDKType {
+  /** creator needs to have access to the applicant references in applicant_id */
   creator: string;
   applicant_id: Long;
   credit_class_abbreviation: string;
@@ -146,6 +164,7 @@ export interface MsgUpdateProject {
   name: string;
 }
 export interface MsgUpdateProjectSDKType {
+  /** updater needs to have access to the applicant references in applicant_id */
   updater: string;
   project_id: Long;
   name: string;
@@ -158,6 +177,7 @@ export interface MsgApproveProject {
   projectId: Long;
 }
 export interface MsgApproveProjectSDKType {
+  /** Approver needs to be someone who has the authority to approve for the credit class of the project */
   approver: string;
   project_id: Long;
 }
@@ -169,6 +189,7 @@ export interface MsgRejectProject {
   projectId: Long;
 }
 export interface MsgRejectProjectSDKType {
+  /** Rejector needs to be someone who has the authority to approve/ reject for the credit class of the project */
   rejector: string;
   project_id: Long;
 }
@@ -180,6 +201,7 @@ export interface MsgSuspendProject {
   projectId: Long;
 }
 export interface MsgSuspendProjectSDKType {
+  /** updater needs to be someone who has the authority to update for the credit class of the project */
   updater: string;
   project_id: Long;
 }

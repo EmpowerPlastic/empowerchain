@@ -1,6 +1,6 @@
 import { Timestamp } from "../../../google/protobuf/timestamp";
-import { Long, toTimestamp, fromTimestamp, DeepPartial } from "../../../helpers";
 import * as _m0 from "protobufjs/minimal";
+import { toTimestamp, Long, fromTimestamp, DeepPartial } from "../../../helpers";
 /**
  * Equivocation implements the Evidence interface and defines evidence of double
  * signing misbehavior.
@@ -25,9 +25,16 @@ export interface Equivocation {
  */
 
 export interface EquivocationSDKType {
+  /** height is the equivocation height. */
   height: Long;
+  /** time is the equivocation time. */
+
   time?: Date;
+  /** power is the equivocation validator power. */
+
   power: Long;
+  /** consensus_address is the equivocation validator consensus address. */
+
   consensus_address: string;
 }
 

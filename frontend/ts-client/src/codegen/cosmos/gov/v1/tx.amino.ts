@@ -2,7 +2,7 @@ import { voteOptionFromJSON } from "./gov";
 import { AminoMsg } from "@cosmjs/amino";
 import { Long } from "../../../helpers";
 import { MsgSubmitProposal, MsgExecLegacyContent, MsgVote, MsgVoteWeighted, MsgDeposit, MsgUpdateParams } from "./tx";
-export interface MsgSubmitProposalAminoType extends AminoMsg {
+export interface AminoMsgSubmitProposal extends AminoMsg {
   type: "cosmos-sdk/v1/MsgSubmitProposal";
   value: {
     messages: {
@@ -19,7 +19,7 @@ export interface MsgSubmitProposalAminoType extends AminoMsg {
     summary: string;
   };
 }
-export interface MsgExecLegacyContentAminoType extends AminoMsg {
+export interface AminoMsgExecLegacyContent extends AminoMsg {
   type: "cosmos-sdk/v1/MsgExecLegacyContent";
   value: {
     content: {
@@ -29,7 +29,7 @@ export interface MsgExecLegacyContentAminoType extends AminoMsg {
     authority: string;
   };
 }
-export interface MsgVoteAminoType extends AminoMsg {
+export interface AminoMsgVote extends AminoMsg {
   type: "cosmos-sdk/v1/MsgVote";
   value: {
     proposal_id: string;
@@ -38,7 +38,7 @@ export interface MsgVoteAminoType extends AminoMsg {
     metadata: string;
   };
 }
-export interface MsgVoteWeightedAminoType extends AminoMsg {
+export interface AminoMsgVoteWeighted extends AminoMsg {
   type: "cosmos-sdk/v1/MsgVoteWeighted";
   value: {
     proposal_id: string;
@@ -50,7 +50,7 @@ export interface MsgVoteWeightedAminoType extends AminoMsg {
     metadata: string;
   };
 }
-export interface MsgDepositAminoType extends AminoMsg {
+export interface AminoMsgDeposit extends AminoMsg {
   type: "cosmos-sdk/v1/MsgDeposit";
   value: {
     proposal_id: string;
@@ -61,7 +61,7 @@ export interface MsgDepositAminoType extends AminoMsg {
     }[];
   };
 }
-export interface MsgUpdateParamsAminoType extends AminoMsg {
+export interface AminoMsgUpdateParams extends AminoMsg {
   type: "cosmos-sdk/x/gov/v1/MsgUpdateParams";
   value: {
     authority: string;
@@ -95,7 +95,7 @@ export const AminoConverter = {
       metadata,
       title,
       summary
-    }: MsgSubmitProposal): MsgSubmitProposalAminoType["value"] => {
+    }: MsgSubmitProposal): AminoMsgSubmitProposal["value"] => {
       return {
         messages: messages.map(el0 => ({
           type_url: el0.typeUrl,
@@ -118,7 +118,7 @@ export const AminoConverter = {
       metadata,
       title,
       summary
-    }: MsgSubmitProposalAminoType["value"]): MsgSubmitProposal => {
+    }: AminoMsgSubmitProposal["value"]): MsgSubmitProposal => {
       return {
         messages: messages.map(el0 => ({
           typeUrl: el0.type_url,
@@ -140,7 +140,7 @@ export const AminoConverter = {
     toAmino: ({
       content,
       authority
-    }: MsgExecLegacyContent): MsgExecLegacyContentAminoType["value"] => {
+    }: MsgExecLegacyContent): AminoMsgExecLegacyContent["value"] => {
       return {
         content: {
           type_url: content.typeUrl,
@@ -152,7 +152,7 @@ export const AminoConverter = {
     fromAmino: ({
       content,
       authority
-    }: MsgExecLegacyContentAminoType["value"]): MsgExecLegacyContent => {
+    }: AminoMsgExecLegacyContent["value"]): MsgExecLegacyContent => {
       return {
         content: {
           typeUrl: content.type_url,
@@ -169,7 +169,7 @@ export const AminoConverter = {
       voter,
       option,
       metadata
-    }: MsgVote): MsgVoteAminoType["value"] => {
+    }: MsgVote): AminoMsgVote["value"] => {
       return {
         proposal_id: proposalId.toString(),
         voter,
@@ -182,7 +182,7 @@ export const AminoConverter = {
       voter,
       option,
       metadata
-    }: MsgVoteAminoType["value"]): MsgVote => {
+    }: AminoMsgVote["value"]): MsgVote => {
       return {
         proposalId: Long.fromString(proposal_id),
         voter,
@@ -198,7 +198,7 @@ export const AminoConverter = {
       voter,
       options,
       metadata
-    }: MsgVoteWeighted): MsgVoteWeightedAminoType["value"] => {
+    }: MsgVoteWeighted): AminoMsgVoteWeighted["value"] => {
       return {
         proposal_id: proposalId.toString(),
         voter,
@@ -214,7 +214,7 @@ export const AminoConverter = {
       voter,
       options,
       metadata
-    }: MsgVoteWeightedAminoType["value"]): MsgVoteWeighted => {
+    }: AminoMsgVoteWeighted["value"]): MsgVoteWeighted => {
       return {
         proposalId: Long.fromString(proposal_id),
         voter,
@@ -232,7 +232,7 @@ export const AminoConverter = {
       proposalId,
       depositor,
       amount
-    }: MsgDeposit): MsgDepositAminoType["value"] => {
+    }: MsgDeposit): AminoMsgDeposit["value"] => {
       return {
         proposal_id: proposalId.toString(),
         depositor,
@@ -246,7 +246,7 @@ export const AminoConverter = {
       proposal_id,
       depositor,
       amount
-    }: MsgDepositAminoType["value"]): MsgDeposit => {
+    }: AminoMsgDeposit["value"]): MsgDeposit => {
       return {
         proposalId: Long.fromString(proposal_id),
         depositor,
@@ -262,7 +262,7 @@ export const AminoConverter = {
     toAmino: ({
       authority,
       params
-    }: MsgUpdateParams): MsgUpdateParamsAminoType["value"] => {
+    }: MsgUpdateParams): AminoMsgUpdateParams["value"] => {
       return {
         authority,
         params: {
@@ -282,7 +282,7 @@ export const AminoConverter = {
     fromAmino: ({
       authority,
       params
-    }: MsgUpdateParamsAminoType["value"]): MsgUpdateParams => {
+    }: AminoMsgUpdateParams["value"]): MsgUpdateParams => {
       return {
         authority,
         params: {

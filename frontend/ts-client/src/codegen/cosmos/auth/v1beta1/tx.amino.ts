@@ -1,8 +1,8 @@
 import { AminoMsg } from "@cosmjs/amino";
 import { Long } from "../../../helpers";
 import { MsgUpdateParams } from "./tx";
-export interface MsgUpdateParamsAminoType extends AminoMsg {
-  type: "cosmos-sdk/x/auth/MsgUpdateParams";
+export interface AminoMsgUpdateParams extends AminoMsg {
+  type: "cosmos-sdk/MsgUpdateParams";
   value: {
     authority: string;
     params: {
@@ -16,11 +16,11 @@ export interface MsgUpdateParamsAminoType extends AminoMsg {
 }
 export const AminoConverter = {
   "/cosmos.auth.v1beta1.MsgUpdateParams": {
-    aminoType: "cosmos-sdk/x/auth/MsgUpdateParams",
+    aminoType: "cosmos-sdk/MsgUpdateParams",
     toAmino: ({
       authority,
       params
-    }: MsgUpdateParams): MsgUpdateParamsAminoType["value"] => {
+    }: MsgUpdateParams): AminoMsgUpdateParams["value"] => {
       return {
         authority,
         params: {
@@ -35,7 +35,7 @@ export const AminoConverter = {
     fromAmino: ({
       authority,
       params
-    }: MsgUpdateParamsAminoType["value"]): MsgUpdateParams => {
+    }: AminoMsgUpdateParams["value"]): MsgUpdateParams => {
       return {
         authority,
         params: {
