@@ -29,6 +29,16 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			},
 			expectedError: nil,
 		},
+		"happy path - no issuer creator": {
+			msgUnderTest: &MsgUpdateParams{
+				Authority: sample.AccAddress(),
+				Params: Params{
+					IssuerCreator:          "",
+					CreditClassCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
+				},
+			},
+			expectedError: nil,
+		},
 		"invalid authority": {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: "invalid",

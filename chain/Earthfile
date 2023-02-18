@@ -48,6 +48,26 @@ test-with-coverage:
     RUN make test-with-coverage
     SAVE ARTIFACT coverage.out AS LOCAL coverage.out
 
+test-sim-import-export:
+    FROM +build
+    RUN make test-sim-import-export
+
+test-sim-after-import:
+    FROM +build
+    RUN make test-sim-after-import
+
+test-sim-multi-seed-short:
+    FROM +build
+    RUN make test-sim-multi-seed-short
+
+test-sim-multi-seed-long:
+    FROM +build
+    RUN make test-sim-multi-seed-long
+
+test-sim-nondeterminism:
+    FROM +build
+    RUN make test-sim-nondeterminism
+
 smoketest:
     FROM +build
     RUN make smoketest

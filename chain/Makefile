@@ -148,6 +148,52 @@ smoketest-ibc: install
 	./scripts/test/smoke_ibc.sh
 
 ###############################################################################
+###                               Simulations                               ###
+###############################################################################
+
+SIMAPP = github.com/EmpowerPlastic/empowerchain/app/simulation
+SIM_TEST_DIR = ./app/simulation
+TOOLS_DESTDIR  ?= $(GOPATH)/bin
+RUNSIM         = $(TOOLS_DESTDIR)/runsim
+default_seeds := 1,2,4,7,32,123,124,582,1893,2989,3012,4728,37827,981928,87821, \
+	891823782,989182,89182391,11,22,44,77,99,2020,3232,123123,124124,582582,18931893, \
+	29892989,30123012,47284728,7601778,8090485,977367484,491163361,424254581,673398983
+
+JOBS ?= 4
+SEED ?= 1
+SEEDS ?= $(subst $(whitespace),$(empty),$(default_seeds))
+PERIOD ?= 5
+NUM_BLOCKS ?= 100
+BLOCK_SIZE ?= 200
+
+# Install the runsim binary
+runsim: $(RUNSIM)
+$(RUNSIM):
+	@echo "Installing runsim..."
+	@go install github.com/cosmos/tools/cmd/runsim@v1.0.0
+
+test-sim-import-export: runsim
+	@echo "Running application import/export simulation. This may take several minutes..."
+	@runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 50 5 TestAppImportExport
+
+test-sim-after-import: runsim
+	@echo "Running application simulation-after-import. This may take several minutes..."
+	@runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 50 5 TestAppSimulationAfterImport
+
+test-sim-multi-seed-short: runsim
+	@echo "Running short multi-seed application simulation. This may take awhile!"
+	@runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 50 10 TestFullAppSimulation
+
+test-sim-multi-seed-long: runsim
+	@echo "Running long multi-seed application simulation. This may take awhile!"
+	@runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 500 50 TestFullAppSimulation
+
+test-sim-nondeterminism:
+	@echo "Running non-determinism test..."
+	go test $(SIM_TEST_DIR) -mod=readonly -run TestAppStateDeterminism -Enabled=true \
+		-NumBlocks=100 -BlockSize=200 -Commit=true -Period=0 -v -timeout 24h
+
+###############################################################################
 ###                                  Proto                                  ###
 ###############################################################################
 

@@ -1448,10 +1448,10 @@ func (s *TestSuite) TestTransferCredits() {
 				Amount: 100,
 				Retire: false,
 			},
-			expectedSenderBalance:           100000000,
-			expectedRecipientBalanceActive:  100000000,
+			expectedSenderBalance:           0,
+			expectedRecipientBalanceActive:  0,
 			expectedRecipientBalanceRetired: 0,
-			err:                             nil,
+			err:                             plasticcredit.ErrSameSenderAndRecipient,
 		},
 		"sending to the same address (no balance)": {
 			msg: &plasticcredit.MsgTransferCredits{
