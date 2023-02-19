@@ -10,12 +10,12 @@ on:
 jobs:
   build:
     name: Update EmpowerChain swagger docs
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-      - uses: earthly/actions/setup-earthly@v1
+      - uses: earthly/actions-setup@v1
         with:
-          version: v0.6.22
+          version: v0.6.30
 
       - run: earthly --ci --output +swagger-gen
         working-directory: ./chain
@@ -29,4 +29,4 @@ jobs:
           commit-message: Update Swagger docs
           title: Update Swagger docs
           branch: update-docs
-          labels: docs
+          labels: C:docs

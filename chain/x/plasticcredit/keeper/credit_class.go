@@ -66,6 +66,15 @@ func (k Keeper) CreateCreditClass(ctx sdk.Context, creator sdk.AccAddress, abbre
 		Name:         name,
 	}
 
+	params := k.GetParams(ctx)
+	err := k.distrKeeper.FundCommunityPool(ctx, sdk.NewCoins(params.CreditClassCreationFee), creator)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInsufficientFee,
+			"creator %s does not have enough funds to cover credit class creation fee %s",
+			creator.String(), params.CreditClassCreationFee.String(),
+		)
+	}
+
 	if err := k.setCreditClass(ctx, creditClass); err != nil {
 		return err
 	}

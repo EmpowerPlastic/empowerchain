@@ -5,6 +5,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	distrcli "github.com/cosmos/cosmos-sdk/x/distribution/client/cli"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
@@ -14,6 +17,15 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 	val := s.network.Validators[0]
 	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
 	s.Require().NoError(err)
+	noCoinsKey, err := val.ClientCtx.Keyring.Key(noCoinsIssuerAdminName)
+	s.Require().NoError(err)
+
+	queryCmd := distrcli.GetCmdQueryCommunityPool()
+	queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{fmt.Sprintf("--%s=%s", flags.FlagOutput, "json")})
+	s.Require().NoError(err)
+	var queryPoolResponse distrtypes.QueryCommunityPoolResponse
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryPoolResponse))
+	initialCommunityPool := queryPoolResponse.GetPool()
 
 	testCases := map[string]struct {
 		args              []string
@@ -32,6 +44,13 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 				Name:         "Test",
 				IssuerId:     1,
 			},
+		},
+		"invalid funds to cover fee": {
+			[]string{"PCRD3", "3", "Test", fmt.Sprintf("--%s=%s", flags.FlagFrom, noCoinsKey.Name)},
+			false,
+			true,
+			"insufficient fee",
+			plasticcredit.CreditClass{},
 		},
 		"non-existent issuer": {
 			[]string{"PCRD2", "5", "Test", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
@@ -70,17 +89,31 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
-				fmt.Println(out.String())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code)
 
-				queryCmd := cli.CmdQueryCreditClass()
-				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{fmt.Sprint(tc.expectedState.Abbreviation)})
+				queryCmd = cli.CmdQueryCreditClass()
+				queryOutput, err = clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{fmt.Sprint(tc.expectedState.Abbreviation)})
 				s.Require().NoError(err)
 				var queryResponse plasticcredit.QueryCreditClassResponse
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryResponse))
 				s.Require().Equal(tc.expectedState.Name, queryResponse.CreditClass.Name)
 				s.Require().Equal(tc.expectedState.IssuerId, queryResponse.CreditClass.IssuerId)
+
+				// verify community pool has increased by fee amount
+				queryCmd = distrcli.GetCmdQueryCommunityPool()
+				queryOutput, err = clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{fmt.Sprintf("--%s=%s", flags.FlagOutput, "json")})
+				s.Require().NoError(err)
+				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryPoolResponse))
+				communityPool := queryPoolResponse.GetPool()
+
+				// calculate community pool is within error tolerance
+				diff := communityPool.Sub(initialCommunityPool)
+				feeDiff := diff.AmountOf(s.creditClassCreationFee.Denom)
+				delta := feeDiff.Sub(sdk.NewDecFromInt(s.creditClassCreationFee.Amount))
+				epsilon, err := sdk.NewDecFromStr("0.00000000001") // include error tolerance
+				s.Require().NoError(err)
+				s.Require().True(delta.LTE(epsilon))
 			}
 		})
 	}
@@ -90,7 +123,6 @@ func (s *E2ETestSuite) TestCmdUpdateCreditClass() {
 	val := s.network.Validators[0]
 	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
 	s.Require().NoError(err)
-
 	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
 	s.Require().NoError(err)
 

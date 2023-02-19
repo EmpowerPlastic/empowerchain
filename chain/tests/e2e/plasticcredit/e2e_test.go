@@ -16,6 +16,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/stretchr/testify/suite"
@@ -26,21 +27,29 @@ import (
 )
 
 const (
-	issuerKeyName        = "issuer"
-	issuerCreatorKeyName = "issuerCreator"
-	applicantKeyName     = "applicant"
-	val1KeyName          = "node0"
-	val2KeyName          = "node1"
-	val3KeyName          = "node2"
-	randomKeyName        = "randomKey"
+	issuerKeyName          = "issuer"
+	issuerCreatorKeyName   = "issuerCreator"
+	applicantKeyName       = "applicant"
+	val1KeyName            = "node0"
+	val2KeyName            = "node1"
+	val3KeyName            = "node2"
+	randomKeyName          = "randomKey"
+	noCoinsIssuerAdminName = "nocoins"
+
+	issuerAddress             = "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+	issuerCreatorAddress      = "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7"
+	applicantAddress          = "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn"
+	randomAddress             = "empower15hxwswcmmkasaar65n3vkmp6skurvtas3xzl7s"
+	noCoinsIssuerAdminAddress = "empower1xgsaene8aqfknmldemvl5q0mtgcgjv9svupqwu"
 )
 
 type E2ETestSuite struct {
 	suite.Suite
 
-	cfg         network.Config
-	network     *network.Network
-	commonFlags []string
+	cfg                    network.Config
+	network                *network.Network
+	commonFlags            []string
+	creditClassCreationFee sdk.Coin
 }
 
 func (s *E2ETestSuite) SetupSuite() {
@@ -58,11 +67,15 @@ func (s *E2ETestSuite) SetupSuite() {
 
 	s.cfg.NumValidators = 3
 
+	s.creditClassCreationFee = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(50000))
+
 	genesisState := s.cfg.GenesisState
 
 	plasticcreditGenesisState := plasticcredit.DefaultGenesis()
+	// use "stake" for testing fee
+	plasticcreditGenesisState.Params.CreditClassCreationFee = s.creditClassCreationFee
 	plasticcreditGenesisState.IdCounters = plasticcredit.IDCounters{
-		NextIssuerId:    3,
+		NextIssuerId:    4,
 		NextApplicantId: 4,
 		NextProjectId:   11,
 	}
@@ -71,13 +84,19 @@ func (s *E2ETestSuite) SetupSuite() {
 			Id:          1,
 			Name:        "Empower",
 			Description: "First Issuer",
-			Admin:       "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m",
+			Admin:       issuerAddress,
 		},
 		{
 			Id:          2,
 			Name:        "Test Issuer",
 			Description: "Purely for testing",
-			Admin:       "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m",
+			Admin:       issuerAddress,
+		},
+		{
+			Id:          3,
+			Name:        "Test Issuer with no coins",
+			Description: "Purely for testing",
+			Admin:       noCoinsIssuerAdminAddress,
 		},
 	}
 	plasticcreditGenesisState.Applicants = []plasticcredit.Applicant{
@@ -85,19 +104,19 @@ func (s *E2ETestSuite) SetupSuite() {
 			Id:          1,
 			Name:        "Plastix Inc.",
 			Description: "Grab that bottle",
-			Admin:       "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
+			Admin:       applicantAddress,
 		},
 		{
 			Id:          2,
 			Name:        "Ocean plastic Inc.",
 			Description: "Grab that net",
-			Admin:       "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
+			Admin:       applicantAddress,
 		},
 		{
 			Id:          3,
 			Name:        "Sea plastic Inc.",
 			Description: "collector",
-			Admin:       "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
+			Admin:       applicantAddress,
 		},
 	}
 	plasticcreditGenesisState.CreditClasses = []plasticcredit.CreditClass{
@@ -227,6 +246,7 @@ func (s *E2ETestSuite) SetupSuite() {
 	var bankGenesis banktypes.GenesisState
 	var authGenesis authtypes.GenesisState
 	var govGenesis govtypesv1.GenesisState
+	var distrGenesis distrtypes.GenesisState
 	s.Require().NoError(s.cfg.Codec.UnmarshalJSON(genesisState[banktypes.ModuleName], &bankGenesis))
 	s.Require().NoError(s.cfg.Codec.UnmarshalJSON(genesisState[authtypes.ModuleName], &authGenesis))
 	s.Require().NoError(s.cfg.Codec.UnmarshalJSON(genesisState[govtypes.ModuleName], &govGenesis))
@@ -235,25 +255,30 @@ func (s *E2ETestSuite) SetupSuite() {
 		sdk.NewCoin(s.cfg.BondDenom, s.cfg.StakingTokens),
 	)
 
-	issuerAddress := "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
-	issuerCreatorAddress := "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7"
-	applicantAddress := "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn"
-	randomAddress := "empower15hxwswcmmkasaar65n3vkmp6skurvtas3xzl7s"
+	distrModuleAcct := authtypes.NewModuleAddress(distrtypes.ModuleName)
+	communityPoolAmt := s.creditClassCreationFee
+
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: issuerAddress, Coins: balances})
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: issuerCreatorAddress, Coins: balances})
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: applicantAddress, Coins: balances})
 	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: randomAddress, Coins: balances})
+	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: noCoinsIssuerAdminAddress, Coins: sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10)))})
+	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: distrModuleAcct.String(), Coins: sdk.NewCoins(communityPoolAmt)})
 
 	var genAccounts authtypes.GenesisAccounts
 	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(issuerAddress)))
 	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(issuerCreatorAddress)))
 	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(applicantAddress)))
 	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(randomAddress)))
+	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(noCoinsIssuerAdminAddress)))
 	accounts, err := authtypes.PackAccounts(genAccounts)
 	s.Require().NoError(err)
 	authGenesis.Accounts = append(authGenesis.Accounts, accounts...)
 
 	*govGenesis.Params.VotingPeriod = 10 * time.Second
+
+	// initialize community pool with small amount
+	distrGenesis.FeePool.CommunityPool = sdk.NewDecCoins(sdk.NewDecCoinFromCoin(communityPoolAmt))
 
 	bankGenesisStateBz, err := s.cfg.Codec.MarshalJSON(&bankGenesis)
 	s.Require().NoError(err)
@@ -261,10 +286,13 @@ func (s *E2ETestSuite) SetupSuite() {
 	s.Require().NoError(err)
 	govGenesisStateBz, err := s.cfg.Codec.MarshalJSON(&govGenesis)
 	s.Require().NoError(err)
+	distrGenesisStateBz, err := s.cfg.Codec.MarshalJSON(&distrGenesis)
+	s.Require().NoError(err)
 
 	genesisState[banktypes.ModuleName] = bankGenesisStateBz
 	genesisState[authtypes.ModuleName] = authGenesisStateBz
 	genesisState[govtypes.ModuleName] = govGenesisStateBz
+	genesisState[distrtypes.ModuleName] = distrGenesisStateBz
 	s.cfg.GenesisState = genesisState
 
 	s.cfg.AppConstructor = app.NewAppConstructor()
@@ -306,6 +334,15 @@ func (s *E2ETestSuite) SetupSuite() {
 	_, err = kb.NewAccount(
 		randomKeyName,
 		"pony olive still divide actual surge amateur funny marriage lizard radio gift basket supply sense feature early hazard carry smooth garment cream fury afford",
+		keyring.DefaultBIP39Passphrase,
+		sdk.FullFundraiserPath,
+		hd.Secp256k1,
+	)
+	s.Require().NoError(err)
+
+	_, err = kb.NewAccount(
+		noCoinsIssuerAdminName,
+		"venture strong firm clap primary sample record ahead spin inherit skull daughter cherry relief estate maid squeeze charge hair produce animal discover margin edit",
 		keyring.DefaultBIP39Passphrase,
 		sdk.FullFundraiserPath,
 		hd.Secp256k1,

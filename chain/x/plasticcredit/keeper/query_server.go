@@ -61,6 +61,23 @@ func (k Querier) Issuer(goCtx context.Context, req *plasticcredit.QueryIssuerReq
 	}, nil
 }
 
+func (k Querier) Applicants(goCtx context.Context, req *plasticcredit.QueryApplicantsRequest) (*plasticcredit.QueryApplicantsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	applicants, pageRes, err := k.GetApplicants(ctx, req.Pagination)
+	if err != nil {
+		return nil, err
+	}
+
+	return &plasticcredit.QueryApplicantsResponse{
+		Applicants: applicants,
+		Pagination: pageRes,
+	}, nil
+}
+
 func (k Querier) Applicant(goCtx context.Context, req *plasticcredit.QueryApplicantRequest) (*plasticcredit.QueryApplicantResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
@@ -110,6 +127,23 @@ func (k Querier) CreditClass(goCtx context.Context, req *plasticcredit.QueryCred
 	}, nil
 }
 
+func (k Querier) Projects(goCtx context.Context, req *plasticcredit.QueryProjectsRequest) (*plasticcredit.QueryProjectsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	projects, pageRes, err := k.GetProjects(ctx, req.Pagination)
+	if err != nil {
+		return nil, err
+	}
+
+	return &plasticcredit.QueryProjectsResponse{
+		Projects:   projects,
+		Pagination: pageRes,
+	}, nil
+}
+
 func (k Querier) Project(goCtx context.Context, req *plasticcredit.QueryProjectRequest) (*plasticcredit.QueryProjectResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
@@ -139,6 +173,23 @@ func (k Querier) CreditCollection(goCtx context.Context, req *plasticcredit.Quer
 
 	return &plasticcredit.QueryCreditCollectionResponse{
 		CreditCollection: creditCollection,
+	}, nil
+}
+
+func (k Querier) CreditBalances(goCtx context.Context, req *plasticcredit.QueryCreditBalancesRequest) (*plasticcredit.QueryCreditBalancesResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	creditBalances, pageRes, err := k.GetCreditBalances(ctx, req.Pagination)
+	if err != nil {
+		return nil, err
+	}
+
+	return &plasticcredit.QueryCreditBalancesResponse{
+		CreditBalances: creditBalances,
+		Pagination:     pageRes,
 	}, nil
 }
 

@@ -17,6 +17,7 @@ type (
 		storeKey            storetypes.StoreKey
 		memKey              storetypes.StoreKey
 		accessControlKeeper plasticcredit.AccessControlKeeper
+		distrKeeper         plasticcredit.DistrKeeper
 
 		// the address capable of executing a MsgUpdateParams message. Typically, this
 		// should be the x/gov module account.
@@ -29,6 +30,7 @@ func NewKeeper(
 	storeKey,
 	memKey storetypes.StoreKey,
 	accessControlKeeper plasticcredit.AccessControlKeeper,
+	distrKeeper plasticcredit.DistrKeeper,
 	authority string,
 ) *Keeper {
 	return &Keeper{
@@ -37,6 +39,7 @@ func NewKeeper(
 		memKey:              memKey,
 		authority:           authority,
 		accessControlKeeper: accessControlKeeper,
+		distrKeeper:         distrKeeper,
 	}
 }
 

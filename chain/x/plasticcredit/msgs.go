@@ -30,9 +30,12 @@ func (m *MsgUpdateParams) ValidateBasic() error {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid authority address (%s)", err)
 	}
 
-	_, err = sdk.AccAddressFromBech32(m.Params.IssuerCreator)
-	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid issuer creator address (%s)", err)
+	// We allow empty issuer creator (which means only gov can create issuers)
+	if m.Params.IssuerCreator != "" {
+		_, err = sdk.AccAddressFromBech32(m.Params.IssuerCreator)
+		if err != nil {
+			return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid issuer creator address (%s)", err)
+		}
 	}
 
 	return m.Params.Validate()

@@ -2,10 +2,12 @@ package keeper_test
 
 import (
 	"fmt"
+	"math/rand"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
+	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
@@ -16,17 +18,18 @@ func (s *TestSuite) TestParamsQuery() {
 	ms := keeper.NewMsgServerImpl(k)
 	goCtx := sdk.WrapSDKContext(s.ctx)
 
-	params := plasticcredit.DefaultParams()
+	updatedParams := plasticcredit.DefaultParams()
+	updatedParams.CreditClassCreationFee = sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63()))
 	_, err := ms.UpdateParams(goCtx, &plasticcredit.MsgUpdateParams{
 		Authority: k.Authority(),
-		Params:    plasticcredit.Params{},
+		Params:    updatedParams,
 	})
 	s.Require().NoError(err)
 
 	querier := keeper.Querier{Keeper: k}
 	response, err := querier.Params(goCtx, &plasticcredit.QueryParamsRequest{})
 	s.Require().NoError(err)
-	s.Require().Equal(&plasticcredit.QueryParamsResponse{Params: params}, response)
+	s.Require().Equal(&plasticcredit.QueryParamsResponse{Params: updatedParams}, response)
 }
 
 func (s *TestSuite) TestIssuerQuery() {
@@ -109,6 +112,53 @@ func (s *TestSuite) TestIssuersQuery() {
 	s.Require().Len(resp3.Issuers, 10)
 }
 
+func (s *TestSuite) TestApplicantsQuery() {
+	k := s.empowerApp.PlasticcreditKeeper
+	goCtx := sdk.WrapSDKContext(s.ctx)
+
+	querier := keeper.Querier{Keeper: k}
+	resp, err := querier.Applicants(goCtx, &plasticcredit.QueryApplicantsRequest{})
+	s.Require().NoError(err)
+	s.Require().Len(resp.Applicants, 0)
+
+	ms := keeper.NewMsgServerImpl(k)
+	baseName := "Empower"
+	description := "Something description."
+	admin := sample.AccAddress()
+	for i := 0; i < 11; i++ {
+		id := i + 1
+		createMsg := plasticcredit.MsgCreateApplicant{
+			Name:        fmt.Sprintf("%s%d", baseName, id),
+			Description: description,
+			Admin:       admin,
+		}
+		_, err = ms.CreateApplicant(goCtx, &createMsg)
+		s.Require().NoError(err)
+	}
+
+	resp2, err := querier.Applicants(goCtx, &plasticcredit.QueryApplicantsRequest{})
+	s.Require().NoError(err)
+	s.Require().Len(resp2.Applicants, 11)
+
+	for i, applicant := range resp2.Applicants {
+		id := i + 1
+		s.Require().Equal(uint64(id), applicant.Id)
+		expectedName := fmt.Sprintf("%s%d", baseName, id)
+		s.Require().Equal(expectedName, applicant.Name)
+		s.Require().Equal(description, applicant.Description)
+		s.Require().Equal(admin, applicant.Admin)
+	}
+
+	resp3, err := querier.Applicants(goCtx, &plasticcredit.QueryApplicantsRequest{
+		Pagination: query.PageRequest{
+			Offset: 0,
+			Limit:  10,
+		},
+	})
+	s.Require().NoError(err)
+	s.Require().Len(resp3.Applicants, 10)
+}
+
 func (s *TestSuite) TestApplicantQuery() {
 	k := s.empowerApp.PlasticcreditKeeper
 	goCtx := sdk.WrapSDKContext(s.ctx)
@@ -143,6 +193,7 @@ func (s *TestSuite) TestCreditClassQuery() {
 	goCtx := sdk.WrapSDKContext(s.ctx)
 	ms := keeper.NewMsgServerImpl(k)
 	issuerAdmin := sample.AccAddress()
+	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(10e12))))
 	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),
 		Name:        "Empower",
@@ -150,7 +201,7 @@ func (s *TestSuite) TestCreditClassQuery() {
 		Admin:       issuerAdmin,
 	})
 	s.Require().NoError(err)
-	creditClassAbbreviation := "PCRD"
+	creditClassAbbreviation := "CRDT"
 
 	querier := keeper.Querier{Keeper: k}
 	_, err = querier.CreditClass(goCtx, &plasticcredit.QueryCreditClassRequest{
@@ -182,6 +233,8 @@ func (s *TestSuite) TestCreditClassesQuery() {
 	goCtx := sdk.WrapSDKContext(s.ctx)
 	ms := keeper.NewMsgServerImpl(k)
 	issuerAdmin := sample.AccAddress()
+	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(10e12))))
+
 	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),
 		Name:        "Empower",
@@ -232,13 +285,89 @@ func (s *TestSuite) TestCreditClassesQuery() {
 	s.Require().Len(resp3.CreditClasses, 10)
 }
 
+func (s *TestSuite) TestProjectsQuery() {
+	k := s.empowerApp.PlasticcreditKeeper
+	goCtx := sdk.WrapSDKContext(s.ctx)
+	ms := keeper.NewMsgServerImpl(k)
+	issuerAdmin := sample.AccAddress()
+	// fund the issuerAdmin account for fee
+	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NormalizeCoin(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6)))))
+	applicantAdmin := sample.AccAddress()
+	creditClassAbbreviation := "DRP"
+	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
+		Creator:     k.Authority(),
+		Name:        "Empower",
+		Description: "Something",
+		Admin:       issuerAdmin,
+	})
+	s.Require().NoError(err)
+	_, err = ms.CreateCreditClass(goCtx, &plasticcredit.MsgCreateCreditClass{
+		Creator:      issuerAdmin,
+		Abbreviation: creditClassAbbreviation,
+		IssuerId:     1,
+		Name:         "Empower Plastic Credits",
+	})
+	s.Require().NoError(err)
+	_, err = ms.CreateApplicant(goCtx, &plasticcredit.MsgCreateApplicant{
+		Admin:       applicantAdmin,
+		Name:        "Empower",
+		Description: "Something",
+	})
+	s.Require().NoError(err)
+
+	querier := keeper.Querier{Keeper: k}
+	resp, err := querier.Projects(goCtx, &plasticcredit.QueryProjectsRequest{})
+	s.Require().NoError(err)
+	s.Require().Len(resp.Projects, 0)
+
+	var expectedProjects []plasticcredit.Project
+	for i := 0; i < 11; i++ {
+		abbreviation := fmt.Sprintf("ABC%d", i)
+		name := fmt.Sprintf("Empower Project (%s)", abbreviation)
+
+		createMsg := plasticcredit.MsgCreateProject{
+			Creator:                 applicantAdmin,
+			ApplicantId:             1,
+			Name:                    name,
+			CreditClassAbbreviation: creditClassAbbreviation,
+		}
+		_, err = ms.CreateProject(goCtx, &createMsg)
+		s.Require().NoError(err)
+
+		expectedProjects = append(expectedProjects, plasticcredit.Project{
+			Id:                      uint64(i + 1),
+			ApplicantId:             createMsg.ApplicantId,
+			CreditClassAbbreviation: creditClassAbbreviation,
+			Name:                    createMsg.Name,
+			Status:                  plasticcredit.ProjectStatus_NEW,
+		})
+	}
+
+	resp2, err := querier.Projects(goCtx, &plasticcredit.QueryProjectsRequest{})
+	s.Require().NoError(err)
+	s.Require().Len(resp2.Projects, 11)
+
+	s.Require().ElementsMatch(expectedProjects, resp2.Projects)
+
+	resp3, err := querier.Projects(goCtx, &plasticcredit.QueryProjectsRequest{
+		Pagination: query.PageRequest{
+			Offset: 0,
+			Limit:  10,
+		},
+	})
+	s.Require().NoError(err)
+	s.Require().Len(resp3.Projects, 10)
+}
+
 func (s *TestSuite) TestProjectQuery() {
 	k := s.empowerApp.PlasticcreditKeeper
 	goCtx := sdk.WrapSDKContext(s.ctx)
 	ms := keeper.NewMsgServerImpl(k)
 	issuerAdmin := sample.AccAddress()
+	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(10e12))))
 	applicantAdmin := sample.AccAddress()
 	creditClassAbbreviation := "PCRD"
+
 	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),
 		Name:        "Empower",
@@ -287,4 +416,104 @@ func (s *TestSuite) TestProjectQuery() {
 	s.Require().Equal(plasticcredit.ProjectStatus_NEW, resp.Project.Status)
 }
 
-// TODO credit balance, credit collection queries
+func (s *TestSuite) TestCreditCollectionQuery() {
+	s.PopulateWithSamples()
+
+	k := s.empowerApp.PlasticcreditKeeper
+	goCtx := sdk.WrapSDKContext(s.ctx)
+	querier := keeper.Querier{Keeper: k}
+
+	_, err := querier.CreditCollection(goCtx, &plasticcredit.QueryCreditCollectionRequest{
+		Denom: "notexists",
+	})
+	s.Require().ErrorIs(err, plasticcredit.ErrCreditCollectionNotFound)
+
+	resp, err := querier.CreditCollection(goCtx, &plasticcredit.QueryCreditCollectionRequest{
+		Denom: s.sampleCreditDenom,
+	})
+	s.Require().NoError(err)
+	s.Require().Equal(s.sampleCreditDenom, resp.CreditCollection.Denom)
+}
+
+func (s *TestSuite) TestCreditBalanceQuery() {
+	s.PopulateWithSamples()
+
+	k := s.empowerApp.PlasticcreditKeeper
+	goCtx := sdk.WrapSDKContext(s.ctx)
+	querier := keeper.Querier{Keeper: k}
+	sampleOwner := sample.AccAddress()
+
+	_, err := querier.CreditBalance(goCtx, &plasticcredit.QueryCreditBalanceRequest{
+		Denom: "notexists",
+		Owner: sampleOwner,
+	})
+	s.Require().ErrorIs(err, plasticcredit.ErrCreditBalanceNotFound)
+
+	// Also not found even if the denom exists, but the "owner" doesn't have any balance
+	_, err = querier.CreditBalance(goCtx, &plasticcredit.QueryCreditBalanceRequest{
+		Denom: s.sampleCreditDenom,
+		Owner: sampleOwner,
+	})
+	s.Require().ErrorIs(err, plasticcredit.ErrCreditBalanceNotFound)
+
+	// Now let's create a balance
+	ms := keeper.NewMsgServerImpl(k)
+	_, err = ms.TransferCredits(goCtx, &plasticcredit.MsgTransferCredits{
+		From:   s.sampleApplicantAdmin,
+		To:     sampleOwner,
+		Denom:  s.sampleCreditDenom,
+		Amount: 1337,
+		Retire: false,
+	})
+	s.Require().NoError(err)
+
+	resp, err := querier.CreditBalance(goCtx, &plasticcredit.QueryCreditBalanceRequest{
+		Denom: s.sampleCreditDenom,
+		Owner: sampleOwner,
+	})
+	s.Require().NoError(err)
+	s.Require().Equal(s.sampleCreditDenom, resp.Balance.Denom)
+	s.Require().Equal(sampleOwner, resp.Balance.Owner)
+	s.Require().Equal(uint64(1337), resp.Balance.Balance.Active)
+	s.Require().Equal(uint64(0), resp.Balance.Balance.Retired)
+}
+
+func (s *TestSuite) TestCreditBalancesQuery() {
+	s.PopulateWithSamples()
+
+	k := s.empowerApp.PlasticcreditKeeper
+	goCtx := sdk.WrapSDKContext(s.ctx)
+	querier := keeper.Querier{Keeper: k}
+
+	resp1, err := querier.CreditBalances(goCtx, &plasticcredit.QueryCreditBalancesRequest{})
+	s.Require().NoError(err)
+	s.Require().Equal(1, len(resp1.CreditBalances))
+
+	// Now, let's transfer some credits to other accounts, so we get a bunch of balances to query
+	ms := keeper.NewMsgServerImpl(k)
+	for i := 0; i < 11; i++ {
+		recipient := sample.AccAddress()
+		_, err = ms.TransferCredits(goCtx, &plasticcredit.MsgTransferCredits{
+			From:   s.sampleApplicantAdmin,
+			To:     recipient,
+			Denom:  s.sampleCreditDenom,
+			Amount: 1337,
+			Retire: false,
+		})
+		s.Require().NoError(err)
+	}
+
+	resp2, err := querier.CreditBalances(goCtx, &plasticcredit.QueryCreditBalancesRequest{})
+	s.Require().NoError(err)
+	s.Require().Equal(12, len(resp2.CreditBalances))
+
+	// Now, let's query with pagination
+	resp3, err := querier.CreditBalances(goCtx, &plasticcredit.QueryCreditBalancesRequest{
+		Pagination: query.PageRequest{
+			Limit:  5,
+			Offset: 0,
+		},
+	})
+	s.Require().NoError(err)
+	s.Require().Equal(5, len(resp3.CreditBalances))
+}

@@ -6,6 +6,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/query"
 
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
@@ -21,6 +22,26 @@ func (k Keeper) GetProject(ctx sdk.Context, projectID uint64) (project plasticcr
 	k.cdc.MustUnmarshal(bz, &project)
 
 	return project, true
+}
+
+func (k Keeper) GetProjects(ctx sdk.Context, pageReq query.PageRequest) ([]plasticcredit.Project, query.PageResponse, error) {
+	store := k.getProjectStore(ctx)
+
+	var projects []plasticcredit.Project
+	pageRes, err := query.Paginate(store, &pageReq, func(_ []byte, value []byte) error {
+		var project plasticcredit.Project
+		if err := k.cdc.Unmarshal(value, &project); err != nil {
+			return err
+		}
+		projects = append(projects, project)
+
+		return nil
+	})
+	if err != nil {
+		return nil, query.PageResponse{}, err
+	}
+
+	return projects, *pageRes, nil
 }
 
 func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicantID uint64, creditClassAbbreviation string, name string) (uint64, error) {

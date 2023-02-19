@@ -93,7 +93,7 @@ func (gs GenesisState) Validate() error {
 		}
 
 		if _, exists := projects[project.Id]; exists {
-			return errors.Wrapf(ErrProjectDuplicate, "duplicate project ith id %d was found", project.Id)
+			return errors.Wrapf(ErrProjectDuplicate, "duplicate project with id %d was found", project.Id)
 		}
 		projects[project.Id] = project
 	}

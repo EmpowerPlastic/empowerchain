@@ -47,6 +47,7 @@ var (
 
 	ErrCreditsNotEnough       = errors.Register(ModuleName, 7001, "not enough credits")
 	ErrActiveCreditsNotEnough = errors.Register(ModuleName, 7002, "not enough active credits")
+	ErrSameSenderAndRecipient = errors.Register(ModuleName, 7003, "sender and recipient are the same")
 	ErrCreditBalanceNotFound  = errors.Register(ModuleName, 7404, "credit balance not found")
 	ErrCreditBalanceDuplicate = errors.Register(ModuleName, 7409, "duplicate credit balance detected")
 )

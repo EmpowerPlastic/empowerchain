@@ -1,15 +1,53 @@
 package plasticcredit
 
 import (
+	"math/rand"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 
+	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"github.com/EmpowerPlastic/empowerchain/utils"
 )
+
+func TestParamsValidation(t *testing.T) {
+	testCases := map[string]struct {
+		params Params
+		err    error
+	}{
+		"happy path": {
+			params: Params{
+				IssuerCreator:          sample.AccAddress(),
+				CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
+			},
+		},
+		"invalid issuer creator": {
+			params: Params{
+				IssuerCreator:          "invalid",
+				CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
+			},
+			err: sdkerrors.ErrInvalidAddress,
+		},
+		"invalid credit class creation fee": {
+			params: Params{
+				IssuerCreator:          sample.AccAddress(),
+				CreditClassCreationFee: sdk.Coin{},
+			},
+			err: sdkerrors.ErrInvalidCoins,
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			err := tc.params.Validate()
+
+			require.ErrorIs(t, err, tc.err)
+		})
+	}
+}
 
 func TestIDCountersValidation(t *testing.T) {
 	testCases := map[string]struct {
@@ -79,6 +117,15 @@ func TestIssuerValidation(t *testing.T) {
 			},
 			err: nil,
 		},
+		"happy path description test": {
+			idc: Issuer{
+				Id:          42,
+				Name:        "Empower",
+				Description: "Something something with special characters:%$#",
+				Admin:       sample.AccAddress(),
+			},
+			err: nil,
+		},
 		"empty description is OK": {
 			idc: Issuer{
 				Id:          1337,
@@ -129,6 +176,15 @@ func TestIssuerValidation(t *testing.T) {
 				Id:          1,
 				Name:        "Empower ",
 				Description: "Something something",
+				Admin:       sample.AccAddress(),
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"description too long": {
+			idc: Issuer{
+				Id:          1,
+				Name:        "Empower ",
+				Description: sample.String(257),
 				Admin:       sample.AccAddress(),
 			},
 			err: utils.ErrInvalidValue,
@@ -221,6 +277,15 @@ func TestApplicantValidation(t *testing.T) {
 			},
 			err: nil,
 		},
+		"happy path description test": {
+			applicant: Applicant{
+				Id:          42,
+				Name:        "Empower",
+				Description: "Something something with special characters:%$#",
+				Admin:       sample.AccAddress(),
+			},
+			err: nil,
+		},
 		"empty description is OK": {
 			applicant: Applicant{
 				Id:          1337,
@@ -271,6 +336,15 @@ func TestApplicantValidation(t *testing.T) {
 				Id:          1,
 				Name:        "EmpowerChain ",
 				Description: "Something something",
+				Admin:       sample.AccAddress(),
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"description too long": {
+			applicant: Applicant{
+				Id:          1,
+				Name:        "Empower ",
+				Description: sample.String(257),
 				Admin:       sample.AccAddress(),
 			},
 			err: utils.ErrInvalidValue,

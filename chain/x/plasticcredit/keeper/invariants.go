@@ -36,19 +36,15 @@ func TotalSupplyInvariant(k InvariantKeeper) sdk.Invariant {
 			Retired uint64
 		})
 		k.IterateCreditBalances(ctx, func(creditBalance plasticcredit.CreditBalance) {
-			if totalSupply, ok := totalSupplies[creditBalance.Denom]; ok {
-				totalSupply.Active += creditBalance.Balance.Active
-				totalSupply.Retired += creditBalance.Balance.Retired
-				totalSupplies[creditBalance.Denom] = totalSupply
-			} else {
-				totalSupply.Active = creditBalance.Balance.Active
-				totalSupply.Retired = creditBalance.Balance.Retired
-				totalSupplies[creditBalance.Denom] = totalSupply
-			}
+			totalSupply := totalSupplies[creditBalance.Denom]
+			totalSupply.Active += creditBalance.Balance.Active
+			totalSupply.Retired += creditBalance.Balance.Retired
+			totalSupplies[creditBalance.Denom] = totalSupply
 		})
 
 		k.IterateCreditCollections(ctx, func(creditCollection plasticcredit.CreditCollection) {
-			if totalSupplies[creditCollection.Denom].Active != creditCollection.TotalAmount.Active || totalSupplies[creditCollection.Denom].Retired != creditCollection.TotalAmount.Retired {
+			if totalSupplies[creditCollection.Denom].Active != creditCollection.TotalAmount.Active ||
+				totalSupplies[creditCollection.Denom].Retired != creditCollection.TotalAmount.Retired {
 				count++
 				msg += fmt.Sprintf("%s collection has %d active and %d retired credits, but the total of active is %d and retired is %d\n", creditCollection.Denom, creditCollection.TotalAmount.Active, creditCollection.TotalAmount.Retired, totalSupplies[creditCollection.Denom].Active, totalSupplies[creditCollection.Denom].Retired)
 			}
