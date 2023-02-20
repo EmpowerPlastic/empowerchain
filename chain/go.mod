@@ -9,7 +9,7 @@ require (
 	cosmossdk.io/tools/rosetta v0.2.0
 	github.com/CosmWasm/wasmd v0.32.0
 	github.com/cosmos/cosmos-proto v1.0.0-beta.1
-	github.com/cosmos/cosmos-sdk v0.47.0-rc2
+	github.com/cosmos/cosmos-sdk v0.47.0-rc2.0.20230214145423-04e98905554e
 	github.com/cosmos/gogoproto v1.4.4
 	github.com/cosmos/ibc-go/v7 v7.0.0-rc0
 	github.com/golang/protobuf v1.5.2
@@ -22,7 +22,7 @@ require (
 	github.com/stretchr/testify v1.8.1
 	github.com/tendermint/tendermint v0.37.0-rc2
 	github.com/tendermint/tm-db v0.6.7
-	golang.org/x/exp v0.0.0-20221205204356-47842c84f3db
+	golang.org/x/exp v0.0.0-20230213192124-5e25df0256eb
 	google.golang.org/genproto v0.0.0-20230125152338-dcaf20b6aeaa
 	google.golang.org/grpc v1.53.0
 	google.golang.org/protobuf v1.28.2-0.20220831092852-f930b1dc76e8
@@ -80,7 +80,7 @@ require (
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gogogateway v1.2.0 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
-	github.com/cosmos/iavl v0.19.5-rc.1 // indirect
+	github.com/cosmos/iavl v0.19.5 // indirect
 	github.com/cosmos/ics23/go v0.9.1-0.20221207100636-b1abd8678aab // indirect
 	github.com/cosmos/ledger-cosmos-go v0.12.1 // indirect
 	github.com/cosmos/rosetta-sdk-go v0.9.0 // indirect
@@ -180,7 +180,7 @@ require (
 	github.com/kisielk/errcheck v1.6.3 // indirect
 	github.com/kisielk/gotool v1.0.0 // indirect
 	github.com/kkHAIKE/contextcheck v1.1.3 // indirect
-	github.com/klauspost/compress v1.15.12 // indirect
+	github.com/klauspost/compress v1.15.15 // indirect
 	github.com/kulti/thelper v0.6.3 // indirect
 	github.com/kunwardeep/paralleltest v1.0.6 // indirect
 	github.com/kyoh86/exportloopref v0.1.11 // indirect
@@ -302,8 +302,8 @@ require (
 )
 
 replace (
-	// TODO: Remove before PR
-	github.com/CosmWasm/wasmd => /home/gg/Code/wasmd
+	// use notional fork of wasmd (should be from branch: 47-with-token-factory)
+	github.com/CosmWasm/wasmd => github.com/notional-labs/wasmd v0.30.1-0.20230216182207-5b8d05de5379
 	// use informal system fork of tendermint
 	github.com/tendermint/tendermint => github.com/informalsystems/tendermint v0.37.0-rc2
 )
