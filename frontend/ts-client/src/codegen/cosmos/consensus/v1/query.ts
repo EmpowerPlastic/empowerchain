@@ -20,6 +20,11 @@ export interface QueryParamsResponse {
 /** QueryParamsResponse defines the response type for querying x/consensus parameters. */
 
 export interface QueryParamsResponseSDKType {
+  /**
+   * params are the tendermint consensus params stored in the consensus module.
+   * Please note that `params.version` is not populated in this response, it is
+   * tracked separately in the x/upgrade module.
+   */
   params?: ConsensusParamsSDKType;
 }
 

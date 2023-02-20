@@ -41,7 +41,14 @@ export interface MsgUpdateParams {
  */
 
 export interface MsgUpdateParamsSDKType {
+  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
   authority: string;
+  /**
+   * params defines the x/slashing parameters to update.
+   * 
+   * NOTE: All parameters must be supplied.
+   */
+
   params?: ParamsSDKType;
 }
 /**

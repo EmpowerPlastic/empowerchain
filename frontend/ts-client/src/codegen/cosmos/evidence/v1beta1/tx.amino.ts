@@ -1,6 +1,6 @@
 import { AminoMsg } from "@cosmjs/amino";
 import { MsgSubmitEvidence } from "./tx";
-export interface MsgSubmitEvidenceAminoType extends AminoMsg {
+export interface AminoMsgSubmitEvidence extends AminoMsg {
   type: "cosmos-sdk/MsgSubmitEvidence";
   value: {
     submitter: string;
@@ -16,7 +16,7 @@ export const AminoConverter = {
     toAmino: ({
       submitter,
       evidence
-    }: MsgSubmitEvidence): MsgSubmitEvidenceAminoType["value"] => {
+    }: MsgSubmitEvidence): AminoMsgSubmitEvidence["value"] => {
       return {
         submitter,
         evidence: {
@@ -28,7 +28,7 @@ export const AminoConverter = {
     fromAmino: ({
       submitter,
       evidence
-    }: MsgSubmitEvidenceAminoType["value"]): MsgSubmitEvidence => {
+    }: AminoMsgSubmitEvidence["value"]): MsgSubmitEvidence => {
       return {
         submitter,
         evidence: {

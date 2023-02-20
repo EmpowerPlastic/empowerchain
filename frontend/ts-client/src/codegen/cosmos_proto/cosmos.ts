@@ -6,7 +6,12 @@ export enum ScalarType {
   SCALAR_TYPE_BYTES = 2,
   UNRECOGNIZED = -1,
 }
-export const ScalarTypeSDKType = ScalarType;
+export enum ScalarTypeSDKType {
+  SCALAR_TYPE_UNSPECIFIED = 0,
+  SCALAR_TYPE_STRING = 1,
+  SCALAR_TYPE_BYTES = 2,
+  UNRECOGNIZED = -1,
+}
 export function scalarTypeFromJSON(object: any): ScalarType {
   switch (object) {
     case 0:
@@ -69,7 +74,18 @@ export interface InterfaceDescriptor {
  */
 
 export interface InterfaceDescriptorSDKType {
+  /**
+   * name is the name of the interface. It should be a short-name (without
+   * a period) such that the fully qualified name of the interface will be
+   * package.name, ex. for the package a.b and interface named C, the
+   * fully-qualified name will be a.b.C.
+   */
   name: string;
+  /**
+   * description is a human-readable description of the interface and its
+   * purpose.
+   */
+
   description: string;
 }
 /**
@@ -117,9 +133,28 @@ export interface ScalarDescriptor {
  */
 
 export interface ScalarDescriptorSDKType {
+  /**
+   * name is the name of the scalar. It should be a short-name (without
+   * a period) such that the fully qualified name of the scalar will be
+   * package.name, ex. for the package a.b and scalar named C, the
+   * fully-qualified name will be a.b.C.
+   */
   name: string;
+  /**
+   * description is a human-readable description of the scalar and its
+   * encoding format. For instance a big integer or decimal scalar should
+   * specify precisely the expected encoding format.
+   */
+
   description: string;
-  field_type: ScalarType[];
+  /**
+   * field_type is the type of field with which this scalar can be used.
+   * Scalars can be used with one and only one type of field so that
+   * encoding standards and simple and clear. Currently only string and
+   * bytes fields are supported for scalars.
+   */
+
+  field_type: ScalarTypeSDKType[];
 }
 
 function createBaseInterfaceDescriptor(): InterfaceDescriptor {

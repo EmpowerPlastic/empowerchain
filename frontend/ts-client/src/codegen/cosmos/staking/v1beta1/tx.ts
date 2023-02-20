@@ -52,6 +52,13 @@ export interface MsgEditValidator {
 export interface MsgEditValidatorSDKType {
   description?: DescriptionSDKType;
   validator_address: string;
+  /**
+   * We pass a reference to the new commission rate and min self delegation as
+   * it's not mandatory to update. If not updated, the deserialized rate will be
+   * zero with no way to distinguish if an update was intended.
+   * REF: #2373
+   */
+
   commission_rate: string;
   min_self_delegation: string;
 }
@@ -174,7 +181,11 @@ export interface MsgCancelUnbondingDelegation {
 export interface MsgCancelUnbondingDelegationSDKType {
   delegator_address: string;
   validator_address: string;
+  /** amount is always less than or equal to unbonding delegation entry balance */
+
   amount?: CoinSDKType;
+  /** creation_height is the height which the unbonding took place. */
+
   creation_height: Long;
 }
 /**
@@ -215,7 +226,14 @@ export interface MsgUpdateParams {
  */
 
 export interface MsgUpdateParamsSDKType {
+  /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
   authority: string;
+  /**
+   * params defines the x/staking parameters to update.
+   * 
+   * NOTE: All parameters must be supplied.
+   */
+
   params?: ParamsSDKType;
 }
 /**

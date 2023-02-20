@@ -15,7 +15,10 @@ export interface QueryBalanceRequest {
 /** QueryBalanceRequest is the request type for the Query/Balance RPC method. */
 
 export interface QueryBalanceRequestSDKType {
+  /** address is the address to query balances for. */
   address: string;
+  /** denom is the coin denom to query balances for. */
+
   denom: string;
 }
 /** QueryBalanceResponse is the response type for the Query/Balance RPC method. */
@@ -27,6 +30,7 @@ export interface QueryBalanceResponse {
 /** QueryBalanceResponse is the response type for the Query/Balance RPC method. */
 
 export interface QueryBalanceResponseSDKType {
+  /** balance is the balance of the coin. */
   balance?: CoinSDKType;
 }
 /** QueryBalanceRequest is the request type for the Query/AllBalances RPC method. */
@@ -41,7 +45,10 @@ export interface QueryAllBalancesRequest {
 /** QueryBalanceRequest is the request type for the Query/AllBalances RPC method. */
 
 export interface QueryAllBalancesRequestSDKType {
+  /** address is the address to query balances for. */
   address: string;
+  /** pagination defines an optional pagination for the request. */
+
   pagination?: PageRequestSDKType;
 }
 /**
@@ -62,7 +69,10 @@ export interface QueryAllBalancesResponse {
  */
 
 export interface QueryAllBalancesResponseSDKType {
+  /** balances is the balances of all the coins. */
   balances: CoinSDKType[];
+  /** pagination defines the pagination in the response. */
+
   pagination?: PageResponseSDKType;
 }
 /**
@@ -87,7 +97,10 @@ export interface QuerySpendableBalancesRequest {
  */
 
 export interface QuerySpendableBalancesRequestSDKType {
+  /** address is the address to query spendable balances for. */
   address: string;
+  /** pagination defines an optional pagination for the request. */
+
   pagination?: PageRequestSDKType;
 }
 /**
@@ -112,7 +125,10 @@ export interface QuerySpendableBalancesResponse {
  */
 
 export interface QuerySpendableBalancesResponseSDKType {
+  /** balances is the spendable balances of all the coins. */
   balances: CoinSDKType[];
+  /** pagination defines the pagination in the response. */
+
   pagination?: PageResponseSDKType;
 }
 /**
@@ -137,7 +153,10 @@ export interface QuerySpendableBalanceByDenomRequest {
  */
 
 export interface QuerySpendableBalanceByDenomRequestSDKType {
+  /** address is the address to query balances for. */
   address: string;
+  /** denom is the coin denom to query balances for. */
+
   denom: string;
 }
 /**
@@ -159,6 +178,7 @@ export interface QuerySpendableBalanceByDenomResponse {
  */
 
 export interface QuerySpendableBalanceByDenomResponseSDKType {
+  /** balance is the balance of the coin. */
   balance?: CoinSDKType;
 }
 /**
@@ -180,6 +200,11 @@ export interface QueryTotalSupplyRequest {
  */
 
 export interface QueryTotalSupplyRequestSDKType {
+  /**
+   * pagination defines an optional pagination for the request.
+   * 
+   * Since: cosmos-sdk 0.43
+   */
   pagination?: PageRequestSDKType;
 }
 /**
@@ -204,7 +229,14 @@ export interface QueryTotalSupplyResponse {
  */
 
 export interface QueryTotalSupplyResponseSDKType {
+  /** supply is the supply of the coins */
   supply: CoinSDKType[];
+  /**
+   * pagination defines the pagination in the response.
+   * 
+   * Since: cosmos-sdk 0.43
+   */
+
   pagination?: PageResponseSDKType;
 }
 /** QuerySupplyOfRequest is the request type for the Query/SupplyOf RPC method. */
@@ -216,6 +248,7 @@ export interface QuerySupplyOfRequest {
 /** QuerySupplyOfRequest is the request type for the Query/SupplyOf RPC method. */
 
 export interface QuerySupplyOfRequestSDKType {
+  /** denom is the coin denom to query balances for. */
   denom: string;
 }
 /** QuerySupplyOfResponse is the response type for the Query/SupplyOf RPC method. */
@@ -227,6 +260,7 @@ export interface QuerySupplyOfResponse {
 /** QuerySupplyOfResponse is the response type for the Query/SupplyOf RPC method. */
 
 export interface QuerySupplyOfResponseSDKType {
+  /** amount is the supply of the coin. */
   amount?: CoinSDKType;
 }
 /** QueryParamsRequest defines the request type for querying x/bank parameters. */
@@ -254,6 +288,7 @@ export interface QueryDenomsMetadataRequest {
 /** QueryDenomsMetadataRequest is the request type for the Query/DenomsMetadata RPC method. */
 
 export interface QueryDenomsMetadataRequestSDKType {
+  /** pagination defines an optional pagination for the request. */
   pagination?: PageRequestSDKType;
 }
 /**
@@ -274,7 +309,10 @@ export interface QueryDenomsMetadataResponse {
  */
 
 export interface QueryDenomsMetadataResponseSDKType {
+  /** metadata provides the client information for all the registered tokens. */
   metadatas: MetadataSDKType[];
+  /** pagination defines the pagination in the response. */
+
   pagination?: PageResponseSDKType;
 }
 /** QueryDenomMetadataRequest is the request type for the Query/DenomMetadata RPC method. */
@@ -286,6 +324,7 @@ export interface QueryDenomMetadataRequest {
 /** QueryDenomMetadataRequest is the request type for the Query/DenomMetadata RPC method. */
 
 export interface QueryDenomMetadataRequestSDKType {
+  /** denom is the coin denom to query the metadata for. */
   denom: string;
 }
 /**
@@ -303,6 +342,7 @@ export interface QueryDenomMetadataResponse {
  */
 
 export interface QueryDenomMetadataResponseSDKType {
+  /** metadata describes and provides all the client information for the requested token. */
   metadata?: MetadataSDKType;
 }
 /**
@@ -325,7 +365,10 @@ export interface QueryDenomOwnersRequest {
  */
 
 export interface QueryDenomOwnersRequestSDKType {
+  /** denom defines the coin denomination to query all account holders for. */
   denom: string;
+  /** pagination defines an optional pagination for the request. */
+
   pagination?: PageRequestSDKType;
 }
 /**
@@ -352,7 +395,10 @@ export interface DenomOwner {
  */
 
 export interface DenomOwnerSDKType {
+  /** address defines the address that owns a particular denomination. */
   address: string;
+  /** balance is the balance of the denominated coin for an account. */
+
   balance?: CoinSDKType;
 }
 /**
@@ -375,6 +421,8 @@ export interface QueryDenomOwnersResponse {
 
 export interface QueryDenomOwnersResponseSDKType {
   denom_owners: DenomOwnerSDKType[];
+  /** pagination defines the pagination in the response. */
+
   pagination?: PageResponseSDKType;
 }
 /**
@@ -400,7 +448,13 @@ export interface QuerySendEnabledRequest {
  */
 
 export interface QuerySendEnabledRequestSDKType {
+  /** denoms is the specific denoms you want look up. Leave empty to get all entries. */
   denoms: string[];
+  /**
+   * pagination defines an optional pagination for the request. This field is
+   * only read if the denoms field is empty.
+   */
+
   pagination?: PageRequestSDKType;
 }
 /**
@@ -426,6 +480,11 @@ export interface QuerySendEnabledResponse {
 
 export interface QuerySendEnabledResponseSDKType {
   send_enabled: SendEnabledSDKType[];
+  /**
+   * pagination defines the pagination in the response. This field is only
+   * populated if the denoms field in the request is empty.
+   */
+
   pagination?: PageResponseSDKType;
 }
 

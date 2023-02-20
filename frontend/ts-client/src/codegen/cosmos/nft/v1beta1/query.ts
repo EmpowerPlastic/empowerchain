@@ -14,7 +14,10 @@ export interface QueryBalanceRequest {
 /** QueryBalanceRequest is the request type for the Query/Balance RPC method */
 
 export interface QueryBalanceRequestSDKType {
+  /** class_id associated with the nft */
   class_id: string;
+  /** owner is the owner address of the nft */
+
   owner: string;
 }
 /** QueryBalanceResponse is the response type for the Query/Balance RPC method */
@@ -26,6 +29,7 @@ export interface QueryBalanceResponse {
 /** QueryBalanceResponse is the response type for the Query/Balance RPC method */
 
 export interface QueryBalanceResponseSDKType {
+  /** amount is the number of all NFTs of a given class owned by the owner */
   amount: Long;
 }
 /** QueryOwnerRequest is the request type for the Query/Owner RPC method */
@@ -40,7 +44,10 @@ export interface QueryOwnerRequest {
 /** QueryOwnerRequest is the request type for the Query/Owner RPC method */
 
 export interface QueryOwnerRequestSDKType {
+  /** class_id associated with the nft */
   class_id: string;
+  /** id is a unique identifier of the NFT */
+
   id: string;
 }
 /** QueryOwnerResponse is the response type for the Query/Owner RPC method */
@@ -52,6 +59,7 @@ export interface QueryOwnerResponse {
 /** QueryOwnerResponse is the response type for the Query/Owner RPC method */
 
 export interface QueryOwnerResponseSDKType {
+  /** owner is the owner address of the nft */
   owner: string;
 }
 /** QuerySupplyRequest is the request type for the Query/Supply RPC method */
@@ -63,6 +71,7 @@ export interface QuerySupplyRequest {
 /** QuerySupplyRequest is the request type for the Query/Supply RPC method */
 
 export interface QuerySupplyRequestSDKType {
+  /** class_id associated with the nft */
   class_id: string;
 }
 /** QuerySupplyResponse is the response type for the Query/Supply RPC method */
@@ -74,6 +83,7 @@ export interface QuerySupplyResponse {
 /** QuerySupplyResponse is the response type for the Query/Supply RPC method */
 
 export interface QuerySupplyResponseSDKType {
+  /** amount is the number of all NFTs from the given class */
   amount: Long;
 }
 /** QueryNFTstRequest is the request type for the Query/NFTs RPC method */
@@ -91,8 +101,13 @@ export interface QueryNFTsRequest {
 /** QueryNFTstRequest is the request type for the Query/NFTs RPC method */
 
 export interface QueryNFTsRequestSDKType {
+  /** class_id associated with the nft */
   class_id: string;
+  /** owner is the owner address of the nft */
+
   owner: string;
+  /** pagination defines an optional pagination for the request. */
+
   pagination?: PageRequestSDKType;
 }
 /** QueryNFTsResponse is the response type for the Query/NFTs RPC methods */
@@ -107,7 +122,10 @@ export interface QueryNFTsResponse {
 /** QueryNFTsResponse is the response type for the Query/NFTs RPC methods */
 
 export interface QueryNFTsResponseSDKType {
+  /** NFT defines the NFT */
   nfts: NFTSDKType[];
+  /** pagination defines the pagination in the response. */
+
   pagination?: PageResponseSDKType;
 }
 /** QueryNFTRequest is the request type for the Query/NFT RPC method */
@@ -122,7 +140,10 @@ export interface QueryNFTRequest {
 /** QueryNFTRequest is the request type for the Query/NFT RPC method */
 
 export interface QueryNFTRequestSDKType {
+  /** class_id associated with the nft */
   class_id: string;
+  /** id is a unique identifier of the NFT */
+
   id: string;
 }
 /** QueryNFTResponse is the response type for the Query/NFT RPC method */
@@ -134,6 +155,7 @@ export interface QueryNFTResponse {
 /** QueryNFTResponse is the response type for the Query/NFT RPC method */
 
 export interface QueryNFTResponseSDKType {
+  /** owner is the owner address of the nft */
   nft?: NFTSDKType;
 }
 /** QueryClassRequest is the request type for the Query/Class RPC method */
@@ -145,6 +167,7 @@ export interface QueryClassRequest {
 /** QueryClassRequest is the request type for the Query/Class RPC method */
 
 export interface QueryClassRequestSDKType {
+  /** class_id associated with the nft */
   class_id: string;
 }
 /** QueryClassResponse is the response type for the Query/Class RPC method */
@@ -156,6 +179,7 @@ export interface QueryClassResponse {
 /** QueryClassResponse is the response type for the Query/Class RPC method */
 
 export interface QueryClassResponseSDKType {
+  /** class defines the class of the nft type. */
   class?: ClassSDKType;
 }
 /** QueryClassesRequest is the request type for the Query/Classes RPC method */
@@ -167,6 +191,7 @@ export interface QueryClassesRequest {
 /** QueryClassesRequest is the request type for the Query/Classes RPC method */
 
 export interface QueryClassesRequestSDKType {
+  /** pagination defines an optional pagination for the request. */
   pagination?: PageRequestSDKType;
 }
 /** QueryClassesResponse is the response type for the Query/Classes RPC method */
@@ -181,7 +206,10 @@ export interface QueryClassesResponse {
 /** QueryClassesResponse is the response type for the Query/Classes RPC method */
 
 export interface QueryClassesResponseSDKType {
+  /** class defines the class of the nft type. */
   classes: ClassSDKType[];
+  /** pagination defines the pagination in the response. */
+
   pagination?: PageResponseSDKType;
 }
 

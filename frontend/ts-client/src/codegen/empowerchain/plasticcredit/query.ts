@@ -36,6 +36,20 @@ export interface QueryIssuerResponse {
 export interface QueryIssuerResponseSDKType {
   issuer?: IssuerSDKType;
 }
+export interface QueryApplicantsRequest {
+  pagination?: PageRequest;
+}
+export interface QueryApplicantsRequestSDKType {
+  pagination?: PageRequestSDKType;
+}
+export interface QueryApplicantsResponse {
+  applicants: Applicant[];
+  pagination?: PageResponse;
+}
+export interface QueryApplicantsResponseSDKType {
+  applicants: ApplicantSDKType[];
+  pagination?: PageResponseSDKType;
+}
 export interface QueryApplicantRequest {
   applicantId: Long;
 }
@@ -74,6 +88,20 @@ export interface QueryCreditClassResponse {
 export interface QueryCreditClassResponseSDKType {
   credit_class?: CreditClassSDKType;
 }
+export interface QueryProjectsRequest {
+  pagination?: PageRequest;
+}
+export interface QueryProjectsRequestSDKType {
+  pagination?: PageRequestSDKType;
+}
+export interface QueryProjectsResponse {
+  projects: Project[];
+  pagination?: PageResponse;
+}
+export interface QueryProjectsResponseSDKType {
+  projects: ProjectSDKType[];
+  pagination?: PageResponseSDKType;
+}
 export interface QueryProjectRequest {
   projectId: Long;
 }
@@ -97,6 +125,20 @@ export interface QueryCreditCollectionResponse {
 }
 export interface QueryCreditCollectionResponseSDKType {
   credit_collection?: CreditCollectionSDKType;
+}
+export interface QueryCreditBalancesRequest {
+  pagination?: PageRequest;
+}
+export interface QueryCreditBalancesRequestSDKType {
+  pagination?: PageRequestSDKType;
+}
+export interface QueryCreditBalancesResponse {
+  creditBalances: CreditBalance[];
+  pagination?: PageResponse;
+}
+export interface QueryCreditBalancesResponseSDKType {
+  credit_balances: CreditBalanceSDKType[];
+  pagination?: PageResponseSDKType;
 }
 export interface QueryCreditBalanceRequest {
   owner: string;
@@ -382,6 +424,106 @@ export const QueryIssuerResponse = {
 
 };
 
+function createBaseQueryApplicantsRequest(): QueryApplicantsRequest {
+  return {
+    pagination: undefined
+  };
+}
+
+export const QueryApplicantsRequest = {
+  encode(message: QueryApplicantsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
+    }
+
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryApplicantsRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryApplicantsRequest();
+
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+
+      switch (tag >>> 3) {
+        case 1:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<QueryApplicantsRequest>): QueryApplicantsRequest {
+    const message = createBaseQueryApplicantsRequest();
+    message.pagination = object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
+    return message;
+  }
+
+};
+
+function createBaseQueryApplicantsResponse(): QueryApplicantsResponse {
+  return {
+    applicants: [],
+    pagination: undefined
+  };
+}
+
+export const QueryApplicantsResponse = {
+  encode(message: QueryApplicantsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.applicants) {
+      Applicant.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+
+    if (message.pagination !== undefined) {
+      PageResponse.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
+
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryApplicantsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryApplicantsResponse();
+
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+
+      switch (tag >>> 3) {
+        case 1:
+          message.applicants.push(Applicant.decode(reader, reader.uint32()));
+          break;
+
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<QueryApplicantsResponse>): QueryApplicantsResponse {
+    const message = createBaseQueryApplicantsResponse();
+    message.applicants = object.applicants?.map(e => Applicant.fromPartial(e)) || [];
+    message.pagination = object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
+    return message;
+  }
+
+};
+
 function createBaseQueryApplicantRequest(): QueryApplicantRequest {
   return {
     applicantId: Long.UZERO
@@ -662,6 +804,106 @@ export const QueryCreditClassResponse = {
 
 };
 
+function createBaseQueryProjectsRequest(): QueryProjectsRequest {
+  return {
+    pagination: undefined
+  };
+}
+
+export const QueryProjectsRequest = {
+  encode(message: QueryProjectsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
+    }
+
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryProjectsRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryProjectsRequest();
+
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+
+      switch (tag >>> 3) {
+        case 1:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<QueryProjectsRequest>): QueryProjectsRequest {
+    const message = createBaseQueryProjectsRequest();
+    message.pagination = object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
+    return message;
+  }
+
+};
+
+function createBaseQueryProjectsResponse(): QueryProjectsResponse {
+  return {
+    projects: [],
+    pagination: undefined
+  };
+}
+
+export const QueryProjectsResponse = {
+  encode(message: QueryProjectsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.projects) {
+      Project.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+
+    if (message.pagination !== undefined) {
+      PageResponse.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
+
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryProjectsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryProjectsResponse();
+
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+
+      switch (tag >>> 3) {
+        case 1:
+          message.projects.push(Project.decode(reader, reader.uint32()));
+          break;
+
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<QueryProjectsResponse>): QueryProjectsResponse {
+    const message = createBaseQueryProjectsResponse();
+    message.projects = object.projects?.map(e => Project.fromPartial(e)) || [];
+    message.pagination = object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
+    return message;
+  }
+
+};
+
 function createBaseQueryProjectRequest(): QueryProjectRequest {
   return {
     projectId: Long.UZERO
@@ -837,6 +1079,106 @@ export const QueryCreditCollectionResponse = {
   fromPartial(object: DeepPartial<QueryCreditCollectionResponse>): QueryCreditCollectionResponse {
     const message = createBaseQueryCreditCollectionResponse();
     message.creditCollection = object.creditCollection !== undefined && object.creditCollection !== null ? CreditCollection.fromPartial(object.creditCollection) : undefined;
+    return message;
+  }
+
+};
+
+function createBaseQueryCreditBalancesRequest(): QueryCreditBalancesRequest {
+  return {
+    pagination: undefined
+  };
+}
+
+export const QueryCreditBalancesRequest = {
+  encode(message: QueryCreditBalancesRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
+    }
+
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreditBalancesRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryCreditBalancesRequest();
+
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+
+      switch (tag >>> 3) {
+        case 1:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<QueryCreditBalancesRequest>): QueryCreditBalancesRequest {
+    const message = createBaseQueryCreditBalancesRequest();
+    message.pagination = object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
+    return message;
+  }
+
+};
+
+function createBaseQueryCreditBalancesResponse(): QueryCreditBalancesResponse {
+  return {
+    creditBalances: [],
+    pagination: undefined
+  };
+}
+
+export const QueryCreditBalancesResponse = {
+  encode(message: QueryCreditBalancesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.creditBalances) {
+      CreditBalance.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+
+    if (message.pagination !== undefined) {
+      PageResponse.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
+
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreditBalancesResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryCreditBalancesResponse();
+
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+
+      switch (tag >>> 3) {
+        case 1:
+          message.creditBalances.push(CreditBalance.decode(reader, reader.uint32()));
+          break;
+
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<QueryCreditBalancesResponse>): QueryCreditBalancesResponse {
+    const message = createBaseQueryCreditBalancesResponse();
+    message.creditBalances = object.creditBalances?.map(e => CreditBalance.fromPartial(e)) || [];
+    message.pagination = object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
     return message;
   }
 

@@ -1,6 +1,6 @@
 import { PublicKey, PublicKeySDKType } from "../crypto/keys";
-import { Long, DeepPartial } from "../../helpers";
 import * as _m0 from "protobufjs/minimal";
+import { Long, DeepPartial } from "../../helpers";
 export interface ValidatorSet {
   validators: Validator[];
   proposer?: Validator;

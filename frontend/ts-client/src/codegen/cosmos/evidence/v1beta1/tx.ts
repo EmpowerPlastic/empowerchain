@@ -19,7 +19,10 @@ export interface MsgSubmitEvidence {
  */
 
 export interface MsgSubmitEvidenceSDKType {
+  /** submitter is the signer account address of evidence. */
   submitter: string;
+  /** evidence defines the evidence of misbehavior. */
+
   evidence?: AnySDKType;
 }
 /** MsgSubmitEvidenceResponse defines the Msg/SubmitEvidence response type. */
@@ -31,6 +34,7 @@ export interface MsgSubmitEvidenceResponse {
 /** MsgSubmitEvidenceResponse defines the Msg/SubmitEvidence response type. */
 
 export interface MsgSubmitEvidenceResponseSDKType {
+  /** hash defines the hash of the evidence. */
   hash: Uint8Array;
 }
 
