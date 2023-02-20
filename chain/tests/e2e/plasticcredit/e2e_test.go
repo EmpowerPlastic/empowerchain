@@ -74,11 +74,6 @@ func (s *E2ETestSuite) SetupSuite() {
 	plasticcreditGenesisState := plasticcredit.DefaultGenesis()
 	// use "stake" for testing fee
 	plasticcreditGenesisState.Params.CreditClassCreationFee = s.creditClassCreationFee
-	plasticcreditGenesisState.IdCounters = plasticcredit.IDCounters{
-		NextIssuerId:    4,
-		NextApplicantId: 4,
-		NextProjectId:   11,
-	}
 	plasticcreditGenesisState.Issuers = []plasticcredit.Issuer{
 		{
 			Id:          1,
@@ -202,6 +197,13 @@ func (s *E2ETestSuite) SetupSuite() {
 			Name:                    "Approved project 2",
 			Status:                  plasticcredit.ProjectStatus_APPROVED,
 		},
+		{
+			Id:                      11,
+			ApplicantId:             1,
+			CreditClassAbbreviation: "EMP",
+			Name:                    "Approved project to suspend",
+			Status:                  plasticcredit.ProjectStatus_APPROVED,
+		},
 	}
 	plasticcreditGenesisState.CreditCollections = []plasticcredit.CreditCollection{
 		{
@@ -238,6 +240,11 @@ func (s *E2ETestSuite) SetupSuite() {
 				Retired: 0,
 			},
 		},
+	}
+	plasticcreditGenesisState.IdCounters = plasticcredit.IDCounters{
+		NextIssuerId:    uint64(len(plasticcreditGenesisState.Issuers)+1),
+		NextApplicantId: uint64(len(plasticcreditGenesisState.Applicants)+1),
+		NextProjectId:   uint64(len(plasticcreditGenesisState.Projects)+1),
 	}
 	plasticcreditGenesisStateBz, err := s.cfg.Codec.MarshalJSON(&plasticcreditGenesisState)
 	s.Require().NoError(err)

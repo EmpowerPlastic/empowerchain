@@ -60,7 +60,7 @@ func (s *E2ETestSuite) TestCmdCreateApplicant() {
 			} else {
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				s.Require().Equal(uint32(0), cliResponse.Code)
+				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				var createApplicantResp plasticcredit.MsgCreateApplicantResponse
 				err = s.UnpackTxResponseData(val.ClientCtx, out.Bytes(), &createApplicantResp)
@@ -155,7 +155,7 @@ func (s *E2ETestSuite) TestCmdUpdateApplicant() {
 			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				s.Require().Equal(uint32(0), cliResponse.Code)
+				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				queryCmd := cli.CmdQueryApplicant()
 				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.args[1]})

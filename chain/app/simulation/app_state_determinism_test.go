@@ -3,6 +3,7 @@ package simulation
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/CosmWasm/wasmd/x/wasm"
 	"math/rand"
 	"os"
 	"testing"
@@ -47,7 +48,14 @@ func TestAppStateDeterminism(t *testing.T) {
 			}
 
 			db := dbm.NewMemDB()
-			empowerApp := app.New(logger, db, nil, true, map[int64]bool{}, app.DefaultNodeHome, simcli.FlagPeriodValue, params.MakeEncodingConfig(app.ModuleBasics), simtestutil.EmptyAppOptions{}, interBlockCacheOpt())
+			empowerApp := app.New(logger, db, nil, true, map[int64]bool{},
+				app.DefaultNodeHome,
+				simcli.FlagPeriodValue,
+				params.MakeEncodingConfig(app.ModuleBasics),
+				simtestutil.EmptyAppOptions{},
+				[]wasm.Option{},
+				interBlockCacheOpt(),
+			)
 
 			fmt.Printf(
 				"running non-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",

@@ -34,12 +34,11 @@ import (
 
 func NewAppConstructor() network.AppConstructor {
 	return func(val network.ValidatorI) servertypes.Application {
-		var emptyWasmOpts []wasm.Option
 		return New(
 			val.GetCtx().Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.GetCtx().Config.RootDir, 0,
 			params.MakeEncodingConfig(ModuleBasics),
 			simtestutils.EmptyAppOptions{},
-			emptyWasmOpts,
+			[]wasm.Option{},
 		)
 	}
 }
@@ -61,11 +60,16 @@ var DefaultConsensusParams = &tmproto.ConsensusParams{
 	},
 }
 
-func setup(withGenesis bool, invCheckPeriod uint) (*EmpowerApp, GenesisState) {
+func setup(withGenesis bool) (*EmpowerApp, GenesisState) {
 	db := dbm.NewMemDB()
 	encCdc := params.MakeEncodingConfig(ModuleBasics)
-	var emptyWasmOpts []wasm.Option
-	empowerApp := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, params.MakeEncodingConfig(ModuleBasics), simtestutils.EmptyAppOptions{}, emptyWasmOpts)
+	empowerApp := New(log.NewNopLogger(), db, nil, true, map[int64]bool{},
+		DefaultNodeHome,
+		5,
+		params.MakeEncodingConfig(ModuleBasics),
+		simtestutils.EmptyAppOptions{},
+		[]wasm.Option{},
+	)
 
 	if withGenesis {
 		return empowerApp, NewDefaultGenesisState(encCdc.Codec)
@@ -102,7 +106,7 @@ func Setup(t *testing.T, isCheckTx bool) *EmpowerApp {
 func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) *EmpowerApp {
 	t.Helper()
 
-	empowerApp, genesisState := setup(true, 5)
+	empowerApp, genesisState := setup(true)
 	genesisState = genesisStateWithValSet(t, empowerApp, genesisState, valSet, genAccs, balances...)
 
 	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
@@ -217,12 +221,11 @@ func NewTestNetworkFixture() network.TestFixture {
 	}
 	defer os.RemoveAll(dir)
 
-	var emptyWasmOpts []wasm.Option
 	app := New(
 		log.NewNopLogger(), dbm.NewMemDB(), nil, true, make(map[int64]bool), dir, 0,
 		params.MakeEncodingConfig(ModuleBasics),
 		simtestutils.EmptyAppOptions{},
-		emptyWasmOpts,
+		[]wasm.Option{},
 	)
 
 	return network.TestFixture{

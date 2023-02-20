@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"github.com/CosmWasm/wasmd/x/wasm"
 	"os"
 	"testing"
 
@@ -18,7 +19,13 @@ func TestFullAppSimulation(t *testing.T) {
 	config := simcli.NewConfigFromFlags()
 	config.ChainID = SimAppChainID
 
-	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "empower-chain", "empower-chain-sim", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
+	db, dir, logger, skip, err := simtestutil.SetupSimulation(
+		config,
+		"empower-chain",
+		"empower-chain-sim",
+		simcli.FlagVerboseValue,
+		simcli.FlagEnabledValue,
+	)
 	if skip {
 		t.Skip("skipping application simulation")
 	}
@@ -29,7 +36,14 @@ func TestFullAppSimulation(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
-	empowerApp := app.New(logger, db, nil, true, map[int64]bool{}, app.DefaultNodeHome, simcli.FlagPeriodValue, params.MakeEncodingConfig(app.ModuleBasics), simtestutil.EmptyAppOptions{}, fauxMerkleModeOpt)
+	empowerApp := app.New(logger, db, nil, true, map[int64]bool{},
+		app.DefaultNodeHome,
+		simcli.FlagPeriodValue,
+		params.MakeEncodingConfig(app.ModuleBasics),
+		simtestutil.EmptyAppOptions{},
+		[]wasm.Option{},
+		fauxMerkleModeOpt,
+	)
 	require.Equal(t, "empowerchain", empowerApp.Name())
 
 	// run randomized simulation
@@ -37,6 +51,7 @@ func TestFullAppSimulation(t *testing.T) {
 		t,
 		os.Stdout,
 		empowerApp.BaseApp,
+		// TODO: REPLACE WITH SDK VERSION
 		AppStateFn(empowerApp.AppCodec(), empowerApp.SimulationManager()),
 		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
 		simtestutil.SimulationOperations(empowerApp, empowerApp.AppCodec(), config),
