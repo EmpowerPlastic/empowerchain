@@ -1,6 +1,6 @@
 import { AminoMsg } from "@cosmjs/amino";
 import { MsgSend, MsgMultiSend, MsgUpdateParams, MsgSetSendEnabled } from "./tx";
-export interface MsgSendAminoType extends AminoMsg {
+export interface AminoMsgSend extends AminoMsg {
   type: "cosmos-sdk/MsgSend";
   value: {
     from_address: string;
@@ -11,7 +11,7 @@ export interface MsgSendAminoType extends AminoMsg {
     }[];
   };
 }
-export interface MsgMultiSendAminoType extends AminoMsg {
+export interface AminoMsgMultiSend extends AminoMsg {
   type: "cosmos-sdk/MsgMultiSend";
   value: {
     inputs: {
@@ -30,8 +30,8 @@ export interface MsgMultiSendAminoType extends AminoMsg {
     }[];
   };
 }
-export interface MsgUpdateParamsAminoType extends AminoMsg {
-  type: "cosmos-sdk/x/bank/MsgUpdateParams";
+export interface AminoMsgUpdateParams extends AminoMsg {
+  type: "cosmos-sdk/MsgUpdateParams";
   value: {
     authority: string;
     params: {
@@ -43,7 +43,7 @@ export interface MsgUpdateParamsAminoType extends AminoMsg {
     };
   };
 }
-export interface MsgSetSendEnabledAminoType extends AminoMsg {
+export interface AminoMsgSetSendEnabled extends AminoMsg {
   type: "cosmos-sdk/MsgSetSendEnabled";
   value: {
     authority: string;
@@ -61,7 +61,7 @@ export const AminoConverter = {
       fromAddress,
       toAddress,
       amount
-    }: MsgSend): MsgSendAminoType["value"] => {
+    }: MsgSend): AminoMsgSend["value"] => {
       return {
         from_address: fromAddress,
         to_address: toAddress,
@@ -75,7 +75,7 @@ export const AminoConverter = {
       from_address,
       to_address,
       amount
-    }: MsgSendAminoType["value"]): MsgSend => {
+    }: AminoMsgSend["value"]): MsgSend => {
       return {
         fromAddress: from_address,
         toAddress: to_address,
@@ -91,7 +91,7 @@ export const AminoConverter = {
     toAmino: ({
       inputs,
       outputs
-    }: MsgMultiSend): MsgMultiSendAminoType["value"] => {
+    }: MsgMultiSend): AminoMsgMultiSend["value"] => {
       return {
         inputs: inputs.map(el0 => ({
           address: el0.address,
@@ -112,7 +112,7 @@ export const AminoConverter = {
     fromAmino: ({
       inputs,
       outputs
-    }: MsgMultiSendAminoType["value"]): MsgMultiSend => {
+    }: AminoMsgMultiSend["value"]): MsgMultiSend => {
       return {
         inputs: inputs.map(el0 => ({
           address: el0.address,
@@ -132,11 +132,11 @@ export const AminoConverter = {
     }
   },
   "/cosmos.bank.v1beta1.MsgUpdateParams": {
-    aminoType: "cosmos-sdk/x/bank/MsgUpdateParams",
+    aminoType: "cosmos-sdk/MsgUpdateParams",
     toAmino: ({
       authority,
       params
-    }: MsgUpdateParams): MsgUpdateParamsAminoType["value"] => {
+    }: MsgUpdateParams): AminoMsgUpdateParams["value"] => {
       return {
         authority,
         params: {
@@ -151,7 +151,7 @@ export const AminoConverter = {
     fromAmino: ({
       authority,
       params
-    }: MsgUpdateParamsAminoType["value"]): MsgUpdateParams => {
+    }: AminoMsgUpdateParams["value"]): MsgUpdateParams => {
       return {
         authority,
         params: {
@@ -170,7 +170,7 @@ export const AminoConverter = {
       authority,
       sendEnabled,
       useDefaultFor
-    }: MsgSetSendEnabled): MsgSetSendEnabledAminoType["value"] => {
+    }: MsgSetSendEnabled): AminoMsgSetSendEnabled["value"] => {
       return {
         authority,
         send_enabled: sendEnabled.map(el0 => ({
@@ -184,7 +184,7 @@ export const AminoConverter = {
       authority,
       send_enabled,
       use_default_for
-    }: MsgSetSendEnabledAminoType["value"]): MsgSetSendEnabled => {
+    }: AminoMsgSetSendEnabled["value"]): MsgSetSendEnabled => {
       return {
         authority,
         sendEnabled: send_enabled.map(el0 => ({

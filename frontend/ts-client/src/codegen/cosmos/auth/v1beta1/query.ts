@@ -20,6 +20,7 @@ export interface QueryAccountsRequest {
  */
 
 export interface QueryAccountsRequestSDKType {
+  /** pagination defines an optional pagination for the request. */
   pagination?: PageRequestSDKType;
 }
 /**
@@ -42,7 +43,10 @@ export interface QueryAccountsResponse {
  */
 
 export interface QueryAccountsResponseSDKType {
+  /** accounts are the existing accounts */
   accounts: AnySDKType[];
+  /** pagination defines the pagination in the response. */
+
   pagination?: PageResponseSDKType;
 }
 /** QueryAccountRequest is the request type for the Query/Account RPC method. */
@@ -54,6 +58,7 @@ export interface QueryAccountRequest {
 /** QueryAccountRequest is the request type for the Query/Account RPC method. */
 
 export interface QueryAccountRequestSDKType {
+  /** address defines the address to query for. */
   address: string;
 }
 /** QueryAccountResponse is the response type for the Query/Account RPC method. */
@@ -65,6 +70,7 @@ export interface QueryAccountResponse {
 /** QueryAccountResponse is the response type for the Query/Account RPC method. */
 
 export interface QueryAccountResponseSDKType {
+  /** account defines the account of the corresponding address. */
   account?: AnySDKType;
 }
 /** QueryParamsRequest is the request type for the Query/Params RPC method. */
@@ -82,6 +88,7 @@ export interface QueryParamsResponse {
 /** QueryParamsResponse is the response type for the Query/Params RPC method. */
 
 export interface QueryParamsResponseSDKType {
+  /** params defines the parameters of the module. */
   params?: ParamsSDKType;
 }
 /**
@@ -272,8 +279,22 @@ export interface QueryAccountAddressByIDRequest {
  */
 
 export interface QueryAccountAddressByIDRequestSDKType {
+  /**
+   * Deprecated, use account_id instead
+   * 
+   * id is the account number of the address to be queried. This field
+   * should have been an uint64 (like all account numbers), and will be
+   * updated to uint64 in a future version of the auth query.
+   */
+
   /** @deprecated */
   id: Long;
+  /**
+   * account_id is the account number of the address to be queried.
+   * 
+   * Since: cosmos-sdk 0.47
+   */
+
   account_id: Long;
 }
 /**
@@ -311,6 +332,7 @@ export interface QueryAccountInfoRequest {
  */
 
 export interface QueryAccountInfoRequestSDKType {
+  /** address is the account address string. */
   address: string;
 }
 /**
@@ -330,6 +352,7 @@ export interface QueryAccountInfoResponse {
  */
 
 export interface QueryAccountInfoResponseSDKType {
+  /** info is the account info which is represented by BaseAccount. */
   info?: BaseAccountSDKType;
 }
 

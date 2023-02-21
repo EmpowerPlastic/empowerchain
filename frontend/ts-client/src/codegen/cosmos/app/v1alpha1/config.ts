@@ -33,7 +33,14 @@ export interface Config {
  */
 
 export interface ConfigSDKType {
+  /** modules are the module configurations for the app. */
   modules: ModuleConfigSDKType[];
+  /**
+   * golang_bindings specifies explicit interface to implementation type bindings which
+   * depinject uses to resolve interface inputs to provider functions.  The scope of this
+   * field's configuration is global (not module specific).
+   */
+
   golang_bindings: GolangBindingSDKType[];
 }
 /** ModuleConfig is a module configuration for an app. */
@@ -69,8 +76,31 @@ export interface ModuleConfig {
 /** ModuleConfig is a module configuration for an app. */
 
 export interface ModuleConfigSDKType {
+  /**
+   * name is the unique name of the module within the app. It should be a name
+   * that persists between different versions of a module so that modules
+   * can be smoothly upgraded to new versions.
+   * 
+   * For example, for the module cosmos.bank.module.v1.Module, we may chose
+   * to simply name the module "bank" in the app. When we upgrade to
+   * cosmos.bank.module.v2.Module, the app-specific name "bank" stays the same
+   * and the framework knows that the v2 module should receive all the same state
+   * that the v1 module had. Note: modules should provide info on which versions
+   * they can migrate from in the ModuleDescriptor.can_migration_from field.
+   */
   name: string;
+  /**
+   * config is the config object for the module. Module config messages should
+   * define a ModuleDescriptor using the cosmos.app.v1alpha1.is_module extension.
+   */
+
   config?: AnySDKType;
+  /**
+   * golang_bindings specifies explicit interface to implementation type bindings which
+   * depinject uses to resolve interface inputs to provider functions.  The scope of this
+   * field's configuration is module specific.
+   */
+
   golang_bindings: GolangBindingSDKType[];
 }
 /** GolangBinding is an explicit interface type to implementing type binding for dependency injection. */
@@ -85,7 +115,10 @@ export interface GolangBinding {
 /** GolangBinding is an explicit interface type to implementing type binding for dependency injection. */
 
 export interface GolangBindingSDKType {
+  /** interface_type is the interface type which will be bound to a specific implementation type */
   interface_type: string;
+  /** implementation is the implementing type which will be supplied when an input of type interface is requested */
+
   implementation: string;
 }
 

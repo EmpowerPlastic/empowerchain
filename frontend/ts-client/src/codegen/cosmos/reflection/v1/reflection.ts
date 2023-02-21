@@ -16,6 +16,7 @@ export interface FileDescriptorsResponse {
 /** FileDescriptorsResponse is the Query/FileDescriptors response type. */
 
 export interface FileDescriptorsResponseSDKType {
+  /** files is the file descriptors. */
   files: FileDescriptorProtoSDKType[];
 }
 

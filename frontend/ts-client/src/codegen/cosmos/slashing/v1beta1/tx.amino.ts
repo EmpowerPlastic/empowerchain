@@ -1,14 +1,14 @@
 import { AminoMsg } from "@cosmjs/amino";
 import { Long } from "../../../helpers";
 import { MsgUnjail, MsgUpdateParams } from "./tx";
-export interface MsgUnjailAminoType extends AminoMsg {
+export interface AminoMsgUnjail extends AminoMsg {
   type: "cosmos-sdk/MsgUnjail";
   value: {
     validator_addr: string;
   };
 }
-export interface MsgUpdateParamsAminoType extends AminoMsg {
-  type: "cosmos-sdk/x/slashing/MsgUpdateParams";
+export interface AminoMsgUpdateParams extends AminoMsg {
+  type: "cosmos-sdk/MsgUpdateParams";
   value: {
     authority: string;
     params: {
@@ -28,25 +28,25 @@ export const AminoConverter = {
     aminoType: "cosmos-sdk/MsgUnjail",
     toAmino: ({
       validatorAddr
-    }: MsgUnjail): MsgUnjailAminoType["value"] => {
+    }: MsgUnjail): AminoMsgUnjail["value"] => {
       return {
         validator_addr: validatorAddr
       };
     },
     fromAmino: ({
       validator_addr
-    }: MsgUnjailAminoType["value"]): MsgUnjail => {
+    }: AminoMsgUnjail["value"]): MsgUnjail => {
       return {
         validatorAddr: validator_addr
       };
     }
   },
   "/cosmos.slashing.v1beta1.MsgUpdateParams": {
-    aminoType: "cosmos-sdk/x/slashing/MsgUpdateParams",
+    aminoType: "cosmos-sdk/MsgUpdateParams",
     toAmino: ({
       authority,
       params
-    }: MsgUpdateParams): MsgUpdateParamsAminoType["value"] => {
+    }: MsgUpdateParams): AminoMsgUpdateParams["value"] => {
       return {
         authority,
         params: {
@@ -61,7 +61,7 @@ export const AminoConverter = {
     fromAmino: ({
       authority,
       params
-    }: MsgUpdateParamsAminoType["value"]): MsgUpdateParams => {
+    }: AminoMsgUpdateParams["value"]): MsgUpdateParams => {
       return {
         authority,
         params: {

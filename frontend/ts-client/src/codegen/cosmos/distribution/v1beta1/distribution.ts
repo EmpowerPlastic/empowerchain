@@ -27,9 +27,19 @@ export interface Params {
 
 export interface ParamsSDKType {
   community_tax: string;
+  /**
+   * Deprecated: The base_proposer_reward field is deprecated and is no longer used
+   * in the x/distribution module's reward mechanism.
+   */
+
   /** @deprecated */
 
   base_proposer_reward: string;
+  /**
+   * Deprecated: The bonus_proposer_reward field is deprecated and is no longer used
+   * in the x/distribution module's reward mechanism.
+   */
+
   /** @deprecated */
 
   bonus_proposer_reward: string;

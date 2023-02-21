@@ -18,9 +18,16 @@ export interface EventSend {
 /** EventSend is emitted on Msg/Send */
 
 export interface EventSendSDKType {
+  /** class_id associated with the nft */
   class_id: string;
+  /** id is a unique identifier of the nft */
+
   id: string;
+  /** sender is the address of the owner of nft */
+
   sender: string;
+  /** receiver is the receiver address of nft */
+
   receiver: string;
 }
 /** EventMint is emitted on Mint */
@@ -38,8 +45,13 @@ export interface EventMint {
 /** EventMint is emitted on Mint */
 
 export interface EventMintSDKType {
+  /** class_id associated with the nft */
   class_id: string;
+  /** id is a unique identifier of the nft */
+
   id: string;
+  /** owner is the owner address of the nft */
+
   owner: string;
 }
 /** EventBurn is emitted on Burn */
@@ -57,8 +69,13 @@ export interface EventBurn {
 /** EventBurn is emitted on Burn */
 
 export interface EventBurnSDKType {
+  /** class_id associated with the nft */
   class_id: string;
+  /** id is a unique identifier of the nft */
+
   id: string;
+  /** owner is the owner address of the nft */
+
   owner: string;
 }
 

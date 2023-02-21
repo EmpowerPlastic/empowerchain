@@ -1,5 +1,5 @@
-import { Long, DeepPartial } from "../../helpers";
 import * as _m0 from "protobufjs/minimal";
+import { Long, DeepPartial } from "../../helpers";
 /** EventCreateIssuer is an event emitted when a new issuer is created */
 
 export interface EventCreateIssuer {

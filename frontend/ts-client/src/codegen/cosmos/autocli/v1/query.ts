@@ -26,6 +26,7 @@ export interface AppOptionsResponse {
 /** AppOptionsResponse is the RemoteInfoService/AppOptions response type. */
 
 export interface AppOptionsResponseSDKType {
+  /** module_options is a map of module name to autocli module options. */
   module_options?: {
     [key: string]: ModuleOptionsSDKType;
   };
