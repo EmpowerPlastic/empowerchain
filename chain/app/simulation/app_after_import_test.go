@@ -40,7 +40,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 	}()
 
 	empowerApp := app.New(logger, db, nil, true, map[int64]bool{},
-		app.DefaultNodeHome,
+		dir,
 		simcli.FlagPeriodValue,
 		params.MakeEncodingConfig(app.ModuleBasics),
 		simtestutil.EmptyAppOptions{},
@@ -98,7 +98,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 	}()
 
 	newApp := app.New(log.NewNopLogger(), newDB, nil, true, map[int64]bool{},
-		app.DefaultNodeHome,
+		newDir,
 		simcli.FlagPeriodValue,
 		params.MakeEncodingConfig(app.ModuleBasics),
 		simtestutil.EmptyAppOptions{},

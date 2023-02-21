@@ -37,7 +37,7 @@ func TestFullAppSimulation(t *testing.T) {
 	}()
 
 	empowerApp := app.New(logger, db, nil, true, map[int64]bool{},
-		app.DefaultNodeHome,
+		dir,
 		simcli.FlagPeriodValue,
 		params.MakeEncodingConfig(app.ModuleBasics),
 		simtestutil.EmptyAppOptions{},

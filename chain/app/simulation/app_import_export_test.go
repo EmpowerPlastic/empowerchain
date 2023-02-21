@@ -59,7 +59,7 @@ func TestAppImportExport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 	empowerApp := app.New(logger, db, nil, true, map[int64]bool{},
-		app.DefaultNodeHome,
+		dir,
 		simcli.FlagPeriodValue,
 		params.MakeEncodingConfig(app.ModuleBasics),
 		simtestutil.EmptyAppOptions{},
@@ -112,7 +112,7 @@ func TestAppImportExport(t *testing.T) {
 	}()
 
 	newApp := app.New(log.NewNopLogger(), newDB, nil, true, map[int64]bool{},
-		app.DefaultNodeHome,
+		newDir,
 		simcli.FlagPeriodValue,
 		params.MakeEncodingConfig(app.ModuleBasics),
 		simtestutil.EmptyAppOptions{},
