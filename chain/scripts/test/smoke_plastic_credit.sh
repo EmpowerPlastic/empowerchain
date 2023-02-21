@@ -8,9 +8,9 @@ source scripts/serve_env.sh
 # alice is issuer admin
 
 echo "--- Test: Plastic Credit Create Issuer ---"
-empowerd tx gov submit-proposal scripts/test/testdata/proposal_create_issuer.json --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx gov submit-proposal scripts/test/testdata/proposal_create_issuer.json --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx gov vote 1 yes --from validator --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx gov vote 1 yes --from validator --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 empowerd q gov proposal 1
 sleep 25
@@ -30,15 +30,15 @@ fi
 
 echo "--- Test: Plastic Credit Update Issuer ---"
 ISSUER_ID=$(empowerd q plasticcredit issuer 1 -o json | jq ".issuer.id")
-empowerd tx plasticcredit update-issuer empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 1 "updated Empower" "updated Empower issuer" --from empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx plasticcredit update-issuer empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 1 "updated Empower" "updated Empower issuer" --from empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 
 echo "--- Test: Plastic Credit Create Applicants ---"
-empowerd tx plasticcredit create-applicant "First applicant" "With description" --from empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx plasticcredit create-applicant "First applicant" "With description" --from empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx plasticcredit update-applicant empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m 1 "Updated applicant" "With updated description" --from empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx plasticcredit update-applicant empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m 1 "Updated applicant" "With updated description" --from empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx plasticcredit create-applicant "Second applicant" "With description" --from empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx plasticcredit create-applicant "Second applicant" "With description" --from empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 
 empowerd q plasticcredit applicant 1
@@ -47,12 +47,12 @@ empowerd q plasticcredit applicant 2
 echo "--- Test: Plastic Credit Create Credit Class ---"
 empowerd q bank balances empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7
 
-empowerd tx plasticcredit create-credit-class PCRD 1 "Empower Plastic Credits" --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test  --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx plasticcredit create-credit-class PCRD 1 "Empower Plastic Credits" --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test  --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx plasticcredit create-credit-class RCRD 1 "Empower Recycling Credits" --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx plasticcredit create-credit-class RCRD 1 "Empower Recycling Credits" --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 
-empowerd tx plasticcredit update-credit-class PCRD "Updated Empower Recycling Credits" --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx plasticcredit update-credit-class PCRD "Updated Empower Recycling Credits" --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 
 
@@ -66,35 +66,35 @@ if [ "$NUM_CREDIT_CLASSES" != "2" ]; then
 fi
 
 echo "--- Test: Plastic Credit Create Projects ---"
-empowerd tx plasticcredit create-project 1 PCRD "My Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx plasticcredit create-project 1 PCRD "My Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx plasticcredit create-project 1 RCRD "My Recycling Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx plasticcredit create-project 1 RCRD "My Recycling Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx plasticcredit create-project 2 PCRD "My Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx plasticcredit create-project 2 PCRD "My Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 empowerd q plasticcredit project 1
 empowerd q plasticcredit project 2
 empowerd q plasticcredit project 3
-empowerd tx plasticcredit update-project 1 "My Updated Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx plasticcredit update-project 1 "My Updated Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 
 echo "--- Test: Plastic Credit Approve Projects ---"
 
-empowerd tx pc approve-project 1 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx pc approve-project 1 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 STATUS=$(empowerd q plasticcredit project 1 -o json | jq -r ".project.status")
 if [ "$STATUS" != "APPROVED" ]; then
   echo "Error: project was not approved, it was: $STATUS"
   exit 1
 fi
-empowerd tx pc approve-project 2 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx pc approve-project 2 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 STATUS=$(empowerd q plasticcredit project 2 -o json | jq -r ".project.status")
 if [ "$STATUS" != "APPROVED" ]; then
   echo "Error: project was not approved, it was: $STATUS"
   exit 1
 fi
-empowerd tx pc approve-project 3 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx pc approve-project 3 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 STATUS=$(empowerd q plasticcredit project 3 -o json | jq -r ".project.status")
 if [ "$STATUS" != "APPROVED" ]; then
@@ -103,20 +103,20 @@ if [ "$STATUS" != "APPROVED" ]; then
 fi
 
 echo "--- Test: Plastic Credit Reject Projects ---"
-empowerd tx plasticcredit create-project 1 PCRD "My Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx plasticcredit create-project 1 PCRD "My Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx plasticcredit create-project 2 PCRD "My Other Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx plasticcredit create-project 2 PCRD "My Other Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 empowerd q plasticcredit project 4
 empowerd q plasticcredit project 5
-empowerd tx pc reject-project 4 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx pc reject-project 4 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 STATUS=$(empowerd q plasticcredit project 4 -o json | jq -r ".project.status")
 if [ "$STATUS" != "REJECTED" ]; then
   echo "Error: project was not rejected, it was: $STATUS"
   exit 1
 fi
-empowerd tx pc reject-project 5 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx pc reject-project 5 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 STATUS=$(empowerd q plasticcredit project 5 -o json | jq -r ".project.status")
 if [ "$STATUS" != "REJECTED" ]; then
@@ -125,16 +125,16 @@ if [ "$STATUS" != "REJECTED" ]; then
 fi
 
 echo "--- Test: Plastic Credit Suspend Projects ---"
-empowerd tx plasticcredit create-project 1 PCRD "My Suspendable Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx plasticcredit create-project 1 PCRD "My Suspendable Project" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 empowerd q plasticcredit project 6
-empowerd tx pc approve-project 6 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx pc approve-project 6 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx pc suspend-project 6 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx pc suspend-project 6 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx pc approve-project 6 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx pc approve-project 6 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx pc suspend-project 6 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx pc suspend-project 6 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 STATUS=$(empowerd q plasticcredit project 6 -o json | jq -r ".project.status")
 if [ "$STATUS" != "SUSPENDED" ]; then
@@ -143,25 +143,25 @@ if [ "$STATUS" != "SUSPENDED" ]; then
 fi
 
 echo "--- Test: Plastic Credit Issuance, Transfer and Retirement ---"
-empowerd tx pc issue-credits 1 123 1000 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx pc issue-credits 1 123 1000 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx pc issue-credits 2 00001 10000 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx pc issue-credits 2 00001 10000 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx pc issue-credits 3 987654321 9999999999 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
-sleep 5
-
-empowerd tx pc transfer empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 PCRD/123 50 false --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
-sleep 5
-empowerd tx pc transfer empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 RCRD/00001 10 true --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
-sleep 5
-empowerd tx pc transfer empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 PCRD/987654321 10 true --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx pc issue-credits 3 987654321 9999999999 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 
-empowerd tx pc retire PCRD/123 5 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx pc transfer empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 PCRD/123 50 false --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx pc retire RCRD/00001 2 --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx pc transfer empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 RCRD/00001 10 true --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx pc retire PCRD/987654321 9999999989 --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.5
+empowerd tx pc transfer empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 PCRD/987654321 10 true --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
+sleep 5
+
+empowerd tx pc retire PCRD/123 5 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
+sleep 5
+empowerd tx pc retire RCRD/00001 2 --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
+sleep 5
+empowerd tx pc retire PCRD/987654321 9999999989 --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 
 CREDITS_1_ACTIVE=$(empowerd q pc credit-collection PCRD/123 -o json | jq .credit_collection.total_amount.active)
