@@ -167,7 +167,7 @@ func (s *E2ETestSuite) TestCmdTransferCredits() {
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), issueResponse1.Code, issueResponse1.RawLog)
 
-	issueOutput2, err := clitestutil.ExecTestCLICmd(val.ClientCtx, issueCmd, append([]string{"1", "TestCmdTransferCredits2", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)}, s.commonFlags...))
+	issueOutput2, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, issueCmd, append([]string{"1", "TestCmdTransferCredits2", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)}, s.commonFlags...))
 	issueResponse2, err := s.getCliResponse(val.ClientCtx, issueOutput2.Bytes())
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), issueResponse2.Code, issueResponse2.RawLog)

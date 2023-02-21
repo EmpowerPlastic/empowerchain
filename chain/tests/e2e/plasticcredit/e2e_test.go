@@ -242,9 +242,9 @@ func (s *E2ETestSuite) SetupSuite() {
 		},
 	}
 	plasticcreditGenesisState.IdCounters = plasticcredit.IDCounters{
-		NextIssuerId:    uint64(len(plasticcreditGenesisState.Issuers)+1),
-		NextApplicantId: uint64(len(plasticcreditGenesisState.Applicants)+1),
-		NextProjectId:   uint64(len(plasticcreditGenesisState.Projects)+1),
+		NextIssuerId:    uint64(len(plasticcreditGenesisState.Issuers) + 1),
+		NextApplicantId: uint64(len(plasticcreditGenesisState.Applicants) + 1),
+		NextProjectId:   uint64(len(plasticcreditGenesisState.Projects) + 1),
 	}
 	plasticcreditGenesisStateBz, err := s.cfg.Codec.MarshalJSON(&plasticcreditGenesisState)
 	s.Require().NoError(err)

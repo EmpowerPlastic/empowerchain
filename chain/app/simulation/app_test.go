@@ -1,10 +1,10 @@
 package simulation
 
 import (
-	"github.com/CosmWasm/wasmd/x/wasm"
 	"os"
 	"testing"
 
+	"github.com/CosmWasm/wasmd/x/wasm"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"

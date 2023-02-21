@@ -3,12 +3,12 @@ package simulation
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/CosmWasm/wasmd/x/wasm"
 	"os"
 	"runtime/debug"
 	"strings"
 	"testing"
 
+	"github.com/CosmWasm/wasmd/x/wasm"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
