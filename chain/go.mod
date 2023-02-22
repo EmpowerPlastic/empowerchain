@@ -10,7 +10,7 @@ require (
 	github.com/CosmWasm/wasmd v0.32.0
 	github.com/cosmos/cosmos-proto v1.0.0-beta.1
 	github.com/cosmos/cosmos-sdk v0.47.0-rc2.0.20230214145423-04e98905554e
-	github.com/cosmos/gogoproto v1.4.4
+	github.com/cosmos/gogoproto v1.4.6
 	github.com/cosmos/ibc-go/v7 v7.0.0-rc0
 	github.com/golang/protobuf v1.5.2
 	github.com/golangci/golangci-lint v1.51.2
