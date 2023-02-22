@@ -7,11 +7,12 @@ import (
 )
 
 func main() {
-	js.Global().Set("empSha256", sha256DataWrapper())
+	js.Global().Set("empSha256", sha256DataWrapper()) // Makes empSha256 available to JavaScript on the global object
 	fmt.Println("Go Web Assembly! You can find empSha256 on the global object now.")
-	<-make(chan bool)
+	<-make(chan bool) // To make the program not exit, which is necessary when running in a browser
 }
 
+// sha256DataWrapper wraps the Sha256Data function in a js.Func so it can be called from JavaScript
 func sha256DataWrapper() js.Func {
 	// expects args[0] to be a Uint8Array
 	// returns a map with either an "error" key or a "value" key
