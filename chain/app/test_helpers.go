@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/CosmWasm/wasmd/x/wasm"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
@@ -37,6 +38,7 @@ func NewAppConstructor() network.AppConstructor {
 			val.GetCtx().Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.GetCtx().Config.RootDir, 0,
 			params.MakeEncodingConfig(ModuleBasics),
 			simtestutils.EmptyAppOptions{},
+			[]wasm.Option{},
 		)
 	}
 }
@@ -58,10 +60,16 @@ var DefaultConsensusParams = &tmproto.ConsensusParams{
 	},
 }
 
-func setup(withGenesis bool, invCheckPeriod uint) (*EmpowerApp, GenesisState) {
+func setup(withGenesis bool) (*EmpowerApp, GenesisState) {
 	db := dbm.NewMemDB()
 	encCdc := params.MakeEncodingConfig(ModuleBasics)
-	empowerApp := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, 5, params.MakeEncodingConfig(ModuleBasics), simtestutils.EmptyAppOptions{})
+	empowerApp := New(log.NewNopLogger(), db, nil, true, map[int64]bool{},
+		DefaultNodeHome,
+		5,
+		params.MakeEncodingConfig(ModuleBasics),
+		simtestutils.EmptyAppOptions{},
+		[]wasm.Option{},
+	)
 
 	if withGenesis {
 		return empowerApp, NewDefaultGenesisState(encCdc.Codec)
@@ -98,7 +106,7 @@ func Setup(t *testing.T, isCheckTx bool) *EmpowerApp {
 func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) *EmpowerApp {
 	t.Helper()
 
-	empowerApp, genesisState := setup(true, 5)
+	empowerApp, genesisState := setup(true)
 	genesisState = genesisStateWithValSet(t, empowerApp, genesisState, valSet, genAccs, balances...)
 
 	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
@@ -217,6 +225,7 @@ func NewTestNetworkFixture() network.TestFixture {
 		log.NewNopLogger(), dbm.NewMemDB(), nil, true, make(map[int64]bool), dir, 0,
 		params.MakeEncodingConfig(ModuleBasics),
 		simtestutils.EmptyAppOptions{},
+		[]wasm.Option{},
 	)
 
 	return network.TestFixture{

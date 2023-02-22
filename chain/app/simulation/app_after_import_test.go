@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/CosmWasm/wasmd/x/wasm"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -21,7 +22,13 @@ func TestAppSimulationAfterImport(t *testing.T) {
 	config := simcli.NewConfigFromFlags()
 	config.ChainID = SimAppChainID
 
-	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "empower-chain", "empower-chain-sim", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
+	db, dir, logger, skip, err := simtestutil.SetupSimulation(
+		config,
+		"empower-chain",
+		"empower-chain-sim",
+		simcli.FlagVerboseValue,
+		simcli.FlagEnabledValue,
+	)
 	if skip {
 		t.Skip("skipping application simulation after import")
 	}
@@ -32,7 +39,14 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
-	empowerApp := app.New(logger, db, nil, true, map[int64]bool{}, app.DefaultNodeHome, simcli.FlagPeriodValue, params.MakeEncodingConfig(app.ModuleBasics), simtestutil.EmptyAppOptions{}, fauxMerkleModeOpt)
+	empowerApp := app.New(logger, db, nil, true, map[int64]bool{},
+		dir,
+		simcli.FlagPeriodValue,
+		params.MakeEncodingConfig(app.ModuleBasics),
+		simtestutil.EmptyAppOptions{},
+		[]wasm.Option{},
+		fauxMerkleModeOpt,
+	)
 	require.Equal(t, "empowerchain", empowerApp.Name())
 
 	// Run randomized simulation
@@ -69,7 +83,13 @@ func TestAppSimulationAfterImport(t *testing.T) {
 
 	fmt.Printf("importing genesis...\n")
 
-	newDB, newDir, _, _, err := simtestutil.SetupSimulation(config, "empower-chain-2", "empower-chain-sim-2", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
+	newDB, newDir, _, _, err := simtestutil.SetupSimulation(
+		config,
+		"empower-chain-2",
+		"empower-chain-sim-2",
+		simcli.FlagVerboseValue,
+		simcli.FlagEnabledValue,
+	)
 	require.NoError(t, err, "simulation setup failed")
 
 	defer func() {
@@ -77,7 +97,14 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
 
-	newApp := app.New(log.NewNopLogger(), newDB, nil, true, map[int64]bool{}, app.DefaultNodeHome, simcli.FlagPeriodValue, params.MakeEncodingConfig(app.ModuleBasics), simtestutil.EmptyAppOptions{}, fauxMerkleModeOpt)
+	newApp := app.New(log.NewNopLogger(), newDB, nil, true, map[int64]bool{},
+		newDir,
+		simcli.FlagPeriodValue,
+		params.MakeEncodingConfig(app.ModuleBasics),
+		simtestutil.EmptyAppOptions{},
+		[]wasm.Option{},
+		fauxMerkleModeOpt,
+	)
 	require.Equal(t, "empowerchain", newApp.Name())
 
 	newApp.InitChain(abci.RequestInitChain{

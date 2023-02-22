@@ -212,7 +212,7 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				s.Require().Equal(uint32(0), cliResponse.Code)
+				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				cmd = cli.CmdQueryIssuer()
 				out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{tc.args[1]})

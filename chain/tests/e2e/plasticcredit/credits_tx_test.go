@@ -135,7 +135,7 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				s.Require().Equal(uint32(0), cliResponse.Code)
+				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				var issueCreditsResp plasticcredit.MsgIssueCreditsResponse
 				err = s.UnpackTxResponseData(val.ClientCtx, out.Bytes(), &issueCreditsResp)
@@ -153,19 +153,24 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 
 func (s *E2ETestSuite) TestCmdTransferCredits() {
 	val := s.network.Validators[0]
+	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
+	s.Require().NoError(err)
 	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
 	s.Require().NoError(err)
 	applicant, err := applicantKey.GetAddress()
 	s.Require().NoError(err)
 	senderAddress := applicant.String()
 
-	cmd := cli.MsgIssueCreditsCmd()
-	_, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{"1", "456", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)}, s.commonFlags...))
+	issueCmd := cli.MsgIssueCreditsCmd()
+	issueOutput1, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, issueCmd, append([]string{"1", "TestCmdTransferCredits1", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)}, s.commonFlags...))
+	issueResponse1, err := s.getCliResponse(val.ClientCtx, issueOutput1.Bytes())
 	s.Require().NoError(err)
-	s.Require().NoError(s.network.WaitForNextBlock())
-	_, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{"1", "123", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)}, s.commonFlags...))
+	s.Require().Equal(uint32(0), issueResponse1.Code, issueResponse1.RawLog)
+
+	issueOutput2, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, issueCmd, append([]string{"1", "TestCmdTransferCredits2", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)}, s.commonFlags...))
+	issueResponse2, err := s.getCliResponse(val.ClientCtx, issueOutput2.Bytes())
 	s.Require().NoError(err)
-	s.Require().NoError(s.network.WaitForNextBlock())
+	s.Require().Equal(uint32(0), issueResponse2.Code, issueResponse2.RawLog)
 
 	testCases := map[string]struct {
 		senderAddress                   string
@@ -184,21 +189,7 @@ func (s *E2ETestSuite) TestCmdTransferCredits() {
 		"happy path (no retire)": {
 			senderAddress,
 			"empower15hxwswcmmkasaar65n3vkmp6skurvtas3xzl7s",
-			"EMP/123",
-			"100",
-			"false",
-			fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
-			1900,
-			100,
-			0,
-			false,
-			false,
-			"",
-		},
-		"happy path (existing collection)": {
-			senderAddress,
-			"empower15hxwswcmmkasaar65n3vkmp6skurvtas3xzl7s",
-			"EMP/456",
+			"EMP/TestCmdTransferCredits1",
 			"100",
 			"false",
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
@@ -209,10 +200,24 @@ func (s *E2ETestSuite) TestCmdTransferCredits() {
 			false,
 			"",
 		},
+		"happy path (retire)": {
+			senderAddress,
+			"empower15hxwswcmmkasaar65n3vkmp6skurvtas3xzl7s",
+			"EMP/TestCmdTransferCredits2",
+			"200",
+			"true",
+			fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
+			800,
+			0,
+			200,
+			false,
+			false,
+			"",
+		},
 		"not enough sender balance": {
 			senderAddress,
 			"empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
-			"EMP/456",
+			"EMP/TestCmdTransferCredits2",
 			"10000",
 			"false",
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
@@ -226,7 +231,7 @@ func (s *E2ETestSuite) TestCmdTransferCredits() {
 		"non-existing denom": {
 			senderAddress,
 			"empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
-			"EMP/100",
+			"EMP/DOES_NOT_EXIST",
 			"100",
 			"false",
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
@@ -252,8 +257,9 @@ func (s *E2ETestSuite) TestCmdTransferCredits() {
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			default:
-				_, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
+				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				cmdQueryBalance := cli.CmdQueryCreditBalance()
 				querySenderBalanceResponse, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmdQueryBalance, append([]string{tc.senderAddress}, tc.denom))

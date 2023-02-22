@@ -66,7 +66,7 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				s.Require().Equal(uint32(0), cliResponse.Code)
+				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				var createProjectResp plasticcredit.MsgCreateProjectResponse
 				err = s.UnpackTxResponseData(val.ClientCtx, out.Bytes(), &createProjectResp)
@@ -151,7 +151,7 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				s.Require().Equal(uint32(0), cliResponse.Code)
+				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				queryCmd := cli.CmdQueryProject()
 				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.args[0]})
@@ -254,7 +254,7 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				s.Require().Equal(uint32(0), cliResponse.Code)
+				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				queryCmd := cli.CmdQueryProject()
 				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.args[0]})
@@ -346,7 +346,7 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				s.Require().Equal(uint32(0), cliResponse.Code)
+				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				queryCmd := cli.CmdQueryProject()
 				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.args[0]})
@@ -373,15 +373,15 @@ func (s *E2ETestSuite) TestCmdSuspendProject() {
 		expectedState     *plasticcredit.Project
 	}{
 		"suspend approved project": {
-			[]string{"1", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			[]string{"11", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
 			false,
 			false,
 			"",
 			&plasticcredit.Project{
-				Id:                      1,
+				Id:                      11,
 				ApplicantId:             1,
 				CreditClassAbbreviation: "EMP",
-				Name:                    "Approved project",
+				Name:                    "Approved project to suspend",
 				Status:                  plasticcredit.ProjectStatus_SUSPENDED,
 			},
 		},
@@ -430,7 +430,7 @@ func (s *E2ETestSuite) TestCmdSuspendProject() {
 			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				s.Require().Equal(uint32(0), cliResponse.Code)
+				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				queryCmd := cli.CmdQueryProject()
 				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.args[0]})

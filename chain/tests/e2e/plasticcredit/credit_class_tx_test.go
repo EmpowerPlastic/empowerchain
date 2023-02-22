@@ -90,7 +90,7 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				s.Require().Equal(uint32(0), cliResponse.Code)
+				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				queryCmd = cli.CmdQueryCreditClass()
 				queryOutput, err = clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{fmt.Sprint(tc.expectedState.Abbreviation)})
@@ -189,7 +189,7 @@ func (s *E2ETestSuite) TestCmdUpdateCreditClass() {
 			default:
 				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				s.Require().Equal(uint32(0), cliResponse.Code)
+				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				queryCmd := cli.CmdQueryCreditClass()
 				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.args[0]})
