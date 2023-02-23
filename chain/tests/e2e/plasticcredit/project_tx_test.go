@@ -16,18 +16,24 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 	s.Require().NoError(err)
 	notApplicantKey, _ := val.ClientCtx.Keyring.Key(issuerKeyName)
 	testCases := map[string]struct {
-		args              []string
+		applicantID		  string
+		creditClass		  string
+		projectName 	  string
+		fromFlagValue	  string
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
 		expectedState     *plasticcredit.Project
 	}{
 		"create project": {
-			[]string{"1", "EMP", "My new Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
-			false,
-			false,
-			"",
-			&plasticcredit.Project{
+			applicantID:		"1",
+			creditClass:		"EMP",
+			projectName:		"My new Project",
+			fromFlagValue:		fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
+			expectedErrOnSend:	false,
+			expectedErrOnExec:	false,
+			expectedErrMsg:		"",
+			expectedState:		&plasticcredit.Project{
 				Id:                      11,
 				ApplicantId:             1,
 				CreditClassAbbreviation: "EMP",
@@ -36,24 +42,37 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 			},
 		},
 		"admin does not have authorization for applicant": {
-			[]string{"1", "EMP", "My new Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, notApplicantKey.Name)},
-			false,
-			true,
-			"unauthorized",
-			nil,
+			applicantID:		"1",
+			creditClass:		"EMP",
+			projectName:		"My new Project",
+			fromFlagValue:		fmt.Sprintf("--%s=%s", flags.FlagFrom, notApplicantKey.Name),
+			expectedErrOnSend:	false,
+			expectedErrOnExec:	true,
+			expectedErrMsg:		"unauthorized",
+			expectedState:		nil,
 		},
 		"empty name": {
-			[]string{"1", "EMP", "", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
-			true,
-			false,
-			"project name cannot be empty",
-			nil,
+			applicantID:		"1",
+			creditClass:		"EMP",
+			projectName:		"",
+			fromFlagValue:		fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
+			expectedErrOnSend:	true,
+			expectedErrOnExec:	false,
+			expectedErrMsg:		"project name cannot be empty",
+			expectedState:		nil,
 		},
 	}
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgCreateProjectCmd()
-			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(
+				[]string{
+					tc.applicantID,
+					tc.creditClass,
+					tc.projectName,
+					tc.fromFlagValue,
+				}, s.commonFlags...),
+			)
 
 			switch {
 			case tc.expectedErrOnSend:
@@ -94,18 +113,22 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 	s.Require().NoError(err)
 
 	testCases := map[string]struct {
-		args              []string
+		projectID		  string
+		updateName		  string
+		fromFlagValue	  string
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
 		expectedState     *plasticcredit.Project
 	}{
 		"update project": {
-			[]string{"9", "My Updated Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
-			false,
-			false,
-			"",
-			&plasticcredit.Project{
+			projectID:			"9",
+			updateName: 		"My Updated Project",
+			fromFlagValue: 		fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
+			expectedErrOnSend:	false,
+			expectedErrOnExec:	false,
+			expectedErrMsg:		"",
+			expectedState:		&plasticcredit.Project{
 				Id:                      9,
 				ApplicantId:             1,
 				CreditClassAbbreviation: "PCRD",
@@ -114,31 +137,40 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 			},
 		},
 		"update non-existing project": {
-			[]string{"65", "My Updated Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
-			false,
-			true,
-			"project not found",
-			nil,
+			projectID:			"65",
+			updateName: 		"My Updated Project",
+			fromFlagValue: 		fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
+			expectedErrOnSend:	false,
+			expectedErrOnExec:	true,
+			expectedErrMsg:		"project not found",
+			expectedState:		nil,
 		},
 		"invalid applicant": {
-			[]string{"1", "My Updated Project", fmt.Sprintf("--%s=%s", flags.FlagFrom, notApplicantKey.Name)},
-			false,
-			true,
-			"unauthorized",
-			nil,
+			projectID:			"1",
+			updateName: 		"My Updated Project",
+			fromFlagValue: 		fmt.Sprintf("--%s=%s", flags.FlagFrom, notApplicantKey.Name),
+			expectedErrOnSend:	false,
+			expectedErrOnExec:	true,
+			expectedErrMsg:		"unauthorized",
+			expectedState:		nil,
 		},
 		"empty name": {
-			[]string{"1", "", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
-			true,
-			false,
-			"project name cannot be empty",
-			nil,
+			projectID:			"1",
+			updateName: 		"",
+			fromFlagValue: 		fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
+			expectedErrOnSend:	true,
+			expectedErrOnExec:	false,
+			expectedErrMsg:		"project name cannot be empty",
+			expectedState:		nil,
 		},
 	}
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgUpdateProjectCmd()
-			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(
+				[]string{tc.projectID, tc.updateName, tc.fromFlagValue},
+				s.commonFlags...),
+			)
 
 			switch {
 			case tc.expectedErrOnSend:
@@ -154,7 +186,7 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				queryCmd := cli.CmdQueryProject()
-				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.args[0]})
+				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.projectID})
 				s.Require().NoError(err)
 				var queryResponse plasticcredit.QueryProjectResponse
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryResponse))
@@ -171,18 +203,20 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
 	s.Require().NoError(err)
 	testCases := map[string]struct {
-		args              []string
+		projectID		  string
+		fromFlagValue     string
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
 		expectedState     *plasticcredit.Project
 	}{
 		"approve new project": {
-			[]string{"3", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			false,
-			"",
-			&plasticcredit.Project{
+			projectID:			"3",
+			fromFlagValue: 		fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend:	false,
+			expectedErrOnExec:	false,
+			expectedErrMsg:		"",
+			expectedState:		&plasticcredit.Project{
 				Id:                      3,
 				ApplicantId:             1,
 				CreditClassAbbreviation: "EMP",
@@ -191,11 +225,12 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 			},
 		},
 		"approve suspended project": {
-			[]string{"2", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			false,
-			"",
-			&plasticcredit.Project{
+			projectID:			"2",
+			fromFlagValue: 		fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend:	false,
+			expectedErrOnExec:	false,
+			expectedErrMsg:		"",
+			expectedState:		&plasticcredit.Project{
 				Id:                      2,
 				ApplicantId:             1,
 				CreditClassAbbreviation: "PCRD",
@@ -204,32 +239,36 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 			},
 		},
 		"approve non-existing project": {
-			[]string{"62", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			true,
-			"project not found",
-			nil,
+			projectID:			"62",
+			fromFlagValue:		fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend:	false,
+			expectedErrOnExec:	true,
+			expectedErrMsg:		"project not found",
+			expectedState:		nil,
 		},
 		"invalid admin": {
-			[]string{"9", fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name)},
-			false,
-			true,
-			"unauthorized",
-			nil,
+			projectID:			"9",
+			fromFlagValue:		fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name),
+			expectedErrOnSend:	false,
+			expectedErrOnExec:	true,
+			expectedErrMsg:		"unauthorized",
+			expectedState:		nil,
 		},
 		"project already approved": {
-			[]string{"1", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			true,
-			"project is approved / rejected",
-			nil,
+			projectID:			"1",
+			fromFlagValue:		fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend:	false,
+			expectedErrOnExec:	true,
+			expectedErrMsg:		"project is approved / rejected",
+			expectedState:		nil,
 		},
 		"approving rejected project": {
-			[]string{"4", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			false,
-			"project is approved / rejected",
-			&plasticcredit.Project{
+			projectID:			"4",
+			fromFlagValue:		fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend:	false,
+			expectedErrOnExec:	false,
+			expectedErrMsg:		"project is approved / rejected",
+			expectedState:		&plasticcredit.Project{
 				Id:                      4,
 				ApplicantId:             1,
 				CreditClassAbbreviation: "PCRD",
@@ -241,7 +280,7 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgApproveProjectCmd()
-			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{tc.projectID, tc.fromFlagValue}, s.commonFlags...))
 
 			switch {
 			case tc.expectedErrOnSend:
@@ -257,7 +296,7 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				queryCmd := cli.CmdQueryProject()
-				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.args[0]})
+				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.projectID})
 				s.Require().NoError(err)
 				var queryResponse plasticcredit.QueryProjectResponse
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryResponse))
@@ -274,18 +313,20 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
 	s.Require().NoError(err)
 	testCases := map[string]struct {
-		args              []string
+		projectID         string
+		fromFlagValue     string
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
 		expectedState     *plasticcredit.Project
 	}{
 		"reject project": {
-			[]string{"5", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			false,
-			"",
-			&plasticcredit.Project{
+			projectID:         "5",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: false,
+			expectedErrMsg:    "",
+			expectedState: &plasticcredit.Project{
 				Id:                      5,
 				ApplicantId:             1,
 				CreditClassAbbreviation: "PCRD",
@@ -294,45 +335,50 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 			},
 		},
 		"invalid admin": {
-			[]string{"6", fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name)},
-			false,
-			true,
-			"unauthorized",
-			nil,
+			projectID:         "6",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "unauthorized",
+			expectedState:     nil,
 		},
 		"reject non-existing project": {
-			[]string{"62", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			true,
-			"project not found",
-			nil,
+			projectID:         "62",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "project not found",
+			expectedState:     nil,
 		},
 		"project already approved": {
-			[]string{"1", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			true,
-			"project is approved / rejected",
-			nil,
+			projectID:         "1",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "project is approved / rejected",
+			expectedState:     nil,
 		},
 		"project already rejected": {
-			[]string{"7", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			true,
-			"project is approved / rejected",
-			nil,
+			projectID:         "7",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "project is approved / rejected",
+			expectedState:     nil,
 		},
 		"project already suspended": {
-			[]string{"8", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			true,
-			"project is approved / rejected",
-			nil,
+			projectID:         "8",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "project is approved / rejected",
+			expectedState:     nil,
 		},
 	}
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgRejectProjectCmd()
-			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{tc.projectID, tc.fromFlagValue}, s.commonFlags...))
 
 			switch {
 			case tc.expectedErrOnSend:
@@ -349,7 +395,7 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				queryCmd := cli.CmdQueryProject()
-				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.args[0]})
+				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.projectID})
 				s.Require().NoError(err)
 				var queryResponse plasticcredit.QueryProjectResponse
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryResponse))
@@ -366,18 +412,20 @@ func (s *E2ETestSuite) TestCmdSuspendProject() {
 	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
 	s.Require().NoError(err)
 	testCases := map[string]struct {
-		args              []string
+		projectID         string
+		fromFlagValue     string
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
 		expectedState     *plasticcredit.Project
 	}{
 		"suspend approved project": {
-			[]string{"11", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			false,
-			"",
-			&plasticcredit.Project{
+			projectID:         "11",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: false,
+			expectedErrMsg:    "",
+			expectedState: &plasticcredit.Project{
 				Id:                      11,
 				ApplicantId:             1,
 				CreditClassAbbreviation: "EMP",
@@ -386,38 +434,42 @@ func (s *E2ETestSuite) TestCmdSuspendProject() {
 			},
 		},
 		"invalid admin": {
-			[]string{"10", fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name)},
-			false,
-			true,
-			"unauthorized",
-			nil,
+			projectID:         "10",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "unauthorized",
+			expectedState:     nil,
 		},
 		"suspending non-existing project": {
-			[]string{"62", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			true,
-			"project not found",
-			nil,
+			projectID:         "62",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "project not found",
+			expectedState:     nil,
 		},
 		"project already rejected": {
-			[]string{"5", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			true,
-			"project not suspendable",
-			nil,
+			projectID:         "5",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "project not suspendable",
+			expectedState:     nil,
 		},
 		"project already suspended": {
-			[]string{"8", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			true,
-			"project not suspendable",
-			nil,
+			projectID:         "8",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "project not suspendable",
+			expectedState:     nil,
 		},
 	}
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgSuspendProjectCmd()
-			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{tc.projectID, tc.fromFlagValue}, s.commonFlags...))
 
 			switch {
 			case tc.expectedErrOnSend:
@@ -433,7 +485,7 @@ func (s *E2ETestSuite) TestCmdSuspendProject() {
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				queryCmd := cli.CmdQueryProject()
-				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.args[0]})
+				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.projectID})
 				s.Require().NoError(err)
 				var queryResponse plasticcredit.QueryProjectResponse
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryResponse))
