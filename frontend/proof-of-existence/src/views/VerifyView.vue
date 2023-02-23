@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <h1>This is Certify page</h1>
+    <h1>This is Verify page</h1>
   </div>
 </template>
 
