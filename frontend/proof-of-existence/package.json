@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "prepare": "cd ../.. && husky install frontend/proof-of-existence/.husky",
     "dev": "vite",
     "build": "run-p type-check build-only",
     "preview": "vite preview",
