@@ -18,32 +18,40 @@ func (s *E2ETestSuite) TestCmdCreateApplicant() {
 	s.Require().NoError(err)
 
 	testCases := map[string]struct {
-		args              []string
+		applicantName     string
+		applicantDesc     string
+		fromFlagValue     string
 		expectedErrOnSend bool
 		expectedErrMsg    string
 		expectedState     plasticcredit.Applicant
 	}{
 		"create new applicant": {
-			[]string{"Empower2", "Description", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			"",
-			plasticcredit.Applicant{
+			applicantName:     "Empower2",
+			applicantDesc:     "Description",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrMsg:    "",
+			expectedState: plasticcredit.Applicant{
 				Name:        "Empower2",
 				Description: "Description",
 				Admin:       issuer.String(),
 			},
 		},
 		"empty name": {
-			[]string{"", "Grab that bottle", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			true,
-			"invalid request",
-			plasticcredit.Applicant{},
+			applicantName:     "",
+			applicantDesc:     "Grab that bottle",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: true,
+			expectedErrMsg:    "invalid request",
+			expectedState:     plasticcredit.Applicant{},
 		},
 		"empty description": {
-			[]string{"Empower244", "", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			"",
-			plasticcredit.Applicant{
+			applicantName:     "Empower244",
+			applicantDesc:     "",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrMsg:    "",
+			expectedState: plasticcredit.Applicant{
 				Name:        "Empower244",
 				Description: "",
 				Admin:       issuer.String(),
@@ -53,7 +61,9 @@ func (s *E2ETestSuite) TestCmdCreateApplicant() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgCreateApplicantCmd()
-			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+			out, _ := clitestutil.ExecTestCLICmd(
+				val.ClientCtx, cmd, append([]string{tc.applicantName, tc.applicantDesc, tc.fromFlagValue}, s.commonFlags...),
+			)
 			s.Require().NoError(s.network.WaitForNextBlock())
 			if tc.expectedErrOnSend {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
@@ -91,18 +101,26 @@ func (s *E2ETestSuite) TestCmdUpdateApplicant() {
 	s.Require().NoError(err)
 
 	testCases := map[string]struct {
-		args              []string
+		issuerAddr        string
+		applicantID       string
+		updatedTitle      string
+		updatedDesc       string
+		fromFlagValue     string
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
 		expectedState     *plasticcredit.Applicant
 	}{
 		"update name, description": {
-			[]string{issuerAddress.String(), "2", "Plastix Updated Inc.", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)},
-			false,
-			false,
-			"",
-			&plasticcredit.Applicant{
+			issuerAddr:        issuerAddress.String(),
+			applicantID:       "2",
+			updatedTitle:      "Plastix Updated Inc.",
+			updatedDesc:       "We fight for a clean planet",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: false,
+			expectedErrMsg:    "",
+			expectedState: &plasticcredit.Applicant{
 				Id:          2,
 				Name:        "Plastix Updated Inc.",
 				Description: "We fight for a clean planet",
@@ -110,40 +128,58 @@ func (s *E2ETestSuite) TestCmdUpdateApplicant() {
 			},
 		},
 		"update non-existing applicant": {
-			[]string{issuerAddress.String(), "17", "Plastix Inc.", "Grab that bottle", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			true,
-			"applicant not found",
-			nil,
+			issuerAddr:        issuerAddress.String(),
+			applicantID:       "17",
+			updatedTitle:      "Plastix Inc.",
+			updatedDesc:       "Grab that bottle",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "applicant not found",
+			expectedState:     nil,
 		},
 
 		"wrong signer": {
-			[]string{issuerAddress.String(), "3", "Plastix Inc.", "Grab that bottle", fmt.Sprintf("--%s=%s", flags.FlagFrom, randomKey.Name)},
-			false,
-			true,
-			"",
-			nil,
+			issuerAddr:        issuerAddress.String(),
+			applicantID:       "3",
+			updatedTitle:      "Plastix Inc.",
+			updatedDesc:       "Grab that bottle",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, randomKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "",
+			expectedState:     nil,
 		},
 		"empty name": {
-			[]string{issuerAddress.String(), "3", "", "Grab that bottle", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			true,
-			false,
-			"applicant name cannot be empty",
-			nil,
+			issuerAddr:        issuerAddress.String(),
+			applicantID:       "3",
+			updatedTitle:      "",
+			updatedDesc:       "Grab that bottle",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: true,
+			expectedErrOnExec: false,
+			expectedErrMsg:    "applicant name cannot be empty",
+			expectedState:     nil,
 		},
 
 		"invalid admin": {
-			[]string{"invalidaddress", "3", "Plastix Inc.", "Grab that bottle", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			true,
-			false,
-			"invalid admin address",
-			nil,
+			issuerAddr:        "invalidaddress",
+			applicantID:       "3",
+			updatedTitle:      "Plastix Inc.",
+			updatedDesc:       "Grab that bottle",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: true,
+			expectedErrOnExec: false,
+			expectedErrMsg:    "invalid admin address",
+			expectedState:     nil,
 		},
 	}
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgUpdateApplicantCmd()
-			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(
+				[]string{tc.issuerAddr, tc.applicantID, tc.updatedTitle, tc.updatedDesc, tc.fromFlagValue}, s.commonFlags...),
+			)
 			switch {
 			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
@@ -158,7 +194,7 @@ func (s *E2ETestSuite) TestCmdUpdateApplicant() {
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				queryCmd := cli.CmdQueryApplicant()
-				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.args[1]})
+				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.applicantID})
 				s.Require().NoError(err)
 				var queryResponse plasticcredit.QueryApplicantResponse
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryResponse))

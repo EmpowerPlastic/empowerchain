@@ -120,14 +120,22 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 	s.Require().NoError(err)
 
 	testCases := map[string]struct {
-		args              []string
+		issuerAddress     string
+		issuerID          string
+		updatedName       string
+		updatedDesc       string
+		fromFlagValue     string
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
 		expectedState     proto.Message
 	}{
 		"update name, description": {
-			[]string{issuer.String(), "1", "Empower Plastic", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			issuer.String(),
+			"1",
+			"Empower Plastic",
+			"We fight for a clean planet",
+			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
 			false,
 			false,
 			"",
@@ -140,7 +148,11 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 		},
 
 		"update non-existing issuer": {
-			[]string{issuer.String(), "51", "Plastic Nemesis Ltd", "How do we start?", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			issuer.String(),
+			"51",
+			"Plastic Nemesis Ltd",
+			"How do we start?",
+			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
 			false,
 			true,
 			"issuer not found",
@@ -148,7 +160,11 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 		},
 
 		"wrong singer": {
-			[]string{issuer.String(), "1", "Empower Plastic", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, notIssuerKey.Name)},
+			issuer.String(),
+			"1",
+			"Empower Plastic",
+			"We fight for a clean planet",
+			fmt.Sprintf("--%s=%s", flags.FlagFrom, notIssuerKey.Name),
 			false,
 			true,
 			"",
@@ -156,7 +172,11 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 		},
 
 		"empty name": {
-			[]string{issuer.String(), "1", "", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			issuer.String(),
+			"1",
+			"",
+			"We fight for a clean planet",
+			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
 			true,
 			false,
 			"issuer name cannot be empty",
@@ -164,7 +184,11 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 		},
 
 		"empty description": {
-			[]string{issuer.String(), "1", "Empower Plastic", "", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			issuer.String(),
+			"1",
+			"Empower Plastic",
+			"",
+			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
 			false,
 			false,
 			"",
@@ -177,14 +201,22 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 		},
 
 		"invalid admin": {
-			[]string{"invalidaddress", "1", "Empower Plastic", "We fight for a clean planet", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			"invalidaddress",
+			"1",
+			"Empower Plastic",
+			"We fight for a clean planet",
+			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
 			true,
 			false,
 			"invalid admin address",
 			nil,
 		},
 		"change admin": {
-			[]string{newAdmin, "2", "Test Issuer", "Purely for testing", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
+			newAdmin,
+			"2",
+			"Test Issuer",
+			"Purely for testing",
+			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
 			false,
 			false,
 			"",
@@ -199,7 +231,9 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgUpdateIssuerCmd()
-			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(
+				[]string{tc.issuerAddress, tc.issuerID, tc.updatedName, tc.updatedDesc, tc.fromFlagValue}, s.commonFlags...,
+			))
 
 			switch {
 			case tc.expectedErrOnSend:
@@ -215,7 +249,7 @@ func (s *E2ETestSuite) TestCmdUpdateIssuer() {
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				cmd = cli.CmdQueryIssuer()
-				out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{tc.args[1]})
+				out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{tc.issuerID})
 				s.Require().NoError(err)
 				var resp plasticcredit.QueryIssuerResponse
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
