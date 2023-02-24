@@ -16,24 +16,24 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 	s.Require().NoError(err)
 	notApplicantKey, _ := val.ClientCtx.Keyring.Key(issuerKeyName)
 	testCases := map[string]struct {
-		applicantID		  string
-		creditClass		  string
-		projectName 	  string
-		fromFlagValue	  string
+		applicantID       string
+		creditClass       string
+		projectName       string
+		fromFlagValue     string
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
 		expectedState     *plasticcredit.Project
 	}{
 		"create project": {
-			applicantID:		"1",
-			creditClass:		"EMP",
-			projectName:		"My new Project",
-			fromFlagValue:		fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
-			expectedErrOnSend:	false,
-			expectedErrOnExec:	false,
-			expectedErrMsg:		"",
-			expectedState:		&plasticcredit.Project{
+			applicantID:       "1",
+			creditClass:       "EMP",
+			projectName:       "My new Project",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: false,
+			expectedErrMsg:    "",
+			expectedState: &plasticcredit.Project{
 				Id:                      11,
 				ApplicantId:             1,
 				CreditClassAbbreviation: "EMP",
@@ -42,24 +42,24 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 			},
 		},
 		"admin does not have authorization for applicant": {
-			applicantID:		"1",
-			creditClass:		"EMP",
-			projectName:		"My new Project",
-			fromFlagValue:		fmt.Sprintf("--%s=%s", flags.FlagFrom, notApplicantKey.Name),
-			expectedErrOnSend:	false,
-			expectedErrOnExec:	true,
-			expectedErrMsg:		"unauthorized",
-			expectedState:		nil,
+			applicantID:       "1",
+			creditClass:       "EMP",
+			projectName:       "My new Project",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, notApplicantKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "unauthorized",
+			expectedState:     nil,
 		},
 		"empty name": {
-			applicantID:		"1",
-			creditClass:		"EMP",
-			projectName:		"",
-			fromFlagValue:		fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
-			expectedErrOnSend:	true,
-			expectedErrOnExec:	false,
-			expectedErrMsg:		"project name cannot be empty",
-			expectedState:		nil,
+			applicantID:       "1",
+			creditClass:       "EMP",
+			projectName:       "",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
+			expectedErrOnSend: true,
+			expectedErrOnExec: false,
+			expectedErrMsg:    "project name cannot be empty",
+			expectedState:     nil,
 		},
 	}
 	for name, tc := range testCases {
@@ -113,22 +113,22 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 	s.Require().NoError(err)
 
 	testCases := map[string]struct {
-		projectID		  string
-		updateName		  string
-		fromFlagValue	  string
+		projectID         string
+		updateName        string
+		fromFlagValue     string
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
 		expectedState     *plasticcredit.Project
 	}{
 		"update project": {
-			projectID:			"9",
-			updateName: 		"My Updated Project",
-			fromFlagValue: 		fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
-			expectedErrOnSend:	false,
-			expectedErrOnExec:	false,
-			expectedErrMsg:		"",
-			expectedState:		&plasticcredit.Project{
+			projectID:         "9",
+			updateName:        "My Updated Project",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: false,
+			expectedErrMsg:    "",
+			expectedState: &plasticcredit.Project{
 				Id:                      9,
 				ApplicantId:             1,
 				CreditClassAbbreviation: "PCRD",
@@ -137,31 +137,31 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 			},
 		},
 		"update non-existing project": {
-			projectID:			"65",
-			updateName: 		"My Updated Project",
-			fromFlagValue: 		fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
-			expectedErrOnSend:	false,
-			expectedErrOnExec:	true,
-			expectedErrMsg:		"project not found",
-			expectedState:		nil,
+			projectID:         "65",
+			updateName:        "My Updated Project",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "project not found",
+			expectedState:     nil,
 		},
 		"invalid applicant": {
-			projectID:			"1",
-			updateName: 		"My Updated Project",
-			fromFlagValue: 		fmt.Sprintf("--%s=%s", flags.FlagFrom, notApplicantKey.Name),
-			expectedErrOnSend:	false,
-			expectedErrOnExec:	true,
-			expectedErrMsg:		"unauthorized",
-			expectedState:		nil,
+			projectID:         "1",
+			updateName:        "My Updated Project",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, notApplicantKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "unauthorized",
+			expectedState:     nil,
 		},
 		"empty name": {
-			projectID:			"1",
-			updateName: 		"",
-			fromFlagValue: 		fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
-			expectedErrOnSend:	true,
-			expectedErrOnExec:	false,
-			expectedErrMsg:		"project name cannot be empty",
-			expectedState:		nil,
+			projectID:         "1",
+			updateName:        "",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
+			expectedErrOnSend: true,
+			expectedErrOnExec: false,
+			expectedErrMsg:    "project name cannot be empty",
+			expectedState:     nil,
 		},
 	}
 	for name, tc := range testCases {
@@ -203,7 +203,7 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
 	s.Require().NoError(err)
 	testCases := map[string]struct {
-		projectID		  string
+		projectID         string
 		fromFlagValue     string
 		expectedErrOnSend bool
 		expectedErrOnExec bool
@@ -211,12 +211,12 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 		expectedState     *plasticcredit.Project
 	}{
 		"approve new project": {
-			projectID:			"3",
-			fromFlagValue: 		fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
-			expectedErrOnSend:	false,
-			expectedErrOnExec:	false,
-			expectedErrMsg:		"",
-			expectedState:		&plasticcredit.Project{
+			projectID:         "3",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: false,
+			expectedErrMsg:    "",
+			expectedState: &plasticcredit.Project{
 				Id:                      3,
 				ApplicantId:             1,
 				CreditClassAbbreviation: "EMP",
@@ -225,12 +225,12 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 			},
 		},
 		"approve suspended project": {
-			projectID:			"2",
-			fromFlagValue: 		fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
-			expectedErrOnSend:	false,
-			expectedErrOnExec:	false,
-			expectedErrMsg:		"",
-			expectedState:		&plasticcredit.Project{
+			projectID:         "2",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: false,
+			expectedErrMsg:    "",
+			expectedState: &plasticcredit.Project{
 				Id:                      2,
 				ApplicantId:             1,
 				CreditClassAbbreviation: "PCRD",
@@ -239,36 +239,36 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 			},
 		},
 		"approve non-existing project": {
-			projectID:			"62",
-			fromFlagValue:		fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
-			expectedErrOnSend:	false,
-			expectedErrOnExec:	true,
-			expectedErrMsg:		"project not found",
-			expectedState:		nil,
+			projectID:         "62",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "project not found",
+			expectedState:     nil,
 		},
 		"invalid admin": {
-			projectID:			"9",
-			fromFlagValue:		fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name),
-			expectedErrOnSend:	false,
-			expectedErrOnExec:	true,
-			expectedErrMsg:		"unauthorized",
-			expectedState:		nil,
+			projectID:         "9",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "unauthorized",
+			expectedState:     nil,
 		},
 		"project already approved": {
-			projectID:			"1",
-			fromFlagValue:		fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
-			expectedErrOnSend:	false,
-			expectedErrOnExec:	true,
-			expectedErrMsg:		"project is approved / rejected",
-			expectedState:		nil,
+			projectID:         "1",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "project is approved / rejected",
+			expectedState:     nil,
 		},
 		"approving rejected project": {
-			projectID:			"4",
-			fromFlagValue:		fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
-			expectedErrOnSend:	false,
-			expectedErrOnExec:	false,
-			expectedErrMsg:		"project is approved / rejected",
-			expectedState:		&plasticcredit.Project{
+			projectID:         "4",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: false,
+			expectedErrMsg:    "project is approved / rejected",
+			expectedState: &plasticcredit.Project{
 				Id:                      4,
 				ApplicantId:             1,
 				CreditClassAbbreviation: "PCRD",
