@@ -1,215 +1,76 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import { RouterView } from "vue-router";
+import { Button } from "flowbite-vue";
 </script>
 
 <template>
-  <header class="navbar navbar-dark sticky-top flex-md-nowrap p-0">
-    <a
-      class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6"
-      href="#"
+  <button
+    data-drawer-target="logo-sidebar"
+    data-drawer-toggle="logo-sidebar"
+    aria-controls="logo-sidebar"
+    type="button"
+    class="inline-flex items-center p-2 mt-2 ml-3 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+  >
+    <span class="sr-only">Open sidebar</span>
+    <svg
+      class="w-6 h-6"
+      aria-hidden="true"
+      fill="currentColor"
+      viewBox="0 0 20 20"
+      xmlns="http://www.w3.org/2000/svg"
     >
-      <img
-        class="logo"
-        src="src/assets/images/emp-logo.png"
-      >
-    </a>
-    <button
-      class="navbar-toggler position-absolute d-md-none collapsed"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#sidebarMenu"
-      aria-controls="sidebarMenu"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon" />
-    </button>
+      <path
+        clip-rule="evenodd"
+        fill-rule="evenodd"
+        d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"
+      ></path>
+    </svg>
+  </button>
 
-    <div class="navbar-nav">
-      <div class="nav-item text-nowrap">
-        <!--<a class="nav-link px-3" href="#">Sign out</a>-->
+  <aside
+    id="logo-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+  >
+    <div class="h-full px-3 py-4 overflow-y-auto bg-lightBlack">
+      <a href="/" class="flex items-center pl-2.5 mb-5">
+        <img
+          src="src/assets/images/emp-logo.png"
+          class="h-8 mr-3 sm:h-7"
+          alt="Logo"
+        />
+      </a>
+      <div class="flex justify-center flex-col h-5/6 items-center">
+        <ul class="space-y-2 w-full flex flex-col items-center">
+          <li>
+            <a href="/" class="flex items-center w-full">
+              <span class="flex-1 ml-3 whitespace-nowrap text-white"
+                >Certify</span
+              >
+            </a>
+          </li>
+          <li>
+            <a
+              href="/verify"
+              class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              <span class="flex-1 ml-3 whitespace-nowrap text-white"
+                >Verify</span
+              >
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
-  </header>
+  </aside>
 
-  <div class="container-fluid">
-    <div class="row">
-      <nav
-        id="sidebarMenu"
-        class="col-md-3 col-lg-2 d-md-block sidebar collapse shadow emp-sidebar"
-      >
-        <div class="position-sticky pt-3 sidebar-sticky menu-deck">
-          <ul class="nav flex-column">
-            <li class="nav-item">
-              <a
-                class="nav-link active home"
-                aria-current="page"
-                href="#"
-              >
-                Home
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link wallet"
-                href="#"
-              >
-                My wallet
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link contact"
-                href="#"
-              >
-                Contact
-              </a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-        <div class="emp-content-box emp-astro">
-          <div class="emp-character" />
-          <RouterView />
-        </div>
-      </main>
+  <div class="p-4 sm:ml-64">
+    <div
+      class="p-0 border-gray-200 border-dashed rounded-lg h-full bg-lightBlack"
+    >
+      <RouterView />
     </div>
   </div>
 </template>
 
-<style scoped>
-.navbar-brand {
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
-  display: flex;
-  justify-content: center;
-}
-.logo {
-  width: 90%;
-  max-width: 200px;
-}
-.container-fluid {
-  height: calc(100vh - 75px);
-}
-.emp-sidebar {
-  background-color: rgba(0, 0, 0, 0.22);
-}
-.menu-deck {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.nav {
-  width: 70%;
-}
-.nav-item {
-  margin: 10px 0;
-}
-.nav-link {
-  color: #ffffff;
-  font-size: 14px;
-  padding-left: 70px;
-  height: 62px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  background-repeat: no-repeat;
-  background-position: 10% center;
-  border-radius: 16px;
-}
-.nav-link.home {
-  background-image: url("src/assets/images/icon-home.svg");
-}
-.nav-link.wallet {
-  background-image: url(src/assets//images/icon-my-wallet.svg);
-}
-.nav-link.contact {
-  background-image: url(src/assets//images/icon-contact.svg);
-}
-.nav-link.active {
-  background-color: rgba(0, 0, 0, 0.4);
-}
-.emp-content-box {
-  background-color: rgba(0, 0, 0, 0.22);
-  border-radius: 16px;
-  padding: 2rem;
-  max-width: 1000px;
-}
-.emp-content-box.emp-astro {
-  margin-top: 160px;
-  position: relative;
-}
-.emp-character {
-  background-image: url(src/assets//images/emp-astro-1.png);
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-  width: 248px;
-  height: 194px;
-  position: absolute;
-  top: -184px;
-  right: calc(25% + 124px);
-  animation: float 6s ease-in-out infinite;
-}
-@media (max-width: 575.98px) {
-  .emp-sidebar {
-    background-color: rgba(0, 0, 0, 0.8);
-  }
-  .nav-link.active {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-  .emp-content-box.emp-astro {
-    margin-top: 0;
-  }
-  .emp-character {
-    background-image: none;
-  }
-}
-@media (max-width: 767.98px) {
-  .emp-content-box.emp-astro {
-    margin-top: 0;
-  }
-  .emp-character {
-    background-image: none;
-  }
-}
-@media (max-width: 991.98px) {
-  .emp-character {
-    width: 248px;
-    height: 194px;
-    top: -184px;
-  }
-}
-.sidebar {
-  position: fixed;
-  top: 0;
-  /* rtl:raw:
-  right: 0;
-  */
-  bottom: 0;
-  /* rtl:remove */
-  left: 0;
-  z-index: 100; /* Behind the navbar */
-  padding: 0; /* Height of navbar */
-  box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
-}
-
-@media (max-width: 767.98px) {
-  .sidebar {
-    top: 4.4rem;
-  }
-}
-
-.sidebar-sticky {
-  height: calc(100vh - 48px);
-  overflow-x: hidden;
-  overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
-}
-
-.navbar-toggler {
-  right: 1rem;
-}
-
-</style>
+<style scoped></style>

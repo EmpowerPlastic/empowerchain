@@ -8,7 +8,7 @@ require (
 	cosmossdk.io/math v1.0.0-beta.6
 	cosmossdk.io/tools/rosetta v0.2.0
 	github.com/CosmWasm/wasmd v0.32.0
-	github.com/cosmos/cosmos-proto v1.0.0-beta.1
+	github.com/cosmos/cosmos-proto v1.0.0-beta.2
 	github.com/cosmos/cosmos-sdk v0.47.0-rc2.0.20230214145423-04e98905554e
 	github.com/cosmos/gogoproto v1.4.6
 	github.com/cosmos/ibc-go/v7 v7.0.0-rc0
@@ -297,7 +297,7 @@ require (
 	mvdan.cc/lint v0.0.0-20170908181259-adc824a0674b // indirect
 	mvdan.cc/unparam v0.0.0-20221223090309-7455f1af531d // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
-	pgregory.net/rapid v0.5.3 // indirect
+	pgregory.net/rapid v0.5.5 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 

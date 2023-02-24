@@ -1,23 +1,21 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import CertifyView from '../views/CertifyView.vue'
+import { createRouter, createWebHistory } from "vue-router";
+import CertifyView from "../views/CertifyView.vue";
+import VerifyView from "../views/VerifyView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: CertifyView
-    }/*,
+      path: "/",
+      name: "certify",
+      component: CertifyView,
+    },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
-    } */
-  ]
-})
+      path: "/verify",
+      name: "verify",
+      component: VerifyView,
+    },
+  ],
+});
 
-export default router
+export default router;
