@@ -1,12 +1,12 @@
 package e2e
 
 import (
-	"cosmossdk.io/errors"
 	"encoding/hex"
 	"fmt"
 	"testing"
 	"time"
 
+	"cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
