@@ -80,7 +80,6 @@ require (
 	github.com/cosmos/btcutil v1.0.5 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gogogateway v1.2.0 // indirect
-	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.20.0-alpha4 // indirect
 	github.com/cosmos/ics23/go v0.9.1-0.20221207100636-b1abd8678aab // indirect
 	github.com/cosmos/ledger-cosmos-go v0.12.1 // indirect
@@ -111,7 +110,6 @@ require (
 	github.com/go-kit/kit v0.12.0 // indirect
 	github.com/go-kit/log v0.2.1 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
-	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/go-toolsmith/astcast v1.1.0 // indirect
 	github.com/go-toolsmith/astcopy v1.0.3 // indirect
 	github.com/go-toolsmith/astequal v1.1.0 // indirect
@@ -260,8 +258,6 @@ require (
 	github.com/tdakkota/asciicheck v0.1.1 // indirect
 	github.com/tecbot/gorocksdb v0.0.0-20191217155057-f0fad39f321c // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
-	github.com/tendermint/tendermint v0.37.0-rc2 // indirect
-	github.com/tendermint/tm-db v0.6.7 // indirect
 	github.com/tetafro/godot v1.4.11 // indirect
 	github.com/tidwall/btree v1.6.0 // indirect
 	github.com/timakin/bodyclose v0.0.0-20221125081123-e39cf3fc478e // indirect
@@ -307,5 +303,20 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-// use notional fork of wasmd (should be from branch: 47-with-token-factory)
-replace github.com/CosmWasm/wasmd => github.com/notional-labs/wasmd v0.30.1-0.20230225082434-1bab40b3f1f7
+replace (
+
+	// use cosmos fork of keyring
+	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
+	// use notional fork of wasmd (should be from branch: 47-with-token-factory)
+	github.com/CosmWasm/wasmd => github.com/notional-labs/wasmd v0.30.1-0.20230225082434-1bab40b3f1f7
+	// use cometbft enabled wasmvm
+	github.com/CosmWasm/wasmvm => github.com/notional-labs/wasmvm v1.0.0-soon2.0.20230224221603-dbeeef0006f5
+	github.com/cosmos/ibc-go/v7 => github.com/cosmos/ibc-go/v7 v7.0.0-20230224085028-0a79e38d9199
+	github.com/cosmos/interchain-accounts => github.com/notional-labs/interchain-accounts v0.0.0-20230224232143-e9404a7e24d2
+	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
+	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
+	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
+	// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
+	// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
+	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.8.1
+)
