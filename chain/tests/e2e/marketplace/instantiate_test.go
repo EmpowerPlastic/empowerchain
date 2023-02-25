@@ -58,7 +58,7 @@ func (s *E2ETestSuite) TestUploadByProposal() {
 	err = tmpl.Execute(proposalFile, ProposalTmplValues{WASMByteCode: contractAsBase64})
 	s.Require().NoError(err)
 
-	s.MakeSuccessfulProposal(proposalFile.Name())
+	s.MakeSuccessfulProposal(proposalFile.Name(), fmt.Sprintf("--%s=%s", flags.FlagGas, "100000000"))
 }
 
 func gzipEncode(data []byte) ([]byte, error) {

@@ -39,6 +39,7 @@ func uploadContractBeforeAll(s *e2e.TestSuite) {
 	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, storeCodeCmd, append([]string{
 		wasmFilePath,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, e2e.ContractAdminAddress),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "5000000"),
 	}, s.CommonFlags...))
 	s.Require().NoError(err)
 	cliResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())

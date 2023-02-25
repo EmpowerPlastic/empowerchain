@@ -65,11 +65,9 @@ func (s *TestSuite) SetupSuite() {
 
 	s.CommonFlags = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastAsync),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagOutput, "json"),
-		fmt.Sprintf("--%s=%s", flags.FlagGas, "auto"),
-		fmt.Sprintf("--%s=%s", flags.FlagGasAdjustment, "1.75"),
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, s.Config.MinGasPrices),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.Config.BondDenom, sdk.NewInt(10))).String()),
 	}
 
 	s.Config.NumValidators = 3
@@ -432,5 +430,10 @@ func (s *TestSuite) GetCliResponse(ctx client.Context, txJSONResponse []byte) (s
 		return sdk.TxResponse{}, fmt.Errorf("can't get cli response for tx that failed with code %d: %s", initialCliResponse.Code, initialCliResponse.RawLog)
 	}
 
-	return clitestutil.GetTxResponse(s.Network, ctx, initialCliResponse.TxHash)
+	resp, err := clitestutil.GetTxResponse(s.Network, ctx, initialCliResponse.TxHash)
+	if err != nil {
+		return sdk.TxResponse{}, errors.Wrapf(err, "can't get cli response for tx response: %s, (%s)", string(txJSONResponse), initialCliResponse.RawLog)
+	}
+
+	return resp, nil
 }

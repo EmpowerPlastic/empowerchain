@@ -13,7 +13,7 @@ import (
 
 // MakeSuccessfulProposal creates a proposal, votes yes on it, and waits for it to pass
 // If the process fails at any point, the calling test will fail
-func (s *TestSuite) MakeSuccessfulProposal(pathToProposalJSON string) {
+func (s *TestSuite) MakeSuccessfulProposal(pathToProposalJSON string, extraFlags ...string) {
 	val := s.Network.Validators[0]
 	issuerCreatorKey, err := val.ClientCtx.Keyring.Key(IssuerCreatorKeyName)
 	s.Require().NoError(err)
@@ -25,10 +25,10 @@ func (s *TestSuite) MakeSuccessfulProposal(pathToProposalJSON string) {
 	s.Require().NoError(err)
 
 	submitCmd := govcli.NewCmdSubmitProposal()
-	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, submitCmd, append([]string{
+	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, submitCmd, append(append([]string{
 		pathToProposalJSON,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerCreatorKey.Name),
-	}, s.CommonFlags...))
+	}, extraFlags...), s.CommonFlags...))
 	s.Require().NoError(err)
 	cliResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 	s.Require().NoError(err)
