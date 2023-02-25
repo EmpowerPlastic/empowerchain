@@ -9,15 +9,16 @@ import (
 	distrcli "github.com/cosmos/cosmos-sdk/x/distribution/client/cli"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 
+	"github.com/EmpowerPlastic/empowerchain/tests/e2e"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *E2ETestSuite) TestCmdCreateCreditClass() {
-	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
+	val := s.Network.Validators[0]
+	issuerKey, err := val.ClientCtx.Keyring.Key(e2e.IssuerKeyName)
 	s.Require().NoError(err)
-	noCoinsKey, err := val.ClientCtx.Keyring.Key(noCoinsIssuerAdminName)
+	noCoinsKey, err := val.ClientCtx.Keyring.Key(e2e.NoCoinsIssuerAdminKeyName)
 	s.Require().NoError(err)
 
 	queryCmd := distrcli.GetCmdQueryCommunityPool()
@@ -96,19 +97,19 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 		s.Run(name, func() {
 			cmd := cli.MsgCreateCreditClassCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(
-				[]string{tc.abbreviation, tc.issuerID, tc.name, tc.fromFlagValue}, s.commonFlags...,
+				[]string{tc.abbreviation, tc.issuerID, tc.name, tc.fromFlagValue}, s.CommonFlags...,
 			))
 
 			switch {
 			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			case tc.expectedErrOnExec:
-				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				txResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			default:
-				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				cliResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
@@ -129,8 +130,8 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 
 				// calculate community pool is within error tolerance
 				diff := communityPool.Sub(initialCommunityPool)
-				feeDiff := diff.AmountOf(s.creditClassCreationFee.Denom)
-				delta := feeDiff.Sub(sdk.NewDecFromInt(s.creditClassCreationFee.Amount))
+				feeDiff := diff.AmountOf(s.CreditClassCreationFee.Denom)
+				delta := feeDiff.Sub(sdk.NewDecFromInt(s.CreditClassCreationFee.Amount))
 				epsilon, err := sdk.NewDecFromStr("0.00000000001") // include error tolerance
 				s.Require().NoError(err)
 				s.Require().True(delta.LTE(epsilon))
@@ -140,10 +141,10 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 }
 
 func (s *E2ETestSuite) TestCmdUpdateCreditClass() {
-	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
+	val := s.Network.Validators[0]
+	issuerKey, err := val.ClientCtx.Keyring.Key(e2e.IssuerKeyName)
 	s.Require().NoError(err)
-	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
+	notAdminKey, err := val.ClientCtx.Keyring.Key(e2e.ApplicantKeyName)
 	s.Require().NoError(err)
 
 	testCases := map[string]struct {
@@ -212,18 +213,18 @@ func (s *E2ETestSuite) TestCmdUpdateCreditClass() {
 				tc.abbreviation,
 				tc.name,
 				tc.fromFlagValue,
-			}, s.commonFlags...))
+			}, s.CommonFlags...))
 
 			switch {
 			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			case tc.expectedErrOnExec:
-				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				txResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			default:
-				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				cliResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
