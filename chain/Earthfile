@@ -39,39 +39,42 @@ build-all:
     RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-windows-amd64
     SAVE ARTIFACT build/empowerd.exe AS LOCAL build/empowerd-"$VERSION".exe
 
-test:
+test-prep:
     FROM +build
+    COPY ../cosmwasm/+build-optimized/plastic_credit_marketplace.wasm ../cosmwasm/artifacts/plastic_credit_marketplace.wasm
+
+test:
+    FROM +test-prep
     RUN make test
 
 test-with-coverage:
-    FROM +build
+    FROM +test-prep
     RUN make test-with-coverage
     SAVE ARTIFACT coverage.out AS LOCAL coverage.out
 
 test-sim-import-export:
-    FROM +build
+    FROM +test-prep
     RUN make test-sim-import-export
 
 test-sim-after-import:
-    FROM +build
+    FROM +test-prep
     RUN make test-sim-after-import
 
 test-sim-multi-seed-short:
-    FROM +build
+    FROM +test-prep
     RUN make test-sim-multi-seed-short
 
 test-sim-multi-seed-long:
-    FROM +build
+    FROM +test-prep
     RUN make test-sim-multi-seed-long
 
 test-sim-nondeterminism:
-    FROM +build
+    FROM +test-prep
     RUN make test-sim-nondeterminism
 
 smoketest-prep:
-    FROM +build
+    FROM +test-prep
     WORKDIR /workbench
-    COPY ../cosmwasm/+build-optimized/plastic_credit_marketplace.wasm ../empowerchain/cosmwasm/artifacts/plastic_credit_marketplace.wasm
     GIT CLONE --branch v7.1.0 https://github.com/cosmos/gaia gaia
     RUN cd gaia && make install && cd ..
     GIT CLONE https://github.com/cosmos/relayer relayer
