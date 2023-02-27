@@ -23,6 +23,16 @@ build:
     RUN cargo build
     RUN cargo wasm
 
+build-optimized:
+    FROM +build-prep
+    WITH DOCKER --pull cosmwasm/workspace-optimizer:0.12.11
+        RUN docker run -v "$(pwd)":/code \
+          --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+          --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+          cosmwasm/workspace-optimizer:0.12.11
+    END
+    SAVE ARTIFACT --keep-own ./artifacts/* AS LOCAL artifacts/
+
 test:
     FROM +build-prep
     RUN cargo test

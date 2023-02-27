@@ -27,5 +27,5 @@ jobs:
         with:
           version: v0.6.30
 
-      - run: earthly --ci +${{ matrix.test }}
+      - run: earthly --ci -P +${{ matrix.test }}
         working-directory: ./chain

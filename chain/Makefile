@@ -143,9 +143,9 @@ smoketest: install
 	./scripts/test/smoke_gov_proposals.sh
 	./scripts/test/smoke_poe.sh
 	./scripts/test/smoke_plastic_credit.sh
-
-smoketest-ibc: install
-	./scripts/test/smoke_ibc.sh
+	./scripts/test/smoke_wasm.sh
+	# TODO: ADD BACK IN https://github.com/EmpowerPlastic/empowerchain/issues/516
+	#./scripts/test/smoke_ibc.sh
 
 ###############################################################################
 ###                               Simulations                               ###

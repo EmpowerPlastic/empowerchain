@@ -6,15 +6,16 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 
+	"github.com/EmpowerPlastic/empowerchain/tests/e2e"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *E2ETestSuite) TestCmdCreateProject() {
-	val := s.network.Validators[0]
-	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
+	val := s.Network.Validators[0]
+	applicantKey, err := val.ClientCtx.Keyring.Key(e2e.ApplicantKeyName)
 	s.Require().NoError(err)
-	notApplicantKey, _ := val.ClientCtx.Keyring.Key(issuerKeyName)
+	notApplicantKey, _ := val.ClientCtx.Keyring.Key(e2e.IssuerKeyName)
 	testCases := map[string]struct {
 		applicantID       string
 		creditClass       string
@@ -71,19 +72,19 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 					tc.creditClass,
 					tc.projectName,
 					tc.fromFlagValue,
-				}, s.commonFlags...),
+				}, s.CommonFlags...),
 			)
 
 			switch {
 			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			case tc.expectedErrOnExec:
-				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				txResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			default:
-				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				cliResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
@@ -105,11 +106,11 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 }
 
 func (s *E2ETestSuite) TestCmdUpdateProject() {
-	val := s.network.Validators[0]
+	val := s.Network.Validators[0]
 
-	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
+	applicantKey, err := val.ClientCtx.Keyring.Key(e2e.ApplicantKeyName)
 	s.Require().NoError(err)
-	notApplicantKey, _ := val.ClientCtx.Keyring.Key(issuerKeyName)
+	notApplicantKey, _ := val.ClientCtx.Keyring.Key(e2e.IssuerKeyName)
 	s.Require().NoError(err)
 
 	testCases := map[string]struct {
@@ -169,19 +170,19 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 			cmd := cli.MsgUpdateProjectCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(
 				[]string{tc.projectID, tc.updateName, tc.fromFlagValue},
-				s.commonFlags...),
+				s.CommonFlags...),
 			)
 
 			switch {
 			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			case tc.expectedErrOnExec:
-				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				txResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			default:
-				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				cliResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
@@ -197,10 +198,10 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 }
 
 func (s *E2ETestSuite) TestCmdApproveProject() {
-	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
+	val := s.Network.Validators[0]
+	issuerKey, err := val.ClientCtx.Keyring.Key(e2e.IssuerKeyName)
 	s.Require().NoError(err)
-	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
+	notAdminKey, err := val.ClientCtx.Keyring.Key(e2e.ApplicantKeyName)
 	s.Require().NoError(err)
 	testCases := map[string]struct {
 		projectID         string
@@ -280,18 +281,18 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgApproveProjectCmd()
-			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{tc.projectID, tc.fromFlagValue}, s.commonFlags...))
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{tc.projectID, tc.fromFlagValue}, s.CommonFlags...))
 
 			switch {
 			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			case tc.expectedErrOnExec:
-				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				txResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			default:
-				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				cliResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
@@ -307,10 +308,10 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 }
 
 func (s *E2ETestSuite) TestCmdRejectProject() {
-	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
+	val := s.Network.Validators[0]
+	issuerKey, err := val.ClientCtx.Keyring.Key(e2e.IssuerKeyName)
 	s.Require().NoError(err)
-	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
+	notAdminKey, err := val.ClientCtx.Keyring.Key(e2e.ApplicantKeyName)
 	s.Require().NoError(err)
 	testCases := map[string]struct {
 		projectID         string
@@ -378,19 +379,19 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgRejectProjectCmd()
-			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{tc.projectID, tc.fromFlagValue}, s.commonFlags...))
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{tc.projectID, tc.fromFlagValue}, s.CommonFlags...))
 
 			switch {
 			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			case tc.expectedErrOnExec:
-				s.Require().NoError(s.network.WaitForNextBlock())
-				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				s.Require().NoError(s.Network.WaitForNextBlock())
+				txResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			default:
-				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				cliResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
@@ -406,10 +407,10 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 }
 
 func (s *E2ETestSuite) TestCmdSuspendProject() {
-	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
+	val := s.Network.Validators[0]
+	issuerKey, err := val.ClientCtx.Keyring.Key(e2e.IssuerKeyName)
 	s.Require().NoError(err)
-	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
+	notAdminKey, err := val.ClientCtx.Keyring.Key(e2e.ApplicantKeyName)
 	s.Require().NoError(err)
 	testCases := map[string]struct {
 		projectID         string
@@ -469,18 +470,18 @@ func (s *E2ETestSuite) TestCmdSuspendProject() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgSuspendProjectCmd()
-			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{tc.projectID, tc.fromFlagValue}, s.commonFlags...))
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{tc.projectID, tc.fromFlagValue}, s.CommonFlags...))
 
 			switch {
 			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			case tc.expectedErrOnExec:
-				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				txResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			default:
-				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				cliResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
