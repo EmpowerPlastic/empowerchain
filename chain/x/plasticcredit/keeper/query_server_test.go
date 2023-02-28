@@ -366,7 +366,7 @@ func (s *TestSuite) TestProjectQuery() {
 	issuerAdmin := sample.AccAddress()
 	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(10e12))))
 	applicantAdmin := sample.AccAddress()
-	creditClassAbbreviation := "PCRD"
+	creditClassAbbreviation := "PTEST"
 
 	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),

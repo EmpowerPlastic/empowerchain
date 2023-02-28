@@ -1,0 +1,12 @@
+syntax = "proto3";
+package igniter.igniter;
+
+import "gogoproto/gogo.proto";
+import "igniter/igniter/params.proto";
+
+option go_package = "igniter/x/igniter/types";
+
+// GenesisState defines the igniter module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+}

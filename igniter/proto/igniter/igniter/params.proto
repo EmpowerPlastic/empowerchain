@@ -1,0 +1,12 @@
+syntax = "proto3";
+package igniter.igniter;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "igniter/x/igniter/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+  
+}

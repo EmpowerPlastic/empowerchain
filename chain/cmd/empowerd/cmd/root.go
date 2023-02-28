@@ -159,6 +159,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		genesisCommand(encodingConfig),
 		queryCommand(),
 		txCommand(),
+		PrepareGenesisCmd(app.DefaultNodeHome, app.ModuleBasics),
 		keys.Commands(app.DefaultNodeHome),
 	)
 

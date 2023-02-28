@@ -421,7 +421,7 @@ func TestCreditClassValidation(t *testing.T) {
 	}{
 		"happy path": {
 			creditClass: CreditClass{
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
 			},
@@ -429,7 +429,7 @@ func TestCreditClassValidation(t *testing.T) {
 		},
 		"happy path name test": {
 			creditClass: CreditClass{
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "This is a longer name with spaces and special characters:%$#",
 			},
@@ -461,7 +461,7 @@ func TestCreditClassValidation(t *testing.T) {
 		},
 		"too long abbreviation": {
 			creditClass: CreditClass{
-				Abbreviation: "PCRDTT",
+				Abbreviation: "PTESTTT",
 				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
 			},
@@ -485,7 +485,7 @@ func TestCreditClassValidation(t *testing.T) {
 		},
 		"invalid issuer id": {
 			creditClass: CreditClass{
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				IssuerId:     0,
 				Name:         "Empower Plastic Credits",
 			},
@@ -493,7 +493,7 @@ func TestCreditClassValidation(t *testing.T) {
 		},
 		"empty name": {
 			creditClass: CreditClass{
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "",
 			},
@@ -501,7 +501,7 @@ func TestCreditClassValidation(t *testing.T) {
 		},
 		"too long name": {
 			creditClass: CreditClass{
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "This name is 65 characters long, which is above the limit we set!",
 			},
@@ -509,7 +509,7 @@ func TestCreditClassValidation(t *testing.T) {
 		},
 		"name starts with space": {
 			creditClass: CreditClass{
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         " EmpowerChain",
 			},
@@ -517,7 +517,7 @@ func TestCreditClassValidation(t *testing.T) {
 		},
 		"name ends with space": {
 			creditClass: CreditClass{
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "EmpowerChain ",
 			},
@@ -543,7 +543,7 @@ func TestProjectValidation(t *testing.T) {
 			project: Project{
 				Id:                      1,
 				ApplicantId:             42,
-				CreditClassAbbreviation: "PCRD",
+				CreditClassAbbreviation: "PTEST",
 				Name:                    "My Project",
 				Status:                  ProjectStatus_NEW,
 			},
@@ -553,7 +553,7 @@ func TestProjectValidation(t *testing.T) {
 			project: Project{
 				Id:                      1,
 				ApplicantId:             42,
-				CreditClassAbbreviation: "PCRD",
+				CreditClassAbbreviation: "PTEST",
 				Name:                    "This is a longer name with spaces and special characters:%$#",
 				Status:                  ProjectStatus_NEW,
 			},
@@ -563,7 +563,7 @@ func TestProjectValidation(t *testing.T) {
 			project: Project{
 				Id:                      0,
 				ApplicantId:             42,
-				CreditClassAbbreviation: "PCRD",
+				CreditClassAbbreviation: "PTEST",
 				Name:                    "My Project",
 				Status:                  ProjectStatus_NEW,
 			},
@@ -573,7 +573,7 @@ func TestProjectValidation(t *testing.T) {
 			project: Project{
 				Id:                      1337,
 				ApplicantId:             0,
-				CreditClassAbbreviation: "PCRD",
+				CreditClassAbbreviation: "PTEST",
 				Name:                    "My Project",
 				Status:                  ProjectStatus_NEW,
 			},
@@ -593,7 +593,7 @@ func TestProjectValidation(t *testing.T) {
 			project: Project{
 				Id:                      1,
 				ApplicantId:             42,
-				CreditClassAbbreviation: "PCRD",
+				CreditClassAbbreviation: "PTEST",
 				Name:                    "",
 				Status:                  ProjectStatus_NEW,
 			},
@@ -603,7 +603,7 @@ func TestProjectValidation(t *testing.T) {
 			project: Project{
 				Id:                      1,
 				ApplicantId:             32,
-				CreditClassAbbreviation: "PCRD",
+				CreditClassAbbreviation: "PTEST",
 				Name:                    "This name is 65 characters long, which is above the limit we set!",
 				Status:                  ProjectStatus_NEW,
 			},
@@ -613,7 +613,7 @@ func TestProjectValidation(t *testing.T) {
 			project: Project{
 				Id:                      1,
 				ApplicantId:             32,
-				CreditClassAbbreviation: "PCRD",
+				CreditClassAbbreviation: "PTEST",
 				Name:                    " EmpowerChain",
 				Status:                  ProjectStatus_NEW,
 			},
@@ -623,7 +623,7 @@ func TestProjectValidation(t *testing.T) {
 			project: Project{
 				Id:                      1,
 				ApplicantId:             32,
-				CreditClassAbbreviation: "PCRD",
+				CreditClassAbbreviation: "PTEST",
 				Name:                    "EmpowerChain ",
 				Status:                  ProjectStatus_NEW,
 			},
@@ -633,7 +633,7 @@ func TestProjectValidation(t *testing.T) {
 			project: Project{
 				Id:                      1,
 				ApplicantId:             42,
-				CreditClassAbbreviation: "PCRD",
+				CreditClassAbbreviation: "PTEST",
 				Name:                    "My Project",
 				Status:                  4,
 			},
@@ -657,7 +657,7 @@ func TestCreditCollectionValidation(t *testing.T) {
 	}{
 		"happy path": {
 			collection: CreditCollection{
-				Denom:     "EMP/123",
+				Denom:     "ETEST/123",
 				ProjectId: 1,
 				TotalAmount: CreditAmount{
 					Active:  100,
@@ -679,7 +679,7 @@ func TestCreditCollectionValidation(t *testing.T) {
 		},
 		"invalid project id": {
 			collection: CreditCollection{
-				Denom:     "EMP/123",
+				Denom:     "ETEST/123",
 				ProjectId: 0,
 				TotalAmount: CreditAmount{
 					Active:  100,
@@ -690,7 +690,7 @@ func TestCreditCollectionValidation(t *testing.T) {
 		},
 		"invalid total amount": {
 			collection: CreditCollection{
-				Denom:     "EMP/123",
+				Denom:     "ETEST/123",
 				ProjectId: 1,
 				TotalAmount: CreditAmount{
 					Active:  0,
@@ -701,7 +701,7 @@ func TestCreditCollectionValidation(t *testing.T) {
 		},
 		"invalid credit data uri": {
 			collection: CreditCollection{
-				Denom:     "EMP/123",
+				Denom:     "ETEST/123",
 				ProjectId: 0,
 				TotalAmount: CreditAmount{
 					Active:  100,
@@ -712,7 +712,7 @@ func TestCreditCollectionValidation(t *testing.T) {
 		},
 		"invalid credit data hash": {
 			collection: CreditCollection{
-				Denom:     "EMP/123",
+				Denom:     "ETEST/123",
 				ProjectId: 0,
 				TotalAmount: CreditAmount{
 					Active:  100,
@@ -740,7 +740,7 @@ func TestCreditBalanceValidation(t *testing.T) {
 		"happy path": {
 			balance: CreditBalance{
 				Owner: sample.AccAddress(),
-				Denom: "EMP/123",
+				Denom: "ETEST/123",
 				Balance: CreditAmount{
 					Active:  0,
 					Retired: 0,
@@ -751,7 +751,7 @@ func TestCreditBalanceValidation(t *testing.T) {
 		"invalid owner": {
 			balance: CreditBalance{
 				Owner: "Empower",
-				Denom: "EMP/123",
+				Denom: "ETEST/123",
 				Balance: CreditAmount{
 					Active:  0,
 					Retired: 0,

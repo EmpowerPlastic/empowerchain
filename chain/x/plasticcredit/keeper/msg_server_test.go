@@ -513,7 +513,7 @@ func (s *TestSuite) TestCreateCreditClass() {
 		"happy path": {
 			msg: &plasticcredit.MsgCreateCreditClass{
 				Creator:      s.sampleIssuerAdmin,
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				IssuerId:     s.sampleIssuerID,
 				Name:         "Empower Plastic Credits",
 			},
@@ -522,7 +522,7 @@ func (s *TestSuite) TestCreateCreditClass() {
 		"unable to cover fee": {
 			msg: &plasticcredit.MsgCreateCreditClass{
 				Creator:      s.noCoinsIssuerAdmin,
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				IssuerId:     s.noCoinsIssuerID,
 				Name:         "Empower Plastic Credits",
 			},
@@ -531,7 +531,7 @@ func (s *TestSuite) TestCreateCreditClass() {
 		"unauthorized creator on the issuer": {
 			msg: &plasticcredit.MsgCreateCreditClass{
 				Creator:      sample.AccAddress(),
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				IssuerId:     s.sampleIssuerID,
 				Name:         "Empower Plastic Credits",
 			},
@@ -549,7 +549,7 @@ func (s *TestSuite) TestCreateCreditClass() {
 		"invalid abbreviation with special characters": {
 			msg: &plasticcredit.MsgCreateCreditClass{
 				Creator:      s.sampleIssuerAdmin,
-				Abbreviation: "PCRD!",
+				Abbreviation: "PTEST!",
 				IssuerId:     s.sampleIssuerID,
 				Name:         "Empower Plastic Credits",
 			},
@@ -567,7 +567,7 @@ func (s *TestSuite) TestCreateCreditClass() {
 		"invalid name": {
 			msg: &plasticcredit.MsgCreateCreditClass{
 				Creator:      s.sampleIssuerAdmin,
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				IssuerId:     s.sampleIssuerID,
 				Name:         "",
 			},
@@ -715,17 +715,17 @@ func (s *TestSuite) TestCreateDuplicateCreditClass() {
 
 	_, err = ms.CreateCreditClass(goCtx, &plasticcredit.MsgCreateCreditClass{
 		Creator:      admin1,
-		Abbreviation: "PCRD",
+		Abbreviation: "PTEST",
 		IssuerId:     1,
-		Name:         "My PCRDS",
+		Name:         "My PTESTS",
 	})
 	s.Require().NoError(err)
 
 	_, err = ms.CreateCreditClass(goCtx, &plasticcredit.MsgCreateCreditClass{
 		Creator:      admin2,
-		Abbreviation: "PCRD",
+		Abbreviation: "PTEST",
 		IssuerId:     2,
-		Name:         "What about _MY_ PCRDS?",
+		Name:         "What about _MY_ PTESTS?",
 	})
 	s.Require().ErrorIs(err, plasticcredit.ErrCreditClassAbbreviationTaken)
 }
