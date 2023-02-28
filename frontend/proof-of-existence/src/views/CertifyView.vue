@@ -1,12 +1,38 @@
 <script setup lang="ts">
 import { Tabs } from "flowbite";
 import { ref } from "vue";
+
 const activeTab = ref("first");
 
 //Methods
-const handleFileUpload = (e: HTMLInputElement) => {
-  console.log(e.target.files);
+const handleFileUpload = async (e: HTMLInputElement) => {
+  console.log(e.target.files[0]);
+
+  hashFile(e.target.files[0]);
 };
+
+async function hashFile(file: File) {
+  const bytes = await readFile(file);
+  const byteArray = new Uint8Array(bytes);
+  hashAndSetResult(byteArray);
+}
+
+async function readFile(file: File): Promise<ArrayBuffer> {
+  return new Promise((resolve, reject) => {
+    let reader = new FileReader();
+
+    reader.addEventListener("loadend", (e) => resolve(e.target.result));
+    reader.addEventListener("error", reject);
+
+    // Read file
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+function hashAndSetResult(byteArray: Uint8Array) {
+  const result = window.empSha256(byteArray);
+  console.log(result);
+}
 </script>
 
 <template>
