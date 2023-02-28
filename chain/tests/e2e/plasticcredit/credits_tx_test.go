@@ -6,13 +6,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 
+	"github.com/EmpowerPlastic/empowerchain/tests/e2e"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *E2ETestSuite) TestCmdIssueCredits() {
-	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
+	val := s.Network.Validators[0]
+	issuerKey, err := val.ClientCtx.Keyring.Key(e2e.IssuerKeyName)
 	s.Require().NoError(err)
 
 	testCases := map[string]struct {
@@ -122,18 +123,18 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 		s.Run(name, func() {
 			cmd := cli.MsgIssueCreditsCmd()
 			cliArgs := []string{tc.projectID, tc.serialNumber, tc.issueCredits, tc.fromFlagValue}
-			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(cliArgs, s.commonFlags...))
-			s.Require().NoError(s.network.WaitForNextBlock())
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(cliArgs, s.CommonFlags...))
+			s.Require().NoError(s.Network.WaitForNextBlock())
 			switch {
 			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			case tc.expectedErrOnExec:
-				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				txResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			default:
-				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				cliResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
@@ -152,23 +153,23 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 }
 
 func (s *E2ETestSuite) TestCmdTransferCredits() {
-	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
+	val := s.Network.Validators[0]
+	issuerKey, err := val.ClientCtx.Keyring.Key(e2e.IssuerKeyName)
 	s.Require().NoError(err)
-	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
+	applicantKey, err := val.ClientCtx.Keyring.Key(e2e.ApplicantKeyName)
 	s.Require().NoError(err)
 	applicant, err := applicantKey.GetAddress()
 	s.Require().NoError(err)
 	senderAddress := applicant.String()
 
 	issueCmd := cli.MsgIssueCreditsCmd()
-	issueOutput1, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, issueCmd, append([]string{"1", "TestCmdTransferCredits1", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)}, s.commonFlags...))
-	issueResponse1, err := s.getCliResponse(val.ClientCtx, issueOutput1.Bytes())
+	issueOutput1, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, issueCmd, append([]string{"1", "TestCmdTransferCredits1", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)}, s.CommonFlags...))
+	issueResponse1, err := s.GetCliResponse(val.ClientCtx, issueOutput1.Bytes())
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), issueResponse1.Code, issueResponse1.RawLog)
 
-	issueOutput2, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, issueCmd, append([]string{"1", "TestCmdTransferCredits2", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)}, s.commonFlags...))
-	issueResponse2, err := s.getCliResponse(val.ClientCtx, issueOutput2.Bytes())
+	issueOutput2, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, issueCmd, append([]string{"1", "TestCmdTransferCredits2", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)}, s.CommonFlags...))
+	issueResponse2, err := s.GetCliResponse(val.ClientCtx, issueOutput2.Bytes())
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), issueResponse2.Code, issueResponse2.RawLog)
 
@@ -246,18 +247,18 @@ func (s *E2ETestSuite) TestCmdTransferCredits() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgTransferCreditsCmd()
-			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{tc.senderAddress, tc.recipientAddress, tc.denom, tc.transferCredits, tc.retire, tc.fromFlagValue}, s.commonFlags...))
-			s.Require().NoError(s.network.WaitForNextBlock())
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{tc.senderAddress, tc.recipientAddress, tc.denom, tc.transferCredits, tc.retire, tc.fromFlagValue}, s.CommonFlags...))
+			s.Require().NoError(s.Network.WaitForNextBlock())
 			switch {
 			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			case tc.expectedErrOnExec:
-				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				txResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			default:
-				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				cliResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
@@ -284,17 +285,17 @@ func (s *E2ETestSuite) TestCmdTransferCredits() {
 }
 
 func (s *E2ETestSuite) TestCmdRetireCredits() {
-	val := s.network.Validators[0]
-	applicantKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
+	val := s.Network.Validators[0]
+	applicantKey, err := val.ClientCtx.Keyring.Key(e2e.ApplicantKeyName)
 	s.Require().NoError(err)
 	applicant, err := applicantKey.GetAddress()
 	s.Require().NoError(err)
 	senderAddress := applicant.String()
 
 	cmd := cli.MsgIssueCreditsCmd()
-	_, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{"2", "00001", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)}, s.commonFlags...))
+	_, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{"2", "00001", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)}, s.CommonFlags...))
 	s.Require().NoError(err)
-	s.Require().NoError(s.network.WaitForNextBlock())
+	s.Require().NoError(s.Network.WaitForNextBlock())
 
 	testCases := map[string]struct {
 		fromFlagValue          string
@@ -327,17 +328,17 @@ func (s *E2ETestSuite) TestCmdRetireCredits() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgRetireCreditsCmd()
-			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{tc.denom, tc.retireCredits, tc.fromFlagValue}, s.commonFlags...))
-			s.Require().NoError(s.network.WaitForNextBlock())
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{tc.denom, tc.retireCredits, tc.fromFlagValue}, s.CommonFlags...))
+			s.Require().NoError(s.Network.WaitForNextBlock())
 			switch {
 			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			case tc.expectedErrOnExec:
-				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				txResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			default:
-				_, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				_, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				cmdQueryBalance := cli.CmdQueryCreditBalance()
 				querySenderBalanceResponse, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmdQueryBalance, append([]string{senderAddress}, tc.denom))
