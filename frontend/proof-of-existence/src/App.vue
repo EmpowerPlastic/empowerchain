@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-import { Button } from "flowbite-vue";
 </script>
 
 <template>
@@ -65,10 +64,14 @@ import { Button } from "flowbite-vue";
   </aside>
 
   <div class="p-4 sm:ml-64">
-    <div
-      class="p-0 border-gray-200 border-dashed rounded-lg h-full bg-lightBlack"
-    >
-      <RouterView />
+    <div class="flex flex-col items-start p-4 mt-40">
+      <div class="flex flex-col items-center">
+        <img
+          src="../src/assets/images/emp-astro-1.png"
+          class="w-32 absolute animate-bounce -m-24"
+        />
+        <RouterView />
+      </div>
     </div>
   </div>
 </template>

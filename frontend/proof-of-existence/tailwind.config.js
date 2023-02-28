@@ -22,6 +22,7 @@ module.exports = {
       },
       backgroundImage: {
         "main-image": "url('./src/assets/images/main-bg.jpg')",
+        "emp-astro": "url('./src/assets/images/emp-astro-1.png')",
       },
     },
   },
