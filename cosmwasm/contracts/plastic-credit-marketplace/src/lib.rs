@@ -23,7 +23,7 @@ pub fn instantiate(
 
 #[cfg(test)]
 mod test {
-    use cosmwasm_std::{Empty, Addr, Uint128, Coin};
+    use cosmwasm_std::{Empty, Addr, Uint64, Uint128, Coin};
     use cw_multi_test::{App, Contract, ContractWrapper, Executor};
 
 	use crate::instantiate;
@@ -65,7 +65,7 @@ mod test {
 		for _ in 0..5 {
 			app.execute_contract(owner.clone(), contract_addr.clone(), &ExecuteMsg::CreateListing{
 				denom: "pcrd".to_string(),
-				number_of_credits: Uint128::new(1),
+				number_of_credits: Uint64::new(1),
 				price_per_credit: Coin{
 					denom: "umpwr".to_string(),
 					amount: Uint128::new(100),
@@ -83,7 +83,7 @@ mod test {
 			assert_eq!(i as u64, listing.id);
 			assert_eq!(owner.clone(), listing.owner);
 			assert_eq!("pcrd".to_string(), listing.denom);
-			assert_eq!(Uint128::new(1), listing.number_of_credits);
+			assert_eq!(Uint64::new(1), listing.number_of_credits);
 			assert_eq!(Coin{
 				denom: "umpwr".to_string(),
 				amount: Uint128::new(100),
@@ -100,7 +100,7 @@ mod test {
 
 		let msg = ExecuteMsg::CreateListing{
 			denom: "pcrd".to_string(),
-			number_of_credits: Uint128::new(0),
+			number_of_credits: Uint64::new(0),
 			price_per_credit: Coin{
 				denom: "umpwr".to_string(),
 				amount: Uint128::new(100),
@@ -121,7 +121,7 @@ mod test {
 
 		let msg = ExecuteMsg::CreateListing{
 			denom: "pcrd".to_string(),
-			number_of_credits: Uint128::new(1),
+			number_of_credits: Uint64::new(1),
 			price_per_credit: Coin{
 				denom: "umpwr".to_string(),
 				amount: Uint128::new(0),
