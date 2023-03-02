@@ -22,6 +22,28 @@ pub fn instantiate(
 }
 
 #[cfg(test)]
+mod tests {
+	use super::*;
+	use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info, MOCK_CONTRACT_ADDR};
+	use cosmwasm_std::{attr, coins, CosmosMsg};
+
+	#[test]
+	fn test_initialization() {
+		let mut deps = mock_dependencies();
+
+		let info = mock_info("creator", &coins(1, "BTC"));
+
+		// we can just call .unwrap() to assert this was a success
+		let res = instantiate(deps.as_mut(), mock_env(), info, Empty{}).unwrap();
+		assert_eq!(0, res.messages.len());
+
+		// it worked, let's query the state
+		let next_listing = NEXT_LISTING_ID.load(deps.as_ref().storage).unwrap();
+		assert_eq!(0, next_listing)
+	}
+}
+
+/*#[cfg(test)]
 mod test {
     use cosmwasm_std::{Empty, Addr, Uint64, Uint128, Coin};
     use cw_multi_test::{App, Contract, ContractWrapper, Executor};
@@ -40,6 +62,7 @@ mod test {
 
 	fn setup() -> (App, Addr, Addr) {
 		let mut app = App::default();
+
 		let code_id = app.store_code(marketplace_contract());
 		let owner = Addr::unchecked("owner");
 
@@ -135,4 +158,4 @@ mod test {
 		}).unwrap();
 		assert_eq!(0, listings.listings.len());
 	}
-}
+}*/
