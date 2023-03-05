@@ -2,18 +2,21 @@ package marketplace_test
 
 import (
 	"fmt"
+
 	wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+
 	"github.com/EmpowerPlastic/empowerchain/tests/e2e"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 )
 
 func (s *E2ETestSuite) TestCreateListing() {
 	val := s.Network.Validators[0]
 	marketplaceAddress := s.instantiateMarketplace()
 	creditOwnerKey, err := val.ClientCtx.Keyring.Key(e2e.ApplicantKeyName)
+	s.Require().NoError(err)
 
 	grantCmd := cli.MsgGrantTransferAuthorizationCmd()
 	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, grantCmd, append([]string{
@@ -61,5 +64,5 @@ func (s *E2ETestSuite) TestCreateListing() {
 	// Check that the contract balance increased by 5 credits
 	s.Require().Equal(uint64(5), contractBalanceAfter.Balance.Balance.Active)
 	// Check that the credit owner balance decreased by 5 credits
-	s.Require().Equal(creditOwnerBalanceBefore.Balance.Balance.Active - 5, creditOwnerBalanceAfter.Balance.Balance.Active)
+	s.Require().Equal(creditOwnerBalanceBefore.Balance.Balance.Active-5, creditOwnerBalanceAfter.Balance.Balance.Active)
 }
