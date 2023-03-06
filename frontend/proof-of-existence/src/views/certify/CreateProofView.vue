@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Tabs } from "flowbite";
-import { ref } from "vue";
 import router from "@/router";
 //Methods
 const back = () => {

@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { Tabs } from "flowbite";
 import { ref } from "vue";
 import router from "@/router";
-import { Data } from "@empowerplastic/empowerchain-ts-client/src/codegen/tendermint/types/types";
 
 const activeTab = ref("first");
 const file = ref(undefined);
@@ -12,7 +10,6 @@ const fileName = ref("choose file");
 
 //Methods
 const handleFileUpload = async (e: HTMLInputElement) => {
-  console.log(e.target?.files[0].name);
   fileName.value = e.target?.files[0].name;
   file.value = e.target.files[0];
   hashing.value = true;
@@ -107,12 +104,6 @@ function hashAndSetResult(byteArray: Uint8Array) {
             >
           </p>
           <div class="w-full p-3 mt-7 rounded bg-lightGray">
-            <!--            <div class="w-full bg-lightBlack rounded-full mb-2 mt-2">-->
-            <!--              <div-->
-            <!--                class="bg-lightGreen h-1.5 rounded-full"-->
-            <!--                style="width: 45%"-->
-            <!--              ></div>-->
-            <!--            </div>-->
             <label class="cursor-pointer" for="file_input">
               <input
                 class="hidden"
