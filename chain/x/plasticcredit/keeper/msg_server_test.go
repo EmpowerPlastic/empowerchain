@@ -165,8 +165,8 @@ func (s *TestSuite) TestCreateIssuer() {
 			s.Require().ErrorIs(err, tc.err)
 
 			events := s.ctx.EventManager().ABCIEvents()
-			idCounters, errIdCounters := k.GetIDCounters(s.ctx)
-			s.Require().NoError(errIdCounters)
+			idCounters, errIDCounters := k.GetIDCounters(s.ctx)
+			s.Require().NoError(errIDCounters)
 
 			if err == nil {
 				s.Require().Equal(s.numTestIssuers+1, resp.IssuerId)
