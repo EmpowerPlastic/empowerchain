@@ -3,7 +3,7 @@ name: "Simulation tests on EmpowerChain"
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */2 * * *"
+    - cron: "0 */5 * * *"
 
 jobs:
   sim-tests:
@@ -25,7 +25,7 @@ jobs:
 
       - uses: earthly/actions-setup@v1
         with:
-          version: v0.6.30
+          version: 0.6.30
 
-      - run: earthly --ci +${{ matrix.test }}
+      - run: earthly --ci -P +${{ matrix.test }}
         working-directory: ./chain

@@ -4,12 +4,13 @@ import (
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/gogoproto/proto"
 
+	"github.com/EmpowerPlastic/empowerchain/tests/e2e"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *E2ETestSuite) TestCmdQueryParams() {
-	val := s.network.Validators[0]
+	val := s.Network.Validators[0]
 	issuerCreator := ""
 	testCases := map[string]struct {
 		args []string
@@ -32,8 +33,8 @@ func (s *E2ETestSuite) TestCmdQueryParams() {
 }
 
 func (s *E2ETestSuite) TestCmdQueryIssuer() {
-	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
+	val := s.Network.Validators[0]
+	issuerKey, err := val.ClientCtx.Keyring.Key(e2e.IssuerKeyName)
 	s.Require().NoError(err)
 	issuer, err := issuerKey.GetAddress()
 	s.Require().NoError(err)
@@ -82,7 +83,7 @@ func (s *E2ETestSuite) TestCmdQueryIssuer() {
 }
 
 func (s *E2ETestSuite) TestCmdQueryProject() {
-	val := s.network.Validators[0]
+	val := s.Network.Validators[0]
 	testCases := map[string]struct {
 		args           []string
 		expectedErr    bool
@@ -129,7 +130,7 @@ func (s *E2ETestSuite) TestCmdQueryProject() {
 }
 
 func (s *E2ETestSuite) TestCmdQueryApplicant() {
-	val := s.network.Validators[0]
+	val := s.Network.Validators[0]
 	testCases := map[string]struct {
 		args           []string
 		expectedErr    bool
