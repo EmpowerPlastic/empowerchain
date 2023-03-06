@@ -165,7 +165,6 @@ func (s *TestSuite) TestIDCountersInvariant() {
 			s.Require().Equal(tc.expBroken, broken)
 		})
 	}
-
 }
 
 func (s *TestSuite) TestTotalSuppliesInvariant() {
