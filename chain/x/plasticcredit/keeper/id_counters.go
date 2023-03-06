@@ -11,7 +11,7 @@ func (k Keeper) GetIDCounters(ctx sdk.Context) (idc plasticcredit.IDCounters, er
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(plasticcredit.IDCountersKey)
 	if bz == nil {
-		return plasticcredit.IDCounters{}, errors.Wrap(plasticcredit.ErrIDCountersNotFound, "id counters not found, should not happen!")
+		return plasticcredit.IDCounters{}, errors.Wrap(plasticcredit.ErrIDCountersNotFound, "id counters not found, should not happen")
 	}
 
 	err = k.cdc.Unmarshal(bz, &idc)
