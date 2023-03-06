@@ -17,12 +17,19 @@ module.exports = {
         white: "rgba(255, 255, 255, 1)",
         lightWhite: "rgba(255, 255, 255, 0.08)",
       },
+      fontSize: {
+        title28: "1.75rem",
+        title22: "1.275rem",
+        title16: "1rem",
+        title14: "0.875rem",
+        title12: "0.75rem",
+      },
       fontFamily: {
         openSans: ["Open Sans", "sans-serif"],
       },
       backgroundImage: {
-        "main-image": "url('./src/assets/images/main-bg.jpg')",
-        "emp-astro": "url('./src/assets/images/emp-astro-1.png')",
+        "main-image": "url('../src/assets/images/main-bg.jpg')",
+        "emp-astro": "url('../src/assets/images/emp-astro-1.png')",
       },
     },
   },

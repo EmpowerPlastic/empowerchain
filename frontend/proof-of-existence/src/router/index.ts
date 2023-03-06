@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
-import CertifyView from "../views/CertifyView.vue";
-import VerifyView from "../views/VerifyView.vue";
+import CertifyView from "../views/certify/CertifyView.vue";
+import VerifyView from "../views/Verify/VerifyView.vue";
+import CreateProofView from "../views/certify/CreateProofView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,6 +15,16 @@ const router = createRouter({
       path: "/verify",
       name: "verify",
       component: VerifyView,
+    },
+    {
+      path: "/proof/:hash",
+      name: "proof",
+      component: CreateProofView,
+    },
+    {
+      path: "/",
+      name: "certify",
+      component: CertifyView,
     },
   ],
 });

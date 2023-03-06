@@ -1,14 +1,21 @@
 <script setup lang="ts">
 import { Tabs } from "flowbite";
 import { ref } from "vue";
+import router from "@/router";
+import { Data } from "@empowerplastic/empowerchain-ts-client/src/codegen/tendermint/types/types";
 
 const activeTab = ref("first");
+const file = ref(undefined);
+const progress = ref(0);
+const hashing = ref(false);
+const fileName = ref("choose file");
 
 //Methods
 const handleFileUpload = async (e: HTMLInputElement) => {
-  console.log(e.target.files[0]);
-
-  hashFile(e.target.files[0]);
+  console.log(e.target?.files[0].name);
+  fileName.value = e.target?.files[0].name;
+  file.value = e.target.files[0];
+  hashing.value = true;
 };
 
 async function hashFile(file: File) {
@@ -31,13 +38,24 @@ async function readFile(file: File): Promise<ArrayBuffer> {
 
 function hashAndSetResult(byteArray: Uint8Array) {
   const result = window.empSha256(byteArray);
+  hashing.value = false;
   console.log(result);
+  router.push({
+    path: `/proof/${result?.value}`,
+    query: { fileName: fileName.value, time: new Date().getTime() },
+  });
 }
 </script>
 
 <template>
+  <img
+    src="../../assets/images/emp-astro-1.png"
+    class="left-28 top-full sm:top-auto sm:left-auto w-32 absolute animate-bounce -m-24"
+  />
   <div class="w-full p-4 text-left bg-lightBlack rounded-lg sm:p-8">
-    <h5 class="mb-2 text-2xl font-bold text-white">Certify documents</h5>
+    <h5 class="mb-2 mt-3 text-2xl font-bold text-white text-title28">
+      Certify documents
+    </h5>
     <div class="mt-3 p-4">
       <ul
         class="flex flex-wrap text-center text-lightGreen border-gray-200 rounded-t-lg"
@@ -53,7 +71,7 @@ function hashAndSetResult(byteArray: Uint8Array) {
             role="tab"
             aria-controls="file"
             aria-selected="true"
-            class="inline-block p-4 text-white hover:text-gray-600 hover:bg-gray-100"
+            class="inline-block p-4 text-white text-title16 hover:text-gray-600 hover:bg-gray-100"
           >
             File
           </button>
@@ -66,7 +84,7 @@ function hashAndSetResult(byteArray: Uint8Array) {
             role="tab"
             aria-controls="hash"
             aria-selected="false"
-            class="inline-block p-4 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+            class="inline-block p-4 text-title16 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-gray-300"
           >
             Hash
           </button>
@@ -79,7 +97,7 @@ function hashAndSetResult(byteArray: Uint8Array) {
           role="tabpanel"
           aria-labelledby="file-tab"
         >
-          <p class="mb-3 text-white text-sm">
+          <p class="mb-3 text-white text-title14">
             Drag and drop your document here, or choose a file. Your file will
             <b>not</b> be uploaded.
             <a
@@ -104,17 +122,19 @@ function hashAndSetResult(byteArray: Uint8Array) {
               />
               <div class="flex items-center">
                 <div
-                  class="flex justify-center p-1 rounded bg-lightGreen w-24 mr-4 text-white"
+                  class="flex justify-center p-1 rounded bg-lightGreen w-24 mr-4 text-white text-title16"
                 >
                   Browse
                 </div>
-                <span class="text-lightGray">choose file...</span>
+                <span class="text-lightGray text-title16">{{ fileName }}</span>
               </div>
             </label>
           </div>
           <div class="flex flex-row justify-center">
             <button
-              class="bg-lightGreen mt-10 content-center p-2 rounded text-white w-40"
+              :disabled="!file"
+              @click="hashFile(file)"
+              class="bg-lightGreen mt-10 content-center p-1 px-9 rounded text-white text-title22 disabled:bg-lightGray disabled:text-gray"
             >
               Create proof
             </button>
