@@ -1,20 +1,21 @@
 package keeper
 
 import (
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
 
-func (k Keeper) GetIDCounters(ctx sdk.Context) (idc plasticcredit.IDCounters) {
+func (k Keeper) GetIDCounters(ctx sdk.Context) (idc plasticcredit.IDCounters, err error) {
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(plasticcredit.IDCountersKey)
 	if bz == nil {
-		panic("id counters not found, should not happen!")
+		return plasticcredit.IDCounters{}, errors.Wrap(plasticcredit.ErrIDCountersNotFound, "id counters not found, should not happen!")
 	}
 
-	k.cdc.MustUnmarshal(bz, &idc)
-	return idc
+	err = k.cdc.Unmarshal(bz, &idc)
+	return idc, err
 }
 
 func (k Keeper) setIDCounters(ctx sdk.Context, idc plasticcredit.IDCounters) error {

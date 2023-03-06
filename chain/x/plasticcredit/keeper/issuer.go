@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"log"
+
 	"cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -70,7 +72,10 @@ func (k Keeper) CreateIssuer(ctx sdk.Context, creator sdk.AccAddress, name strin
 		return 0, errors.Wrapf(sdkerrors.ErrUnauthorized, "invalid issue creator; expected %s or %s, got %s", authorizedIssuerCreators[0], authorizedIssuerCreators[1], creator.String())
 	}
 
-	idc := k.GetIDCounters(ctx)
+	idc, err := k.GetIDCounters(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
 	nextID := idc.NextIssuerId
 
 	issuer := plasticcredit.Issuer{
