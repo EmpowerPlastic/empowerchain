@@ -9,15 +9,16 @@ import (
 	distrcli "github.com/cosmos/cosmos-sdk/x/distribution/client/cli"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 
+	"github.com/EmpowerPlastic/empowerchain/tests/e2e"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *E2ETestSuite) TestCmdCreateCreditClass() {
-	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
+	val := s.Network.Validators[0]
+	issuerKey, err := val.ClientCtx.Keyring.Key(e2e.IssuerKeyName)
 	s.Require().NoError(err)
-	noCoinsKey, err := val.ClientCtx.Keyring.Key(noCoinsIssuerAdminName)
+	noCoinsKey, err := val.ClientCtx.Keyring.Key(e2e.NoCoinsIssuerAdminKeyName)
 	s.Require().NoError(err)
 
 	queryCmd := distrcli.GetCmdQueryCommunityPool()
@@ -28,72 +29,92 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 	initialCommunityPool := queryPoolResponse.GetPool()
 
 	testCases := map[string]struct {
-		args              []string
+		abbreviation      string
+		issuerID          string
+		name              string
+		fromFlagValue     string
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
 		expectedState     plasticcredit.CreditClass
 	}{
 		"create new credit class": {
-			[]string{"PCRD2", "1", "Test", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			false,
-			"",
-			plasticcredit.CreditClass{
+			abbreviation:      "PCRD2",
+			issuerID:          "1",
+			name:              "Test",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: false,
+			expectedErrMsg:    "",
+			expectedState: plasticcredit.CreditClass{
 				Abbreviation: "PCRD2",
 				Name:         "Test",
 				IssuerId:     1,
 			},
 		},
 		"invalid funds to cover fee": {
-			[]string{"PCRD3", "3", "Test", fmt.Sprintf("--%s=%s", flags.FlagFrom, noCoinsKey.Name)},
-			false,
-			true,
-			"insufficient fee",
-			plasticcredit.CreditClass{},
+			abbreviation:      "PCRD3",
+			issuerID:          "3",
+			name:              "Test",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, noCoinsKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "insufficient fee",
+			expectedState:     plasticcredit.CreditClass{},
 		},
 		"non-existent issuer": {
-			[]string{"PCRD2", "5", "Test", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			true,
-			"issuer not found",
-			plasticcredit.CreditClass{},
+			abbreviation:      "PCRD2",
+			issuerID:          "5",
+			name:              "Test",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "issuer not found",
+			expectedState:     plasticcredit.CreditClass{},
 		},
 		"empty abbreviation": {
-			[]string{"", "1", "Test", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			true,
-			false,
-			"abbreviation cannot be empty: invalid request",
-			plasticcredit.CreditClass{},
+			abbreviation:      "",
+			issuerID:          "1",
+			name:              "Test",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: true,
+			expectedErrOnExec: false,
+			expectedErrMsg:    "abbreviation cannot be empty: invalid request",
+			expectedState:     plasticcredit.CreditClass{},
 		},
 		"empty name": {
-			[]string{"PCRD6", "1", "", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			true,
-			false,
-			"credit class name cannot be empty: invalid request",
-			plasticcredit.CreditClass{},
+			abbreviation:      "PCRD6",
+			issuerID:          "1",
+			name:              "",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: true,
+			expectedErrOnExec: false,
+			expectedErrMsg:    "credit class name cannot be empty: invalid request",
+			expectedState:     plasticcredit.CreditClass{},
 		},
 	}
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgCreateCreditClassCmd()
-			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(
+				[]string{tc.abbreviation, tc.issuerID, tc.name, tc.fromFlagValue}, s.CommonFlags...,
+			))
 
 			switch {
 			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			case tc.expectedErrOnExec:
-				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				txResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			default:
-				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				cliResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				queryCmd = cli.CmdQueryCreditClass()
-				queryOutput, err = clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{fmt.Sprint(tc.expectedState.Abbreviation)})
+				queryOutput, err = clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.expectedState.Abbreviation})
 				s.Require().NoError(err)
 				var queryResponse plasticcredit.QueryCreditClassResponse
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryResponse))
@@ -109,8 +130,8 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 
 				// calculate community pool is within error tolerance
 				diff := communityPool.Sub(initialCommunityPool)
-				feeDiff := diff.AmountOf(s.creditClassCreationFee.Denom)
-				delta := feeDiff.Sub(sdk.NewDecFromInt(s.creditClassCreationFee.Amount))
+				feeDiff := diff.AmountOf(s.CreditClassCreationFee.Denom)
+				delta := feeDiff.Sub(sdk.NewDecFromInt(s.CreditClassCreationFee.Amount))
 				epsilon, err := sdk.NewDecFromStr("0.00000000001") // include error tolerance
 				s.Require().NoError(err)
 				s.Require().True(delta.LTE(epsilon))
@@ -120,79 +141,95 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 }
 
 func (s *E2ETestSuite) TestCmdUpdateCreditClass() {
-	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
+	val := s.Network.Validators[0]
+	issuerKey, err := val.ClientCtx.Keyring.Key(e2e.IssuerKeyName)
 	s.Require().NoError(err)
-	notAdminKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
+	notAdminKey, err := val.ClientCtx.Keyring.Key(e2e.ApplicantKeyName)
 	s.Require().NoError(err)
 
 	testCases := map[string]struct {
-		args              []string
+		abbreviation      string
+		name              string
+		fromFlagValue     string
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
 		expectedState     *plasticcredit.CreditClass
 	}{
 		"update name": {
-			[]string{"EMP", "Updated Empower Plastic Credits via CLI", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			false,
-			"",
-			&plasticcredit.CreditClass{
+			abbreviation:      "EMP",
+			name:              "Updated Empower Plastic Credits via CLI",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: false,
+			expectedErrMsg:    "",
+			expectedState: &plasticcredit.CreditClass{
 				Abbreviation: "EMP",
 				IssuerId:     1,
 				Name:         "Updated Empower Plastic Credits via CLI",
 			},
 		},
 		"unauthorized": {
-			[]string{"EMP", "Updated Empower Plastic Credits via CLI", fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name)},
-			false,
-			true,
-			"unauthorized",
-			nil,
+			abbreviation:      "EMP",
+			name:              "Updated Empower Plastic Credits via CLI",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "unauthorized",
+			expectedState:     nil,
 		},
 		"empty name": {
-			[]string{"EMP", "", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			true,
-			false,
-			"credit class name cannot be empty",
-			nil,
+			abbreviation:      "EMP",
+			name:              "",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: true,
+			expectedErrOnExec: false,
+			expectedErrMsg:    "credit class name cannot be empty",
+			expectedState:     nil,
 		},
 		"empty abbreviation": {
-			[]string{"", "Test", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			true,
-			false,
-			"abbreviation cannot be empty: invalid request",
-			nil,
+			abbreviation:      "",
+			name:              "Test",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: true,
+			expectedErrOnExec: false,
+			expectedErrMsg:    "abbreviation cannot be empty: invalid request",
+			expectedState:     nil,
 		},
 		"non-existing abbreviation": {
-			[]string{"JJJ", "Test", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)},
-			false,
-			true,
-			"credit class not found",
-			nil,
+			abbreviation:      "JJJ",
+			name:              "Test",
+			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
+			expectedErrOnSend: false,
+			expectedErrOnExec: true,
+			expectedErrMsg:    "credit class not found",
+			expectedState:     nil,
 		},
 	}
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgUpdateCreditClassCmd()
-			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, s.commonFlags...))
+			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{
+				tc.abbreviation,
+				tc.name,
+				tc.fromFlagValue,
+			}, s.CommonFlags...))
 
 			switch {
 			case tc.expectedErrOnSend:
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			case tc.expectedErrOnExec:
-				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				txResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().NotEqual(uint32(0), txResponse.Code)
 				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
 			default:
-				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
+				cliResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 				queryCmd := cli.CmdQueryCreditClass()
-				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.args[0]})
+				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.abbreviation})
 				s.Require().NoError(err)
 				var resp plasticcredit.QueryCreditClassResponse
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &resp))
