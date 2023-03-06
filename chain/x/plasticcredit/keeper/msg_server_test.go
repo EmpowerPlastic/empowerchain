@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"math/rand"
+	"testing"
 	"time"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -9,6 +10,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/stretchr/testify/suite"
 
 	"github.com/EmpowerPlastic/empowerchain/app"
 	"github.com/EmpowerPlastic/empowerchain/app/params"
@@ -165,12 +167,14 @@ func (s *TestSuite) TestCreateIssuer() {
 			s.Require().ErrorIs(err, tc.err)
 
 			events := s.ctx.EventManager().ABCIEvents()
-			idCounters := k.GetIDCounters(s.ctx)
+			idCounters, errIdCounters := k.GetIDCounters(s.ctx)
+			s.Require().NoError(errIdCounters)
 
 			if err == nil {
 				s.Require().Equal(s.numTestIssuers+1, resp.IssuerId)
 
-				idCounters := k.GetIDCounters(s.ctx)
+				idCounters, err := k.GetIDCounters(s.ctx)
+				s.Require().NoError(err)
 				s.Require().Equal(s.numTestIssuers+2, idCounters.NextIssuerId)
 
 				issuer, found := k.GetIssuer(s.ctx, resp.IssuerId)
@@ -367,7 +371,8 @@ func (s *TestSuite) TestCreateApplicant() {
 			if err == nil {
 				s.Require().Equal(uint64(1), resp.ApplicantId)
 
-				idCounters := k.GetIDCounters(s.ctx)
+				idCounters, err := k.GetIDCounters(s.ctx)
+				s.Require().NoError(err)
 				s.Require().Equal(uint64(2), idCounters.NextApplicantId)
 
 				applicant, found := k.GetApplicant(s.ctx, resp.ApplicantId)
@@ -795,7 +800,8 @@ func (s *TestSuite) TestCreateProject() {
 			events := s.ctx.EventManager().ABCIEvents()
 
 			if err == nil {
-				idCounters := k.GetIDCounters(s.ctx)
+				idCounters, err := k.GetIDCounters(s.ctx)
+				s.Require().NoError(err)
 				s.Require().Equal(uint64(6), idCounters.NextProjectId)
 
 				project, found := k.GetProject(s.ctx, resp.ProjectId)
@@ -1734,4 +1740,28 @@ func (s *TestSuite) TestRetireCredits() {
 			}
 		})
 	}
+}
+
+func TestTestSuite(t *testing.T) {
+	params.SetAddressPrefixes()
+	params.RegisterDenoms()
+
+	ts := &TestSuite{}
+	ts.numTestIssuers = 2
+	ts.issuerCreator = sample.AccAddress()
+	ts.sampleIssuerID = 1
+	ts.sampleIssuerAdmin = sample.AccAddress()
+	ts.noCoinsIssuerID = 2
+	ts.noCoinsIssuerAdmin = sample.AccAddress()
+	ts.sampleCreditClassAbbreviation = "EMP"
+	ts.sampleApplicantID = 1
+	ts.sampleApplicantAdmin = sample.AccAddress()
+	ts.sampleProjectID = 1
+	ts.sampleUnapprovedProjectID = 2
+	ts.sampleRejectionProjectID = 3
+	ts.sampleSuspendedProjectID = 4
+	ts.sampleCreditDenom = "EMP/123"
+	ts.creditClassCreationFee = sdk.NormalizeCoin(plasticcredit.DefaultCreditClassCreationFee)
+
+	suite.Run(t, ts)
 }

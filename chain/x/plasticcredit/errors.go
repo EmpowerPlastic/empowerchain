@@ -25,6 +25,8 @@ import (
 
 // x/plasticcredit module sentinel errors
 var (
+	ErrIDCountersNotFound = errors.Register(ModuleName, 1404, "id counters not found")
+
 	ErrIssuerNotAllowed = errors.Register(ModuleName, 2001, "address is not an issuer")
 	ErrIssuerNotFound   = errors.Register(ModuleName, 2404, "issuer not found")
 	ErrIssuerDuplicate  = errors.Register(ModuleName, 2409, "duplicate issuer detected")

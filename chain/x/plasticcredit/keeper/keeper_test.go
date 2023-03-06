@@ -1,8 +1,6 @@
 package keeper_test
 
 import (
-	"testing"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/stretchr/testify/suite"
@@ -11,7 +9,6 @@ import (
 
 	"github.com/EmpowerPlastic/empowerchain/app"
 	"github.com/EmpowerPlastic/empowerchain/app/params"
-	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
 )
@@ -184,28 +181,4 @@ func (s *TestSuite) PopulateWithSamples() {
 	s.Require().NoError(err)
 	s.Require().Equal(s.sampleCreditDenom, respIssue.Collection.Denom)
 	s.ctx = s.ctx.WithEventManager(sdk.NewEventManager())
-}
-
-func TestTestSuite(t *testing.T) {
-	params.SetAddressPrefixes()
-	params.RegisterDenoms()
-
-	ts := &TestSuite{}
-	ts.numTestIssuers = 2
-	ts.issuerCreator = sample.AccAddress()
-	ts.sampleIssuerID = 1
-	ts.sampleIssuerAdmin = sample.AccAddress()
-	ts.noCoinsIssuerID = 2
-	ts.noCoinsIssuerAdmin = sample.AccAddress()
-	ts.sampleCreditClassAbbreviation = "EMP"
-	ts.sampleApplicantID = 1
-	ts.sampleApplicantAdmin = sample.AccAddress()
-	ts.sampleProjectID = 1
-	ts.sampleUnapprovedProjectID = 2
-	ts.sampleRejectionProjectID = 3
-	ts.sampleSuspendedProjectID = 4
-	ts.sampleCreditDenom = "EMP/123"
-	ts.creditClassCreationFee = sdk.NormalizeCoin(plasticcredit.DefaultCreditClassCreationFee)
-
-	suite.Run(t, ts)
 }

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -12,14 +13,23 @@ import (
 type InvariantKeeper interface {
 	IterateCreditBalances(ctx sdk.Context, handler func(creditBalance plasticcredit.CreditBalance))
 	IterateCreditCollections(ctx sdk.Context, handler func(creditCollection plasticcredit.CreditCollection))
+	GetIDCounters(ctx sdk.Context) (idc plasticcredit.IDCounters, err error)
+	GetApplicant(ctx sdk.Context, id uint64) (applicant plasticcredit.Applicant, found bool)
+	GetIssuer(ctx sdk.Context, id uint64) (issuer plasticcredit.Issuer, found bool)
+	GetProject(ctx sdk.Context, projectID uint64) (project plasticcredit.Project, found bool)
 }
 
 func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
 	ir.RegisterRoute(types.ModuleName, "total-supply", TotalSupplyInvariant(k))
+	ir.RegisterRoute(types.ModuleName, "id-counters", IDCountersInvariant(k))
 }
 
 func AllInvariants(k Keeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
+		res, stop := IDCountersInvariant(k)(ctx)
+		if stop {
+			return res, stop
+		}
 		return TotalSupplyInvariant(k)(ctx)
 	}
 }
@@ -52,6 +62,53 @@ func TotalSupplyInvariant(k InvariantKeeper) sdk.Invariant {
 		broken := count != 0
 		return sdk.FormatInvariant(plasticcredit.ModuleName, "total supply",
 			fmt.Sprintf("amount of invalid supplies found %d\n%s", count, msg),
+		), broken
+	}
+}
+
+// IDCountersInvariant checks if ID counters point to non-existing state objects
+func IDCountersInvariant(k InvariantKeeper) sdk.Invariant {
+	return func(ctx sdk.Context) (string, bool) {
+		var invalidInvariants []string
+		broken := false
+		idCounters, err := k.GetIDCounters(ctx)
+		if err != nil {
+			// When running tests, the IDCounters are not found
+			if strings.Contains(err.Error(), "id counters not found") {
+				idCounters = plasticcredit.IDCounters{
+					NextApplicantId: 1,
+					NextIssuerId:    1,
+					NextProjectId:   1,
+				}
+			} else {
+				return sdk.FormatInvariant(plasticcredit.ModuleName, "id counters",
+					fmt.Sprintf("error while getting id counters: %s", err.Error()),
+				), true
+			}
+		}
+		// check if applicant with ID pointed by IDCounters exist
+		_, found := k.GetApplicant(ctx, idCounters.NextApplicantId)
+		if found {
+			invalidInvariants = append(invalidInvariants, "applicant id")
+			broken = true
+		}
+		// check if issuer with ID pointed by IDCounters exist
+		_, found = k.GetIssuer(ctx, idCounters.NextIssuerId)
+		if found {
+			invalidInvariants = append(invalidInvariants, "issuer id")
+			broken = true
+		}
+		// check if project with ID pointed by IDCounters exist
+		_, found = k.GetProject(ctx, idCounters.NextProjectId)
+		if found {
+			invalidInvariants = append(invalidInvariants, "project id")
+			broken = true
+		}
+		if len(invalidInvariants) == 0 {
+			invalidInvariants = append(invalidInvariants, "none")
+		}
+		return sdk.FormatInvariant(plasticcredit.ModuleName, "id counters",
+			fmt.Sprintf("invalid id counters: %s", strings.Join(invalidInvariants, ", ")),
 		), broken
 	}
 }

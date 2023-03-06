@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"log"
+
 	"cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -46,7 +48,10 @@ func (k Keeper) GetApplicants(ctx sdk.Context, pageReq query.PageRequest) ([]pla
 }
 
 func (k Keeper) createApplicant(ctx sdk.Context, name string, description string, admin string) (uint64, error) {
-	idc := k.GetIDCounters(ctx)
+	idc, err := k.GetIDCounters(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	nextID := idc.NextApplicantId
 
