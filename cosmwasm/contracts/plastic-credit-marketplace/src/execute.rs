@@ -28,15 +28,15 @@ pub fn execute_create_listing(
     }
 
     let next_listing_id = NEXT_LISTING_ID.load(deps.storage)?;
-
-    LISTINGS.save(deps.storage, next_listing_id, &Listing {
+    let listing = &Listing {
         id: next_listing_id,
         owner: info.sender.clone(),
         denom: denom.clone(),
         number_of_credits,
-        price_per_credit,
-    })?;
+        price_per_credit: price_per_credit.clone(),
+    };
 
+    LISTINGS.save(deps.storage, next_listing_id, listing)?;
     NEXT_LISTING_ID.save(deps.storage, &(next_listing_id + 1))?;
 
     let exec_credit_transfer_msg = create_exec_credit_transfer_message(
@@ -46,7 +46,14 @@ pub fn execute_create_listing(
         number_of_credits.into(),
     );
 
-    Ok(Response::new().add_message(exec_credit_transfer_msg))
+    Ok(Response::new()
+        .add_attribute("action", "create_listing")
+        .add_attribute("listing_id", listing.id.to_string())
+        .add_attribute("listing_owner", info.sender)
+        .add_attribute("number_of_credits", number_of_credits)
+        .add_attribute("price_per_credit", price_per_credit.to_string())
+        .add_message(exec_credit_transfer_msg)
+    )
 }
 
 fn create_exec_credit_transfer_message(from: String, to: String, denom: String, amount: u64) -> CosmosMsg {
@@ -97,7 +104,7 @@ mod tests {
     fn test_create_listing() {
         let mut deps = mock_dependencies();
         let info = mock_info("creator", &coins(2, "token"));
-        instantiate(deps.as_mut(), mock_env(), info.clone(), Empty{}).unwrap();
+        instantiate(deps.as_mut(), mock_env(), info.clone(), Empty {}).unwrap();
 
         let msg = ExecuteMsg::CreateListing {
             denom: "pcrd".to_string(),
@@ -109,7 +116,7 @@ mod tests {
         };
 
         let res = execute(deps.as_mut(), mock_env(), info.clone(), msg).unwrap();
-        assert_eq!(0, res.attributes.len()); // For now. We'll clean this right up soon(tm)
+        assert_eq!(5, res.attributes.len());
 
         assert_eq!(1, res.messages.len());
         let sg_msg = &res.messages[0].msg;
@@ -152,7 +159,7 @@ mod tests {
     fn test_create_multiple_listings() {
         let mut deps = mock_dependencies();
         let info = mock_info("creator", &coins(2, "token"));
-        instantiate(deps.as_mut(), mock_env(), info.clone(), Empty{}).unwrap();
+        instantiate(deps.as_mut(), mock_env(), info.clone(), Empty {}).unwrap();
 
         let msg = ExecuteMsg::CreateListing {
             denom: "pcrd".to_string(),
@@ -180,7 +187,7 @@ mod tests {
     fn test_create_listing_zero_credits() {
         let mut deps = mock_dependencies();
         let info = mock_info("creator", &coins(2, "token"));
-        instantiate(deps.as_mut(), mock_env(), info.clone(), Empty{}).unwrap();
+        instantiate(deps.as_mut(), mock_env(), info.clone(), Empty {}).unwrap();
 
         let msg = ExecuteMsg::CreateListing {
             denom: "pcrd".to_string(),
@@ -204,7 +211,7 @@ mod tests {
     fn test_create_listing_zero_price() {
         let mut deps = mock_dependencies();
         let info = mock_info("creator", &coins(2, "token"));
-        instantiate(deps.as_mut(), mock_env(), info.clone(), Empty{}).unwrap();
+        instantiate(deps.as_mut(), mock_env(), info.clone(), Empty {}).unwrap();
 
         let msg = ExecuteMsg::CreateListing {
             denom: "pcrd".to_string(),
