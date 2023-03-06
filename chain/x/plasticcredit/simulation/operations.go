@@ -266,7 +266,10 @@ func SimulateMsgUpdateIssuer(cdc *codec.ProtoCodec, ak plasticcredit.AccountKeep
 		querier := keeper.Querier{Keeper: k}
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
-		ids := querier.GetIDCounters(sdkCtx)
+		ids, err := querier.GetIDCounters(sdkCtx)
+		if err != nil {
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get id counters"), nil, nil
+		}
 		issuer, err := getRandomIssuer(ctx, r, querier, ids)
 		if err != nil {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, nil
@@ -351,7 +354,10 @@ func SimulateMsgUpdateApplicant(cdc *codec.ProtoCodec, ak plasticcredit.AccountK
 		querier := keeper.Querier{Keeper: k}
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
-		ids := querier.GetIDCounters(sdkCtx)
+		ids, err := querier.GetIDCounters(sdkCtx)
+		if err != nil {
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get id counters"), nil, nil
+		}
 		applicant, err := getRandomApplicant(ctx, r, querier, ids)
 		if err != nil {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get applicant"), nil, nil
@@ -401,7 +407,10 @@ func SimulateMsgCreateCreditClass(cdc *codec.ProtoCodec, ak plasticcredit.Accoun
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
 
-		ids := querier.GetIDCounters(sdkCtx)
+		ids, err := querier.GetIDCounters(sdkCtx)
+		if err != nil {
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get id counters"), nil, nil
+		}
 		issuer, err := getRandomIssuer(ctx, r, querier, ids)
 		if err != nil {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, nil
@@ -506,7 +515,10 @@ func SimulateMsgCreateProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKee
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
 
-		ids := querier.GetIDCounters(sdkCtx)
+		ids, err := querier.GetIDCounters(sdkCtx)
+		if err != nil {
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get id counters"), nil, nil
+		}
 		applicant, err := getRandomApplicant(ctx, r, querier, ids)
 		if err != nil {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get applicant"), nil, nil
@@ -559,7 +571,10 @@ func SimulateMsgUpdateProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKee
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
 
-		ids := querier.GetIDCounters(sdkCtx)
+		ids, err := querier.GetIDCounters(sdkCtx)
+		if err != nil {
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get id counters"), nil, nil
+		}
 		project, err := getRandomProject(ctx, r, querier, ids)
 		if err != nil {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, nil
@@ -611,7 +626,10 @@ func SimulateMsgApproveProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKe
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
 
-		ids := querier.GetIDCounters(sdkCtx)
+		ids, err := querier.GetIDCounters(sdkCtx)
+		if err != nil {
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get id counters"), nil, nil
+		}
 		project, err := getRandomProject(ctx, r, querier, ids)
 		if err != nil {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, nil
@@ -670,7 +688,10 @@ func SimulateMsgRejectProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKee
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
 
-		ids := querier.GetIDCounters(sdkCtx)
+		ids, err := querier.GetIDCounters(sdkCtx)
+		if err != nil {
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get id counters"), nil, nil
+		}
 		project, err := getRandomProject(ctx, r, querier, ids)
 		if err != nil {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, nil
@@ -729,7 +750,10 @@ func SimulateMsgSuspendProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKe
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
 
-		ids := querier.GetIDCounters(sdkCtx)
+		ids, err := querier.GetIDCounters(sdkCtx)
+		if err != nil {
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get id counters"), nil, nil
+		}
 		project, err := getRandomProject(ctx, r, querier, ids)
 		if err != nil {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, nil
@@ -788,7 +812,10 @@ func SimulateMsgIssueCredits(cdc *codec.ProtoCodec, ak plasticcredit.AccountKeep
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
 
-		ids := querier.GetIDCounters(sdkCtx)
+		ids, err := querier.GetIDCounters(sdkCtx)
+		if err != nil {
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get id counters"), nil, nil
+		}
 		project, err := getRandomProject(ctx, r, querier, ids)
 		if err != nil {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get project"), nil, nil

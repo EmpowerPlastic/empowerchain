@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"log"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
@@ -58,7 +60,11 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *plasticcredit.GenesisState {
 	genesis := plasticcredit.DefaultGenesis()
 
 	genesis.Params = k.GetParams(ctx)
-	genesis.IdCounters = k.GetIDCounters(ctx)
+	var err error
+	genesis.IdCounters, err = k.GetIDCounters(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
 	k.iterateIssuers(ctx, func(issuer plasticcredit.Issuer) {
 		genesis.Issuers = append(genesis.Issuers, issuer)
 	})

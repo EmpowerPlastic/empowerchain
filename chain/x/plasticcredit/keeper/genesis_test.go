@@ -168,7 +168,8 @@ func (s *TestSuite) TestGenesis() {
 	fetchedParams := k.GetParams(s.ctx)
 	s.Require().Equal(genesisState.Params, fetchedParams)
 
-	idCounter := k.GetIDCounters(s.ctx)
+	idCounter, err := k.GetIDCounters(s.ctx)
+	s.Require().NoError(err)
 	s.Require().Equal(genesisState.IdCounters, idCounter)
 
 	for _, issuer := range genesisState.Issuers {
