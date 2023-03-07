@@ -20,6 +20,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	crisis "github.com/cosmos/cosmos-sdk/x/crisis"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -67,7 +68,7 @@ func setup(withGenesis bool) (*EmpowerApp, GenesisState) {
 		DefaultNodeHome,
 		5,
 		params.MakeEncodingConfig(ModuleBasics),
-		simtestutils.EmptyAppOptions{},
+		simtestutils.AppOptionsMap{crisis.FlagSkipGenesisInvariants: true},
 		[]wasm.Option{},
 	)
 
