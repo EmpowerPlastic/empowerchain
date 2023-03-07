@@ -19,6 +19,10 @@ import (
 )
 
 func (s *E2ETestSuite) TestInstantiate() {
+	s.instantiateMarketplace()
+}
+
+func (s *E2ETestSuite) instantiateMarketplace() string {
 	val := s.Network.Validators[0]
 	instantiateCmd := wasmcli.InstantiateContractCmd()
 	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, instantiateCmd, append([]string{
@@ -37,6 +41,8 @@ func (s *E2ETestSuite) TestInstantiate() {
 	err = s.UnpackTxResponseData(val.ClientCtx, out.Bytes(), &instantiateResponse)
 	s.Require().NoError(err)
 	s.Require().NotEmpty(instantiateResponse.Address)
+
+	return instantiateResponse.Address
 }
 
 func (s *E2ETestSuite) TestUploadByProposal() {
