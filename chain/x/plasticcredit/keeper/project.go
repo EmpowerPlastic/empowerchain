@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"log"
-
 	"cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -60,10 +58,7 @@ func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicant
 		return 0, errors.Wrapf(plasticcredit.ErrCreditClassNotFound, "credit class with abbreviation %s was not found", creditClassAbbreviation)
 	}
 
-	idc, err := k.GetIDCounters(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
+	idc := k.GetIDCounters(ctx)
 	nextID := idc.NextProjectId
 	project := plasticcredit.Project{
 		Id:                      nextID,

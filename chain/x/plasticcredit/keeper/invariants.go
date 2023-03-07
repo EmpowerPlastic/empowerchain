@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
@@ -13,15 +12,15 @@ import (
 type InvariantKeeper interface {
 	IterateCreditBalances(ctx sdk.Context, handler func(creditBalance plasticcredit.CreditBalance))
 	IterateCreditCollections(ctx sdk.Context, handler func(creditCollection plasticcredit.CreditCollection))
-	GetIDCounters(ctx sdk.Context) (idc plasticcredit.IDCounters, err error)
+	GetIDCounters(ctx sdk.Context) (idc plasticcredit.IDCounters)
 	GetApplicant(ctx sdk.Context, id uint64) (applicant plasticcredit.Applicant, found bool)
 	GetIssuer(ctx sdk.Context, id uint64) (issuer plasticcredit.Issuer, found bool)
 	GetProject(ctx sdk.Context, projectID uint64) (project plasticcredit.Project, found bool)
 }
 
 func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
-	ir.RegisterRoute(types.ModuleName, "total-supply", TotalSupplyInvariant(k))
-	ir.RegisterRoute(types.ModuleName, "id-counters", IDCountersInvariant(k))
+	ir.RegisterRoute(plasticcredit.ModuleName, "total-supply", TotalSupplyInvariant(k))
+	ir.RegisterRoute(plasticcredit.ModuleName, "id-counters", IDCountersInvariant(k))
 }
 
 func AllInvariants(k Keeper) sdk.Invariant {
@@ -71,21 +70,7 @@ func IDCountersInvariant(k InvariantKeeper) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		var invalidInvariants []string
 		broken := false
-		idCounters, err := k.GetIDCounters(ctx)
-		if err != nil {
-			// When running tests, the IDCounters are not found
-			if strings.Contains(err.Error(), "id counters not found") {
-				idCounters = plasticcredit.IDCounters{
-					NextApplicantId: 1,
-					NextIssuerId:    1,
-					NextProjectId:   1,
-				}
-			} else {
-				return sdk.FormatInvariant(plasticcredit.ModuleName, "id counters",
-					fmt.Sprintf("error while getting id counters: %s", err.Error()),
-				), true
-			}
-		}
+		idCounters := k.GetIDCounters(ctx)
 		// check if applicant with ID pointed by IDCounters exist
 		_, found := k.GetApplicant(ctx, idCounters.NextApplicantId)
 		if found {

@@ -31,8 +31,8 @@ func (k MockInvariantKeeper) IterateCreditBalances(ctx sdk.Context, handler func
 	}
 }
 
-func (k MockInvariantKeeper) GetIDCounters(ctx sdk.Context) (idc plasticcredit.IDCounters, err error) {
-	return k.idCounters, nil
+func (k MockInvariantKeeper) GetIDCounters(ctx sdk.Context) (idc plasticcredit.IDCounters) {
+	return k.idCounters
 }
 
 func (k MockInvariantKeeper) GetApplicant(ctx sdk.Context, id uint64) (applicant plasticcredit.Applicant, found bool) {
