@@ -2,46 +2,52 @@
 import { ref } from "vue";
 import router from "@/router";
 
-const activeTab = ref("first");
-const file = ref(undefined);
-const progress = ref(0);
-const hashing = ref(false);
-const fileName = ref("choose file");
+const file = ref<File | undefined>(undefined);
 
 //Methods
-const handleFileUpload = async (e: HTMLInputElement) => {
-  fileName.value = e.target?.files[0].name;
-  file.value = e.target.files[0];
-  hashing.value = true;
+const handleFileUpload = async (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  const targetFiles = target.files;
+  const hasTargetFiles = targetFiles && targetFiles.length > 0;
+  file.value = hasTargetFiles ? targetFiles[0] : undefined;
 };
 
-async function hashFile(file: File) {
-  const bytes = await readFile(file);
-  const byteArray = new Uint8Array(bytes);
-  hashAndSetResult(byteArray);
-}
+const hashFile = async (file?: File) => {
+  if (file) {
+    const bytes = await readFile(file);
+    const byteArray = new Uint8Array(bytes);
+    hashAndSetResult(byteArray);
+  }
+};
 
-async function readFile(file: File): Promise<ArrayBuffer> {
+const readFile = async (file: File): Promise<ArrayBuffer> => {
   return new Promise((resolve, reject) => {
-    let reader = new FileReader();
+    const reader = new FileReader();
 
-    reader.addEventListener("loadend", (e) => resolve(e.target.result));
-    reader.addEventListener("error", reject);
+    reader.addEventListener("loadend", (e: ProgressEvent<FileReader>) => {
+      const buffer: ArrayBuffer | null = e.target?.result as ArrayBuffer | null;
+      if (buffer !== null) {
+        resolve(buffer);
+      } else {
+        reject(new Error("File reading failed"));
+      }
+    });
 
+    reader.addEventListener("error", (e: ProgressEvent<FileReader>) => {
+      reject(e.target?.error);
+    });
     // Read file
     reader.readAsArrayBuffer(file);
   });
-}
+};
 
-function hashAndSetResult(byteArray: Uint8Array) {
+const hashAndSetResult = (byteArray: Uint8Array) => {
   const result = window.empSha256(byteArray);
-  hashing.value = false;
-  console.log(result);
   router.push({
     path: `/proof/${result?.value}`,
-    query: { fileName: fileName.value, time: new Date().getTime() },
+    query: { fileName: file.value?.name, time: new Date().getTime() },
   });
-}
+};
 </script>
 
 <template>
@@ -117,7 +123,9 @@ function hashAndSetResult(byteArray: Uint8Array) {
                 >
                   Browse
                 </div>
-                <span class="text-lightGray text-title16">{{ fileName }}</span>
+                <span class="text-lightGray text-title16">{{
+                  file ? file?.name : "Choose file"
+                }}</span>
               </div>
             </label>
           </div>
