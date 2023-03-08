@@ -38,7 +38,7 @@ func NewAppConstructor() network.AppConstructor {
 		return New(
 			val.GetCtx().Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.GetCtx().Config.RootDir, 0,
 			params.MakeEncodingConfig(ModuleBasics),
-			simtestutils.EmptyAppOptions{},
+			simtestutils.AppOptionsMap{crisis.FlagSkipGenesisInvariants: true},
 			[]wasm.Option{},
 		)
 	}
