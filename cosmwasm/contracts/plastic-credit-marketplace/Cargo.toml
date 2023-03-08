@@ -11,7 +11,9 @@ cosmwasm-std = "1.1.9"
 cw-storage-plus = "1.0.1"
 serde = { version = "1.0.151", features = ["derive"] }
 thiserror = "1.0.38"
-
+cosmos-sdk-proto = { version = "0.16", default-features = false }
+prost = "0.11"
+prost-types = "0.11"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
