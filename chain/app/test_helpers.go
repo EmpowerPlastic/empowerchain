@@ -20,7 +20,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module/testutil"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	crisis "github.com/cosmos/cosmos-sdk/x/crisis"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -38,7 +37,7 @@ func NewAppConstructor() network.AppConstructor {
 		return New(
 			val.GetCtx().Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.GetCtx().Config.RootDir, 0,
 			params.MakeEncodingConfig(ModuleBasics),
-			simtestutils.AppOptionsMap{crisis.FlagSkipGenesisInvariants: true},
+			simtestutils.EmptyAppOptions{},
 			[]wasm.Option{},
 		)
 	}
@@ -68,7 +67,7 @@ func setup(withGenesis bool) (*EmpowerApp, GenesisState) {
 		DefaultNodeHome,
 		5,
 		params.MakeEncodingConfig(ModuleBasics),
-		simtestutils.AppOptionsMap{crisis.FlagSkipGenesisInvariants: true},
+		simtestutils.EmptyAppOptions{},
 		[]wasm.Option{},
 	)
 
