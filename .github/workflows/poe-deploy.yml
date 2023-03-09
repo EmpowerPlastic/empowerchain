@@ -3,9 +3,9 @@ name: "PoE frontend depoly"
 on:
   push:
     branches:
-      - poe-cd
-    # paths:
-    #   - 'frontend/proof-of-existence/**' # On updating poe frontend
+      - main
+    paths:
+      - 'frontend/proof-of-existence/**' # On updating poe frontend
 
 jobs:
   build:
