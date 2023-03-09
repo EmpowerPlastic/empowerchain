@@ -11,4 +11,16 @@ pub enum ContractError {
 
     #[error("listing needs to have a price per credit")]
     ZeroPrice {},
+
+    #[error("not enough credits available on listing to buy")]
+    NotEnoughCredits {},
+
+    #[error("not enough funds sent to buy credits")]
+    NotEnoughFunds {},
+
+    #[error("too much funds sent to buy credits")]
+    TooMuchFunds {},
+
+    #[error("listing not found")]
+    ListingNotFound {},
 }

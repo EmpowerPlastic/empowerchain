@@ -262,18 +262,12 @@ func (s *E2ETestSuite) TestCmdTransferCredits() {
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
-				cmdQueryBalance := cli.CmdQueryCreditBalance()
-				querySenderBalanceResponse, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmdQueryBalance, append([]string{tc.senderAddress}, tc.denom))
-				s.Require().NoError(err)
-				var senderBalance plasticcredit.QueryCreditBalanceResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(querySenderBalanceResponse.Bytes(), &senderBalance))
-				s.Require().Equal(tc.expectedSenderBalance, senderBalance.Balance.Balance.Active)
+				actualSenderBalance := s.GetCreditBalance(tc.senderAddress, tc.denom)
+				s.Require().Equal(tc.expectedSenderBalance, actualSenderBalance.Active)
 
-				queryRecipientBalanceResponse, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmdQueryBalance, append([]string{tc.recipientAddress}, tc.denom))
-				s.Require().NoError(err)
-				var recipientBalance plasticcredit.QueryCreditBalanceResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryRecipientBalanceResponse.Bytes(), &recipientBalance))
-				s.Require().Equal(tc.expectedRecipientBalanceActive, recipientBalance.Balance.Balance.Active)
+				actualRecipientBalance := s.GetCreditBalance(tc.recipientAddress, tc.denom)
+				s.Require().Equal(tc.expectedRecipientBalanceActive, actualRecipientBalance.Active)
+
 				cmdQueryCollection := cli.CmdQueryCreditCollection()
 				queryCollectionResponse, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmdQueryCollection, []string{tc.denom})
 				s.Require().NoError(err)
@@ -340,12 +334,9 @@ func (s *E2ETestSuite) TestCmdRetireCredits() {
 			default:
 				_, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				cmdQueryBalance := cli.CmdQueryCreditBalance()
-				querySenderBalanceResponse, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmdQueryBalance, append([]string{senderAddress}, tc.denom))
-				s.Require().NoError(err)
-				var senderBalance plasticcredit.QueryCreditBalanceResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(querySenderBalanceResponse.Bytes(), &senderBalance))
-				s.Require().Equal(tc.expectedBalanceRetired, senderBalance.Balance.Balance.Retired)
+
+				actualBalance := s.GetCreditBalance(senderAddress, tc.denom)
+				s.Require().Equal(tc.expectedBalanceRetired, actualBalance.Retired)
 			}
 		})
 	}
