@@ -2,6 +2,8 @@ package e2e
 
 import (
 	"fmt"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -88,3 +90,4 @@ func (s *TestSuite) MakeSuccessfulProposal(pathToProposalJSON string, extraFlags
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &propResponse))
 	s.Require().Equal(govtypesv1.ProposalStatus_PROPOSAL_STATUS_PASSED, propResponse.Status)
 }
+
