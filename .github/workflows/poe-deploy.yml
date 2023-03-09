@@ -9,14 +9,13 @@ on:
 
 jobs:
   build:
-    name: Deploy EmpowerChain docs
+    name: Deploy Proof of Existence Frontend
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
       - run: |
          npm i && \
-         cd proof-of-existence && \
-         npm run build
+         npx lerna run build
         working-directory: ./frontend
       - uses: amondnet/vercel-action@v25
         with:
@@ -25,4 +24,4 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}
           scope: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_POE}}
-          working-directory: ./frontend/proof-of-existence
+          working-directory: ./frontend/proof-of-existence/dist
