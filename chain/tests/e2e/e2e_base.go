@@ -46,6 +46,8 @@ const (
 	NoCoinsIssuerAdminAddress = "empower1xgsaene8aqfknmldemvl5q0mtgcgjv9svupqwu"
 )
 
+var DefaultFee = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10))
+
 type TestSuite struct {
 	suite.Suite
 
@@ -67,7 +69,7 @@ func (s *TestSuite) SetupSuite() {
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagOutput, "json"),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.Config.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, DefaultFee.String()),
 	}
 
 	s.Config.NumValidators = 3

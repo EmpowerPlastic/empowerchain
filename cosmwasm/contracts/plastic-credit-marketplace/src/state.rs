@@ -4,7 +4,7 @@ use cw_storage_plus::{Item, Map};
 
 #[cw_serde]
 pub struct Listing {
-    pub id: u64, 
+    pub id: u64,
     pub owner: Addr,
     pub denom: String,
     pub number_of_credits: Uint64,
