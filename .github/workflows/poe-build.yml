@@ -1,11 +1,13 @@
 name: "PoE frontend build"
 
 on:
+  workflow_dispatch:
+  pull_request:
   push:
     branches:
-      - poe-cd
-    # paths:
-    #   - 'frontend/proof-of-existence/**' # On updating poe frontend
+      - main
+    paths:
+      - 'frontend/proof-of-existance/**'
 
 jobs:
   build:
