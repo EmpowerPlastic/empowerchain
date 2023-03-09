@@ -13,6 +13,10 @@ import (
 type MockInvariantKeeper struct {
 	creditCollections []plasticcredit.CreditCollection
 	creditBalances    []plasticcredit.CreditBalance
+	idCounters        plasticcredit.IDCounters
+	applicant         plasticcredit.Applicant
+	issuer            plasticcredit.Issuer
+	project           plasticcredit.Project
 }
 
 func (k MockInvariantKeeper) IterateCreditCollections(ctx sdk.Context, handler func(creditCollection plasticcredit.CreditCollection)) {
@@ -24,6 +28,142 @@ func (k MockInvariantKeeper) IterateCreditCollections(ctx sdk.Context, handler f
 func (k MockInvariantKeeper) IterateCreditBalances(ctx sdk.Context, handler func(creditBalance plasticcredit.CreditBalance)) {
 	for _, creditBalance := range k.creditBalances {
 		handler(creditBalance)
+	}
+}
+
+func (k MockInvariantKeeper) GetIDCounters(ctx sdk.Context) (idc plasticcredit.IDCounters) {
+	return k.idCounters
+}
+
+func (k MockInvariantKeeper) GetApplicant(ctx sdk.Context, id uint64) (applicant plasticcredit.Applicant, found bool) {
+	if k.applicant.Id == id {
+		return k.applicant, true
+	}
+	return plasticcredit.Applicant{}, false
+}
+
+func (k MockInvariantKeeper) GetIssuer(ctx sdk.Context, id uint64) (issuer plasticcredit.Issuer, found bool) {
+	if k.issuer.Id == id {
+		return k.issuer, true
+	}
+	return plasticcredit.Issuer{}, false
+}
+
+func (k MockInvariantKeeper) GetProject(ctx sdk.Context, projectID uint64) (project plasticcredit.Project, found bool) {
+	if k.project.Id == projectID {
+		return k.project, true
+	}
+	return plasticcredit.Project{}, false
+}
+
+func (s *TestSuite) TestIDCountersInvariant() {
+	testCases := map[string]struct {
+		idCounters    plasticcredit.IDCounters
+		applicant     plasticcredit.Applicant
+		issuer        plasticcredit.Issuer
+		project       plasticcredit.Project
+		expBroken     bool
+		messageBroken string
+	}{
+		"happy path": {
+			idCounters: plasticcredit.IDCounters{
+				NextApplicantId: 2,
+				NextIssuerId:    2,
+				NextProjectId:   2,
+			},
+			applicant: plasticcredit.Applicant{
+				Id: 1,
+			},
+			issuer: plasticcredit.Issuer{
+				Id: 1,
+			},
+			project: plasticcredit.Project{
+				Id: 1,
+			},
+			expBroken:     false,
+			messageBroken: "invalid id counters: none",
+		},
+		"invalid applicant id": {
+			idCounters: plasticcredit.IDCounters{
+				NextApplicantId: 2,
+				NextIssuerId:    2,
+				NextProjectId:   2,
+			},
+			applicant: plasticcredit.Applicant{
+				Id: 2,
+			},
+			issuer: plasticcredit.Issuer{
+				Id: 1,
+			},
+			project: plasticcredit.Project{
+				Id: 1,
+			},
+			expBroken:     true,
+			messageBroken: "invalid id counters: applicant id",
+		},
+		"invalid issuer id": {
+			idCounters: plasticcredit.IDCounters{
+				NextApplicantId: 2,
+				NextIssuerId:    2,
+				NextProjectId:   2,
+			},
+			applicant: plasticcredit.Applicant{
+				Id: 1,
+			},
+			issuer: plasticcredit.Issuer{
+				Id: 2,
+			},
+			project: plasticcredit.Project{
+				Id: 1,
+			},
+			expBroken:     true,
+			messageBroken: "invalid id counters: issuer id",
+		},
+		"invalid project id": {
+			idCounters: plasticcredit.IDCounters{
+				NextApplicantId: 2,
+				NextIssuerId:    2,
+				NextProjectId:   2,
+			},
+			applicant: plasticcredit.Applicant{
+				Id: 1,
+			},
+			issuer: plasticcredit.Issuer{
+				Id: 1,
+			},
+			project: plasticcredit.Project{
+				Id: 2,
+			},
+			expBroken:     true,
+			messageBroken: "invalid id counters: project id",
+		},
+		"all ids invalid": {
+			idCounters: plasticcredit.IDCounters{
+				NextApplicantId: 2,
+				NextIssuerId:    2,
+				NextProjectId:   2,
+			},
+			applicant: plasticcredit.Applicant{
+				Id: 2,
+			},
+			issuer: plasticcredit.Issuer{
+				Id: 2,
+			},
+			project: plasticcredit.Project{
+				Id: 2,
+			},
+			expBroken:     true,
+			messageBroken: "invalid id counters: applicant id, issuer id, project id",
+		},
+	}
+	for name, tc := range testCases {
+		s.Run(name, func() {
+			k := MockInvariantKeeper{idCounters: tc.idCounters, applicant: tc.applicant, issuer: tc.issuer, project: tc.project}
+			invariant := keeper.IDCountersInvariant(k)
+			message, broken := invariant(s.ctx)
+			s.Require().True(strings.Contains(message, tc.messageBroken))
+			s.Require().Equal(tc.expBroken, broken)
+		})
 	}
 }
 
