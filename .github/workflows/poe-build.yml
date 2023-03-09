@@ -1,0 +1,21 @@
+name: "PoE frontend build"
+
+on:
+  push:
+    branches:
+      - poe-cd
+    # paths:
+    #   - 'frontend/proof-of-existence/**' # On updating poe frontend
+
+jobs:
+  build:
+    name: Build Proof of Existence Frontend
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: earthly/actions-setup@v1
+        with:
+          version: 0.6.30
+
+      - run: earthly --ci --output +lerna-build
+        working-directory: ./frontend
