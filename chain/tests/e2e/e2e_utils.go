@@ -2,8 +2,6 @@ package e2e
 
 import (
 	"fmt"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -12,6 +10,9 @@ import (
 	bankcli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	govcli "github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *TestSuite) GetBankBalance(address, denom string) uint64 {
@@ -87,4 +88,3 @@ func (s *TestSuite) MakeSuccessfulProposal(pathToProposalJSON string, extraFlags
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &propResponse))
 	s.Require().Equal(govtypesv1.ProposalStatus_PROPOSAL_STATUS_PASSED, propResponse.Status)
 }
-

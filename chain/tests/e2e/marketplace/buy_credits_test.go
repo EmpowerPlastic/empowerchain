@@ -2,14 +2,14 @@ package marketplace_test
 
 import (
 	"fmt"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/EmpowerPlastic/empowerchain/tests/e2e"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
@@ -72,12 +72,12 @@ func (s *E2ETestSuite) TestBuyCredits() {
 	// Check that the credits were transferred
 	buyerCreditBalance := s.GetCreditBalance(e2e.RandomAddress, "PCRD/00001")
 	s.Require().Equal(plasticcredit.CreditAmount{
-		Active: 2,
+		Active:  2,
 		Retired: 0,
 	}, buyerCreditBalance)
 	contractCreditBalance := s.GetCreditBalance(marketplaceAddress, "PCRD/00001")
 	s.Require().Equal(plasticcredit.CreditAmount{
-		Active: 3,
+		Active:  3,
 		Retired: 0,
 	}, contractCreditBalance)
 }
