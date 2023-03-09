@@ -1,0 +1,15 @@
+VERSION 0.6
+FROM node:lts-alpine
+WORKDIR /app
+
+# Frontend
+frontend-context:
+    COPY package.json package-lock.json lerna.json ./
+    COPY ts-client ts-client
+    COPY proof-of-existence proof-of-existence
+    SAVE ARTIFACT .
+
+lerna-build:
+    COPY +frontend-context/app .
+    RUN npm install
+    RUN npx lerna run build
