@@ -13,9 +13,9 @@ func (s *TestSuite) TestCreateCreditDenom() {
 		err                     error
 	}{
 		"happy path": {
-			creditClassAbbreviation: "PCRD",
+			creditClassAbbreviation: "PTEST",
 			serialNumber:            "123",
-			expectedValue:           "PCRD/123",
+			expectedValue:           "PTEST/123",
 			err:                     nil,
 		},
 		"empty abbrev": {
@@ -24,7 +24,7 @@ func (s *TestSuite) TestCreateCreditDenom() {
 			err:                     utils.ErrInvalidValue,
 		},
 		"empty serial number": {
-			creditClassAbbreviation: "PCRD",
+			creditClassAbbreviation: "PTEST",
 			serialNumber:            "",
 			err:                     utils.ErrInvalidValue,
 		},

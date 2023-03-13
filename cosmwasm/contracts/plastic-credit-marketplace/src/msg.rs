@@ -1,5 +1,5 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
-use cosmwasm_std::{Uint128, Coin};
+use cosmwasm_std::{Uint64, Coin};
 
 use crate::state::Listing;
 
@@ -7,8 +7,12 @@ use crate::state::Listing;
 pub enum ExecuteMsg {
     CreateListing {
         denom: String,
-        number_of_credits: Uint128,
+        number_of_credits: Uint64,
         price_per_credit: Coin,
+    },
+    BuyCredits {
+        listing_id: u64,
+        number_of_credits_to_buy: u64,
     }
 }
 
