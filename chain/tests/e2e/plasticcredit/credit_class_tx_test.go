@@ -39,7 +39,7 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 		expectedState     plasticcredit.CreditClass
 	}{
 		"create new credit class": {
-			abbreviation:      "PCRD2",
+			abbreviation:      "PTEST2",
 			issuerID:          "1",
 			name:              "Test",
 			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
@@ -47,13 +47,13 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 			expectedErrOnExec: false,
 			expectedErrMsg:    "",
 			expectedState: plasticcredit.CreditClass{
-				Abbreviation: "PCRD2",
+				Abbreviation: "PTEST2",
 				Name:         "Test",
 				IssuerId:     1,
 			},
 		},
 		"invalid funds to cover fee": {
-			abbreviation:      "PCRD3",
+			abbreviation:      "PTEST3",
 			issuerID:          "3",
 			name:              "Test",
 			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, noCoinsKey.Name),
@@ -63,7 +63,7 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 			expectedState:     plasticcredit.CreditClass{},
 		},
 		"non-existent issuer": {
-			abbreviation:      "PCRD2",
+			abbreviation:      "PTEST2",
 			issuerID:          "5",
 			name:              "Test",
 			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
@@ -83,7 +83,7 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 			expectedState:     plasticcredit.CreditClass{},
 		},
 		"empty name": {
-			abbreviation:      "PCRD6",
+			abbreviation:      "PTEST6",
 			issuerID:          "1",
 			name:              "",
 			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),

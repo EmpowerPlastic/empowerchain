@@ -2,6 +2,7 @@ use cosmos_sdk_proto::cosmos::authz::v1beta1::MsgExec;
 use cosmos_sdk_proto::traits::{Message, TypeUrl};
 use cosmos_sdk_proto::traits::MessageExt;
 use cosmwasm_std::{entry_point, Binary, DepsMut, Env, MessageInfo, Response, Uint64, Coin, CosmosMsg, BankMsg};
+use crate::state::CREATOR_DENOM_INDEX;
 use crate::{msg::ExecuteMsg, error::ContractError, state::{LISTINGS, Listing, NEXT_LISTING_ID}};
 
 #[entry_point]
@@ -28,6 +29,10 @@ pub fn execute_create_listing(
     if price_per_credit.amount.is_zero() {
         return Err(ContractError::ZeroPrice {});
     }
+
+    // Check if listing for a given creator and denom already exists
+    let creator_denom_index = format!("{}{}", info.sender.to_string(), denom);
+    let mut listing = CREATOR_DENOM_INDEX.load(deps.storage, creator_denom_index).map_err(|_| ContractError::ListingNotFound {})?;
 
     let next_listing_id = NEXT_LISTING_ID.load(deps.storage)?;
     let listing = &Listing {

@@ -12,4 +12,5 @@ pub struct Listing {
 }
 
 pub const NEXT_LISTING_ID: Item<u64> = Item::new("next_listing_id");
+pub const CREATOR_DENOM_INDEX: Item<String> = Item::new("creator_denom_index");
 pub const LISTINGS: Map<u64, Listing> = Map::new("listings");

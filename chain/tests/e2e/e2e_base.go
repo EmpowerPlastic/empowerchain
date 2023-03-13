@@ -127,7 +127,7 @@ func (s *TestSuite) SetupSuite() {
 			Name:         "Empower Plastic",
 		},
 		{
-			Abbreviation: "PCRD",
+			Abbreviation: "PTEST",
 			IssuerId:     2,
 			Name:         "Plastic Credit",
 		},
@@ -143,7 +143,7 @@ func (s *TestSuite) SetupSuite() {
 		{
 			Id:                      2,
 			ApplicantId:             1,
-			CreditClassAbbreviation: "PCRD",
+			CreditClassAbbreviation: "PTEST",
 			Name:                    "Suspended project",
 			Status:                  plasticcredit.ProjectStatus_SUSPENDED,
 		},
@@ -157,42 +157,42 @@ func (s *TestSuite) SetupSuite() {
 		{
 			Id:                      4,
 			ApplicantId:             1,
-			CreditClassAbbreviation: "PCRD",
+			CreditClassAbbreviation: "PTEST",
 			Name:                    "Rejected project",
 			Status:                  plasticcredit.ProjectStatus_REJECTED,
 		},
 		{
 			Id:                      5,
 			ApplicantId:             1,
-			CreditClassAbbreviation: "PCRD",
+			CreditClassAbbreviation: "PTEST",
 			Name:                    "Other New Project",
 			Status:                  plasticcredit.ProjectStatus_NEW,
 		},
 		{
 			Id:                      6,
 			ApplicantId:             1,
-			CreditClassAbbreviation: "PCRD",
+			CreditClassAbbreviation: "PTEST",
 			Name:                    "Another New Project",
 			Status:                  plasticcredit.ProjectStatus_NEW,
 		},
 		{
 			Id:                      7,
 			ApplicantId:             1,
-			CreditClassAbbreviation: "PCRD",
+			CreditClassAbbreviation: "PTEST",
 			Name:                    "Another Rejected Project",
 			Status:                  plasticcredit.ProjectStatus_REJECTED,
 		},
 		{
 			Id:                      8,
 			ApplicantId:             1,
-			CreditClassAbbreviation: "PCRD",
+			CreditClassAbbreviation: "PTEST",
 			Name:                    "Another Suspended Project",
 			Status:                  plasticcredit.ProjectStatus_SUSPENDED,
 		},
 		{
 			Id:                      9,
 			ApplicantId:             1,
-			CreditClassAbbreviation: "PCRD",
+			CreditClassAbbreviation: "PTEST",
 			Name:                    "New Project to update",
 			Status:                  plasticcredit.ProjectStatus_NEW,
 		},
@@ -221,7 +221,7 @@ func (s *TestSuite) SetupSuite() {
 			},
 		},
 		{
-			Denom:     "PCRD/00001",
+			Denom:     "PTEST/00001",
 			ProjectId: 2,
 			TotalAmount: plasticcredit.CreditAmount{
 				Active:  5000,
@@ -240,7 +240,7 @@ func (s *TestSuite) SetupSuite() {
 		},
 		{
 			Owner: plasticcreditGenesisState.Applicants[0].Admin,
-			Denom: "PCRD/00001",
+			Denom: "PTEST/00001",
 			Balance: plasticcredit.CreditAmount{
 				Active:  5000,
 				Retired: 0,
