@@ -57,7 +57,7 @@ func (s *TestSuite) TestGenesis() {
 		},
 		CreditClasses: []plasticcredit.CreditClass{
 			{
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "Empower Plastic Cleanup Credit",
 			},
@@ -76,7 +76,7 @@ func (s *TestSuite) TestGenesis() {
 			{
 				Id:                      1,
 				ApplicantId:             1,
-				CreditClassAbbreviation: "PCRD",
+				CreditClassAbbreviation: "PTEST",
 				Name:                    "My project",
 			},
 			{
@@ -94,7 +94,7 @@ func (s *TestSuite) TestGenesis() {
 			{
 				Id:                      4,
 				ApplicantId:             3,
-				CreditClassAbbreviation: "PCRD",
+				CreditClassAbbreviation: "PTEST",
 				Name:                    "Project 420x",
 			},
 		},
@@ -119,7 +119,7 @@ func (s *TestSuite) TestGenesis() {
 		CreditBalances: []plasticcredit.CreditBalance{
 			{
 				Owner: sample.AccAddress(),
-				Denom: "EMP/61361514316",
+				Denom: "ETEST/61361514316",
 				Balance: plasticcredit.CreditAmount{
 					Active:  0,
 					Retired: 500000,
@@ -127,7 +127,7 @@ func (s *TestSuite) TestGenesis() {
 			},
 			{
 				Owner: sample.AccAddress(),
-				Denom: "EMP/61361514316",
+				Denom: "ETEST/61361514316",
 				Balance: plasticcredit.CreditAmount{
 					Active:  0,
 					Retired: 200000,
@@ -135,7 +135,7 @@ func (s *TestSuite) TestGenesis() {
 			},
 			{
 				Owner: sample.AccAddress(),
-				Denom: "EMP/61361514316",
+				Denom: "ETEST/61361514316",
 				Balance: plasticcredit.CreditAmount{
 					Active:  0,
 					Retired: 300000,

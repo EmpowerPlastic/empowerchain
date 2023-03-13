@@ -28,7 +28,7 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 	}{
 		"create project": {
 			applicantID:       "1",
-			creditClass:       "EMP",
+			creditClass:       "ETEST",
 			projectName:       "My new Project",
 			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
 			expectedErrOnSend: false,
@@ -37,14 +37,14 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 			expectedState: &plasticcredit.Project{
 				Id:                      11,
 				ApplicantId:             1,
-				CreditClassAbbreviation: "EMP",
+				CreditClassAbbreviation: "ETEST",
 				Name:                    "My new Project",
 				Status:                  plasticcredit.ProjectStatus_NEW,
 			},
 		},
 		"admin does not have authorization for applicant": {
 			applicantID:       "1",
-			creditClass:       "EMP",
+			creditClass:       "ETEST",
 			projectName:       "My new Project",
 			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, notApplicantKey.Name),
 			expectedErrOnSend: false,
@@ -54,7 +54,7 @@ func (s *E2ETestSuite) TestCmdCreateProject() {
 		},
 		"empty name": {
 			applicantID:       "1",
-			creditClass:       "EMP",
+			creditClass:       "ETEST",
 			projectName:       "",
 			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
 			expectedErrOnSend: true,
@@ -132,7 +132,7 @@ func (s *E2ETestSuite) TestCmdUpdateProject() {
 			expectedState: &plasticcredit.Project{
 				Id:                      9,
 				ApplicantId:             1,
-				CreditClassAbbreviation: "PCRD",
+				CreditClassAbbreviation: "PTEST",
 				Name:                    "My Updated Project",
 				Status:                  plasticcredit.ProjectStatus_NEW,
 			},
@@ -220,7 +220,7 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 			expectedState: &plasticcredit.Project{
 				Id:                      3,
 				ApplicantId:             1,
-				CreditClassAbbreviation: "EMP",
+				CreditClassAbbreviation: "ETEST",
 				Name:                    "New project",
 				Status:                  plasticcredit.ProjectStatus_APPROVED,
 			},
@@ -234,7 +234,7 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 			expectedState: &plasticcredit.Project{
 				Id:                      2,
 				ApplicantId:             1,
-				CreditClassAbbreviation: "PCRD",
+				CreditClassAbbreviation: "PTEST",
 				Name:                    "Suspended project",
 				Status:                  plasticcredit.ProjectStatus_APPROVED,
 			},
@@ -272,7 +272,7 @@ func (s *E2ETestSuite) TestCmdApproveProject() {
 			expectedState: &plasticcredit.Project{
 				Id:                      4,
 				ApplicantId:             1,
-				CreditClassAbbreviation: "PCRD",
+				CreditClassAbbreviation: "PTEST",
 				Name:                    "Rejected project",
 				Status:                  plasticcredit.ProjectStatus_APPROVED,
 			},
@@ -330,7 +330,7 @@ func (s *E2ETestSuite) TestCmdRejectProject() {
 			expectedState: &plasticcredit.Project{
 				Id:                      5,
 				ApplicantId:             1,
-				CreditClassAbbreviation: "PCRD",
+				CreditClassAbbreviation: "PTEST",
 				Name:                    "Other New Project",
 				Status:                  plasticcredit.ProjectStatus_REJECTED,
 			},
@@ -429,7 +429,7 @@ func (s *E2ETestSuite) TestCmdSuspendProject() {
 			expectedState: &plasticcredit.Project{
 				Id:                      11,
 				ApplicantId:             1,
-				CreditClassAbbreviation: "EMP",
+				CreditClassAbbreviation: "ETEST",
 				Name:                    "Approved project to suspend",
 				Status:                  plasticcredit.ProjectStatus_SUSPENDED,
 			},

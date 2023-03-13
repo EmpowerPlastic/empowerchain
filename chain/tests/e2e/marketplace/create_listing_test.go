@@ -20,7 +20,7 @@ func (s *E2ETestSuite) TestCreateListing() {
 	grantCmd := cli.MsgGrantTransferAuthorizationCmd()
 	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, grantCmd, append([]string{
 		marketplaceAddress,
-		"PCRD/00001",
+		"PTEST/00001",
 		"10",
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, creditOwnerKey.Name),
 	}, s.CommonFlags...))
@@ -31,13 +31,13 @@ func (s *E2ETestSuite) TestCreateListing() {
 
 	// Query balance before creating the listing
 	// Not bothering to query the marketplace balance because it will be zero anyway (it was just created, after all)
-	creditOwnerBalanceBefore := s.GetCreditBalance(e2e.ApplicantAddress, "PCRD/00001")
+	creditOwnerBalanceBefore := s.GetCreditBalance(e2e.ApplicantAddress, "PTEST/00001")
 
 	// Create the listing
 	executeContractCmd := wasmcli.ExecuteContractCmd()
 	out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
 		marketplaceAddress,
-		`{"create_listing": {"denom": "PCRD/00001", "number_of_credits": "5", "price_per_credit": {"denom": "umpwr", "amount": "1"}}}`,
+		`{"create_listing": {"denom": "PTEST/00001", "number_of_credits": "5", "price_per_credit": {"denom": "umpwr", "amount": "1"}}}`,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, creditOwnerKey.Name),
 	}, s.CommonFlags...))
 	s.Require().NoError(err, out.String())
@@ -46,8 +46,8 @@ func (s *E2ETestSuite) TestCreateListing() {
 	s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 	// Query balances after creating the listing
-	contractBalanceAfter := s.GetCreditBalance(marketplaceAddress, "PCRD/00001")
-	creditOwnerBalanceAfter := s.GetCreditBalance(e2e.ApplicantAddress, "PCRD/00001")
+	contractBalanceAfter := s.GetCreditBalance(marketplaceAddress, "PTEST/00001")
+	creditOwnerBalanceAfter := s.GetCreditBalance(e2e.ApplicantAddress, "PTEST/00001")
 
 	// Check that the contract balance increased by 5 credits
 	s.Require().Equal(uint64(5), contractBalanceAfter.Active)

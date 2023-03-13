@@ -24,7 +24,7 @@ func (s *E2ETestSuite) TestBuyCredits() {
 	grantCmd := cli.MsgGrantTransferAuthorizationCmd()
 	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, grantCmd, append([]string{
 		marketplaceAddress,
-		"PCRD/00001",
+		"PTEST/00001",
 		"10",
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, creditOwnerKey.Name),
 	}, s.CommonFlags...))
@@ -37,7 +37,7 @@ func (s *E2ETestSuite) TestBuyCredits() {
 	executeContractCmd := wasmcli.ExecuteContractCmd()
 	out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
 		marketplaceAddress,
-		fmt.Sprintf(`{"create_listing": {"denom": "PCRD/00001", "number_of_credits": "5", "price_per_credit": {"denom": "%s", "amount": "1500000"}}}`, sdk.DefaultBondDenom),
+		fmt.Sprintf(`{"create_listing": {"denom": "PTEST/00001", "number_of_credits": "5", "price_per_credit": {"denom": "%s", "amount": "1500000"}}}`, sdk.DefaultBondDenom),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, creditOwnerKey.Name),
 	}, s.CommonFlags...))
 	s.Require().NoError(err, out.String())
@@ -70,12 +70,12 @@ func (s *E2ETestSuite) TestBuyCredits() {
 	s.Require().Equal(buyerBalanceBefore-3000000-e2e.DefaultFee.Amount.Uint64(), buyerBalanceAfter)
 
 	// Check that the credits were transferred
-	buyerCreditBalance := s.GetCreditBalance(e2e.RandomAddress, "PCRD/00001")
+	buyerCreditBalance := s.GetCreditBalance(e2e.RandomAddress, "PTEST/00001")
 	s.Require().Equal(plasticcredit.CreditAmount{
 		Active:  2,
 		Retired: 0,
 	}, buyerCreditBalance)
-	contractCreditBalance := s.GetCreditBalance(marketplaceAddress, "PCRD/00001")
+	contractCreditBalance := s.GetCreditBalance(marketplaceAddress, "PTEST/00001")
 	s.Require().Equal(plasticcredit.CreditAmount{
 		Active:  3,
 		Retired: 0,
