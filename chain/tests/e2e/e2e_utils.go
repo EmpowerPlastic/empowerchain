@@ -7,9 +7,41 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	bankcli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	govcli "github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
+
+func (s *TestSuite) GetBankBalance(address, denom string) uint64 {
+	val := s.Network.Validators[0]
+
+	queryCmd := bankcli.GetBalancesCmd()
+	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{
+		address,
+		fmt.Sprintf("--denom=%s", denom),
+		fmt.Sprintf("--%s=json", flags.FlagOutput),
+	})
+	s.Require().NoError(err, out.String())
+	var balanceResponse sdk.Coin
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &balanceResponse))
+
+	return balanceResponse.Amount.Uint64()
+}
+
+func (s *TestSuite) GetCreditBalance(address, denom string) plasticcredit.CreditAmount {
+	val := s.Network.Validators[0]
+
+	cmdQueryBalance := cli.CmdQueryCreditBalance()
+	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmdQueryBalance, []string{address, denom})
+	s.Require().NoError(err)
+	var creditBalanceResponse plasticcredit.QueryCreditBalanceResponse
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &creditBalanceResponse))
+
+	return creditBalanceResponse.Balance.Balance
+}
 
 // MakeSuccessfulProposal creates a proposal, votes yes on it, and waits for it to pass
 // If the process fails at any point, the calling test will fail
