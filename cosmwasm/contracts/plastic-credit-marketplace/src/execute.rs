@@ -9,6 +9,7 @@ pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> R
     match msg {
         ExecuteMsg::CreateListing { denom, number_of_credits, price_per_credit } => execute_create_listing(deps, env, info, denom, number_of_credits, price_per_credit),
         ExecuteMsg::BuyCredits { listing_id, number_of_credits_to_buy } => execute_buy_credits(deps, env, info, listing_id, number_of_credits_to_buy),
+        ExecuteMsg::UpdateListing { listing_id, number_of_credits, price_per_credit } => execute_update_listing(deps, env, info, listing_id, number_of_credits, price_per_credit),
     }
 }
 
@@ -106,6 +107,75 @@ pub fn execute_buy_credits(
         .add_attribute("total_price", total_price.to_string())
         .add_messages(vec![transfer_credits_msg, transfer_funds_msg])
     )
+}
+
+fn execute_update_listing(
+    deps: DepsMut,
+    env: Env,
+    info: MessageInfo,
+    listing_id: u64,
+    number_of_credits: Uint64,
+    price_per_credit: Coin,
+) -> Result<Response, ContractError> {
+    // Can't update the number of credits to zero
+    if number_of_credits.is_zero() {
+        return Err(ContractError::ZeroCredits {});
+    }
+
+    // Can't update the price to zero
+    if price_per_credit.amount.is_zero() {
+        return Err(ContractError::ZeroPrice {});
+    }
+
+    let mut listing = LISTINGS.load(deps.storage, listing_id).map_err(|_| ContractError::ListingNotFound {})?;
+
+    // Only the owner of the listing can update it
+    if listing.owner != info.sender {
+        return Err(ContractError::Unauthorized {});
+    }
+
+    let exec_credit_transfer_msg: Option<CosmosMsg>;
+    // Check if the number of credits is increasing or decreasing
+    if number_of_credits < listing.number_of_credits {
+        // If the number of credits is decreasing, we need to transfer the difference back to the owner
+        let number_of_credits_to_transfer = listing.number_of_credits.checked_sub(number_of_credits).unwrap();
+        exec_credit_transfer_msg = Some(create_transfer_credits_from_contract_msg(
+            env,
+            info.sender.to_string(),
+            listing.denom.clone(),
+            number_of_credits_to_transfer.into(),
+        ));
+    } else if number_of_credits > listing.number_of_credits {
+        // If the number of credits is increasing, we need to transfer the difference from the owner
+        let number_of_credits_to_transfer = number_of_credits.checked_sub(listing.number_of_credits).unwrap();
+        exec_credit_transfer_msg = Some(create_transfer_credits_to_contract_msg(
+            info.sender.to_string(),
+            env.contract.address.to_string(),
+            listing.denom.clone(),
+            number_of_credits_to_transfer.into(),
+        ));
+    } else {
+        // If the number of credits is the same, we don't need to transfer anything
+        exec_credit_transfer_msg = None;
+    }
+
+    // Update the listing
+    listing.number_of_credits = number_of_credits;
+    listing.price_per_credit = price_per_credit.clone();
+    LISTINGS.save(deps.storage, listing_id, &listing)?;
+
+    let res = Response::new()
+        .add_attribute("action", "update_listing")
+        .add_attribute("listing_id", listing.id.to_string())
+        .add_attribute("listing_owner", info.sender)
+        .add_attribute("number_of_credits", number_of_credits.to_string())
+        .add_attribute("price_per_credit", price_per_credit.to_string());
+    
+    if let Some(msg) = exec_credit_transfer_msg {
+        Ok(res.add_message(msg))
+    } else {
+        Ok(res)
+    }
 }
 
 fn create_transfer_credits_to_contract_msg(from: String, to: String, denom: String, amount: u64) -> CosmosMsg {
@@ -308,7 +378,272 @@ mod tests {
             assert_eq!(all_listings.len(), 0);
         }
     }
+    mod update_listing_tests {
+        use cosmos_sdk_proto::{
+            cosmos::authz::v1beta1::MsgExec,
+            traits::MessageExt,
+            traits::Message,
+        };
+        use cosmwasm_std::{Coin, CosmosMsg, Empty, Uint128, Uint64};
+        use cosmwasm_std::testing::{MOCK_CONTRACT_ADDR, mock_dependencies, mock_env, mock_info};
+        use crate::error::ContractError;
+        use crate::execute::{execute, MsgTransferCredits};
+        use crate::instantiate;
+        use crate::msg::ExecuteMsg;
+        use crate::state::LISTINGS;
 
+        #[test]
+        fn test_update_listing_happy_path_increase_credits() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let update_listing_msg = ExecuteMsg::UpdateListing {
+                listing_id: 1,
+                number_of_credits: Uint64::from(100u64),
+                price_per_credit:Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+            };
+            let res = execute(deps.as_mut(), mock_env(), creator_info.clone(), update_listing_msg).unwrap();
+            assert_eq!(res.attributes.len(), 5);
+            assert_eq!(res.messages.len(), 1);
+            let sg_msg = &res.messages[0].msg;
+            if let CosmosMsg::Stargate { type_url, value } = sg_msg {
+                assert_eq!(type_url, "/cosmos.authz.v1beta1.MsgExec");
+
+                let exec_msg = MsgExec::decode(value.as_slice()).unwrap();
+                assert_eq!(exec_msg.msgs.len(), 1);
+
+                let transfer_msg = MsgTransferCredits::from_any(&exec_msg.msgs[0]).unwrap();
+                assert_eq!(transfer_msg.from, creator_info.sender.to_string());
+                assert_eq!(transfer_msg.to, MOCK_CONTRACT_ADDR.to_string());
+                assert_eq!(transfer_msg.denom, "pcrd");
+                assert_eq!(transfer_msg.amount, 58);
+                assert_eq!(transfer_msg.retire, false);
+            } else {
+                panic!("Expected Stargate message");
+            }
+
+            let listing = LISTINGS.load(deps.as_ref().storage, 1).unwrap();
+            assert_eq!(listing.id, 1);
+            assert_eq!(listing.owner, creator_info.sender);
+            assert_eq!(listing.denom, "pcrd");
+            assert_eq!(listing.number_of_credits, Uint64::from(100u64));
+            assert_eq!(listing.price_per_credit, Coin {
+                denom: "token".to_string(),
+                amount: Uint128::from(1337u128),
+            });
+        }
+
+        #[test]
+        fn test_update_listing_happy_path_decrease_credits() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let update_listing_msg = ExecuteMsg::UpdateListing {
+                listing_id: 1,
+                number_of_credits: Uint64::from(10u64),
+                price_per_credit:Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+            };
+            let res = execute(deps.as_mut(), mock_env(), creator_info.clone(), update_listing_msg).unwrap();
+            assert_eq!(res.attributes.len(), 5);
+            assert_eq!(res.messages.len(), 1);
+            let sg_msg = &res.messages[0].msg;
+            if let CosmosMsg::Stargate { type_url, value } = sg_msg {
+                assert_eq!(type_url, "/cosmos.authz.v1beta1.MsgExec");
+
+                let exec_msg = MsgExec::decode(value.as_slice()).unwrap();
+                assert_eq!(exec_msg.msgs.len(), 1);
+
+                let transfer_msg = MsgTransferCredits::from_any(&exec_msg.msgs[0]).unwrap();
+                assert_eq!(transfer_msg.from, MOCK_CONTRACT_ADDR.to_string());
+                assert_eq!(transfer_msg.to, creator_info.sender.to_string());
+                assert_eq!(transfer_msg.denom, "pcrd");
+                assert_eq!(transfer_msg.amount, 32);
+                assert_eq!(transfer_msg.retire, true);
+            } else {
+                panic!("Expected Stargate message");
+            }
+
+            let listing = LISTINGS.load(deps.as_ref().storage, 1).unwrap();
+            assert_eq!(listing.id, 1);
+            assert_eq!(listing.owner, creator_info.sender);
+            assert_eq!(listing.denom, "pcrd");
+            assert_eq!(listing.number_of_credits, Uint64::from(10u64));
+            assert_eq!(listing.price_per_credit, Coin {
+                denom: "token".to_string(),
+                amount: Uint128::from(1337u128),
+            });
+        }
+
+        #[test]
+        fn test_update_listing_happy_path_change_price_per_credit_only() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let update_listing_msg = ExecuteMsg::UpdateListing {
+                listing_id: 1,
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit:Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(42u128),
+                },
+            };
+            let res = execute(deps.as_mut(), mock_env(), creator_info.clone(), update_listing_msg).unwrap();
+            assert_eq!(res.attributes.len(), 5);
+            assert_eq!(res.messages.len(), 0);
+            
+            let listing = LISTINGS.load(deps.as_ref().storage, 1).unwrap();
+            assert_eq!(listing.id, 1);
+            assert_eq!(listing.owner, creator_info.sender);
+            assert_eq!(listing.denom, "pcrd");
+            assert_eq!(listing.number_of_credits, Uint64::from(42u64));
+            assert_eq!(listing.price_per_credit, Coin {
+                denom: "token".to_string(),
+                amount: Uint128::from(42u128),
+            });
+        }
+
+        #[test]
+        fn test_update_listing_non_existing_listing() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+
+            let update_listing_msg = ExecuteMsg::UpdateListing {
+                listing_id: 1,
+                number_of_credits: Uint64::from(1337u64),
+                price_per_credit:Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(42u128),
+                },
+            };
+            let err = execute(deps.as_mut(), mock_env(), creator_info.clone(), update_listing_msg).unwrap_err();
+            assert_eq!(err, ContractError::ListingNotFound {});
+        }
+
+        #[test]
+        fn test_update_listing_not_owner() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let update_listing_msg = ExecuteMsg::UpdateListing {
+                listing_id: 1,
+                number_of_credits: Uint64::from(1337u64),
+                price_per_credit:Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(42u128),
+                },
+            };
+            let err = execute(deps.as_mut(), mock_env(), mock_info("not_creator", &[]), update_listing_msg).unwrap_err();
+            assert_eq!(err, ContractError::Unauthorized {});
+        }
+
+        #[test]
+        fn test_update_listing_zero_price() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let update_listing_msg = ExecuteMsg::UpdateListing {
+                listing_id: 1,
+                number_of_credits: Uint64::from(1337u64),
+                price_per_credit:Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(0u128),
+                },
+            };
+            let err = execute(deps.as_mut(), mock_env(), creator_info.clone(), update_listing_msg).unwrap_err();
+            assert_eq!(err, ContractError::ZeroPrice {});
+        }
+
+        #[test]
+        fn test_update_listing_zero_credits() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let update_listing_msg = ExecuteMsg::UpdateListing {
+                listing_id: 1,
+                number_of_credits: Uint64::from(0u64),
+                price_per_credit:Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(42u128),
+                },
+            };
+            let err = execute(deps.as_mut(), mock_env(), creator_info.clone(), update_listing_msg).unwrap_err();
+            assert_eq!(err, ContractError::ZeroCredits {});
+        }
+    }
+    
     mod buy_credits_tests {
         use cosmos_sdk_proto::traits::{Message, TypeUrl};
         use cosmwasm_std::{BankMsg, Coin, coins, CosmosMsg, Empty, Uint128, Uint64};
