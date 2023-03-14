@@ -177,7 +177,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 		"happy path": {
 			creditCollections: []plasticcredit.CreditCollection{
 				{
-					Denom:     "EMP/123",
+					Denom:     "ETEST/123",
 					ProjectId: 1,
 					TotalAmount: plasticcredit.CreditAmount{
 						Active:  1000,
@@ -185,7 +185,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 					},
 				},
 				{
-					Denom:     "PCRD/0001",
+					Denom:     "PTEST/0001",
 					ProjectId: 2,
 					TotalAmount: plasticcredit.CreditAmount{
 						Active:  100,
@@ -196,7 +196,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 			creditBalances: []plasticcredit.CreditBalance{
 				{
 					Owner: sample.AccAddress(),
-					Denom: "EMP/123",
+					Denom: "ETEST/123",
 					Balance: plasticcredit.CreditAmount{
 						Active:  200,
 						Retired: 0,
@@ -204,7 +204,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 				},
 				{
 					Owner: sample.AccAddress(),
-					Denom: "EMP/123",
+					Denom: "ETEST/123",
 					Balance: plasticcredit.CreditAmount{
 						Active:  800,
 						Retired: 100,
@@ -212,7 +212,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 				},
 				{
 					Owner: sample.AccAddress(),
-					Denom: "EMP/123",
+					Denom: "ETEST/123",
 					Balance: plasticcredit.CreditAmount{
 						Active:  0,
 						Retired: 100,
@@ -220,7 +220,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 				},
 				{
 					Owner: sample.AccAddress(),
-					Denom: "PCRD/0001",
+					Denom: "PTEST/0001",
 					Balance: plasticcredit.CreditAmount{
 						Active:  100,
 						Retired: 0,
@@ -233,7 +233,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 		"invalid active balance": {
 			creditCollections: []plasticcredit.CreditCollection{
 				{
-					Denom:     "EMP/123",
+					Denom:     "ETEST/123",
 					ProjectId: 1,
 					TotalAmount: plasticcredit.CreditAmount{
 						Active:  1000,
@@ -241,7 +241,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 					},
 				},
 				{
-					Denom:     "PCRD/0001",
+					Denom:     "PTEST/0001",
 					ProjectId: 2,
 					TotalAmount: plasticcredit.CreditAmount{
 						Active:  80,
@@ -252,7 +252,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 			creditBalances: []plasticcredit.CreditBalance{
 				{
 					Owner: sample.AccAddress(),
-					Denom: "EMP/123",
+					Denom: "ETEST/123",
 					Balance: plasticcredit.CreditAmount{
 						Active:  200,
 						Retired: 0,
@@ -260,7 +260,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 				},
 				{
 					Owner: sample.AccAddress(),
-					Denom: "EMP/123",
+					Denom: "ETEST/123",
 					Balance: plasticcredit.CreditAmount{
 						Active:  800,
 						Retired: 100,
@@ -268,7 +268,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 				},
 				{
 					Owner: sample.AccAddress(),
-					Denom: "EMP/123",
+					Denom: "ETEST/123",
 					Balance: plasticcredit.CreditAmount{
 						Active:  0,
 						Retired: 100,
@@ -276,7 +276,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 				},
 				{
 					Owner: sample.AccAddress(),
-					Denom: "PCRD/0001",
+					Denom: "PTEST/0001",
 					Balance: plasticcredit.CreditAmount{
 						Active:  100,
 						Retired: 0,
@@ -284,12 +284,12 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 				},
 			},
 			expBroken:     true,
-			messageBroken: "amount of invalid supplies found 1\nPCRD/0001 collection has 80 active and 0 retired credits, but the total of active is 100 and retired is 0",
+			messageBroken: "amount of invalid supplies found 1\nPTEST/0001 collection has 80 active and 0 retired credits, but the total of active is 100 and retired is 0",
 		},
 		"invalid retired balance": {
 			creditCollections: []plasticcredit.CreditCollection{
 				{
-					Denom:     "EMP/123",
+					Denom:     "ETEST/123",
 					ProjectId: 1,
 					TotalAmount: plasticcredit.CreditAmount{
 						Active:  1000,
@@ -297,7 +297,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 					},
 				},
 				{
-					Denom:     "PCRD/0001",
+					Denom:     "PTEST/0001",
 					ProjectId: 2,
 					TotalAmount: plasticcredit.CreditAmount{
 						Active:  100,
@@ -308,7 +308,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 			creditBalances: []plasticcredit.CreditBalance{
 				{
 					Owner: sample.AccAddress(),
-					Denom: "EMP/123",
+					Denom: "ETEST/123",
 					Balance: plasticcredit.CreditAmount{
 						Active:  200,
 						Retired: 0,
@@ -316,7 +316,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 				},
 				{
 					Owner: sample.AccAddress(),
-					Denom: "EMP/123",
+					Denom: "ETEST/123",
 					Balance: plasticcredit.CreditAmount{
 						Active:  800,
 						Retired: 100,
@@ -324,7 +324,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 				},
 				{
 					Owner: sample.AccAddress(),
-					Denom: "EMP/123",
+					Denom: "ETEST/123",
 					Balance: plasticcredit.CreditAmount{
 						Active:  0,
 						Retired: 100,
@@ -332,7 +332,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 				},
 				{
 					Owner: sample.AccAddress(),
-					Denom: "PCRD/0001",
+					Denom: "PTEST/0001",
 					Balance: plasticcredit.CreditAmount{
 						Active:  100,
 						Retired: 0,
@@ -340,7 +340,7 @@ func (s *TestSuite) TestTotalSuppliesInvariant() {
 				},
 			},
 			expBroken:     true,
-			messageBroken: "amount of invalid supplies found 1\nPCRD/0001 collection has 100 active and 20 retired credits, but the total of active is 100 and retired is 0",
+			messageBroken: "amount of invalid supplies found 1\nPTEST/0001 collection has 100 active and 20 retired credits, but the total of active is 100 and retired is 0",
 		},
 	}
 	for name, tc := range testCases {

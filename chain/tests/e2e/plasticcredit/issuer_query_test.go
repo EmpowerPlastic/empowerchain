@@ -98,7 +98,7 @@ func (s *E2ETestSuite) TestCmdQueryProject() {
 				Project: plasticcredit.Project{
 					Id:                      1,
 					ApplicantId:             1,
-					CreditClassAbbreviation: "EMP",
+					CreditClassAbbreviation: "ETEST",
 					Name:                    "Approved project",
 					Status:                  plasticcredit.ProjectStatus_APPROVED,
 				},

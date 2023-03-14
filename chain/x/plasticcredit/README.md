@@ -162,7 +162,7 @@ The `issuer_id` field is the direct link to the Issuer that has created and oper
 
 `name` is mainly a human-readable name for a credit class such as "Empower Plastic Credits".
 
-`denom` is the short unique denominator for the plastic credits in this credit class (e.g. "PCRD")
+`denom` is the short unique denominator for the plastic credits in this credit class (e.g. "PTEST")
 
 - Credit Class: `0x04 | creditClassID | -> ProtocolBuffer(CreditClass)`
 
@@ -186,7 +186,7 @@ The project can in one of the following states: new, approved or rejected
 ### Credit Collection
 
 Credit Collection contains references to formal information about the collection and overall amount of minted and retired credits.
-- `denom` - denomination of the collection, which is unique per collection and consists of `Credit Class` denom and a chosen suffix, e.g. `EMP/123`. Denom is also used as a store key.
+- `denom` - denomination of the collection, which is unique per collection and consists of `Credit Class` denom and a chosen suffix, e.g. `ETEST/123`. Denom is also used as a store key.
 - `Active amount` - amount of credits that are active for a given collection (weren't retired).
 - `Retired amount` - amount of credits that have been retired for a given collection.
 - `Credit data` - URLs and proofs to all the data relevant to a given Credit Collection.
