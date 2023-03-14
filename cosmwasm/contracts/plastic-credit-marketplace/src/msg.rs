@@ -9,6 +9,10 @@ pub enum ExecuteMsg {
         denom: String,
         number_of_credits: Uint64,
         price_per_credit: Coin,
+    },
+    BuyCredits {
+        listing_id: u64,
+        number_of_credits_to_buy: u64,
     }
 }
 

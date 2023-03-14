@@ -36,7 +36,7 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 			"",
 			plasticcredit.CreditCollection{
 				ProjectId: 1,
-				Denom:     "EMP/456",
+				Denom:     "ETEST/456",
 				TotalAmount: plasticcredit.CreditAmount{
 					Active: 1000,
 				},
@@ -52,7 +52,7 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 			"",
 			plasticcredit.CreditCollection{
 				ProjectId: 1,
-				Denom:     "EMP/123",
+				Denom:     "ETEST/123",
 				TotalAmount: plasticcredit.CreditAmount{
 					Active: 2000,
 				},
@@ -190,7 +190,7 @@ func (s *E2ETestSuite) TestCmdTransferCredits() {
 		"happy path (no retire)": {
 			senderAddress,
 			"empower15hxwswcmmkasaar65n3vkmp6skurvtas3xzl7s",
-			"EMP/TestCmdTransferCredits1",
+			"ETEST/TestCmdTransferCredits1",
 			"100",
 			"false",
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
@@ -204,7 +204,7 @@ func (s *E2ETestSuite) TestCmdTransferCredits() {
 		"happy path (retire)": {
 			senderAddress,
 			"empower15hxwswcmmkasaar65n3vkmp6skurvtas3xzl7s",
-			"EMP/TestCmdTransferCredits2",
+			"ETEST/TestCmdTransferCredits2",
 			"200",
 			"true",
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
@@ -218,7 +218,7 @@ func (s *E2ETestSuite) TestCmdTransferCredits() {
 		"not enough sender balance": {
 			senderAddress,
 			"empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
-			"EMP/TestCmdTransferCredits2",
+			"ETEST/TestCmdTransferCredits2",
 			"10000",
 			"false",
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
@@ -232,7 +232,7 @@ func (s *E2ETestSuite) TestCmdTransferCredits() {
 		"non-existing denom": {
 			senderAddress,
 			"empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
-			"EMP/DOES_NOT_EXIST",
+			"ETEST/DOES_NOT_EXIST",
 			"100",
 			"false",
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
@@ -262,18 +262,12 @@ func (s *E2ETestSuite) TestCmdTransferCredits() {
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
-				cmdQueryBalance := cli.CmdQueryCreditBalance()
-				querySenderBalanceResponse, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmdQueryBalance, append([]string{tc.senderAddress}, tc.denom))
-				s.Require().NoError(err)
-				var senderBalance plasticcredit.QueryCreditBalanceResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(querySenderBalanceResponse.Bytes(), &senderBalance))
-				s.Require().Equal(tc.expectedSenderBalance, senderBalance.Balance.Balance.Active)
+				actualSenderBalance := s.GetCreditBalance(tc.senderAddress, tc.denom)
+				s.Require().Equal(tc.expectedSenderBalance, actualSenderBalance.Active)
 
-				queryRecipientBalanceResponse, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmdQueryBalance, append([]string{tc.recipientAddress}, tc.denom))
-				s.Require().NoError(err)
-				var recipientBalance plasticcredit.QueryCreditBalanceResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryRecipientBalanceResponse.Bytes(), &recipientBalance))
-				s.Require().Equal(tc.expectedRecipientBalanceActive, recipientBalance.Balance.Balance.Active)
+				actualRecipientBalance := s.GetCreditBalance(tc.recipientAddress, tc.denom)
+				s.Require().Equal(tc.expectedRecipientBalanceActive, actualRecipientBalance.Active)
+
 				cmdQueryCollection := cli.CmdQueryCreditCollection()
 				queryCollectionResponse, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmdQueryCollection, []string{tc.denom})
 				s.Require().NoError(err)
@@ -308,7 +302,7 @@ func (s *E2ETestSuite) TestCmdRetireCredits() {
 	}{
 		"happy path": {
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
-			"PCRD/00001",
+			"PTEST/00001",
 			"100",
 			100,
 			false,
@@ -317,7 +311,7 @@ func (s *E2ETestSuite) TestCmdRetireCredits() {
 		},
 		"not enough active balance": {
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name),
-			"EMP/777",
+			"ETEST/777",
 			"100",
 			0,
 			false,
@@ -340,12 +334,9 @@ func (s *E2ETestSuite) TestCmdRetireCredits() {
 			default:
 				_, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 				s.Require().NoError(err)
-				cmdQueryBalance := cli.CmdQueryCreditBalance()
-				querySenderBalanceResponse, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmdQueryBalance, append([]string{senderAddress}, tc.denom))
-				s.Require().NoError(err)
-				var senderBalance plasticcredit.QueryCreditBalanceResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(querySenderBalanceResponse.Bytes(), &senderBalance))
-				s.Require().Equal(tc.expectedBalanceRetired, senderBalance.Balance.Balance.Retired)
+
+				actualBalance := s.GetCreditBalance(senderAddress, tc.denom)
+				s.Require().Equal(tc.expectedBalanceRetired, actualBalance.Retired)
 			}
 		})
 	}
