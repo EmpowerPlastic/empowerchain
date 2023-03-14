@@ -28,8 +28,8 @@ module.exports = {
         openSans: ["Open Sans", "sans-serif"],
       },
       backgroundImage: {
-        "main-image": "url('../src/assets/images/main-bg.jpg')",
-        "emp-astro": "url('../src/assets/images/emp-astro-1.png')",
+        "main-image": "url('../assets/images/main-bg.jpg')",
+        "emp-astro": "url('../assets/images/emp-astro-1.png')",
       },
     },
   },
