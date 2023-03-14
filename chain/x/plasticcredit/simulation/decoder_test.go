@@ -35,19 +35,19 @@ func TestNewDecodeStore(t *testing.T) {
 		Admin:       "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
 	}
 	creditClass := plasticcredit.CreditClass{
-		Abbreviation: "PCRD",
+		Abbreviation: "PTEST",
 		IssuerId:     1,
 		Name:         "test credit class",
 	}
 	project := plasticcredit.Project{
 		Id:                      1,
 		ApplicantId:             1,
-		CreditClassAbbreviation: "PCRD",
+		CreditClassAbbreviation: "PTEST",
 		Name:                    "test project",
 		Status:                  plasticcredit.ProjectStatus_NEW,
 	}
 	creditCollection := plasticcredit.CreditCollection{
-		Denom:     "PCRD",
+		Denom:     "PTEST",
 		ProjectId: 1,
 		TotalAmount: plasticcredit.CreditAmount{
 			Active:  12,
@@ -56,7 +56,7 @@ func TestNewDecodeStore(t *testing.T) {
 	}
 	creditBalance := plasticcredit.CreditBalance{
 		Owner: "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
-		Denom: "PCRD",
+		Denom: "PTEST",
 		Balance: plasticcredit.CreditAmount{
 			Active:  3,
 			Retired: 2,

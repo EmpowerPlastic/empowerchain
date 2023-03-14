@@ -39,7 +39,7 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 		expectedState     plasticcredit.CreditClass
 	}{
 		"create new credit class": {
-			abbreviation:      "PTEST2",
+			abbreviation:      "PTES2",
 			issuerID:          "1",
 			name:              "Test",
 			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
@@ -47,13 +47,13 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 			expectedErrOnExec: false,
 			expectedErrMsg:    "",
 			expectedState: plasticcredit.CreditClass{
-				Abbreviation: "PTEST2",
+				Abbreviation: "PTES2",
 				Name:         "Test",
 				IssuerId:     1,
 			},
 		},
 		"invalid funds to cover fee": {
-			abbreviation:      "PTEST3",
+			abbreviation:      "PTES3",
 			issuerID:          "3",
 			name:              "Test",
 			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, noCoinsKey.Name),
@@ -63,7 +63,7 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 			expectedState:     plasticcredit.CreditClass{},
 		},
 		"non-existent issuer": {
-			abbreviation:      "PTEST2",
+			abbreviation:      "PTES2",
 			issuerID:          "5",
 			name:              "Test",
 			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
@@ -83,7 +83,7 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 			expectedState:     plasticcredit.CreditClass{},
 		},
 		"empty name": {
-			abbreviation:      "PTEST6",
+			abbreviation:      "PTES6",
 			issuerID:          "1",
 			name:              "",
 			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
@@ -157,20 +157,20 @@ func (s *E2ETestSuite) TestCmdUpdateCreditClass() {
 		expectedState     *plasticcredit.CreditClass
 	}{
 		"update name": {
-			abbreviation:      "EMP",
+			abbreviation:      "ETEST",
 			name:              "Updated Empower Plastic Credits via CLI",
 			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
 			expectedErrOnSend: false,
 			expectedErrOnExec: false,
 			expectedErrMsg:    "",
 			expectedState: &plasticcredit.CreditClass{
-				Abbreviation: "EMP",
+				Abbreviation: "ETEST",
 				IssuerId:     1,
 				Name:         "Updated Empower Plastic Credits via CLI",
 			},
 		},
 		"unauthorized": {
-			abbreviation:      "EMP",
+			abbreviation:      "ETEST",
 			name:              "Updated Empower Plastic Credits via CLI",
 			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, notAdminKey.Name),
 			expectedErrOnSend: false,
@@ -179,7 +179,7 @@ func (s *E2ETestSuite) TestCmdUpdateCreditClass() {
 			expectedState:     nil,
 		},
 		"empty name": {
-			abbreviation:      "EMP",
+			abbreviation:      "ETEST",
 			name:              "",
 			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
 			expectedErrOnSend: true,

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -19,10 +20,10 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/EmpowerPlastic/empowerchain/app"
+	genesistools "github.com/EmpowerPlastic/empowerchain/app/genesis-tools"
 	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
@@ -75,240 +76,43 @@ func (s *TestSuite) SetupSuite() {
 	s.Config.NumValidators = 3
 	s.CreditClassCreationFee = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(50000))
 
-	genesisState := s.Config.GenesisState
+	genesisStateRaw := s.Config.GenesisState
 
-	plasticcreditGenesisState := plasticcredit.DefaultGenesis()
-	// use "stake" for testing fee
-	plasticcreditGenesisState.Params.CreditClassCreationFee = s.CreditClassCreationFee
-	plasticcreditGenesisState.Issuers = []plasticcredit.Issuer{
-		{
-			Id:          1,
-			Name:        "Empower",
-			Description: "First Issuer",
-			Admin:       IssuerAddress,
-		},
-		{
-			Id:          2,
-			Name:        "Test Issuer",
-			Description: "Purely for testing",
-			Admin:       IssuerAddress,
-		},
-		{
-			Id:          3,
-			Name:        "Test Issuer with no coins",
-			Description: "Purely for testing",
-			Admin:       NoCoinsIssuerAdminAddress,
-		},
-	}
-	plasticcreditGenesisState.Applicants = []plasticcredit.Applicant{
-		{
-			Id:          1,
-			Name:        "Plastix Inc.",
-			Description: "Grab that bottle",
-			Admin:       ApplicantAddress,
-		},
-		{
-			Id:          2,
-			Name:        "Ocean plastic Inc.",
-			Description: "Grab that net",
-			Admin:       ApplicantAddress,
-		},
-		{
-			Id:          3,
-			Name:        "Sea plastic Inc.",
-			Description: "collector",
-			Admin:       ApplicantAddress,
-		},
-	}
-	plasticcreditGenesisState.CreditClasses = []plasticcredit.CreditClass{
-		{
-			Abbreviation: "EMP",
-			IssuerId:     1,
-			Name:         "Empower Plastic",
-		},
-		{
-			Abbreviation: "PTEST",
-			IssuerId:     2,
-			Name:         "Plastic Credit",
-		},
-	}
-	plasticcreditGenesisState.Projects = []plasticcredit.Project{
-		{
-			Id:                      1,
-			ApplicantId:             1,
-			CreditClassAbbreviation: "EMP",
-			Name:                    "Approved project",
-			Status:                  plasticcredit.ProjectStatus_APPROVED,
-		},
-		{
-			Id:                      2,
-			ApplicantId:             1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "Suspended project",
-			Status:                  plasticcredit.ProjectStatus_SUSPENDED,
-		},
-		{
-			Id:                      3,
-			ApplicantId:             1,
-			CreditClassAbbreviation: "EMP",
-			Name:                    "New project",
-			Status:                  plasticcredit.ProjectStatus_NEW,
-		},
-		{
-			Id:                      4,
-			ApplicantId:             1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "Rejected project",
-			Status:                  plasticcredit.ProjectStatus_REJECTED,
-		},
-		{
-			Id:                      5,
-			ApplicantId:             1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "Other New Project",
-			Status:                  plasticcredit.ProjectStatus_NEW,
-		},
-		{
-			Id:                      6,
-			ApplicantId:             1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "Another New Project",
-			Status:                  plasticcredit.ProjectStatus_NEW,
-		},
-		{
-			Id:                      7,
-			ApplicantId:             1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "Another Rejected Project",
-			Status:                  plasticcredit.ProjectStatus_REJECTED,
-		},
-		{
-			Id:                      8,
-			ApplicantId:             1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "Another Suspended Project",
-			Status:                  plasticcredit.ProjectStatus_SUSPENDED,
-		},
-		{
-			Id:                      9,
-			ApplicantId:             1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "New Project to update",
-			Status:                  plasticcredit.ProjectStatus_NEW,
-		},
-		{
-			Id:                      10,
-			ApplicantId:             1,
-			CreditClassAbbreviation: "EMP",
-			Name:                    "Approved project 2",
-			Status:                  plasticcredit.ProjectStatus_APPROVED,
-		},
-		{
-			Id:                      11,
-			ApplicantId:             1,
-			CreditClassAbbreviation: "EMP",
-			Name:                    "Approved project to suspend",
-			Status:                  plasticcredit.ProjectStatus_APPROVED,
-		},
-	}
-	plasticcreditGenesisState.CreditCollections = []plasticcredit.CreditCollection{
-		{
-			Denom:     "EMP/123",
-			ProjectId: 1,
-			TotalAmount: plasticcredit.CreditAmount{
-				Active:  1000,
-				Retired: 200,
-			},
-		},
-		{
-			Denom:     "PTEST/00001",
-			ProjectId: 2,
-			TotalAmount: plasticcredit.CreditAmount{
-				Active:  5000,
-				Retired: 0,
-			},
-		},
-	}
-	plasticcreditGenesisState.CreditBalances = []plasticcredit.CreditBalance{
-		{
-			Owner: plasticcreditGenesisState.Applicants[0].Admin,
-			Denom: "EMP/123",
-			Balance: plasticcredit.CreditAmount{
-				Active:  1000,
-				Retired: 200,
-			},
-		},
-		{
-			Owner: plasticcreditGenesisState.Applicants[0].Admin,
-			Denom: "PTEST/00001",
-			Balance: plasticcredit.CreditAmount{
-				Active:  5000,
-				Retired: 0,
-			},
-		},
-	}
-	plasticcreditGenesisState.IdCounters = plasticcredit.IDCounters{
-		NextIssuerId:    uint64(len(plasticcreditGenesisState.Issuers) + 1),
-		NextApplicantId: uint64(len(plasticcreditGenesisState.Applicants) + 1),
-		NextProjectId:   uint64(len(plasticcreditGenesisState.Projects) + 1),
-	}
-	plasticcreditGenesisStateBz, err := s.Config.Codec.MarshalJSON(&plasticcreditGenesisState)
-	s.Require().NoError(err)
-	genesisState[plasticcredit.ModuleName] = plasticcreditGenesisStateBz
+	e2eGenesisState := genesistools.GenesisState{}
+	e2eGenesisState.PlasticcreditGenesis = plasticcredit.DefaultGenesis()
+	s.Require().NoError(s.Config.Codec.UnmarshalJSON(genesisStateRaw[banktypes.ModuleName], &e2eGenesisState.BankGenesis))
+	s.Require().NoError(s.Config.Codec.UnmarshalJSON(genesisStateRaw[authtypes.ModuleName], &e2eGenesisState.AuthGenesis))
+	s.Require().NoError(s.Config.Codec.UnmarshalJSON(genesisStateRaw[govtypes.ModuleName], &e2eGenesisState.GovGenesis))
 
-	var bankGenesis banktypes.GenesisState
-	var authGenesis authtypes.GenesisState
-	var govGenesis govtypesv1.GenesisState
-	var distrGenesis distrtypes.GenesisState
-	s.Require().NoError(s.Config.Codec.UnmarshalJSON(genesisState[banktypes.ModuleName], &bankGenesis))
-	s.Require().NoError(s.Config.Codec.UnmarshalJSON(genesisState[authtypes.ModuleName], &authGenesis))
-	s.Require().NoError(s.Config.Codec.UnmarshalJSON(genesisState[govtypes.ModuleName], &govGenesis))
+	AddGenesisE2ETestData(s.Config.Codec, &e2eGenesisState, s.Config.BondDenom, s.Config.StakingTokens, s.CreditClassCreationFee)
 
-	balances := sdk.NewCoins(
-		sdk.NewCoin(s.Config.BondDenom, s.Config.StakingTokens),
-	)
-
-	distrModuleAcct := authtypes.NewModuleAddress(distrtypes.ModuleName)
-	communityPoolAmt := s.CreditClassCreationFee
-
-	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: IssuerAddress, Coins: balances})
-	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: IssuerCreatorAddress, Coins: balances})
-	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: ApplicantAddress, Coins: balances})
-	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: RandomAddress, Coins: balances})
-	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: ContractAdminAddress, Coins: balances})
-	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: NoCoinsIssuerAdminAddress, Coins: sdk.NewCoins(sdk.NewCoin(s.Config.BondDenom, sdk.NewInt(10)))})
-	bankGenesis.Balances = append(bankGenesis.Balances, banktypes.Balance{Address: distrModuleAcct.String(), Coins: sdk.NewCoins(communityPoolAmt)})
-
-	var genAccounts authtypes.GenesisAccounts
-	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(IssuerAddress)))
-	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(IssuerCreatorAddress)))
-	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(ApplicantAddress)))
-	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(RandomAddress)))
-	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(ContractAdminAddress)))
-	genAccounts = append(genAccounts, authtypes.NewBaseAccountWithAddress(sdk.MustAccAddressFromBech32(NoCoinsIssuerAdminAddress)))
-	accounts, err := authtypes.PackAccounts(genAccounts)
-	s.Require().NoError(err)
-	authGenesis.Accounts = append(authGenesis.Accounts, accounts...)
-
-	*govGenesis.Params.VotingPeriod = 10 * time.Second
+	e2eGenesisState.PlasticcreditGenesis.Params.CreditClassCreationFee = s.CreditClassCreationFee
+	*e2eGenesisState.GovGenesis.Params.VotingPeriod = 10 * time.Second
 
 	// initialize community pool with small amount
-	distrGenesis.FeePool.CommunityPool = sdk.NewDecCoins(sdk.NewDecCoinFromCoin(communityPoolAmt))
+	communityPoolAmt := s.CreditClassCreationFee
+	e2eGenesisState.DistrGenesis.FeePool.CommunityPool = sdk.NewDecCoins(sdk.NewDecCoinFromCoin(communityPoolAmt))
 
-	bankGenesisStateBz, err := s.Config.Codec.MarshalJSON(&bankGenesis)
+	distrModuleAcct := authtypes.NewModuleAddress(distrtypes.ModuleName)
+	e2eGenesisState.BankGenesis.Balances = append(e2eGenesisState.BankGenesis.Balances, banktypes.Balance{Address: distrModuleAcct.String(), Coins: sdk.NewCoins(communityPoolAmt)})
+
+	plasticcreditGenesisStateBz, err := s.Config.Codec.MarshalJSON(&e2eGenesisState.PlasticcreditGenesis)
 	s.Require().NoError(err)
-	authGenesisStateBz, err := s.Config.Codec.MarshalJSON(&authGenesis)
+	bankGenesisStateBz, err := s.Config.Codec.MarshalJSON(&e2eGenesisState.BankGenesis)
 	s.Require().NoError(err)
-	govGenesisStateBz, err := s.Config.Codec.MarshalJSON(&govGenesis)
+	authGenesisStateBz, err := s.Config.Codec.MarshalJSON(&e2eGenesisState.AuthGenesis)
 	s.Require().NoError(err)
-	distrGenesisStateBz, err := s.Config.Codec.MarshalJSON(&distrGenesis)
+	govGenesisStateBz, err := s.Config.Codec.MarshalJSON(&e2eGenesisState.GovGenesis)
+	s.Require().NoError(err)
+	distrGenesisStateBz, err := s.Config.Codec.MarshalJSON(&e2eGenesisState.DistrGenesis)
 	s.Require().NoError(err)
 
-	genesisState[banktypes.ModuleName] = bankGenesisStateBz
-	genesisState[authtypes.ModuleName] = authGenesisStateBz
-	genesisState[govtypes.ModuleName] = govGenesisStateBz
-	genesisState[distrtypes.ModuleName] = distrGenesisStateBz
-	s.Config.GenesisState = genesisState
+	genesisStateRaw[plasticcredit.ModuleName] = plasticcreditGenesisStateBz
+	genesisStateRaw[banktypes.ModuleName] = bankGenesisStateBz
+	genesisStateRaw[authtypes.ModuleName] = authGenesisStateBz
+	genesisStateRaw[govtypes.ModuleName] = govGenesisStateBz
+	genesisStateRaw[distrtypes.ModuleName] = distrGenesisStateBz
+	s.Config.GenesisState = genesisStateRaw
 
 	s.Config.AppConstructor = app.NewAppConstructor()
 	encodingConfig := params.MakeEncodingConfig(app.ModuleBasics)
@@ -438,4 +242,238 @@ func (s *TestSuite) GetCliResponse(ctx client.Context, txJSONResponse []byte) (s
 	}
 
 	return resp, nil
+}
+
+// AddGenesisE2ETestData adds e2e test data to the genesis state
+func AddGenesisE2ETestData(cdc codec.Codec, genesisState *genesistools.GenesisState, bondDenom string, tokens math.Int, creditClassCreationFee sdk.Coin) {
+	currentNoOfIssuers := uint64(len(genesisState.PlasticcreditGenesis.Issuers))
+	currentNoOfApplicants := uint64(len(genesisState.PlasticcreditGenesis.Applicants))
+	currentNoOfCreditClasses := uint64(len(genesisState.PlasticcreditGenesis.CreditClasses))
+	currentNoOfProjects := uint64(len(genesisState.PlasticcreditGenesis.Projects))
+
+	genesisState.PlasticcreditGenesis.Issuers = append(genesisState.PlasticcreditGenesis.Issuers, []plasticcredit.Issuer{
+		{
+			Id:          currentNoOfIssuers + 1,
+			Name:        "Empower",
+			Description: "First Issuer",
+			Admin:       IssuerAddress,
+		},
+		{
+			Id:          currentNoOfIssuers + 2,
+			Name:        "Test Issuer",
+			Description: "Purely for testing",
+			Admin:       IssuerAddress,
+		},
+		{
+			Id:          currentNoOfIssuers + 3,
+			Name:        "Test Issuer with no coins",
+			Description: "Purely for testing",
+			Admin:       NoCoinsIssuerAdminAddress,
+		},
+	}...)
+	genesisState.PlasticcreditGenesis.Applicants = append(genesisState.PlasticcreditGenesis.Applicants, []plasticcredit.Applicant{
+		{
+			Id:          currentNoOfApplicants + 1,
+			Name:        "Plastix Inc.",
+			Description: "Grab that bottle",
+			Admin:       ApplicantAddress,
+		},
+		{
+			Id:          currentNoOfApplicants + 2,
+			Name:        "Ocean plastic Inc.",
+			Description: "Grab that net",
+			Admin:       ApplicantAddress,
+		},
+		{
+			Id:          currentNoOfApplicants + 3,
+			Name:        "Sea plastic Inc.",
+			Description: "collector",
+			Admin:       ApplicantAddress,
+		},
+	}...)
+	genesisState.PlasticcreditGenesis.CreditClasses = []plasticcredit.CreditClass{
+		{
+			Abbreviation: "ETEST",
+			IssuerId:     currentNoOfCreditClasses + 1,
+			Name:         "Empower Plastic",
+		},
+		{
+			Abbreviation: "PTEST",
+			IssuerId:     currentNoOfCreditClasses + 2,
+			Name:         "Plastic Credit",
+		},
+	}
+	genesisState.PlasticcreditGenesis.Projects = append(genesisState.PlasticcreditGenesis.Projects, []plasticcredit.Project{
+		{
+			Id:                      currentNoOfProjects + 1,
+			ApplicantId:             currentNoOfApplicants + 1,
+			CreditClassAbbreviation: "ETEST",
+			Name:                    "Approved project",
+			Status:                  plasticcredit.ProjectStatus_APPROVED,
+		},
+		{
+			Id:                      currentNoOfProjects + 2,
+			ApplicantId:             currentNoOfApplicants + 1,
+			CreditClassAbbreviation: "PTEST",
+			Name:                    "Suspended project",
+			Status:                  plasticcredit.ProjectStatus_SUSPENDED,
+		},
+		{
+			Id:                      currentNoOfProjects + 3,
+			ApplicantId:             currentNoOfApplicants + 1,
+			CreditClassAbbreviation: "ETEST",
+			Name:                    "New project",
+			Status:                  plasticcredit.ProjectStatus_NEW,
+		},
+		{
+			Id:                      currentNoOfProjects + 4,
+			ApplicantId:             currentNoOfApplicants + 1,
+			CreditClassAbbreviation: "PTEST",
+			Name:                    "Rejected project",
+			Status:                  plasticcredit.ProjectStatus_REJECTED,
+		},
+		{
+			Id:                      currentNoOfProjects + 5,
+			ApplicantId:             currentNoOfApplicants + 1,
+			CreditClassAbbreviation: "PTEST",
+			Name:                    "Other New Project",
+			Status:                  plasticcredit.ProjectStatus_NEW,
+		},
+		{
+			Id:                      currentNoOfProjects + 6,
+			ApplicantId:             currentNoOfApplicants + 1,
+			CreditClassAbbreviation: "PTEST",
+			Name:                    "Another New Project",
+			Status:                  plasticcredit.ProjectStatus_NEW,
+		},
+		{
+			Id:                      currentNoOfProjects + 7,
+			ApplicantId:             currentNoOfApplicants + 1,
+			CreditClassAbbreviation: "PTEST",
+			Name:                    "Another Rejected Project",
+			Status:                  plasticcredit.ProjectStatus_REJECTED,
+		},
+		{
+			Id:                      currentNoOfProjects + 8,
+			ApplicantId:             currentNoOfApplicants + 1,
+			CreditClassAbbreviation: "PTEST",
+			Name:                    "Another Suspended Project",
+			Status:                  plasticcredit.ProjectStatus_SUSPENDED,
+		},
+		{
+			Id:                      currentNoOfProjects + 9,
+			ApplicantId:             currentNoOfApplicants + 1,
+			CreditClassAbbreviation: "PTEST",
+			Name:                    "New Project to update",
+			Status:                  plasticcredit.ProjectStatus_NEW,
+		},
+		{
+			Id:                      currentNoOfProjects + 10,
+			ApplicantId:             currentNoOfApplicants + 1,
+			CreditClassAbbreviation: "ETEST",
+			Name:                    "Approved project 2",
+			Status:                  plasticcredit.ProjectStatus_APPROVED,
+		},
+		{
+			Id:                      currentNoOfProjects + 11,
+			ApplicantId:             currentNoOfApplicants + 1,
+			CreditClassAbbreviation: "ETEST",
+			Name:                    "Approved project to suspend",
+			Status:                  plasticcredit.ProjectStatus_APPROVED,
+		},
+	}...)
+	// check if credit collection exists in genesis state
+	// if not, add it
+	// if yes, add to the total amount
+	etestFound := false
+	ptestFound := false
+	for i, creditCollection := range genesisState.PlasticcreditGenesis.CreditCollections {
+		if creditCollection.Denom == "ETEST/123" {
+			genesisState.PlasticcreditGenesis.CreditCollections[i].TotalAmount.Active += 1000
+			genesisState.PlasticcreditGenesis.CreditCollections[i].TotalAmount.Retired += 200
+			etestFound = true
+		}
+		if creditCollection.Denom == "PTEST/00001" {
+			genesisState.PlasticcreditGenesis.CreditCollections[i].TotalAmount.Active += 5000
+			ptestFound = true
+		}
+	}
+	if !etestFound {
+		genesisState.PlasticcreditGenesis.CreditCollections = append(genesisState.PlasticcreditGenesis.CreditCollections, []plasticcredit.CreditCollection{
+			{
+				Denom:     "ETEST/123",
+				ProjectId: currentNoOfProjects + 1,
+				TotalAmount: plasticcredit.CreditAmount{
+					Active:  1000,
+					Retired: 200,
+				},
+			},
+		}...)
+	}
+	if !ptestFound {
+		genesisState.PlasticcreditGenesis.CreditCollections = append(genesisState.PlasticcreditGenesis.CreditCollections, []plasticcredit.CreditCollection{
+			{
+				Denom:     "PTEST/00001",
+				ProjectId: currentNoOfProjects + 2,
+				TotalAmount: plasticcredit.CreditAmount{
+					Active:  5000,
+					Retired: 0,
+				},
+			},
+		}...)
+	}
+	// add credit balances
+	if etestFound || ptestFound {
+		for i, creditBalance := range genesisState.PlasticcreditGenesis.CreditBalances {
+			if creditBalance.Denom == "ETEST/123" && creditBalance.Owner == genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin {
+				genesisState.PlasticcreditGenesis.CreditBalances[i].Balance.Active += 1000
+				genesisState.PlasticcreditGenesis.CreditBalances[i].Balance.Retired += 200
+			}
+			if creditBalance.Denom == "PTEST/00001" && creditBalance.Owner == genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin {
+				genesisState.PlasticcreditGenesis.CreditBalances[i].Balance.Active += 5000
+			}
+		}
+	} else {
+		if !etestFound {
+			genesisState.PlasticcreditGenesis.CreditBalances = append(genesisState.PlasticcreditGenesis.CreditBalances, []plasticcredit.CreditBalance{
+				{
+					Owner: genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin,
+					Denom: "ETEST/123",
+					Balance: plasticcredit.CreditAmount{
+						Active:  1000,
+						Retired: 200,
+					},
+				},
+			}...)
+		}
+		if !ptestFound {
+			genesisState.PlasticcreditGenesis.CreditBalances = append(genesisState.PlasticcreditGenesis.CreditBalances, []plasticcredit.CreditBalance{
+				{
+					Owner: genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin,
+					Denom: "PTEST/00001",
+					Balance: plasticcredit.CreditAmount{
+						Active:  5000,
+						Retired: 0,
+					},
+				},
+			}...)
+		}
+	}
+
+	genesisState.PlasticcreditGenesis.IdCounters = plasticcredit.IDCounters{
+		NextIssuerId:    uint64(len(genesisState.PlasticcreditGenesis.Issuers) + 1),
+		NextApplicantId: uint64(len(genesisState.PlasticcreditGenesis.Applicants) + 1),
+		NextProjectId:   uint64(len(genesisState.PlasticcreditGenesis.Projects) + 1),
+	}
+
+	balances := sdk.NewCoins(
+		sdk.NewCoin(bondDenom, tokens),
+	)
+
+	genesistools.AddGenesisBaseAccountAndBalance(cdc, genesisState, sdk.MustAccAddressFromBech32(IssuerAddress), balances)
+	genesistools.AddGenesisBaseAccountAndBalance(cdc, genesisState, sdk.MustAccAddressFromBech32(IssuerCreatorAddress), balances)
+	genesistools.AddGenesisBaseAccountAndBalance(cdc, genesisState, sdk.MustAccAddressFromBech32(ApplicantAddress), balances)
+	genesistools.AddGenesisBaseAccountAndBalance(cdc, genesisState, sdk.MustAccAddressFromBech32(RandomAddress), balances)
+	genesistools.AddGenesisBaseAccountAndBalance(cdc, genesisState, sdk.MustAccAddressFromBech32(ContractAdminAddress), balances)
+	genesistools.AddGenesisBaseAccountAndBalance(cdc, genesisState, sdk.MustAccAddressFromBech32(NoCoinsIssuerAdminAddress), sdk.NewCoins(sdk.NewCoin(bondDenom, sdk.NewInt(10))))
 }
