@@ -1,0 +1,23 @@
+name: "PoE frontend build"
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/proof-of-existance/**'
+
+jobs:
+  build:
+    name: Build Proof of Existence Frontend
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: earthly/actions-setup@v1
+        with:
+          version: 0.6.30
+
+      - run: earthly --ci --output +lerna-build
+        working-directory: ./frontend
