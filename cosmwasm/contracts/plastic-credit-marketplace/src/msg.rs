@@ -31,6 +31,10 @@ pub enum QueryMsg {
         /// query. If no limit is set a max of 30 listings will be
         /// returned.
         limit: Option<u64>,
+        /// The address of the listing to start the query after. If
+        /// this is set, the listing with this address will not be
+        /// included in the results.
+        start_after: Option<(Addr, String)>,
     },
     #[returns(ListingResponse)]
     Listing {
