@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import router from "@/router";
+import SelectWalletModel from "@/views/certify/SelectWalletModel.vue";
 //Methods
 const back = () => {
   router.push({
@@ -9,14 +10,14 @@ const back = () => {
 </script>
 
 <template>
+  <SelectWalletModel />
   <img
     src="../../assets/images/emp-astro-2.png"
     class="left-28 top-full sm:top-auto sm:left-auto w-32 fixed sm:absolute animate-bounce -m-24"
   />
+
   <div class="w-full p-8 text-left bg-lightBlack rounded-lg sm:p-8">
-    <h5 class="mb-2 mt-3 text-2xl font-bold text-white text-title28">
-      Create proof
-    </h5>
+    <h5 class="mb-2 mt-3 font-bold text-white text-title28">Create proof</h5>
     <div class="grid grid-cols-1 sm:grid-cols-3 sm:gap-6">
       <div class="col-span-2 w-full mt-3">
         <div
@@ -61,6 +62,8 @@ const back = () => {
           Connect wallet
         </h5>
         <button
+          data-modal-target="selectWalletModal"
+          data-modal-toggle="selectWalletModal"
           class="bg-lightGreen mt-7 content-center p-1 px-7 rounded text-white"
         >
           Connect your wallet
