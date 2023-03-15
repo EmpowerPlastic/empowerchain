@@ -79,6 +79,55 @@ func AddGenesisBaseAccountAndBalance(cdc codec.Codec, genesisState *GenesisState
 	}
 }
 
+// AddGenesisPlasticCreditBalance adds a plastic credit balance to the genesis state.
+func AddGenesisPlasticCreditBalance(cdc codec.Codec, genesisState *GenesisState, projectId uint64, denom string, owner string, amount plasticcredit.CreditAmount) {
+	// check if credit collection is already present
+	collectionFound := false
+	for i, creditCollection := range genesisState.PlasticcreditGenesis.CreditCollections {
+		if creditCollection.Denom == denom {
+			// if credit collection is already present, update the total amount
+			genesisState.PlasticcreditGenesis.CreditCollections[i].TotalAmount.Active += amount.Active
+			genesisState.PlasticcreditGenesis.CreditCollections[i].TotalAmount.Retired += amount.Retired
+			collectionFound = true
+			break
+		}
+	}
+	// if credit collection is not present, add it
+	if !collectionFound {
+		genesisState.PlasticcreditGenesis.CreditCollections = append(genesisState.PlasticcreditGenesis.CreditCollections, []plasticcredit.CreditCollection{
+			{
+				Denom:     denom,
+				ProjectId: projectId,
+				TotalAmount: plasticcredit.CreditAmount{
+					Active:  amount.Active,
+					Retired: amount.Retired,
+				},
+			},
+		}...)
+	}
+	// if credit balance is already present, update the amount
+	if collectionFound {
+		for i, creditBalance := range genesisState.PlasticcreditGenesis.CreditBalances {
+			if creditBalance.Denom == denom && creditBalance.Owner == owner {
+				genesisState.PlasticcreditGenesis.CreditBalances[i].Balance.Active += amount.Active
+				genesisState.PlasticcreditGenesis.CreditBalances[i].Balance.Retired += amount.Retired
+			}
+		}
+		// if credit balance is not present, add it
+	} else {
+		genesisState.PlasticcreditGenesis.CreditBalances = append(genesisState.PlasticcreditGenesis.CreditBalances, []plasticcredit.CreditBalance{
+			{
+				Owner: owner,
+				Denom: denom,
+				Balance: plasticcredit.CreditAmount{
+					Active:  amount.Active,
+					Retired: amount.Retired,
+				},
+			},
+		}...)
+	}
+}
+
 // UnmarshalGenesis unmarshals the raw application genesis state and sets the
 // corresponding values in the provided GenesisState.
 func UnmarshalGenesis(clientCtx client.Context, genesisState *GenesisState, appState map[string]json.RawMessage) {

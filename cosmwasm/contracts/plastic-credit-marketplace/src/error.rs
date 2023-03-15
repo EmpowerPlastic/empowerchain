@@ -26,7 +26,4 @@ pub enum ContractError {
 
     #[error("listing already exists")]
     ListingAlreadyExists {},
-
-    #[error("unauthorized")]
-    Unauthorized {},
 }

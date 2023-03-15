@@ -1,7 +1,6 @@
 use cosmwasm_std::{
     entry_point, DepsMut, Empty, Env, MessageInfo, Response, StdResult,
 };
-use state::NEXT_LISTING_ID;
 
 pub mod state;
 pub mod msg;
@@ -11,13 +10,11 @@ pub mod query;
 
 #[entry_point]
 pub fn instantiate(
-	deps: DepsMut,
+	_deps: DepsMut,
 	_env: Env,
 	_info: MessageInfo,
 	_msg: Empty,
 ) -> StdResult<Response> {
-	NEXT_LISTING_ID.save(deps.storage, &1)?;
-
 	Ok(Response::new())
 }
 
@@ -38,8 +35,5 @@ mod tests {
 		let res = instantiate(deps.as_mut(), mock_env(), info, Empty{}).unwrap();
 		assert_eq!(0, res.messages.len());
 
-		// it worked, let's query the state
-		let next_listing = NEXT_LISTING_ID.load(deps.as_ref().storage).unwrap();
-		assert_eq!(1, next_listing)
 	}
 }

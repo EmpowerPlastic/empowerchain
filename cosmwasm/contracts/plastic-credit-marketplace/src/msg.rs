@@ -1,5 +1,5 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
-use cosmwasm_std::{Uint64, Coin};
+use cosmwasm_std::{Uint64, Coin, Addr};
 
 use crate::state::Listing;
 
@@ -11,12 +11,13 @@ pub enum ExecuteMsg {
         price_per_credit: Coin,
     },
     UpdateListing {
-        listing_id: u64,
+        denom: String,
         number_of_credits: Uint64,
         price_per_credit: Coin,
     },
     BuyCredits {
-        listing_id: u64,
+        owner: Addr,
+        denom: String,
         number_of_credits_to_buy: u64,
     }
 }
@@ -26,18 +27,24 @@ pub enum ExecuteMsg {
 pub enum QueryMsg {
     #[returns(ListingsResponse)]
     Listings {
-        /// The listing ID to start listing listings after. For
-        /// example, if this is set to 2 listings with IDs 3 and
-        /// higher will be returned.
-        start_after: Option<u64>,
         /// The maximum number of listings to return as part of this
         /// query. If no limit is set a max of 30 listings will be
         /// returned.
         limit: Option<u64>,
+    },
+    #[returns(ListingResponse)]
+    Listing {
+        owner: Addr,
+        denom: String,
     },
 }
 
 #[cw_serde]
 pub struct ListingsResponse {
     pub listings: Vec<Listing>,
+}
+
+#[cw_serde]
+pub struct ListingResponse {
+    pub listing: Listing,
 }

@@ -1,16 +1,15 @@
 use cosmos_sdk_proto::cosmos::authz::v1beta1::MsgExec;
 use cosmos_sdk_proto::traits::{Message, TypeUrl};
 use cosmos_sdk_proto::traits::MessageExt;
-use cosmwasm_std::{entry_point, Binary, DepsMut, Env, MessageInfo, Response, Uint64, Coin, CosmosMsg, BankMsg};
-use crate::state::CREATOR_DENOM_INDEX;
-use crate::{msg::ExecuteMsg, error::ContractError, state::{LISTINGS, Listing, NEXT_LISTING_ID}};
+use cosmwasm_std::{entry_point, Binary, DepsMut, Env, MessageInfo, Response, Uint64, Coin, CosmosMsg, BankMsg, Addr};
+use crate::{msg::ExecuteMsg, error::ContractError, state::{LISTINGS, Listing}};
 
 #[entry_point]
 pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> Result<Response, ContractError> {
     match msg {
         ExecuteMsg::CreateListing { denom, number_of_credits, price_per_credit } => execute_create_listing(deps, env, info, denom, number_of_credits, price_per_credit),
-        ExecuteMsg::BuyCredits { listing_id, number_of_credits_to_buy } => execute_buy_credits(deps, env, info, listing_id, number_of_credits_to_buy),
-        ExecuteMsg::UpdateListing { listing_id, number_of_credits, price_per_credit } => execute_update_listing(deps, env, info, listing_id, number_of_credits, price_per_credit),
+        ExecuteMsg::BuyCredits { owner, denom, number_of_credits_to_buy } => execute_buy_credits(deps, env, info, owner, denom, number_of_credits_to_buy),
+        ExecuteMsg::UpdateListing { denom, number_of_credits, price_per_credit } => execute_update_listing(deps, env, info, denom, number_of_credits, price_per_credit),
     }
 }
 
@@ -30,21 +29,18 @@ pub fn execute_create_listing(
         return Err(ContractError::ZeroPrice {});
     }
 
-    // Check if listing for a given creator and denom already exists
-    let creator_denom_index = format!("{}{}", info.sender.to_string(), denom);
-    let mut listing = CREATOR_DENOM_INDEX.load(deps.storage, creator_denom_index).map_err(|_| ContractError::ListingNotFound {})?;
+    if (LISTINGS.may_load(deps.storage, (info.sender.clone(), denom.clone()))?).is_some() {
+        return Err(ContractError::ListingAlreadyExists {});
+    }
 
-    let next_listing_id = NEXT_LISTING_ID.load(deps.storage)?;
     let listing = &Listing {
-        id: next_listing_id,
         owner: info.sender.clone(),
         denom: denom.clone(),
         number_of_credits,
         price_per_credit: price_per_credit.clone(),
     };
 
-    LISTINGS.save(deps.storage, next_listing_id, listing)?;
-    NEXT_LISTING_ID.save(deps.storage, &(next_listing_id + 1))?;
+    LISTINGS.save(deps.storage, (info.sender.clone(), denom.clone()), listing)?;
 
     let exec_credit_transfer_msg = create_transfer_credits_to_contract_msg(
         info.sender.to_string(),
@@ -55,7 +51,6 @@ pub fn execute_create_listing(
 
     Ok(Response::new()
         .add_attribute("action", "create_listing")
-        .add_attribute("listing_id", listing.id.to_string())
         .add_attribute("listing_owner", info.sender)
         .add_attribute("number_of_credits", number_of_credits)
         .add_attribute("price_per_credit", price_per_credit.to_string())
@@ -67,14 +62,15 @@ pub fn execute_buy_credits(
     deps: DepsMut,
     env: Env,
     info: MessageInfo,
-    listing_id: u64,
+    owner: Addr,
+    denom: String,
     number_of_credits_to_buy: u64,
 ) -> Result<Response, ContractError> {
     if number_of_credits_to_buy == 0 {
         return Err(ContractError::ZeroCredits {});
     }
 
-    let mut listing = LISTINGS.load(deps.storage, listing_id).map_err(|_| ContractError::ListingNotFound {})?;
+    let mut listing = LISTINGS.load(deps.storage, (Addr::unchecked(owner.clone()), denom.clone())).map_err(|_| ContractError::ListingNotFound {})?;
 
     if listing.number_of_credits < number_of_credits_to_buy.into() {
         return Err(ContractError::NotEnoughCredits {});
@@ -89,12 +85,12 @@ pub fn execute_buy_credits(
     }
 
     listing.number_of_credits = listing.number_of_credits.checked_sub(number_of_credits_to_buy.into()).unwrap();
-    LISTINGS.save(deps.storage, listing_id, &listing)?;
+    LISTINGS.save(deps.storage, (Addr::unchecked(owner.clone()), denom.clone()), &listing)?;
 
     let transfer_credits_msg = create_transfer_credits_from_contract_msg(
         env,
         info.sender.to_string(),
-        listing.denom,
+        listing.denom.clone(),
         number_of_credits_to_buy,
     );
     let transfer_funds_msg = CosmosMsg::Bank(BankMsg::Send {
@@ -106,7 +102,8 @@ pub fn execute_buy_credits(
     });
     Ok(Response::new()
         .add_attribute("action", "buy_credits")
-        .add_attribute("listing_id", listing.id.to_string())
+        .add_attribute("listing_owner", listing.owner)
+        .add_attribute("denom", listing.denom)
         .add_attribute("buyer", info.sender)
         .add_attribute("number_of_credits_bought", number_of_credits_to_buy.to_string())
         .add_attribute("total_price", total_price.to_string())
@@ -118,7 +115,7 @@ fn execute_update_listing(
     deps: DepsMut,
     env: Env,
     info: MessageInfo,
-    listing_id: u64,
+    denom: String,
     number_of_credits: Uint64,
     price_per_credit: Coin,
 ) -> Result<Response, ContractError> {
@@ -132,12 +129,7 @@ fn execute_update_listing(
         return Err(ContractError::ZeroPrice {});
     }
 
-    let mut listing = LISTINGS.load(deps.storage, listing_id).map_err(|_| ContractError::ListingNotFound {})?;
-
-    // Only the owner of the listing can update it
-    if listing.owner != info.sender {
-        return Err(ContractError::Unauthorized {});
-    }
+    let mut listing = LISTINGS.load(deps.storage, (info.sender.clone(), denom)).map_err(|_| ContractError::ListingNotFound {})?;
 
     let exec_credit_transfer_msg: Option<CosmosMsg>;
     // Check if the number of credits is increasing or decreasing
@@ -167,11 +159,10 @@ fn execute_update_listing(
     // Update the listing
     listing.number_of_credits = number_of_credits;
     listing.price_per_credit = price_per_credit.clone();
-    LISTINGS.save(deps.storage, listing_id, &listing)?;
+    LISTINGS.save(deps.storage, (listing.owner.clone(), listing.denom.clone()), &listing)?;
 
     let res = Response::new()
         .add_attribute("action", "update_listing")
-        .add_attribute("listing_id", listing.id.to_string())
         .add_attribute("listing_owner", info.sender)
         .add_attribute("number_of_credits", number_of_credits.to_string())
         .add_attribute("price_per_credit", price_per_credit.to_string());
@@ -243,17 +234,17 @@ mod tests {
             traits::Message,
         };
         use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info, MOCK_CONTRACT_ADDR};
-        use cosmwasm_std::{Coin, coins, CosmosMsg, Empty, Order, Uint128, Uint64};
+        use cosmwasm_std::{Coin, coins, CosmosMsg, Empty, Order, Uint128, Uint64, Addr};
         use crate::{
             execute::{execute, MsgTransferCredits},
             instantiate,
             msg::ExecuteMsg,
-            state::{Listing, LISTINGS, NEXT_LISTING_ID},
+            state::{Listing, LISTINGS},
         };
         use crate::error::ContractError;
 
         #[test]
-        fn test_create_listing() {
+        fn test_create_listqing() {
             let mut deps = mock_dependencies();
             let info = mock_info("creator", &coins(2, "token"));
             instantiate(deps.as_mut(), mock_env(), info.clone(), Empty {}).unwrap();
@@ -268,7 +259,7 @@ mod tests {
             };
 
             let res = execute(deps.as_mut(), mock_env(), info.clone(), msg).unwrap();
-            assert_eq!(res.attributes.len(), 5);
+            assert_eq!(res.attributes.len(), 4);
 
             assert_eq!(res.messages.len(), 1);
             let sg_msg = &res.messages[0].msg;
@@ -288,8 +279,7 @@ mod tests {
                 panic!("Expected Stargate message");
             }
 
-            let listing = LISTINGS.load(deps.as_ref().storage, 1).unwrap();
-            assert_eq!(listing.id, 1);
+            let listing = LISTINGS.load(deps.as_ref().storage, (info.sender.clone(), "pcrd".to_string())).unwrap();
             assert_eq!(listing.owner, info.sender);
             assert_eq!(listing.denom, "pcrd");
             assert_eq!(listing.number_of_credits, Uint64::from(42u64));
@@ -300,17 +290,17 @@ mod tests {
 
             let all_listings = LISTINGS.range(deps.as_ref().storage, None, None, Order::Ascending)
                 .map(|item| item.unwrap())
-                .collect::<Vec<(u64, Listing)>>();
+                .collect::<Vec<((Addr, String), Listing)>>();
             assert_eq!(all_listings.len(), 1);
 
-            let next_listing = NEXT_LISTING_ID.load(deps.as_ref().storage).unwrap();
-            assert_eq!(next_listing, 2)
         }
 
         #[test]
         fn test_create_multiple_listings() {
             let mut deps = mock_dependencies();
             let info = mock_info("creator", &coins(2, "token"));
+            let info2 = mock_info("creator2", &coins(2, "token"));
+            let info3 = mock_info("creator3", &coins(2, "token"));
             instantiate(deps.as_mut(), mock_env(), info.clone(), Empty {}).unwrap();
 
             let msg = ExecuteMsg::CreateListing {
@@ -323,16 +313,14 @@ mod tests {
             };
 
             execute(deps.as_mut(), mock_env(), info.clone(), msg.clone()).unwrap();
-            execute(deps.as_mut(), mock_env(), info.clone(), msg.clone()).unwrap();
-            execute(deps.as_mut(), mock_env(), info.clone(), msg.clone()).unwrap();
+            execute(deps.as_mut(), mock_env(), info2.clone(), msg.clone()).unwrap();
+            execute(deps.as_mut(), mock_env(), info3.clone(), msg.clone()).unwrap();
 
             let all_listings = LISTINGS.range(deps.as_ref().storage, None, None, Order::Ascending)
                 .map(|item| item.unwrap())
-                .collect::<Vec<(u64, Listing)>>();
+                .collect::<Vec<((Addr, String), Listing)>>();
             assert_eq!(all_listings.len(), 3);
 
-            let next_listing = NEXT_LISTING_ID.load(deps.as_ref().storage).unwrap();
-            assert_eq!(next_listing, 4)
         }
 
         #[test]
@@ -355,7 +343,7 @@ mod tests {
 
             let all_listings = LISTINGS.range(deps.as_ref().storage, None, None, Order::Ascending)
                 .map(|item| item.unwrap())
-                .collect::<Vec<(u64, Listing)>>();
+                .collect::<Vec<((Addr, String), Listing)>>();
             assert_eq!(all_listings.len(), 0);
         }
 
@@ -379,11 +367,12 @@ mod tests {
 
             let all_listings = LISTINGS.range(deps.as_ref().storage, None, None, Order::Ascending)
                 .map(|item| item.unwrap())
-                .collect::<Vec<(u64, Listing)>>();
+                .collect::<Vec<((Addr, String), Listing)>>();
             assert_eq!(all_listings.len(), 0);
         }
     }
     mod update_listing_tests {
+        use cosmos_sdk_proto::traits::TypeUrl;
         use cosmos_sdk_proto::{
             cosmos::authz::v1beta1::MsgExec,
             traits::MessageExt,
@@ -414,7 +403,7 @@ mod tests {
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
             let update_listing_msg = ExecuteMsg::UpdateListing {
-                listing_id: 1,
+                denom: "pcrd".to_string(),
                 number_of_credits: Uint64::from(100u64),
                 price_per_credit:Coin {
                     denom: "token".to_string(),
@@ -422,7 +411,7 @@ mod tests {
                 },
             };
             let res = execute(deps.as_mut(), mock_env(), creator_info.clone(), update_listing_msg).unwrap();
-            assert_eq!(res.attributes.len(), 5);
+            assert_eq!(res.attributes.len(), 4);
             assert_eq!(res.messages.len(), 1);
             let sg_msg = &res.messages[0].msg;
             if let CosmosMsg::Stargate { type_url, value } = sg_msg {
@@ -441,8 +430,7 @@ mod tests {
                 panic!("Expected Stargate message");
             }
 
-            let listing = LISTINGS.load(deps.as_ref().storage, 1).unwrap();
-            assert_eq!(listing.id, 1);
+            let listing = LISTINGS.load(deps.as_ref().storage, (creator_info.sender.clone(), "pcrd".to_string())).unwrap();
             assert_eq!(listing.owner, creator_info.sender);
             assert_eq!(listing.denom, "pcrd");
             assert_eq!(listing.number_of_credits, Uint64::from(100u64));
@@ -469,7 +457,7 @@ mod tests {
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
             let update_listing_msg = ExecuteMsg::UpdateListing {
-                listing_id: 1,
+                denom: "pcrd".to_string(),
                 number_of_credits: Uint64::from(10u64),
                 price_per_credit:Coin {
                     denom: "token".to_string(),
@@ -477,27 +465,22 @@ mod tests {
                 },
             };
             let res = execute(deps.as_mut(), mock_env(), creator_info.clone(), update_listing_msg).unwrap();
-            assert_eq!(res.attributes.len(), 5);
+            assert_eq!(res.attributes.len(), 4);
             assert_eq!(res.messages.len(), 1);
-            let sg_msg = &res.messages[0].msg;
-            if let CosmosMsg::Stargate { type_url, value } = sg_msg {
-                assert_eq!(type_url, "/cosmos.authz.v1beta1.MsgExec");
+            if let CosmosMsg::Stargate { type_url, value } = &res.messages[0].msg {
+                assert_eq!(type_url, MsgTransferCredits::TYPE_URL);
 
-                let exec_msg = MsgExec::decode(value.as_slice()).unwrap();
-                assert_eq!(exec_msg.msgs.len(), 1);
-
-                let transfer_msg = MsgTransferCredits::from_any(&exec_msg.msgs[0]).unwrap();
+                let transfer_msg = MsgTransferCredits::decode(value.as_slice()).unwrap();
                 assert_eq!(transfer_msg.from, MOCK_CONTRACT_ADDR.to_string());
                 assert_eq!(transfer_msg.to, creator_info.sender.to_string());
                 assert_eq!(transfer_msg.denom, "pcrd");
                 assert_eq!(transfer_msg.amount, 32);
-                assert_eq!(transfer_msg.retire, true);
+                assert_eq!(transfer_msg.retire, false);
             } else {
                 panic!("Expected Stargate message");
             }
 
-            let listing = LISTINGS.load(deps.as_ref().storage, 1).unwrap();
-            assert_eq!(listing.id, 1);
+            let listing = LISTINGS.load(deps.as_ref().storage, (creator_info.sender.clone(), "pcrd".to_string())).unwrap();
             assert_eq!(listing.owner, creator_info.sender);
             assert_eq!(listing.denom, "pcrd");
             assert_eq!(listing.number_of_credits, Uint64::from(10u64));
@@ -524,7 +507,7 @@ mod tests {
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
             let update_listing_msg = ExecuteMsg::UpdateListing {
-                listing_id: 1,
+                denom: "pcrd".to_string(),
                 number_of_credits: Uint64::from(42u64),
                 price_per_credit:Coin {
                     denom: "token".to_string(),
@@ -532,11 +515,10 @@ mod tests {
                 },
             };
             let res = execute(deps.as_mut(), mock_env(), creator_info.clone(), update_listing_msg).unwrap();
-            assert_eq!(res.attributes.len(), 5);
+            assert_eq!(res.attributes.len(), 4);
             assert_eq!(res.messages.len(), 0);
             
-            let listing = LISTINGS.load(deps.as_ref().storage, 1).unwrap();
-            assert_eq!(listing.id, 1);
+            let listing = LISTINGS.load(deps.as_ref().storage, (creator_info.sender.clone(), "pcrd".to_string())).unwrap();
             assert_eq!(listing.owner, creator_info.sender);
             assert_eq!(listing.denom, "pcrd");
             assert_eq!(listing.number_of_credits, Uint64::from(42u64));
@@ -553,7 +535,7 @@ mod tests {
             instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
 
             let update_listing_msg = ExecuteMsg::UpdateListing {
-                listing_id: 1,
+                denom: "pcrd".to_string(),
                 number_of_credits: Uint64::from(1337u64),
                 price_per_credit:Coin {
                     denom: "token".to_string(),
@@ -581,7 +563,7 @@ mod tests {
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
             let update_listing_msg = ExecuteMsg::UpdateListing {
-                listing_id: 1,
+                denom: "pcrd".to_string(),
                 number_of_credits: Uint64::from(1337u64),
                 price_per_credit:Coin {
                     denom: "token".to_string(),
@@ -589,7 +571,7 @@ mod tests {
                 },
             };
             let err = execute(deps.as_mut(), mock_env(), mock_info("not_creator", &[]), update_listing_msg).unwrap_err();
-            assert_eq!(err, ContractError::Unauthorized {});
+            assert_eq!(err, ContractError::ListingNotFound {});
         }
 
         #[test]
@@ -609,7 +591,7 @@ mod tests {
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
             let update_listing_msg = ExecuteMsg::UpdateListing {
-                listing_id: 1,
+                denom: "pcrd".to_string(),
                 number_of_credits: Uint64::from(1337u64),
                 price_per_credit:Coin {
                     denom: "token".to_string(),
@@ -637,7 +619,7 @@ mod tests {
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
             let update_listing_msg = ExecuteMsg::UpdateListing {
-                listing_id: 1,
+                denom: "pcrd".to_string(),
                 number_of_credits: Uint64::from(0u64),
                 price_per_credit:Coin {
                     denom: "token".to_string(),
@@ -651,7 +633,7 @@ mod tests {
     
     mod buy_credits_tests {
         use cosmos_sdk_proto::traits::{Message, TypeUrl};
-        use cosmwasm_std::{BankMsg, Coin, coins, CosmosMsg, Empty, Uint128, Uint64};
+        use cosmwasm_std::{BankMsg, Coin, coins, CosmosMsg, Empty, Uint128, Uint64, Addr};
         use cosmwasm_std::testing::{MOCK_CONTRACT_ADDR, mock_dependencies, mock_env, mock_info};
         use crate::error::ContractError;
         use crate::execute::{execute, MsgTransferCredits};
@@ -677,13 +659,14 @@ mod tests {
 
             let buyer_info = mock_info("buyer", &coins(20, "umpwr"));
             let buy_credits_msg = ExecuteMsg::BuyCredits {
-                listing_id: 1,
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
                 number_of_credits_to_buy: 10u64,
             };
             let res = execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg).unwrap();
-            assert_eq!(res.attributes.len(), 5);
+            assert_eq!(res.attributes.len(), 6);
 
-            let listing = LISTINGS.load(deps.as_ref().storage, 1).unwrap();
+            let listing = LISTINGS.load(deps.as_ref().storage, (Addr::unchecked(creator_info.sender.clone()), "pcrd".to_string())).unwrap();
             assert_eq!(listing.number_of_credits, Uint64::from(32u64)); // Because 10 were bought
 
             assert_eq!(res.messages.len(), 2);
@@ -728,14 +711,15 @@ mod tests {
 
             let buyer_info = mock_info("buyer", &coins(30, "umpwr"));
             let buy_credits_msg = ExecuteMsg::BuyCredits {
-                listing_id: 1,
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
                 number_of_credits_to_buy: 10u64,
             };
             execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg.clone()).unwrap();
             execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg.clone()).unwrap();
             execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg.clone()).unwrap();
 
-            let listing = LISTINGS.load(deps.as_ref().storage, 1).unwrap();
+            let listing = LISTINGS.load(deps.as_ref().storage, (Addr::unchecked(creator_info.sender.clone()), "pcrd".to_string())).unwrap();
             assert_eq!(listing.number_of_credits, Uint64::from(0u64)); // Because 30 were bought
         }
 
@@ -747,7 +731,8 @@ mod tests {
 
             let buyer_info = mock_info("buyer", &coins(1337, "umpwr"));
             let buy_credits_msg = ExecuteMsg::BuyCredits {
-                listing_id: 1,
+                owner: creator_info.sender,
+                denom: "pcrd".to_string(),
                 number_of_credits_to_buy: 10u64,
             };
             let err = execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg).unwrap_err();
@@ -772,7 +757,8 @@ mod tests {
 
             let buyer_info = mock_info("buyer", &coins(1337, "umpwr"));
             let buy_credits_msg = ExecuteMsg::BuyCredits {
-                listing_id: 1,
+                owner: creator_info.sender,
+                denom: "pcrd".to_string(),
                 number_of_credits_to_buy: 0u64,
             };
             let err = execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg).unwrap_err();
@@ -797,7 +783,8 @@ mod tests {
 
             let buyer_info_with_not_enough_umpwr = mock_info("buyer", &coins(1, "umpwr"));
             let buy_credits_msg = ExecuteMsg::BuyCredits {
-                listing_id: 1,
+                owner: creator_info.sender,
+                denom: "pcrd".to_string(),
                 number_of_credits_to_buy: 1u64,
             };
             let err = execute(deps.as_mut(), mock_env(), buyer_info_with_not_enough_umpwr.clone(), buy_credits_msg).unwrap_err();
@@ -822,7 +809,8 @@ mod tests {
 
             let buyer_info_with_too_much_umpwr = mock_info("buyer", &coins(3, "umpwr"));
             let buy_credits_msg = ExecuteMsg::BuyCredits {
-                listing_id: 1,
+                owner: creator_info.sender,
+                denom: "pcrd".to_string(),
                 number_of_credits_to_buy: 1u64,
             };
             let err = execute(deps.as_mut(), mock_env(), buyer_info_with_too_much_umpwr.clone(), buy_credits_msg).unwrap_err();
@@ -847,7 +835,8 @@ mod tests {
 
             let buyer_info = mock_info("buyer", &coins(1337, "umpwr"));
             let buy_credits_msg = ExecuteMsg::BuyCredits {
-                listing_id: 1,
+                owner: creator_info.sender,
+                denom: "pcrd".to_string(),
                 number_of_credits_to_buy: 43u64,
             };
             let err = execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg).unwrap_err();
