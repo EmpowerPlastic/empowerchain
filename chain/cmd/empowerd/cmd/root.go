@@ -40,6 +40,7 @@ import (
 
 	"github.com/EmpowerPlastic/empowerchain/app"
 	"github.com/EmpowerPlastic/empowerchain/app/params"
+	preparegenesis "github.com/EmpowerPlastic/empowerchain/cmd/empowerd/cmd/prepare-genesis"
 )
 
 // NewRootCmd creates a new root command for empowerd. It is called once in the main function.
@@ -156,7 +157,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
-		genesisCommand(encodingConfig),
+		genesisCommand(encodingConfig, preparegenesis.MainnetCmd(app.DefaultNodeHome, app.ModuleBasics), preparegenesis.DevnetCmd(app.DefaultNodeHome, app.ModuleBasics)),
 		queryCommand(),
 		txCommand(),
 		keys.Commands(app.DefaultNodeHome),

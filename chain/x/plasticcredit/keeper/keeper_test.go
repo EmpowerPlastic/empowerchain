@@ -197,14 +197,14 @@ func TestTestSuite(t *testing.T) {
 	ts.sampleIssuerAdmin = sample.AccAddress()
 	ts.noCoinsIssuerID = 2
 	ts.noCoinsIssuerAdmin = sample.AccAddress()
-	ts.sampleCreditClassAbbreviation = "EMP"
+	ts.sampleCreditClassAbbreviation = "ETEST"
 	ts.sampleApplicantID = 1
 	ts.sampleApplicantAdmin = sample.AccAddress()
 	ts.sampleProjectID = 1
 	ts.sampleUnapprovedProjectID = 2
 	ts.sampleRejectionProjectID = 3
 	ts.sampleSuspendedProjectID = 4
-	ts.sampleCreditDenom = "EMP/123"
+	ts.sampleCreditDenom = "ETEST/123"
 	ts.creditClassCreationFee = sdk.NormalizeCoin(plasticcredit.DefaultCreditClassCreationFee)
 
 	suite.Run(t, ts)
