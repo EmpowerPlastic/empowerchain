@@ -244,7 +244,7 @@ mod tests {
         use crate::error::ContractError;
 
         #[test]
-        fn test_create_listqing() {
+        fn test_create_listing() {
             let mut deps = mock_dependencies();
             let info = mock_info("creator", &coins(2, "token"));
             instantiate(deps.as_mut(), mock_env(), info.clone(), Empty {}).unwrap();

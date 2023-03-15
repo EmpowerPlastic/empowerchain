@@ -2,17 +2,11 @@ package marketplace_test
 
 import (
 	"fmt"
-	"os"
-	"testing"
 
 	wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
-	"github.com/cosmos/cosmos-sdk/testutil/network"
-	"github.com/stretchr/testify/suite"
 
-	"github.com/EmpowerPlastic/empowerchain/app"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/tests/e2e"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
@@ -165,21 +159,4 @@ func (s *E2ETestSuite) TestUpdateListing() {
 			}
 		})
 	}
-}
-
-func TestE2ETestSuite(t *testing.T) {
-	// Check if wasm file exists before running tests
-	if _, err := os.Stat(wasmFilePath); os.IsNotExist(err) {
-		t.Fatalf("Wasm file not found at %s", wasmFilePath)
-	}
-
-	params.SetAddressPrefixes()
-	params.RegisterDenoms()
-	cfg := network.DefaultConfig(app.NewTestNetworkFixture)
-	suite.Run(t, &E2ETestSuite{
-		TestSuite: e2e.TestSuite{
-			Config:        cfg,
-			BeforeAllHook: uploadContractBeforeAll,
-		},
-	})
 }
