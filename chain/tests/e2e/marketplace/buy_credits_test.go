@@ -18,6 +18,8 @@ func (s *E2ETestSuite) TestBuyCredits() {
 	marketplaceAddress := s.instantiateMarketplace()
 	creditOwnerKey, err := val.ClientCtx.Keyring.Key(e2e.ApplicantKeyName)
 	s.Require().NoError(err)
+	creditOwnerAddress, err := creditOwnerKey.GetAddress()
+	s.Require().NoError(err)
 	buyerKey, err := val.ClientCtx.Keyring.Key(e2e.RandomKeyName)
 	s.Require().NoError(err)
 
@@ -52,7 +54,7 @@ func (s *E2ETestSuite) TestBuyCredits() {
 	// Buy some credits
 	out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
 		marketplaceAddress,
-		`{"buy_credits": {"listing_id": 1, "number_of_credits_to_buy": 2}}`,
+		fmt.Sprintf(`{"buy_credits": {"owner": "%s", "denom": "PTEST/00001", "number_of_credits_to_buy": 2}}`, creditOwnerAddress.String()),
 		fmt.Sprintf("--amount=%s%s", "3000000", sdk.DefaultBondDenom),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, buyerKey.Name),
 	}, s.CommonFlags...))
