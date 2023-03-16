@@ -80,7 +80,7 @@ func AddGenesisBaseAccountAndBalance(cdc codec.Codec, genesisState *GenesisState
 }
 
 // AddGenesisPlasticCreditBalance adds a plastic credit balance to the genesis state.
-func AddGenesisPlasticCreditBalance(cdc codec.Codec, genesisState *GenesisState, projectId uint64, denom string, owner string, amount plasticcredit.CreditAmount) {
+func AddGenesisPlasticCreditBalance(cdc codec.Codec, genesisState *GenesisState, projectID uint64, denom string, owner string, amount plasticcredit.CreditAmount) {
 	// check if credit collection is already present
 	collectionFound := false
 	for i, creditCollection := range genesisState.PlasticcreditGenesis.CreditCollections {
@@ -97,7 +97,7 @@ func AddGenesisPlasticCreditBalance(cdc codec.Codec, genesisState *GenesisState,
 		genesisState.PlasticcreditGenesis.CreditCollections = append(genesisState.PlasticcreditGenesis.CreditCollections, []plasticcredit.CreditCollection{
 			{
 				Denom:     denom,
-				ProjectId: projectId,
+				ProjectId: projectID,
 				TotalAmount: plasticcredit.CreditAmount{
 					Active:  amount.Active,
 					Retired: amount.Retired,
