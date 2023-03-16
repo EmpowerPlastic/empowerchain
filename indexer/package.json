@@ -1,0 +1,35 @@
+{
+  "name": "empowerchain-indexer",
+  "version": "0.0.1",
+  "description": "Empowerchain indexer",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "subql build",
+    "codegen": "subql codegen",
+    "start:docker": "docker-compose pull && docker-compose up --remove-orphans",
+    "dev": "subql codegen && subql build && docker-compose pull && docker-compose up --remove-orphans",
+    "prepack": "rm -rf dist && npm run build",
+    "test": "jest"
+  },
+  "homepage": "https://github.com/subquery/cosmos-subql-starter",
+  "repository": "github:subquery/cosmos-subql-starter",
+  "files": [
+    "dist",
+    "schema.graphql",
+    "project.yaml"
+  ],
+  "author": "Empower Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@cosmjs/stargate": "^0.28.9",
+    "@subql/cli": "latest",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@subql/types-cosmos": "latest",
+    "@types/node": "^17.0.21",
+    "pino": "^7.8.0",
+    "ts-proto": "^1.112.1",
+    "tslib": "^2.3.1"
+  }
+}
