@@ -14,33 +14,33 @@ repository: "https://github.com/EmpowerPlastic/empowerchain"
 schema:
   file: ./schema.graphql
 network:
-  chainId: stargaze-1
+  chainId: emp-devnet-1
   # This endpoint must be a public non-pruned archive node
   # Public nodes may be rate limited, which can affect indexing speed
   # When developing your project we suggest getting a private API key
-  endpoint: "https://devnet.empowerchain.io:26657"
+  endpoint: "https://devnet.empowerchain.io:26657/"
   # Optionally provide the HTTP endpoint of a full chain dictionary to speed up processing
-  dictionary: "https://api.subquery.network/sq/subquery/cosmos-stargaze-dictionary"
-  chainTypes:
-    cosmos.slashing.v1beta1:
-      file: ./proto/cosmos/slashing/v1beta1/tx.proto
-      messages:
-        - MsgUnjail
-    cosmos.gov.v1beta1:
-      file: ./proto/cosmos/gov/v1beta1/tx.proto
-      messages:
-        - MsgVoteWeighted
-    cosmos.gov.v1beta1.gov:
-      file: ./proto/cosmos/gov/v1beta1/gov.proto
-      messages:
-        - WeightedVoteOption
-    publicawesome.stargaze.claim.v1beta1:
-      file: ./proto/stargaze/claim/v1beta1/tx.proto
-      messages:
-        - MsgInitialClaim
+  # dictionary: "https://api.subquery.network/sq/subquery/cosmos-stargaze-dictionary"
+  # chainTypes:
+  #   cosmos.slashing.v1beta1:
+  #     file: ./proto/cosmos/slashing/v1beta1/tx.proto
+  #     messages:
+  #       - MsgUnjail
+  #   cosmos.gov.v1beta1:
+  #     file: ./proto/cosmos/gov/v1beta1/tx.proto
+  #     messages:
+  #       - MsgVoteWeighted
+  #   cosmos.gov.v1beta1.gov:
+  #     file: ./proto/cosmos/gov/v1beta1/gov.proto
+  #     messages:
+  #       - WeightedVoteOption
+  #   publicawesome.stargaze.claim.v1beta1:
+  #     file: ./proto/stargaze/claim/v1beta1/tx.proto
+  #     messages:
+  #       - MsgInitialClaim
 dataSources:
   - kind: cosmos/Runtime
-    startBlock: 6000000
+    startBlock: 1
     mapping:
       file: ./dist/index.js
       handlers:
@@ -48,8 +48,8 @@ dataSources:
         # - handler: handleBlock
         #   kind: cosmos/BlockHandler
         # Using transaction handlers without filters slows your project down as they can be executed with each and every block
-        # - handler: handleTransaction
-        #   kind: cosmos/TransactionHandler
+        - handler: handleTransaction
+          kind: cosmos/TransactionHandler
         - handler: handleEvent
           kind: cosmos/EventHandler
           filter:

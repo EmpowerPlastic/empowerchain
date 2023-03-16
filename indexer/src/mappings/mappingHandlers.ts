@@ -1,4 +1,4 @@
-import { ExecuteEvent, Message } from "../types";
+import { ExecuteEvent, Message, Transaction } from "../types";
 import {
   CosmosEvent,
   CosmosBlock,
@@ -6,13 +6,13 @@ import {
   CosmosTransaction,
 } from "@subql/types-cosmos";
 
-/*
-export async function handleBlock(block: CosmosBlock): Promise<void> {
-  // If you want to index each block in Cosmos (Stargaze), you could do that here
-}
-*/
 
-/*
+// export async function handleBlock(block: CosmosBlock): Promise<void> {
+//   // If you want to index each block in Cosmos (Stargaze), you could do that here
+// }
+
+
+
 export async function handleTransaction(tx: CosmosTransaction): Promise<void> {
   // If you want to index each transaction in Cosmos (Stargaze), you could do that here
   const transactionRecord = Transaction.create({
@@ -22,7 +22,7 @@ export async function handleTransaction(tx: CosmosTransaction): Promise<void> {
   });
   await transactionRecord.save();
 }
-*/
+
 
 export async function handleMessage(msg: CosmosMessage): Promise<void> {
   const messageRecord = Message.create({

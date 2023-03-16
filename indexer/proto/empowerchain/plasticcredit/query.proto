@@ -1,0 +1,159 @@
+syntax = "proto3";
+package empowerchain.plasticcredit;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "empowerchain/plasticcredit/types.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/plasticcredit";
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/params";
+  }
+
+  rpc Issuers(QueryIssuersRequest) returns (QueryIssuersResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/issuers";
+  }
+
+  rpc Issuer(QueryIssuerRequest) returns (QueryIssuerResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/issuers/{issuer_id}";
+  }
+
+  rpc Applicants(QueryApplicantsRequest) returns (QueryApplicantsResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/applicants";
+  }
+
+  rpc Applicant(QueryApplicantRequest) returns (QueryApplicantResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/applicants/{applicant_id}";
+  }
+
+  rpc CreditClasses(QueryCreditClassesRequest) returns (QueryCreditClassesResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit-classes";
+  }
+
+  rpc CreditClass(QueryCreditClassRequest) returns (QueryCreditClassResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit-classes/{credit_class_abbreviation}";
+  }
+
+  rpc Projects(QueryProjectsRequest) returns (QueryProjectsResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/projects";
+  }
+
+  rpc Project(QueryProjectRequest) returns (QueryProjectResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/projects/{project_id}";
+  }
+
+  rpc CreditCollection(QueryCreditCollectionRequest) returns (QueryCreditCollectionResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/creditcollections/{denom}";
+  }
+
+  rpc CreditBalances(QueryCreditBalancesRequest) returns (QueryCreditBalancesResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/creditbalances";
+  }
+
+  rpc CreditBalance(QueryCreditBalanceRequest) returns (QueryCreditBalanceResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/creditbalances/{owner}/{denom}";
+  }
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryIssuersRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryIssuersResponse {
+  repeated Issuer issuers = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = false];
+}
+
+message QueryIssuerRequest {
+  uint64 issuer_id = 1;
+}
+
+message QueryIssuerResponse {
+  Issuer issuer = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryApplicantsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryApplicantsResponse {
+  repeated Applicant applicants = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = false];
+}
+
+message QueryApplicantRequest {
+  uint64 applicant_id = 1;
+}
+
+message QueryApplicantResponse {
+  Applicant applicant = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryCreditClassesRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryCreditClassesResponse {
+  repeated CreditClass credit_classes = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = false];
+}
+
+message QueryCreditClassRequest {
+  string credit_class_abbreviation = 1;
+}
+
+message QueryCreditClassResponse {
+  CreditClass credit_class = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryProjectsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryProjectsResponse {
+  repeated Project projects = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = false];
+}
+
+message QueryProjectRequest {
+  uint64 project_id = 1;
+}
+
+message QueryProjectResponse {
+  Project project = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryCreditCollectionRequest {
+  string denom = 1;
+}
+
+message QueryCreditCollectionResponse {
+  CreditCollection credit_collection = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryCreditBalancesRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryCreditBalancesResponse {
+  repeated CreditBalance credit_balances = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = false];
+}
+
+message QueryCreditBalanceRequest {
+  string owner = 1;
+  string denom = 2;
+}
+
+message QueryCreditBalanceResponse {
+  CreditBalance balance = 1 [(gogoproto.nullable) = false];
+}

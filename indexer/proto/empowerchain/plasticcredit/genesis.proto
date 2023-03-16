@@ -1,0 +1,19 @@
+syntax = "proto3";
+package empowerchain.plasticcredit;
+
+import "empowerchain/plasticcredit/types.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/plasticcredit";
+
+// GenesisState defines the plasticcredit module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  IDCounters id_counters = 2 [(gogoproto.nullable) = false];
+  repeated Issuer issuers = 3 [(gogoproto.nullable) = false];
+  repeated Applicant applicants = 4 [(gogoproto.nullable) = false];
+  repeated CreditClass credit_classes = 5 [(gogoproto.nullable) = false];
+  repeated Project projects = 6 [(gogoproto.nullable) = false];
+  repeated CreditCollection credit_collections = 7 [(gogoproto.nullable) = false];
+  repeated CreditBalance credit_balances = 8 [(gogoproto.nullable) = false];
+}

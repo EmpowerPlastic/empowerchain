@@ -1,0 +1,252 @@
+syntax = "proto3";
+package empowerchain.plasticcredit;
+
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "cosmos/msg/v1/msg.proto";
+import "empowerchain/plasticcredit/types.proto";
+
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/plasticcredit";
+
+service Msg {
+  // UpdateParams defines a governance operation for updating the x/plasticcredit module parameters.
+  // The authority is defined in the keeper.
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+
+  // CreateIssuer creates a new Issuer that can create credit classes and issue new credits with those classes
+  // There is only a single signer in the system that is allowed to create new issuers and it is defined in Params as "issuer_creator"
+  rpc CreateIssuer(MsgCreateIssuer) returns (MsgCreateIssuerResponse);
+
+  // UpdateIssuer updates an existing issuer details.
+  // The only entity that is allowed to change an issue is the address defined in the issuer as "admin"
+  rpc UpdateIssuer(MsgUpdateIssuer) returns (MsgUpdateIssuerResponse);
+
+  // CreateApplicant creates a new Applicant that can create and apply for projects, for which plastic credits can be issued
+  rpc CreateApplicant(MsgCreateApplicant) returns (MsgCreateApplicantResponse);
+
+  // UpdateApplicant updates an existing Applicant by admin
+  rpc UpdateApplicant(MsgUpdateApplicant) returns (MsgUpdateApplicantResponse);
+
+  // CreateCreditClass creates a new Credit Class for an issuer.
+  rpc CreateCreditClass(MsgCreateCreditClass) returns (MsgCreateCreditClassResponse);
+
+  // UpdateCreditClass update an existing Credit Class for an issuer. Only the admin from the Issuer that owns the Credit Class is allowed and only change the name
+  rpc UpdateCreditClass(MsgUpdateCreditClass) returns (MsgUpdateCreditClassResponse);
+
+  // CreateProject creates a new Project for an applicant that can be approved be an issuer for issuing under a credit class
+  rpc CreateProject(MsgCreateProject) returns(MsgCreateProjectResponse);
+
+  // UpdateProject updates an existing Project. Can only be done by the admin from the Applicant that owns the Project and only change the name of the project
+  rpc UpdateProject(MsgUpdateProject) returns(MsgUpdateProjectResponse);
+
+  // ApproveProject
+  rpc ApproveProject(MsgApproveProject) returns(MsgApproveProjectResponse);
+
+  // RejectProject
+  rpc RejectProject(MsgRejectProject) returns(MsgRejectProjectResponse);
+
+  // SuspendProject suspends an approved project, even if it has already been issued credits. Not allowed to suspend a new or rejected project.
+  rpc SuspendProject(MsgSuspendProject) returns(MsgSuspendProjectResponse);
+
+  // IssueCredits mints new credits related to given credit class and project
+  rpc IssueCredits(MsgIssueCredits) returns (MsgIssueCreditsResponse);
+
+  // TransferCredits transfers credits from one account to another and can optionally retire them by doing so
+  rpc TransferCredits(MsgTransferCredits) returns (MsgTransferCreditsResponse);
+
+  // RetireCredits retires active credits
+  rpc RetireCredits(MsgRetireCredits) returns (MsgRetireCreditsResponse);
+}
+
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address that controls the module (defaults to x/gov unless overwritten in keeper).
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // params defines the x/plasitccredit parameters to update.
+  //
+  // NOTE: All parameters must be supplied.
+  Params params = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgUpdateParamsResponse {}
+
+message MsgCreateIssuer {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  string name = 2;
+  string description = 3;
+  string admin = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message MsgCreateIssuerResponse {
+  uint64 issuer_id = 1;
+}
+
+message MsgUpdateIssuer {
+  option (cosmos.msg.v1.signer) = "updater";
+
+  // updater is the address that is performing the update/sends the tx
+  string updater = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  uint64 issuer_id = 2;
+  string name = 3;
+  string description = 4;
+  string admin = 5 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message MsgUpdateIssuerResponse {}
+
+message MsgCreateApplicant {
+  option (cosmos.msg.v1.signer) = "admin";
+  string name = 1;
+  string description = 2;
+  string admin = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message MsgCreateApplicantResponse{
+  uint64 applicant_id = 1;
+}
+
+message MsgUpdateApplicant {
+  option (cosmos.msg.v1.signer) = "updater";
+  // updater is the address that is performing the update/sends the tx
+  string updater = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 applicant_id = 2;
+  string name = 3;
+  string description = 4;
+  string admin = 5 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message MsgUpdateApplicantResponse {}
+
+message MsgCreateCreditClass {
+  option (cosmos.msg.v1.signer) = "admin";
+
+  // creator is the signer and needs to have permissions on the issuer referenced in issuer_id
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // abbreviation is the short-hand name, as well as the ID of the credit class
+  string abbreviation = 2;
+  // issuer_id is the ID of the issuer creating and owning the credit class
+  uint64 issuer_id = 3;
+  // name is the human friendly name of the credits (e.g. Empower Plastic Credits)
+  string name = 4;
+}
+
+message MsgCreateCreditClassResponse {}
+
+message MsgUpdateCreditClass {
+  option (cosmos.msg.v1.signer) = "updater";
+  // abbreviation is the short-hand name, as well as the ID of the credit class
+  string updater = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string abbreviation = 2;
+  string name = 3;
+}
+
+message MsgUpdateCreditClassResponse {}
+
+message MsgCreateProject {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  // creator needs to have access to the applicant references in applicant_id
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 applicant_id = 2;
+  string credit_class_abbreviation = 3;
+  string name = 4;
+}
+
+message MsgCreateProjectResponse {
+  uint64 project_id = 1;
+}
+
+message MsgUpdateProject {
+  option (cosmos.msg.v1.signer) = "updater";
+
+  // updater needs to have access to the applicant references in applicant_id
+  string updater = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 project_id = 2;
+  string name = 3;
+}
+
+message MsgUpdateProjectResponse {}
+
+message MsgApproveProject {
+  option (cosmos.msg.v1.signer) = "approver";
+
+  // Approver needs to be someone who has the authority to approve for the credit class of the project
+  string approver = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  uint64 project_id = 2;
+}
+
+message MsgApproveProjectResponse {}
+
+message MsgRejectProject {
+  option (cosmos.msg.v1.signer) = "rejector";
+
+  // Rejector needs to be someone who has the authority to approve/ reject for the credit class of the project
+  string rejector = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  uint64 project_id = 2;
+}
+
+message MsgRejectProjectResponse {}
+
+message MsgSuspendProject {
+  option (cosmos.msg.v1.signer) = "Updater";
+
+  // updater needs to be someone who has the authority to update for the credit class of the project
+  string updater = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  uint64 project_id = 2;
+}
+
+message MsgSuspendProjectResponse {}
+
+message MsgIssueCredits {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  uint64 project_id = 2;
+  string serial_number = 3;
+  uint64 credit_amount = 4;
+}
+
+message MsgIssueCreditsResponse {
+  CreditCollection collection = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgTransferCredits {
+  option (cosmos.msg.v1.signer) = "from";
+
+  string from = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  string to = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  string denom = 3;
+
+  uint64 amount = 4;
+
+  bool retire = 5;
+}
+
+message MsgTransferCreditsResponse {}
+
+message MsgRetireCredits {
+  option (cosmos.msg.v1.signer) = "owner";
+
+  string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  string denom = 2;
+  uint64 amount = 3;
+
+}
+
+message MsgRetireCreditsResponse {
+  CreditBalance balance = 1 [(gogoproto.nullable) = false];
+}
