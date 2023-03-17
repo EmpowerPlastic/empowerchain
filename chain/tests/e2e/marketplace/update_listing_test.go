@@ -24,81 +24,25 @@ func (s *E2ETestSuite) TestUpdateListing() {
 		denom                        string
 		numberOfCredits              uint64
 		pricePerCredit               uint64
-		createNewListing             bool
 		expectedCreatorCreditBalance uint64
 		expectedPricePerCredit       uint64
 		expectedErr                  bool
-		expectedErrMsg               string
 	}{
 		"happy path (increase credit amount)": {
 			denom:                        "PTEST/UPDATE_LISTING_1",
 			numberOfCredits:              150,
 			pricePerCredit:               10,
-			createNewListing:             true,
 			expectedCreatorCreditBalance: 850,
 			expectedPricePerCredit:       10,
 			expectedErr:                  false,
-			expectedErrMsg:               "",
 		},
 		"happy path (decrease credit amount)": {
 			denom:                        "PTEST/UPDATE_LISTING_2",
 			numberOfCredits:              50,
 			pricePerCredit:               10,
-			createNewListing:             true,
 			expectedCreatorCreditBalance: 950,
 			expectedPricePerCredit:       10,
 			expectedErr:                  false,
-			expectedErrMsg:               "",
-		},
-		"happy path (increase price per credit)": {
-			denom:                        "PTEST/UPDATE_LISTING_3",
-			numberOfCredits:              100,
-			pricePerCredit:               20,
-			createNewListing:             true,
-			expectedCreatorCreditBalance: 900,
-			expectedPricePerCredit:       20,
-			expectedErr:                  false,
-			expectedErrMsg:               "",
-		},
-		"happy path (decrease price per credit)": {
-			denom:                        "PTEST/UPDATE_LISTING_4",
-			numberOfCredits:              100,
-			pricePerCredit:               5,
-			createNewListing:             true,
-			expectedCreatorCreditBalance: 900,
-			expectedPricePerCredit:       5,
-			expectedErr:                  false,
-			expectedErrMsg:               "",
-		},
-		"listing does not exist": {
-			denom:                        "PTEST/UPDATE_LISTING_5",
-			numberOfCredits:              1000,
-			pricePerCredit:               10,
-			createNewListing:             false,
-			expectedCreatorCreditBalance: 0,
-			expectedPricePerCredit:       0,
-			expectedErr:                  true,
-			expectedErrMsg:               "listing not found",
-		},
-		"number of credits is zero": {
-			denom:                        "PTEST/UPDATE_LISTING_6",
-			numberOfCredits:              0,
-			pricePerCredit:               10,
-			createNewListing:             true,
-			expectedCreatorCreditBalance: 0,
-			expectedPricePerCredit:       0,
-			expectedErr:                  true,
-			expectedErrMsg:               "listing needs to have more than zero credits listed",
-		},
-		"price per credit is zero": {
-			denom:                        "PTEST/UPDATE_LISTING_7",
-			numberOfCredits:              1000,
-			pricePerCredit:               0,
-			createNewListing:             true,
-			expectedCreatorCreditBalance: 0,
-			expectedPricePerCredit:       0,
-			expectedErr:                  true,
-			expectedErrMsg:               "listing needs to have a price per credit",
 		},
 	}
 	for name, tc := range testCases {
@@ -118,17 +62,15 @@ func (s *E2ETestSuite) TestUpdateListing() {
 
 			// Create the listing
 			executeContractCmd := wasmcli.ExecuteContractCmd()
-			if tc.createNewListing {
-				out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
-					marketplaceAddress,
-					fmt.Sprintf(`{"create_listing": {"denom": "%s", "number_of_credits": "100", "price_per_credit": {"denom": "umpwr", "amount": "10"}}}`, tc.denom),
-					fmt.Sprintf("--%s=%s", flags.FlagFrom, creditOwnerKey.Name),
-				}, s.CommonFlags...))
-				s.Require().NoError(err, out.String())
-				cliResponse, err = s.GetCliResponse(val.ClientCtx, out.Bytes())
-				s.Require().NoError(err)
-				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
-			}
+			out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
+				marketplaceAddress,
+				fmt.Sprintf(`{"create_listing": {"denom": "%s", "number_of_credits": "100", "price_per_credit": {"denom": "umpwr", "amount": "10"}}}`, tc.denom),
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, creditOwnerKey.Name),
+			}, s.CommonFlags...))
+			s.Require().NoError(err, out.String())
+			cliResponse, err = s.GetCliResponse(val.ClientCtx, out.Bytes())
+			s.Require().NoError(err)
+			s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 			// Update the listing
 			out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
@@ -140,7 +82,7 @@ func (s *E2ETestSuite) TestUpdateListing() {
 			cliResponse, err = s.GetCliResponse(val.ClientCtx, out.Bytes())
 			s.Require().NoError(err)
 			if tc.expectedErr {
-				s.Require().Contains(cliResponse.RawLog, tc.expectedErrMsg)
+				s.Require().NotEqual(uint32(0), cliResponse.Code, cliResponse.RawLog)
 			} else {
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 

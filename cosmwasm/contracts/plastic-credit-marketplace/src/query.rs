@@ -1,7 +1,7 @@
 use cosmwasm_std::{entry_point, Deps, Env, StdResult, Binary, to_binary, Addr};
 use cw_storage_plus::Bound;
 
-use crate::{msg::{QueryMsg, ListingsResponse}, state::{LISTINGS, Listing}};
+use crate::{msg::{QueryMsg, ListingResponse, ListingsResponse}, state::{LISTINGS, Listing}};
 
 pub const DEFAULT_LIMIT: u64 = 30;
 
@@ -36,21 +36,65 @@ pub fn listing(
     deps: Deps, 
     owner: Addr,
     denom: String,
-) -> StdResult<Listing> {
+) -> StdResult<ListingResponse> {
     let listing = LISTINGS.load(deps.storage, (owner, denom))?;
-
-    Ok(listing)
+    Ok(ListingResponse { listing })
 }
 
 #[cfg(test)]
 mod tests {
     mod query_listings_tests {
-        use cosmwasm_std::{Coin, coins, Empty, from_binary, Uint128, Uint64};
+        use cosmwasm_std::{Coin, coins, Empty, from_binary, Uint128, Uint64, StdError};
         use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
         use crate::execute::execute;
         use crate::{instantiate, query};
         use crate::msg::{ExecuteMsg, ListingsResponse};
         use crate::query::query;
+
+        #[test]
+        fn test_query_listing_found() {
+            let mut deps = mock_dependencies();
+            let info = mock_info("creator", &coins(2, "token"));
+            instantiate(deps.as_mut(), mock_env(), info.clone(), Empty {}).unwrap();
+
+            let msg = ExecuteMsg::CreateListing {
+                denom: "ptest".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+            };
+            execute(deps.as_mut(), mock_env(), info.clone(), msg.clone()).unwrap();
+
+            let res = query(deps.as_ref(), mock_env(), query::QueryMsg::Listing {
+                owner: info.sender.clone(),
+                denom: "ptest".to_string(),
+            }).unwrap();
+            let res: crate::state::Listing = from_binary(&res).unwrap();
+            assert_eq!(res.denom, "ptest");
+            assert_eq!(res.number_of_credits, Uint64::from(42u64));
+            assert_eq!(res.price_per_credit, Coin {
+                denom: "token".to_string(),
+                amount: Uint128::from(1337u128),
+            });
+        }
+        #[test]
+
+        fn test_query_listing_not_found() {
+            let mut deps = mock_dependencies();
+            let info = mock_info("creator", &coins(2, "token"));
+            instantiate(deps.as_mut(), mock_env(), info.clone(), Empty {}).unwrap();
+
+            let res = query(deps.as_ref(), mock_env(), query::QueryMsg::Listing {
+                owner: info.sender.clone(),
+                denom: "ptest".to_string(),
+            });
+            match res {
+                Ok(_) => panic!("Expected error"),
+                Err(e) => assert_eq!(e, StdError::NotFound { kind: "plastic_credit_marketplace::state::Listing".to_string() }),
+            }
+        }
 
         #[test]
         fn test_query_listings() {

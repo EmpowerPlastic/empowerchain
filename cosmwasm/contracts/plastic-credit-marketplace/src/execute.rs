@@ -129,7 +129,7 @@ fn execute_update_listing(
         return Err(ContractError::ZeroPrice {});
     }
 
-    let mut listing = LISTINGS.load(deps.storage, (info.sender.clone(), denom)).map_err(|_| ContractError::ListingNotFound {})?;
+    let mut listing = LISTINGS.load(deps.storage, (info.sender.clone(), denom.clone())).map_err(|_| ContractError::ListingNotFound {})?;
 
     let exec_credit_transfer_msg: Option<CosmosMsg>;
     // Check if the number of credits is increasing or decreasing
@@ -164,6 +164,7 @@ fn execute_update_listing(
     let res = Response::new()
         .add_attribute("action", "update_listing")
         .add_attribute("listing_owner", info.sender)
+        .add_attribute("denom", denom)
         .add_attribute("number_of_credits", number_of_credits.to_string())
         .add_attribute("price_per_credit", price_per_credit.to_string());
     
@@ -370,6 +371,31 @@ mod tests {
                 .collect::<Vec<((Addr, String), Listing)>>();
             assert_eq!(all_listings.len(), 0);
         }
+        #[test]
+        fn test_create_listing_already_exists() {
+            let mut deps = mock_dependencies();
+            let info = mock_info("creator", &coins(2, "token"));
+            instantiate(deps.as_mut(), mock_env(), info.clone(), Empty {}).unwrap();
+
+            let msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+            };
+
+            execute(deps.as_mut(), mock_env(), info.clone(), msg.clone()).unwrap();
+
+            let err = execute(deps.as_mut(), mock_env(), info.clone(), msg).unwrap_err();
+            assert_eq!(err, ContractError::ListingAlreadyExists {});
+
+            let all_listings = LISTINGS.range(deps.as_ref().storage, None, None, Order::Ascending)
+                .map(|item| item.unwrap())
+                .collect::<Vec<((Addr, String), Listing)>>();
+            assert_eq!(all_listings.len(), 1);
+        }
     }
     mod update_listing_tests {
         use cosmos_sdk_proto::traits::TypeUrl;
@@ -411,7 +437,7 @@ mod tests {
                 },
             };
             let res = execute(deps.as_mut(), mock_env(), creator_info.clone(), update_listing_msg).unwrap();
-            assert_eq!(res.attributes.len(), 4);
+            assert_eq!(res.attributes.len(), 5);
             assert_eq!(res.messages.len(), 1);
             let sg_msg = &res.messages[0].msg;
             if let CosmosMsg::Stargate { type_url, value } = sg_msg {
@@ -465,7 +491,7 @@ mod tests {
                 },
             };
             let res = execute(deps.as_mut(), mock_env(), creator_info.clone(), update_listing_msg).unwrap();
-            assert_eq!(res.attributes.len(), 4);
+            assert_eq!(res.attributes.len(), 5);
             assert_eq!(res.messages.len(), 1);
             if let CosmosMsg::Stargate { type_url, value } = &res.messages[0].msg {
                 assert_eq!(type_url, MsgTransferCredits::TYPE_URL);
@@ -515,7 +541,7 @@ mod tests {
                 },
             };
             let res = execute(deps.as_mut(), mock_env(), creator_info.clone(), update_listing_msg).unwrap();
-            assert_eq!(res.attributes.len(), 4);
+            assert_eq!(res.attributes.len(), 5);
             assert_eq!(res.messages.len(), 0);
             
             let listing = LISTINGS.load(deps.as_ref().storage, (creator_info.sender.clone(), "pcrd".to_string())).unwrap();
