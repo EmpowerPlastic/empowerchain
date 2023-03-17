@@ -1,16 +1,35 @@
 <script setup lang="ts">
 import router from "@/router";
 import SelectWalletModel from "@/views/certify/SelectWalletModel.vue";
+import { ref } from "vue";
+
+const showModal = ref(false);
 //Methods
 const back = () => {
   router.push({
     path: `/`,
   });
 };
+
+const selectedWallet = (wallet: string) => {
+  console.log(wallet);
+};
+
+const openModal = () => {
+  showModal.value = true;
+};
+
+const closeModal = () => {
+  showModal.value = false;
+};
 </script>
 
 <template>
-  <SelectWalletModel />
+  <SelectWalletModel
+    @wallet="selectedWallet"
+    :show-modal="showModal"
+    :close-modal="closeModal"
+  />
   <img
     src="../../assets/images/emp-astro-2.png"
     class="left-28 top-full sm:top-auto sm:left-auto w-32 fixed sm:absolute animate-bounce -m-24"
@@ -62,8 +81,7 @@ const back = () => {
           Connect wallet
         </h5>
         <button
-          data-modal-target="selectWalletModal"
-          data-modal-toggle="selectWalletModal"
+          @click="openModal"
           class="bg-lightGreen mt-7 content-center p-1 px-7 rounded text-white"
         >
           Connect your wallet
