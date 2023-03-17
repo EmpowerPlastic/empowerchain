@@ -71,10 +71,10 @@ mod tests {
                 owner: info.sender.clone(),
                 denom: "ptest".to_string(),
             }).unwrap();
-            let res: crate::state::Listing = from_binary(&res).unwrap();
-            assert_eq!(res.denom, "ptest");
-            assert_eq!(res.number_of_credits, Uint64::from(42u64));
-            assert_eq!(res.price_per_credit, Coin {
+            let res: crate::msg::ListingResponse = from_binary(&res).unwrap();
+            assert_eq!(res.listing.denom, "ptest");
+            assert_eq!(res.listing.number_of_credits, Uint64::from(42u64));
+            assert_eq!(res.listing.price_per_credit, Coin {
                 denom: "token".to_string(),
                 amount: Uint128::from(1337u128),
             });
