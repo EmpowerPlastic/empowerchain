@@ -23,4 +23,7 @@ pub enum ContractError {
 
     #[error("listing not found")]
     ListingNotFound {},
+
+    #[error("listing already exists")]
+    ListingAlreadyExists {},
 }

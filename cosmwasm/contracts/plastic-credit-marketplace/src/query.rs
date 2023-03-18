@@ -1,29 +1,30 @@
-use cosmwasm_std::{entry_point, Deps, Env, StdResult, Binary, to_binary};
+use cosmwasm_std::{entry_point, Deps, Env, StdResult, Binary, to_binary, Addr};
 use cw_storage_plus::Bound;
 
-use crate::{msg::{QueryMsg, ListingsResponse}, state::{LISTINGS, Listing}};
+use crate::{msg::{QueryMsg, ListingResponse, ListingsResponse}, state::{LISTINGS, Listing}};
 
 pub const DEFAULT_LIMIT: u64 = 30;
 
 #[entry_point]
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     match msg {
+        QueryMsg::Listing {owner, denom} => to_binary(&listing(deps, owner, denom)?),
         QueryMsg::Listings { limit, start_after } => to_binary(&listings(deps, start_after, limit)?),
     }
 }
 
 pub fn listings(
     deps: Deps,
-    start_after: Option<u64>,
+    start_after: Option<(Addr, String)>,
     limit: Option<u64>,
 ) -> StdResult<ListingsResponse> {
-    let min = start_after.map(Bound::exclusive);
     let limit = limit.unwrap_or(DEFAULT_LIMIT);
+    let start = start_after.map(Bound::exclusive);
 
     let listings: Vec<Listing> = LISTINGS
-        .range(deps.storage, min, None, cosmwasm_std::Order::Ascending)
+        .range(deps.storage, start, None, cosmwasm_std::Order::Ascending)
         .take(limit as usize)
-        .collect::<Result<Vec<(u64, Listing)>, _>>()?
+        .collect::<Result<Vec<((Addr, String), Listing)>, _>>()?
         .into_iter()
         .map(|(_, listing)| listing)
         .collect();
@@ -31,15 +32,69 @@ pub fn listings(
     Ok(ListingsResponse { listings })
 }
 
+pub fn listing(
+    deps: Deps, 
+    owner: Addr,
+    denom: String,
+) -> StdResult<ListingResponse> {
+    let listing = LISTINGS.load(deps.storage, (owner, denom))?;
+    Ok(ListingResponse { listing })
+}
+
 #[cfg(test)]
 mod tests {
     mod query_listings_tests {
-        use cosmwasm_std::{Coin, coins, Empty, from_binary, Uint128, Uint64};
+        use cosmwasm_std::{Coin, coins, Empty, from_binary, Uint128, Uint64, StdError};
         use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
         use crate::execute::execute;
         use crate::{instantiate, query};
         use crate::msg::{ExecuteMsg, ListingsResponse};
         use crate::query::query;
+
+        #[test]
+        fn test_query_listing_found() {
+            let mut deps = mock_dependencies();
+            let info = mock_info("creator", &coins(2, "token"));
+            instantiate(deps.as_mut(), mock_env(), info.clone(), Empty {}).unwrap();
+
+            let msg = ExecuteMsg::CreateListing {
+                denom: "ptest".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+            };
+            execute(deps.as_mut(), mock_env(), info.clone(), msg.clone()).unwrap();
+
+            let res = query(deps.as_ref(), mock_env(), query::QueryMsg::Listing {
+                owner: info.sender.clone(),
+                denom: "ptest".to_string(),
+            }).unwrap();
+            let res: crate::msg::ListingResponse = from_binary(&res).unwrap();
+            assert_eq!(res.listing.denom, "ptest");
+            assert_eq!(res.listing.number_of_credits, Uint64::from(42u64));
+            assert_eq!(res.listing.price_per_credit, Coin {
+                denom: "token".to_string(),
+                amount: Uint128::from(1337u128),
+            });
+        }
+        #[test]
+
+        fn test_query_listing_not_found() {
+            let mut deps = mock_dependencies();
+            let info = mock_info("creator", &coins(2, "token"));
+            instantiate(deps.as_mut(), mock_env(), info.clone(), Empty {}).unwrap();
+
+            let res = query(deps.as_ref(), mock_env(), query::QueryMsg::Listing {
+                owner: info.sender.clone(),
+                denom: "ptest".to_string(),
+            });
+            match res {
+                Ok(_) => panic!("Expected error"),
+                Err(e) => assert_eq!(e, StdError::NotFound { kind: "plastic_credit_marketplace::state::Listing".to_string() }),
+            }
+        }
 
         #[test]
         fn test_query_listings() {
@@ -55,8 +110,16 @@ mod tests {
             let res: ListingsResponse = from_binary(&res).unwrap();
             assert_eq!(res.listings.len(), 0);
 
-            for i in 0..101 {
-                let denom = format!("ptest{}", i);
+            // Create vector of strings
+            let mut denoms: Vec<String> = Vec::new();
+            for i in b'a'..=b'd' {
+                for j in b'a'..=b'z' {
+                    let denom = format!("ptest{}{}", i as char, j as char);
+                    denoms.push(denom.to_string());
+                }
+            }
+
+            for denom in denoms.clone() {
                 let msg = ExecuteMsg::CreateListing {
                     denom: denom.to_string(),
                     number_of_credits: Uint64::from(42u64),
@@ -65,7 +128,6 @@ mod tests {
                         amount: Uint128::from(1337u128),
                     },
                 };
-
                 execute(deps.as_mut(), mock_env(), info.clone(), msg.clone()).unwrap();
             }
 
@@ -78,8 +140,7 @@ mod tests {
             assert_eq!(res.listings.len(), 30);
             // Check that they all have the expected values
             for i in 0..30 {
-                let denom = format!("ptest{}", i);
-                assert_eq!(res.listings[i].denom, denom);
+                assert_eq!(res.listings[i].denom, denoms[i]);
                 assert_eq!(res.listings[i].number_of_credits, Uint64::from(42u64));
                 assert_eq!(res.listings[i].price_per_credit, Coin {
                     denom: "token".to_string(),
@@ -98,14 +159,13 @@ mod tests {
             // Query the next 50 listings, should return the next 50 listings
             let res = query(deps.as_ref(), mock_env(), query::QueryMsg::Listings {
                 limit: Some(50),
-                start_after: Some(50),
+                start_after: Some((res.listings[49].owner.clone(), res.listings[49].denom.clone())),
             }).unwrap();
             let res: ListingsResponse = from_binary(&res).unwrap();
             assert_eq!(res.listings.len(), 50);
             // Check that they all have the expected values
             for i in 0..50 {
-                let denom = format!("ptest{}", i + 50);
-                assert_eq!(res.listings[i].denom, denom);
+                assert_eq!(res.listings[i].denom, denoms[i + 50]);
                 assert_eq!(res.listings[i].number_of_credits, Uint64::from(42u64));
                 assert_eq!(res.listings[i].price_per_credit, Coin {
                     denom: "token".to_string(),
@@ -113,21 +173,22 @@ mod tests {
                 });
             }
 
-            // Query the next 50 listings, should return the last 1 listing
+            // Query the next 50 listings, should return the last 4 listings
             let res = query(deps.as_ref(), mock_env(), query::QueryMsg::Listings {
                 limit: Some(50),
-                start_after: Some(100),
+                start_after: Some((res.listings[49].owner.clone(), res.listings[49].denom.clone())),
             }).unwrap();
             let res: ListingsResponse = from_binary(&res).unwrap();
-            assert_eq!(res.listings.len(), 1);
-            // Check that it has the expected values
-            let denom = format!("ptest{}", 100);
-            assert_eq!(res.listings[0].denom, denom);
-            assert_eq!(res.listings[0].number_of_credits, Uint64::from(42u64));
-            assert_eq!(res.listings[0].price_per_credit, Coin {
-                denom: "token".to_string(),
-                amount: Uint128::from(1337u128),
-            });
+            assert_eq!(res.listings.len(), 4);
+            // Check that they all have the expected values
+            for i in 0..4 {
+                assert_eq!(res.listings[i].denom, denoms[i + 100]);
+                assert_eq!(res.listings[i].number_of_credits, Uint64::from(42u64));
+                assert_eq!(res.listings[i].price_per_credit, Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                });
+            }   
         }
     }
 }

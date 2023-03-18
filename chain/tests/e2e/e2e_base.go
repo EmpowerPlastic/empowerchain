@@ -385,80 +385,15 @@ func AddGenesisE2ETestData(cdc codec.Codec, genesisState *genesistools.GenesisSt
 	// check if credit collection exists in genesis state
 	// if not, add it
 	// if yes, add to the total amount
-	etestFound := false
-	ptestFound := false
-	for i, creditCollection := range genesisState.PlasticcreditGenesis.CreditCollections {
-		if creditCollection.Denom == "ETEST/123" {
-			genesisState.PlasticcreditGenesis.CreditCollections[i].TotalAmount.Active += 1000
-			genesisState.PlasticcreditGenesis.CreditCollections[i].TotalAmount.Retired += 200
-			etestFound = true
-		}
-		if creditCollection.Denom == "PTEST/00001" {
-			genesisState.PlasticcreditGenesis.CreditCollections[i].TotalAmount.Active += 5000
-			ptestFound = true
-		}
-	}
-	if !etestFound {
-		genesisState.PlasticcreditGenesis.CreditCollections = append(genesisState.PlasticcreditGenesis.CreditCollections, []plasticcredit.CreditCollection{
-			{
-				Denom:     "ETEST/123",
-				ProjectId: currentNoOfProjects + 1,
-				TotalAmount: plasticcredit.CreditAmount{
-					Active:  1000,
-					Retired: 200,
-				},
-			},
-		}...)
-	}
-	if !ptestFound {
-		genesisState.PlasticcreditGenesis.CreditCollections = append(genesisState.PlasticcreditGenesis.CreditCollections, []plasticcredit.CreditCollection{
-			{
-				Denom:     "PTEST/00001",
-				ProjectId: currentNoOfProjects + 2,
-				TotalAmount: plasticcredit.CreditAmount{
-					Active:  5000,
-					Retired: 0,
-				},
-			},
-		}...)
-	}
-	// add credit balances
-	if etestFound || ptestFound {
-		for i, creditBalance := range genesisState.PlasticcreditGenesis.CreditBalances {
-			if creditBalance.Denom == "ETEST/123" && creditBalance.Owner == genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin {
-				genesisState.PlasticcreditGenesis.CreditBalances[i].Balance.Active += 1000
-				genesisState.PlasticcreditGenesis.CreditBalances[i].Balance.Retired += 200
-			}
-			if creditBalance.Denom == "PTEST/00001" && creditBalance.Owner == genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin {
-				genesisState.PlasticcreditGenesis.CreditBalances[i].Balance.Active += 5000
-			}
-		}
-	} else {
-		if !etestFound {
-			genesisState.PlasticcreditGenesis.CreditBalances = append(genesisState.PlasticcreditGenesis.CreditBalances, []plasticcredit.CreditBalance{
-				{
-					Owner: genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin,
-					Denom: "ETEST/123",
-					Balance: plasticcredit.CreditAmount{
-						Active:  1000,
-						Retired: 200,
-					},
-				},
-			}...)
-		}
-		if !ptestFound {
-			genesisState.PlasticcreditGenesis.CreditBalances = append(genesisState.PlasticcreditGenesis.CreditBalances, []plasticcredit.CreditBalance{
-				{
-					Owner: genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin,
-					Denom: "PTEST/00001",
-					Balance: plasticcredit.CreditAmount{
-						Active:  5000,
-						Retired: 0,
-					},
-				},
-			}...)
-		}
-	}
+	genesistools.AddGenesisPlasticCreditBalance(cdc, genesisState, currentNoOfProjects+1, "ETEST/123", genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin, plasticcredit.CreditAmount{Active: 1000, Retired: 200})
+	genesistools.AddGenesisPlasticCreditBalance(cdc, genesisState, currentNoOfProjects+2, "PTEST/00001", genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin, plasticcredit.CreditAmount{Active: 5000})
+	genesistools.AddGenesisPlasticCreditBalance(cdc, genesisState, currentNoOfProjects+2, "PTEST/UPDATE_LISTING_1", genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin, plasticcredit.CreditAmount{Active: 1000, Retired: 200})
+	genesistools.AddGenesisPlasticCreditBalance(cdc, genesisState, currentNoOfProjects+2, "PTEST/UPDATE_LISTING_2", genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin, plasticcredit.CreditAmount{Active: 1000, Retired: 200})
+	genesistools.AddGenesisPlasticCreditBalance(cdc, genesisState, currentNoOfProjects+2, "PTEST/UPDATE_LISTING_3", genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin, plasticcredit.CreditAmount{Active: 1000, Retired: 200})
+	genesistools.AddGenesisPlasticCreditBalance(cdc, genesisState, currentNoOfProjects+2, "PTEST/UPDATE_LISTING_4", genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin, plasticcredit.CreditAmount{Active: 1000, Retired: 200})
+	genesistools.AddGenesisPlasticCreditBalance(cdc, genesisState, currentNoOfProjects+2, "PTEST/UPDATE_LISTING_5", genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin, plasticcredit.CreditAmount{Active: 1000, Retired: 200})
+	genesistools.AddGenesisPlasticCreditBalance(cdc, genesisState, currentNoOfProjects+2, "PTEST/UPDATE_LISTING_6", genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin, plasticcredit.CreditAmount{Active: 1000, Retired: 200})
+	genesistools.AddGenesisPlasticCreditBalance(cdc, genesisState, currentNoOfProjects+2, "PTEST/UPDATE_LISTING_7", genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin, plasticcredit.CreditAmount{Active: 1000, Retired: 200})
 
 	genesisState.PlasticcreditGenesis.IdCounters = plasticcredit.IDCounters{
 		NextIssuerId:    uint64(len(genesisState.PlasticcreditGenesis.Issuers) + 1),
