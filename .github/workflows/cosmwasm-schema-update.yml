@@ -1,0 +1,28 @@
+name: "CosmWasm contract schema update"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'cosmwasm/contracts/**' # On contract code changes
+
+jobs:
+  build:
+    name: Update cosmwasm contract schema
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: earthly/actions/setup-earthly@v1
+        with:
+          version: v0.6.22
+
+      - run: earthly --ci --output +generate-schema
+        working-directory: ./cosmwasm
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          title: Update CosmWasm contract schema
+          commit-message: Update CosmWasm contract schema
+          branch: update-cosmwasm-schema
