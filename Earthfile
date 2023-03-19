@@ -21,3 +21,8 @@ get-proto:
     WORKDIR .
     COPY chain/proto/empowerchain ./empowerchain
     SAVE ARTIFACT .
+
+get-cw-schema:
+    WORKDIR .
+    COPY cosmwasm/schema ./schema
+    SAVE ARTIFACT .

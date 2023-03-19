@@ -1,0 +1,19 @@
+VERSION 0.6
+FROM node:lts-alpine
+WORKDIR /empowerchain/frontend/cw-client
+
+install-ts-codegen:
+  RUN npm install -g @cosmwasm/ts-codegen@0.25.2
+
+generate-ts-types:
+  FROM +install-ts-codegen
+  COPY ../../+get-cw-schema/* .
+  RUN cosmwasm-ts-codegen generate \
+    --plugin client \
+    --schema ./schema \
+    --out ./src/plastic-credit-marketplace \
+    --name "Plastic Credit Marketplace" \
+    --bundle true \
+    --bundleFile index.ts \
+    --bundleScope contracts
+  SAVE ARTIFACT ./src/plastic-credit-marketplace AS LOCAL ./src/plastic-credit-marketplace

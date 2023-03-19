@@ -1,4 +1,4 @@
-name: "CosmWasm contract schema update"
+name: "CosmWasm typeScript types update"
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Update cosmwasm contract schema
+    name: Update cosmwasm contract schema and ts-types
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
@@ -19,6 +19,9 @@ jobs:
 
       - run: earthly --ci --output +generate-schema
         working-directory: ./cosmwasm
+
+      - run: earthly --ci --output +generate-ts-types
+        working-directory: ./frontend/cw-client
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
