@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import router from "@/router";
 import SelectWalletModel from "@/views/certify/SelectWalletModel.vue";
+import { ref } from "vue";
 
+const showModal = ref(true);
 //Methods
 const back = () => {
   router.push({
