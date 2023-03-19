@@ -3,6 +3,7 @@
   "private": true,
   "workspaces": [
     "ts-client",
+    "cw-client",
     "proof-of-existence"
   ],
   "devDependencies": {
