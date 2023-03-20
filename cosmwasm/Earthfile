@@ -45,3 +45,10 @@ test-with-coverage:
     RUN mkdir target/coverage
     RUN grcov . --binary-path ./target/debug/deps/ -s . -t lcov --branch --ignore-not-existing --ignore '../*' --ignore "/*" -o target/coverage/tests.lcov
     SAVE ARTIFACT target/coverage/tests.lcov AS LOCAL tests.lcov
+
+generate-schema:
+    FROM +build-prep
+    RUN cargo schema
+    SAVE ARTIFACT ./schema/* AS LOCAL schema/
+
+
