@@ -14,13 +14,21 @@ export type ExecuteMsg = {
     price_per_credit: Coin;
   };
 } | {
+  update_listing: {
+    denom: string;
+    number_of_credits: Uint64;
+    price_per_credit: Coin;
+  };
+} | {
   buy_credits: {
-    listing_id: number;
+    denom: string;
     number_of_credits_to_buy: number;
+    owner: Addr;
   };
 };
 export type Uint64 = string;
 export type Uint128 = string;
+export type Addr = string;
 export interface Coin {
   amount: Uint128;
   denom: string;
@@ -29,17 +37,23 @@ export interface Coin {
 export type QueryMsg = {
   listings: {
     limit?: number | null;
-    start_after?: number | null;
+    start_after?: [Addr, string] | null;
+  };
+} | {
+  listing: {
+    denom: string;
+    owner: Addr;
   };
 };
-export type Addr = string;
-export interface ListingsResponse {
-  listings: Listing[];
+export interface ListingResponse {
+  listing: Listing;
 }
 export interface Listing {
   denom: string;
-  id: number;
   number_of_credits: Uint64;
   owner: Addr;
   price_per_credit: Coin;
+}
+export interface ListingsResponse {
+  listings: Listing[];
 }
