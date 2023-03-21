@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint64, Uint128, Coin, QueryMsg, Addr, ListingsResponse, Listing } from "./PlasticCreditMarketplace.types";
+import { InstantiateMsg, ExecuteMsg, Uint64, Uint128, Addr, Coin, QueryMsg, ListingResponse, Listing, ListingsResponse } from "./PlasticCreditMarketplace.types";
 export interface PlasticCreditMarketplaceReadOnlyInterface {
   contractAddress: string;
   listings: ({
@@ -14,8 +14,15 @@ export interface PlasticCreditMarketplaceReadOnlyInterface {
     startAfter
   }: {
     limit?: number;
-    startAfter?: number;
+    startAfter?: Addr[][];
   }) => Promise<ListingsResponse>;
+  listing: ({
+    denom,
+    owner
+  }: {
+    denom: string;
+    owner: Addr;
+  }) => Promise<ListingResponse>;
 }
 export class PlasticCreditMarketplaceQueryClient implements PlasticCreditMarketplaceReadOnlyInterface {
   client: CosmWasmClient;
@@ -25,6 +32,7 @@ export class PlasticCreditMarketplaceQueryClient implements PlasticCreditMarketp
     this.client = client;
     this.contractAddress = contractAddress;
     this.listings = this.listings.bind(this);
+    this.listing = this.listing.bind(this);
   }
 
   listings = async ({
@@ -32,12 +40,26 @@ export class PlasticCreditMarketplaceQueryClient implements PlasticCreditMarketp
     startAfter
   }: {
     limit?: number;
-    startAfter?: number;
+    startAfter?: Addr[][];
   }): Promise<ListingsResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
       listings: {
         limit,
         start_after: startAfter
+      }
+    });
+  };
+  listing = async ({
+    denom,
+    owner
+  }: {
+    denom: string;
+    owner: Addr;
+  }): Promise<ListingResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      listing: {
+        denom,
+        owner
       }
     });
   };
@@ -54,12 +76,23 @@ export interface PlasticCreditMarketplaceInterface extends PlasticCreditMarketpl
     numberOfCredits: Uint64;
     pricePerCredit: Coin;
   }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
-  buyCredits: ({
-    listingId,
-    numberOfCreditsToBuy
+  updateListing: ({
+    denom,
+    numberOfCredits,
+    pricePerCredit
   }: {
-    listingId: number;
+    denom: string;
+    numberOfCredits: Uint64;
+    pricePerCredit: Coin;
+  }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
+  buyCredits: ({
+    denom,
+    numberOfCreditsToBuy,
+    owner
+  }: {
+    denom: string;
     numberOfCreditsToBuy: number;
+    owner: Addr;
   }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
 }
 export class PlasticCreditMarketplaceClient extends PlasticCreditMarketplaceQueryClient implements PlasticCreditMarketplaceInterface {
@@ -73,6 +106,7 @@ export class PlasticCreditMarketplaceClient extends PlasticCreditMarketplaceQuer
     this.sender = sender;
     this.contractAddress = contractAddress;
     this.createListing = this.createListing.bind(this);
+    this.updateListing = this.updateListing.bind(this);
     this.buyCredits = this.buyCredits.bind(this);
   }
 
@@ -93,17 +127,37 @@ export class PlasticCreditMarketplaceClient extends PlasticCreditMarketplaceQuer
       }
     }, fee, memo, funds);
   };
-  buyCredits = async ({
-    listingId,
-    numberOfCreditsToBuy
+  updateListing = async ({
+    denom,
+    numberOfCredits,
+    pricePerCredit
   }: {
-    listingId: number;
+    denom: string;
+    numberOfCredits: Uint64;
+    pricePerCredit: Coin;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      update_listing: {
+        denom,
+        number_of_credits: numberOfCredits,
+        price_per_credit: pricePerCredit
+      }
+    }, fee, memo, funds);
+  };
+  buyCredits = async ({
+    denom,
+    numberOfCreditsToBuy,
+    owner
+  }: {
+    denom: string;
     numberOfCreditsToBuy: number;
+    owner: Addr;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       buy_credits: {
-        listing_id: listingId,
-        number_of_credits_to_buy: numberOfCreditsToBuy
+        denom,
+        number_of_credits_to_buy: numberOfCreditsToBuy,
+        owner
       }
     }, fee, memo, funds);
   };
