@@ -180,6 +180,7 @@ func (s *TestSuite) PopulateWithSamples() {
 		ProjectId:    s.sampleProjectID,
 		SerialNumber: "123",
 		CreditAmount: 100000000,
+		MetadataUris: []string{"ipfs://CID1", "ipfs://CID2"},
 	})
 	s.Require().NoError(err)
 	s.Require().Equal(s.sampleCreditDenom, respIssue.Collection.Denom)

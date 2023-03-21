@@ -102,6 +102,7 @@ func AddGenesisPlasticCreditBalance(cdc codec.Codec, genesisState *GenesisState,
 					Active:  amount.Active,
 					Retired: amount.Retired,
 				},
+				MetadataUris: []string{"ipfs://CID1", "ipfs://CID2"},
 			},
 		}...)
 	}

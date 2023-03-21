@@ -61,6 +61,10 @@ func createUniqueRandomSerialNumber(ctx context.Context, r *rand.Rand, querier k
 	}
 }
 
+func createRandomMetadataUri(r *rand.Rand) string {
+	return simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 1, 256))
+}
+
 func createRandomSerialNumber(r *rand.Rand) string {
 	return simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 1, 256))
 }

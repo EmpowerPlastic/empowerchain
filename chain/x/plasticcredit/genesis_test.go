@@ -133,6 +133,7 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  50,
 							Retired: 50,
 						},
+						MetadataUris: []string{"ipfs://CID1", "ipfs://CID2"},
 					},
 					{
 						Denom:     "PTEST/0002",
@@ -141,6 +142,7 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  100,
 							Retired: 0,
 						},
+						MetadataUris: []string{"ipfs://CID3", "ipfs://CID4"},
 					},
 					{
 						Denom:     "WEC/0001",
@@ -149,6 +151,7 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  1,
 							Retired: 0,
 						},
+						MetadataUris: []string{"ipfs://CID5", "ipfs://CID6"},
 					},
 					{
 						Denom:     "PTEST/0003",
@@ -157,6 +160,7 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  42,
 							Retired: 0,
 						},
+						MetadataUris: []string{"ipfs://CID7", "ipfs://CID8"},
 					},
 					{
 						Denom:     "RCRD/0001",
@@ -165,6 +169,7 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  60,
 							Retired: 40,
 						},
+						MetadataUris: []string{"ipfs://CID9", "ipfs://CID10"},
 					},
 				},
 				CreditBalances: []plasticcredit.CreditBalance{
@@ -682,6 +687,7 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  1,
 							Retired: 0,
 						},
+						MetadataUris: []string{"ipfs://CID1"},
 					},
 					{
 						Denom:     "PTEST/1",
@@ -690,6 +696,7 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  0,
 							Retired: 1,
 						},
+						MetadataUris: []string{"ipfs://CID1"},
 					},
 				},
 				CreditBalances: plasticcredit.DefaultGenesis().CreditBalances,
@@ -725,6 +732,7 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  1,
 							Retired: 0,
 						},
+						MetadataUris: []string{"ipfs://CID1"},
 					},
 				},
 				CreditBalances: plasticcredit.DefaultGenesis().CreditBalances,
@@ -793,6 +801,7 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  1,
 							Retired: 0,
 						},
+						MetadataUris: []string{"ipfs://CID1"},
 					},
 				},
 				CreditBalances: []plasticcredit.CreditBalance{

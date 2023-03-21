@@ -70,6 +70,8 @@ message CreditCollection {
   uint64 project_id = 2;
   // Total amount of active and retired credits for the collection
   CreditAmount total_amount = 3 [(gogoproto.nullable) = false];
+  // IPFS URI of the metadata
+  repeated string metadata_uris = 4;
 }
 
 message CreditBalance {

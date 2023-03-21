@@ -663,6 +663,7 @@ func TestCreditCollectionValidation(t *testing.T) {
 					Active:  100,
 					Retired: 50,
 				},
+				MetadataUris: []string{"ipfs://CID"},
 			},
 			err: nil,
 		},
@@ -674,6 +675,7 @@ func TestCreditCollectionValidation(t *testing.T) {
 					Active:  100,
 					Retired: 50,
 				},
+				MetadataUris: []string{"ipfs://CID"},
 			},
 			err: utils.ErrInvalidValue,
 		},
@@ -685,6 +687,7 @@ func TestCreditCollectionValidation(t *testing.T) {
 					Active:  100,
 					Retired: 50,
 				},
+				MetadataUris: []string{"ipfs://CID"},
 			},
 			err: utils.ErrInvalidValue,
 		},
@@ -696,10 +699,11 @@ func TestCreditCollectionValidation(t *testing.T) {
 					Active:  0,
 					Retired: 0,
 				},
+				MetadataUris: []string{"ipfs://CID"},
 			},
 			err: utils.ErrInvalidValue,
 		},
-		"invalid credit data uri": {
+		"invalid credit metadata uri": {
 			collection: CreditCollection{
 				Denom:     "ETEST/123",
 				ProjectId: 0,
@@ -707,17 +711,7 @@ func TestCreditCollectionValidation(t *testing.T) {
 					Active:  100,
 					Retired: 50,
 				},
-			},
-			err: utils.ErrInvalidValue,
-		},
-		"invalid credit data hash": {
-			collection: CreditCollection{
-				Denom:     "ETEST/123",
-				ProjectId: 0,
-				TotalAmount: CreditAmount{
-					Active:  100,
-					Retired: 50,
-				},
+				MetadataUris: []string{},
 			},
 			err: utils.ErrInvalidValue,
 		},
