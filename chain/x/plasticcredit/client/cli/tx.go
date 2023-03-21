@@ -454,8 +454,13 @@ func MsgTransferCreditsCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			retire, err := cast.ToBoolE(args[4])
-			if err != nil {
+			var retire bool
+			if len(args) == 5 {
+				retire, err = cast.ToBoolE(args[4])
+				if err != nil {
+					return err
+				}
+			} else {
 				retire = false
 			}
 
