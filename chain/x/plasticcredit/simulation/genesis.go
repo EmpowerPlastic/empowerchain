@@ -244,7 +244,7 @@ func generateCreditCollections(r *rand.Rand, projects []plasticcredit.Project) [
 			metadatasNo := simtypes.RandIntBetween(r, 1, 5)
 			metadatas := make([]string, metadatasNo)
 			for k := 0; k < metadatasNo; k++ {
-				metadatas[k] = createRandomMetadataUri(r)
+				metadatas[k] = createRandomMetadataURI(r)
 			}
 
 			creditCollections = append(creditCollections, plasticcredit.CreditCollection{

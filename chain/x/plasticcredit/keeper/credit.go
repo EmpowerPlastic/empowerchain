@@ -190,7 +190,7 @@ func (k Keeper) transferCredits(ctx sdk.Context, denom string, from sdk.AccAddre
 	return ctx.EventManager().EmitTypedEvents(events...)
 }
 
-func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, serialNumber string, amount uint64, metadata_uris []string) (collection plasticcredit.CreditCollection, err error) {
+func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, serialNumber string, amount uint64, metadataUris []string) (collection plasticcredit.CreditCollection, err error) {
 	if amount == 0 {
 		return plasticcredit.CreditCollection{}, errors.Wrapf(utils.ErrInvalidValue, "cannot issue 0 credits")
 	}
@@ -236,12 +236,12 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 				Active:  amount,
 				Retired: 0,
 			},
-			MetadataUris: metadata_uris,
+			MetadataUris: metadataUris,
 		}
 	} else {
 		// If collection already exists, add new credits to the total and append new data if present
 		creditCollection.TotalAmount.Active += amount
-		creditCollection.MetadataUris = append(creditCollection.MetadataUris, metadata_uris...)
+		creditCollection.MetadataUris = append(creditCollection.MetadataUris, metadataUris...)
 
 	}
 
@@ -283,7 +283,7 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 		Denom:                   denom,
 		Amount:                  amount,
 		IssuerAddress:           creator,
-		MetadataUris:            metadata_uris,
+		MetadataUris:            metadataUris,
 	})
 }
 
