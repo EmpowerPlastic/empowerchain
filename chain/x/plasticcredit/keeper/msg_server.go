@@ -208,7 +208,7 @@ func (m msgServer) SuspendProject(goCtx context.Context, req *plasticcredit.MsgS
 func (m msgServer) IssueCredits(goCtx context.Context, req *plasticcredit.MsgIssueCredits) (*plasticcredit.MsgIssueCreditsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	collection, err := m.issueCredits(ctx, req.Creator, req.ProjectId, req.SerialNumber, req.CreditAmount)
+	collection, err := m.issueCredits(ctx, req.Creator, req.ProjectId, req.SerialNumber, req.CreditAmount, req.MetadataUris)
 	if err != nil {
 		return nil, err
 	}

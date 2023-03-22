@@ -106,6 +106,7 @@ func (s *TestSuite) TestGenesis() {
 					Active:  0,
 					Retired: 100000,
 				},
+				MetadataUris: []string{"ipfs://CID1", "ipfs://CID2"},
 			},
 			{
 				Denom:     "PLST/123",
@@ -114,6 +115,7 @@ func (s *TestSuite) TestGenesis() {
 					Active:  123,
 					Retired: 55,
 				},
+				MetadataUris: []string{"ipfs://CID3", "ipfs://CID4"},
 			},
 		},
 		CreditBalances: []plasticcredit.CreditBalance{

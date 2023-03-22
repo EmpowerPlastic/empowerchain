@@ -215,6 +215,7 @@ message MsgIssueCredits {
   uint64 project_id = 2;
   string serial_number = 3;
   uint64 credit_amount = 4;
+  repeated string metadata_uris = 5;
 }
 
 message MsgIssueCreditsResponse {

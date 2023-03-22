@@ -338,6 +338,9 @@ func (m *MsgIssueCredits) ValidateBasic() error {
 	if m.CreditAmount == 0 {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid credit amount")
 	}
+	if len(m.MetadataUris) == 0 {
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "invalid metadata uris")
+	}
 	return nil
 }
 

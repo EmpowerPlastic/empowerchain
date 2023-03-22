@@ -812,11 +812,18 @@ func SimulateMsgIssueCredits(cdc *codec.ProtoCodec, ak plasticcredit.AccountKeep
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, nil
 		}
 
+		metadatasNo := simtypes.RandIntBetween(r, 1, 5)
+		metadatas := make([]string, metadatasNo)
+		for i := 0; i < metadatasNo; i++ {
+			metadatas[i] = createRandomMetadataURI(r)
+		}
+
 		msg := &plasticcredit.MsgIssueCredits{
 			Creator:      issuerAdmin.Address.String(),
 			ProjectId:    project.Id,
 			SerialNumber: createUniqueRandomSerialNumber(ctx, r, querier, creditClass.Abbreviation),
 			CreditAmount: uint64(simtypes.RandIntBetween(r, 1, 10000000)),
+			MetadataUris: metadatas,
 		}
 
 		spendable := bk.SpendableCoins(sdkCtx, issuerAdmin.Address)

@@ -20,6 +20,7 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 		projectID         string
 		serialNumber      string
 		issueCredits      string
+		metadataUris      []string
 		fromFlagValue     string
 		expectedErrOnSend bool
 		expectedErrOnExec bool
@@ -30,6 +31,7 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 			"1",
 			"456",
 			"1000",
+			[]string{"ipfs://CID1", "ipfs://CID2"},
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
 			false,
 			false,
@@ -46,6 +48,7 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 			"1",
 			"123",
 			"1000",
+			[]string{"ipfs://CID1", "ipfs://CID2"},
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
 			false,
 			false,
@@ -62,6 +65,7 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 			"15",
 			"123",
 			"1000",
+			[]string{"ipfs://CID1", "ipfs://CID2"},
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
 			false,
 			true,
@@ -72,6 +76,7 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 			"15",
 			"",
 			"1000",
+			[]string{"ipfs://CID1", "ipfs://CID2"},
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
 			true,
 			false,
@@ -82,6 +87,7 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 			"1",
 			"123",
 			"0",
+			[]string{"ipfs://CID1", "ipfs://CID2"},
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
 			true,
 			false,
@@ -92,6 +98,7 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 			"6",
 			"123",
 			"1000",
+			[]string{"ipfs://CID1", "ipfs://CID2"},
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
 			false,
 			true,
@@ -102,6 +109,7 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 			"7",
 			"123",
 			"1000",
+			[]string{"ipfs://CID1", "ipfs://CID2"},
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
 			false,
 			true,
@@ -112,6 +120,7 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 			"8",
 			"123",
 			"1000",
+			[]string{"ipfs://CID1", "ipfs://CID2"},
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
 			false,
 			true,
@@ -122,7 +131,10 @@ func (s *E2ETestSuite) TestCmdIssueCredits() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.MsgIssueCreditsCmd()
-			cliArgs := []string{tc.projectID, tc.serialNumber, tc.issueCredits, tc.fromFlagValue}
+			// create string array from string array
+			cliArgs := []string{tc.projectID, tc.serialNumber, tc.issueCredits}
+			cliArgs = append(cliArgs, tc.metadataUris...)
+			cliArgs = append(cliArgs, tc.fromFlagValue)
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(cliArgs, s.CommonFlags...))
 			s.Require().NoError(s.Network.WaitForNextBlock())
 			switch {
@@ -163,12 +175,12 @@ func (s *E2ETestSuite) TestCmdTransferCredits() {
 	senderAddress := applicant.String()
 
 	issueCmd := cli.MsgIssueCreditsCmd()
-	issueOutput1, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, issueCmd, append([]string{"1", "TestCmdTransferCredits1", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)}, s.CommonFlags...))
+	issueOutput1, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, issueCmd, append([]string{"1", "TestCmdTransferCredits1", "1000", "ipfs://CID1", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)}, s.CommonFlags...))
 	issueResponse1, err := s.GetCliResponse(val.ClientCtx, issueOutput1.Bytes())
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), issueResponse1.Code, issueResponse1.RawLog)
 
-	issueOutput2, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, issueCmd, append([]string{"1", "TestCmdTransferCredits2", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)}, s.CommonFlags...))
+	issueOutput2, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, issueCmd, append([]string{"1", "TestCmdTransferCredits2", "1000", "ipfs://CID2", fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name)}, s.CommonFlags...))
 	issueResponse2, err := s.GetCliResponse(val.ClientCtx, issueOutput2.Bytes())
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), issueResponse2.Code, issueResponse2.RawLog)
@@ -287,7 +299,7 @@ func (s *E2ETestSuite) TestCmdRetireCredits() {
 	senderAddress := applicant.String()
 
 	cmd := cli.MsgIssueCreditsCmd()
-	_, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{"2", "00001", "1000", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)}, s.CommonFlags...))
+	_, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{"2", "00001", "1000", "ipfs://CID1", fmt.Sprintf("--%s=%s", flags.FlagFrom, applicantKey.Name)}, s.CommonFlags...))
 	s.Require().NoError(err)
 	s.Require().NoError(s.Network.WaitForNextBlock())
 

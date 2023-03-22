@@ -178,6 +178,9 @@ func (cc CreditCollection) Validate() error {
 	if cc.TotalAmount.Active == 0 && cc.TotalAmount.Retired == 0 {
 		return errors.Wrap(utils.ErrInvalidValue, "credit collection cannot have a collection with 0 credits")
 	}
+	if len(cc.MetadataUris) == 0 {
+		return errors.Wrap(utils.ErrInvalidValue, "credit collection must have at least one metadata uri")
+	}
 	return nil
 }
 

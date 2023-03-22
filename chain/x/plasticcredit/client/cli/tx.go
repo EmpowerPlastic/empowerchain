@@ -395,10 +395,10 @@ func MsgSuspendProjectCmd() *cobra.Command {
 
 func MsgIssueCreditsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "issue-credits [project-id] [serial-number] [amount]",
+		Use:   "issue-credits [project-id] [serial-number] [amount] [metadata_uri_1, metadata_uri_2, ...]",
 		Short: "Issue credits.",
 		Long:  `Issue credits.`,
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.MinimumNArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -421,6 +421,7 @@ func MsgIssueCreditsCmd() *cobra.Command {
 				ProjectId:    projectID,
 				SerialNumber: serialNumber,
 				CreditAmount: creditAmount,
+				MetadataUris: args[3:],
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)

@@ -143,11 +143,11 @@ if [ "$STATUS" != "SUSPENDED" ]; then
 fi
 
 echo "--- Test: Plastic Credit Issuance, Transfer and Retirement ---"
-empowerd tx pc issue-credits 1 123 1000 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
+empowerd tx pc issue-credits 1 123 1000 ipfs://CID1 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx pc issue-credits 2 00001 10000 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
+empowerd tx pc issue-credits 2 00001 10000 ipfs://CID1 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx pc issue-credits 3 987654321 9999999999 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
+empowerd tx pc issue-credits 3 987654321 9999999999 ipfs://CID1 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 
 empowerd tx pc transfer empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 PTEST/123 50 false --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
