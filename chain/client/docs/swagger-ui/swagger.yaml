@@ -4,6 +4,138 @@ info:
   description: A REST interface for state queries
   version: 1.0.0
 paths:
+  /empowerchain/empowerchain/plasticcredit/applicants:
+    get:
+      operationId: Applicants
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              applicants:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    admin:
+                      type: string
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
   /empowerchain/empowerchain/plasticcredit/applicants/{applicant_id}:
     get:
       operationId: Applicant
@@ -239,6 +371,145 @@ paths:
           type: string
       tags:
         - Query
+  /empowerchain/empowerchain/plasticcredit/creditbalances:
+    get:
+      operationId: CreditBalances
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              credit_balances:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    owner:
+                      type: string
+                      title: Address of the credits owner, part of compound key
+                    denom:
+                      type: string
+                      title: denominator of the credit, apart of compound key
+                    balance:
+                      title: Number of active and retired credits
+                      type: object
+                      properties:
+                        active:
+                          type: string
+                          format: uint64
+                        retired:
+                          type: string
+                          format: uint64
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
   /empowerchain/empowerchain/plasticcredit/creditbalances/{owner}/{denom}:
     get:
       operationId: CreditBalance
@@ -331,6 +602,11 @@ paths:
                       retired:
                         type: string
                         format: uint64
+                  metadata_uris:
+                    type: array
+                    items:
+                      type: string
+                    title: IPFS URI of the metadata
         default:
           description: An unexpected error response.
           schema:
@@ -606,6 +882,147 @@ paths:
                     value:
                       type: string
                       format: byte
+      tags:
+        - Query
+  /empowerchain/empowerchain/plasticcredit/projects:
+    get:
+      operationId: Projects
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              projects:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    applicant_id:
+                      type: string
+                      format: uint64
+                    credit_class_abbreviation:
+                      type: string
+                    name:
+                      type: string
+                    status:
+                      type: string
+                      enum:
+                        - NEW
+                        - APPROVED
+                        - REJECTED
+                        - SUSPENDED
+                      default: NEW
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
       tags:
         - Query
   /empowerchain/empowerchain/plasticcredit/projects/{project_id}:
@@ -890,6 +1307,11 @@ definitions:
           retired:
             type: string
             format: uint64
+      metadata_uris:
+        type: array
+        items:
+          type: string
+        title: IPFS URI of the metadata
   empowerchain.plasticcredit.Issuer:
     type: object
     properties:
@@ -974,6 +1396,49 @@ definitions:
             type: string
           admin:
             type: string
+  empowerchain.plasticcredit.QueryApplicantsResponse:
+    type: object
+    properties:
+      applicants:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            name:
+              type: string
+            description:
+              type: string
+            admin:
+              type: string
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
   empowerchain.plasticcredit.QueryCreditBalanceResponse:
     type: object
     properties:
@@ -996,6 +1461,56 @@ definitions:
               retired:
                 type: string
                 format: uint64
+  empowerchain.plasticcredit.QueryCreditBalancesResponse:
+    type: object
+    properties:
+      credit_balances:
+        type: array
+        items:
+          type: object
+          properties:
+            owner:
+              type: string
+              title: Address of the credits owner, part of compound key
+            denom:
+              type: string
+              title: denominator of the credit, apart of compound key
+            balance:
+              title: Number of active and retired credits
+              type: object
+              properties:
+                active:
+                  type: string
+                  format: uint64
+                retired:
+                  type: string
+                  format: uint64
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
   empowerchain.plasticcredit.QueryCreditClassResponse:
     type: object
     properties:
@@ -1079,6 +1594,11 @@ definitions:
               retired:
                 type: string
                 format: uint64
+          metadata_uris:
+            type: array
+            items:
+              type: string
+            title: IPFS URI of the metadata
   empowerchain.plasticcredit.QueryIssuerResponse:
     type: object
     properties:
@@ -1196,6 +1716,58 @@ definitions:
               - REJECTED
               - SUSPENDED
             default: NEW
+  empowerchain.plasticcredit.QueryProjectsResponse:
+    type: object
+    properties:
+      projects:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            applicant_id:
+              type: string
+              format: uint64
+            credit_class_abbreviation:
+              type: string
+            name:
+              type: string
+            status:
+              type: string
+              enum:
+                - NEW
+                - APPROVED
+                - REJECTED
+                - SUSPENDED
+              default: NEW
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
   google.protobuf.Any:
     type: object
     properties:
