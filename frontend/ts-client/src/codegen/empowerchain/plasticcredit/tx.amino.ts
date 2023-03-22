@@ -113,6 +113,7 @@ export interface AminoMsgIssueCredits extends AminoMsg {
     project_id: string;
     serial_number: string;
     credit_amount: string;
+    metadata_uris: string[];
   };
 }
 export interface AminoMsgTransferCredits extends AminoMsg {
@@ -464,26 +465,30 @@ export const AminoConverter = {
       creator,
       projectId,
       serialNumber,
-      creditAmount
+      creditAmount,
+      metadataUris
     }: MsgIssueCredits): AminoMsgIssueCredits["value"] => {
       return {
         creator,
         project_id: projectId.toString(),
         serial_number: serialNumber,
-        credit_amount: creditAmount.toString()
+        credit_amount: creditAmount.toString(),
+        metadata_uris: metadataUris
       };
     },
     fromAmino: ({
       creator,
       project_id,
       serial_number,
-      credit_amount
+      credit_amount,
+      metadata_uris
     }: AminoMsgIssueCredits["value"]): MsgIssueCredits => {
       return {
         creator,
         projectId: Long.fromString(project_id),
         serialNumber: serial_number,
-        creditAmount: Long.fromString(credit_amount)
+        creditAmount: Long.fromString(credit_amount),
+        metadataUris: metadata_uris
       };
     }
   },

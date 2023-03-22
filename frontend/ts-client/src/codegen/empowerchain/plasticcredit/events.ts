@@ -123,6 +123,7 @@ export interface EventIssuedCredits {
   denom: string;
   amount: Long;
   issuerAddress: string;
+  metadataUris: string[];
 }
 /** EventIssuedCredits is an event emitted when new credits are issued */
 
@@ -133,6 +134,7 @@ export interface EventIssuedCreditsSDKType {
   denom: string;
   amount: Long;
   issuer_address: string;
+  metadata_uris: string[];
 }
 /** EventTransferCredits is an event emitted when credits are being transfered from one account to another */
 
@@ -779,7 +781,8 @@ function createBaseEventIssuedCredits(): EventIssuedCredits {
     creditClassAbbreviation: "",
     denom: "",
     amount: Long.UZERO,
-    issuerAddress: ""
+    issuerAddress: "",
+    metadataUris: []
   };
 }
 
@@ -807,6 +810,10 @@ export const EventIssuedCredits = {
 
     if (message.issuerAddress !== "") {
       writer.uint32(50).string(message.issuerAddress);
+    }
+
+    for (const v of message.metadataUris) {
+      writer.uint32(58).string(v!);
     }
 
     return writer;
@@ -845,6 +852,10 @@ export const EventIssuedCredits = {
           message.issuerAddress = reader.string();
           break;
 
+        case 7:
+          message.metadataUris.push(reader.string());
+          break;
+
         default:
           reader.skipType(tag & 7);
           break;
@@ -862,6 +873,7 @@ export const EventIssuedCredits = {
     message.denom = object.denom ?? "";
     message.amount = object.amount !== undefined && object.amount !== null ? Long.fromValue(object.amount) : Long.UZERO;
     message.issuerAddress = object.issuerAddress ?? "";
+    message.metadataUris = object.metadataUris?.map(e => e) || [];
     return message;
   }
 
