@@ -25,6 +25,7 @@ const showModal = ref(false);
 const selectedWallet = ref("");
 const showError = ref(false);
 const errorMessage = ref("");
+const loading = ref(false);
 
 //Methods
 const back = () => {
@@ -47,6 +48,7 @@ const handleSelectedWallet = (wallet: Wallet) => {
 };
 
 const handleTransaction = () => {
+  loading.value = true;
   switch (selectedWallet.value) {
     case Wallet.Keplr:
       handleKeplrWallet();
@@ -129,11 +131,13 @@ const handleLeapWallet = async () => {
 };
 
 const handleResponse = (response: any) => {
-  if (response.code === 0) {
+  if (response?.code === 0) {
+    loading.value = false;
     pushToSuccessPage();
   } else {
+    loading.value = false;
     showError.value = true;
-    errorMessage.value = response.rawLog;
+    errorMessage.value = response?.rawLog;
   }
 };
 
@@ -196,11 +200,11 @@ const pushToSuccessPage = () => {
         </div>
         <div class="flex flex-col sm:flex-row justify-between">
           <button
-            :disabled="!selectedWallet"
+            :disabled="!selectedWallet || loading"
             @click="handleTransaction"
             class="bg-lightGreen disabled:bg-lightGray mt-4 content-center p-1 px-14 rounded text-white"
           >
-            Complete
+            {{ loading ? "Loading..." : "Complete" }}
           </button>
           <button
             @click="back"
