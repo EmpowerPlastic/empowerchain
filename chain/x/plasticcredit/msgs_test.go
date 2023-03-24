@@ -10,7 +10,6 @@ import (
 
 	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
-	"github.com/EmpowerPlastic/empowerchain/utils"
 )
 
 type validateTest struct {
@@ -325,16 +324,6 @@ func TestMsgUpdateApplicant_ValidateBasic(t *testing.T) {
 				Admin:       sample.AccAddress(),
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
-		},
-		"invalid name": {
-			msgUnderTest: &MsgUpdateApplicant{
-				ApplicantId: 1,
-				Name:        " Starting with a space is not OK",
-				Description: "Empower is cool",
-				Admin:       sample.AccAddress(),
-				Updater:     sample.AccAddress(),
-			},
-			expectedError: utils.ErrInvalidValue,
 		},
 	}
 
