@@ -1,7 +1,6 @@
 package plasticcredit
 
 import (
-	"github.com/EmpowerPlastic/empowerchain/utils"
 	"math/rand"
 	"testing"
 
@@ -11,6 +10,7 @@ import (
 
 	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
+	"github.com/EmpowerPlastic/empowerchain/utils"
 )
 
 type validateTest struct {
