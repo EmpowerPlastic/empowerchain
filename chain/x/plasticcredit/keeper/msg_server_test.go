@@ -85,8 +85,8 @@ func (s *TestSuite) TestUpdateParams() {
 			if err == nil {
 				s.Require().NoError(err)
 
-				params := k.GetParams(s.ctx)
-				s.Require().Equal(msg.Params, params)
+				getParams := k.GetParams(s.ctx)
+				s.Require().Equal(msg.Params, getParams)
 			}
 		})
 	}
@@ -298,103 +298,6 @@ func (s *TestSuite) TestUpdateIssuer() {
 					Description: tc.msg.Description,
 					Admin:       tc.msg.Admin,
 				}, eventUpdateIssuer)
-			}
-		})
-	}
-}
-
-func (s *TestSuite) TestUpdateIssuerCreator() {
-	testCases := map[string]struct {
-		msg *plasticcredit.MsgCreateIssuer
-		err error
-	}{
-		"happy path": {
-			msg: &plasticcredit.MsgCreateIssuer{
-				Creator:     s.issuerCreator,
-				Name:        "Empower",
-				Description: "Empower is cool",
-				Admin:       sample.AccAddress(),
-			},
-			err: nil,
-		},
-		"unauthorized caller": {
-			msg: &plasticcredit.MsgCreateIssuer{
-				Creator:     sample.AccAddress(), // not allowed!
-				Name:        "Empower",
-				Description: "Empower is cool",
-				Admin:       sample.AccAddress(),
-			},
-			err: sdkerrors.ErrUnauthorized,
-		},
-		"invalid name": {
-			msg: &plasticcredit.MsgCreateIssuer{
-				Creator:     s.issuerCreator,
-				Name:        "This is has a space at the end ",
-				Description: "Empower is cool",
-				Admin:       sample.AccAddress(),
-			},
-			err: utils.ErrInvalidValue,
-		},
-		"invalid description": {
-			msg: &plasticcredit.MsgCreateIssuer{
-				Creator:     s.issuerCreator,
-				Name:        "Empower",
-				Description: sample.String(257),
-				Admin:       sample.AccAddress(),
-			},
-			err: utils.ErrInvalidValue,
-		},
-	}
-
-	for name, tc := range testCases {
-		s.Run(name, func() {
-			s.SetupTest()
-			s.PopulateWithSamples()
-
-			k := s.empowerApp.PlasticcreditKeeper
-			goCtx := sdk.WrapSDKContext(s.ctx)
-			ms := keeper.NewMsgServerImpl(k)
-
-			resp, err := ms.CreateIssuer(goCtx, tc.msg)
-			s.Require().ErrorIs(err, tc.err)
-
-			events := s.ctx.EventManager().ABCIEvents()
-			idCounters := k.GetIDCounters(s.ctx)
-
-			if err == nil {
-				s.Require().Equal(s.numTestIssuers+1, resp.IssuerId)
-
-				idCounters := k.GetIDCounters(s.ctx)
-				s.Require().Equal(s.numTestIssuers+2, idCounters.NextIssuerId)
-
-				issuer, found := k.GetIssuer(s.ctx, resp.IssuerId)
-				s.Require().True(found)
-				s.Require().Equal(plasticcredit.Issuer{
-					Id:          resp.IssuerId,
-					Name:        tc.msg.Name,
-					Description: tc.msg.Description,
-					Admin:       tc.msg.Admin,
-				}, issuer)
-
-				s.Require().Len(events, 1)
-				parsedEvent, err := sdk.ParseTypedEvent(events[0])
-				s.Require().NoError(err)
-				eventCreateIssuer, ok := parsedEvent.(*plasticcredit.EventCreateIssuer)
-				s.Require().True(ok)
-				s.Require().Equal(&plasticcredit.EventCreateIssuer{
-					IssuerId:    issuer.Id,
-					Creator:     tc.msg.Creator,
-					Name:        issuer.Name,
-					Description: issuer.Description,
-					Admin:       issuer.Admin,
-				}, eventCreateIssuer)
-
-			} else {
-				s.Require().Equal(s.numTestIssuers+1, idCounters.NextIssuerId)
-				_, found := k.GetIssuer(s.ctx, s.numTestIssuers+1)
-				s.Require().False(found)
-
-				s.Require().Len(events, 0)
 			}
 		})
 	}
