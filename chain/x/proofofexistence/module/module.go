@@ -1,9 +1,8 @@
-package proofofexistence
+package module
 
 import (
 	"context"
 	"encoding/json"
-	"math/rand"
 
 	"cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -11,7 +10,6 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -19,7 +17,6 @@ import (
 	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
 	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence/client/cli"
 	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence/keeper"
-	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence/simulation"
 )
 
 // ConsensusVersion defines the current x/proofofexistence module consensus version.
@@ -31,7 +28,9 @@ var (
 )
 
 // AppModuleBasic defines the basic application module used by the consensus_param module.
-type AppModuleBasic struct{}
+type AppModuleBasic struct {
+	cdc codec.Codec
+}
 
 type AppModule struct {
 	AppModuleBasic
@@ -40,9 +39,9 @@ type AppModule struct {
 	accKeeper  proofofexistence.AccountKeeper
 }
 
-func NewAppModule(keeper keeper.Keeper, ak proofofexistence.AccountKeeper, bk proofofexistence.BankKeeper) AppModule {
+func NewAppModule(cdc codec.Codec, keeper keeper.Keeper, ak proofofexistence.AccountKeeper, bk proofofexistence.BankKeeper) AppModule {
 	return AppModule{
-		AppModuleBasic: AppModuleBasic{},
+		AppModuleBasic: AppModuleBasic{cdc: cdc},
 		keeper:         keeper,
 		bankKeeper:     bk,
 		accKeeper:      ak,
@@ -52,7 +51,10 @@ func NewAppModule(keeper keeper.Keeper, ak proofofexistence.AccountKeeper, bk pr
 // Name returns the name of the module
 func (AppModuleBasic) Name() string { return proofofexistence.ModuleName }
 
-func (AppModuleBasic) RegisterLegacyAminoCodec(*codec.LegacyAmino) {}
+// RegisterLegacyAminoCodec registers the amino codec for the module, which is used to marshal and unmarshal structs to/from []byte in order to persist them in the module's KVStore
+func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	proofofexistence.RegisterCodec(cdc)
+}
 
 // RegisterInterfaces registers the module's interface types
 func (AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
@@ -124,35 +126,4 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 	}
 
 	return cdc.MustMarshalJSON(gs)
-}
-
-// AppModuleSimulation functions
-
-// GenerateGenesisState creates a randomized GenState of the proofofexistence module.
-func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	// TODO: simulation.RandomizedGenState(simState)
-	// https://github.com/cosmos/cosmos-sdk/blob/main/x/nft/simulation/genesis.go
-}
-
-// ProposalContents returns all the proofofexistence content functions used to simulate governance proposals.
-func (am AppModule) ProposalContents(simState module.SimulationState) []simtypes.WeightedProposalMsg {
-	return nil
-}
-
-// RandomizedParams creates randomized proofofexistence param changes for the simulator.
-func (AppModule) RandomizedParams(r *rand.Rand) []simtypes.LegacyParamChange {
-	return nil
-}
-
-// RegisterStoreDecoder registers a decoder for proofofexistence module's types
-func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
-	// TODO: sdr[keeper.StoreKey] = simulation.NewDecodeStore(am.cdc)
-}
-
-// WeightedOperations returns the all the proofofexistence module operations with their respective weights.
-func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
-	return simulation.WeightedOperations(
-		simState.AppParams, simState.Cdc,
-		am.accKeeper, am.bankKeeper, am.keeper,
-	)
 }

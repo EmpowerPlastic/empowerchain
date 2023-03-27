@@ -72,6 +72,8 @@ func SimulateMsgCreateProof(cdc *codec.ProtoCodec, ak proofofexistence.AccountKe
 			MsgType:         msgType,
 			Context:         sdkCtx,
 			SimAccount:      creator,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
 			ModuleName:      proofofexistence.ModuleName,
 			CoinsSpentInMsg: spendable,
 		}
