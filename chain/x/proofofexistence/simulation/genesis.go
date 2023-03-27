@@ -16,7 +16,6 @@ const (
 
 // RandomizedGenState generates a random GenesisState for proofofexistence
 func RandomizedGenState(simState *module.SimulationState) {
-
 	var proofs []proofofexistence.Proof
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, ProofsKey, &proofs, simState.Rand,
@@ -52,21 +51,4 @@ func generateProofs(r *rand.Rand, creators []simtypes.Account) []proofofexistenc
 	}
 
 	return proofs
-}
-
-func Min(x, y int) int {
-	if x < y {
-		return x
-	}
-	return y
-}
-
-func getUnusedAccount(r *rand.Rand, accounts []simtypes.Account, usedAccounts []simtypes.Account) simtypes.Account {
-	for {
-		acc, _ := simtypes.RandomAcc(r, accounts)
-		_, found := simtypes.FindAccount(usedAccounts, acc.Address)
-		if !found {
-			return acc
-		}
-	}
 }

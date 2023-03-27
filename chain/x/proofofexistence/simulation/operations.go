@@ -29,9 +29,7 @@ func WeightedOperations(
 	bk proofofexistence.BankKeeper,
 	k keeper.Keeper,
 ) simulation.WeightedOperations {
-	var (
-		weightMsgCreateProof int
-	)
+	var weightMsgCreateProof int
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgCreateProof, &weightMsgCreateProof, nil,
 		func(_ *rand.Rand) {
