@@ -25,6 +25,8 @@ const (
 func WeightedOperations(
 	appParams simtypes.AppParams,
 	cdc codec.JSONCodec,
+	ak proofofexistence.AccountKeeper,
+	bk proofofexistence.BankKeeper,
 	k keeper.Keeper,
 ) simulation.WeightedOperations {
 	var (
@@ -42,19 +44,24 @@ func WeightedOperations(
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgCreateProof,
-			SimulateMsgCreateProof(protoCodec, k),
+			SimulateMsgCreateProof(protoCodec, ak, bk, k),
 		),
 	}
 }
 
 // SimulateMsgCreateProof generates a MsgCreateProof with random values.
-func SimulateMsgCreateProof(cdc *codec.ProtoCodec, k keeper.Keeper) simtypes.Operation {
+func SimulateMsgCreateProof(cdc *codec.ProtoCodec, ak proofofexistence.AccountKeeper, bk proofofexistence.BankKeeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accounts []simtypes.Account, chainID string,
 	) (opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error) {
 		msgType := sdk.MsgTypeURL(&proofofexistence.MsgCreateProof{})
-		querier := keeper.Querier{Keeper: k}
-		admin, _ := simtypes.RandomAcc(r, accounts)
+		creator, _ := simtypes.RandomAcc(r, accounts)
+		spendable := bk.SpendableCoins(sdkCtx, creator.Address)
+
+		msg := &proofofexistence.MsgCreateProof{
+			Creator: creator.Address.String(),
+			Hash:    createRandom32ByteString(r),
+		}
 
 		txCtx := simulation.OperationInput{
 			R:               r,
@@ -64,7 +71,7 @@ func SimulateMsgCreateProof(cdc *codec.ProtoCodec, k keeper.Keeper) simtypes.Ope
 			Msg:             msg,
 			MsgType:         msgType,
 			Context:         sdkCtx,
-			SimAccount:      simAccount,
+			SimAccount:      creator,
 			ModuleName:      proofofexistence.ModuleName,
 			CoinsSpentInMsg: spendable,
 		}

@@ -2,8 +2,10 @@ package simulation
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"math/rand"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -75,6 +77,20 @@ func createRandomName(r *rand.Rand) string {
 
 func createRandomDescription(r *rand.Rand) string {
 	return simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 256))
+}
+
+func createRandomTime(r *rand.Rand) time.Time {
+	randomTimestamp := r.Int63n(time.Now().Unix()-94608000) + 94608000
+	randomTime := time.Unix(randomTimestamp, 0)
+	return randomTime
+}
+
+func createRandom32ByteString(r *rand.Rand) string {
+	data := make([]byte, 32)
+	for i := range data {
+		data[i] = byte(r.Intn(256))
+	}
+	return hex.EncodeToString(data)
 }
 
 func getRandomIssuer(ctx context.Context, r *rand.Rand, querier keeper.Querier, ids plasticcredit.IDCounters) (plasticcredit.Issuer, error) {

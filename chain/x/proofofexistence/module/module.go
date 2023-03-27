@@ -19,6 +19,7 @@ import (
 	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
 	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence/client/cli"
 	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence/keeper"
+	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence/simulation"
 )
 
 // ConsensusVersion defines the current x/proofofexistence module consensus version.
@@ -34,14 +35,17 @@ type AppModuleBasic struct{}
 
 type AppModule struct {
 	AppModuleBasic
-
-	keeper keeper.Keeper
+	keeper     keeper.Keeper
+	bankKeeper proofofexistence.BankKeeper
+	accKeeper  proofofexistence.AccountKeeper
 }
 
-func NewAppModule(keeper keeper.Keeper) AppModule {
+func NewAppModule(keeper keeper.Keeper, ak proofofexistence.AccountKeeper, bk proofofexistence.BankKeeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         keeper,
+		bankKeeper:     bk,
+		accKeeper:      ak,
 	}
 }
 
@@ -147,6 +151,8 @@ func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
 
 // WeightedOperations returns the all the proofofexistence module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
-	// TODO
-	return nil
+	return simulation.WeightedOperations(
+		simState.AppParams, simState.Cdc,
+		am.accKeeper, am.bankKeeper, am.keeper,
+	)
 }

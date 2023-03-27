@@ -7,50 +7,51 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
 )
 
 const (
-	IssuersKey = "issuers"
+	ProofsKey = "proofs"
 )
 
-// RandomizedGenState generates a random GenesisState for plasticcredit
+// RandomizedGenState generates a random GenesisState for proofofexistence
 func RandomizedGenState(simState *module.SimulationState) {
 
-	var issuers []plasticcredit.Issuer
+	var proofs []proofofexistence.Proof
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, IssuersKey, &issuers, simState.Rand,
-		func(r *rand.Rand) { issuers = generateIssuers(r, simState.Accounts) },
+		simState.Cdc, ProofsKey, &proofs, simState.Rand,
+		func(r *rand.Rand) { proofs = generateProofs(r, simState.Accounts) },
 	)
 
-	plasticcreditGenesis := plasticcredit.GenesisState{
-		Issuers: issuers,
+	proofofexistenceGenesis := proofofexistence.GenesisState{
+		ProofList: proofs,
 	}
 
-	fmt.Println("Number of issuers: ", len(issuers))
+	fmt.Println("Number of proofs: ", len(proofs))
 
-	if err := plasticcreditGenesis.Validate(); err != nil {
+	if err := proofofexistenceGenesis.Validate(); err != nil {
 		panic(err)
 	}
 
-	simState.GenState[plasticcredit.ModuleName] = simState.Cdc.MustMarshalJSON(&plasticcreditGenesis)
+	simState.GenState[proofofexistence.ModuleName] = simState.Cdc.MustMarshalJSON(&proofofexistenceGenesis)
 }
 
-func generateIssuers(r *rand.Rand, accounts []simtypes.Account) []plasticcredit.Issuer {
-	var issuers []plasticcredit.Issuer
+func generateProofs(r *rand.Rand, creators []simtypes.Account) []proofofexistence.Proof {
+	var proofs []proofofexistence.Proof
 
-	numIssuers := simtypes.RandIntBetween(r, 1, Min(20, len(accounts)))
-	for i := 0; i < numIssuers; i++ {
-		acc, _ := simtypes.RandomAcc(r, accounts)
-		issuers = append(issuers, plasticcredit.Issuer{
-			Id:          uint64(i + 1),
-			Name:        createRandomName(r),
-			Description: createRandomDescription(r),
-			Admin:       acc.Address.String(),
+	numProofs := simtypes.RandIntBetween(r, 1, 1_000_000)
+	for i := 0; i < numProofs; i++ {
+		creator, _ := simtypes.RandomAcc(r, creators)
+		proofs = append(proofs, proofofexistence.Proof{
+			Hash: createRandom32ByteString(r),
+			Metadata: &proofofexistence.ProofMetadata{
+				Timestamp: createRandomTime(r),
+				Creator:   creator.Address.String(),
+			},
 		})
 	}
 
-	return issuers
+	return proofs
 }
 
 func Min(x, y int) int {
