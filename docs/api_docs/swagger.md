@@ -29,7 +29,9 @@ A REST interface for state queries
 | Method  | URI     | Name   | Summary |
 |---------|---------|--------|---------|
 | GET | /empowerchain/empowerchain/plasticcredit/applicants/{applicant_id} | [applicant](#applicant) |  |
+| GET | /empowerchain/empowerchain/plasticcredit/applicants | [applicants](#applicants) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/creditbalances/{owner}/{denom} | [credit balance](#credit-balance) |  |
+| GET | /empowerchain/empowerchain/plasticcredit/creditbalances | [credit balances](#credit-balances) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/credit-classes/{credit_class_abbreviation} | [credit class](#credit-class) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/credit-classes | [credit classes](#credit-classes) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/creditcollections/{denom} | [credit collection](#credit-collection) |  |
@@ -37,6 +39,7 @@ A REST interface for state queries
 | GET | /empowerchain/empowerchain/plasticcredit/issuers | [issuers](#issuers) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/params | [plastic credit params](#plastic-credit-params) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/projects/{project_id} | [project](#project) |  |
+| GET | /empowerchain/empowerchain/plasticcredit/projects | [projects](#projects) |  |
 | GET | /empowerchain/empowerchain/proofofexistence/proof/{hash} | [proof](#proof) |  |
   
 
@@ -148,6 +151,156 @@ An unexpected error response.
 | description | string| `string` |  | |  |  |
 | id | uint64 (formatted string)| `string` |  | |  |  |
 | name | string| `string` |  | |  |  |
+
+
+
+### <span id="applicants"></span> applicants (*Applicants*)
+
+```
+GET /empowerchain/empowerchain/plasticcredit/applicants
+```
+
+#### Parameters
+
+| Name | Source | Type | Go type | Separator | Required | Default | Description |
+|------|--------|------|---------|-----------| :------: |---------|-------------|
+| pagination.count_total | `query` | boolean | `bool` |  |  |  | count_total is set to true  to indicate that the result set should include
+a count of the total number of items available for pagination in UIs.
+count_total is only respected when offset is used. It is ignored when key
+is set. |
+| pagination.key | `query` | byte (base64 string) | `strfmt.Base64` |  |  |  | key is a value returned in PageResponse.next_key to begin
+querying the next page most efficiently. Only one of offset or key
+should be set. |
+| pagination.limit | `query` | uint64 (formatted string) | `string` |  |  |  | limit is the total number of results to be returned in the result page.
+If left empty it will default to a value to be set by each app. |
+| pagination.offset | `query` | uint64 (formatted string) | `string` |  |  |  | offset is a numeric offset that can be used when key is unavailable.
+It is less efficient than using key. Only one of offset or key should
+be set. |
+| pagination.reverse | `query` | boolean | `bool` |  |  |  | reverse is set to true if results are to be returned in the descending order.
+
+Since: cosmos-sdk 0.43 |
+
+#### All responses
+| Code | Status | Description | Has headers | Schema |
+|------|--------|-------------|:-----------:|--------|
+| [200](#applicants-200) | OK | A successful response. |  | [schema](#applicants-200-schema) |
+| [default](#applicants-default) | | An unexpected error response. |  | [schema](#applicants-default-schema) |
+
+#### Responses
+
+
+##### <span id="applicants-200"></span> 200 - A successful response.
+Status: OK
+
+###### <span id="applicants-200-schema"></span> Schema
+   
+  
+
+[ApplicantsOKBody](#applicants-o-k-body)
+
+##### <span id="applicants-default"></span> Default Response
+An unexpected error response.
+
+###### <span id="applicants-default-schema"></span> Schema
+
+  
+
+[ApplicantsDefaultBody](#applicants-default-body)
+
+###### Inlined models
+
+**<span id="applicants-default-body"></span> ApplicantsDefaultBody**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| code | int32 (formatted integer)| `int32` |  | |  |  |
+| details | [][ApplicantsDefaultBodyDetailsItems0](#applicants-default-body-details-items0)| `[]*ApplicantsDefaultBodyDetailsItems0` |  | |  |  |
+| error | string| `string` |  | |  |  |
+| message | string| `string` |  | |  |  |
+
+
+
+**<span id="applicants-default-body-details-items0"></span> ApplicantsDefaultBodyDetailsItems0**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| type_url | string| `string` |  | |  |  |
+| value | byte (base64 string)| `strfmt.Base64` |  | |  |  |
+
+
+
+**<span id="applicants-o-k-body"></span> ApplicantsOKBody**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| applicants | [][ApplicantsOKBodyApplicantsItems0](#applicants-o-k-body-applicants-items0)| `[]*ApplicantsOKBodyApplicantsItems0` |  | |  |  |
+| pagination | [ApplicantsOKBodyPagination](#applicants-o-k-body-pagination)| `ApplicantsOKBodyPagination` |  | |  |  |
+
+
+
+**<span id="applicants-o-k-body-applicants-items0"></span> ApplicantsOKBodyApplicantsItems0**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| admin | string| `string` |  | |  |  |
+| description | string| `string` |  | |  |  |
+| id | uint64 (formatted string)| `string` |  | |  |  |
+| name | string| `string` |  | |  |  |
+
+
+
+**<span id="applicants-o-k-body-pagination"></span> ApplicantsOKBodyPagination**
+
+
+> PageResponse is to be embedded in gRPC response messages where the
+corresponding request message has used PageRequest.
+
+ message SomeResponse {
+         repeated Bar results = 1;
+         PageResponse page = 2;
+ }
+  
+
+
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| next_key | byte (base64 string)| `strfmt.Base64` |  | | next_key is the key to be passed to PageRequest.key to
+query the next page most efficiently. It will be empty if
+there are no more results. |  |
+| total | uint64 (formatted string)| `string` |  | |  |  |
 
 
 
@@ -272,6 +425,171 @@ An unexpected error response.
 |------|------|---------|:--------:| ------- |-------------|---------|
 | active | uint64 (formatted string)| `string` |  | |  |  |
 | retired | uint64 (formatted string)| `string` |  | |  |  |
+
+
+
+### <span id="credit-balances"></span> credit balances (*CreditBalances*)
+
+```
+GET /empowerchain/empowerchain/plasticcredit/creditbalances
+```
+
+#### Parameters
+
+| Name | Source | Type | Go type | Separator | Required | Default | Description |
+|------|--------|------|---------|-----------| :------: |---------|-------------|
+| pagination.count_total | `query` | boolean | `bool` |  |  |  | count_total is set to true  to indicate that the result set should include
+a count of the total number of items available for pagination in UIs.
+count_total is only respected when offset is used. It is ignored when key
+is set. |
+| pagination.key | `query` | byte (base64 string) | `strfmt.Base64` |  |  |  | key is a value returned in PageResponse.next_key to begin
+querying the next page most efficiently. Only one of offset or key
+should be set. |
+| pagination.limit | `query` | uint64 (formatted string) | `string` |  |  |  | limit is the total number of results to be returned in the result page.
+If left empty it will default to a value to be set by each app. |
+| pagination.offset | `query` | uint64 (formatted string) | `string` |  |  |  | offset is a numeric offset that can be used when key is unavailable.
+It is less efficient than using key. Only one of offset or key should
+be set. |
+| pagination.reverse | `query` | boolean | `bool` |  |  |  | reverse is set to true if results are to be returned in the descending order.
+
+Since: cosmos-sdk 0.43 |
+
+#### All responses
+| Code | Status | Description | Has headers | Schema |
+|------|--------|-------------|:-----------:|--------|
+| [200](#credit-balances-200) | OK | A successful response. |  | [schema](#credit-balances-200-schema) |
+| [default](#credit-balances-default) | | An unexpected error response. |  | [schema](#credit-balances-default-schema) |
+
+#### Responses
+
+
+##### <span id="credit-balances-200"></span> 200 - A successful response.
+Status: OK
+
+###### <span id="credit-balances-200-schema"></span> Schema
+   
+  
+
+[CreditBalancesOKBody](#credit-balances-o-k-body)
+
+##### <span id="credit-balances-default"></span> Default Response
+An unexpected error response.
+
+###### <span id="credit-balances-default-schema"></span> Schema
+
+  
+
+[CreditBalancesDefaultBody](#credit-balances-default-body)
+
+###### Inlined models
+
+**<span id="credit-balances-default-body"></span> CreditBalancesDefaultBody**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| code | int32 (formatted integer)| `int32` |  | |  |  |
+| details | [][CreditBalancesDefaultBodyDetailsItems0](#credit-balances-default-body-details-items0)| `[]*CreditBalancesDefaultBodyDetailsItems0` |  | |  |  |
+| error | string| `string` |  | |  |  |
+| message | string| `string` |  | |  |  |
+
+
+
+**<span id="credit-balances-default-body-details-items0"></span> CreditBalancesDefaultBodyDetailsItems0**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| type_url | string| `string` |  | |  |  |
+| value | byte (base64 string)| `strfmt.Base64` |  | |  |  |
+
+
+
+**<span id="credit-balances-o-k-body"></span> CreditBalancesOKBody**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| credit_balances | [][CreditBalancesOKBodyCreditBalancesItems0](#credit-balances-o-k-body-credit-balances-items0)| `[]*CreditBalancesOKBodyCreditBalancesItems0` |  | |  |  |
+| pagination | [CreditBalancesOKBodyPagination](#credit-balances-o-k-body-pagination)| `CreditBalancesOKBodyPagination` |  | |  |  |
+
+
+
+**<span id="credit-balances-o-k-body-credit-balances-items0"></span> CreditBalancesOKBodyCreditBalancesItems0**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| balance | [CreditBalancesOKBodyCreditBalancesItems0Balance](#credit-balances-o-k-body-credit-balances-items0-balance)| `CreditBalancesOKBodyCreditBalancesItems0Balance` |  | |  |  |
+| denom | string| `string` |  | |  |  |
+| owner | string| `string` |  | |  |  |
+
+
+
+**<span id="credit-balances-o-k-body-credit-balances-items0-balance"></span> CreditBalancesOKBodyCreditBalancesItems0Balance**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| active | uint64 (formatted string)| `string` |  | |  |  |
+| retired | uint64 (formatted string)| `string` |  | |  |  |
+
+
+
+**<span id="credit-balances-o-k-body-pagination"></span> CreditBalancesOKBodyPagination**
+
+
+> PageResponse is to be embedded in gRPC response messages where the
+corresponding request message has used PageRequest.
+
+ message SomeResponse {
+         repeated Bar results = 1;
+         PageResponse page = 2;
+ }
+  
+
+
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| next_key | byte (base64 string)| `strfmt.Base64` |  | | next_key is the key to be passed to PageRequest.key to
+query the next page most efficiently. It will be empty if
+there are no more results. |  |
+| total | uint64 (formatted string)| `string` |  | |  |  |
 
 
 
@@ -633,6 +951,7 @@ An unexpected error response.
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | denom | string| `string` |  | |  |  |
+| metadata_uris | []string| `[]string` |  | |  |  |
 | project_id | uint64 (formatted string)| `string` |  | |  |  |
 | total_amount | [CreditCollectionOKBodyCreditCollectionTotalAmount](#credit-collection-o-k-body-credit-collection-total-amount)| `CreditCollectionOKBodyCreditCollectionTotalAmount` |  | |  |  |
 
@@ -1146,6 +1465,157 @@ An unexpected error response.
 
 
 
+### <span id="projects"></span> projects (*Projects*)
+
+```
+GET /empowerchain/empowerchain/plasticcredit/projects
+```
+
+#### Parameters
+
+| Name | Source | Type | Go type | Separator | Required | Default | Description |
+|------|--------|------|---------|-----------| :------: |---------|-------------|
+| pagination.count_total | `query` | boolean | `bool` |  |  |  | count_total is set to true  to indicate that the result set should include
+a count of the total number of items available for pagination in UIs.
+count_total is only respected when offset is used. It is ignored when key
+is set. |
+| pagination.key | `query` | byte (base64 string) | `strfmt.Base64` |  |  |  | key is a value returned in PageResponse.next_key to begin
+querying the next page most efficiently. Only one of offset or key
+should be set. |
+| pagination.limit | `query` | uint64 (formatted string) | `string` |  |  |  | limit is the total number of results to be returned in the result page.
+If left empty it will default to a value to be set by each app. |
+| pagination.offset | `query` | uint64 (formatted string) | `string` |  |  |  | offset is a numeric offset that can be used when key is unavailable.
+It is less efficient than using key. Only one of offset or key should
+be set. |
+| pagination.reverse | `query` | boolean | `bool` |  |  |  | reverse is set to true if results are to be returned in the descending order.
+
+Since: cosmos-sdk 0.43 |
+
+#### All responses
+| Code | Status | Description | Has headers | Schema |
+|------|--------|-------------|:-----------:|--------|
+| [200](#projects-200) | OK | A successful response. |  | [schema](#projects-200-schema) |
+| [default](#projects-default) | | An unexpected error response. |  | [schema](#projects-default-schema) |
+
+#### Responses
+
+
+##### <span id="projects-200"></span> 200 - A successful response.
+Status: OK
+
+###### <span id="projects-200-schema"></span> Schema
+   
+  
+
+[ProjectsOKBody](#projects-o-k-body)
+
+##### <span id="projects-default"></span> Default Response
+An unexpected error response.
+
+###### <span id="projects-default-schema"></span> Schema
+
+  
+
+[ProjectsDefaultBody](#projects-default-body)
+
+###### Inlined models
+
+**<span id="projects-default-body"></span> ProjectsDefaultBody**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| code | int32 (formatted integer)| `int32` |  | |  |  |
+| details | [][ProjectsDefaultBodyDetailsItems0](#projects-default-body-details-items0)| `[]*ProjectsDefaultBodyDetailsItems0` |  | |  |  |
+| error | string| `string` |  | |  |  |
+| message | string| `string` |  | |  |  |
+
+
+
+**<span id="projects-default-body-details-items0"></span> ProjectsDefaultBodyDetailsItems0**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| type_url | string| `string` |  | |  |  |
+| value | byte (base64 string)| `strfmt.Base64` |  | |  |  |
+
+
+
+**<span id="projects-o-k-body"></span> ProjectsOKBody**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| pagination | [ProjectsOKBodyPagination](#projects-o-k-body-pagination)| `ProjectsOKBodyPagination` |  | |  |  |
+| projects | [][ProjectsOKBodyProjectsItems0](#projects-o-k-body-projects-items0)| `[]*ProjectsOKBodyProjectsItems0` |  | |  |  |
+
+
+
+**<span id="projects-o-k-body-pagination"></span> ProjectsOKBodyPagination**
+
+
+> PageResponse is to be embedded in gRPC response messages where the
+corresponding request message has used PageRequest.
+
+ message SomeResponse {
+         repeated Bar results = 1;
+         PageResponse page = 2;
+ }
+  
+
+
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| next_key | byte (base64 string)| `strfmt.Base64` |  | | next_key is the key to be passed to PageRequest.key to
+query the next page most efficiently. It will be empty if
+there are no more results. |  |
+| total | uint64 (formatted string)| `string` |  | |  |  |
+
+
+
+**<span id="projects-o-k-body-projects-items0"></span> ProjectsOKBodyProjectsItems0**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| applicant_id | uint64 (formatted string)| `string` |  | |  |  |
+| credit_class_abbreviation | string| `string` |  | |  |  |
+| id | uint64 (formatted string)| `string` |  | |  |  |
+| name | string| `string` |  | |  |  |
+| status | string| `string` |  | `"NEW"`|  |  |
+
+
+
 ### <span id="proof"></span> proof (*Proof*)
 
 ```
@@ -1441,6 +1911,7 @@ signatures required by gogoproto.
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | denom | string| `string` |  | |  |  |
+| metadata_uris | []string| `[]string` |  | |  |  |
 | project_id | uint64 (formatted string)| `string` |  | |  |  |
 | total_amount | [EmpowerchainPlasticcreditCreditCollectionTotalAmount](#empowerchain-plasticcredit-credit-collection-total-amount)| `EmpowerchainPlasticcreditCreditCollectionTotalAmount` |  | |  |  |
 
@@ -1590,6 +2061,69 @@ signatures required by gogoproto.
 
 
 
+### <span id="empowerchain-plasticcredit-query-applicants-response"></span> empowerchain.plasticcredit.QueryApplicantsResponse
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| applicants | [][EmpowerchainPlasticcreditQueryApplicantsResponseApplicantsItems0](#empowerchain-plasticcredit-query-applicants-response-applicants-items0)| `[]*EmpowerchainPlasticcreditQueryApplicantsResponseApplicantsItems0` |  | |  |  |
+| pagination | [EmpowerchainPlasticcreditQueryApplicantsResponsePagination](#empowerchain-plasticcredit-query-applicants-response-pagination)| `EmpowerchainPlasticcreditQueryApplicantsResponsePagination` |  | |  |  |
+
+
+
+#### Inlined models
+
+**<span id="empowerchain-plasticcredit-query-applicants-response-applicants-items0"></span> EmpowerchainPlasticcreditQueryApplicantsResponseApplicantsItems0**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| admin | string| `string` |  | |  |  |
+| description | string| `string` |  | |  |  |
+| id | uint64 (formatted string)| `string` |  | |  |  |
+| name | string| `string` |  | |  |  |
+
+
+
+**<span id="empowerchain-plasticcredit-query-applicants-response-pagination"></span> EmpowerchainPlasticcreditQueryApplicantsResponsePagination**
+
+
+> PageResponse is to be embedded in gRPC response messages where the
+corresponding request message has used PageRequest.
+
+ message SomeResponse {
+         repeated Bar results = 1;
+         PageResponse page = 2;
+ }
+  
+
+
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| next_key | byte (base64 string)| `strfmt.Base64` |  | | next_key is the key to be passed to PageRequest.key to
+query the next page most efficiently. It will be empty if
+there are no more results. |  |
+| total | uint64 (formatted string)| `string` |  | |  |  |
+
+
+
 ### <span id="empowerchain-plasticcredit-query-credit-balance-response"></span> empowerchain.plasticcredit.QueryCreditBalanceResponse
 
 
@@ -1637,6 +2171,84 @@ signatures required by gogoproto.
 |------|------|---------|:--------:| ------- |-------------|---------|
 | active | uint64 (formatted string)| `string` |  | |  |  |
 | retired | uint64 (formatted string)| `string` |  | |  |  |
+
+
+
+### <span id="empowerchain-plasticcredit-query-credit-balances-response"></span> empowerchain.plasticcredit.QueryCreditBalancesResponse
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| credit_balances | [][EmpowerchainPlasticcreditQueryCreditBalancesResponseCreditBalancesItems0](#empowerchain-plasticcredit-query-credit-balances-response-credit-balances-items0)| `[]*EmpowerchainPlasticcreditQueryCreditBalancesResponseCreditBalancesItems0` |  | |  |  |
+| pagination | [EmpowerchainPlasticcreditQueryCreditBalancesResponsePagination](#empowerchain-plasticcredit-query-credit-balances-response-pagination)| `EmpowerchainPlasticcreditQueryCreditBalancesResponsePagination` |  | |  |  |
+
+
+
+#### Inlined models
+
+**<span id="empowerchain-plasticcredit-query-credit-balances-response-credit-balances-items0"></span> EmpowerchainPlasticcreditQueryCreditBalancesResponseCreditBalancesItems0**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| balance | [EmpowerchainPlasticcreditQueryCreditBalancesResponseCreditBalancesItems0Balance](#empowerchain-plasticcredit-query-credit-balances-response-credit-balances-items0-balance)| `EmpowerchainPlasticcreditQueryCreditBalancesResponseCreditBalancesItems0Balance` |  | |  |  |
+| denom | string| `string` |  | |  |  |
+| owner | string| `string` |  | |  |  |
+
+
+
+**<span id="empowerchain-plasticcredit-query-credit-balances-response-credit-balances-items0-balance"></span> EmpowerchainPlasticcreditQueryCreditBalancesResponseCreditBalancesItems0Balance**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| active | uint64 (formatted string)| `string` |  | |  |  |
+| retired | uint64 (formatted string)| `string` |  | |  |  |
+
+
+
+**<span id="empowerchain-plasticcredit-query-credit-balances-response-pagination"></span> EmpowerchainPlasticcreditQueryCreditBalancesResponsePagination**
+
+
+> PageResponse is to be embedded in gRPC response messages where the
+corresponding request message has used PageRequest.
+
+ message SomeResponse {
+         repeated Bar results = 1;
+         PageResponse page = 2;
+ }
+  
+
+
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| next_key | byte (base64 string)| `strfmt.Base64` |  | | next_key is the key to be passed to PageRequest.key to
+query the next page most efficiently. It will be empty if
+there are no more results. |  |
+| total | uint64 (formatted string)| `string` |  | |  |  |
 
 
 
@@ -1765,6 +2377,7 @@ there are no more results. |  |
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | denom | string| `string` |  | |  |  |
+| metadata_uris | []string| `[]string` |  | |  |  |
 | project_id | uint64 (formatted string)| `string` |  | |  |  |
 | total_amount | [EmpowerchainPlasticcreditQueryCreditCollectionResponseCreditCollectionTotalAmount](#empowerchain-plasticcredit-query-credit-collection-response-credit-collection-total-amount)| `EmpowerchainPlasticcreditQueryCreditCollectionResponseCreditCollectionTotalAmount` |  | |  |  |
 
@@ -1960,6 +2573,70 @@ signatures required by gogoproto.
 #### Inlined models
 
 **<span id="empowerchain-plasticcredit-query-project-response-project"></span> EmpowerchainPlasticcreditQueryProjectResponseProject**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| applicant_id | uint64 (formatted string)| `string` |  | |  |  |
+| credit_class_abbreviation | string| `string` |  | |  |  |
+| id | uint64 (formatted string)| `string` |  | |  |  |
+| name | string| `string` |  | |  |  |
+| status | string| `string` |  | `"NEW"`|  |  |
+
+
+
+### <span id="empowerchain-plasticcredit-query-projects-response"></span> empowerchain.plasticcredit.QueryProjectsResponse
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| pagination | [EmpowerchainPlasticcreditQueryProjectsResponsePagination](#empowerchain-plasticcredit-query-projects-response-pagination)| `EmpowerchainPlasticcreditQueryProjectsResponsePagination` |  | |  |  |
+| projects | [][EmpowerchainPlasticcreditQueryProjectsResponseProjectsItems0](#empowerchain-plasticcredit-query-projects-response-projects-items0)| `[]*EmpowerchainPlasticcreditQueryProjectsResponseProjectsItems0` |  | |  |  |
+
+
+
+#### Inlined models
+
+**<span id="empowerchain-plasticcredit-query-projects-response-pagination"></span> EmpowerchainPlasticcreditQueryProjectsResponsePagination**
+
+
+> PageResponse is to be embedded in gRPC response messages where the
+corresponding request message has used PageRequest.
+
+ message SomeResponse {
+         repeated Bar results = 1;
+         PageResponse page = 2;
+ }
+  
+
+
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| next_key | byte (base64 string)| `strfmt.Base64` |  | | next_key is the key to be passed to PageRequest.key to
+query the next page most efficiently. It will be empty if
+there are no more results. |  |
+| total | uint64 (formatted string)| `string` |  | |  |  |
+
+
+
+**<span id="empowerchain-plasticcredit-query-projects-response-projects-items0"></span> EmpowerchainPlasticcreditQueryProjectsResponseProjectsItems0**
 
 
   
