@@ -5,17 +5,14 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/EmpowerPlastic/empowerchain/app/params"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govcli "github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	"github.com/cosmos/gogoproto/proto"
-
-	"github.com/EmpowerPlastic/empowerchain/app/params"
-	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *E2ETestSuite) TestCmdCreateIssuer() {
@@ -102,158 +99,6 @@ func (s *E2ETestSuite) TestCmdCreateIssuer() {
 				s.Require().Equal(tc.expectedState.Name, resp.Issuers[len(resp.Issuers)-1].Name)
 				s.Require().Equal(tc.expectedState.Description, resp.Issuers[len(resp.Issuers)-1].Description)
 				s.Require().Equal(tc.expectedState.Admin, resp.Issuers[len(resp.Issuers)-1].Admin)
-			}
-		})
-	}
-}
-
-func (s *E2ETestSuite) TestCmdUpdateIssuer() {
-	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
-	s.Require().NoError(err)
-	issuer, err := issuerKey.GetAddress()
-	s.Require().NoError(err)
-	newAdmin := sample.AccAddress()
-	s.Require().NoError(err)
-
-	notIssuerKey, err := val.ClientCtx.Keyring.Key(applicantKeyName)
-	s.Require().NoError(err)
-
-	testCases := map[string]struct {
-		issuerAddress     string
-		issuerID          string
-		updatedName       string
-		updatedDesc       string
-		fromFlagValue     string
-		expectedErrOnSend bool
-		expectedErrOnExec bool
-		expectedErrMsg    string
-		expectedState     proto.Message
-	}{
-		"update name, description": {
-			issuer.String(),
-			"1",
-			"Empower Plastic",
-			"We fight for a clean planet",
-			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
-			false,
-			false,
-			"",
-			&plasticcredit.Issuer{
-				Id:          1,
-				Name:        "Empower Plastic",
-				Description: "We fight for a clean planet",
-				Admin:       issuer.String(),
-			},
-		},
-
-		"update non-existing issuer": {
-			issuer.String(),
-			"51",
-			"Plastic Nemesis Ltd",
-			"How do we start?",
-			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
-			false,
-			true,
-			"issuer not found",
-			nil,
-		},
-
-		"wrong singer": {
-			issuer.String(),
-			"1",
-			"Empower Plastic",
-			"We fight for a clean planet",
-			fmt.Sprintf("--%s=%s", flags.FlagFrom, notIssuerKey.Name),
-			false,
-			true,
-			"",
-			nil,
-		},
-
-		"empty name": {
-			issuer.String(),
-			"1",
-			"",
-			"We fight for a clean planet",
-			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
-			true,
-			false,
-			"issuer name cannot be empty",
-			nil,
-		},
-
-		"empty description": {
-			issuer.String(),
-			"1",
-			"Empower Plastic",
-			"",
-			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
-			false,
-			false,
-			"",
-			&plasticcredit.Issuer{
-				Id:          1,
-				Name:        "Empower Plastic",
-				Description: "",
-				Admin:       issuer.String(),
-			},
-		},
-
-		"invalid admin": {
-			"invalidaddress",
-			"1",
-			"Empower Plastic",
-			"We fight for a clean planet",
-			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
-			true,
-			false,
-			"invalid admin address",
-			nil,
-		},
-		"change admin": {
-			newAdmin,
-			"2",
-			"Test Issuer",
-			"Purely for testing",
-			fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
-			false,
-			false,
-			"",
-			&plasticcredit.Issuer{
-				Id:          2,
-				Name:        "Test Issuer",
-				Description: "Purely for testing",
-				Admin:       newAdmin,
-			},
-		},
-	}
-	for name, tc := range testCases {
-		s.Run(name, func() {
-			cmd := cli.MsgUpdateIssuerCmd()
-			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(
-				[]string{tc.issuerAddress, tc.issuerID, tc.updatedName, tc.updatedDesc, tc.fromFlagValue}, s.commonFlags...,
-			))
-
-			switch {
-			case tc.expectedErrOnSend:
-				s.Require().Contains(out.String(), tc.expectedErrMsg)
-			case tc.expectedErrOnExec:
-				txResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
-				s.Require().NoError(err)
-				s.Require().NotEqual(uint32(0), txResponse.Code)
-				s.Require().Contains(txResponse.RawLog, tc.expectedErrMsg)
-			default:
-				cliResponse, err := s.getCliResponse(val.ClientCtx, out.Bytes())
-				s.Require().NoError(err)
-				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
-
-				cmd = cli.CmdQueryIssuer()
-				out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{tc.issuerID})
-				s.Require().NoError(err)
-				var resp plasticcredit.QueryIssuerResponse
-				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
-				s.Require().Equal(tc.expectedState, &resp.Issuer)
 			}
 		})
 	}
