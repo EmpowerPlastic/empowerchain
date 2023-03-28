@@ -561,6 +561,15 @@ export interface Params {
   /** The ratio representing the proportion of the deposit value that must be paid at proposal submission. */
 
   minInitialDepositRatio: string;
+  /** burn deposits if a proposal does not meet quorum */
+
+  burnVoteQuorum: boolean;
+  /** burn deposits if the proposal does not enter voting period */
+
+  burnProposalDepositPrevote: boolean;
+  /** burn deposits if quorum with vote type no_veto is met */
+
+  burnVoteVeto: boolean;
 }
 /**
  * Params defines the parameters for the x/gov module.
@@ -598,6 +607,15 @@ export interface ParamsSDKType {
   /** The ratio representing the proportion of the deposit value that must be paid at proposal submission. */
 
   min_initial_deposit_ratio: string;
+  /** burn deposits if a proposal does not meet quorum */
+
+  burn_vote_quorum: boolean;
+  /** burn deposits if the proposal does not enter voting period */
+
+  burn_proposal_deposit_prevote: boolean;
+  /** burn deposits if quorum with vote type no_veto is met */
+
+  burn_vote_veto: boolean;
 }
 
 function createBaseWeightedVoteOption(): WeightedVoteOption {
@@ -1208,7 +1226,10 @@ function createBaseParams(): Params {
     quorum: "",
     threshold: "",
     vetoThreshold: "",
-    minInitialDepositRatio: ""
+    minInitialDepositRatio: "",
+    burnVoteQuorum: false,
+    burnProposalDepositPrevote: false,
+    burnVoteVeto: false
   };
 }
 
@@ -1240,6 +1261,18 @@ export const Params = {
 
     if (message.minInitialDepositRatio !== "") {
       writer.uint32(58).string(message.minInitialDepositRatio);
+    }
+
+    if (message.burnVoteQuorum === true) {
+      writer.uint32(104).bool(message.burnVoteQuorum);
+    }
+
+    if (message.burnProposalDepositPrevote === true) {
+      writer.uint32(112).bool(message.burnProposalDepositPrevote);
+    }
+
+    if (message.burnVoteVeto === true) {
+      writer.uint32(120).bool(message.burnVoteVeto);
     }
 
     return writer;
@@ -1282,6 +1315,18 @@ export const Params = {
           message.minInitialDepositRatio = reader.string();
           break;
 
+        case 13:
+          message.burnVoteQuorum = reader.bool();
+          break;
+
+        case 14:
+          message.burnProposalDepositPrevote = reader.bool();
+          break;
+
+        case 15:
+          message.burnVoteVeto = reader.bool();
+          break;
+
         default:
           reader.skipType(tag & 7);
           break;
@@ -1300,6 +1345,9 @@ export const Params = {
     message.threshold = object.threshold ?? "";
     message.vetoThreshold = object.vetoThreshold ?? "";
     message.minInitialDepositRatio = object.minInitialDepositRatio ?? "";
+    message.burnVoteQuorum = object.burnVoteQuorum ?? false;
+    message.burnProposalDepositPrevote = object.burnProposalDepositPrevote ?? false;
+    message.burnVoteVeto = object.burnVoteVeto ?? false;
     return message;
   }
 
