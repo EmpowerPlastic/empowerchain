@@ -1,58 +1,43 @@
 <script setup lang="ts">
-import { onMounted, ref, toRefs } from "vue";
-import { empowerchain } from "@empowerplastic/empowerchain-ts-client";
+import { onMounted, ref } from "vue";
 import { Wallet } from "@/types/enums";
-import { HttpEndpoint } from "@cosmjs/tendermint-rpc";
+import { CHAIN_ID, REST_URL, RPC_URL } from "@/config/config";
 
 //Modal props
-defineProps({
-  showModal: Boolean,
-});
-
-const showWarning = ref(false);
-
-const { createProof } =
-  empowerchain.proofofexistence.MessageComposer.withTypeUrl;
-
+export interface ModalProps {
+  showModal: boolean;
+}
+defineProps<ModalProps>();
 //Pass selected wallet to parent
 const emit = defineEmits(["selectedWallet"]);
 
-const CHAIN_ID = "emp-devnet-1";
-const RPC_URL: string | HttpEndpoint = "https://devnet.empowerchain.io:26657";
-const REST_URL = "https://devnet.empowerchain.io:1317";
+const showWarning = ref(false);
 
 const passWalletToParent = (wallet: Wallet) => {
   showWarning.value = false;
   emit("selectedWallet", wallet);
 };
 
-const handleKeplrWallet = async () => {
-  const checkKeplrInstalled = window.keplr;
-  if (!checkKeplrInstalled) {
-    showWarning.value = true;
-  } else {
-    await window.keplr.enable(CHAIN_ID);
-    passWalletToParent(Wallet.Keplr);
-  }
-};
+const handleWallet = async (wallet: Wallet, provider) => {
+  const checkWalletInstalled =
+    wallet === Wallet.Cosmostation
+      ? await window.cosmostation?.providers?.keplr
+      : await window?.[provider];
 
-const handleCosmostationWallet = async () => {
-  const checkCosmostationInstalled = await window.cosmostation;
-  if (!checkCosmostationInstalled) {
+  if (!checkWalletInstalled) {
     showWarning.value = true;
-  } else {
-    await window.cosmostation.providers.keplr.enable(CHAIN_ID);
-    passWalletToParent(Wallet.Cosmostation);
+    return;
   }
-};
 
-const handleLeapWallet = async () => {
-  const checkLeapInstalled = await window.leap;
-  if (!checkLeapInstalled) {
-    showWarning.value = true;
-  } else {
-    await window.leap.enable(CHAIN_ID);
-    passWalletToParent(Wallet.Leap);
+  try {
+    if (wallet === Wallet.Cosmostation) {
+      await window.cosmostation.providers.keplr.enable(CHAIN_ID);
+    } else {
+      await window[provider]?.enable(CHAIN_ID);
+    }
+    passWalletToParent(wallet);
+  } catch (error) {
+    console.error(`Failed to enable wallet: ${error}`);
   }
 };
 
@@ -143,17 +128,19 @@ onMounted(() => {
           <img
             src="../../assets/images/wallet-keplr.png"
             class="h-20 cursor-pointer mb-3"
-            @click="handleKeplrWallet()"
+            @click="handleWallet(Wallet.Keplr, 'keplr')"
           />
           <img
             src="../../assets/images/wallet-cosmostation.png"
             class="h-20 cursor-pointer mb-3"
-            @click="handleCosmostationWallet()"
+            @click="
+              handleWallet(Wallet.Cosmostation, 'cosmostation.providers.keplr')
+            "
           />
           <img
             src="../../assets/images/wallet-leap.png"
             class="h-20 cursor-pointer mb-3"
-            @click="handleLeapWallet()"
+            @click="handleWallet(Wallet.Leap, 'leap')"
           />
         </div>
       </div>

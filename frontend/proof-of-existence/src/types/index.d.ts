@@ -1,9 +1,10 @@
 export {};
+import { Window as KeplrWindow } from "@keplr-wallet/types";
 declare global {
   interface Window {
     empSha256: (byteArray: Uint8Array) => { value: string };
-    keplr: any;
-    leap: any;
-    cosmostation: any;
+    keplr: KeplrWindow;
+    leap: KeplrWindow;
+    cosmostation: KeplrWindow;
   }
 }

@@ -12,13 +12,14 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@empowerplastic/empowerchain-ts-client": "*",
     "flowbite": "^1.6.3",
     "flowbite-vue": "^0.0.10",
     "vue": "^3.2.45",
-    "vue-router": "^4.1.6",
-    "@empowerplastic/empowerchain-ts-client": "*"
+    "vue-router": "^4.1.6"
   },
   "devDependencies": {
+    "@keplr-wallet/types": "^0.11.51",
     "@rushstack/eslint-patch": "^1.1.4",
     "@types/node": "^18.11.12",
     "@vitejs/plugin-vue": "^4.0.0",

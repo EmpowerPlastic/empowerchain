@@ -4,19 +4,18 @@ import router from "@/router";
 import SelectWalletModel from "@/views/certify/SelectWalletModel.vue";
 import { ref } from "vue";
 import { getSigningEmpowerchainClient } from "@/helpers/signing-client";
-import { HttpEndpoint } from "@cosmjs/tendermint-rpc";
 import { empowerchain } from "@empowerplastic/empowerchain-ts-client";
 import { Wallet } from "@/types/enums";
+import { CHAIN_ID, RPC_URL } from "@/config/config";
+import type { OfflineSigner } from "@cosmjs/proto-signing";
 
-const CHAIN_ID = "emp-devnet-1";
-const RPC_URL: string | HttpEndpoint = "https://devnet.empowerchain.io:26657";
 const fee = {
   amount: [{ amount: "100000", denom: "umpwr" }],
   gas: "200000",
 };
 
 const route = useRoute();
-const hash: string = route.params.hash;
+const hash: string | string[] = route.params.hash;
 
 const { createProof } =
   empowerchain.proofofexistence.MessageComposer.withTypeUrl;
@@ -47,50 +46,36 @@ const handleSelectedWallet = (wallet: Wallet) => {
   closeModal();
 };
 
-const handleTransaction = () => {
+const handleTransaction = async () => {
   loading.value = true;
   switch (selectedWallet.value) {
     case Wallet.Keplr:
-      handleKeplrWallet();
+      {
+        const offlineSigner = window.keplr.getOfflineSigner(CHAIN_ID);
+        await handleWalletTransaction(offlineSigner);
+      }
       break;
     case Wallet.Cosmostation:
-      handleCosmostationWallet();
+      {
+        await window.cosmostation.providers.keplr.enable(CHAIN_ID);
+        const offlineSigner =
+          window.cosmostation.providers.keplr.getOfflineSigner(CHAIN_ID);
+        await handleWalletTransaction(offlineSigner);
+      }
       break;
     case Wallet.Leap:
-      handleLeapWallet();
+      {
+        const offlineSigner = window.leap.getOfflineSigner(CHAIN_ID);
+        await handleWalletTransaction(offlineSigner);
+      }
       break;
     default:
       openModal();
   }
 };
 
-const handleKeplrWallet = async () => {
-  const offlineSigner = window.keplr.getOfflineSigner(CHAIN_ID);
+const handleWalletTransaction = async (offlineSigner: OfflineSigner) => {
   const accounts = await offlineSigner.getAccounts();
-
-  const cosmJS = await getSigningEmpowerchainClient({
-    rpcEndpoint: RPC_URL,
-    signer: offlineSigner,
-  });
-
-  const createProofMsg = createProof({
-    creator: accounts[0].address,
-    hash: hash,
-  });
-  const response = await cosmJS.signAndBroadcast(
-    accounts[0].address,
-    [createProofMsg],
-    fee
-  );
-  handleResponse(response);
-};
-
-const handleCosmostationWallet = async () => {
-  await window.cosmostation.providers.keplr.enable(CHAIN_ID);
-  const offlineSigner =
-    window.cosmostation.providers.keplr.getOfflineSigner(CHAIN_ID);
-  const accounts = await offlineSigner.getAccounts();
-
   const wasmChainClient = await getSigningEmpowerchainClient({
     rpcEndpoint: RPC_URL,
     signer: offlineSigner,
@@ -98,28 +83,7 @@ const handleCosmostationWallet = async () => {
 
   const createProofMsg = createProof({
     creator: accounts[0].address,
-    hash: hash,
-  });
-
-  const response = await wasmChainClient.signAndBroadcast(
-    accounts[0].address,
-    [createProofMsg],
-    fee
-  );
-  handleResponse(response);
-};
-
-const handleLeapWallet = async () => {
-  const offlineSigner = window.leap.getOfflineSigner(CHAIN_ID);
-  const accounts = await offlineSigner.getAccounts();
-  console.log(accounts, "accounts");
-  const wasmChainClient = await getSigningEmpowerchainClient({
-    rpcEndpoint: RPC_URL,
-    signer: offlineSigner,
-  });
-  const createProofMsg = createProof({
-    creator: accounts[0].address,
-    hash: hash,
+    hash: hash?.toString(),
   });
 
   const response = await wasmChainClient.signAndBroadcast(
