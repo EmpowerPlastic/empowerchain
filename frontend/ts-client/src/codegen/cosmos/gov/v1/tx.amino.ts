@@ -82,6 +82,9 @@ export interface AminoMsgUpdateParams extends AminoMsg {
       threshold: string;
       veto_threshold: string;
       min_initial_deposit_ratio: string;
+      burn_vote_quorum: boolean;
+      burn_proposal_deposit_prevote: boolean;
+      burn_vote_veto: boolean;
     };
   };
 }
@@ -275,7 +278,10 @@ export const AminoConverter = {
           quorum: params.quorum,
           threshold: params.threshold,
           veto_threshold: params.vetoThreshold,
-          min_initial_deposit_ratio: params.minInitialDepositRatio
+          min_initial_deposit_ratio: params.minInitialDepositRatio,
+          burn_vote_quorum: params.burnVoteQuorum,
+          burn_proposal_deposit_prevote: params.burnProposalDepositPrevote,
+          burn_vote_veto: params.burnVoteVeto
         }
       };
     },
@@ -301,7 +307,10 @@ export const AminoConverter = {
           quorum: params.quorum,
           threshold: params.threshold,
           vetoThreshold: params.veto_threshold,
-          minInitialDepositRatio: params.min_initial_deposit_ratio
+          minInitialDepositRatio: params.min_initial_deposit_ratio,
+          burnVoteQuorum: params.burn_vote_quorum,
+          burnProposalDepositPrevote: params.burn_proposal_deposit_prevote,
+          burnVoteVeto: params.burn_vote_veto
         }
       };
     }

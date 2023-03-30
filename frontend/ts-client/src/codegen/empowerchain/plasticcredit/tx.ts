@@ -212,12 +212,14 @@ export interface MsgIssueCredits {
   projectId: Long;
   serialNumber: string;
   creditAmount: Long;
+  metadataUris: string[];
 }
 export interface MsgIssueCreditsSDKType {
   creator: string;
   project_id: Long;
   serial_number: string;
   credit_amount: Long;
+  metadata_uris: string[];
 }
 export interface MsgIssueCreditsResponse {
   collection?: CreditCollection;
@@ -1514,7 +1516,8 @@ function createBaseMsgIssueCredits(): MsgIssueCredits {
     creator: "",
     projectId: Long.UZERO,
     serialNumber: "",
-    creditAmount: Long.UZERO
+    creditAmount: Long.UZERO,
+    metadataUris: []
   };
 }
 
@@ -1534,6 +1537,10 @@ export const MsgIssueCredits = {
 
     if (!message.creditAmount.isZero()) {
       writer.uint32(32).uint64(message.creditAmount);
+    }
+
+    for (const v of message.metadataUris) {
+      writer.uint32(42).string(v!);
     }
 
     return writer;
@@ -1564,6 +1571,10 @@ export const MsgIssueCredits = {
           message.creditAmount = (reader.uint64() as Long);
           break;
 
+        case 5:
+          message.metadataUris.push(reader.string());
+          break;
+
         default:
           reader.skipType(tag & 7);
           break;
@@ -1579,6 +1590,7 @@ export const MsgIssueCredits = {
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
     message.serialNumber = object.serialNumber ?? "";
     message.creditAmount = object.creditAmount !== undefined && object.creditAmount !== null ? Long.fromValue(object.creditAmount) : Long.UZERO;
+    message.metadataUris = object.metadataUris?.map(e => e) || [];
     return message;
   }
 

@@ -251,25 +251,15 @@ func (s *TestSuite) TestUpdateIssuer() {
 			},
 			err: plasticcredit.ErrIssuerNotFound,
 		},
-		"invalid name": {
+		"change admin": {
 			msg: &plasticcredit.MsgUpdateIssuer{
 				Updater:     s.sampleIssuerAdmin,
 				IssuerId:    s.sampleIssuerID,
-				Name:        "",
+				Name:        "EmpowerUpdated",
 				Description: "Empower is cool",
-				Admin:       s.sampleIssuerAdmin,
+				Admin:       s.noCoinsIssuerAdmin,
 			},
-			err: utils.ErrInvalidValue,
-		},
-		"invalid description": {
-			msg: &plasticcredit.MsgUpdateIssuer{
-				Updater:     s.sampleIssuerAdmin,
-				IssuerId:    s.sampleIssuerID,
-				Name:        "Empower",
-				Description: sample.String(257),
-				Admin:       sample.AccAddress(),
-			},
-			err: utils.ErrInvalidValue,
+			err: nil,
 		},
 	}
 
@@ -334,22 +324,6 @@ func (s *TestSuite) TestCreateApplicant() {
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
-		"invalid name": {
-			msg: &plasticcredit.MsgCreateApplicant{
-				Name:        "VeryveryveryVeryveryveryVeryveryveryVeryveryveryVeryveryveryVeryveryverylong",
-				Description: "Empower is cool",
-				Admin:       sample.AccAddress(),
-			},
-			err: utils.ErrInvalidValue,
-		},
-		"invalid description": {
-			msg: &plasticcredit.MsgCreateApplicant{
-				Name:        "Empower",
-				Description: sample.String(257),
-				Admin:       sample.AccAddress(),
-			},
-			err: utils.ErrInvalidValue,
-		},
 	}
 
 	for name, tc := range testCases {
@@ -410,7 +384,7 @@ func (s *TestSuite) TestUpdateApplicant() {
 			},
 			err: nil,
 		},
-		"applicant not found": {
+		"update non-existing applicant": {
 			msg: &plasticcredit.MsgUpdateApplicant{
 				ApplicantId: 0,
 				Name:        "Empower",
@@ -420,7 +394,7 @@ func (s *TestSuite) TestUpdateApplicant() {
 			},
 			err: plasticcredit.ErrApplicantNotFound,
 		},
-		"unauthorized caller": {
+		"unauthorized caller / wrong signer": {
 			msg: &plasticcredit.MsgUpdateApplicant{
 				Updater:     sample.AccAddress(), // not allowed!
 				ApplicantId: 1,
@@ -537,24 +511,6 @@ func (s *TestSuite) TestCreateCreditType() {
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
-		"invalid abbreviation with empty": {
-			msg: &plasticcredit.MsgCreateCreditType{
-				Creator:      s.sampleIssuerAdmin,
-				Abbreviation: "",
-				IssuerId:     s.sampleIssuerID,
-				Name:         "Empower Plastic Credits",
-			},
-			err: utils.ErrInvalidValue,
-		},
-		"invalid abbreviation with special characters": {
-			msg: &plasticcredit.MsgCreateCreditType{
-				Creator:      s.sampleIssuerAdmin,
-				Abbreviation: "PTEST!",
-				IssuerId:     s.sampleIssuerID,
-				Name:         "Empower Plastic Credits",
-			},
-			err: utils.ErrInvalidValue,
-		},
 		"non-existent issuer": {
 			msg: &plasticcredit.MsgCreateCreditType{
 				Creator:      s.sampleIssuerAdmin,
@@ -563,15 +519,6 @@ func (s *TestSuite) TestCreateCreditType() {
 				Name:         "Someone else's PCs",
 			},
 			err: plasticcredit.ErrIssuerNotFound,
-		},
-		"invalid name": {
-			msg: &plasticcredit.MsgCreateCreditType{
-				Creator:      s.sampleIssuerAdmin,
-				Abbreviation: "PTEST",
-				IssuerId:     s.sampleIssuerID,
-				Name:         "",
-			},
-			err: utils.ErrInvalidValue,
 		},
 	}
 
@@ -641,21 +588,13 @@ func (s *TestSuite) TestUpdateCreditType() {
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
-		"invalid abbreviation": {
+		"non-existent abbreviation": {
 			msg: &plasticcredit.MsgUpdateCreditType{
 				Updater:      s.sampleIssuerAdmin,
-				Abbreviation: "",
-				Name:         "Empower Plastic Credits",
+				Abbreviation: "XX",
+				Name:         "Someone else's PCs",
 			},
 			err: plasticcredit.ErrCreditTypeNotFound,
-		},
-		"invalid name": {
-			msg: &plasticcredit.MsgUpdateCreditType{
-				Updater:      s.sampleIssuerAdmin,
-				Abbreviation: s.sampleCreditTypeAbbreviation,
-				Name:         "",
-			},
-			err: utils.ErrInvalidValue,
 		},
 	}
 
@@ -771,15 +710,6 @@ func (s *TestSuite) TestCreateProject() {
 			},
 			err: plasticcredit.ErrCreditTypeNotFound,
 		},
-		"invalid name": {
-			msg: &plasticcredit.MsgCreateProject{
-				Creator:                s.sampleApplicantAdmin,
-				ApplicantId:            s.sampleApplicantID,
-				CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
-				Name:                   "",
-			},
-			err: utils.ErrInvalidValue,
-		},
 	}
 
 	for name, tc := range testCases {
@@ -836,7 +766,7 @@ func (s *TestSuite) TestUpdateProject() {
 			},
 			err: nil,
 		},
-		"unauthorized creator on the issuer": {
+		"unauthorized creator on the issuer / invalid applicant": {
 			msg: &plasticcredit.MsgUpdateProject{
 				Updater:   sample.AccAddress(),
 				ProjectId: s.sampleUnapprovedProjectID,
@@ -844,15 +774,7 @@ func (s *TestSuite) TestUpdateProject() {
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
-		"invalid name": {
-			msg: &plasticcredit.MsgUpdateProject{
-				Updater:   s.sampleApplicantAdmin,
-				ProjectId: s.sampleUnapprovedProjectID,
-				Name:      "",
-			},
-			err: utils.ErrInvalidValue,
-		},
-		"project not found": {
+		"update non-existing project": {
 			msg: &plasticcredit.MsgUpdateProject{
 				Updater:   s.sampleApplicantAdmin,
 				ProjectId: 42,
@@ -948,6 +870,13 @@ func (s *TestSuite) TestApproveProject() {
 				ProjectId: s.sampleSuspendedProjectID,
 			},
 			err: nil,
+		},
+		"project already approved": {
+			msg: &plasticcredit.MsgApproveProject{
+				Approver:  s.sampleIssuerAdmin,
+				ProjectId: 1,
+			},
+			err: plasticcredit.ErrProjectNotNew,
 		},
 	}
 

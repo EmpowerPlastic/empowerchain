@@ -245,6 +245,14 @@ func TestMsgCreateApplicant_ValidateBasic(t *testing.T) {
 			},
 			expectedError: nil,
 		},
+		"invalid description": {
+			msgUnderTest: &MsgCreateApplicant{
+				Name:        "Empower",
+				Description: sample.String(257),
+				Admin:       sample.AccAddress(),
+			},
+			expectedError: nil,
+		},
 	}
 
 	for name, tc := range testCases {

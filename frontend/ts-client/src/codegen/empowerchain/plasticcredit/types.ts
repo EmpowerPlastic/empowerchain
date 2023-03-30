@@ -157,6 +157,9 @@ export interface CreditCollection {
   /** Total amount of active and retired credits for the collection */
 
   totalAmount?: CreditAmount;
+  /** IPFS URI of the metadata */
+
+  metadataUris: string[];
 }
 export interface CreditCollectionSDKType {
   /** denominator of the credit, store key */
@@ -167,6 +170,9 @@ export interface CreditCollectionSDKType {
   /** Total amount of active and retired credits for the collection */
 
   total_amount?: CreditAmountSDKType;
+  /** IPFS URI of the metadata */
+
+  metadata_uris: string[];
 }
 export interface CreditBalance {
   /** Address of the credits owner, part of compound key */
@@ -629,7 +635,8 @@ function createBaseCreditCollection(): CreditCollection {
   return {
     denom: "",
     projectId: Long.UZERO,
-    totalAmount: undefined
+    totalAmount: undefined,
+    metadataUris: []
   };
 }
 
@@ -645,6 +652,10 @@ export const CreditCollection = {
 
     if (message.totalAmount !== undefined) {
       CreditAmount.encode(message.totalAmount, writer.uint32(26).fork()).ldelim();
+    }
+
+    for (const v of message.metadataUris) {
+      writer.uint32(34).string(v!);
     }
 
     return writer;
@@ -671,6 +682,10 @@ export const CreditCollection = {
           message.totalAmount = CreditAmount.decode(reader, reader.uint32());
           break;
 
+        case 4:
+          message.metadataUris.push(reader.string());
+          break;
+
         default:
           reader.skipType(tag & 7);
           break;
@@ -685,6 +700,7 @@ export const CreditCollection = {
     message.denom = object.denom ?? "";
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
     message.totalAmount = object.totalAmount !== undefined && object.totalAmount !== null ? CreditAmount.fromPartial(object.totalAmount) : undefined;
+    message.metadataUris = object.metadataUris?.map(e => e) || [];
     return message;
   }
 
