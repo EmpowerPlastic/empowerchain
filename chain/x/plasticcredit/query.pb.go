@@ -1315,7 +1315,7 @@ func (c *queryClient) Applicant(ctx context.Context, in *QueryApplicantRequest, 
 
 func (c *queryClient) CreditTypes(ctx context.Context, in *QueryCreditTypesRequest, opts ...grpc.CallOption) (*QueryCreditTypesResponse, error) {
 	out := new(QueryCreditTypesResponse)
-	err := c.cc.Invoke(ctx, "/empowerchain.plasticcredit.Query/GetCreditTypes", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/empowerchain.plasticcredit.Query/CreditTypes", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1412,7 +1412,7 @@ func (*UnimplementedQueryServer) Applicant(ctx context.Context, req *QueryApplic
 	return nil, status.Errorf(codes.Unimplemented, "method Applicant not implemented")
 }
 func (*UnimplementedQueryServer) CreditTypes(ctx context.Context, req *QueryCreditTypesRequest) (*QueryCreditTypesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetCreditTypes not implemented")
+	return nil, status.Errorf(codes.Unimplemented, "method CreditTypes not implemented")
 }
 func (*UnimplementedQueryServer) CreditType(ctx context.Context, req *QueryCreditTypeRequest) (*QueryCreditTypeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreditType not implemented")
@@ -1537,7 +1537,7 @@ func _Query_CreditTypes_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/empowerchain.plasticcredit.Query/GetCreditTypes",
+		FullMethod: "/empowerchain.plasticcredit.Query/CreditTypes",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).CreditTypes(ctx, req.(*QueryCreditTypesRequest))
@@ -1678,7 +1678,7 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Applicant_Handler,
 		},
 		{
-			MethodName: "GetCreditTypes",
+			MethodName: "CreditTypes",
 			Handler:    _Query_CreditTypes_Handler,
 		},
 		{
@@ -3818,7 +3818,7 @@ func (m *QueryCreditTypesResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GetCreditTypes", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CreditTypes", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
