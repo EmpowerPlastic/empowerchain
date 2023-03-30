@@ -151,8 +151,8 @@ func CmdQueryApplicant() *cobra.Command {
 
 func CmdQueryCreditType() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "credit-class [abbreviation]",
-		Short: "query for a credit class by its [abbreviation]",
+		Use:   "credit-type [abbreviation]",
+		Short: "query for a credit type by its [abbreviation]",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -178,8 +178,8 @@ func CmdQueryCreditType() *cobra.Command {
 
 func CmdQueryCreditTypes() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "credit-classes",
-		Short: "query all credit classes",
+		Use:   "credit-types",
+		Short: "query all credit types",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)

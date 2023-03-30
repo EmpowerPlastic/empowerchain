@@ -56,12 +56,12 @@ empowerd tx plasticcredit update-credit-class PTEST "Updated Empower Recycling C
 sleep 5
 
 
-empowerd q plasticcredit credit-class PTEST
-empowerd q plasticcredit credit-class RCRD
-empowerd q plasticcredit credit-classes
-NUM_CREDIT_CLASSES=$(empowerd q plasticcredit credit-classes -o json | jq ".credit_classes | length")
+empowerd q plasticcredit credit-type PTEST
+empowerd q plasticcredit credit-type RCRD
+empowerd q plasticcredit credit-types
+NUM_CREDIT_CLASSES=$(empowerd q plasticcredit credit-types -o json | jq ".credit_types | length")
 if [ "$NUM_CREDIT_CLASSES" != "2" ]; then
-  echo "Error: number of credit classes from credit-classes query was: $NUM_CREDIT_CLASSES"
+  echo "Error: number of credit classes from credit-types query was: $NUM_CREDIT_CLASSES"
   exit 1
 fi
 
