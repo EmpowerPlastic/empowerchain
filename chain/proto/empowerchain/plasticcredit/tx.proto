@@ -27,11 +27,11 @@ service Msg {
   // UpdateApplicant updates an existing Applicant by admin
   rpc UpdateApplicant(MsgUpdateApplicant) returns (MsgUpdateApplicantResponse);
 
-  // CreateCreditClass creates a new Credit Class for an issuer.
-  rpc CreateCreditClass(MsgCreateCreditClass) returns (MsgCreateCreditClassResponse);
+  // CreateCreditType creates a new Credit Class for an issuer.
+  rpc CreateCreditType(MsgCreateCreditType) returns (MsgCreateCreditTypeResponse);
 
-  // UpdateCreditClass update an existing Credit Class for an issuer. Only the admin from the Issuer that owns the Credit Class is allowed and only change the name
-  rpc UpdateCreditClass(MsgUpdateCreditClass) returns (MsgUpdateCreditClassResponse);
+  // UpdateCreditType update an existing Credit Class for an issuer. Only the admin from the Issuer that owns the Credit Class is allowed and only change the name
+  rpc UpdateCreditType(MsgUpdateCreditType) returns (MsgUpdateCreditTypeResponse);
 
   // CreateProject creates a new Project for an applicant that can be approved be an issuer for issuing under a credit class
   rpc CreateProject(MsgCreateProject) returns(MsgCreateProjectResponse);
@@ -123,7 +123,7 @@ message MsgUpdateApplicant {
 
 message MsgUpdateApplicantResponse {}
 
-message MsgCreateCreditClass {
+message MsgCreateCreditType {
   option (cosmos.msg.v1.signer) = "admin";
 
   // creator is the signer and needs to have permissions on the issuer referenced in issuer_id
@@ -137,9 +137,9 @@ message MsgCreateCreditClass {
   string name = 4;
 }
 
-message MsgCreateCreditClassResponse {}
+message MsgCreateCreditTypeResponse {}
 
-message MsgUpdateCreditClass {
+message MsgUpdateCreditType {
   option (cosmos.msg.v1.signer) = "updater";
   // abbreviation is the short-hand name, as well as the ID of the credit class
   string updater = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
@@ -147,7 +147,7 @@ message MsgUpdateCreditClass {
   string name = 3;
 }
 
-message MsgUpdateCreditClassResponse {}
+message MsgUpdateCreditTypeResponse {}
 
 message MsgCreateProject {
   option (cosmos.msg.v1.signer) = "creator";
@@ -155,7 +155,7 @@ message MsgCreateProject {
   // creator needs to have access to the applicant references in applicant_id
   string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   uint64 applicant_id = 2;
-  string credit_class_abbreviation = 3;
+  string credit_type_abbreviation = 3;
   string name = 4;
 }
 

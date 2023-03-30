@@ -96,7 +96,7 @@ func (m msgServer) UpdateApplicant(goCtx context.Context, req *plasticcredit.Msg
 	return &plasticcredit.MsgUpdateApplicantResponse{}, nil
 }
 
-func (m msgServer) CreateCreditClass(goCtx context.Context, req *plasticcredit.MsgCreateCreditClass) (*plasticcredit.MsgCreateCreditClassResponse, error) {
+func (m msgServer) CreateCreditType(goCtx context.Context, req *plasticcredit.MsgCreateCreditType) (*plasticcredit.MsgCreateCreditTypeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	creator, err := sdk.AccAddressFromBech32(req.Creator)
@@ -104,14 +104,14 @@ func (m msgServer) CreateCreditClass(goCtx context.Context, req *plasticcredit.M
 		return nil, errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address: %s", req.Creator)
 	}
 
-	if err := m.Keeper.CreateCreditClass(ctx, creator, req.Abbreviation, req.IssuerId, req.Name); err != nil {
+	if err := m.Keeper.CreateCreditType(ctx, creator, req.Abbreviation, req.IssuerId, req.Name); err != nil {
 		return nil, err
 	}
 
-	return &plasticcredit.MsgCreateCreditClassResponse{}, nil
+	return &plasticcredit.MsgCreateCreditTypeResponse{}, nil
 }
 
-func (m msgServer) UpdateCreditClass(goCtx context.Context, req *plasticcredit.MsgUpdateCreditClass) (*plasticcredit.MsgUpdateCreditClassResponse, error) {
+func (m msgServer) UpdateCreditType(goCtx context.Context, req *plasticcredit.MsgUpdateCreditType) (*plasticcredit.MsgUpdateCreditTypeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	updater, err := sdk.AccAddressFromBech32(req.Updater)
@@ -119,11 +119,11 @@ func (m msgServer) UpdateCreditClass(goCtx context.Context, req *plasticcredit.M
 		return nil, errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid updater address: %s", req.Updater)
 	}
 
-	if err := m.Keeper.UpdateCreditClass(ctx, updater, req.Abbreviation, req.Name); err != nil {
+	if err := m.Keeper.UpdateCreditType(ctx, updater, req.Abbreviation, req.Name); err != nil {
 		return nil, err
 	}
 
-	return &plasticcredit.MsgUpdateCreditClassResponse{}, nil
+	return &plasticcredit.MsgUpdateCreditTypeResponse{}, nil
 }
 
 func (m msgServer) CreateProject(goCtx context.Context, req *plasticcredit.MsgCreateProject) (*plasticcredit.MsgCreateProjectResponse, error) {
@@ -134,7 +134,7 @@ func (m msgServer) CreateProject(goCtx context.Context, req *plasticcredit.MsgCr
 		return nil, errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address: %s", req.Creator)
 	}
 
-	projectID, err := m.Keeper.CreateProject(ctx, creator, req.ApplicantId, req.CreditClassAbbreviation, req.Name)
+	projectID, err := m.Keeper.CreateProject(ctx, creator, req.ApplicantId, req.CreditTypeAbbreviation, req.Name)
 	if err != nil {
 		return nil, err
 	}

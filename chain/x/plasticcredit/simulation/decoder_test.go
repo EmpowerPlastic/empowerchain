@@ -34,17 +34,17 @@ func TestNewDecodeStore(t *testing.T) {
 		Description: "test applicant description",
 		Admin:       "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
 	}
-	creditClass := plasticcredit.CreditClass{
+	creditType := plasticcredit.CreditType{
 		Abbreviation: "PTEST",
 		IssuerId:     1,
 		Name:         "test credit class",
 	}
 	project := plasticcredit.Project{
-		Id:                      1,
-		ApplicantId:             1,
-		CreditClassAbbreviation: "PTEST",
-		Name:                    "test project",
-		Status:                  plasticcredit.ProjectStatus_NEW,
+		Id:                     1,
+		ApplicantId:            1,
+		CreditTypeAbbreviation: "PTEST",
+		Name:                   "test project",
+		Status:                 plasticcredit.ProjectStatus_NEW,
 	}
 	creditCollection := plasticcredit.CreditCollection{
 		Denom:     "PTEST",
@@ -94,11 +94,11 @@ func TestNewDecodeStore(t *testing.T) {
 		},
 		"credit class": {
 			kvPair: kv.Pair{
-				Key:   plasticcredit.CreditClassKey,
-				Value: cdc.MustMarshal(&creditClass),
+				Key:   plasticcredit.CreditTypeKey,
+				Value: cdc.MustMarshal(&creditType),
 			},
 			expectErr:     false,
-			expectedValue: fmt.Sprintf("%v\n%v", creditClass, creditClass),
+			expectedValue: fmt.Sprintf("%v\n%v", creditType, creditType),
 		},
 		"project": {
 			kvPair: kv.Pair{

@@ -20,21 +20,21 @@ func TestParamsValidation(t *testing.T) {
 	}{
 		"happy path": {
 			params: Params{
-				IssuerCreator:          sample.AccAddress(),
-				CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
+				IssuerCreator:         sample.AccAddress(),
+				CreditTypeCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 			},
 		},
 		"invalid issuer creator": {
 			params: Params{
-				IssuerCreator:          "invalid",
-				CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
+				IssuerCreator:         "invalid",
+				CreditTypeCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
 		"invalid credit class creation fee": {
 			params: Params{
-				IssuerCreator:          sample.AccAddress(),
-				CreditClassCreationFee: sdk.Coin{},
+				IssuerCreator:         sample.AccAddress(),
+				CreditTypeCreationFee: sdk.Coin{},
 			},
 			err: sdkerrors.ErrInvalidCoins,
 		},
@@ -416,11 +416,11 @@ func TestApplicant_AddressHasAuthorization(t *testing.T) {
 
 func TestCreditClassValidation(t *testing.T) {
 	testCases := map[string]struct {
-		creditClass CreditClass
+		creditClass CreditType
 		err         error
 	}{
 		"happy path": {
-			creditClass: CreditClass{
+			creditClass: CreditType{
 				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
@@ -428,7 +428,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: nil,
 		},
 		"happy path name test": {
-			creditClass: CreditClass{
+			creditClass: CreditType{
 				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "This is a longer name with spaces and special characters:%$#",
@@ -436,7 +436,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: nil,
 		},
 		"happy path 2": {
-			creditClass: CreditClass{
+			creditClass: CreditType{
 				Abbreviation: "ABC69",
 				IssuerId:     42,
 				Name:         "thisIsMyNameYo",
@@ -444,7 +444,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: nil,
 		},
 		"empty abbreviation": {
-			creditClass: CreditClass{
+			creditClass: CreditType{
 				Abbreviation: "",
 				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
@@ -452,7 +452,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: utils.ErrInvalidValue,
 		},
 		"too short abbreviation": {
-			creditClass: CreditClass{
+			creditClass: CreditType{
 				Abbreviation: "A",
 				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
@@ -460,7 +460,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: utils.ErrInvalidValue,
 		},
 		"too long abbreviation": {
-			creditClass: CreditClass{
+			creditClass: CreditType{
 				Abbreviation: "PTESTTT",
 				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
@@ -468,7 +468,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: utils.ErrInvalidValue,
 		},
 		"lower-case abbreviation": {
-			creditClass: CreditClass{
+			creditClass: CreditType{
 				Abbreviation: "AbC",
 				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
@@ -476,7 +476,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: utils.ErrInvalidValue,
 		},
 		"special char abbreviation": {
-			creditClass: CreditClass{
+			creditClass: CreditType{
 				Abbreviation: "ABC_",
 				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
@@ -484,7 +484,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: utils.ErrInvalidValue,
 		},
 		"invalid issuer id": {
-			creditClass: CreditClass{
+			creditClass: CreditType{
 				Abbreviation: "PTEST",
 				IssuerId:     0,
 				Name:         "Empower Plastic Credits",
@@ -492,7 +492,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: utils.ErrInvalidValue,
 		},
 		"empty name": {
-			creditClass: CreditClass{
+			creditClass: CreditType{
 				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "",
@@ -500,7 +500,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: utils.ErrInvalidValue,
 		},
 		"too long name": {
-			creditClass: CreditClass{
+			creditClass: CreditType{
 				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "This name is 65 characters long, which is above the limit we set!",
@@ -508,7 +508,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: utils.ErrInvalidValue,
 		},
 		"name starts with space": {
-			creditClass: CreditClass{
+			creditClass: CreditType{
 				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         " EmpowerChain",
@@ -516,7 +516,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: utils.ErrInvalidValue,
 		},
 		"name ends with space": {
-			creditClass: CreditClass{
+			creditClass: CreditType{
 				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "EmpowerChain ",
@@ -541,101 +541,101 @@ func TestProjectValidation(t *testing.T) {
 	}{
 		"happy path": {
 			project: Project{
-				Id:                      1,
-				ApplicantId:             42,
-				CreditClassAbbreviation: "PTEST",
-				Name:                    "My Project",
-				Status:                  ProjectStatus_NEW,
+				Id:                     1,
+				ApplicantId:            42,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   "My Project",
+				Status:                 ProjectStatus_NEW,
 			},
 			err: nil,
 		},
 		"happy path name test": {
 			project: Project{
-				Id:                      1,
-				ApplicantId:             42,
-				CreditClassAbbreviation: "PTEST",
-				Name:                    "This is a longer name with spaces and special characters:%$#",
-				Status:                  ProjectStatus_NEW,
+				Id:                     1,
+				ApplicantId:            42,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   "This is a longer name with spaces and special characters:%$#",
+				Status:                 ProjectStatus_NEW,
 			},
 			err: nil,
 		},
 		"invalid project id": {
 			project: Project{
-				Id:                      0,
-				ApplicantId:             42,
-				CreditClassAbbreviation: "PTEST",
-				Name:                    "My Project",
-				Status:                  ProjectStatus_NEW,
+				Id:                     0,
+				ApplicantId:            42,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   "My Project",
+				Status:                 ProjectStatus_NEW,
 			},
 			err: utils.ErrInvalidValue,
 		},
 		"invalid applicant id": {
 			project: Project{
-				Id:                      1337,
-				ApplicantId:             0,
-				CreditClassAbbreviation: "PTEST",
-				Name:                    "My Project",
-				Status:                  ProjectStatus_NEW,
+				Id:                     1337,
+				ApplicantId:            0,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   "My Project",
+				Status:                 ProjectStatus_NEW,
 			},
 			err: utils.ErrInvalidValue,
 		},
 		"invalid abbreviation": {
 			project: Project{
-				Id:                      1,
-				ApplicantId:             42,
-				CreditClassAbbreviation: "",
-				Name:                    "My Project",
-				Status:                  ProjectStatus_NEW,
+				Id:                     1,
+				ApplicantId:            42,
+				CreditTypeAbbreviation: "",
+				Name:                   "My Project",
+				Status:                 ProjectStatus_NEW,
 			},
 			err: utils.ErrInvalidValue,
 		},
 		"empty name": {
 			project: Project{
-				Id:                      1,
-				ApplicantId:             42,
-				CreditClassAbbreviation: "PTEST",
-				Name:                    "",
-				Status:                  ProjectStatus_NEW,
+				Id:                     1,
+				ApplicantId:            42,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   "",
+				Status:                 ProjectStatus_NEW,
 			},
 			err: utils.ErrInvalidValue,
 		},
 		"too long name": {
 			project: Project{
-				Id:                      1,
-				ApplicantId:             32,
-				CreditClassAbbreviation: "PTEST",
-				Name:                    "This name is 65 characters long, which is above the limit we set!",
-				Status:                  ProjectStatus_NEW,
+				Id:                     1,
+				ApplicantId:            32,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   "This name is 65 characters long, which is above the limit we set!",
+				Status:                 ProjectStatus_NEW,
 			},
 			err: utils.ErrInvalidValue,
 		},
 		"name starts with space": {
 			project: Project{
-				Id:                      1,
-				ApplicantId:             32,
-				CreditClassAbbreviation: "PTEST",
-				Name:                    " EmpowerChain",
-				Status:                  ProjectStatus_NEW,
+				Id:                     1,
+				ApplicantId:            32,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   " EmpowerChain",
+				Status:                 ProjectStatus_NEW,
 			},
 			err: utils.ErrInvalidValue,
 		},
 		"name ends with space": {
 			project: Project{
-				Id:                      1,
-				ApplicantId:             32,
-				CreditClassAbbreviation: "PTEST",
-				Name:                    "EmpowerChain ",
-				Status:                  ProjectStatus_NEW,
+				Id:                     1,
+				ApplicantId:            32,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   "EmpowerChain ",
+				Status:                 ProjectStatus_NEW,
 			},
 			err: utils.ErrInvalidValue,
 		},
 		"invalid status": {
 			project: Project{
-				Id:                      1,
-				ApplicantId:             42,
-				CreditClassAbbreviation: "PTEST",
-				Name:                    "My Project",
-				Status:                  4,
+				Id:                     1,
+				ApplicantId:            42,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   "My Project",
+				Status:                 4,
 			},
 			err: utils.ErrInvalidValue,
 		},

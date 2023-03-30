@@ -29,12 +29,12 @@ service Query {
     option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/applicants/{applicant_id}";
   }
 
-  rpc CreditClasses(QueryCreditClassesRequest) returns (QueryCreditClassesResponse) {
+  rpc CreditTypes(QueryCreditTypesRequest) returns (QueryCreditTypesResponse) {
     option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit-classes";
   }
 
-  rpc CreditClass(QueryCreditClassRequest) returns (QueryCreditClassResponse) {
-    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit-classes/{credit_class_abbreviation}";
+  rpc CreditType(QueryCreditTypeRequest) returns (QueryCreditTypeResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit-classes/{credit_type_abbreviation}";
   }
 
   rpc Projects(QueryProjectsRequest) returns (QueryProjectsResponse) {
@@ -98,21 +98,21 @@ message QueryApplicantResponse {
   Applicant applicant = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryCreditClassesRequest {
+message QueryCreditTypesRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryCreditClassesResponse {
-  repeated CreditClass credit_classes = 1 [(gogoproto.nullable) = false];
+message QueryCreditTypesResponse {
+  repeated CreditType credit_types = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = false];
 }
 
-message QueryCreditClassRequest {
-  string credit_class_abbreviation = 1;
+message QueryCreditTypeRequest {
+  string credit_type_abbreviation = 1;
 }
 
-message QueryCreditClassResponse {
-  CreditClass credit_class = 1 [(gogoproto.nullable) = false];
+message QueryCreditTypeResponse {
+  CreditType credit_type = 1 [(gogoproto.nullable) = false];
 }
 
 message QueryProjectsRequest {

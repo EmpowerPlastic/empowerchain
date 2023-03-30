@@ -33,11 +33,11 @@ func NewDecodeStore(cdc codec.Codec) func(kvA, kvB kv.Pair) string {
 			cdc.MustUnmarshal(kvB.Value, &applicantB)
 			return fmt.Sprintf("%v\n%v", applicantA, applicantB)
 
-		case bytes.Equal(kvA.Key[:1], plasticcredit.CreditClassKey):
-			var creditClassA, creditClassB plasticcredit.CreditClass
-			cdc.MustUnmarshal(kvA.Value, &creditClassA)
-			cdc.MustUnmarshal(kvB.Value, &creditClassB)
-			return fmt.Sprintf("%v\n%v", creditClassA, creditClassB)
+		case bytes.Equal(kvA.Key[:1], plasticcredit.CreditTypeKey):
+			var creditTypeA, creditTypeB plasticcredit.CreditType
+			cdc.MustUnmarshal(kvA.Value, &creditTypeA)
+			cdc.MustUnmarshal(kvB.Value, &creditTypeB)
+			return fmt.Sprintf("%v\n%v", creditTypeA, creditTypeB)
 
 		case bytes.Equal(kvA.Key[:1], plasticcredit.ProjectKey):
 			var projectA, projectB plasticcredit.Project

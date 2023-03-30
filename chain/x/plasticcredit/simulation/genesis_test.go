@@ -42,7 +42,7 @@ func TestRandomizedGenState(t *testing.T) {
 	assert.NotEmpty(t, plasticcreditGenesis.Params.IssuerCreator)
 	assert.NotEmpty(t, plasticcreditGenesis.Issuers)
 	assert.NotEmpty(t, plasticcreditGenesis.Applicants)
-	assert.NotEmpty(t, plasticcreditGenesis.CreditClasses)
+	assert.NotEmpty(t, plasticcreditGenesis.CreditTypes)
 	assert.NotEmpty(t, plasticcreditGenesis.Projects)
 	assert.NotEmpty(t, plasticcreditGenesis.CreditCollections)
 	assert.NotEmpty(t, plasticcreditGenesis.CreditBalances)

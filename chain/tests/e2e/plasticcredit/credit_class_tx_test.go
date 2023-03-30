@@ -36,7 +36,7 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
-		expectedState     plasticcredit.CreditClass
+		expectedState     plasticcredit.CreditType
 	}{
 		"create new credit class": {
 			abbreviation:      "PTES2",
@@ -46,7 +46,7 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 			expectedErrOnSend: false,
 			expectedErrOnExec: false,
 			expectedErrMsg:    "",
-			expectedState: plasticcredit.CreditClass{
+			expectedState: plasticcredit.CreditType{
 				Abbreviation: "PTES2",
 				Name:         "Test",
 				IssuerId:     1,
@@ -60,7 +60,7 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 			expectedErrOnSend: false,
 			expectedErrOnExec: true,
 			expectedErrMsg:    "insufficient fee",
-			expectedState:     plasticcredit.CreditClass{},
+			expectedState:     plasticcredit.CreditType{},
 		},
 		"non-existent issuer": {
 			abbreviation:      "PTES2",
@@ -70,7 +70,7 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 			expectedErrOnSend: false,
 			expectedErrOnExec: true,
 			expectedErrMsg:    "issuer not found",
-			expectedState:     plasticcredit.CreditClass{},
+			expectedState:     plasticcredit.CreditType{},
 		},
 		"empty abbreviation": {
 			abbreviation:      "",
@@ -80,7 +80,7 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 			expectedErrOnSend: true,
 			expectedErrOnExec: false,
 			expectedErrMsg:    "abbreviation cannot be empty: invalid request",
-			expectedState:     plasticcredit.CreditClass{},
+			expectedState:     plasticcredit.CreditType{},
 		},
 		"empty name": {
 			abbreviation:      "PTES6",
@@ -90,12 +90,12 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 			expectedErrOnSend: true,
 			expectedErrOnExec: false,
 			expectedErrMsg:    "credit class name cannot be empty: invalid request",
-			expectedState:     plasticcredit.CreditClass{},
+			expectedState:     plasticcredit.CreditType{},
 		},
 	}
 	for name, tc := range testCases {
 		s.Run(name, func() {
-			cmd := cli.MsgCreateCreditClassCmd()
+			cmd := cli.MsgCreateCreditTypeCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(
 				[]string{tc.abbreviation, tc.issuerID, tc.name, tc.fromFlagValue}, s.CommonFlags...,
 			))
@@ -113,13 +113,13 @@ func (s *E2ETestSuite) TestCmdCreateCreditClass() {
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
-				queryCmd = cli.CmdQueryCreditClass()
+				queryCmd = cli.CmdQueryCreditType()
 				queryOutput, err = clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.expectedState.Abbreviation})
 				s.Require().NoError(err)
-				var queryResponse plasticcredit.QueryCreditClassResponse
+				var queryResponse plasticcredit.QueryCreditTypeResponse
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &queryResponse))
-				s.Require().Equal(tc.expectedState.Name, queryResponse.CreditClass.Name)
-				s.Require().Equal(tc.expectedState.IssuerId, queryResponse.CreditClass.IssuerId)
+				s.Require().Equal(tc.expectedState.Name, queryResponse.CreditType.Name)
+				s.Require().Equal(tc.expectedState.IssuerId, queryResponse.CreditType.IssuerId)
 
 				// verify community pool has increased by fee amount
 				queryCmd = distrcli.GetCmdQueryCommunityPool()
@@ -154,7 +154,7 @@ func (s *E2ETestSuite) TestCmdUpdateCreditClass() {
 		expectedErrOnSend bool
 		expectedErrOnExec bool
 		expectedErrMsg    string
-		expectedState     *plasticcredit.CreditClass
+		expectedState     *plasticcredit.CreditType
 	}{
 		"update name": {
 			abbreviation:      "ETEST",
@@ -163,7 +163,7 @@ func (s *E2ETestSuite) TestCmdUpdateCreditClass() {
 			expectedErrOnSend: false,
 			expectedErrOnExec: false,
 			expectedErrMsg:    "",
-			expectedState: &plasticcredit.CreditClass{
+			expectedState: &plasticcredit.CreditType{
 				Abbreviation: "ETEST",
 				IssuerId:     1,
 				Name:         "Updated Empower Plastic Credits via CLI",
@@ -202,13 +202,13 @@ func (s *E2ETestSuite) TestCmdUpdateCreditClass() {
 			fromFlagValue:     fmt.Sprintf("--%s=%s", flags.FlagFrom, issuerKey.Name),
 			expectedErrOnSend: false,
 			expectedErrOnExec: true,
-			expectedErrMsg:    "credit class not found",
+			expectedErrMsg:    "credit type not found",
 			expectedState:     nil,
 		},
 	}
 	for name, tc := range testCases {
 		s.Run(name, func() {
-			cmd := cli.MsgUpdateCreditClassCmd()
+			cmd := cli.MsgUpdateCreditTypeCmd()
 			out, _ := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append([]string{
 				tc.abbreviation,
 				tc.name,
@@ -228,12 +228,12 @@ func (s *E2ETestSuite) TestCmdUpdateCreditClass() {
 				s.Require().NoError(err)
 				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
-				queryCmd := cli.CmdQueryCreditClass()
+				queryCmd := cli.CmdQueryCreditType()
 				queryOutput, err := clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{tc.abbreviation})
 				s.Require().NoError(err)
-				var resp plasticcredit.QueryCreditClassResponse
+				var resp plasticcredit.QueryCreditTypeResponse
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(queryOutput.Bytes(), &resp))
-				s.Require().Equal(tc.expectedState, &resp.CreditClass)
+				s.Require().Equal(tc.expectedState, &resp.CreditType)
 			}
 		})
 	}

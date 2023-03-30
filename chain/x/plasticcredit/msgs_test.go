@@ -23,8 +23,8 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: sample.AccAddress(),
 				Params: Params{
-					IssuerCreator:          sample.AccAddress(),
-					CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
+					IssuerCreator:         sample.AccAddress(),
+					CreditTypeCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 			},
 			expectedError: nil,
@@ -33,8 +33,8 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: sample.AccAddress(),
 				Params: Params{
-					IssuerCreator:          "",
-					CreditClassCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
+					IssuerCreator:         "",
+					CreditTypeCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 			},
 			expectedError: nil,
@@ -43,8 +43,8 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: "invalid",
 				Params: Params{
-					IssuerCreator:          sample.AccAddress(),
-					CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
+					IssuerCreator:         sample.AccAddress(),
+					CreditTypeCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
@@ -53,8 +53,8 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: sample.AccAddress(),
 				Params: Params{
-					IssuerCreator:          "invalid",
-					CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
+					IssuerCreator:         "invalid",
+					CreditTypeCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
@@ -63,8 +63,8 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: sample.AccAddress(),
 				Params: Params{
-					IssuerCreator:          sample.AccAddress(),
-					CreditClassCreationFee: sdk.Coin{},
+					IssuerCreator:         sample.AccAddress(),
+					CreditTypeCreationFee: sdk.Coin{},
 				},
 			},
 			expectedError: sdkerrors.ErrInvalidCoins,
@@ -331,7 +331,7 @@ func TestMsgUpdateApplicant_ValidateBasic(t *testing.T) {
 func TestMsgCreateCreditClass_ValidateBasic(t *testing.T) {
 	testCases := map[string]validateTest{
 		"happy path": {
-			msgUnderTest: &MsgCreateCreditClass{
+			msgUnderTest: &MsgCreateCreditType{
 				Creator:      sample.AccAddress(),
 				Abbreviation: "PTEST",
 				IssuerId:     1,
@@ -340,7 +340,7 @@ func TestMsgCreateCreditClass_ValidateBasic(t *testing.T) {
 			expectedError: nil,
 		},
 		"invalid creator": {
-			msgUnderTest: &MsgCreateCreditClass{
+			msgUnderTest: &MsgCreateCreditType{
 				Creator:      "hoppsasa",
 				Abbreviation: "PTEST",
 				IssuerId:     1,
@@ -349,7 +349,7 @@ func TestMsgCreateCreditClass_ValidateBasic(t *testing.T) {
 			expectedError: sdkerrors.ErrInvalidAddress,
 		},
 		"empty abbreviation": {
-			msgUnderTest: &MsgCreateCreditClass{
+			msgUnderTest: &MsgCreateCreditType{
 				Creator:      sample.AccAddress(),
 				Abbreviation: "",
 				IssuerId:     1,
@@ -358,7 +358,7 @@ func TestMsgCreateCreditClass_ValidateBasic(t *testing.T) {
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},
 		"empty issuer": {
-			msgUnderTest: &MsgCreateCreditClass{
+			msgUnderTest: &MsgCreateCreditType{
 				Creator:      sample.AccAddress(),
 				Abbreviation: "PTEST",
 				IssuerId:     0,
@@ -367,7 +367,7 @@ func TestMsgCreateCreditClass_ValidateBasic(t *testing.T) {
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},
 		"empty name": {
-			msgUnderTest: &MsgCreateCreditClass{
+			msgUnderTest: &MsgCreateCreditType{
 				Creator:      sample.AccAddress(),
 				Abbreviation: "PTEST",
 				IssuerId:     1,
@@ -388,7 +388,7 @@ func TestMsgCreateCreditClass_ValidateBasic(t *testing.T) {
 func TestMsgUpdateCreditClass_ValidateBasic(t *testing.T) {
 	testCases := map[string]validateTest{
 		"happy path": {
-			msgUnderTest: &MsgUpdateCreditClass{
+			msgUnderTest: &MsgUpdateCreditType{
 				Updater:      sample.AccAddress(),
 				Abbreviation: "PTEST",
 				Name:         "Empower Plastic Credits",
@@ -396,7 +396,7 @@ func TestMsgUpdateCreditClass_ValidateBasic(t *testing.T) {
 			expectedError: nil,
 		},
 		"invalid creator": {
-			msgUnderTest: &MsgUpdateCreditClass{
+			msgUnderTest: &MsgUpdateCreditType{
 				Updater:      "hoppsasa",
 				Abbreviation: "PTEST",
 				Name:         "Empower Plastic Credits",
@@ -404,7 +404,7 @@ func TestMsgUpdateCreditClass_ValidateBasic(t *testing.T) {
 			expectedError: sdkerrors.ErrInvalidAddress,
 		},
 		"empty abbreviation": {
-			msgUnderTest: &MsgUpdateCreditClass{
+			msgUnderTest: &MsgUpdateCreditType{
 				Updater:      sample.AccAddress(),
 				Abbreviation: "",
 				Name:         "Empower Plastic Credits",
@@ -412,7 +412,7 @@ func TestMsgUpdateCreditClass_ValidateBasic(t *testing.T) {
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},
 		"empty name": {
-			msgUnderTest: &MsgUpdateCreditClass{
+			msgUnderTest: &MsgUpdateCreditType{
 				Updater:      sample.AccAddress(),
 				Abbreviation: "PTEST",
 				Name:         "",
@@ -433,46 +433,46 @@ func TestMsgCreateProject_ValidateBasic(t *testing.T) {
 	testCases := map[string]validateTest{
 		"happy path": {
 			msgUnderTest: &MsgCreateProject{
-				Creator:                 sample.AccAddress(),
-				ApplicantId:             42,
-				CreditClassAbbreviation: "PTEST",
-				Name:                    "Project Name",
+				Creator:                sample.AccAddress(),
+				ApplicantId:            42,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   "Project Name",
 			},
 			expectedError: nil,
 		},
 		"invalid creator": {
 			msgUnderTest: &MsgCreateProject{
-				Creator:                 "herpaderpa",
-				ApplicantId:             42,
-				CreditClassAbbreviation: "PTEST",
-				Name:                    "Project Name",
+				Creator:                "herpaderpa",
+				ApplicantId:            42,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   "Project Name",
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
 		},
 		"invalid applicant id": {
 			msgUnderTest: &MsgCreateProject{
-				Creator:                 sample.AccAddress(),
-				ApplicantId:             0,
-				CreditClassAbbreviation: "PTEST",
-				Name:                    "Project Name",
+				Creator:                sample.AccAddress(),
+				ApplicantId:            0,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   "Project Name",
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},
 		"empty abbreviation": {
 			msgUnderTest: &MsgCreateProject{
-				Creator:                 sample.AccAddress(),
-				ApplicantId:             42,
-				CreditClassAbbreviation: "",
-				Name:                    "Project Name",
+				Creator:                sample.AccAddress(),
+				ApplicantId:            42,
+				CreditTypeAbbreviation: "",
+				Name:                   "Project Name",
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},
 		"empty name": {
 			msgUnderTest: &MsgCreateProject{
-				Creator:                 sample.AccAddress(),
-				ApplicantId:             42,
-				CreditClassAbbreviation: "PTEST",
-				Name:                    "",
+				Creator:                sample.AccAddress(),
+				ApplicantId:            42,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   "",
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},

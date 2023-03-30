@@ -24,7 +24,7 @@ func (k Keeper) setParams(ctx sdk.Context, p plasticcredit.Params) error {
 	}
 
 	// normalize coin to use lowest denom
-	p.CreditClassCreationFee = sdk.NormalizeCoin(p.GetCreditClassCreationFee())
+	p.CreditTypeCreationFee = sdk.NormalizeCoin(p.GetCreditTypeCreationFee())
 
 	store := ctx.KVStore(k.storeKey)
 	bz, err := k.cdc.Marshal(&p)

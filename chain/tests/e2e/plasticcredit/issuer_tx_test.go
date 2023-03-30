@@ -286,8 +286,8 @@ func (s *E2ETestSuite) TestCmdUpdateIssuerCreator() {
 			false,
 			"",
 			plasticcredit.Params{
-				IssuerCreator:          "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
-				CreditClassCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(69e6)),
+				IssuerCreator:         "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
+				CreditTypeCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(69e6)),
 			},
 		},
 		"happy path with human denom coin": {
@@ -295,8 +295,8 @@ func (s *E2ETestSuite) TestCmdUpdateIssuerCreator() {
 			false,
 			"",
 			plasticcredit.Params{
-				IssuerCreator:          "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
-				CreditClassCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(42e6)),
+				IssuerCreator:         "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
+				CreditTypeCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(42e6)),
 			},
 		},
 		"invalid issuer creator address": {
