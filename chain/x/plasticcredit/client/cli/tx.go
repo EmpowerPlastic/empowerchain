@@ -166,7 +166,7 @@ func MsgUpdateIssuerCmd() *cobra.Command {
 
 func MsgCreateCreditTypeCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-credit-class [abbreviation] [issuer-id] [name]",
+		Use:   "create-credit-type [abbreviation] [issuer-id] [name]",
 		Short: "Create a new credit class.",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -201,8 +201,8 @@ func MsgCreateCreditTypeCmd() *cobra.Command {
 
 func MsgUpdateCreditTypeCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-credit-class [abbreviation] [name]",
-		Short: "Update an existing credit class name.",
+		Use:   "update-credit-type [abbreviation] [name]",
+		Short: "Update an existing credit type name.",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)

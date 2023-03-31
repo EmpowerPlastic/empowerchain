@@ -47,12 +47,12 @@ empowerd q plasticcredit applicant 2
 echo "--- Test: Plastic Credit Create Credit Class ---"
 empowerd q bank balances empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7
 
-empowerd tx plasticcredit create-credit-class PTEST 1 "Empower Plastic Credits" --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test  --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
+empowerd tx plasticcredit create-credit-type PTEST 1 "Empower Plastic Credits" --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test  --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx plasticcredit create-credit-class RCRD 1 "Empower Recycling Credits" --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
+empowerd tx plasticcredit create-credit-type RCRD 1 "Empower Recycling Credits" --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 
-empowerd tx plasticcredit update-credit-class PTEST "Updated Empower Recycling Credits" --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
+empowerd tx plasticcredit update-credit-type PTEST "Updated Empower Recycling Credits" --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 
 
