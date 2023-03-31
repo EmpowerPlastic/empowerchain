@@ -170,7 +170,7 @@ func (m *MsgCreateCreditType) ValidateBasic() error {
 	}
 
 	if m.Name == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "credit class name cannot be empty")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "credit type name cannot be empty")
 	}
 
 	return nil
@@ -193,7 +193,7 @@ func (m *MsgUpdateCreditType) ValidateBasic() error {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "abbreviation cannot be empty")
 	}
 	if m.Name == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "credit class name cannot be empty")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "credit type name cannot be empty")
 	}
 
 	return nil

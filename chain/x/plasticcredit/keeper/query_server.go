@@ -119,7 +119,7 @@ func (k Querier) CreditType(goCtx context.Context, req *plasticcredit.QueryCredi
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	creditType, found := k.GetCreditType(ctx, req.CreditTypeAbbreviation)
 	if !found {
-		return nil, errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit class with abbreviation: %s was not found", req.CreditTypeAbbreviation)
+		return nil, errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit type with abbreviation: %s was not found", req.CreditTypeAbbreviation)
 	}
 
 	return &plasticcredit.QueryCreditTypeResponse{

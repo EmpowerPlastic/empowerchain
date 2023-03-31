@@ -38,7 +38,7 @@ message EventUpdateProject {
   string name = 3;
 }
 
-// EventProjectApproved is an event emitted when a project is approved by the issuer associated with the projects credit class
+// EventProjectApproved is an event emitted when a project is approved by the issuer associated with the projects credit type
 message EventProjectApproved {
   uint64 project_id = 1;
   string approved_for_credit_type_abbreviation = 2;

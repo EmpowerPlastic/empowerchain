@@ -70,11 +70,11 @@ func (gs GenesisState) Validate() error {
 		}
 
 		if _, exists := issuers[creditType.IssuerId]; !exists {
-			return errors.Wrapf(ErrIssuerNotFound, "credit class with abbreviation %s had issuer_id %d that was not found", creditType.Abbreviation, creditType.IssuerId)
+			return errors.Wrapf(ErrIssuerNotFound, "credit type with abbreviation %s had issuer_id %d that was not found", creditType.Abbreviation, creditType.IssuerId)
 		}
 
 		if _, exists := creditTypes[creditType.Abbreviation]; exists {
-			return errors.Wrapf(ErrCreditClassDuplicate, "duplicate credit class with abbreviation %s was found", creditType.Abbreviation)
+			return errors.Wrapf(ErrCreditTypeDuplicate, "duplicate credit type with abbreviation %s was found", creditType.Abbreviation)
 		}
 		creditTypes[creditType.Abbreviation] = creditType
 	}

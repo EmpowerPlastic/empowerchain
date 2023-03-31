@@ -482,7 +482,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
 			},
-			err: plasticcredit.ErrCreditClassDuplicate,
+			err: plasticcredit.ErrCreditTypeDuplicate,
 		},
 		"credit class with non-existent issuer id": {
 			genState: plasticcredit.GenesisState{

@@ -44,7 +44,7 @@ sleep 5
 empowerd q plasticcredit applicant 1
 empowerd q plasticcredit applicant 2
 
-echo "--- Test: Plastic Credit Create Credit Class ---"
+echo "--- Test: Plastic Credit Create Credit Type ---"
 empowerd q bank balances empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7
 
 empowerd tx plasticcredit create-credit-type PTEST 1 "Empower Plastic Credits" --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test  --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
@@ -61,7 +61,7 @@ empowerd q plasticcredit credit-type RCRD
 empowerd q plasticcredit credit-types
 NUM_CREDIT_CLASSES=$(empowerd q plasticcredit credit-types -o json | jq ".credit_types | length")
 if [ "$NUM_CREDIT_CLASSES" != "2" ]; then
-  echo "Error: number of credit classes from credit-types query was: $NUM_CREDIT_CLASSES"
+  echo "Error: number of credit types from credit-types query was: $NUM_CREDIT_CLASSES"
   exit 1
 fi
 

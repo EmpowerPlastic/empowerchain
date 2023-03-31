@@ -424,7 +424,7 @@ func SimulateMsgCreateCreditType(cdc *codec.ProtoCodec, ak plasticcredit.Account
 
 		spendable, neg := bk.SpendableCoins(sdkCtx, admin.Address).SafeSub(params.CreditTypeCreationFee)
 		if neg {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "not enough balance to create credit class"), nil, nil
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "not enough balance to create credit type"), nil, nil
 		}
 
 		txCtx := simulation.OperationInput{
@@ -514,7 +514,7 @@ func SimulateMsgCreateProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKee
 
 		creditType, err := getRandomCreditType(ctx, r, querier)
 		if err != nil {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, nil
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit type"), nil, nil
 		}
 
 		admin, found := simtypes.FindAccount(accounts, sdk.MustAccAddressFromBech32(applicant.Admin))
@@ -622,7 +622,7 @@ func SimulateMsgApproveProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKe
 
 		creditType, found := querier.GetCreditType(sdkCtx, project.CreditTypeAbbreviation)
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, nil
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit type"), nil, nil
 		}
 
 		issuer, found := querier.GetIssuer(sdkCtx, creditType.IssuerId)
@@ -681,7 +681,7 @@ func SimulateMsgRejectProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKee
 
 		creditType, found := querier.GetCreditType(sdkCtx, project.CreditTypeAbbreviation)
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, nil
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit type"), nil, nil
 		}
 
 		issuer, found := querier.GetIssuer(sdkCtx, creditType.IssuerId)
@@ -740,7 +740,7 @@ func SimulateMsgSuspendProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKe
 
 		creditType, found := querier.GetCreditType(sdkCtx, project.CreditTypeAbbreviation)
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, nil
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit type"), nil, nil
 		}
 
 		issuer, found := querier.GetIssuer(sdkCtx, creditType.IssuerId)
@@ -799,7 +799,7 @@ func SimulateMsgIssueCredits(cdc *codec.ProtoCodec, ak plasticcredit.AccountKeep
 
 		creditType, found := querier.GetCreditType(sdkCtx, project.CreditTypeAbbreviation)
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, nil
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit type"), nil, nil
 		}
 
 		issuer, found := querier.GetIssuer(sdkCtx, creditType.IssuerId)

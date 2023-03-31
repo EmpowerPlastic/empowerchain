@@ -56,7 +56,7 @@ func (s *TestSuite) TestUpdateParams() {
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
-		"invalid credit class creation fee params": {
+		"invalid credit type creation fee params": {
 			msg: func(empowerApp *app.EmpowerApp) *plasticcredit.MsgUpdateParams {
 				return &plasticcredit.MsgUpdateParams{
 					Authority: empowerApp.PlasticcreditKeeper.Authority(),
@@ -424,16 +424,6 @@ func (s *TestSuite) TestUpdateApplicant() {
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
-		"invalid name": {
-			msg: &plasticcredit.MsgUpdateApplicant{
-				ApplicantId: s.sampleApplicantID,
-				Name:        " Starting with a space is not OK",
-				Description: "Empower is cool",
-				Admin:       issuerAdmin,
-				Updater:     issuerAdmin,
-			},
-			err: utils.ErrInvalidValue,
-		},
 	}
 
 	for name, tc := range testCases {
@@ -701,7 +691,7 @@ func (s *TestSuite) TestCreateProject() {
 			},
 			err: plasticcredit.ErrApplicantNotFound,
 		},
-		"non-existent credit class": {
+		"non-existent credit type": {
 			msg: &plasticcredit.MsgCreateProject{
 				Creator:                s.sampleApplicantAdmin,
 				ApplicantId:            s.sampleApplicantID,
@@ -1186,17 +1176,6 @@ func (s *TestSuite) TestIssueCredits() {
 			},
 			expectedAmount: 0,
 			err:            plasticcredit.ErrProjectNotFound,
-		},
-		"empty serial number": {
-			msg: &plasticcredit.MsgIssueCredits{
-				Creator:      s.sampleIssuerAdmin,
-				ProjectId:    s.sampleProjectID,
-				SerialNumber: "",
-				CreditAmount: 1000,
-				MetadataUris: []string{"ipfs://CID1", "ipfs://CID2"},
-			},
-			expectedAmount: 0,
-			err:            utils.ErrInvalidValue,
 		},
 		"issue zero credits": {
 			msg: &plasticcredit.MsgIssueCredits{

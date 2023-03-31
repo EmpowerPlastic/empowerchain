@@ -93,7 +93,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 	fmt.Println("Number of issuers: ", len(issuers))
 	fmt.Println("Number of applicants: ", len(applicants))
-	fmt.Println("Number of credit classes: ", len(creditTypes))
+	fmt.Println("Number of credit types: ", len(creditTypes))
 	fmt.Println("Number of projects: ", len(projects))
 	fmt.Println("Number of credit collections: ", len(creditCollections))
 	fmt.Println("Number of credit balances: ", len(creditBalances))

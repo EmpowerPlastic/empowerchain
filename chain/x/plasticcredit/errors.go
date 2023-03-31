@@ -34,7 +34,7 @@ var (
 
 	ErrCreditTypeAbbreviationTaken = errors.Register(ModuleName, 4001, "credit type abbreviation already in use")
 	ErrCreditTypeNotFound          = errors.Register(ModuleName, 4404, "credit type not found")
-	ErrCreditClassDuplicate        = errors.Register(ModuleName, 4409, "duplicate credit class detected")
+	ErrCreditTypeDuplicate         = errors.Register(ModuleName, 4409, "duplicate credit type detected")
 
 	ErrProjectNotApproved    = errors.Register(ModuleName, 5001, "project is not approved")
 	ErrProjectNotNew         = errors.Register(ModuleName, 5002, "project is approved / rejected")

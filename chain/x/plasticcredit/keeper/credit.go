@@ -86,7 +86,7 @@ func (k Keeper) retireCreditsForAddress(ctx sdk.Context, owner sdk.AccAddress, d
 	abbrev, _ := SplitCreditDenom(denom)
 	creditType, found := k.GetCreditType(ctx, abbrev)
 	if !found {
-		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit class with abbrev %s not found", abbrev)
+		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit type with abbrev %s not found", abbrev)
 	}
 	return creditBalance, ctx.EventManager().EmitTypedEvent(&plasticcredit.EventRetiredCredits{
 		Owner:                  owner.String(),
@@ -166,7 +166,7 @@ func (k Keeper) transferCredits(ctx sdk.Context, denom string, from sdk.AccAddre
 	abbrev, _ := SplitCreditDenom(denom)
 	creditType, found := k.GetCreditType(ctx, abbrev)
 	if !found {
-		return errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit class with abbrev %s not found", abbrev)
+		return errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit type with abbrev %s not found", abbrev)
 	}
 	events := []proto.Message{
 		&plasticcredit.EventTransferCredits{
@@ -205,7 +205,7 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 
 	creditType, found := k.GetCreditType(ctx, project.CreditTypeAbbreviation)
 	if !found {
-		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit class with abbreviation %s not found", project.CreditTypeAbbreviation)
+		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit type with abbreviation %s not found", project.CreditTypeAbbreviation)
 	}
 
 	issuer, found := k.GetIssuer(ctx, creditType.IssuerId)

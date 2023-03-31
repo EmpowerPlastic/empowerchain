@@ -59,7 +59,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
 		},
-		"invalid credit class creation fee params": {
+		"invalid credit type creation fee params": {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: sample.AccAddress(),
 				Params: Params{

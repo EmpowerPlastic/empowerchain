@@ -37,7 +37,7 @@ func TestNewDecodeStore(t *testing.T) {
 	creditType := plasticcredit.CreditType{
 		Abbreviation: "PTEST",
 		IssuerId:     1,
-		Name:         "test credit class",
+		Name:         "test credit type",
 	}
 	project := plasticcredit.Project{
 		Id:                     1,
@@ -92,7 +92,7 @@ func TestNewDecodeStore(t *testing.T) {
 			expectErr:     false,
 			expectedValue: fmt.Sprintf("%v\n%v", applicant, applicant),
 		},
-		"credit class": {
+		"credit type": {
 			kvPair: kv.Pair{
 				Key:   plasticcredit.CreditTypeKey,
 				Value: cdc.MustMarshal(&creditType),

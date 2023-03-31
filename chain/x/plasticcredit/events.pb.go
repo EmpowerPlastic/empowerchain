@@ -307,7 +307,7 @@ func (m *EventUpdateProject) GetName() string {
 	return ""
 }
 
-// EventProjectApproved is an event emitted when a project is approved by the issuer associated with the projects credit class
+// EventProjectApproved is an event emitted when a project is approved by the issuer associated with the projects credit type
 type EventProjectApproved struct {
 	ProjectId                         uint64 `protobuf:"varint,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	ApprovedForCreditTypeAbbreviation string `protobuf:"bytes,2,opt,name=approved_for_credit_type_abbreviation,json=approvedForCreditTypeAbbreviation,proto3" json:"approved_for_credit_type_abbreviation,omitempty"`
@@ -376,7 +376,7 @@ func (m *EventProjectApproved) GetApprovedBy() string {
 	return ""
 }
 
-// EventProjectRejected is an event emitted when a project is rejected by the issuer associated with the projects credit class
+// EventProjectRejected is an event emitted when a project is rejected by the issuer associated with the projects credit type
 type EventProjectRejected struct {
 	ProjectId                         uint64 `protobuf:"varint,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	RejectedForCreditTypeAbbreviation string `protobuf:"bytes,2,opt,name=rejected_for_credit_type_abbreviation,json=rejectedForCreditTypeAbbreviation,proto3" json:"rejected_for_credit_type_abbreviation,omitempty"`
@@ -445,7 +445,7 @@ func (m *EventProjectRejected) GetRejectedBy() string {
 	return ""
 }
 
-// EventProjectSuspended is an event emitted when a project is suspended by the issuer associated with the projects credit class
+// EventProjectSuspended is an event emitted when a project is suspended by the issuer associated with the projects credit type
 type EventProjectSuspended struct {
 	ProjectId                           uint64 `protobuf:"varint,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	SuspendedForCreditClassAbbreviation string `protobuf:"bytes,2,opt,name=suspended_for_credit_class_abbreviation,json=suspendedForCreditClassAbbreviation,proto3" json:"suspended_for_credit_class_abbreviation,omitempty"`

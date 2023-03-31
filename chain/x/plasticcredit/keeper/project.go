@@ -55,7 +55,7 @@ func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicant
 	}
 
 	if _, found := k.GetCreditType(ctx, creditClassAbbreviation); !found {
-		return 0, errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit class with abbreviation %s was not found", creditClassAbbreviation)
+		return 0, errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit type with abbreviation %s was not found", creditClassAbbreviation)
 	}
 
 	idc := k.GetIDCounters(ctx)
@@ -127,11 +127,11 @@ func (k Keeper) ApproveProject(ctx sdk.Context, approver sdk.AccAddress, project
 	// At some point, I would like to have some better indexing that would allow us to not have to fetch so many things just to get to the issuer
 	creditType, found := k.GetCreditType(ctx, project.CreditTypeAbbreviation)
 	if !found {
-		panic("The project was found, the credit class better exist!")
+		panic("The project was found, the credit type better exist!")
 	}
 	issuer, found := k.GetIssuer(ctx, creditType.IssuerId)
 	if !found {
-		panic("The credit class was found, the issuer better exist!")
+		panic("The credit type was found, the issuer better exist!")
 	}
 
 	if !issuer.AddressHasAuthorization(approver) {
@@ -163,11 +163,11 @@ func (k Keeper) RejectProject(ctx sdk.Context, rejector sdk.AccAddress, projectI
 	// At some point, I would like to have some better indexing that would allow us to not have to fetch so many things just to get to the issuer
 	creditType, found := k.GetCreditType(ctx, project.CreditTypeAbbreviation)
 	if !found {
-		panic("The project was found, the credit class better exist!")
+		panic("The project was found, the credit type better exist!")
 	}
 	issuer, found := k.GetIssuer(ctx, creditType.IssuerId)
 	if !found {
-		panic("The credit class was found, the issuer better exist!")
+		panic("The credit type was found, the issuer better exist!")
 	}
 	if !issuer.AddressHasAuthorization(rejector) {
 		return errors.Wrapf(sdkerrors.ErrUnauthorized, "rejector %s does not have authorization on issuer with id %d", rejector.String(), issuer.Id)
@@ -197,11 +197,11 @@ func (k Keeper) SuspendProject(ctx sdk.Context, updater sdk.AccAddress, projectI
 	// At some point, I would like to have some better indexing that would allow us to not have to fetch so many things just to get to the issuer
 	creditType, found := k.GetCreditType(ctx, project.CreditTypeAbbreviation)
 	if !found {
-		panic("The project was found, the credit class better exist!")
+		panic("The project was found, the credit type better exist!")
 	}
 	issuer, found := k.GetIssuer(ctx, creditType.IssuerId)
 	if !found {
-		panic("The credit class was found, the issuer better exist!")
+		panic("The credit type was found, the issuer better exist!")
 	}
 	if !issuer.AddressHasAuthorization(updater) {
 		return errors.Wrapf(sdkerrors.ErrUnauthorized, "For suspension the updater %s does not have authorization on issuer with id %d", updater.String(), issuer.Id)
