@@ -95,7 +95,7 @@ const hashAndSetResult = (byteArray: Uint8Array) => {
       </ul>
       <div id="defaultTabContent">
         <div
-          class="hidden md:p-1 border-t border-lightGray"
+          class="hidden md:p-1 border-t border-lightGray w-full"
           id="file"
           role="tabpanel"
           aria-labelledby="file-tab"
@@ -140,11 +140,44 @@ const hashAndSetResult = (byteArray: Uint8Array) => {
           </div>
         </div>
         <div
-          class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800"
+          class="hidden md:p-1 border-t border-lightGray"
           id="hash"
           role="tabpanel"
           aria-labelledby="hash-tab"
-        ></div>
+        >
+          <p class="mb-3 text-white text-title14">
+            Input the SHA256 checksum hexadecimal digest for your file here.
+          </p>
+          <div class="w-full p-3 mt-7 rounded bg-lightGray">
+            <label class="cursor-pointer" for="file_input">
+              <input
+                class="hidden"
+                id="file_input"
+                type="file"
+                @change="handleFileUpload"
+              />
+              <div class="flex items-center">
+                <div
+                  class="flex justify-center p-1 rounded bg-lightGreen w-24 mr-4 text-white text-title16"
+                >
+                  Browse
+                </div>
+                <span class="text-lightGray text-title16">{{
+                  file ? file?.name : "Choose file"
+                }}</span>
+              </div>
+            </label>
+          </div>
+          <div class="flex flex-row justify-center">
+            <button
+              :disabled="!file"
+              @click="hashFile(file)"
+              class="bg-lightGreen mt-10 content-center p-1 px-9 rounded text-white text-title22 disabled:bg-lightGray disabled:text-gray"
+            >
+              Create proof
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
