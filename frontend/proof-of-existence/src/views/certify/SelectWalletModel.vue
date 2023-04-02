@@ -18,7 +18,7 @@ const passWalletToParent = (wallet: Wallet) => {
   emit("selectedWallet", wallet);
 };
 
-const handleWallet = async (wallet: Wallet, provider) => {
+const handleWallet = async (wallet: Wallet, provider: any) => {
   const checkWalletInstalled =
     wallet === Wallet.Cosmostation
       ? await window.cosmostation?.providers?.keplr

@@ -8,6 +8,7 @@ import { empowerchain } from "@empowerplastic/empowerchain-ts-client";
 import { Wallet } from "@/types/enums";
 import { CHAIN_ID, RPC_URL } from "@/config/config";
 import type { OfflineSigner } from "@cosmjs/proto-signing";
+import type { DeliverTxResponse } from "@cosmjs/stargate/build/stargateclient";
 
 const fee = {
   amount: [{ amount: "100000", denom: "umpwr" }],
@@ -22,8 +23,7 @@ const { createProof } =
 
 const showModal = ref(false);
 const selectedWallet = ref("");
-const showError = ref(false);
-const errorMessage = ref("");
+const errorMessage = ref<string | undefined>();
 const loading = ref(false);
 
 //Methods
@@ -94,13 +94,12 @@ const handleWalletTransaction = async (offlineSigner: OfflineSigner) => {
   handleResponse(response);
 };
 
-const handleResponse = (response: any) => {
+const handleResponse = (response: DeliverTxResponse) => {
   if (response?.code === 0) {
     loading.value = false;
     pushToSuccessPage();
   } else {
     loading.value = false;
-    showError.value = true;
     errorMessage.value = response?.rawLog;
   }
 };
@@ -158,7 +157,7 @@ const pushToSuccessPage = () => {
         <div
           class="p-4 my-4 w-full text-sm text-red-800 rounded-lg bg-red-50 break-all"
           role="alert"
-          v-show="showError"
+          v-show="errorMessage"
         >
           {{ errorMessage }}
         </div>
