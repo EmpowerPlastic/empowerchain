@@ -1,13 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import router from "@/router";
-// ---------------------------
-// TODO - Remove this when empowerchain types are actually used
-import { empowerchain } from "@empowerplastic/empowerchain-ts-client";
-
-const { createIssuer, createApplicant } =
-  empowerchain.plasticcredit.MessageComposer.withTypeUrl;
-// ---------------------------
 
 const file = ref<File | undefined>(undefined);
 
