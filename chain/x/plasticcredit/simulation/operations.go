@@ -391,7 +391,7 @@ func SimulateMsgUpdateApplicant(cdc *codec.ProtoCodec, ak plasticcredit.AccountK
 	}
 }
 
-// SimulateMsgCreateCreditType generates a MsgCreateCreditClass with random values.
+// SimulateMsgCreateCreditType generates a MsgCreateCreditType with random values.
 func SimulateMsgCreateCreditType(cdc *codec.ProtoCodec, ak plasticcredit.AccountKeeper, bk plasticcredit.BankKeeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accounts []simtypes.Account, chainID string,
@@ -446,7 +446,7 @@ func SimulateMsgCreateCreditType(cdc *codec.ProtoCodec, ak plasticcredit.Account
 	}
 }
 
-// SimulateMsgUpdateCreditType generates a MsgUpdateCreditClass with random values.
+// SimulateMsgUpdateCreditType generates a MsgUpdateCreditType with random values.
 func SimulateMsgUpdateCreditType(cdc *codec.ProtoCodec, ak plasticcredit.AccountKeeper, bk plasticcredit.BankKeeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accounts []simtypes.Account, chainID string,

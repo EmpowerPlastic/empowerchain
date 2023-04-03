@@ -13,7 +13,7 @@ service Msg {
   // The authority is defined in the keeper.
   rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 
-  // CreateIssuer creates a new Issuer that can create credit classes and issue new credits with those classes
+  // CreateIssuer creates a new Issuer that can create credit types and issue new credits with those classes
   // There is only a single signer in the system that is allowed to create new issuers and it is defined in Params as "issuer_creator"
   rpc CreateIssuer(MsgCreateIssuer) returns (MsgCreateIssuerResponse);
 

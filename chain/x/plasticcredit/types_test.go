@@ -31,7 +31,7 @@ func TestParamsValidation(t *testing.T) {
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
-		"invalid credit class creation fee": {
+		"invalid credit type creation fee": {
 			params: Params{
 				IssuerCreator:         sample.AccAddress(),
 				CreditTypeCreationFee: sdk.Coin{},

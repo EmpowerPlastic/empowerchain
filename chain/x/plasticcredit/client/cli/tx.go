@@ -167,7 +167,7 @@ func MsgUpdateIssuerCmd() *cobra.Command {
 func MsgCreateCreditTypeCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-credit-type [abbreviation] [issuer-id] [name]",
-		Short: "Create a new credit class.",
+		Short: "Create a new credit type.",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
