@@ -4,9 +4,9 @@ import (
 	"encoding/hex"
 	"testing"
 
+	"github.com/cometbft/cometbft/crypto"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
-	"github.com/cometbft/cometbft/crypto"
 
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 )

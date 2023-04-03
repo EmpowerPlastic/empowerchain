@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"time"
 
+	tmtypes "github.com/cometbft/cometbft/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/spf13/cobra"
-	tmtypes "github.com/cometbft/cometbft/types"
 
 	genesistools "github.com/EmpowerPlastic/empowerchain/app/genesis-tools"
 	"github.com/EmpowerPlastic/empowerchain/app/params"

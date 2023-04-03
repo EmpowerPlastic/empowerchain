@@ -1,8 +1,9 @@
 package module
 
 import (
-	"cosmossdk.io/errors"
 	"encoding/json"
+
+	"cosmossdk.io/errors"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
