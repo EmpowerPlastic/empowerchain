@@ -3,7 +3,8 @@ import { ref } from "vue";
 import router from "@/router";
 
 const file = ref<File | undefined>(undefined);
-
+const inputHash = ref<string | undefined>(undefined);
+const isValid = ref<boolean>(false);
 //Methods
 const handleFileUpload = async (e: Event) => {
   const target = e.target as HTMLInputElement;
@@ -48,6 +49,8 @@ const hashAndSetResult = (byteArray: Uint8Array) => {
     query: { fileName: file.value?.name, time: new Date().getTime() },
   });
 };
+
+const handleInputHash = () => {};
 </script>
 
 <template>
@@ -55,18 +58,18 @@ const hashAndSetResult = (byteArray: Uint8Array) => {
     src="../../assets/images/emp-astro-1.png"
     class="left-28 top-full sm:top-auto sm:left-auto w-32 absolute animate-bounce -m-24"
   />
-  <div class="w-full p-4 text-left bg-lightBlack rounded-lg sm:p-8">
+  <div class="p-4 text-left bg-lightBlack rounded-lg sm:p-8 lg:w-[700px]">
     <h5 class="mb-2 mt-3 text-2xl font-bold text-white text-title28">
       Certify documents
     </h5>
-    <div class="mt-3 p-4">
+    <div class="mt-3 p-4 w-30">
       <ul
         class="flex flex-wrap text-center text-lightGreen border-gray-200 rounded-t-lg"
         id="defaultTab"
         data-tabs-toggle="#defaultTabContent"
         role="tablist"
       >
-        <li class="mr-2">
+        <li>
           <button
             id="file-tab"
             data-tabs-target="#file"
@@ -74,12 +77,12 @@ const hashAndSetResult = (byteArray: Uint8Array) => {
             role="tab"
             aria-controls="file"
             aria-selected="true"
-            class="inline-block p-4 text-white text-title16 hover:text-gray-600 hover:bg-gray-100"
+            class="flex flex-col justify-center text-center px-6 text-title16 aria-selected:bg-lightWhite aria-selected:text-white rounded-t-lg h-9"
           >
             File
           </button>
         </li>
-        <li class="mr-2">
+        <li>
           <button
             id="hash-tab"
             data-tabs-target="#hash"
@@ -87,7 +90,7 @@ const hashAndSetResult = (byteArray: Uint8Array) => {
             role="tab"
             aria-controls="hash"
             aria-selected="false"
-            class="inline-block p-4 text-title16 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+            class="flex flex-col justify-center text-center px-6 text-title16 aria-selected:bg-lightWhite aria-selected:text-white rounded-t-lg h-9"
           >
             Hash
           </button>
@@ -151,30 +154,19 @@ const hashAndSetResult = (byteArray: Uint8Array) => {
           <div class="w-full p-3 mt-7 rounded bg-lightGray">
             <label class="cursor-pointer" for="file_input">
               <input
-                class="hidden"
-                id="file_input"
-                type="file"
-                @change="handleFileUpload"
+                placeholder="Document Hash"
+                v-model="inputHash"
+                class="p-1 rounded bg-lightGray w-full mr-4 text-white text-title16"
               />
-              <div class="flex items-center">
-                <div
-                  class="flex justify-center p-1 rounded bg-lightGreen w-24 mr-4 text-white text-title16"
-                >
-                  Browse
-                </div>
-                <span class="text-lightGray text-title16">{{
-                  file ? file?.name : "Choose file"
-                }}</span>
-              </div>
             </label>
           </div>
           <div class="flex flex-row justify-center">
             <button
-              :disabled="!file"
+              :disabled="!/\b[A-Fa-f0-9]{64}\b/.test(inputHash)"
               @click="hashFile(file)"
               class="bg-lightGreen mt-10 content-center p-1 px-9 rounded text-white text-title22 disabled:bg-lightGray disabled:text-gray"
             >
-              Create proof
+              Register
             </button>
           </div>
         </div>
