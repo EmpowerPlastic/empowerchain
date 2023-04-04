@@ -12,7 +12,7 @@ var (
 	IDCountersKey       = []byte{0x01}
 	IssuerKey           = []byte{0x02}
 	ApplicantKey        = []byte{0x03}
-	CreditClassKey      = []byte{0x04}
+	CreditTypeKey       = []byte{0x04}
 	ProjectKey          = []byte{0x05}
 	CreditCollectionKey = []byte{0x06}
 	CreditBalanceKey    = []byte{0x07}

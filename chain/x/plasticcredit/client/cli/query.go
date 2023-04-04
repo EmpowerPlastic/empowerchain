@@ -28,8 +28,8 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	cmd.AddCommand(CmdQueryIssuer())
 	cmd.AddCommand(CmdQueryIssuers())
 	cmd.AddCommand(CmdQueryApplicant())
-	cmd.AddCommand(CmdQueryCreditClass())
-	cmd.AddCommand(CmdQueryCreditClasses())
+	cmd.AddCommand(CmdQueryCreditType())
+	cmd.AddCommand(CmdQueryCreditTypes())
 	cmd.AddCommand(CmdQueryCreditCollection())
 	cmd.AddCommand(CmdQueryCreditBalance())
 	cmd.AddCommand(CmdQueryProject())
@@ -149,10 +149,10 @@ func CmdQueryApplicant() *cobra.Command {
 	return cmd
 }
 
-func CmdQueryCreditClass() *cobra.Command {
+func CmdQueryCreditType() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "credit-class [abbreviation]",
-		Short: "query for a credit class by its [abbreviation]",
+		Use:   "credit-type [abbreviation]",
+		Short: "query for a credit type by its [abbreviation]",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -160,8 +160,8 @@ func CmdQueryCreditClass() *cobra.Command {
 
 			abbreviation := args[0]
 
-			res, err := queryClient.CreditClass(context.Background(), &plasticcredit.QueryCreditClassRequest{
-				CreditClassAbbreviation: abbreviation,
+			res, err := queryClient.CreditType(context.Background(), &plasticcredit.QueryCreditTypeRequest{
+				CreditTypeAbbreviation: abbreviation,
 			})
 			if err != nil {
 				return err
@@ -176,10 +176,10 @@ func CmdQueryCreditClass() *cobra.Command {
 	return cmd
 }
 
-func CmdQueryCreditClasses() *cobra.Command {
+func CmdQueryCreditTypes() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "credit-classes",
-		Short: "query all credit classes",
+		Use:   "credit-types",
+		Short: "query all credit types",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -189,7 +189,7 @@ func CmdQueryCreditClasses() *cobra.Command {
 				return err
 			}
 
-			res, err := queryClient.CreditClasses(context.Background(), &plasticcredit.QueryCreditClassesRequest{
+			res, err := queryClient.CreditTypes(context.Background(), &plasticcredit.QueryCreditTypesRequest{
 				Pagination: *pageReq,
 			})
 			if err != nil {

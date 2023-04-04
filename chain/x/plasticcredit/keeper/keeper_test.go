@@ -24,19 +24,19 @@ type TestSuite struct {
 	addrs          []sdk.AccAddress
 	numTestIssuers uint64 // number of issuers created in the initial state of the test
 
-	issuerCreator                 string
-	sampleIssuerID                uint64
-	sampleIssuerAdmin             string
-	noCoinsIssuerID               uint64
-	noCoinsIssuerAdmin            string
-	sampleCreditClassAbbreviation string
-	sampleApplicantID             uint64
-	sampleApplicantAdmin          string
-	sampleProjectID               uint64
-	sampleUnapprovedProjectID     uint64
-	sampleRejectionProjectID      uint64
-	sampleSuspendedProjectID      uint64
-	sampleCreditDenom             string
+	issuerCreator                string
+	sampleIssuerID               uint64
+	sampleIssuerAdmin            string
+	noCoinsIssuerID              uint64
+	noCoinsIssuerAdmin           string
+	sampleCreditTypeAbbreviation string
+	sampleApplicantID            uint64
+	sampleApplicantAdmin         string
+	sampleProjectID              uint64
+	sampleUnapprovedProjectID    uint64
+	sampleRejectionProjectID     uint64
+	sampleSuspendedProjectID     uint64
+	sampleCreditDenom            string
 
 	creditClassCreationFee sdk.Coin
 }
@@ -74,8 +74,8 @@ func (s *TestSuite) PopulateWithSamples() {
 	_, err := ms.UpdateParams(goCtx, &plasticcredit.MsgUpdateParams{
 		Authority: k.Authority(),
 		Params: plasticcredit.Params{
-			IssuerCreator:          s.issuerCreator,
-			CreditClassCreationFee: s.creditClassCreationFee,
+			IssuerCreator:         s.issuerCreator,
+			CreditTypeCreationFee: s.creditClassCreationFee,
 		},
 	})
 	s.Require().NoError(err)
@@ -99,9 +99,9 @@ func (s *TestSuite) PopulateWithSamples() {
 	s.Require().NoError(err)
 	s.Require().Equal(s.noCoinsIssuerID, respIssuer.IssuerId)
 
-	_, err = ms.CreateCreditClass(goCtx, &plasticcredit.MsgCreateCreditClass{
+	_, err = ms.CreateCreditType(goCtx, &plasticcredit.MsgCreateCreditType{
 		Creator:      s.sampleIssuerAdmin,
-		Abbreviation: s.sampleCreditClassAbbreviation,
+		Abbreviation: s.sampleCreditTypeAbbreviation,
 		IssuerId:     s.sampleIssuerID,
 		Name:         "Empower Plastic Credits",
 	})
@@ -116,37 +116,37 @@ func (s *TestSuite) PopulateWithSamples() {
 	s.Require().Equal(s.sampleApplicantID, respApplicant.ApplicantId)
 
 	respProject, err := ms.CreateProject(goCtx, &plasticcredit.MsgCreateProject{
-		Creator:                 s.sampleApplicantAdmin,
-		ApplicantId:             s.sampleApplicantID,
-		CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-		Name:                    "Cool project",
+		Creator:                s.sampleApplicantAdmin,
+		ApplicantId:            s.sampleApplicantID,
+		CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
+		Name:                   "Cool project",
 	})
 	s.Require().NoError(err)
 	s.Require().Equal(s.sampleProjectID, respProject.ProjectId)
 
 	respUnapprovedProject, err := ms.CreateProject(goCtx, &plasticcredit.MsgCreateProject{
-		Creator:                 s.sampleApplicantAdmin,
-		ApplicantId:             s.sampleApplicantID,
-		CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-		Name:                    "Another cool project",
+		Creator:                s.sampleApplicantAdmin,
+		ApplicantId:            s.sampleApplicantID,
+		CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
+		Name:                   "Another cool project",
 	})
 	s.Require().NoError(err)
 	s.Require().Equal(s.sampleUnapprovedProjectID, respUnapprovedProject.ProjectId)
 
 	respRejectionProject, err := ms.CreateProject(goCtx, &plasticcredit.MsgCreateProject{
-		Creator:                 s.sampleApplicantAdmin,
-		ApplicantId:             s.sampleApplicantID,
-		CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-		Name:                    "no bueno project",
+		Creator:                s.sampleApplicantAdmin,
+		ApplicantId:            s.sampleApplicantID,
+		CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
+		Name:                   "no bueno project",
 	})
 	s.Require().NoError(err)
 	s.Require().Equal(s.sampleRejectionProjectID, respRejectionProject.ProjectId)
 
 	respSuspendedProject, err := ms.CreateProject(goCtx, &plasticcredit.MsgCreateProject{
-		Creator:                 s.sampleApplicantAdmin,
-		ApplicantId:             s.sampleApplicantID,
-		CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-		Name:                    "suspended project",
+		Creator:                s.sampleApplicantAdmin,
+		ApplicantId:            s.sampleApplicantID,
+		CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
+		Name:                   "suspended project",
 	})
 	s.Require().NoError(err)
 	s.Require().Equal(s.sampleSuspendedProjectID, respSuspendedProject.ProjectId)
@@ -198,7 +198,7 @@ func TestTestSuite(t *testing.T) {
 	ts.sampleIssuerAdmin = sample.AccAddress()
 	ts.noCoinsIssuerID = 2
 	ts.noCoinsIssuerAdmin = sample.AccAddress()
-	ts.sampleCreditClassAbbreviation = "ETEST"
+	ts.sampleCreditTypeAbbreviation = "ETEST"
 	ts.sampleApplicantID = 1
 	ts.sampleApplicantAdmin = sample.AccAddress()
 	ts.sampleProjectID = 1
@@ -206,7 +206,7 @@ func TestTestSuite(t *testing.T) {
 	ts.sampleRejectionProjectID = 3
 	ts.sampleSuspendedProjectID = 4
 	ts.sampleCreditDenom = "ETEST/123"
-	ts.creditClassCreationFee = sdk.NormalizeCoin(plasticcredit.DefaultCreditClassCreationFee)
+	ts.creditClassCreationFee = sdk.NormalizeCoin(plasticcredit.DefaultCreditTypeCreationFee)
 
 	suite.Run(t, ts)
 }

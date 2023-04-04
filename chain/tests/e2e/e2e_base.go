@@ -86,7 +86,7 @@ func (s *TestSuite) SetupSuite() {
 
 	AddGenesisE2ETestData(s.Config.Codec, &e2eGenesisState, s.Config.BondDenom, s.Config.StakingTokens, s.CreditClassCreationFee)
 
-	e2eGenesisState.PlasticcreditGenesis.Params.CreditClassCreationFee = s.CreditClassCreationFee
+	e2eGenesisState.PlasticcreditGenesis.Params.CreditTypeCreationFee = s.CreditClassCreationFee
 	*e2eGenesisState.GovGenesis.Params.VotingPeriod = 10 * time.Second
 
 	// initialize community pool with small amount
@@ -248,7 +248,7 @@ func (s *TestSuite) GetCliResponse(ctx client.Context, txJSONResponse []byte) (s
 func AddGenesisE2ETestData(cdc codec.Codec, genesisState *genesistools.GenesisState, bondDenom string, tokens math.Int, creditClassCreationFee sdk.Coin) {
 	currentNoOfIssuers := uint64(len(genesisState.PlasticcreditGenesis.Issuers))
 	currentNoOfApplicants := uint64(len(genesisState.PlasticcreditGenesis.Applicants))
-	currentNoOfCreditClasses := uint64(len(genesisState.PlasticcreditGenesis.CreditClasses))
+	currentNoOfCreditClasses := uint64(len(genesisState.PlasticcreditGenesis.CreditTypes))
 	currentNoOfProjects := uint64(len(genesisState.PlasticcreditGenesis.Projects))
 
 	genesisState.PlasticcreditGenesis.Issuers = append(genesisState.PlasticcreditGenesis.Issuers, []plasticcredit.Issuer{
@@ -291,7 +291,7 @@ func AddGenesisE2ETestData(cdc codec.Codec, genesisState *genesistools.GenesisSt
 			Admin:       ApplicantAddress,
 		},
 	}...)
-	genesisState.PlasticcreditGenesis.CreditClasses = []plasticcredit.CreditClass{
+	genesisState.PlasticcreditGenesis.CreditTypes = []plasticcredit.CreditType{
 		{
 			Abbreviation: "ETEST",
 			IssuerId:     currentNoOfCreditClasses + 1,
@@ -305,81 +305,81 @@ func AddGenesisE2ETestData(cdc codec.Codec, genesisState *genesistools.GenesisSt
 	}
 	genesisState.PlasticcreditGenesis.Projects = append(genesisState.PlasticcreditGenesis.Projects, []plasticcredit.Project{
 		{
-			Id:                      currentNoOfProjects + 1,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "ETEST",
-			Name:                    "Approved project",
-			Status:                  plasticcredit.ProjectStatus_APPROVED,
+			Id:                     currentNoOfProjects + 1,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "ETEST",
+			Name:                   "Approved project",
+			Status:                 plasticcredit.ProjectStatus_APPROVED,
 		},
 		{
-			Id:                      currentNoOfProjects + 2,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "Suspended project",
-			Status:                  plasticcredit.ProjectStatus_SUSPENDED,
+			Id:                     currentNoOfProjects + 2,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "PTEST",
+			Name:                   "Suspended project",
+			Status:                 plasticcredit.ProjectStatus_SUSPENDED,
 		},
 		{
-			Id:                      currentNoOfProjects + 3,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "ETEST",
-			Name:                    "New project",
-			Status:                  plasticcredit.ProjectStatus_NEW,
+			Id:                     currentNoOfProjects + 3,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "ETEST",
+			Name:                   "New project",
+			Status:                 plasticcredit.ProjectStatus_NEW,
 		},
 		{
-			Id:                      currentNoOfProjects + 4,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "Rejected project",
-			Status:                  plasticcredit.ProjectStatus_REJECTED,
+			Id:                     currentNoOfProjects + 4,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "PTEST",
+			Name:                   "Rejected project",
+			Status:                 plasticcredit.ProjectStatus_REJECTED,
 		},
 		{
-			Id:                      currentNoOfProjects + 5,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "Other New Project",
-			Status:                  plasticcredit.ProjectStatus_NEW,
+			Id:                     currentNoOfProjects + 5,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "PTEST",
+			Name:                   "Other New Project",
+			Status:                 plasticcredit.ProjectStatus_NEW,
 		},
 		{
-			Id:                      currentNoOfProjects + 6,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "Another New Project",
-			Status:                  plasticcredit.ProjectStatus_NEW,
+			Id:                     currentNoOfProjects + 6,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "PTEST",
+			Name:                   "Another New Project",
+			Status:                 plasticcredit.ProjectStatus_NEW,
 		},
 		{
-			Id:                      currentNoOfProjects + 7,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "Another Rejected Project",
-			Status:                  plasticcredit.ProjectStatus_REJECTED,
+			Id:                     currentNoOfProjects + 7,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "PTEST",
+			Name:                   "Another Rejected Project",
+			Status:                 plasticcredit.ProjectStatus_REJECTED,
 		},
 		{
-			Id:                      currentNoOfProjects + 8,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "Another Suspended Project",
-			Status:                  plasticcredit.ProjectStatus_SUSPENDED,
+			Id:                     currentNoOfProjects + 8,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "PTEST",
+			Name:                   "Another Suspended Project",
+			Status:                 plasticcredit.ProjectStatus_SUSPENDED,
 		},
 		{
-			Id:                      currentNoOfProjects + 9,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "New Project to update",
-			Status:                  plasticcredit.ProjectStatus_NEW,
+			Id:                     currentNoOfProjects + 9,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "PTEST",
+			Name:                   "New Project to update",
+			Status:                 plasticcredit.ProjectStatus_NEW,
 		},
 		{
-			Id:                      currentNoOfProjects + 10,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "ETEST",
-			Name:                    "Approved project 2",
-			Status:                  plasticcredit.ProjectStatus_APPROVED,
+			Id:                     currentNoOfProjects + 10,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "ETEST",
+			Name:                   "Approved project 2",
+			Status:                 plasticcredit.ProjectStatus_APPROVED,
 		},
 		{
-			Id:                      currentNoOfProjects + 11,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "ETEST",
-			Name:                    "Approved project to suspend",
-			Status:                  plasticcredit.ProjectStatus_APPROVED,
+			Id:                     currentNoOfProjects + 11,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "ETEST",
+			Name:                   "Approved project to suspend",
+			Status:                 plasticcredit.ProjectStatus_APPROVED,
 		},
 	}...)
 	// check if credit collection exists in genesis state

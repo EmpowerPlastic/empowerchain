@@ -205,7 +205,7 @@ paths:
                       type: string
                       title: >-
                         abbreviation is the short-hand name *and* the identifier
-                        for a credit class
+                        for a credit type
                     issuer_id:
                       type: string
                       format: uint64
@@ -336,7 +336,7 @@ paths:
                     type: string
                     title: >-
                       abbreviation is the short-hand name *and* the identifier
-                      for a credit class
+                      for a Credit Type
                   issuer_id:
                     type: string
                     format: uint64
@@ -842,7 +842,7 @@ paths:
                   credit_class_creation_fee:
                     title: >-
                       credit_class_creation_fee is the fee that is charged for
-                      creating a new credit class
+                      creating a new credit type
 
                       defaults to 50 $MPWR, but can be changed by governance
                     type: object
@@ -1337,7 +1337,7 @@ definitions:
       credit_class_creation_fee:
         title: >-
           credit_class_creation_fee is the fee that is charged for creating a
-          new credit class
+          new credit type
 
           defaults to 50 $MPWR, but can be changed by governance
         type: object
@@ -1521,7 +1521,7 @@ definitions:
             type: string
             title: >-
               abbreviation is the short-hand name *and* the identifier for a
-              credit class
+              credit type
           issuer_id:
             type: string
             format: uint64
@@ -1539,7 +1539,7 @@ definitions:
               type: string
               title: >-
                 abbreviation is the short-hand name *and* the identifier for a
-                credit class
+                credit type
             issuer_id:
               type: string
               format: uint64
@@ -1674,7 +1674,7 @@ definitions:
           credit_class_creation_fee:
             title: >-
               credit_class_creation_fee is the fee that is charged for creating
-              a new credit class
+              a new credit type
 
               defaults to 50 $MPWR, but can be changed by governance
             type: object

@@ -33,7 +33,7 @@ A REST interface for state queries
 | GET | /empowerchain/empowerchain/plasticcredit/creditbalances/{owner}/{denom} | [credit balance](#credit-balance) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/creditbalances | [credit balances](#credit-balances) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/credit-classes/{credit_class_abbreviation} | [credit class](#credit-class) |  |
-| GET | /empowerchain/empowerchain/plasticcredit/credit-classes | [credit classes](#credit-classes) |  |
+| GET | /empowerchain/empowerchain/plasticcredit/credit-classes | [credit types](#credit-classes) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/creditcollections/{denom} | [credit collection](#credit-collection) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/issuers/{issuer_id} | [issuer](#issuer) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/issuers | [issuers](#issuers) |  |
@@ -700,7 +700,7 @@ An unexpected error response.
 
 
 
-### <span id="credit-classes"></span> credit classes (*CreditClasses*)
+### <span id="credit-classes"></span> credit types (*CreditClasses*)
 
 ```
 GET /empowerchain/empowerchain/plasticcredit/credit-classes

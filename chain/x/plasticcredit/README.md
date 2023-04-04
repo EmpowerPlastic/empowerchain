@@ -30,7 +30,7 @@ sequenceDiagram
     participant EmpowerChain
     
     Governance->>EmpowerChain: Create Issuer
-    Issuer->>EmpowerChain: Create Credit Class
+    Issuer->>EmpowerChain: Create Credit Type
     Applicant->>EmpowerChain: Create Applicant
     Applicant->>EmpowerChain: Create Project
     activate EmpowerChain
@@ -58,7 +58,7 @@ The unit can be for in kg's, metric tons or any other unit the issuer chooses.
 Usually you will also see that plastic credits are standardized, or at the very least well document, in a way that makes one credit different from another.
 
 Credits are neither fully fungible, nor entirely non-fungible. 
-Credits are uniquely issued for a specific credit class, a specific project and finally for a specific "serial number". 
+Credits are uniquely issued for a specific credit type, a specific project and finally for a specific "serial number". 
 More on this under the section about credit collections.
 
 The entity relationship diagram below shows the different parts that a single credit collection is made up of. 
@@ -126,7 +126,7 @@ ID Counters is a global object to keep track of ID indexes. It keeps at all time
 
 ### Issuer
 
-An Issuer is an entity that is allowed to create Credit Classes and issue Credits under their own Classes.
+An Issuer is an entity that is allowed to create credit types and issue Credits under their own Classes.
 They are the entity responsible for the data, quality and trust of the plastic credits they issue.
 
 An issuer consists of the following fields: `id`, `name`, `description`, `admin`, with `id` being the unique identifier for an issuer.
@@ -152,19 +152,19 @@ An Applicant consists of the following fields: `id`, `name`, `description`, `adm
 
 - Applicant: `0x03 | applicantID | -> ProtocolBuffer(Applicant)`
 
-### Credit Class
+### Credit Type
 
-A Credit Class is the description of a type of plastic credit. It is created and owned by a single issuer.
+A Credit Type is the description of a type of plastic credit. It is created and owned by a single issuer.
 
-A Credit Class consists of the following fields: `id`, `issuer_id`, `name`, `denom`, with `id` being the unique identifier for a credit class.
+A Credit Type consists of the following fields: `id`, `issuer_id`, `name`, `denom`, with `id` being the unique identifier for a Credit Type.
 
-The `issuer_id` field is the direct link to the Issuer that has created and operates this Credit Class.
+The `issuer_id` field is the direct link to the Issuer that has created and operates this Credit Type.
 
-`name` is mainly a human-readable name for a credit class such as "Empower Plastic Credits".
+`name` is mainly a human-readable name for a credit type such as "Empower Plastic Credits".
 
-`denom` is the short unique denominator for the plastic credits in this credit class (e.g. "PTEST")
+`denom` is the short unique denominator for the plastic credits in this credit type (e.g. "PTEST")
 
-- Credit Class: `0x04 | creditClassID | -> ProtocolBuffer(CreditClass)`
+- Credit Type: `0x04 | creditClassID | -> ProtocolBuffer(CreditClass)`
 
 ### Project
 
@@ -178,7 +178,7 @@ The `applicant_id` field is the direct link to the Applicant that owns the proje
 
 `name` is the name of the project.
 
-`status` is the status of the project in relation to the credit class. Only someone with authorization on the credit class can change this.
+`status` is the status of the project in relation to the credit type. Only someone with authorization on the credit type can change this.
 The project can in one of the following states: new, approved or rejected
 
 - Project: `0x05 | projectID | -> ProtocolBuffer(Project)`
@@ -186,7 +186,7 @@ The project can in one of the following states: new, approved or rejected
 ### Credit Collection
 
 Credit Collection contains references to formal information about the collection and overall amount of minted and retired credits.
-- `denom` - denomination of the collection, which is unique per collection and consists of `Credit Class` denom and a chosen suffix, e.g. `ETEST/123`. Denom is also used as a store key.
+- `denom` - denomination of the collection, which is unique per collection and consists of `Credit Type` denom and a chosen suffix, e.g. `ETEST/123`. Denom is also used as a store key.
 - `Active amount` - amount of credits that are active for a given collection (weren't retired).
 - `Retired amount` - amount of credits that have been retired for a given collection.
 - `Credit data` - URLs and proofs to all the data relevant to a given Credit Collection.

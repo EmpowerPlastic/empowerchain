@@ -18,7 +18,7 @@ const (
 	IssuerCreatorFeeKey  = "issuer-creator-fee"
 	IssuersKey           = "issuers"
 	ApplicantsKey        = "applicants"
-	CreditClassesKey     = "credit-classes"
+	CreditTypesKey       = "credit-classes"
 	ProjectsKey          = "projects"
 	CreditCollectionsKey = "credit-collections"
 	CreditBalancesKey    = "credit-balances"
@@ -52,16 +52,16 @@ func RandomizedGenState(simState *module.SimulationState) {
 		func(r *rand.Rand) { applicants = generateApplicants(r, simState.Accounts) },
 	)
 
-	var creditClasses []plasticcredit.CreditClass
+	var creditTypes []plasticcredit.CreditType
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, CreditClassesKey, &creditClasses, simState.Rand,
-		func(r *rand.Rand) { creditClasses = generateCreditClasses(r, issuers) },
+		simState.Cdc, CreditTypesKey, &creditTypes, simState.Rand,
+		func(r *rand.Rand) { creditTypes = generateCreditTypes(r, issuers) },
 	)
 
 	var projects []plasticcredit.Project
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, ProjectsKey, &projects, simState.Rand,
-		func(r *rand.Rand) { projects = generateProjects(r, applicants, creditClasses) },
+		func(r *rand.Rand) { projects = generateProjects(r, applicants, creditTypes) },
 	)
 
 	var creditCollections []plasticcredit.CreditCollection
@@ -85,7 +85,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 		},
 		Issuers:           issuers,
 		Applicants:        applicants,
-		CreditClasses:     creditClasses,
+		CreditTypes:       creditTypes,
 		Projects:          projects,
 		CreditCollections: creditCollections,
 		CreditBalances:    creditBalances,
@@ -93,7 +93,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 	fmt.Println("Number of issuers: ", len(issuers))
 	fmt.Println("Number of applicants: ", len(applicants))
-	fmt.Println("Number of credit classes: ", len(creditClasses))
+	fmt.Println("Number of credit types: ", len(creditTypes))
 	fmt.Println("Number of projects: ", len(projects))
 	fmt.Println("Number of credit collections: ", len(creditCollections))
 	fmt.Println("Number of credit balances: ", len(creditBalances))
@@ -155,14 +155,14 @@ func generateApplicants(r *rand.Rand, accounts []simtypes.Account) []plasticcred
 	return applicants
 }
 
-func generateCreditClasses(r *rand.Rand, issuers []plasticcredit.Issuer) []plasticcredit.CreditClass {
-	var creditClasses []plasticcredit.CreditClass
+func generateCreditTypes(r *rand.Rand, issuers []plasticcredit.Issuer) []plasticcredit.CreditType {
+	var creditTypes []plasticcredit.CreditType
 	usedAbbreviations := make(map[string]bool)
 
 	for i := 0; i < len(issuers); i++ {
-		numberOfCreditClasses := simtypes.RandIntBetween(r, 1, 3)
+		numberOfCreditTypes := simtypes.RandIntBetween(r, 1, 3)
 
-		for j := 0; j < numberOfCreditClasses; j++ {
+		for j := 0; j < numberOfCreditTypes; j++ {
 			var abbreviation string
 			for {
 				abbreviation = createRandomAbbreviation(r)
@@ -172,7 +172,7 @@ func generateCreditClasses(r *rand.Rand, issuers []plasticcredit.Issuer) []plast
 				}
 			}
 
-			creditClasses = append(creditClasses, plasticcredit.CreditClass{
+			creditTypes = append(creditTypes, plasticcredit.CreditType{
 				Abbreviation: abbreviation,
 				IssuerId:     issuers[i].Id,
 				Name:         createRandomName(r),
@@ -180,13 +180,13 @@ func generateCreditClasses(r *rand.Rand, issuers []plasticcredit.Issuer) []plast
 		}
 	}
 
-	return creditClasses
+	return creditTypes
 }
 
-func generateProjects(r *rand.Rand, applicants []plasticcredit.Applicant, creditClasses []plasticcredit.CreditClass) []plasticcredit.Project {
+func generateProjects(r *rand.Rand, applicants []plasticcredit.Applicant, creditTypes []plasticcredit.CreditType) []plasticcredit.Project {
 	var projects []plasticcredit.Project
 
-	if len(applicants) == 0 || len(creditClasses) == 0 {
+	if len(applicants) == 0 || len(creditTypes) == 0 {
 		return projects
 	}
 
@@ -195,14 +195,14 @@ func generateProjects(r *rand.Rand, applicants []plasticcredit.Applicant, credit
 		numberOfProjectsForApplicant := simtypes.RandIntBetween(r, 1, 3)
 
 		for j := 0; j < numberOfProjectsForApplicant; j++ {
-			creditClass := creditClasses[simtypes.RandIntBetween(r, 0, len(creditClasses))]
+			creditType := creditTypes[simtypes.RandIntBetween(r, 0, len(creditTypes))]
 
 			projects = append(projects, plasticcredit.Project{
-				Id:                      uint64(nextProjectID),
-				ApplicantId:             applicants[i].Id,
-				CreditClassAbbreviation: creditClass.Abbreviation,
-				Name:                    createRandomName(r),
-				Status:                  plasticcredit.ProjectStatus(simtypes.RandIntBetween(r, 0, 3)),
+				Id:                     uint64(nextProjectID),
+				ApplicantId:            applicants[i].Id,
+				CreditTypeAbbreviation: creditType.Abbreviation,
+				Name:                   createRandomName(r),
+				Status:                 plasticcredit.ProjectStatus(simtypes.RandIntBetween(r, 0, 3)),
 			})
 
 			nextProjectID++
@@ -223,7 +223,7 @@ func generateCreditCollections(r *rand.Rand, projects []plasticcredit.Project) [
 			var denom string
 			for {
 				serialNumber := createRandomSerialNumber(r)
-				denom, _ = keeper.CreateCreditDenom(projects[i].CreditClassAbbreviation, serialNumber)
+				denom, _ = keeper.CreateCreditDenom(projects[i].CreditTypeAbbreviation, serialNumber)
 				if _, ok := usedDenom[denom]; !ok {
 					usedDenom[denom] = true
 					break

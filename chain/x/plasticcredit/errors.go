@@ -13,7 +13,7 @@ import (
  * 1: IDCounters
  * 2: Issuer
  * 3: Applicant
- * 4: CreditClass
+ * 4: CreditType
  * 5: Project
  * 6: CreditCollection
  * 7: CreditBalance
@@ -32,9 +32,9 @@ var (
 	ErrApplicantNotFound  = errors.Register(ModuleName, 3404, "applicant not found")
 	ErrApplicantDuplicate = errors.Register(ModuleName, 3409, "duplicate applicant detected")
 
-	ErrCreditClassAbbreviationTaken = errors.Register(ModuleName, 4001, "credit class abbreviation already in use")
-	ErrCreditClassNotFound          = errors.Register(ModuleName, 4404, "credit class not found")
-	ErrCreditClassDuplicate         = errors.Register(ModuleName, 4409, "duplicate credit class detected")
+	ErrCreditTypeAbbreviationTaken = errors.Register(ModuleName, 4001, "credit type abbreviation already in use")
+	ErrCreditTypeNotFound          = errors.Register(ModuleName, 4404, "credit type not found")
+	ErrCreditTypeDuplicate         = errors.Register(ModuleName, 4409, "duplicate credit type detected")
 
 	ErrProjectNotApproved    = errors.Register(ModuleName, 5001, "project is not approved")
 	ErrProjectNotNew         = errors.Register(ModuleName, 5002, "project is approved / rejected")

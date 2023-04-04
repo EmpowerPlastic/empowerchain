@@ -96,11 +96,11 @@ func (s *E2ETestSuite) TestCmdQueryProject() {
 			"",
 			&plasticcredit.QueryProjectResponse{
 				Project: plasticcredit.Project{
-					Id:                      1,
-					ApplicantId:             1,
-					CreditClassAbbreviation: "ETEST",
-					Name:                    "Approved project",
-					Status:                  plasticcredit.ProjectStatus_APPROVED,
+					Id:                     1,
+					ApplicantId:            1,
+					CreditTypeAbbreviation: "ETEST",
+					Name:                   "Approved project",
+					Status:                 plasticcredit.ProjectStatus_APPROVED,
 				},
 			},
 		},

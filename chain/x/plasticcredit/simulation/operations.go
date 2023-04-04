@@ -16,35 +16,35 @@ import (
 
 //nolint:gosec
 const (
-	DefaultWeightMsgCreateIssuer      = 10
-	DefaultWeightMsgUpdateIssuer      = 20
-	DefaultWeightMsgCreateApplicant   = 75
-	DefaultWeightMsgUpdateApplicant   = 50
-	DefaultWeightMsgCreateCreditClass = 10
-	DefaultWeightMsgUpdateCreditClass = 5
-	DefaultWeightMsgCreateProject     = 70
-	DefaultWeightMsgUpdateProject     = 30
-	DefaultWeightMsgApproveProject    = 20
-	DefaultWeightMsgRejectProject     = 30
-	DefaultWeightMsgSuspendProject    = 10
-	DefaultWeightMsgIssueCredits      = 75
-	DefaultWeightMsgTransferCredits   = 15 // Low for now, the lookup is too expensive
-	DefaultWeightMsgRetireCredits     = 15 // Low for now, the lookup is too expensive
+	DefaultWeightMsgCreateIssuer     = 10
+	DefaultWeightMsgUpdateIssuer     = 20
+	DefaultWeightMsgCreateCreditType = 10
+	DefaultWeightMsgUpdateCreditType = 5
+	DefaultWeightMsgCreateProject    = 70
+	DefaultWeightMsgUpdateProject    = 30
+	DefaultWeightMsgApproveProject   = 20
+	DefaultWeightMsgRejectProject    = 30
+	DefaultWeightMsgSuspendProject   = 10
+	DefaultWeightMsgCreateApplicant  = 75
+	DefaultWeightMsgUpdateApplicant  = 50
+	DefaultWeightMsgIssueCredits     = 75
+	DefaultWeightMsgTransferCredits  = 15 // Low for now, the lookup is too expensive
+	DefaultWeightMsgRetireCredits    = 15 // Low for now, the lookup is too expensive
 
-	OpWeightMsgCreateIssuer      = "op_weight_msg_create_issuer"
-	OpWeightMsgUpdateIssuer      = "op_weight_msg_update_issuer"
-	OpWeightMsgCreateApplicant   = "op_weight_msg_create_applicant"
-	OpWeightMsgUpdateApplicant   = "op_weight_msg_update_applicant"
-	OpWeightMsgCreateCreditClass = "op_weight_msg_create_credit_class"
-	OpWeightMsgUpdateCreditClass = "op_weight_msg_update_credit_class"
-	OpWeightMsgCreateProject     = "op_weight_msg_create_project"
-	OpWeightMsgUpdateProject     = "op_weight_msg_update_project"
-	OpWeightMsgApproveProject    = "op_weight_msg_approve_project"
-	OpWeightMsgRejectProject     = "op_weight_msg_reject_project"
-	OpWeightMsgSuspendProject    = "op_weight_msg_suspend_project"
-	OpWeightMsgIssueCredits      = "op_weight_msg_issue_credits"
-	OpWeightMsgTransferCredits   = "op_weight_msg_transfer_credits"
-	OpWeightMsgRetireCredits     = "op_weight_msg_retire_credits"
+	OpWeightMsgApproveProject   = "op_weight_msg_approve_project"
+	OpWeightMsgCreateApplicant  = "op_weight_msg_create_applicant"
+	OpWeightMsgCreateCreditType = "op_weight_msg_create_credit_class"
+	OpWeightMsgCreateIssuer     = "op_weight_msg_create_issuer"
+	OpWeightMsgCreateProject    = "op_weight_msg_create_project"
+	OpWeightMsgIssueCredits     = "op_weight_msg_issue_credits"
+	OpWeightMsgRejectProject    = "op_weight_msg_reject_project"
+	OpWeightMsgRetireCredits    = "op_weight_msg_retire_credits"
+	OpWeightMsgSuspendProject   = "op_weight_msg_suspend_project"
+	OpWeightMsgTransferCredits  = "op_weight_msg_transfer_credits"
+	OpWeightMsgUpdateApplicant  = "op_weight_msg_update_applicant"
+	OpWeightMsgUpdateCreditType = "op_weight_msg_update_credit_class"
+	OpWeightMsgUpdateIssuer     = "op_weight_msg_update_issuer"
+	OpWeightMsgUpdateProject    = "op_weight_msg_update_project"
 )
 
 // WeightedOperations returns all the operations from the module with their respective weights
@@ -56,20 +56,20 @@ func WeightedOperations(
 	k keeper.Keeper,
 ) simulation.WeightedOperations {
 	var (
-		weightMsgCreateIssuer      int
-		weightMsgUpdateIssuer      int
-		weightMsgCreateApplicant   int
-		weightMsgUpdateApplicant   int
-		weightMsgCreateCreditClass int
-		weightMsgUpdateCreditClass int
-		weightMsgCreateProject     int
-		weightMsgUpdateProject     int
-		weightMsgApproveProject    int
-		weightMsgRejectProject     int
-		weightMsgSuspendProject    int
-		weightMsgIssueCredits      int
-		weightMsgTransferCredits   int
-		weightMsgRetireCredits     int
+		weightMsgApproveProject   int
+		weightMsgCreateApplicant  int
+		weightMsgCreateCreditType int
+		weightMsgCreateIssuer     int
+		weightMsgCreateProject    int
+		weightMsgIssueCredits     int
+		weightMsgRejectProject    int
+		weightMsgRetireCredits    int
+		weightMsgSuspendProject   int
+		weightMsgTransferCredits  int
+		weightMsgUpdateApplicant  int
+		weightMsgUpdateCreditType int
+		weightMsgUpdateIssuer     int
+		weightMsgUpdateProject    int
 	)
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgCreateIssuer, &weightMsgCreateIssuer, nil,
@@ -92,14 +92,14 @@ func WeightedOperations(
 			weightMsgUpdateApplicant = DefaultWeightMsgUpdateApplicant
 		},
 	)
-	appParams.GetOrGenerate(cdc, OpWeightMsgCreateCreditClass, &weightMsgCreateCreditClass, nil,
+	appParams.GetOrGenerate(cdc, OpWeightMsgCreateCreditType, &weightMsgCreateCreditType, nil,
 		func(_ *rand.Rand) {
-			weightMsgCreateCreditClass = DefaultWeightMsgCreateCreditClass
+			weightMsgCreateCreditType = DefaultWeightMsgCreateCreditType
 		},
 	)
-	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateCreditClass, &weightMsgUpdateCreditClass, nil,
+	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateCreditType, &weightMsgUpdateCreditType, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateCreditClass = DefaultWeightMsgUpdateCreditClass
+			weightMsgUpdateCreditType = DefaultWeightMsgUpdateCreditType
 		},
 	)
 	appParams.GetOrGenerate(cdc, OpWeightMsgCreateProject, &weightMsgCreateProject, nil,
@@ -163,12 +163,12 @@ func WeightedOperations(
 			SimulateMsgUpdateApplicant(protoCodec, ak, bk, k),
 		),
 		simulation.NewWeightedOperation(
-			weightMsgCreateCreditClass,
-			SimulateMsgCreateCreditClass(protoCodec, ak, bk, k),
+			weightMsgCreateCreditType,
+			SimulateMsgCreateCreditType(protoCodec, ak, bk, k),
 		),
 		simulation.NewWeightedOperation(
-			weightMsgUpdateCreditClass,
-			SimulateMsgUpdateCreditClass(protoCodec, ak, bk, k),
+			weightMsgUpdateCreditType,
+			SimulateMsgUpdateCreditType(protoCodec, ak, bk, k),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgCreateProject,
@@ -391,12 +391,12 @@ func SimulateMsgUpdateApplicant(cdc *codec.ProtoCodec, ak plasticcredit.AccountK
 	}
 }
 
-// SimulateMsgCreateCreditClass generates a MsgCreateCreditClass with random values.
-func SimulateMsgCreateCreditClass(cdc *codec.ProtoCodec, ak plasticcredit.AccountKeeper, bk plasticcredit.BankKeeper, k keeper.Keeper) simtypes.Operation {
+// SimulateMsgCreateCreditType generates a MsgCreateCreditType with random values.
+func SimulateMsgCreateCreditType(cdc *codec.ProtoCodec, ak plasticcredit.AccountKeeper, bk plasticcredit.BankKeeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accounts []simtypes.Account, chainID string,
 	) (opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error) {
-		msgType := sdk.MsgTypeURL(&plasticcredit.MsgCreateCreditClass{})
+		msgType := sdk.MsgTypeURL(&plasticcredit.MsgCreateCreditType{})
 		querier := keeper.Querier{Keeper: k}
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
@@ -412,7 +412,7 @@ func SimulateMsgCreateCreditClass(cdc *codec.ProtoCodec, ak plasticcredit.Accoun
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, nil
 		}
 
-		msg := &plasticcredit.MsgCreateCreditClass{
+		msg := &plasticcredit.MsgCreateCreditType{
 			Creator:      admin.Address.String(),
 			Abbreviation: createUniqueRandomAbbreviation(ctx, r, querier),
 			IssuerId:     issuer.Id,
@@ -422,9 +422,9 @@ func SimulateMsgCreateCreditClass(cdc *codec.ProtoCodec, ak plasticcredit.Accoun
 		res, _ := querier.Params(ctx, &plasticcredit.QueryParamsRequest{})
 		params := res.Params
 
-		spendable, neg := bk.SpendableCoins(sdkCtx, admin.Address).SafeSub(params.CreditClassCreationFee)
+		spendable, neg := bk.SpendableCoins(sdkCtx, admin.Address).SafeSub(params.CreditTypeCreationFee)
 		if neg {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "not enough balance to create credit class"), nil, nil
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "not enough balance to create credit type"), nil, nil
 		}
 
 		txCtx := simulation.OperationInput{
@@ -446,21 +446,21 @@ func SimulateMsgCreateCreditClass(cdc *codec.ProtoCodec, ak plasticcredit.Accoun
 	}
 }
 
-// SimulateMsgUpdateCreditClass generates a MsgUpdateCreditClass with random values.
-func SimulateMsgUpdateCreditClass(cdc *codec.ProtoCodec, ak plasticcredit.AccountKeeper, bk plasticcredit.BankKeeper, k keeper.Keeper) simtypes.Operation {
+// SimulateMsgUpdateCreditType generates a MsgUpdateCreditType with random values.
+func SimulateMsgUpdateCreditType(cdc *codec.ProtoCodec, ak plasticcredit.AccountKeeper, bk plasticcredit.BankKeeper, k keeper.Keeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accounts []simtypes.Account, chainID string,
 	) (opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error) {
-		msgType := sdk.MsgTypeURL(&plasticcredit.MsgUpdateCreditClass{})
+		msgType := sdk.MsgTypeURL(&plasticcredit.MsgUpdateCreditType{})
 		querier := keeper.Querier{Keeper: k}
 
 		ctx := sdk.WrapSDKContext(sdkCtx)
-		creditClass, err := getRandomCreditClass(ctx, r, querier)
+		creditType, err := getRandomCreditType(ctx, r, querier)
 		if err != nil {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, nil
 		}
 
-		issuer, found := querier.GetIssuer(sdkCtx, creditClass.IssuerId)
+		issuer, found := querier.GetIssuer(sdkCtx, creditType.IssuerId)
 		if !found {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find issuer"), nil, nil
 		}
@@ -470,9 +470,9 @@ func SimulateMsgUpdateCreditClass(cdc *codec.ProtoCodec, ak plasticcredit.Accoun
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to find admin"), nil, nil
 		}
 
-		msg := &plasticcredit.MsgUpdateCreditClass{
+		msg := &plasticcredit.MsgUpdateCreditType{
 			Updater:      admin.Address.String(),
-			Abbreviation: creditClass.Abbreviation,
+			Abbreviation: creditType.Abbreviation,
 			Name:         createRandomName(r),
 		}
 
@@ -512,9 +512,9 @@ func SimulateMsgCreateProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKee
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get applicant"), nil, nil
 		}
 
-		creditClass, err := getRandomCreditClass(ctx, r, querier)
+		creditType, err := getRandomCreditType(ctx, r, querier)
 		if err != nil {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, nil
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit type"), nil, nil
 		}
 
 		admin, found := simtypes.FindAccount(accounts, sdk.MustAccAddressFromBech32(applicant.Admin))
@@ -523,10 +523,10 @@ func SimulateMsgCreateProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKee
 		}
 
 		msg := &plasticcredit.MsgCreateProject{
-			Creator:                 admin.Address.String(),
-			ApplicantId:             applicant.Id,
-			CreditClassAbbreviation: creditClass.Abbreviation,
-			Name:                    createRandomName(r),
+			Creator:                admin.Address.String(),
+			ApplicantId:            applicant.Id,
+			CreditTypeAbbreviation: creditType.Abbreviation,
+			Name:                   createRandomName(r),
 		}
 
 		spendable := bk.SpendableCoins(sdkCtx, admin.Address)
@@ -620,12 +620,12 @@ func SimulateMsgApproveProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKe
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "project already approved"), nil, nil
 		}
 
-		creditClass, found := querier.GetCreditClass(sdkCtx, project.CreditClassAbbreviation)
+		creditType, found := querier.GetCreditType(sdkCtx, project.CreditTypeAbbreviation)
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, nil
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit type"), nil, nil
 		}
 
-		issuer, found := querier.GetIssuer(sdkCtx, creditClass.IssuerId)
+		issuer, found := querier.GetIssuer(sdkCtx, creditType.IssuerId)
 		if !found {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, nil
 		}
@@ -679,12 +679,12 @@ func SimulateMsgRejectProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKee
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "project cannot be rejected"), nil, nil
 		}
 
-		creditClass, found := querier.GetCreditClass(sdkCtx, project.CreditClassAbbreviation)
+		creditType, found := querier.GetCreditType(sdkCtx, project.CreditTypeAbbreviation)
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, nil
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit type"), nil, nil
 		}
 
-		issuer, found := querier.GetIssuer(sdkCtx, creditClass.IssuerId)
+		issuer, found := querier.GetIssuer(sdkCtx, creditType.IssuerId)
 		if !found {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, nil
 		}
@@ -738,12 +738,12 @@ func SimulateMsgSuspendProject(cdc *codec.ProtoCodec, ak plasticcredit.AccountKe
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "project cannot be suspended"), nil, nil
 		}
 
-		creditClass, found := querier.GetCreditClass(sdkCtx, project.CreditClassAbbreviation)
+		creditType, found := querier.GetCreditType(sdkCtx, project.CreditTypeAbbreviation)
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, nil
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit type"), nil, nil
 		}
 
-		issuer, found := querier.GetIssuer(sdkCtx, creditClass.IssuerId)
+		issuer, found := querier.GetIssuer(sdkCtx, creditType.IssuerId)
 		if !found {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, nil
 		}
@@ -797,12 +797,12 @@ func SimulateMsgIssueCredits(cdc *codec.ProtoCodec, ak plasticcredit.AccountKeep
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "cannot issue credit for non-approved project"), nil, nil
 		}
 
-		creditClass, found := querier.GetCreditClass(sdkCtx, project.CreditClassAbbreviation)
+		creditType, found := querier.GetCreditType(sdkCtx, project.CreditTypeAbbreviation)
 		if !found {
-			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit class"), nil, nil
+			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get credit type"), nil, nil
 		}
 
-		issuer, found := querier.GetIssuer(sdkCtx, creditClass.IssuerId)
+		issuer, found := querier.GetIssuer(sdkCtx, creditType.IssuerId)
 		if !found {
 			return simtypes.NoOpMsg(plasticcredit.ModuleName, msgType, "unable to get issuer"), nil, nil
 		}
@@ -821,7 +821,7 @@ func SimulateMsgIssueCredits(cdc *codec.ProtoCodec, ak plasticcredit.AccountKeep
 		msg := &plasticcredit.MsgIssueCredits{
 			Creator:      issuerAdmin.Address.String(),
 			ProjectId:    project.Id,
-			SerialNumber: createUniqueRandomSerialNumber(ctx, r, querier, creditClass.Abbreviation),
+			SerialNumber: createUniqueRandomSerialNumber(ctx, r, querier, creditType.Abbreviation),
 			CreditAmount: uint64(simtypes.RandIntBetween(r, 1, 10000000)),
 			MetadataUris: metadatas,
 		}
