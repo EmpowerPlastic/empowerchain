@@ -189,14 +189,14 @@ paths:
         - Query
   /empowerchain/empowerchain/plasticcredit/credit-classes:
     get:
-      operationId: CreditClasses
+      operationId: CreditTypes
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              credit_classes:
+              credit_types:
                 type: array
                 items:
                   type: object
@@ -205,7 +205,7 @@ paths:
                       type: string
                       title: >-
                         abbreviation is the short-hand name *and* the identifier
-                        for a credit type
+                        for a credit class
                     issuer_id:
                       type: string
                       format: uint64
@@ -320,23 +320,23 @@ paths:
           type: boolean
       tags:
         - Query
-  /empowerchain/empowerchain/plasticcredit/credit-classes/{credit_class_abbreviation}:
+  /empowerchain/empowerchain/plasticcredit/credit-classes/{credit_type_abbreviation}:
     get:
-      operationId: CreditClass
+      operationId: CreditType
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              credit_class:
+              credit_type:
                 type: object
                 properties:
                   abbreviation:
                     type: string
                     title: >-
                       abbreviation is the short-hand name *and* the identifier
-                      for a Credit Type
+                      for a credit class
                   issuer_id:
                     type: string
                     format: uint64
@@ -365,7 +365,7 @@ paths:
                       type: string
                       format: byte
       parameters:
-        - name: credit_class_abbreviation
+        - name: credit_type_abbreviation
           in: path
           required: true
           type: string
@@ -839,9 +839,9 @@ paths:
 
                       defaults to the governance account, but can be changed by
                       governance (to, for instance, a DAO/group/multisig)
-                  credit_class_creation_fee:
+                  credit_type_creation_fee:
                     title: >-
-                      credit_class_creation_fee is the fee that is charged for
+                      credit_type_creation_fee is the fee that is charged for
                       creating a new credit type
 
                       defaults to 50 $MPWR, but can be changed by governance
@@ -904,7 +904,7 @@ paths:
                     applicant_id:
                       type: string
                       format: uint64
-                    credit_class_abbreviation:
+                    credit_type_abbreviation:
                       type: string
                     name:
                       type: string
@@ -1043,7 +1043,7 @@ paths:
                   applicant_id:
                     type: string
                     format: uint64
-                  credit_class_abbreviation:
+                  credit_type_abbreviation:
                     type: string
                   name:
                     type: string
@@ -1274,19 +1274,6 @@ definitions:
           retired:
             type: string
             format: uint64
-  empowerchain.plasticcredit.CreditClass:
-    type: object
-    properties:
-      abbreviation:
-        type: string
-        title: >-
-          abbreviation is the short-hand name *and* the identifier for a credit
-          class
-      issuer_id:
-        type: string
-        format: uint64
-      name:
-        type: string
   empowerchain.plasticcredit.CreditCollection:
     type: object
     properties:
@@ -1312,6 +1299,19 @@ definitions:
         items:
           type: string
         title: IPFS URI of the metadata
+  empowerchain.plasticcredit.CreditType:
+    type: object
+    properties:
+      abbreviation:
+        type: string
+        title: >-
+          abbreviation is the short-hand name *and* the identifier for a credit
+          class
+      issuer_id:
+        type: string
+        format: uint64
+      name:
+        type: string
   empowerchain.plasticcredit.Issuer:
     type: object
     properties:
@@ -1334,10 +1334,10 @@ definitions:
 
           defaults to the governance account, but can be changed by governance
           (to, for instance, a DAO/group/multisig)
-      credit_class_creation_fee:
+      credit_type_creation_fee:
         title: >-
-          credit_class_creation_fee is the fee that is charged for creating a
-          new credit type
+          credit_type_creation_fee is the fee that is charged for creating a new
+          credit type
 
           defaults to 50 $MPWR, but can be changed by governance
         type: object
@@ -1361,7 +1361,7 @@ definitions:
       applicant_id:
         type: string
         format: uint64
-      credit_class_abbreviation:
+      credit_type_abbreviation:
         type: string
       name:
         type: string
@@ -1511,26 +1511,54 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-  empowerchain.plasticcredit.QueryCreditClassResponse:
+  empowerchain.plasticcredit.QueryCreditCollectionResponse:
     type: object
     properties:
-      credit_class:
+      credit_collection:
+        type: object
+        properties:
+          denom:
+            type: string
+            title: denominator of the credit, store key
+          project_id:
+            type: string
+            format: uint64
+            title: ID of a project related to the collection
+          total_amount:
+            title: Total amount of active and retired credits for the collection
+            type: object
+            properties:
+              active:
+                type: string
+                format: uint64
+              retired:
+                type: string
+                format: uint64
+          metadata_uris:
+            type: array
+            items:
+              type: string
+            title: IPFS URI of the metadata
+  empowerchain.plasticcredit.QueryCreditTypeResponse:
+    type: object
+    properties:
+      credit_type:
         type: object
         properties:
           abbreviation:
             type: string
             title: >-
               abbreviation is the short-hand name *and* the identifier for a
-              credit type
+              credit class
           issuer_id:
             type: string
             format: uint64
           name:
             type: string
-  empowerchain.plasticcredit.QueryCreditClassesResponse:
+  empowerchain.plasticcredit.QueryCreditTypesResponse:
     type: object
     properties:
-      credit_classes:
+      credit_types:
         type: array
         items:
           type: object
@@ -1539,7 +1567,7 @@ definitions:
               type: string
               title: >-
                 abbreviation is the short-hand name *and* the identifier for a
-                credit type
+                credit class
             issuer_id:
               type: string
               format: uint64
@@ -1571,34 +1599,6 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-  empowerchain.plasticcredit.QueryCreditCollectionResponse:
-    type: object
-    properties:
-      credit_collection:
-        type: object
-        properties:
-          denom:
-            type: string
-            title: denominator of the credit, store key
-          project_id:
-            type: string
-            format: uint64
-            title: ID of a project related to the collection
-          total_amount:
-            title: Total amount of active and retired credits for the collection
-            type: object
-            properties:
-              active:
-                type: string
-                format: uint64
-              retired:
-                type: string
-                format: uint64
-          metadata_uris:
-            type: array
-            items:
-              type: string
-            title: IPFS URI of the metadata
   empowerchain.plasticcredit.QueryIssuerResponse:
     type: object
     properties:
@@ -1671,10 +1671,10 @@ definitions:
 
               defaults to the governance account, but can be changed by
               governance (to, for instance, a DAO/group/multisig)
-          credit_class_creation_fee:
+          credit_type_creation_fee:
             title: >-
-              credit_class_creation_fee is the fee that is charged for creating
-              a new credit type
+              credit_type_creation_fee is the fee that is charged for creating a
+              new credit type
 
               defaults to 50 $MPWR, but can be changed by governance
             type: object
@@ -1704,7 +1704,7 @@ definitions:
           applicant_id:
             type: string
             format: uint64
-          credit_class_abbreviation:
+          credit_type_abbreviation:
             type: string
           name:
             type: string
@@ -1730,7 +1730,7 @@ definitions:
             applicant_id:
               type: string
               format: uint64
-            credit_class_abbreviation:
+            credit_type_abbreviation:
               type: string
             name:
               type: string
