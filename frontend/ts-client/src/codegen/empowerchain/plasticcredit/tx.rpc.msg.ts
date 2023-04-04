@@ -1,6 +1,6 @@
 import { Rpc } from "../../helpers";
 import * as _m0 from "protobufjs/minimal";
-import { MsgUpdateParams, MsgUpdateParamsResponse, MsgCreateIssuer, MsgCreateIssuerResponse, MsgUpdateIssuer, MsgUpdateIssuerResponse, MsgCreateApplicant, MsgCreateApplicantResponse, MsgUpdateApplicant, MsgUpdateApplicantResponse, MsgCreateCreditClass, MsgCreateCreditClassResponse, MsgUpdateCreditClass, MsgUpdateCreditClassResponse, MsgCreateProject, MsgCreateProjectResponse, MsgUpdateProject, MsgUpdateProjectResponse, MsgApproveProject, MsgApproveProjectResponse, MsgRejectProject, MsgRejectProjectResponse, MsgSuspendProject, MsgSuspendProjectResponse, MsgIssueCredits, MsgIssueCreditsResponse, MsgTransferCredits, MsgTransferCreditsResponse, MsgRetireCredits, MsgRetireCreditsResponse } from "./tx";
+import { MsgUpdateParams, MsgUpdateParamsResponse, MsgCreateIssuer, MsgCreateIssuerResponse, MsgUpdateIssuer, MsgUpdateIssuerResponse, MsgCreateApplicant, MsgCreateApplicantResponse, MsgUpdateApplicant, MsgUpdateApplicantResponse, MsgCreateCreditType, MsgCreateCreditTypeResponse, MsgUpdateCreditType, MsgUpdateCreditTypeResponse, MsgCreateProject, MsgCreateProjectResponse, MsgUpdateProject, MsgUpdateProjectResponse, MsgApproveProject, MsgApproveProjectResponse, MsgRejectProject, MsgRejectProjectResponse, MsgSuspendProject, MsgSuspendProjectResponse, MsgIssueCredits, MsgIssueCreditsResponse, MsgTransferCredits, MsgTransferCreditsResponse, MsgRetireCredits, MsgRetireCreditsResponse } from "./tx";
 export interface Msg {
   /**
    * UpdateParams defines a governance operation for updating the x/plasticcredit module parameters.
@@ -8,7 +8,7 @@ export interface Msg {
    */
   updateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse>;
   /**
-   * CreateIssuer creates a new Issuer that can create credit classes and issue new credits with those classes
+   * CreateIssuer creates a new Issuer that can create credit types and issue new credits with those classes
    * There is only a single signer in the system that is allowed to create new issuers and it is defined in Params as "issuer_creator"
    */
 
@@ -25,12 +25,12 @@ export interface Msg {
   /** UpdateApplicant updates an existing Applicant by admin */
 
   updateApplicant(request: MsgUpdateApplicant): Promise<MsgUpdateApplicantResponse>;
-  /** CreateCreditClass creates a new Credit Class for an issuer. */
+  /** CreateCreditType creates a new Credit Class for an issuer. */
 
-  createCreditClass(request: MsgCreateCreditClass): Promise<MsgCreateCreditClassResponse>;
-  /** UpdateCreditClass update an existing Credit Class for an issuer. Only the admin from the Issuer that owns the Credit Class is allowed and only change the name */
+  createCreditType(request: MsgCreateCreditType): Promise<MsgCreateCreditTypeResponse>;
+  /** UpdateCreditType update an existing Credit Class for an issuer. Only the admin from the Issuer that owns the Credit Class is allowed and only change the name */
 
-  updateCreditClass(request: MsgUpdateCreditClass): Promise<MsgUpdateCreditClassResponse>;
+  updateCreditType(request: MsgUpdateCreditType): Promise<MsgUpdateCreditTypeResponse>;
   /** CreateProject creates a new Project for an applicant that can be approved be an issuer for issuing under a credit class */
 
   createProject(request: MsgCreateProject): Promise<MsgCreateProjectResponse>;
@@ -66,8 +66,8 @@ export class MsgClientImpl implements Msg {
     this.updateIssuer = this.updateIssuer.bind(this);
     this.createApplicant = this.createApplicant.bind(this);
     this.updateApplicant = this.updateApplicant.bind(this);
-    this.createCreditClass = this.createCreditClass.bind(this);
-    this.updateCreditClass = this.updateCreditClass.bind(this);
+    this.createCreditType = this.createCreditType.bind(this);
+    this.updateCreditType = this.updateCreditType.bind(this);
     this.createProject = this.createProject.bind(this);
     this.updateProject = this.updateProject.bind(this);
     this.approveProject = this.approveProject.bind(this);
@@ -108,16 +108,16 @@ export class MsgClientImpl implements Msg {
     return promise.then(data => MsgUpdateApplicantResponse.decode(new _m0.Reader(data)));
   }
 
-  createCreditClass(request: MsgCreateCreditClass): Promise<MsgCreateCreditClassResponse> {
-    const data = MsgCreateCreditClass.encode(request).finish();
-    const promise = this.rpc.request("empowerchain.plasticcredit.Msg", "CreateCreditClass", data);
-    return promise.then(data => MsgCreateCreditClassResponse.decode(new _m0.Reader(data)));
+  createCreditType(request: MsgCreateCreditType): Promise<MsgCreateCreditTypeResponse> {
+    const data = MsgCreateCreditType.encode(request).finish();
+    const promise = this.rpc.request("empowerchain.plasticcredit.Msg", "CreateCreditType", data);
+    return promise.then(data => MsgCreateCreditTypeResponse.decode(new _m0.Reader(data)));
   }
 
-  updateCreditClass(request: MsgUpdateCreditClass): Promise<MsgUpdateCreditClassResponse> {
-    const data = MsgUpdateCreditClass.encode(request).finish();
-    const promise = this.rpc.request("empowerchain.plasticcredit.Msg", "UpdateCreditClass", data);
-    return promise.then(data => MsgUpdateCreditClassResponse.decode(new _m0.Reader(data)));
+  updateCreditType(request: MsgUpdateCreditType): Promise<MsgUpdateCreditTypeResponse> {
+    const data = MsgUpdateCreditType.encode(request).finish();
+    const promise = this.rpc.request("empowerchain.plasticcredit.Msg", "UpdateCreditType", data);
+    return promise.then(data => MsgUpdateCreditTypeResponse.decode(new _m0.Reader(data)));
   }
 
   createProject(request: MsgCreateProject): Promise<MsgCreateProjectResponse> {

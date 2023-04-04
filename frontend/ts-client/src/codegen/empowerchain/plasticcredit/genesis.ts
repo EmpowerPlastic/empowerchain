@@ -1,4 +1,4 @@
-import { Params, ParamsSDKType, IDCounters, IDCountersSDKType, Issuer, IssuerSDKType, Applicant, ApplicantSDKType, CreditClass, CreditClassSDKType, Project, ProjectSDKType, CreditCollection, CreditCollectionSDKType, CreditBalance, CreditBalanceSDKType } from "./types";
+import { Params, ParamsSDKType, IDCounters, IDCountersSDKType, Issuer, IssuerSDKType, Applicant, ApplicantSDKType, CreditType, CreditTypeSDKType, Project, ProjectSDKType, CreditCollection, CreditCollectionSDKType, CreditBalance, CreditBalanceSDKType } from "./types";
 import * as _m0 from "protobufjs/minimal";
 import { DeepPartial } from "../../helpers";
 /** GenesisState defines the plasticcredit module's genesis state. */
@@ -8,7 +8,7 @@ export interface GenesisState {
   idCounters?: IDCounters;
   issuers: Issuer[];
   applicants: Applicant[];
-  creditClasses: CreditClass[];
+  creditTypes: CreditType[];
   projects: Project[];
   creditCollections: CreditCollection[];
   creditBalances: CreditBalance[];
@@ -20,7 +20,7 @@ export interface GenesisStateSDKType {
   id_counters?: IDCountersSDKType;
   issuers: IssuerSDKType[];
   applicants: ApplicantSDKType[];
-  credit_classes: CreditClassSDKType[];
+  credit_types: CreditTypeSDKType[];
   projects: ProjectSDKType[];
   credit_collections: CreditCollectionSDKType[];
   credit_balances: CreditBalanceSDKType[];
@@ -32,7 +32,7 @@ function createBaseGenesisState(): GenesisState {
     idCounters: undefined,
     issuers: [],
     applicants: [],
-    creditClasses: [],
+    creditTypes: [],
     projects: [],
     creditCollections: [],
     creditBalances: []
@@ -57,8 +57,8 @@ export const GenesisState = {
       Applicant.encode(v!, writer.uint32(34).fork()).ldelim();
     }
 
-    for (const v of message.creditClasses) {
-      CreditClass.encode(v!, writer.uint32(42).fork()).ldelim();
+    for (const v of message.creditTypes) {
+      CreditType.encode(v!, writer.uint32(42).fork()).ldelim();
     }
 
     for (const v of message.projects) {
@@ -102,7 +102,7 @@ export const GenesisState = {
           break;
 
         case 5:
-          message.creditClasses.push(CreditClass.decode(reader, reader.uint32()));
+          message.creditTypes.push(CreditType.decode(reader, reader.uint32()));
           break;
 
         case 6:
@@ -132,7 +132,7 @@ export const GenesisState = {
     message.idCounters = object.idCounters !== undefined && object.idCounters !== null ? IDCounters.fromPartial(object.idCounters) : undefined;
     message.issuers = object.issuers?.map(e => Issuer.fromPartial(e)) || [];
     message.applicants = object.applicants?.map(e => Applicant.fromPartial(e)) || [];
-    message.creditClasses = object.creditClasses?.map(e => CreditClass.fromPartial(e)) || [];
+    message.creditTypes = object.creditTypes?.map(e => CreditType.fromPartial(e)) || [];
     message.projects = object.projects?.map(e => Project.fromPartial(e)) || [];
     message.creditCollections = object.creditCollections?.map(e => CreditCollection.fromPartial(e)) || [];
     message.creditBalances = object.creditBalances?.map(e => CreditBalance.fromPartial(e)) || [];

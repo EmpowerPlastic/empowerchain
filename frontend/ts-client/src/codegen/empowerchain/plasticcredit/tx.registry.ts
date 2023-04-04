@@ -1,6 +1,6 @@
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
-import { MsgUpdateParams, MsgCreateIssuer, MsgUpdateIssuer, MsgCreateApplicant, MsgUpdateApplicant, MsgCreateCreditClass, MsgUpdateCreditClass, MsgCreateProject, MsgUpdateProject, MsgApproveProject, MsgRejectProject, MsgSuspendProject, MsgIssueCredits, MsgTransferCredits, MsgRetireCredits } from "./tx";
-export const registry: ReadonlyArray<[string, GeneratedType]> = [["/empowerchain.plasticcredit.MsgUpdateParams", MsgUpdateParams], ["/empowerchain.plasticcredit.MsgCreateIssuer", MsgCreateIssuer], ["/empowerchain.plasticcredit.MsgUpdateIssuer", MsgUpdateIssuer], ["/empowerchain.plasticcredit.MsgCreateApplicant", MsgCreateApplicant], ["/empowerchain.plasticcredit.MsgUpdateApplicant", MsgUpdateApplicant], ["/empowerchain.plasticcredit.MsgCreateCreditClass", MsgCreateCreditClass], ["/empowerchain.plasticcredit.MsgUpdateCreditClass", MsgUpdateCreditClass], ["/empowerchain.plasticcredit.MsgCreateProject", MsgCreateProject], ["/empowerchain.plasticcredit.MsgUpdateProject", MsgUpdateProject], ["/empowerchain.plasticcredit.MsgApproveProject", MsgApproveProject], ["/empowerchain.plasticcredit.MsgRejectProject", MsgRejectProject], ["/empowerchain.plasticcredit.MsgSuspendProject", MsgSuspendProject], ["/empowerchain.plasticcredit.MsgIssueCredits", MsgIssueCredits], ["/empowerchain.plasticcredit.MsgTransferCredits", MsgTransferCredits], ["/empowerchain.plasticcredit.MsgRetireCredits", MsgRetireCredits]];
+import { MsgUpdateParams, MsgCreateIssuer, MsgUpdateIssuer, MsgCreateApplicant, MsgUpdateApplicant, MsgCreateCreditType, MsgUpdateCreditType, MsgCreateProject, MsgUpdateProject, MsgApproveProject, MsgRejectProject, MsgSuspendProject, MsgIssueCredits, MsgTransferCredits, MsgRetireCredits } from "./tx";
+export const registry: ReadonlyArray<[string, GeneratedType]> = [["/empowerchain.plasticcredit.MsgUpdateParams", MsgUpdateParams], ["/empowerchain.plasticcredit.MsgCreateIssuer", MsgCreateIssuer], ["/empowerchain.plasticcredit.MsgUpdateIssuer", MsgUpdateIssuer], ["/empowerchain.plasticcredit.MsgCreateApplicant", MsgCreateApplicant], ["/empowerchain.plasticcredit.MsgUpdateApplicant", MsgUpdateApplicant], ["/empowerchain.plasticcredit.MsgCreateCreditType", MsgCreateCreditType], ["/empowerchain.plasticcredit.MsgUpdateCreditType", MsgUpdateCreditType], ["/empowerchain.plasticcredit.MsgCreateProject", MsgCreateProject], ["/empowerchain.plasticcredit.MsgUpdateProject", MsgUpdateProject], ["/empowerchain.plasticcredit.MsgApproveProject", MsgApproveProject], ["/empowerchain.plasticcredit.MsgRejectProject", MsgRejectProject], ["/empowerchain.plasticcredit.MsgSuspendProject", MsgSuspendProject], ["/empowerchain.plasticcredit.MsgIssueCredits", MsgIssueCredits], ["/empowerchain.plasticcredit.MsgTransferCredits", MsgTransferCredits], ["/empowerchain.plasticcredit.MsgRetireCredits", MsgRetireCredits]];
 export const load = (protoRegistry: Registry) => {
   registry.forEach(([typeUrl, mod]) => {
     protoRegistry.register(typeUrl, mod);
@@ -43,17 +43,17 @@ export const MessageComposer = {
       };
     },
 
-    createCreditClass(value: MsgCreateCreditClass) {
+    createCreditType(value: MsgCreateCreditType) {
       return {
-        typeUrl: "/empowerchain.plasticcredit.MsgCreateCreditClass",
-        value: MsgCreateCreditClass.encode(value).finish()
+        typeUrl: "/empowerchain.plasticcredit.MsgCreateCreditType",
+        value: MsgCreateCreditType.encode(value).finish()
       };
     },
 
-    updateCreditClass(value: MsgUpdateCreditClass) {
+    updateCreditType(value: MsgUpdateCreditType) {
       return {
-        typeUrl: "/empowerchain.plasticcredit.MsgUpdateCreditClass",
-        value: MsgUpdateCreditClass.encode(value).finish()
+        typeUrl: "/empowerchain.plasticcredit.MsgUpdateCreditType",
+        value: MsgUpdateCreditType.encode(value).finish()
       };
     },
 
@@ -150,16 +150,16 @@ export const MessageComposer = {
       };
     },
 
-    createCreditClass(value: MsgCreateCreditClass) {
+    createCreditType(value: MsgCreateCreditType) {
       return {
-        typeUrl: "/empowerchain.plasticcredit.MsgCreateCreditClass",
+        typeUrl: "/empowerchain.plasticcredit.MsgCreateCreditType",
         value
       };
     },
 
-    updateCreditClass(value: MsgUpdateCreditClass) {
+    updateCreditType(value: MsgUpdateCreditType) {
       return {
-        typeUrl: "/empowerchain.plasticcredit.MsgUpdateCreditClass",
+        typeUrl: "/empowerchain.plasticcredit.MsgUpdateCreditType",
         value
       };
     },
@@ -257,17 +257,17 @@ export const MessageComposer = {
       };
     },
 
-    createCreditClass(value: MsgCreateCreditClass) {
+    createCreditType(value: MsgCreateCreditType) {
       return {
-        typeUrl: "/empowerchain.plasticcredit.MsgCreateCreditClass",
-        value: MsgCreateCreditClass.fromPartial(value)
+        typeUrl: "/empowerchain.plasticcredit.MsgCreateCreditType",
+        value: MsgCreateCreditType.fromPartial(value)
       };
     },
 
-    updateCreditClass(value: MsgUpdateCreditClass) {
+    updateCreditType(value: MsgUpdateCreditType) {
       return {
-        typeUrl: "/empowerchain.plasticcredit.MsgUpdateCreditClass",
-        value: MsgUpdateCreditClass.fromPartial(value)
+        typeUrl: "/empowerchain.plasticcredit.MsgUpdateCreditType",
+        value: MsgUpdateCreditType.fromPartial(value)
       };
     },
 

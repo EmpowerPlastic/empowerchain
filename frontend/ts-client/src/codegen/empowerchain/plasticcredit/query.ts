@@ -1,5 +1,5 @@
 import { PageRequest, PageRequestSDKType, PageResponse, PageResponseSDKType } from "../../cosmos/base/query/v1beta1/pagination";
-import { Params, ParamsSDKType, Issuer, IssuerSDKType, Applicant, ApplicantSDKType, CreditClass, CreditClassSDKType, Project, ProjectSDKType, CreditCollection, CreditCollectionSDKType, CreditBalance, CreditBalanceSDKType } from "./types";
+import { Params, ParamsSDKType, Issuer, IssuerSDKType, Applicant, ApplicantSDKType, CreditType, CreditTypeSDKType, Project, ProjectSDKType, CreditCollection, CreditCollectionSDKType, CreditBalance, CreditBalanceSDKType } from "./types";
 import * as _m0 from "protobufjs/minimal";
 import { DeepPartial, Long } from "../../helpers";
 export interface QueryParamsRequest {}
@@ -62,31 +62,31 @@ export interface QueryApplicantResponse {
 export interface QueryApplicantResponseSDKType {
   applicant?: ApplicantSDKType;
 }
-export interface QueryCreditClassesRequest {
+export interface QueryCreditTypesRequest {
   pagination?: PageRequest;
 }
-export interface QueryCreditClassesRequestSDKType {
+export interface QueryCreditTypesRequestSDKType {
   pagination?: PageRequestSDKType;
 }
-export interface QueryCreditClassesResponse {
-  creditClasses: CreditClass[];
+export interface QueryCreditTypesResponse {
+  creditTypes: CreditType[];
   pagination?: PageResponse;
 }
-export interface QueryCreditClassesResponseSDKType {
-  credit_classes: CreditClassSDKType[];
+export interface QueryCreditTypesResponseSDKType {
+  credit_types: CreditTypeSDKType[];
   pagination?: PageResponseSDKType;
 }
-export interface QueryCreditClassRequest {
-  creditClassAbbreviation: string;
+export interface QueryCreditTypeRequest {
+  creditTypeAbbreviation: string;
 }
-export interface QueryCreditClassRequestSDKType {
-  credit_class_abbreviation: string;
+export interface QueryCreditTypeRequestSDKType {
+  credit_type_abbreviation: string;
 }
-export interface QueryCreditClassResponse {
-  creditClass?: CreditClass;
+export interface QueryCreditTypeResponse {
+  creditType?: CreditType;
 }
-export interface QueryCreditClassResponseSDKType {
-  credit_class?: CreditClassSDKType;
+export interface QueryCreditTypeResponseSDKType {
+  credit_type?: CreditTypeSDKType;
 }
 export interface QueryProjectsRequest {
   pagination?: PageRequest;
@@ -614,14 +614,14 @@ export const QueryApplicantResponse = {
 
 };
 
-function createBaseQueryCreditClassesRequest(): QueryCreditClassesRequest {
+function createBaseQueryCreditTypesRequest(): QueryCreditTypesRequest {
   return {
     pagination: undefined
   };
 }
 
-export const QueryCreditClassesRequest = {
-  encode(message: QueryCreditClassesRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const QueryCreditTypesRequest = {
+  encode(message: QueryCreditTypesRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.pagination !== undefined) {
       PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
     }
@@ -629,10 +629,10 @@ export const QueryCreditClassesRequest = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreditClassesRequest {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreditTypesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryCreditClassesRequest();
+    const message = createBaseQueryCreditTypesRequest();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -651,25 +651,25 @@ export const QueryCreditClassesRequest = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<QueryCreditClassesRequest>): QueryCreditClassesRequest {
-    const message = createBaseQueryCreditClassesRequest();
+  fromPartial(object: DeepPartial<QueryCreditTypesRequest>): QueryCreditTypesRequest {
+    const message = createBaseQueryCreditTypesRequest();
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
     return message;
   }
 
 };
 
-function createBaseQueryCreditClassesResponse(): QueryCreditClassesResponse {
+function createBaseQueryCreditTypesResponse(): QueryCreditTypesResponse {
   return {
-    creditClasses: [],
+    creditTypes: [],
     pagination: undefined
   };
 }
 
-export const QueryCreditClassesResponse = {
-  encode(message: QueryCreditClassesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.creditClasses) {
-      CreditClass.encode(v!, writer.uint32(10).fork()).ldelim();
+export const QueryCreditTypesResponse = {
+  encode(message: QueryCreditTypesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.creditTypes) {
+      CreditType.encode(v!, writer.uint32(10).fork()).ldelim();
     }
 
     if (message.pagination !== undefined) {
@@ -679,17 +679,17 @@ export const QueryCreditClassesResponse = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreditClassesResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreditTypesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryCreditClassesResponse();
+    const message = createBaseQueryCreditTypesResponse();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
 
       switch (tag >>> 3) {
         case 1:
-          message.creditClasses.push(CreditClass.decode(reader, reader.uint32()));
+          message.creditTypes.push(CreditType.decode(reader, reader.uint32()));
           break;
 
         case 2:
@@ -705,41 +705,41 @@ export const QueryCreditClassesResponse = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<QueryCreditClassesResponse>): QueryCreditClassesResponse {
-    const message = createBaseQueryCreditClassesResponse();
-    message.creditClasses = object.creditClasses?.map(e => CreditClass.fromPartial(e)) || [];
+  fromPartial(object: DeepPartial<QueryCreditTypesResponse>): QueryCreditTypesResponse {
+    const message = createBaseQueryCreditTypesResponse();
+    message.creditTypes = object.creditTypes?.map(e => CreditType.fromPartial(e)) || [];
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
     return message;
   }
 
 };
 
-function createBaseQueryCreditClassRequest(): QueryCreditClassRequest {
+function createBaseQueryCreditTypeRequest(): QueryCreditTypeRequest {
   return {
-    creditClassAbbreviation: ""
+    creditTypeAbbreviation: ""
   };
 }
 
-export const QueryCreditClassRequest = {
-  encode(message: QueryCreditClassRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.creditClassAbbreviation !== "") {
-      writer.uint32(10).string(message.creditClassAbbreviation);
+export const QueryCreditTypeRequest = {
+  encode(message: QueryCreditTypeRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.creditTypeAbbreviation !== "") {
+      writer.uint32(10).string(message.creditTypeAbbreviation);
     }
 
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreditClassRequest {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreditTypeRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryCreditClassRequest();
+    const message = createBaseQueryCreditTypeRequest();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
 
       switch (tag >>> 3) {
         case 1:
-          message.creditClassAbbreviation = reader.string();
+          message.creditTypeAbbreviation = reader.string();
           break;
 
         default:
@@ -751,40 +751,40 @@ export const QueryCreditClassRequest = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<QueryCreditClassRequest>): QueryCreditClassRequest {
-    const message = createBaseQueryCreditClassRequest();
-    message.creditClassAbbreviation = object.creditClassAbbreviation ?? "";
+  fromPartial(object: DeepPartial<QueryCreditTypeRequest>): QueryCreditTypeRequest {
+    const message = createBaseQueryCreditTypeRequest();
+    message.creditTypeAbbreviation = object.creditTypeAbbreviation ?? "";
     return message;
   }
 
 };
 
-function createBaseQueryCreditClassResponse(): QueryCreditClassResponse {
+function createBaseQueryCreditTypeResponse(): QueryCreditTypeResponse {
   return {
-    creditClass: undefined
+    creditType: undefined
   };
 }
 
-export const QueryCreditClassResponse = {
-  encode(message: QueryCreditClassResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.creditClass !== undefined) {
-      CreditClass.encode(message.creditClass, writer.uint32(10).fork()).ldelim();
+export const QueryCreditTypeResponse = {
+  encode(message: QueryCreditTypeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.creditType !== undefined) {
+      CreditType.encode(message.creditType, writer.uint32(10).fork()).ldelim();
     }
 
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreditClassResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreditTypeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryCreditClassResponse();
+    const message = createBaseQueryCreditTypeResponse();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
 
       switch (tag >>> 3) {
         case 1:
-          message.creditClass = CreditClass.decode(reader, reader.uint32());
+          message.creditType = CreditType.decode(reader, reader.uint32());
           break;
 
         default:
@@ -796,9 +796,9 @@ export const QueryCreditClassResponse = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<QueryCreditClassResponse>): QueryCreditClassResponse {
-    const message = createBaseQueryCreditClassResponse();
-    message.creditClass = object.creditClass !== undefined && object.creditClass !== null ? CreditClass.fromPartial(object.creditClass) : undefined;
+  fromPartial(object: DeepPartial<QueryCreditTypeResponse>): QueryCreditTypeResponse {
+    const message = createBaseQueryCreditTypeResponse();
+    message.creditType = object.creditType !== undefined && object.creditType !== null ? CreditType.fromPartial(object.creditType) : undefined;
     return message;
   }
 

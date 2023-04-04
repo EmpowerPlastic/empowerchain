@@ -67,11 +67,11 @@ export interface Params {
    */
   issuerCreator: string;
   /**
-   * credit_class_creation_fee is the fee that is charged for creating a new credit class
+   * credit_type_creation_fee is the fee that is charged for creating a new credit type
    * defaults to 50 $MPWR, but can be changed by governance
    */
 
-  creditClassCreationFee?: Coin;
+  creditTypeCreationFee?: Coin;
 }
 /** Params defines the parameters for the module. */
 
@@ -82,11 +82,11 @@ export interface ParamsSDKType {
    */
   issuer_creator: string;
   /**
-   * credit_class_creation_fee is the fee that is charged for creating a new credit class
+   * credit_type_creation_fee is the fee that is charged for creating a new credit type
    * defaults to 50 $MPWR, but can be changed by governance
    */
 
-  credit_class_creation_fee?: CoinSDKType;
+  credit_type_creation_fee?: CoinSDKType;
 }
 export interface IDCounters {
   nextIssuerId: Long;
@@ -122,13 +122,13 @@ export interface ApplicantSDKType {
   description: string;
   admin: string;
 }
-export interface CreditClass {
+export interface CreditType {
   /** abbreviation is the short-hand name *and* the identifier for a credit class */
   abbreviation: string;
   issuerId: Long;
   name: string;
 }
-export interface CreditClassSDKType {
+export interface CreditTypeSDKType {
   /** abbreviation is the short-hand name *and* the identifier for a credit class */
   abbreviation: string;
   issuer_id: Long;
@@ -137,14 +137,14 @@ export interface CreditClassSDKType {
 export interface Project {
   id: Long;
   applicantId: Long;
-  creditClassAbbreviation: string;
+  creditTypeAbbreviation: string;
   name: string;
   status: ProjectStatus;
 }
 export interface ProjectSDKType {
   id: Long;
   applicant_id: Long;
-  credit_class_abbreviation: string;
+  credit_type_abbreviation: string;
   name: string;
   status: ProjectStatusSDKType;
 }
@@ -214,7 +214,7 @@ export interface ProvenDataSDKType {
 function createBaseParams(): Params {
   return {
     issuerCreator: "",
-    creditClassCreationFee: undefined
+    creditTypeCreationFee: undefined
   };
 }
 
@@ -224,8 +224,8 @@ export const Params = {
       writer.uint32(10).string(message.issuerCreator);
     }
 
-    if (message.creditClassCreationFee !== undefined) {
-      Coin.encode(message.creditClassCreationFee, writer.uint32(18).fork()).ldelim();
+    if (message.creditTypeCreationFee !== undefined) {
+      Coin.encode(message.creditTypeCreationFee, writer.uint32(18).fork()).ldelim();
     }
 
     return writer;
@@ -245,7 +245,7 @@ export const Params = {
           break;
 
         case 2:
-          message.creditClassCreationFee = Coin.decode(reader, reader.uint32());
+          message.creditTypeCreationFee = Coin.decode(reader, reader.uint32());
           break;
 
         default:
@@ -260,7 +260,7 @@ export const Params = {
   fromPartial(object: DeepPartial<Params>): Params {
     const message = createBaseParams();
     message.issuerCreator = object.issuerCreator ?? "";
-    message.creditClassCreationFee = object.creditClassCreationFee !== undefined && object.creditClassCreationFee !== null ? Coin.fromPartial(object.creditClassCreationFee) : undefined;
+    message.creditTypeCreationFee = object.creditTypeCreationFee !== undefined && object.creditTypeCreationFee !== null ? Coin.fromPartial(object.creditTypeCreationFee) : undefined;
     return message;
   }
 
@@ -481,7 +481,7 @@ export const Applicant = {
 
 };
 
-function createBaseCreditClass(): CreditClass {
+function createBaseCreditType(): CreditType {
   return {
     abbreviation: "",
     issuerId: Long.UZERO,
@@ -489,8 +489,8 @@ function createBaseCreditClass(): CreditClass {
   };
 }
 
-export const CreditClass = {
-  encode(message: CreditClass, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const CreditType = {
+  encode(message: CreditType, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.abbreviation !== "") {
       writer.uint32(10).string(message.abbreviation);
     }
@@ -506,10 +506,10 @@ export const CreditClass = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): CreditClass {
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreditType {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCreditClass();
+    const message = createBaseCreditType();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -536,8 +536,8 @@ export const CreditClass = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<CreditClass>): CreditClass {
-    const message = createBaseCreditClass();
+  fromPartial(object: DeepPartial<CreditType>): CreditType {
+    const message = createBaseCreditType();
     message.abbreviation = object.abbreviation ?? "";
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
     message.name = object.name ?? "";
@@ -550,7 +550,7 @@ function createBaseProject(): Project {
   return {
     id: Long.UZERO,
     applicantId: Long.UZERO,
-    creditClassAbbreviation: "",
+    creditTypeAbbreviation: "",
     name: "",
     status: 0
   };
@@ -566,8 +566,8 @@ export const Project = {
       writer.uint32(16).uint64(message.applicantId);
     }
 
-    if (message.creditClassAbbreviation !== "") {
-      writer.uint32(26).string(message.creditClassAbbreviation);
+    if (message.creditTypeAbbreviation !== "") {
+      writer.uint32(26).string(message.creditTypeAbbreviation);
     }
 
     if (message.name !== "") {
@@ -599,7 +599,7 @@ export const Project = {
           break;
 
         case 3:
-          message.creditClassAbbreviation = reader.string();
+          message.creditTypeAbbreviation = reader.string();
           break;
 
         case 4:
@@ -623,7 +623,7 @@ export const Project = {
     const message = createBaseProject();
     message.id = object.id !== undefined && object.id !== null ? Long.fromValue(object.id) : Long.UZERO;
     message.applicantId = object.applicantId !== undefined && object.applicantId !== null ? Long.fromValue(object.applicantId) : Long.UZERO;
-    message.creditClassAbbreviation = object.creditClassAbbreviation ?? "";
+    message.creditTypeAbbreviation = object.creditTypeAbbreviation ?? "";
     message.name = object.name ?? "";
     message.status = object.status ?? 0;
     return message;

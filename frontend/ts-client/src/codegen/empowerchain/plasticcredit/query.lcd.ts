@@ -1,6 +1,6 @@
 import { setPaginationParams } from "../../helpers";
 import { LCDClient } from "@osmonauts/lcd";
-import { QueryParamsRequest, QueryParamsResponseSDKType, QueryIssuersRequest, QueryIssuersResponseSDKType, QueryIssuerRequest, QueryIssuerResponseSDKType, QueryApplicantsRequest, QueryApplicantsResponseSDKType, QueryApplicantRequest, QueryApplicantResponseSDKType, QueryCreditClassesRequest, QueryCreditClassesResponseSDKType, QueryCreditClassRequest, QueryCreditClassResponseSDKType, QueryProjectsRequest, QueryProjectsResponseSDKType, QueryProjectRequest, QueryProjectResponseSDKType, QueryCreditCollectionRequest, QueryCreditCollectionResponseSDKType, QueryCreditBalancesRequest, QueryCreditBalancesResponseSDKType, QueryCreditBalanceRequest, QueryCreditBalanceResponseSDKType } from "./query";
+import { QueryParamsRequest, QueryParamsResponseSDKType, QueryIssuersRequest, QueryIssuersResponseSDKType, QueryIssuerRequest, QueryIssuerResponseSDKType, QueryApplicantsRequest, QueryApplicantsResponseSDKType, QueryApplicantRequest, QueryApplicantResponseSDKType, QueryCreditTypesRequest, QueryCreditTypesResponseSDKType, QueryCreditTypeRequest, QueryCreditTypeResponseSDKType, QueryProjectsRequest, QueryProjectsResponseSDKType, QueryProjectRequest, QueryProjectResponseSDKType, QueryCreditCollectionRequest, QueryCreditCollectionResponseSDKType, QueryCreditBalancesRequest, QueryCreditBalancesResponseSDKType, QueryCreditBalanceRequest, QueryCreditBalanceResponseSDKType } from "./query";
 export class LCDQueryClient {
   req: LCDClient;
 
@@ -15,8 +15,8 @@ export class LCDQueryClient {
     this.issuer = this.issuer.bind(this);
     this.applicants = this.applicants.bind(this);
     this.applicant = this.applicant.bind(this);
-    this.creditClasses = this.creditClasses.bind(this);
-    this.creditClass = this.creditClass.bind(this);
+    this.creditTypes = this.creditTypes.bind(this);
+    this.creditType = this.creditType.bind(this);
     this.projects = this.projects.bind(this);
     this.project = this.project.bind(this);
     this.creditCollection = this.creditCollection.bind(this);
@@ -78,12 +78,12 @@ export class LCDQueryClient {
     const endpoint = `empowerchain/empowerchain/plasticcredit/applicants/${params.applicantId}`;
     return await this.req.get<QueryApplicantResponseSDKType>(endpoint);
   }
-  /* CreditClasses */
+  /* CreditTypes */
 
 
-  async creditClasses(params: QueryCreditClassesRequest = {
+  async creditTypes(params: QueryCreditTypesRequest = {
     pagination: undefined
-  }): Promise<QueryCreditClassesResponseSDKType> {
+  }): Promise<QueryCreditTypesResponseSDKType> {
     const options: any = {
       params: {}
     };
@@ -93,14 +93,14 @@ export class LCDQueryClient {
     }
 
     const endpoint = `empowerchain/empowerchain/plasticcredit/credit-classes`;
-    return await this.req.get<QueryCreditClassesResponseSDKType>(endpoint, options);
+    return await this.req.get<QueryCreditTypesResponseSDKType>(endpoint, options);
   }
-  /* CreditClass */
+  /* CreditType */
 
 
-  async creditClass(params: QueryCreditClassRequest): Promise<QueryCreditClassResponseSDKType> {
-    const endpoint = `empowerchain/empowerchain/plasticcredit/credit-classes/${params.creditClassAbbreviation}`;
-    return await this.req.get<QueryCreditClassResponseSDKType>(endpoint);
+  async creditType(params: QueryCreditTypeRequest): Promise<QueryCreditTypeResponseSDKType> {
+    const endpoint = `empowerchain/empowerchain/plasticcredit/credit-classes/${params.creditTypeAbbreviation}`;
+    return await this.req.get<QueryCreditTypeResponseSDKType>(endpoint);
   }
   /* Projects */
 

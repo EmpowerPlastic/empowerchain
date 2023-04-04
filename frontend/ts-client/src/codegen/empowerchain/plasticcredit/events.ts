@@ -41,7 +41,7 @@ export interface EventUpdateIssuerSDKType {
 export interface EventCreateProject {
   creator: string;
   applicantId: Long;
-  creditClassAbbreviation: string;
+  creditTypeAbbreviation: string;
   name: string;
 }
 /** EventCreateProject is an event emitted when a new Project is created */
@@ -49,7 +49,7 @@ export interface EventCreateProject {
 export interface EventCreateProjectSDKType {
   creator: string;
   applicant_id: Long;
-  credit_class_abbreviation: string;
+  credit_type_abbreviation: string;
   name: string;
 }
 /** EventUpdateProject is an event emitted when a Project is updated */
@@ -66,19 +66,19 @@ export interface EventUpdateProjectSDKType {
   project_id: Long;
   name: string;
 }
-/** EventProjectApproved is an event emitted when a project is approved by the issuer associated with the projects credit class */
+/** EventProjectApproved is an event emitted when a project is approved by the issuer associated with the projects credit type */
 
 export interface EventProjectApproved {
   projectId: Long;
-  approvedForCreditClassAbbreviation: string;
+  approvedForCreditTypeAbbreviation: string;
   approvingIssuerId: Long;
   approvedBy: string;
 }
-/** EventProjectApproved is an event emitted when a project is approved by the issuer associated with the projects credit class */
+/** EventProjectApproved is an event emitted when a project is approved by the issuer associated with the projects credit type */
 
 export interface EventProjectApprovedSDKType {
   project_id: Long;
-  approved_for_credit_class_abbreviation: string;
+  approved_for_credit_type_abbreviation: string;
   approving_issuer_id: Long;
   approved_by: string;
 }
@@ -86,7 +86,7 @@ export interface EventProjectApprovedSDKType {
 
 export interface EventProjectRejected {
   projectId: Long;
-  rejectedForCreditClassAbbreviation: string;
+  rejectedForCreditTypeAbbreviation: string;
   rejectingIssuerId: Long;
   rejectedBy: string;
 }
@@ -94,7 +94,7 @@ export interface EventProjectRejected {
 
 export interface EventProjectRejectedSDKType {
   project_id: Long;
-  rejected_for_credit_class_abbreviation: string;
+  rejected_for_credit_type_abbreviation: string;
   rejecting_issuer_id: Long;
   rejected_by: string;
 }
@@ -119,7 +119,7 @@ export interface EventProjectSuspendedSDKType {
 export interface EventIssuedCredits {
   issuerId: Long;
   projectId: Long;
-  creditClassAbbreviation: string;
+  creditTypeAbbreviation: string;
   denom: string;
   amount: Long;
   issuerAddress: string;
@@ -130,7 +130,7 @@ export interface EventIssuedCredits {
 export interface EventIssuedCreditsSDKType {
   issuer_id: Long;
   project_id: Long;
-  credit_class_abbreviation: string;
+  credit_type_abbreviation: string;
   denom: string;
   amount: Long;
   issuer_address: string;
@@ -144,7 +144,7 @@ export interface EventTransferCredits {
   denom: string;
   amount: Long;
   issuerId: Long;
-  creditClassAbbreviation: string;
+  creditTypeAbbreviation: string;
 }
 /** EventTransferCredits is an event emitted when credits are being transfered from one account to another */
 
@@ -154,7 +154,7 @@ export interface EventTransferCreditsSDKType {
   denom: string;
   amount: Long;
   issuer_id: Long;
-  credit_class_abbreviation: string;
+  credit_type_abbreviation: string;
 }
 /** EventRetiredCredits is an event emitted when credits are retired */
 
@@ -163,7 +163,7 @@ export interface EventRetiredCredits {
   denom: string;
   amount: Long;
   issuerId: Long;
-  creditClassAbbreviation: string;
+  creditTypeAbbreviation: string;
 }
 /** EventRetiredCredits is an event emitted when credits are retired */
 
@@ -172,7 +172,7 @@ export interface EventRetiredCreditsSDKType {
   denom: string;
   amount: Long;
   issuer_id: Long;
-  credit_class_abbreviation: string;
+  credit_type_abbreviation: string;
 }
 /** EventCreateApplicant is an event emitted when a new applicant is created */
 
@@ -208,32 +208,32 @@ export interface EventUpdateApplicantSDKType {
   admin: string;
   updater: string;
 }
-/** EventCreateCreditClass is an event emitted when a new Credit Class is created */
+/** EventCreateCreditType is an event emitted when a new Credit Class is created */
 
-export interface EventCreateCreditClass {
+export interface EventCreateCreditType {
   creator: string;
   abbreviation: string;
   issuerId: Long;
   name: string;
 }
-/** EventCreateCreditClass is an event emitted when a new Credit Class is created */
+/** EventCreateCreditType is an event emitted when a new Credit Class is created */
 
-export interface EventCreateCreditClassSDKType {
+export interface EventCreateCreditTypeSDKType {
   creator: string;
   abbreviation: string;
   issuer_id: Long;
   name: string;
 }
-/** EventUpdateCreditClass is an event emitted when a Credit Class is updated */
+/** EventUpdateCreditType is an event emitted when a Credit Class is updated */
 
-export interface EventUpdateCreditClass {
+export interface EventUpdateCreditType {
   updater: string;
   abbreviation: string;
   name: string;
 }
-/** EventUpdateCreditClass is an event emitted when a Credit Class is updated */
+/** EventUpdateCreditType is an event emitted when a Credit Class is updated */
 
-export interface EventUpdateCreditClassSDKType {
+export interface EventUpdateCreditTypeSDKType {
   updater: string;
   abbreviation: string;
   name: string;
@@ -413,7 +413,7 @@ function createBaseEventCreateProject(): EventCreateProject {
   return {
     creator: "",
     applicantId: Long.UZERO,
-    creditClassAbbreviation: "",
+    creditTypeAbbreviation: "",
     name: ""
   };
 }
@@ -428,8 +428,8 @@ export const EventCreateProject = {
       writer.uint32(16).uint64(message.applicantId);
     }
 
-    if (message.creditClassAbbreviation !== "") {
-      writer.uint32(26).string(message.creditClassAbbreviation);
+    if (message.creditTypeAbbreviation !== "") {
+      writer.uint32(26).string(message.creditTypeAbbreviation);
     }
 
     if (message.name !== "") {
@@ -457,7 +457,7 @@ export const EventCreateProject = {
           break;
 
         case 3:
-          message.creditClassAbbreviation = reader.string();
+          message.creditTypeAbbreviation = reader.string();
           break;
 
         case 4:
@@ -477,7 +477,7 @@ export const EventCreateProject = {
     const message = createBaseEventCreateProject();
     message.creator = object.creator ?? "";
     message.applicantId = object.applicantId !== undefined && object.applicantId !== null ? Long.fromValue(object.applicantId) : Long.UZERO;
-    message.creditClassAbbreviation = object.creditClassAbbreviation ?? "";
+    message.creditTypeAbbreviation = object.creditTypeAbbreviation ?? "";
     message.name = object.name ?? "";
     return message;
   }
@@ -552,7 +552,7 @@ export const EventUpdateProject = {
 function createBaseEventProjectApproved(): EventProjectApproved {
   return {
     projectId: Long.UZERO,
-    approvedForCreditClassAbbreviation: "",
+    approvedForCreditTypeAbbreviation: "",
     approvingIssuerId: Long.UZERO,
     approvedBy: ""
   };
@@ -564,8 +564,8 @@ export const EventProjectApproved = {
       writer.uint32(8).uint64(message.projectId);
     }
 
-    if (message.approvedForCreditClassAbbreviation !== "") {
-      writer.uint32(18).string(message.approvedForCreditClassAbbreviation);
+    if (message.approvedForCreditTypeAbbreviation !== "") {
+      writer.uint32(18).string(message.approvedForCreditTypeAbbreviation);
     }
 
     if (!message.approvingIssuerId.isZero()) {
@@ -593,7 +593,7 @@ export const EventProjectApproved = {
           break;
 
         case 2:
-          message.approvedForCreditClassAbbreviation = reader.string();
+          message.approvedForCreditTypeAbbreviation = reader.string();
           break;
 
         case 3:
@@ -616,7 +616,7 @@ export const EventProjectApproved = {
   fromPartial(object: DeepPartial<EventProjectApproved>): EventProjectApproved {
     const message = createBaseEventProjectApproved();
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
-    message.approvedForCreditClassAbbreviation = object.approvedForCreditClassAbbreviation ?? "";
+    message.approvedForCreditTypeAbbreviation = object.approvedForCreditTypeAbbreviation ?? "";
     message.approvingIssuerId = object.approvingIssuerId !== undefined && object.approvingIssuerId !== null ? Long.fromValue(object.approvingIssuerId) : Long.UZERO;
     message.approvedBy = object.approvedBy ?? "";
     return message;
@@ -627,7 +627,7 @@ export const EventProjectApproved = {
 function createBaseEventProjectRejected(): EventProjectRejected {
   return {
     projectId: Long.UZERO,
-    rejectedForCreditClassAbbreviation: "",
+    rejectedForCreditTypeAbbreviation: "",
     rejectingIssuerId: Long.UZERO,
     rejectedBy: ""
   };
@@ -639,8 +639,8 @@ export const EventProjectRejected = {
       writer.uint32(8).uint64(message.projectId);
     }
 
-    if (message.rejectedForCreditClassAbbreviation !== "") {
-      writer.uint32(18).string(message.rejectedForCreditClassAbbreviation);
+    if (message.rejectedForCreditTypeAbbreviation !== "") {
+      writer.uint32(18).string(message.rejectedForCreditTypeAbbreviation);
     }
 
     if (!message.rejectingIssuerId.isZero()) {
@@ -668,7 +668,7 @@ export const EventProjectRejected = {
           break;
 
         case 2:
-          message.rejectedForCreditClassAbbreviation = reader.string();
+          message.rejectedForCreditTypeAbbreviation = reader.string();
           break;
 
         case 3:
@@ -691,7 +691,7 @@ export const EventProjectRejected = {
   fromPartial(object: DeepPartial<EventProjectRejected>): EventProjectRejected {
     const message = createBaseEventProjectRejected();
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
-    message.rejectedForCreditClassAbbreviation = object.rejectedForCreditClassAbbreviation ?? "";
+    message.rejectedForCreditTypeAbbreviation = object.rejectedForCreditTypeAbbreviation ?? "";
     message.rejectingIssuerId = object.rejectingIssuerId !== undefined && object.rejectingIssuerId !== null ? Long.fromValue(object.rejectingIssuerId) : Long.UZERO;
     message.rejectedBy = object.rejectedBy ?? "";
     return message;
@@ -778,7 +778,7 @@ function createBaseEventIssuedCredits(): EventIssuedCredits {
   return {
     issuerId: Long.UZERO,
     projectId: Long.UZERO,
-    creditClassAbbreviation: "",
+    creditTypeAbbreviation: "",
     denom: "",
     amount: Long.UZERO,
     issuerAddress: "",
@@ -796,8 +796,8 @@ export const EventIssuedCredits = {
       writer.uint32(16).uint64(message.projectId);
     }
 
-    if (message.creditClassAbbreviation !== "") {
-      writer.uint32(26).string(message.creditClassAbbreviation);
+    if (message.creditTypeAbbreviation !== "") {
+      writer.uint32(26).string(message.creditTypeAbbreviation);
     }
 
     if (message.denom !== "") {
@@ -837,7 +837,7 @@ export const EventIssuedCredits = {
           break;
 
         case 3:
-          message.creditClassAbbreviation = reader.string();
+          message.creditTypeAbbreviation = reader.string();
           break;
 
         case 4:
@@ -869,7 +869,7 @@ export const EventIssuedCredits = {
     const message = createBaseEventIssuedCredits();
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
-    message.creditClassAbbreviation = object.creditClassAbbreviation ?? "";
+    message.creditTypeAbbreviation = object.creditTypeAbbreviation ?? "";
     message.denom = object.denom ?? "";
     message.amount = object.amount !== undefined && object.amount !== null ? Long.fromValue(object.amount) : Long.UZERO;
     message.issuerAddress = object.issuerAddress ?? "";
@@ -886,7 +886,7 @@ function createBaseEventTransferCredits(): EventTransferCredits {
     denom: "",
     amount: Long.UZERO,
     issuerId: Long.UZERO,
-    creditClassAbbreviation: ""
+    creditTypeAbbreviation: ""
   };
 }
 
@@ -912,8 +912,8 @@ export const EventTransferCredits = {
       writer.uint32(40).uint64(message.issuerId);
     }
 
-    if (message.creditClassAbbreviation !== "") {
-      writer.uint32(50).string(message.creditClassAbbreviation);
+    if (message.creditTypeAbbreviation !== "") {
+      writer.uint32(50).string(message.creditTypeAbbreviation);
     }
 
     return writer;
@@ -949,7 +949,7 @@ export const EventTransferCredits = {
           break;
 
         case 6:
-          message.creditClassAbbreviation = reader.string();
+          message.creditTypeAbbreviation = reader.string();
           break;
 
         default:
@@ -968,7 +968,7 @@ export const EventTransferCredits = {
     message.denom = object.denom ?? "";
     message.amount = object.amount !== undefined && object.amount !== null ? Long.fromValue(object.amount) : Long.UZERO;
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
-    message.creditClassAbbreviation = object.creditClassAbbreviation ?? "";
+    message.creditTypeAbbreviation = object.creditTypeAbbreviation ?? "";
     return message;
   }
 
@@ -980,7 +980,7 @@ function createBaseEventRetiredCredits(): EventRetiredCredits {
     denom: "",
     amount: Long.UZERO,
     issuerId: Long.UZERO,
-    creditClassAbbreviation: ""
+    creditTypeAbbreviation: ""
   };
 }
 
@@ -1002,8 +1002,8 @@ export const EventRetiredCredits = {
       writer.uint32(32).uint64(message.issuerId);
     }
 
-    if (message.creditClassAbbreviation !== "") {
-      writer.uint32(42).string(message.creditClassAbbreviation);
+    if (message.creditTypeAbbreviation !== "") {
+      writer.uint32(42).string(message.creditTypeAbbreviation);
     }
 
     return writer;
@@ -1035,7 +1035,7 @@ export const EventRetiredCredits = {
           break;
 
         case 5:
-          message.creditClassAbbreviation = reader.string();
+          message.creditTypeAbbreviation = reader.string();
           break;
 
         default:
@@ -1053,7 +1053,7 @@ export const EventRetiredCredits = {
     message.denom = object.denom ?? "";
     message.amount = object.amount !== undefined && object.amount !== null ? Long.fromValue(object.amount) : Long.UZERO;
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
-    message.creditClassAbbreviation = object.creditClassAbbreviation ?? "";
+    message.creditTypeAbbreviation = object.creditTypeAbbreviation ?? "";
     return message;
   }
 
@@ -1219,7 +1219,7 @@ export const EventUpdateApplicant = {
 
 };
 
-function createBaseEventCreateCreditClass(): EventCreateCreditClass {
+function createBaseEventCreateCreditType(): EventCreateCreditType {
   return {
     creator: "",
     abbreviation: "",
@@ -1228,8 +1228,8 @@ function createBaseEventCreateCreditClass(): EventCreateCreditClass {
   };
 }
 
-export const EventCreateCreditClass = {
-  encode(message: EventCreateCreditClass, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const EventCreateCreditType = {
+  encode(message: EventCreateCreditType, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
@@ -1249,10 +1249,10 @@ export const EventCreateCreditClass = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): EventCreateCreditClass {
+  decode(input: _m0.Reader | Uint8Array, length?: number): EventCreateCreditType {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseEventCreateCreditClass();
+    const message = createBaseEventCreateCreditType();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1283,8 +1283,8 @@ export const EventCreateCreditClass = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<EventCreateCreditClass>): EventCreateCreditClass {
-    const message = createBaseEventCreateCreditClass();
+  fromPartial(object: DeepPartial<EventCreateCreditType>): EventCreateCreditType {
+    const message = createBaseEventCreateCreditType();
     message.creator = object.creator ?? "";
     message.abbreviation = object.abbreviation ?? "";
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
@@ -1294,7 +1294,7 @@ export const EventCreateCreditClass = {
 
 };
 
-function createBaseEventUpdateCreditClass(): EventUpdateCreditClass {
+function createBaseEventUpdateCreditType(): EventUpdateCreditType {
   return {
     updater: "",
     abbreviation: "",
@@ -1302,8 +1302,8 @@ function createBaseEventUpdateCreditClass(): EventUpdateCreditClass {
   };
 }
 
-export const EventUpdateCreditClass = {
-  encode(message: EventUpdateCreditClass, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const EventUpdateCreditType = {
+  encode(message: EventUpdateCreditType, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.updater !== "") {
       writer.uint32(10).string(message.updater);
     }
@@ -1319,10 +1319,10 @@ export const EventUpdateCreditClass = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): EventUpdateCreditClass {
+  decode(input: _m0.Reader | Uint8Array, length?: number): EventUpdateCreditType {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseEventUpdateCreditClass();
+    const message = createBaseEventUpdateCreditType();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1349,8 +1349,8 @@ export const EventUpdateCreditClass = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<EventUpdateCreditClass>): EventUpdateCreditClass {
-    const message = createBaseEventUpdateCreditClass();
+  fromPartial(object: DeepPartial<EventUpdateCreditType>): EventUpdateCreditType {
+    const message = createBaseEventUpdateCreditType();
     message.updater = object.updater ?? "";
     message.abbreviation = object.abbreviation ?? "";
     message.name = object.name ?? "";

@@ -95,7 +95,7 @@ export interface MsgUpdateApplicantSDKType {
 }
 export interface MsgUpdateApplicantResponse {}
 export interface MsgUpdateApplicantResponseSDKType {}
-export interface MsgCreateCreditClass {
+export interface MsgCreateCreditType {
   /** creator is the signer and needs to have permissions on the issuer referenced in issuer_id */
   creator: string;
   /** abbreviation is the short-hand name, as well as the ID of the credit class */
@@ -108,7 +108,7 @@ export interface MsgCreateCreditClass {
 
   name: string;
 }
-export interface MsgCreateCreditClassSDKType {
+export interface MsgCreateCreditTypeSDKType {
   /** creator is the signer and needs to have permissions on the issuer referenced in issuer_id */
   creator: string;
   /** abbreviation is the short-hand name, as well as the ID of the credit class */
@@ -121,34 +121,34 @@ export interface MsgCreateCreditClassSDKType {
 
   name: string;
 }
-export interface MsgCreateCreditClassResponse {}
-export interface MsgCreateCreditClassResponseSDKType {}
-export interface MsgUpdateCreditClass {
+export interface MsgCreateCreditTypeResponse {}
+export interface MsgCreateCreditTypeResponseSDKType {}
+export interface MsgUpdateCreditType {
   /** abbreviation is the short-hand name, as well as the ID of the credit class */
   updater: string;
   abbreviation: string;
   name: string;
 }
-export interface MsgUpdateCreditClassSDKType {
+export interface MsgUpdateCreditTypeSDKType {
   /** abbreviation is the short-hand name, as well as the ID of the credit class */
   updater: string;
   abbreviation: string;
   name: string;
 }
-export interface MsgUpdateCreditClassResponse {}
-export interface MsgUpdateCreditClassResponseSDKType {}
+export interface MsgUpdateCreditTypeResponse {}
+export interface MsgUpdateCreditTypeResponseSDKType {}
 export interface MsgCreateProject {
   /** creator needs to have access to the applicant references in applicant_id */
   creator: string;
   applicantId: Long;
-  creditClassAbbreviation: string;
+  creditTypeAbbreviation: string;
   name: string;
 }
 export interface MsgCreateProjectSDKType {
   /** creator needs to have access to the applicant references in applicant_id */
   creator: string;
   applicant_id: Long;
-  credit_class_abbreviation: string;
+  credit_type_abbreviation: string;
   name: string;
 }
 export interface MsgCreateProjectResponse {
@@ -817,7 +817,7 @@ export const MsgUpdateApplicantResponse = {
 
 };
 
-function createBaseMsgCreateCreditClass(): MsgCreateCreditClass {
+function createBaseMsgCreateCreditType(): MsgCreateCreditType {
   return {
     creator: "",
     abbreviation: "",
@@ -826,8 +826,8 @@ function createBaseMsgCreateCreditClass(): MsgCreateCreditClass {
   };
 }
 
-export const MsgCreateCreditClass = {
-  encode(message: MsgCreateCreditClass, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgCreateCreditType = {
+  encode(message: MsgCreateCreditType, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
@@ -847,10 +847,10 @@ export const MsgCreateCreditClass = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateCreditClass {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateCreditType {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgCreateCreditClass();
+    const message = createBaseMsgCreateCreditType();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -881,8 +881,8 @@ export const MsgCreateCreditClass = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<MsgCreateCreditClass>): MsgCreateCreditClass {
-    const message = createBaseMsgCreateCreditClass();
+  fromPartial(object: DeepPartial<MsgCreateCreditType>): MsgCreateCreditType {
+    const message = createBaseMsgCreateCreditType();
     message.creator = object.creator ?? "";
     message.abbreviation = object.abbreviation ?? "";
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
@@ -892,19 +892,19 @@ export const MsgCreateCreditClass = {
 
 };
 
-function createBaseMsgCreateCreditClassResponse(): MsgCreateCreditClassResponse {
+function createBaseMsgCreateCreditTypeResponse(): MsgCreateCreditTypeResponse {
   return {};
 }
 
-export const MsgCreateCreditClassResponse = {
-  encode(_: MsgCreateCreditClassResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgCreateCreditTypeResponse = {
+  encode(_: MsgCreateCreditTypeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateCreditClassResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateCreditTypeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgCreateCreditClassResponse();
+    const message = createBaseMsgCreateCreditTypeResponse();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -919,14 +919,14 @@ export const MsgCreateCreditClassResponse = {
     return message;
   },
 
-  fromPartial(_: DeepPartial<MsgCreateCreditClassResponse>): MsgCreateCreditClassResponse {
-    const message = createBaseMsgCreateCreditClassResponse();
+  fromPartial(_: DeepPartial<MsgCreateCreditTypeResponse>): MsgCreateCreditTypeResponse {
+    const message = createBaseMsgCreateCreditTypeResponse();
     return message;
   }
 
 };
 
-function createBaseMsgUpdateCreditClass(): MsgUpdateCreditClass {
+function createBaseMsgUpdateCreditType(): MsgUpdateCreditType {
   return {
     updater: "",
     abbreviation: "",
@@ -934,8 +934,8 @@ function createBaseMsgUpdateCreditClass(): MsgUpdateCreditClass {
   };
 }
 
-export const MsgUpdateCreditClass = {
-  encode(message: MsgUpdateCreditClass, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgUpdateCreditType = {
+  encode(message: MsgUpdateCreditType, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.updater !== "") {
       writer.uint32(10).string(message.updater);
     }
@@ -951,10 +951,10 @@ export const MsgUpdateCreditClass = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateCreditClass {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateCreditType {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgUpdateCreditClass();
+    const message = createBaseMsgUpdateCreditType();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -981,8 +981,8 @@ export const MsgUpdateCreditClass = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<MsgUpdateCreditClass>): MsgUpdateCreditClass {
-    const message = createBaseMsgUpdateCreditClass();
+  fromPartial(object: DeepPartial<MsgUpdateCreditType>): MsgUpdateCreditType {
+    const message = createBaseMsgUpdateCreditType();
     message.updater = object.updater ?? "";
     message.abbreviation = object.abbreviation ?? "";
     message.name = object.name ?? "";
@@ -991,19 +991,19 @@ export const MsgUpdateCreditClass = {
 
 };
 
-function createBaseMsgUpdateCreditClassResponse(): MsgUpdateCreditClassResponse {
+function createBaseMsgUpdateCreditTypeResponse(): MsgUpdateCreditTypeResponse {
   return {};
 }
 
-export const MsgUpdateCreditClassResponse = {
-  encode(_: MsgUpdateCreditClassResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgUpdateCreditTypeResponse = {
+  encode(_: MsgUpdateCreditTypeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateCreditClassResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateCreditTypeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgUpdateCreditClassResponse();
+    const message = createBaseMsgUpdateCreditTypeResponse();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1018,8 +1018,8 @@ export const MsgUpdateCreditClassResponse = {
     return message;
   },
 
-  fromPartial(_: DeepPartial<MsgUpdateCreditClassResponse>): MsgUpdateCreditClassResponse {
-    const message = createBaseMsgUpdateCreditClassResponse();
+  fromPartial(_: DeepPartial<MsgUpdateCreditTypeResponse>): MsgUpdateCreditTypeResponse {
+    const message = createBaseMsgUpdateCreditTypeResponse();
     return message;
   }
 
@@ -1029,7 +1029,7 @@ function createBaseMsgCreateProject(): MsgCreateProject {
   return {
     creator: "",
     applicantId: Long.UZERO,
-    creditClassAbbreviation: "",
+    creditTypeAbbreviation: "",
     name: ""
   };
 }
@@ -1044,8 +1044,8 @@ export const MsgCreateProject = {
       writer.uint32(16).uint64(message.applicantId);
     }
 
-    if (message.creditClassAbbreviation !== "") {
-      writer.uint32(26).string(message.creditClassAbbreviation);
+    if (message.creditTypeAbbreviation !== "") {
+      writer.uint32(26).string(message.creditTypeAbbreviation);
     }
 
     if (message.name !== "") {
@@ -1073,7 +1073,7 @@ export const MsgCreateProject = {
           break;
 
         case 3:
-          message.creditClassAbbreviation = reader.string();
+          message.creditTypeAbbreviation = reader.string();
           break;
 
         case 4:
@@ -1093,7 +1093,7 @@ export const MsgCreateProject = {
     const message = createBaseMsgCreateProject();
     message.creator = object.creator ?? "";
     message.applicantId = object.applicantId !== undefined && object.applicantId !== null ? Long.fromValue(object.applicantId) : Long.UZERO;
-    message.creditClassAbbreviation = object.creditClassAbbreviation ?? "";
+    message.creditTypeAbbreviation = object.creditTypeAbbreviation ?? "";
     message.name = object.name ?? "";
     return message;
   }
