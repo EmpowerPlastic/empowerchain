@@ -303,3 +303,6 @@ require (
 	pgregory.net/rapid v0.5.5 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
+
+// pin goleveldb to v1.0.1-0.20210819022825-2ae1ddf74ef7 because of https://github.com/cosmos/cosmos-sdk/issues/14949
+replace github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7

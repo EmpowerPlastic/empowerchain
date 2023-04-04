@@ -1,11 +1,10 @@
-package params
+package app
 
 import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/std"
-	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 )
 
@@ -16,7 +15,7 @@ type EncodingConfig struct {
 	Amino             *codec.LegacyAmino
 }
 
-func MakeEncodingConfig(moduleBasics module.BasicManager) EncodingConfig {
+func MakeEncodingConfig() EncodingConfig {
 	amino := codec.NewLegacyAmino()
 	interfaceRegistry := types.NewInterfaceRegistry()
 	marshaler := codec.NewProtoCodec(interfaceRegistry)
@@ -24,8 +23,8 @@ func MakeEncodingConfig(moduleBasics module.BasicManager) EncodingConfig {
 
 	std.RegisterLegacyAminoCodec(amino)
 	std.RegisterInterfaces(interfaceRegistry)
-	moduleBasics.RegisterLegacyAminoCodec(amino)
-	moduleBasics.RegisterInterfaces(interfaceRegistry)
+	ModuleBasics.RegisterLegacyAminoCodec(amino)
+	ModuleBasics.RegisterInterfaces(interfaceRegistry)
 
 	return EncodingConfig{
 		InterfaceRegistry: interfaceRegistry,

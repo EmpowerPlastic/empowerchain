@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/EmpowerPlastic/empowerchain/app"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
 )
 
 func TestFullAppSimulation(t *testing.T) {
@@ -36,11 +35,12 @@ func TestFullAppSimulation(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
-	empowerApp := app.New(logger, db, nil, true, map[int64]bool{},
-		dir,
-		simcli.FlagPeriodValue,
-		params.MakeEncodingConfig(app.ModuleBasics),
-		simtestutil.EmptyAppOptions{},
+	empowerApp := app.New(
+		logger,
+		db,
+		nil,
+		true,
+		simtestutil.NewAppOptionsWithFlagHome(dir),
 		[]wasm.Option{},
 		fauxMerkleModeOpt,
 	)

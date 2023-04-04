@@ -32,7 +32,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/EmpowerPlastic/empowerchain/app"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol"
 	plasticcreditmoduletypes "github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	proofofexistencemoduletypes "github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
@@ -58,11 +57,12 @@ func TestAppImportExport(t *testing.T) {
 		require.NoError(t, db.Close())
 		require.NoError(t, os.RemoveAll(dir))
 	}()
-	empowerApp := app.New(logger, db, nil, true, map[int64]bool{},
-		dir,
-		simcli.FlagPeriodValue,
-		params.MakeEncodingConfig(app.ModuleBasics),
-		simtestutil.EmptyAppOptions{},
+	empowerApp := app.New(
+		logger,
+		db,
+		nil,
+		true,
+		simtestutil.NewAppOptionsWithFlagHome(dir),
 		[]wasm.Option{},
 		fauxMerkleModeOpt,
 	)
@@ -111,11 +111,12 @@ func TestAppImportExport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
 
-	newApp := app.New(log.NewNopLogger(), newDB, nil, true, map[int64]bool{},
-		newDir,
-		simcli.FlagPeriodValue,
-		params.MakeEncodingConfig(app.ModuleBasics),
-		simtestutil.EmptyAppOptions{},
+	newApp := app.New(
+		log.NewNopLogger(),
+		newDB,
+		nil,
+		true,
+		simtestutil.NewAppOptionsWithFlagHome(newDir),
 		[]wasm.Option{},
 		fauxMerkleModeOpt,
 	)
