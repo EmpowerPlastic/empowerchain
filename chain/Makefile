@@ -11,6 +11,9 @@ DOCKER := $(shell which docker)
 BUILD_DIR ?= $(CURDIR)/build
 COSMOS_SDK_VERSION := $(shell go list -m -f '{{ .Version }}' github.com/cosmos/cosmos-sdk)
 
+GO_SYSTEM_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f1-2)
+REQUIRE_GO_VERSION = 1.20
+
 export GO111MODULE = on
 
 # process build tags
@@ -84,6 +87,12 @@ endif
 ###                                  Build                                  ###
 ###############################################################################
 
+check_go_version:
+ifneq ($(GO_SYSTEM_VERSION), $(REQUIRE_GO_VERSION))
+	@echo "ERROR: Go $(REQUIRE_GO_VERSION) is required for $(VERSION) version of EmpowerChain. Currently Go $(GO_SYSTEM_VERSION) is being used."
+	exit 1
+endif
+
 ver:
 	@echo $(VERSION)
 
@@ -93,7 +102,7 @@ BUILD_TARGETS := build install
 
 build: BUILD_ARGS=-o $(BUILD_DIR)/
 
-$(BUILD_TARGETS): go.sum $(BUILD_DIR)/
+$(BUILD_TARGETS): check_go_version go.sum $(BUILD_DIR)/
 	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
 
 $(BUILD_DIR)/:
