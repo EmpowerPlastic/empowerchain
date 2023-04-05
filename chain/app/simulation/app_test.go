@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	"os"
 	"testing"
 
@@ -43,6 +44,7 @@ func TestFullAppSimulation(t *testing.T) {
 		simtestutil.NewAppOptionsWithFlagHome(dir),
 		[]wasm.Option{},
 		fauxMerkleModeOpt,
+		baseapp.SetChainID(SimAppChainID),
 	)
 	require.Equal(t, "empowerchain", empowerApp.Name())
 

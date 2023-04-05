@@ -2,6 +2,7 @@ package simulation
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	"os"
 	"testing"
 
@@ -46,6 +47,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		simtestutil.NewAppOptionsWithFlagHome(dir),
 		[]wasm.Option{},
 		fauxMerkleModeOpt,
+		baseapp.SetChainID(SimAppChainID),
 	)
 	require.Equal(t, "empowerchain", empowerApp.Name())
 
@@ -105,6 +107,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		simtestutil.NewAppOptionsWithFlagHome(newDir),
 		[]wasm.Option{},
 		fauxMerkleModeOpt,
+		baseapp.SetChainID(SimAppChainID),
 	)
 	require.Equal(t, "empowerchain", newApp.Name())
 

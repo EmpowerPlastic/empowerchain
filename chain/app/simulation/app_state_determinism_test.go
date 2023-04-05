@@ -3,6 +3,7 @@ package simulation
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	"math/rand"
 	"os"
 	"testing"
@@ -60,6 +61,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				appOptions,
 				[]wasm.Option{},
 				interBlockCacheOpt(),
+				baseapp.SetChainID(SimAppChainID),
 			)
 
 			fmt.Printf(

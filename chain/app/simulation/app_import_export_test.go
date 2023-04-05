@@ -3,6 +3,7 @@ package simulation
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	"os"
 	"runtime/debug"
 	"strings"
@@ -65,6 +66,7 @@ func TestAppImportExport(t *testing.T) {
 		simtestutil.NewAppOptionsWithFlagHome(dir),
 		[]wasm.Option{},
 		fauxMerkleModeOpt,
+		baseapp.SetChainID(SimAppChainID),
 	)
 	require.Equal(t, "empowerchain", empowerApp.Name())
 
@@ -119,6 +121,7 @@ func TestAppImportExport(t *testing.T) {
 		simtestutil.NewAppOptionsWithFlagHome(newDir),
 		[]wasm.Option{},
 		fauxMerkleModeOpt,
+		baseapp.SetChainID(SimAppChainID),
 	)
 	require.Equal(t, "empowerchain", newApp.Name())
 

@@ -294,7 +294,7 @@ func (a appCreator) appExport(
 		logger,
 		db,
 		traceStore,
-		false,
+		height == -1,
 		appOpts,
 		emptyWasmOpts,
 	)
