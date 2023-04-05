@@ -79,7 +79,7 @@ func (s *E2ETestSuite) TestCancelListing() {
 				// Check the cancelled listing is removed
 				queryCmd := wasmcli.GetCmdGetContractState()
 				out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{"smart", marketplaceAddress, fmt.Sprintf(`{"listing": {"owner": "%s", "denom": "%s"}}`, creditOwnerAddress.String(), tc.denom)})
-				s.Require().Error(err, ErrListingNotFound)
+				s.Require().ErrorIs(err, ErrListingNotFound, out.String())
 			}
 		})
 	}
