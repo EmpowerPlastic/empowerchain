@@ -3,7 +3,6 @@ package simulation
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/baseapp"
 	"math/rand"
 	"os"
 	"testing"
@@ -11,6 +10,7 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	dbm "github.com/cometbft/cometbft-db"
 	"github.com/cometbft/cometbft/libs/log"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
