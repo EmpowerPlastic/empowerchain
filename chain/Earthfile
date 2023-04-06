@@ -122,7 +122,8 @@ swagger-gen:
 
 devnet:
     FROM golang:1.20-bullseye
-    ARG  VALPASS=passw0rd
+    ARG IMAGE_NAME=empowerchain-devnet
+    ARG VALPASS=passw0rd
     ARG GENESISTEMPLATE=https://empowerchain-public.s3.fr-par.scw.cloud/genesis.json
     ARG VALNAME=validator
     WORKDIR /
@@ -145,4 +146,4 @@ devnet:
     RUN echo ${VALPASS} | empowerd genesis devnet ~/.empowerchain/config/genesis.json ${VALNAME} $(jq .pub_key.value ~/.empowerchain/config/priv_validator_key.json | sed -r "s/\"//g")
     RUN mv ~/.empowerchain/config/genesis.json.generated ~/.empowerchain/config/genesis.json
 
-    SAVE IMAGE empowerchain/empowerchain-devnet:latest
+    SAVE IMAGE ${IMAGE_NAME}
