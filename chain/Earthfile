@@ -23,6 +23,11 @@ build:
     SAVE ARTIFACT go.mod AS LOCAL go.mod
     SAVE ARTIFACT go.sum AS LOCAL go.sum
 
+build-with-wasmvm:
+    FROM +build
+    RUN find /root/go -name libwasmvm.x86_64.so -exec cp {} build/libwasmvm.x86_64.so \;
+    SAVE ARTIFACT build/*
+
 build-all:
     ARG EARTHLY_GIT_HASH
     ARG EARTHLY_GIT_SHORT_HASH
@@ -114,3 +119,30 @@ swagger-gen:
     RUN cd client/docs/swagger-ui && swagger generate markdown
     SAVE ARTIFACT client/docs/swagger-ui/swagger.yaml AS LOCAL swagger.yaml
     SAVE ARTIFACT client/docs/swagger-ui/markdown.md AS LOCAL swagger.md
+
+devnet:
+    FROM golang:1.20-bullseye
+    ARG  VALPASS=passw0rd
+    ARG GENESISTEMPLATE=https://empowerchain-public.s3.fr-par.scw.cloud/genesis.json
+    ARG VALNAME=validator
+    WORKDIR /
+    COPY +build-with-wasmvm/empowerd /usr/local/bin/empowerd
+    COPY +build-with-wasmvm/libwasmvm.x86_64.so /usr/local/lib/libwasmvm.x86_64.so
+    ENV LD_LIBRARY_PATH=/usr/local/lib
+
+    RUN apt update && apt install jq -y
+
+    # Initialize empowerchain
+    RUN empowerd init ${VALNAME}
+
+    # Download devnet genesis
+    RUN curl -s ${GENESISTEMPLATE} > ~/.empowerchain/config/genesis.json
+
+    # Set up validator key
+    RUN { echo ${VALPASS}; echo ${VALPASS}; } | empowerd keys add ${VALNAME}
+
+    # Set up devnet genesis for new key
+    RUN echo ${VALPASS} | empowerd genesis devnet ~/.empowerchain/config/genesis.json ${VALNAME} $(jq .pub_key.value ~/.empowerchain/config/priv_validator_key.json | sed -r "s/\"//g")
+    RUN mv ~/.empowerchain/config/genesis.json.generated ~/.empowerchain/config/genesis.json
+
+    SAVE IMAGE empowerchain/empowerchain-devnet:latest
