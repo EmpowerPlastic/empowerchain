@@ -126,6 +126,8 @@ devnet:
     ARG VALPASS=passw0rd
     ARG GENESISTEMPLATE=https://empowerchain-public.s3.fr-par.scw.cloud/genesis.json
     ARG VALNAME=validator
+    EXPOSE 26656 26657 1317 9090
+    CMD empowerd start --rpc.laddr tcp://0.0.0.0:26657
     WORKDIR /
     COPY +build-with-wasmvm/empowerd /usr/local/bin/empowerd
     COPY +build-with-wasmvm/libwasmvm.x86_64.so /usr/local/lib/libwasmvm.x86_64.so
