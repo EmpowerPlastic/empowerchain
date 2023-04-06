@@ -8,13 +8,12 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/EmpowerPlastic/empowerchain/app"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/simulation"
 )
 
 func TestNewDecodeStore(t *testing.T) {
-	cdc := params.MakeEncodingConfig(app.ModuleBasics).Codec
+	cdc := app.MakeEncodingConfig().Codec
 	decodeStore := simulation.NewDecodeStore(cdc)
 
 	idCounters := plasticcredit.IDCounters{

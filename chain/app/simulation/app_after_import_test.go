@@ -6,16 +6,16 @@ import (
 	"testing"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/libs/log"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 	"github.com/stretchr/testify/require"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/EmpowerPlastic/empowerchain/app"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
 )
 
 func TestAppSimulationAfterImport(t *testing.T) {
@@ -39,13 +39,15 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
-	empowerApp := app.New(logger, db, nil, true, map[int64]bool{},
-		dir,
-		simcli.FlagPeriodValue,
-		params.MakeEncodingConfig(app.ModuleBasics),
-		simtestutil.EmptyAppOptions{},
+	empowerApp := app.New(
+		logger,
+		db,
+		nil,
+		true,
+		simtestutil.NewAppOptionsWithFlagHome(dir),
 		[]wasm.Option{},
 		fauxMerkleModeOpt,
+		baseapp.SetChainID(SimAppChainID),
 	)
 	require.Equal(t, "empowerchain", empowerApp.Name())
 
@@ -97,13 +99,15 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
 
-	newApp := app.New(log.NewNopLogger(), newDB, nil, true, map[int64]bool{},
-		newDir,
-		simcli.FlagPeriodValue,
-		params.MakeEncodingConfig(app.ModuleBasics),
-		simtestutil.EmptyAppOptions{},
+	newApp := app.New(
+		log.NewNopLogger(),
+		newDB,
+		nil,
+		true,
+		simtestutil.NewAppOptionsWithFlagHome(newDir),
 		[]wasm.Option{},
 		fauxMerkleModeOpt,
+		baseapp.SetChainID(SimAppChainID),
 	)
 	require.Equal(t, "empowerchain", newApp.Name())
 

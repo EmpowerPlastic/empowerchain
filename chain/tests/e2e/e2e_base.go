@@ -24,7 +24,6 @@ import (
 
 	"github.com/EmpowerPlastic/empowerchain/app"
 	genesistools "github.com/EmpowerPlastic/empowerchain/app/genesis-tools"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
 
@@ -115,7 +114,7 @@ func (s *TestSuite) SetupSuite() {
 	s.Config.GenesisState = genesisStateRaw
 
 	s.Config.AppConstructor = app.NewAppConstructor()
-	encodingConfig := params.MakeEncodingConfig(app.ModuleBasics)
+	encodingConfig := app.MakeEncodingConfig()
 	s.Config.InterfaceRegistry = encodingConfig.InterfaceRegistry
 	s.Config.Codec = encodingConfig.Codec
 	s.Config.TxConfig = encodingConfig.TxConfig

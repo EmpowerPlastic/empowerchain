@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 
+	tmtypes "github.com/cometbft/cometbft/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
-	tmtypes "github.com/tendermint/tendermint/types"
 
 	genesistools "github.com/EmpowerPlastic/empowerchain/app/genesis-tools"
 )

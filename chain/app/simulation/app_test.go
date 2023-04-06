@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -12,7 +13,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/EmpowerPlastic/empowerchain/app"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
 )
 
 func TestFullAppSimulation(t *testing.T) {
@@ -36,13 +36,15 @@ func TestFullAppSimulation(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
-	empowerApp := app.New(logger, db, nil, true, map[int64]bool{},
-		dir,
-		simcli.FlagPeriodValue,
-		params.MakeEncodingConfig(app.ModuleBasics),
-		simtestutil.EmptyAppOptions{},
+	empowerApp := app.New(
+		logger,
+		db,
+		nil,
+		true,
+		simtestutil.NewAppOptionsWithFlagHome(dir),
 		[]wasm.Option{},
 		fauxMerkleModeOpt,
+		baseapp.SetChainID(SimAppChainID),
 	)
 	require.Equal(t, "empowerchain", empowerApp.Name())
 
