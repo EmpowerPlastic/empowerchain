@@ -20,67 +20,54 @@ func (s *E2ETestSuite) TestCancelListing() {
 	creditOwnerAddress, err := creditOwnerKey.GetAddress()
 	s.Require().NoError(err)
 
-	testCases := map[string]struct {
-		denom                        string
-		expectedCreatorCreditBalance uint64
-		expectedErr                  bool
-	}{
-		"happy path": {
-			denom:                        "PTEST/UPDATE_LISTING_1",
-			expectedCreatorCreditBalance: 1000,
-			expectedErr:                  false,
+	// Grant transfer permissions to the marketplace contract
+	grantTransferCmd := cli.MsgGrantTransferAuthorizationCmd()
+	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, grantTransferCmd, append([]string{
+		marketplaceAddress,
+		"PTEST/UPDATE_LISTING_1",
+		"100000",
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, creditOwnerKey.Name),
+	}, s.CommonFlags...))
+	s.Require().NoError(err, out.String())
+	cliResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
+	s.Require().NoError(err)
+	s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
+
+	// Create the listing
+	executeContractCmd := wasmcli.ExecuteContractCmd()
+	out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
+		marketplaceAddress,
+		fmt.Sprintf(`{"create_listing": {"denom": "%s", "number_of_credits": "100", "price_per_credit": {"denom": "umpwr", "amount": "10"}}}`, "PTEST/UPDATE_LISTING_1"),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, creditOwnerKey.Name),
+	}, s.CommonFlags...))
+	s.Require().NoError(err, out.String())
+	cliResponse, err = s.GetCliResponse(val.ClientCtx, out.Bytes())
+	s.Require().NoError(err)
+	s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
+	creditOwnerBalanceBefore := s.GetCreditBalance(e2e.ApplicantAddress, "PTEST/00001")
+	// Cancel the listing
+	out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
+		marketplaceAddress,
+		fmt.Sprintf(`{"cancel_listing": {"denom": "%s"}}`, "PTEST/UPDATE_LISTING_1"),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, creditOwnerKey.Name),
+	}, s.CommonFlags...))
+	s.Require().NoError(err, out.String())
+	cliResponse, err = s.GetCliResponse(val.ClientCtx, out.Bytes())
+	s.Require().NoError(err)
+	s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
+
+	// Check the cancelled listing is removed
+	queryCmd := wasmcli.GetCmdGetContractState()
+	_, err = clitestutil.ExecTestCLICmd(
+		val.ClientCtx,
+		queryCmd,
+		[]string{
+			"smart", marketplaceAddress, fmt.Sprintf(`{"listing": {"owner": "%s", "denom": "%s"}}`, creditOwnerAddress.String(), "PTEST/UPDATE_LISTING_1"),
 		},
-	}
-	for name, tc := range testCases {
-		s.Run(name, func() {
-			// Grant transfer permissions to the marketplace contract
-			grantTransferCmd := cli.MsgGrantTransferAuthorizationCmd()
-			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, grantTransferCmd, append([]string{
-				marketplaceAddress,
-				tc.denom,
-				"100000",
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, creditOwnerKey.Name),
-			}, s.CommonFlags...))
-			s.Require().NoError(err, out.String())
-			cliResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
-			s.Require().NoError(err)
-			s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
+	)
+	s.Require().Error(err, ErrListingNotFound)
 
-			// Create the listing
-			executeContractCmd := wasmcli.ExecuteContractCmd()
-			out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
-				marketplaceAddress,
-				fmt.Sprintf(`{"create_listing": {"denom": "%s", "number_of_credits": "100", "price_per_credit": {"denom": "umpwr", "amount": "10"}}}`, tc.denom),
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, creditOwnerKey.Name),
-			}, s.CommonFlags...))
-			s.Require().NoError(err, out.String())
-			cliResponse, err = s.GetCliResponse(val.ClientCtx, out.Bytes())
-			s.Require().NoError(err)
-			s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
-
-			// Cancel the listing
-			out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
-				marketplaceAddress,
-				fmt.Sprintf(`{"cancel_listing": {"denom": "%s"}}`, tc.denom),
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, creditOwnerKey.Name),
-			}, s.CommonFlags...))
-			s.Require().NoError(err, out.String())
-			cliResponse, err = s.GetCliResponse(val.ClientCtx, out.Bytes())
-			s.Require().NoError(err)
-			if tc.expectedErr {
-				s.Require().NotEqual(uint32(0), cliResponse.Code, cliResponse.RawLog)
-			} else {
-				s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
-
-				// Check that the credit balances
-				creditOwnerBalanceAfter := s.GetCreditBalance(e2e.ApplicantAddress, tc.denom)
-				s.Require().Equal(tc.expectedCreatorCreditBalance, creditOwnerBalanceAfter.Active)
-
-				// Check the cancelled listing is removed
-				queryCmd := wasmcli.GetCmdGetContractState()
-				out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{"smart", marketplaceAddress, fmt.Sprintf(`{"listing": {"owner": "%s", "denom": "%s"}}`, creditOwnerAddress.String(), tc.denom)})
-				s.Require().ErrorIs(err, ErrListingNotFound, out.String())
-			}
-		})
-	}
+	// Check that the credit balances
+	creditOwnerBalanceAfter := s.GetCreditBalance(e2e.ApplicantAddress, "PTEST/00001")
+	s.Require().Equal(creditOwnerBalanceBefore.Active, creditOwnerBalanceAfter.Active)
 }

@@ -968,6 +968,34 @@ mod tests {
                 },
             };
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
-    }
+        }
+
+        #[test]
+        fn test_cancel_listing_already_cancelled() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+            };
+            let owner = creator_info.sender.clone();
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let cancel_listing_msg = ExecuteMsg::CancelListing {
+                denom: "pcrd".to_string(),
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), cancel_listing_msg.clone()).unwrap();
+
+            let listing = LISTINGS.load(deps.as_ref().storage, (owner, "pcrd".to_string())).map_err(|_| ContractError::ListingNotFound {});
+            assert_eq!(listing.unwrap_err(), ContractError::ListingNotFound {});
+            let err = execute(deps.as_mut(), mock_env(), creator_info.clone(), cancel_listing_msg).unwrap_err();
+            assert_eq!(err, ContractError::ListingNotFound {});
+        }
     }
 }

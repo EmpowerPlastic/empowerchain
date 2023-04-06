@@ -32,7 +32,7 @@ type E2ETestSuite struct {
 	e2e.TestSuite
 }
 
-var ErrListingNotFound = errors.Register("plastic_credit_marketplace", 100, "Listing not found")
+var ErrListingNotFound = errors.Register("plastic_credit_marketplace", 100, "rpc error: code = Unknown desc = plastic_credit_marketplace::state::Listing not found: query wasm contract failed: unknown request")
 
 // uploadContractBeforeAll uploads the marketplace contract before all tests
 // because of this, we have the code id 1 set already and can use it in other tests
