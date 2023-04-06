@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - '*'
+      - 'main'
     paths:
       - 'chain/**'
 
@@ -13,7 +13,7 @@ env:
 
 jobs:
   build:
-    name: Build EmpowerChain
+    name: Build and push devnet to ghcr.io
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
