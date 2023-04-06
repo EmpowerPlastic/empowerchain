@@ -24,7 +24,7 @@ func (s *E2ETestSuite) TestCancelListing() {
 	grantTransferCmd := cli.MsgGrantTransferAuthorizationCmd()
 	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, grantTransferCmd, append([]string{
 		marketplaceAddress,
-		"PTEST/UPDATE_LISTING_1",
+		"PTEST/CANCEL_LISTING_1",
 		"100000",
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, creditOwnerKey.Name),
 	}, s.CommonFlags...))
@@ -32,23 +32,22 @@ func (s *E2ETestSuite) TestCancelListing() {
 	cliResponse, err := s.GetCliResponse(val.ClientCtx, out.Bytes())
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
-
+	creditOwnerBalanceBefore := s.GetCreditBalance(creditOwnerAddress.String(), "PTEST/00001")
 	// Create the listing
 	executeContractCmd := wasmcli.ExecuteContractCmd()
 	out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
 		marketplaceAddress,
-		fmt.Sprintf(`{"create_listing": {"denom": "%s", "number_of_credits": "100", "price_per_credit": {"denom": "umpwr", "amount": "10"}}}`, "PTEST/UPDATE_LISTING_1"),
+		fmt.Sprintf(`{"create_listing": {"denom": "%s", "number_of_credits": "100", "price_per_credit": {"denom": "umpwr", "amount": "10"}}}`, "PTEST/CANCEL_LISTING_1"),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, creditOwnerKey.Name),
 	}, s.CommonFlags...))
 	s.Require().NoError(err, out.String())
 	cliResponse, err = s.GetCliResponse(val.ClientCtx, out.Bytes())
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
-	creditOwnerBalanceBefore := s.GetCreditBalance(e2e.ApplicantAddress, "PTEST/00001")
 	// Cancel the listing
 	out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
 		marketplaceAddress,
-		fmt.Sprintf(`{"cancel_listing": {"denom": "%s"}}`, "PTEST/UPDATE_LISTING_1"),
+		fmt.Sprintf(`{"cancel_listing": {"denom": "%s"}}`, "PTEST/CANCEL_LISTING_1"),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, creditOwnerKey.Name),
 	}, s.CommonFlags...))
 	s.Require().NoError(err, out.String())
@@ -62,12 +61,12 @@ func (s *E2ETestSuite) TestCancelListing() {
 		val.ClientCtx,
 		queryCmd,
 		[]string{
-			"smart", marketplaceAddress, fmt.Sprintf(`{"listing": {"owner": "%s", "denom": "%s"}}`, creditOwnerAddress.String(), "PTEST/UPDATE_LISTING_1"),
+			"smart", marketplaceAddress, fmt.Sprintf(`{"listing": {"owner": "%s", "denom": "%s"}}`, creditOwnerAddress.String(), "PTEST/CANCEL_LISTING_1"),
 		},
 	)
 	s.Require().Error(err, ErrListingNotFound)
 
 	// Check that the credit balances
-	creditOwnerBalanceAfter := s.GetCreditBalance(e2e.ApplicantAddress, "PTEST/00001")
+	creditOwnerBalanceAfter := s.GetCreditBalance(creditOwnerAddress.String(), "PTEST/00001")
 	s.Require().Equal(creditOwnerBalanceBefore.Active, creditOwnerBalanceAfter.Active)
 }
