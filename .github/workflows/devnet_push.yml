@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - '*'
-    # paths:
-    #   - 'chain/**'
+      - 'main'
+    paths:
+      - 'chain/**'
 
 env:
   IMAGE_NAME: empowerchain-devnet
