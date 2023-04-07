@@ -29,5 +29,5 @@ jobs:
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME 
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          earthly --ci --output +devnet --IMAGE_NAME=$IMAGE_ID
+          earthly --ci --push +devnet --IMAGE_NAME=$IMAGE_ID
         working-directory: ./chain
