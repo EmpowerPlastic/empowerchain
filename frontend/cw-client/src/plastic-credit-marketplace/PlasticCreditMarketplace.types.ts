@@ -25,6 +25,10 @@ export type ExecuteMsg = {
     number_of_credits_to_buy: number;
     owner: Addr;
   };
+} | {
+  cancel_listing: {
+    denom: string;
+  };
 };
 export type Uint64 = string;
 export type Uint128 = string;
