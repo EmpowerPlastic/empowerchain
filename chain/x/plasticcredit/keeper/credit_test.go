@@ -7,24 +7,24 @@ import (
 
 func (s *TestSuite) TestCreateCreditDenom() {
 	testCases := map[string]struct {
-		creditClassAbbreviation string
+		creditTypeAbbreviation string
 		serialNumber            string
 		expectedValue           string
 		err                     error
 	}{
 		"happy path": {
-			creditClassAbbreviation: "PTEST",
+			creditTypeAbbreviation: "PTEST",
 			serialNumber:            "123",
 			expectedValue:           "PTEST/123",
 			err:                     nil,
 		},
 		"empty abbrev": {
-			creditClassAbbreviation: "",
+			creditTypeAbbreviation: "",
 			serialNumber:            "123",
 			err:                     utils.ErrInvalidValue,
 		},
 		"empty serial number": {
-			creditClassAbbreviation: "PTEST",
+			creditTypeAbbreviation: "PTEST",
 			serialNumber:            "",
 			err:                     utils.ErrInvalidValue,
 		},
@@ -32,7 +32,7 @@ func (s *TestSuite) TestCreateCreditDenom() {
 
 	for name, tc := range testCases {
 		s.Run(name, func() {
-			denom, err := keeper.CreateCreditDenom(tc.creditClassAbbreviation, tc.serialNumber)
+			denom, err := keeper.CreateCreditDenom(tc.creditTypeAbbreviation, tc.serialNumber)
 			s.Require().ErrorIs(tc.err, err)
 			if tc.err == nil {
 				s.Require().Equal(tc.expectedValue, denom)

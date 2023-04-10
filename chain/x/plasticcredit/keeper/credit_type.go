@@ -146,7 +146,7 @@ func (k Keeper) iterateCreditTypes(ctx sdk.Context, handler func(creditType plas
 
 func (k Keeper) getCreditTypeStore(ctx sdk.Context) storetypes.KVStore {
 	store := ctx.KVStore(k.storeKey)
-	creditClassStore := prefix.NewStore(store, plasticcredit.CreditTypeKey)
+	creditTypeStore := prefix.NewStore(store, plasticcredit.CreditTypeKey)
 
-	return creditClassStore
+	return creditTypeStore
 }

@@ -414,13 +414,13 @@ func TestApplicant_AddressHasAuthorization(t *testing.T) {
 	}
 }
 
-func TestCreditClassValidation(t *testing.T) {
+func TestCreditTypeValidation(t *testing.T) {
 	testCases := map[string]struct {
-		creditClass CreditType
+		creditType CreditType
 		err         error
 	}{
 		"happy path": {
-			creditClass: CreditType{
+			creditType: CreditType{
 				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
@@ -428,7 +428,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: nil,
 		},
 		"happy path name test": {
-			creditClass: CreditType{
+			creditType: CreditType{
 				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "This is a longer name with spaces and special characters:%$#",
@@ -436,7 +436,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: nil,
 		},
 		"happy path 2": {
-			creditClass: CreditType{
+			creditType: CreditType{
 				Abbreviation: "ABC69",
 				IssuerId:     42,
 				Name:         "thisIsMyNameYo",
@@ -444,7 +444,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: nil,
 		},
 		"empty abbreviation": {
-			creditClass: CreditType{
+			creditType: CreditType{
 				Abbreviation: "",
 				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
@@ -452,7 +452,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: utils.ErrInvalidValue,
 		},
 		"too short abbreviation": {
-			creditClass: CreditType{
+			creditType: CreditType{
 				Abbreviation: "A",
 				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
@@ -460,7 +460,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: utils.ErrInvalidValue,
 		},
 		"too long abbreviation": {
-			creditClass: CreditType{
+			creditType: CreditType{
 				Abbreviation: "PTESTTT",
 				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
@@ -468,7 +468,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: utils.ErrInvalidValue,
 		},
 		"lower-case abbreviation": {
-			creditClass: CreditType{
+			creditType: CreditType{
 				Abbreviation: "AbC",
 				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
@@ -476,7 +476,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: utils.ErrInvalidValue,
 		},
 		"special char abbreviation": {
-			creditClass: CreditType{
+			creditType: CreditType{
 				Abbreviation: "ABC_",
 				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
@@ -484,7 +484,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: utils.ErrInvalidValue,
 		},
 		"invalid issuer id": {
-			creditClass: CreditType{
+			creditType: CreditType{
 				Abbreviation: "PTEST",
 				IssuerId:     0,
 				Name:         "Empower Plastic Credits",
@@ -492,7 +492,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: utils.ErrInvalidValue,
 		},
 		"empty name": {
-			creditClass: CreditType{
+			creditType: CreditType{
 				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "",
@@ -500,7 +500,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: utils.ErrInvalidValue,
 		},
 		"too long name": {
-			creditClass: CreditType{
+			creditType: CreditType{
 				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "This name is 65 characters long, which is above the limit we set!",
@@ -508,7 +508,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: utils.ErrInvalidValue,
 		},
 		"name starts with space": {
-			creditClass: CreditType{
+			creditType: CreditType{
 				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         " EmpowerChain",
@@ -516,7 +516,7 @@ func TestCreditClassValidation(t *testing.T) {
 			err: utils.ErrInvalidValue,
 		},
 		"name ends with space": {
-			creditClass: CreditType{
+			creditType: CreditType{
 				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "EmpowerChain ",
@@ -527,7 +527,7 @@ func TestCreditClassValidation(t *testing.T) {
 
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			err := tc.creditClass.Validate()
+			err := tc.creditType.Validate()
 
 			require.ErrorIs(t, err, tc.err)
 		})
