@@ -293,7 +293,7 @@ func (s *TestSuite) TestProjectsQuery() {
 	// fund the issuerAdmin account for fee
 	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NormalizeCoin(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6)))))
 	applicantAdmin := sample.AccAddress()
-	creditClassAbbreviation := "DRP"
+	creditTypeAbbreviation := "DRP"
 	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),
 		Name:        "Empower",
@@ -303,7 +303,7 @@ func (s *TestSuite) TestProjectsQuery() {
 	s.Require().NoError(err)
 	_, err = ms.CreateCreditType(goCtx, &plasticcredit.MsgCreateCreditType{
 		Creator:      issuerAdmin,
-		Abbreviation: creditClassAbbreviation,
+		Abbreviation: creditTypeAbbreviation,
 		IssuerId:     1,
 		Name:         "Empower Plastic Credits",
 	})
@@ -329,7 +329,7 @@ func (s *TestSuite) TestProjectsQuery() {
 			Creator:                applicantAdmin,
 			ApplicantId:            1,
 			Name:                   name,
-			CreditTypeAbbreviation: creditClassAbbreviation,
+			CreditTypeAbbreviation: creditTypeAbbreviation,
 		}
 		_, err = ms.CreateProject(goCtx, &createMsg)
 		s.Require().NoError(err)
@@ -337,7 +337,7 @@ func (s *TestSuite) TestProjectsQuery() {
 		expectedProjects = append(expectedProjects, plasticcredit.Project{
 			Id:                     uint64(i + 1),
 			ApplicantId:            createMsg.ApplicantId,
-			CreditTypeAbbreviation: creditClassAbbreviation,
+			CreditTypeAbbreviation: creditTypeAbbreviation,
 			Name:                   createMsg.Name,
 			Status:                 plasticcredit.ProjectStatus_NEW,
 		})
@@ -366,7 +366,7 @@ func (s *TestSuite) TestProjectQuery() {
 	issuerAdmin := sample.AccAddress()
 	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(10e12))))
 	applicantAdmin := sample.AccAddress()
-	creditClassAbbreviation := "PTEST"
+	creditTypeAbbreviation := "PTEST"
 
 	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),
@@ -377,7 +377,7 @@ func (s *TestSuite) TestProjectQuery() {
 	s.Require().NoError(err)
 	_, err = ms.CreateCreditType(goCtx, &plasticcredit.MsgCreateCreditType{
 		Creator:      issuerAdmin,
-		Abbreviation: creditClassAbbreviation,
+		Abbreviation: creditTypeAbbreviation,
 		IssuerId:     1,
 		Name:         "Empower Plastic Credits",
 	})
@@ -398,7 +398,7 @@ func (s *TestSuite) TestProjectQuery() {
 	createMsg := plasticcredit.MsgCreateProject{
 		Creator:                applicantAdmin,
 		ApplicantId:            1,
-		CreditTypeAbbreviation: creditClassAbbreviation,
+		CreditTypeAbbreviation: creditTypeAbbreviation,
 		Name:                   "Project 420x",
 	}
 	_, err = ms.CreateProject(goCtx, &createMsg)

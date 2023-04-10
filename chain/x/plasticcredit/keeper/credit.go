@@ -373,7 +373,7 @@ func CreateCreditDenom(creditTypeAbbreviation string, serialNumber string) (stri
 	return creditTypeAbbreviation + "/" + serialNumber, nil
 }
 
-func SplitCreditDenom(denom string) (creditClassAbbreviation string, serialNumber string) {
+func SplitCreditDenom(denom string) (creditTypeAbbreviation string, serialNumber string) {
 	delimIndex := strings.Index(denom, "/")
 	return denom[:delimIndex], denom[delimIndex:]
 }

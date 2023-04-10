@@ -62,7 +62,7 @@ type Params struct {
 	// issuer_creator is the address that is allowed to create new issuers
 	// defaults to the governance account, but can be changed by governance (to, for instance, a DAO/group/multisig)
 	IssuerCreator string `protobuf:"bytes,1,opt,name=issuer_creator,json=issuerCreator,proto3" json:"issuer_creator,omitempty"`
-	// credit_type_creation_fee is the fee that is charged for creating a new credit class
+	// credit_type_creation_fee is the fee that is charged for creating a new credit type
 	// defaults to 50 $MPWR, but can be changed by governance
 	CreditTypeCreationFee types.Coin `protobuf:"bytes,2,opt,name=credit_type_creation_fee,json=creditTypeCreationFee,proto3" json:"credit_type_creation_fee"`
 }

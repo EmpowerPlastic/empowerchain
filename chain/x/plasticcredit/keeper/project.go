@@ -44,7 +44,7 @@ func (k Keeper) GetProjects(ctx sdk.Context, pageReq query.PageRequest) ([]plast
 	return projects, *pageRes, nil
 }
 
-func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicantID uint64, creditClassAbbreviation string, name string) (uint64, error) {
+func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicantID uint64, creditTypeAbbreviation string, name string) (uint64, error) {
 	applicant, found := k.GetApplicant(ctx, applicantID)
 	if !found {
 		return 0, errors.Wrapf(plasticcredit.ErrApplicantNotFound, "applicant with id %d was not found", applicantID)
@@ -54,8 +54,8 @@ func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicant
 		return 0, errors.Wrapf(sdkerrors.ErrUnauthorized, "%s does not have authorization for applicant with id %d", creator.String(), applicantID)
 	}
 
-	if _, found := k.GetCreditType(ctx, creditClassAbbreviation); !found {
-		return 0, errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit type with abbreviation %s was not found", creditClassAbbreviation)
+	if _, found := k.GetCreditType(ctx, creditTypeAbbreviation); !found {
+		return 0, errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit type with abbreviation %s was not found", creditTypeAbbreviation)
 	}
 
 	idc := k.GetIDCounters(ctx)
@@ -63,7 +63,7 @@ func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicant
 	project := plasticcredit.Project{
 		Id:                     nextID,
 		ApplicantId:            applicantID,
-		CreditTypeAbbreviation: creditClassAbbreviation,
+		CreditTypeAbbreviation: creditTypeAbbreviation,
 		Name:                   name,
 		Status:                 plasticcredit.ProjectStatus_NEW,
 	}
@@ -80,7 +80,7 @@ func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicant
 	return nextID, ctx.EventManager().EmitTypedEvent(&plasticcredit.EventCreateProject{
 		Creator:                creator.String(),
 		ApplicantId:            applicantID,
-		CreditTypeAbbreviation: creditClassAbbreviation,
+		CreditTypeAbbreviation: creditTypeAbbreviation,
 		Name:                   name,
 	})
 }
@@ -214,7 +214,7 @@ func (k Keeper) SuspendProject(ctx sdk.Context, updater sdk.AccAddress, projectI
 
 	return ctx.EventManager().EmitTypedEvent(&plasticcredit.EventProjectSuspended{
 		ProjectId:                           project.Id,
-		SuspendedForCreditClassAbbreviation: creditType.Abbreviation,
+		SuspendedForCreditTypeAbbreviation: creditType.Abbreviation,
 		SuspendingIssuerId:                  issuer.Id,
 		SuspendedBy:                         updater.String(),
 	})
