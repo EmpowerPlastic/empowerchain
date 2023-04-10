@@ -30,11 +30,11 @@ service Query {
   }
 
   rpc CreditTypes(QueryCreditTypesRequest) returns (QueryCreditTypesResponse) {
-    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit-classes";
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit-types";
   }
 
   rpc CreditType(QueryCreditTypeRequest) returns (QueryCreditTypeResponse) {
-    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit-classes/{credit_type_abbreviation}";
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit-types/{credit_type_abbreviation}";
   }
 
   rpc Projects(QueryProjectsRequest) returns (QueryProjectsResponse) {
