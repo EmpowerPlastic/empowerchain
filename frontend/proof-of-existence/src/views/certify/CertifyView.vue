@@ -44,13 +44,24 @@ const readFile = async (file: File): Promise<ArrayBuffer> => {
 
 const hashAndSetResult = (byteArray: Uint8Array) => {
   const result = window.empSha256(byteArray);
-  router.push({
-    path: `/proof/${result?.value}`,
-    query: { fileName: file.value?.name, time: new Date().getTime() },
-  });
+  redirectToWalletPage(result?.value, file.value?.name, new Date().getTime());
 };
 
-const handleInputHash = () => {};
+const redirectToWalletPage = (
+  hash: string,
+  fileName: string | undefined,
+  timestamp: number
+) => {
+  router.push({
+    path: `/proof/${hash}`,
+    query: { fileName: fileName, time: timestamp },
+  });
+};
+const handleInputHash = () => {
+  if (inputHash.value) {
+    redirectToWalletPage(inputHash.value, undefined, new Date().getTime());
+  }
+};
 </script>
 
 <template>
@@ -103,7 +114,7 @@ const handleInputHash = () => {};
           role="tabpanel"
           aria-labelledby="file-tab"
         >
-          <p class="mb-3 text-white text-title14">
+          <p class="mb-3 text-white text-title14 mt-2">
             Drag and drop your document here, or choose a file. Your file will
             <b>not</b> be uploaded.
             <a
@@ -148,7 +159,7 @@ const handleInputHash = () => {};
           role="tabpanel"
           aria-labelledby="hash-tab"
         >
-          <p class="mb-3 text-white text-title14">
+          <p class="mb-3 text-white text-title14 mt-2">
             Input the SHA256 checksum hexadecimal digest for your file here.
           </p>
           <div class="w-full p-3 mt-7 rounded bg-lightGray">
@@ -156,14 +167,14 @@ const handleInputHash = () => {};
               <input
                 placeholder="Document Hash"
                 v-model="inputHash"
-                class="p-1 rounded bg-lightGray w-full mr-4 text-white text-title16"
+                class="p-1 rounded bg-lightGray w-full mr-4 text-white text-title16 h-36 md:h-auto"
               />
             </label>
           </div>
           <div class="flex flex-row justify-center">
             <button
               :disabled="!/\b[A-Fa-f0-9]{64}\b/.test(inputHash)"
-              @click="hashFile(file)"
+              @click="handleInputHash"
               class="bg-lightGreen mt-10 content-center p-1 px-9 rounded text-white text-title22 disabled:bg-lightGray disabled:text-gray"
             >
               Register
