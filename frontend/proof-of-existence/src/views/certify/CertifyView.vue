@@ -173,7 +173,7 @@ const handleInputHash = () => {
           </div>
           <div class="flex flex-row justify-center">
             <button
-              :disabled="!/\b[A-Fa-f0-9]{64}\b/.test(inputHash)"
+              :disabled="!/\b[A-Fa-f0-9]{64}\b/.test(inputHash || '')"
               @click="handleInputHash"
               class="bg-lightGreen mt-10 content-center p-1 px-9 rounded text-white text-title22 disabled:bg-lightGray disabled:text-gray"
             >

@@ -5,7 +5,7 @@ import { CHAIN_ID, REST_URL, RPC_URL } from "@/config/config";
 
 //Modal props
 export interface ModalProps {
-  closeModal: (val: string) => void;
+  closeModal: (val: MouseEvent) => void;
 }
 defineProps<ModalProps>();
 //Pass selected wallet to parent
