@@ -32,9 +32,9 @@ A REST interface for state queries
 | GET | /empowerchain/empowerchain/plasticcredit/applicants | [applicants](#applicants) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/creditbalances/{owner}/{denom} | [credit balance](#credit-balance) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/creditbalances | [credit balances](#credit-balances) |  |
-| GET | /empowerchain/empowerchain/plasticcredit/credit-classes/{credit_class_abbreviation} | [credit class](#credit-class) |  |
-| GET | /empowerchain/empowerchain/plasticcredit/credit-classes | [credit types](#credit-classes) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/creditcollections/{denom} | [credit collection](#credit-collection) |  |
+| GET | /empowerchain/empowerchain/plasticcredit/credit-classes/{credit_type_abbreviation} | [credit type](#credit-type) |  |
+| GET | /empowerchain/empowerchain/plasticcredit/credit-classes | [credit types](#credit-types) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/issuers/{issuer_id} | [issuer](#issuer) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/issuers | [issuers](#issuers) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/params | [plastic credit params](#plastic-credit-params) |  |
@@ -593,262 +593,6 @@ there are no more results. |  |
 
 
 
-### <span id="credit-class"></span> credit class (*CreditClass*)
-
-```
-GET /empowerchain/empowerchain/plasticcredit/credit-classes/{credit_class_abbreviation}
-```
-
-#### Parameters
-
-| Name | Source | Type | Go type | Separator | Required | Default | Description |
-|------|--------|------|---------|-----------| :------: |---------|-------------|
-| credit_class_abbreviation | `path` | string | `string` |  | ✓ |  |  |
-
-#### All responses
-| Code | Status | Description | Has headers | Schema |
-|------|--------|-------------|:-----------:|--------|
-| [200](#credit-class-200) | OK | A successful response. |  | [schema](#credit-class-200-schema) |
-| [default](#credit-class-default) | | An unexpected error response. |  | [schema](#credit-class-default-schema) |
-
-#### Responses
-
-
-##### <span id="credit-class-200"></span> 200 - A successful response.
-Status: OK
-
-###### <span id="credit-class-200-schema"></span> Schema
-   
-  
-
-[CreditClassOKBody](#credit-class-o-k-body)
-
-##### <span id="credit-class-default"></span> Default Response
-An unexpected error response.
-
-###### <span id="credit-class-default-schema"></span> Schema
-
-  
-
-[CreditClassDefaultBody](#credit-class-default-body)
-
-###### Inlined models
-
-**<span id="credit-class-default-body"></span> CreditClassDefaultBody**
-
-
-  
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| code | int32 (formatted integer)| `int32` |  | |  |  |
-| details | [][CreditClassDefaultBodyDetailsItems0](#credit-class-default-body-details-items0)| `[]*CreditClassDefaultBodyDetailsItems0` |  | |  |  |
-| error | string| `string` |  | |  |  |
-| message | string| `string` |  | |  |  |
-
-
-
-**<span id="credit-class-default-body-details-items0"></span> CreditClassDefaultBodyDetailsItems0**
-
-
-  
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| type_url | string| `string` |  | |  |  |
-| value | byte (base64 string)| `strfmt.Base64` |  | |  |  |
-
-
-
-**<span id="credit-class-o-k-body"></span> CreditClassOKBody**
-
-
-  
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| credit_class | [CreditClassOKBodyCreditClass](#credit-class-o-k-body-credit-class)| `CreditClassOKBodyCreditClass` |  | |  |  |
-
-
-
-**<span id="credit-class-o-k-body-credit-class"></span> CreditClassOKBodyCreditClass**
-
-
-  
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| abbreviation | string| `string` |  | |  |  |
-| issuer_id | uint64 (formatted string)| `string` |  | |  |  |
-| name | string| `string` |  | |  |  |
-
-
-
-### <span id="credit-classes"></span> credit types (*CreditClasses*)
-
-```
-GET /empowerchain/empowerchain/plasticcredit/credit-classes
-```
-
-#### Parameters
-
-| Name | Source | Type | Go type | Separator | Required | Default | Description |
-|------|--------|------|---------|-----------| :------: |---------|-------------|
-| pagination.count_total | `query` | boolean | `bool` |  |  |  | count_total is set to true  to indicate that the result set should include
-a count of the total number of items available for pagination in UIs.
-count_total is only respected when offset is used. It is ignored when key
-is set. |
-| pagination.key | `query` | byte (base64 string) | `strfmt.Base64` |  |  |  | key is a value returned in PageResponse.next_key to begin
-querying the next page most efficiently. Only one of offset or key
-should be set. |
-| pagination.limit | `query` | uint64 (formatted string) | `string` |  |  |  | limit is the total number of results to be returned in the result page.
-If left empty it will default to a value to be set by each app. |
-| pagination.offset | `query` | uint64 (formatted string) | `string` |  |  |  | offset is a numeric offset that can be used when key is unavailable.
-It is less efficient than using key. Only one of offset or key should
-be set. |
-| pagination.reverse | `query` | boolean | `bool` |  |  |  | reverse is set to true if results are to be returned in the descending order.
-
-Since: cosmos-sdk 0.43 |
-
-#### All responses
-| Code | Status | Description | Has headers | Schema |
-|------|--------|-------------|:-----------:|--------|
-| [200](#credit-classes-200) | OK | A successful response. |  | [schema](#credit-classes-200-schema) |
-| [default](#credit-classes-default) | | An unexpected error response. |  | [schema](#credit-classes-default-schema) |
-
-#### Responses
-
-
-##### <span id="credit-classes-200"></span> 200 - A successful response.
-Status: OK
-
-###### <span id="credit-classes-200-schema"></span> Schema
-   
-  
-
-[CreditClassesOKBody](#credit-classes-o-k-body)
-
-##### <span id="credit-classes-default"></span> Default Response
-An unexpected error response.
-
-###### <span id="credit-classes-default-schema"></span> Schema
-
-  
-
-[CreditClassesDefaultBody](#credit-classes-default-body)
-
-###### Inlined models
-
-**<span id="credit-classes-default-body"></span> CreditClassesDefaultBody**
-
-
-  
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| code | int32 (formatted integer)| `int32` |  | |  |  |
-| details | [][CreditClassesDefaultBodyDetailsItems0](#credit-classes-default-body-details-items0)| `[]*CreditClassesDefaultBodyDetailsItems0` |  | |  |  |
-| error | string| `string` |  | |  |  |
-| message | string| `string` |  | |  |  |
-
-
-
-**<span id="credit-classes-default-body-details-items0"></span> CreditClassesDefaultBodyDetailsItems0**
-
-
-  
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| type_url | string| `string` |  | |  |  |
-| value | byte (base64 string)| `strfmt.Base64` |  | |  |  |
-
-
-
-**<span id="credit-classes-o-k-body"></span> CreditClassesOKBody**
-
-
-  
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| credit_classes | [][CreditClassesOKBodyCreditClassesItems0](#credit-classes-o-k-body-credit-classes-items0)| `[]*CreditClassesOKBodyCreditClassesItems0` |  | |  |  |
-| pagination | [CreditClassesOKBodyPagination](#credit-classes-o-k-body-pagination)| `CreditClassesOKBodyPagination` |  | |  |  |
-
-
-
-**<span id="credit-classes-o-k-body-credit-classes-items0"></span> CreditClassesOKBodyCreditClassesItems0**
-
-
-  
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| abbreviation | string| `string` |  | |  |  |
-| issuer_id | uint64 (formatted string)| `string` |  | |  |  |
-| name | string| `string` |  | |  |  |
-
-
-
-**<span id="credit-classes-o-k-body-pagination"></span> CreditClassesOKBodyPagination**
-
-
-> PageResponse is to be embedded in gRPC response messages where the
-corresponding request message has used PageRequest.
-
- message SomeResponse {
-         repeated Bar results = 1;
-         PageResponse page = 2;
- }
-  
-
-
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| next_key | byte (base64 string)| `strfmt.Base64` |  | | next_key is the key to be passed to PageRequest.key to
-query the next page most efficiently. It will be empty if
-there are no more results. |  |
-| total | uint64 (formatted string)| `string` |  | |  |  |
-
-
-
 ### <span id="credit-collection"></span> credit collection (*CreditCollection*)
 
 ```
@@ -970,6 +714,262 @@ An unexpected error response.
 |------|------|---------|:--------:| ------- |-------------|---------|
 | active | uint64 (formatted string)| `string` |  | |  |  |
 | retired | uint64 (formatted string)| `string` |  | |  |  |
+
+
+
+### <span id="credit-type"></span> credit type (*CreditType*)
+
+```
+GET /empowerchain/empowerchain/plasticcredit/credit-classes/{credit_type_abbreviation}
+```
+
+#### Parameters
+
+| Name | Source | Type | Go type | Separator | Required | Default | Description |
+|------|--------|------|---------|-----------| :------: |---------|-------------|
+| credit_type_abbreviation | `path` | string | `string` |  | ✓ |  |  |
+
+#### All responses
+| Code | Status | Description | Has headers | Schema |
+|------|--------|-------------|:-----------:|--------|
+| [200](#credit-type-200) | OK | A successful response. |  | [schema](#credit-type-200-schema) |
+| [default](#credit-type-default) | | An unexpected error response. |  | [schema](#credit-type-default-schema) |
+
+#### Responses
+
+
+##### <span id="credit-type-200"></span> 200 - A successful response.
+Status: OK
+
+###### <span id="credit-type-200-schema"></span> Schema
+   
+  
+
+[CreditTypeOKBody](#credit-type-o-k-body)
+
+##### <span id="credit-type-default"></span> Default Response
+An unexpected error response.
+
+###### <span id="credit-type-default-schema"></span> Schema
+
+  
+
+[CreditTypeDefaultBody](#credit-type-default-body)
+
+###### Inlined models
+
+**<span id="credit-type-default-body"></span> CreditTypeDefaultBody**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| code | int32 (formatted integer)| `int32` |  | |  |  |
+| details | [][CreditTypeDefaultBodyDetailsItems0](#credit-type-default-body-details-items0)| `[]*CreditTypeDefaultBodyDetailsItems0` |  | |  |  |
+| error | string| `string` |  | |  |  |
+| message | string| `string` |  | |  |  |
+
+
+
+**<span id="credit-type-default-body-details-items0"></span> CreditTypeDefaultBodyDetailsItems0**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| type_url | string| `string` |  | |  |  |
+| value | byte (base64 string)| `strfmt.Base64` |  | |  |  |
+
+
+
+**<span id="credit-type-o-k-body"></span> CreditTypeOKBody**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| credit_type | [CreditTypeOKBodyCreditType](#credit-type-o-k-body-credit-type)| `CreditTypeOKBodyCreditType` |  | |  |  |
+
+
+
+**<span id="credit-type-o-k-body-credit-type"></span> CreditTypeOKBodyCreditType**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| abbreviation | string| `string` |  | |  |  |
+| issuer_id | uint64 (formatted string)| `string` |  | |  |  |
+| name | string| `string` |  | |  |  |
+
+
+
+### <span id="credit-types"></span> credit types (*CreditTypes*)
+
+```
+GET /empowerchain/empowerchain/plasticcredit/credit-classes
+```
+
+#### Parameters
+
+| Name | Source | Type | Go type | Separator | Required | Default | Description |
+|------|--------|------|---------|-----------| :------: |---------|-------------|
+| pagination.count_total | `query` | boolean | `bool` |  |  |  | count_total is set to true  to indicate that the result set should include
+a count of the total number of items available for pagination in UIs.
+count_total is only respected when offset is used. It is ignored when key
+is set. |
+| pagination.key | `query` | byte (base64 string) | `strfmt.Base64` |  |  |  | key is a value returned in PageResponse.next_key to begin
+querying the next page most efficiently. Only one of offset or key
+should be set. |
+| pagination.limit | `query` | uint64 (formatted string) | `string` |  |  |  | limit is the total number of results to be returned in the result page.
+If left empty it will default to a value to be set by each app. |
+| pagination.offset | `query` | uint64 (formatted string) | `string` |  |  |  | offset is a numeric offset that can be used when key is unavailable.
+It is less efficient than using key. Only one of offset or key should
+be set. |
+| pagination.reverse | `query` | boolean | `bool` |  |  |  | reverse is set to true if results are to be returned in the descending order.
+
+Since: cosmos-sdk 0.43 |
+
+#### All responses
+| Code | Status | Description | Has headers | Schema |
+|------|--------|-------------|:-----------:|--------|
+| [200](#credit-types-200) | OK | A successful response. |  | [schema](#credit-types-200-schema) |
+| [default](#credit-types-default) | | An unexpected error response. |  | [schema](#credit-types-default-schema) |
+
+#### Responses
+
+
+##### <span id="credit-types-200"></span> 200 - A successful response.
+Status: OK
+
+###### <span id="credit-types-200-schema"></span> Schema
+   
+  
+
+[CreditTypesOKBody](#credit-types-o-k-body)
+
+##### <span id="credit-types-default"></span> Default Response
+An unexpected error response.
+
+###### <span id="credit-types-default-schema"></span> Schema
+
+  
+
+[CreditTypesDefaultBody](#credit-types-default-body)
+
+###### Inlined models
+
+**<span id="credit-types-default-body"></span> CreditTypesDefaultBody**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| code | int32 (formatted integer)| `int32` |  | |  |  |
+| details | [][CreditTypesDefaultBodyDetailsItems0](#credit-types-default-body-details-items0)| `[]*CreditTypesDefaultBodyDetailsItems0` |  | |  |  |
+| error | string| `string` |  | |  |  |
+| message | string| `string` |  | |  |  |
+
+
+
+**<span id="credit-types-default-body-details-items0"></span> CreditTypesDefaultBodyDetailsItems0**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| type_url | string| `string` |  | |  |  |
+| value | byte (base64 string)| `strfmt.Base64` |  | |  |  |
+
+
+
+**<span id="credit-types-o-k-body"></span> CreditTypesOKBody**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| credit_types | [][CreditTypesOKBodyCreditTypesItems0](#credit-types-o-k-body-credit-types-items0)| `[]*CreditTypesOKBodyCreditTypesItems0` |  | |  |  |
+| pagination | [CreditTypesOKBodyPagination](#credit-types-o-k-body-pagination)| `CreditTypesOKBodyPagination` |  | |  |  |
+
+
+
+**<span id="credit-types-o-k-body-credit-types-items0"></span> CreditTypesOKBodyCreditTypesItems0**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| abbreviation | string| `string` |  | |  |  |
+| issuer_id | uint64 (formatted string)| `string` |  | |  |  |
+| name | string| `string` |  | |  |  |
+
+
+
+**<span id="credit-types-o-k-body-pagination"></span> CreditTypesOKBodyPagination**
+
+
+> PageResponse is to be embedded in gRPC response messages where the
+corresponding request message has used PageRequest.
+
+ message SomeResponse {
+         repeated Bar results = 1;
+         PageResponse page = 2;
+ }
+  
+
+
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| next_key | byte (base64 string)| `strfmt.Base64` |  | | next_key is the key to be passed to PageRequest.key to
+query the next page most efficiently. It will be empty if
+there are no more results. |  |
+| total | uint64 (formatted string)| `string` |  | |  |  |
 
 
 
@@ -1329,12 +1329,12 @@ An unexpected error response.
 
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
-| credit_class_creation_fee | [PlasticCreditParamsOKBodyParamsCreditClassCreationFee](#plastic-credit-params-o-k-body-params-credit-class-creation-fee)| `PlasticCreditParamsOKBodyParamsCreditClassCreationFee` |  | |  |  |
+| credit_type_creation_fee | [PlasticCreditParamsOKBodyParamsCreditTypeCreationFee](#plastic-credit-params-o-k-body-params-credit-type-creation-fee)| `PlasticCreditParamsOKBodyParamsCreditTypeCreationFee` |  | |  |  |
 | issuer_creator | string| `string` |  | |  |  |
 
 
 
-**<span id="plastic-credit-params-o-k-body-params-credit-class-creation-fee"></span> PlasticCreditParamsOKBodyParamsCreditClassCreationFee**
+**<span id="plastic-credit-params-o-k-body-params-credit-type-creation-fee"></span> PlasticCreditParamsOKBodyParamsCreditTypeCreationFee**
 
 
 > Coin defines a token with a denomination and an amount.
@@ -1458,7 +1458,7 @@ An unexpected error response.
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | applicant_id | uint64 (formatted string)| `string` |  | |  |  |
-| credit_class_abbreviation | string| `string` |  | |  |  |
+| credit_type_abbreviation | string| `string` |  | |  |  |
 | id | uint64 (formatted string)| `string` |  | |  |  |
 | name | string| `string` |  | |  |  |
 | status | string| `string` |  | `"NEW"`|  |  |
@@ -1609,7 +1609,7 @@ there are no more results. |  |
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | applicant_id | uint64 (formatted string)| `string` |  | |  |  |
-| credit_class_abbreviation | string| `string` |  | |  |  |
+| credit_type_abbreviation | string| `string` |  | |  |  |
 | id | uint64 (formatted string)| `string` |  | |  |  |
 | name | string| `string` |  | |  |  |
 | status | string| `string` |  | `"NEW"`|  |  |
@@ -1882,23 +1882,6 @@ signatures required by gogoproto.
 
 
 
-### <span id="empowerchain-plasticcredit-credit-class"></span> empowerchain.plasticcredit.CreditClass
-
-
-  
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| abbreviation | string| `string` |  | |  |  |
-| issuer_id | uint64 (formatted string)| `string` |  | |  |  |
-| name | string| `string` |  | |  |  |
-
-
-
 ### <span id="empowerchain-plasticcredit-credit-collection"></span> empowerchain.plasticcredit.CreditCollection
 
 
@@ -1935,6 +1918,23 @@ signatures required by gogoproto.
 
 
 
+### <span id="empowerchain-plasticcredit-credit-type"></span> empowerchain.plasticcredit.CreditType
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| abbreviation | string| `string` |  | |  |  |
+| issuer_id | uint64 (formatted string)| `string` |  | |  |  |
+| name | string| `string` |  | |  |  |
+
+
+
 ### <span id="empowerchain-plasticcredit-issuer"></span> empowerchain.plasticcredit.Issuer
 
 
@@ -1967,14 +1967,14 @@ signatures required by gogoproto.
 
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
-| credit_class_creation_fee | [EmpowerchainPlasticcreditParamsCreditClassCreationFee](#empowerchain-plasticcredit-params-credit-class-creation-fee)| `EmpowerchainPlasticcreditParamsCreditClassCreationFee` |  | |  |  |
+| credit_type_creation_fee | [EmpowerchainPlasticcreditParamsCreditTypeCreationFee](#empowerchain-plasticcredit-params-credit-type-creation-fee)| `EmpowerchainPlasticcreditParamsCreditTypeCreationFee` |  | |  |  |
 | issuer_creator | string| `string` |  | |  |  |
 
 
 
 #### Inlined models
 
-**<span id="empowerchain-plasticcredit-params-credit-class-creation-fee"></span> EmpowerchainPlasticcreditParamsCreditClassCreationFee**
+**<span id="empowerchain-plasticcredit-params-credit-type-creation-fee"></span> EmpowerchainPlasticcreditParamsCreditTypeCreationFee**
 
 
 > Coin defines a token with a denomination and an amount.
@@ -2008,7 +2008,7 @@ signatures required by gogoproto.
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | applicant_id | uint64 (formatted string)| `string` |  | |  |  |
-| credit_class_abbreviation | string| `string` |  | |  |  |
+| credit_type_abbreviation | string| `string` |  | |  |  |
 | id | uint64 (formatted string)| `string` |  | |  |  |
 | name | string| `string` |  | |  |  |
 | status | string| `string` |  | `"NEW"`|  |  |
@@ -2252,102 +2252,6 @@ there are no more results. |  |
 
 
 
-### <span id="empowerchain-plasticcredit-query-credit-class-response"></span> empowerchain.plasticcredit.QueryCreditClassResponse
-
-
-  
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| credit_class | [EmpowerchainPlasticcreditQueryCreditClassResponseCreditClass](#empowerchain-plasticcredit-query-credit-class-response-credit-class)| `EmpowerchainPlasticcreditQueryCreditClassResponseCreditClass` |  | |  |  |
-
-
-
-#### Inlined models
-
-**<span id="empowerchain-plasticcredit-query-credit-class-response-credit-class"></span> EmpowerchainPlasticcreditQueryCreditClassResponseCreditClass**
-
-
-  
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| abbreviation | string| `string` |  | |  |  |
-| issuer_id | uint64 (formatted string)| `string` |  | |  |  |
-| name | string| `string` |  | |  |  |
-
-
-
-### <span id="empowerchain-plasticcredit-query-credit-classes-response"></span> empowerchain.plasticcredit.QueryCreditClassesResponse
-
-
-  
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| credit_classes | [][EmpowerchainPlasticcreditQueryCreditClassesResponseCreditClassesItems0](#empowerchain-plasticcredit-query-credit-classes-response-credit-classes-items0)| `[]*EmpowerchainPlasticcreditQueryCreditClassesResponseCreditClassesItems0` |  | |  |  |
-| pagination | [EmpowerchainPlasticcreditQueryCreditClassesResponsePagination](#empowerchain-plasticcredit-query-credit-classes-response-pagination)| `EmpowerchainPlasticcreditQueryCreditClassesResponsePagination` |  | |  |  |
-
-
-
-#### Inlined models
-
-**<span id="empowerchain-plasticcredit-query-credit-classes-response-credit-classes-items0"></span> EmpowerchainPlasticcreditQueryCreditClassesResponseCreditClassesItems0**
-
-
-  
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| abbreviation | string| `string` |  | |  |  |
-| issuer_id | uint64 (formatted string)| `string` |  | |  |  |
-| name | string| `string` |  | |  |  |
-
-
-
-**<span id="empowerchain-plasticcredit-query-credit-classes-response-pagination"></span> EmpowerchainPlasticcreditQueryCreditClassesResponsePagination**
-
-
-> PageResponse is to be embedded in gRPC response messages where the
-corresponding request message has used PageRequest.
-
- message SomeResponse {
-         repeated Bar results = 1;
-         PageResponse page = 2;
- }
-  
-
-
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| next_key | byte (base64 string)| `strfmt.Base64` |  | | next_key is the key to be passed to PageRequest.key to
-query the next page most efficiently. It will be empty if
-there are no more results. |  |
-| total | uint64 (formatted string)| `string` |  | |  |  |
-
-
-
 ### <span id="empowerchain-plasticcredit-query-credit-collection-response"></span> empowerchain.plasticcredit.QueryCreditCollectionResponse
 
 
@@ -2396,6 +2300,102 @@ there are no more results. |  |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | active | uint64 (formatted string)| `string` |  | |  |  |
 | retired | uint64 (formatted string)| `string` |  | |  |  |
+
+
+
+### <span id="empowerchain-plasticcredit-query-credit-type-response"></span> empowerchain.plasticcredit.QueryCreditTypeResponse
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| credit_type | [EmpowerchainPlasticcreditQueryCreditTypeResponseCreditType](#empowerchain-plasticcredit-query-credit-type-response-credit-type)| `EmpowerchainPlasticcreditQueryCreditTypeResponseCreditType` |  | |  |  |
+
+
+
+#### Inlined models
+
+**<span id="empowerchain-plasticcredit-query-credit-type-response-credit-type"></span> EmpowerchainPlasticcreditQueryCreditTypeResponseCreditType**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| abbreviation | string| `string` |  | |  |  |
+| issuer_id | uint64 (formatted string)| `string` |  | |  |  |
+| name | string| `string` |  | |  |  |
+
+
+
+### <span id="empowerchain-plasticcredit-query-credit-types-response"></span> empowerchain.plasticcredit.QueryCreditTypesResponse
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| credit_types | [][EmpowerchainPlasticcreditQueryCreditTypesResponseCreditTypesItems0](#empowerchain-plasticcredit-query-credit-types-response-credit-types-items0)| `[]*EmpowerchainPlasticcreditQueryCreditTypesResponseCreditTypesItems0` |  | |  |  |
+| pagination | [EmpowerchainPlasticcreditQueryCreditTypesResponsePagination](#empowerchain-plasticcredit-query-credit-types-response-pagination)| `EmpowerchainPlasticcreditQueryCreditTypesResponsePagination` |  | |  |  |
+
+
+
+#### Inlined models
+
+**<span id="empowerchain-plasticcredit-query-credit-types-response-credit-types-items0"></span> EmpowerchainPlasticcreditQueryCreditTypesResponseCreditTypesItems0**
+
+
+  
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| abbreviation | string| `string` |  | |  |  |
+| issuer_id | uint64 (formatted string)| `string` |  | |  |  |
+| name | string| `string` |  | |  |  |
+
+
+
+**<span id="empowerchain-plasticcredit-query-credit-types-response-pagination"></span> EmpowerchainPlasticcreditQueryCreditTypesResponsePagination**
+
+
+> PageResponse is to be embedded in gRPC response messages where the
+corresponding request message has used PageRequest.
+
+ message SomeResponse {
+         repeated Bar results = 1;
+         PageResponse page = 2;
+ }
+  
+
+
+
+
+
+**Properties**
+
+| Name | Type | Go type | Required | Default | Description | Example |
+|------|------|---------|:--------:| ------- |-------------|---------|
+| next_key | byte (base64 string)| `strfmt.Base64` |  | | next_key is the key to be passed to PageRequest.key to
+query the next page most efficiently. It will be empty if
+there are no more results. |  |
+| total | uint64 (formatted string)| `string` |  | |  |  |
 
 
 
@@ -2528,12 +2528,12 @@ there are no more results. |  |
 
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
-| credit_class_creation_fee | [EmpowerchainPlasticcreditQueryParamsResponseParamsCreditClassCreationFee](#empowerchain-plasticcredit-query-params-response-params-credit-class-creation-fee)| `EmpowerchainPlasticcreditQueryParamsResponseParamsCreditClassCreationFee` |  | |  |  |
+| credit_type_creation_fee | [EmpowerchainPlasticcreditQueryParamsResponseParamsCreditTypeCreationFee](#empowerchain-plasticcredit-query-params-response-params-credit-type-creation-fee)| `EmpowerchainPlasticcreditQueryParamsResponseParamsCreditTypeCreationFee` |  | |  |  |
 | issuer_creator | string| `string` |  | |  |  |
 
 
 
-**<span id="empowerchain-plasticcredit-query-params-response-params-credit-class-creation-fee"></span> EmpowerchainPlasticcreditQueryParamsResponseParamsCreditClassCreationFee**
+**<span id="empowerchain-plasticcredit-query-params-response-params-credit-type-creation-fee"></span> EmpowerchainPlasticcreditQueryParamsResponseParamsCreditTypeCreationFee**
 
 
 > Coin defines a token with a denomination and an amount.
@@ -2584,7 +2584,7 @@ signatures required by gogoproto.
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | applicant_id | uint64 (formatted string)| `string` |  | |  |  |
-| credit_class_abbreviation | string| `string` |  | |  |  |
+| credit_type_abbreviation | string| `string` |  | |  |  |
 | id | uint64 (formatted string)| `string` |  | |  |  |
 | name | string| `string` |  | |  |  |
 | status | string| `string` |  | `"NEW"`|  |  |
@@ -2648,7 +2648,7 @@ there are no more results. |  |
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | applicant_id | uint64 (formatted string)| `string` |  | |  |  |
-| credit_class_abbreviation | string| `string` |  | |  |  |
+| credit_type_abbreviation | string| `string` |  | |  |  |
 | id | uint64 (formatted string)| `string` |  | |  |  |
 | name | string| `string` |  | |  |  |
 | status | string| `string` |  | `"NEW"`|  |  |
