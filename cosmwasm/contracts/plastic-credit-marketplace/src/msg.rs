@@ -19,6 +19,9 @@ pub enum ExecuteMsg {
         owner: Addr,
         denom: String,
         number_of_credits_to_buy: u64,
+    },
+    CancelListing {
+        denom: String,
     }
 }
 

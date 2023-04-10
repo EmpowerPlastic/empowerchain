@@ -394,6 +394,8 @@ func AddGenesisE2ETestData(cdc codec.Codec, genesisState *genesistools.GenesisSt
 	genesistools.AddGenesisPlasticCreditBalance(cdc, genesisState, currentNoOfProjects+2, "PTEST/UPDATE_LISTING_6", genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin, plasticcredit.CreditAmount{Active: 1000, Retired: 200})
 	genesistools.AddGenesisPlasticCreditBalance(cdc, genesisState, currentNoOfProjects+2, "PTEST/UPDATE_LISTING_7", genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin, plasticcredit.CreditAmount{Active: 1000, Retired: 200})
 
+	genesistools.AddGenesisPlasticCreditBalance(cdc, genesisState, currentNoOfProjects+2, "PTEST/CANCEL_LISTING_1", genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin, plasticcredit.CreditAmount{Active: 1000, Retired: 200})
+
 	genesisState.PlasticcreditGenesis.IdCounters = plasticcredit.IDCounters{
 		NextIssuerId:    uint64(len(genesisState.PlasticcreditGenesis.Issuers) + 1),
 		NextApplicantId: uint64(len(genesisState.PlasticcreditGenesis.Applicants) + 1),
