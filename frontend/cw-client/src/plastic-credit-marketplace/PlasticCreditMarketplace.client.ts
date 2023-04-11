@@ -94,6 +94,11 @@ export interface PlasticCreditMarketplaceInterface extends PlasticCreditMarketpl
     numberOfCreditsToBuy: number;
     owner: Addr;
   }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
+  cancelListing: ({
+    denom
+  }: {
+    denom: string;
+  }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
 }
 export class PlasticCreditMarketplaceClient extends PlasticCreditMarketplaceQueryClient implements PlasticCreditMarketplaceInterface {
   client: SigningCosmWasmClient;
@@ -108,6 +113,7 @@ export class PlasticCreditMarketplaceClient extends PlasticCreditMarketplaceQuer
     this.createListing = this.createListing.bind(this);
     this.updateListing = this.updateListing.bind(this);
     this.buyCredits = this.buyCredits.bind(this);
+    this.cancelListing = this.cancelListing.bind(this);
   }
 
   createListing = async ({
@@ -158,6 +164,17 @@ export class PlasticCreditMarketplaceClient extends PlasticCreditMarketplaceQuer
         denom,
         number_of_credits_to_buy: numberOfCreditsToBuy,
         owner
+      }
+    }, fee, memo, funds);
+  };
+  cancelListing = async ({
+    denom
+  }: {
+    denom: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      cancel_listing: {
+        denom
       }
     }, fee, memo, funds);
   };
