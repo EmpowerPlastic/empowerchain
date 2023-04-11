@@ -567,9 +567,9 @@ var xxx_messageInfo_MsgUpdateApplicantResponse proto.InternalMessageInfo
 type MsgCreateCreditType struct {
 	// creator is the signer and needs to have permissions on the issuer referenced in issuer_id
 	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	// abbreviation is the short-hand name, as well as the ID of the credit class
+	// abbreviation is the short-hand name, as well as the ID of the credit type
 	Abbreviation string `protobuf:"bytes,2,opt,name=abbreviation,proto3" json:"abbreviation,omitempty"`
-	// issuer_id is the ID of the issuer creating and owning the credit class
+	// issuer_id is the ID of the issuer creating and owning the credit type
 	IssuerId uint64 `protobuf:"varint,3,opt,name=issuer_id,json=issuerId,proto3" json:"issuer_id,omitempty"`
 	// name is the human friendly name of the credits (e.g. Empower Plastic Credits)
 	Name string `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
@@ -673,7 +673,7 @@ func (m *MsgCreateCreditTypeResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgCreateCreditTypeResponse proto.InternalMessageInfo
 
 type MsgUpdateCreditType struct {
-	// abbreviation is the short-hand name, as well as the ID of the credit class
+	// abbreviation is the short-hand name, as well as the ID of the credit type
 	Updater      string `protobuf:"bytes,1,opt,name=updater,proto3" json:"updater,omitempty"`
 	Abbreviation string `protobuf:"bytes,2,opt,name=abbreviation,proto3" json:"abbreviation,omitempty"`
 	Name         string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
@@ -980,7 +980,7 @@ func (m *MsgUpdateProjectResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgUpdateProjectResponse proto.InternalMessageInfo
 
 type MsgApproveProject struct {
-	// Approver needs to be someone who has the authority to approve for the credit class of the project
+	// Approver needs to be someone who has the authority to approve for the credit type of the project
 	Approver  string `protobuf:"bytes,1,opt,name=approver,proto3" json:"approver,omitempty"`
 	ProjectId uint64 `protobuf:"varint,2,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 }
@@ -1069,7 +1069,7 @@ func (m *MsgApproveProjectResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgApproveProjectResponse proto.InternalMessageInfo
 
 type MsgRejectProject struct {
-	// Rejector needs to be someone who has the authority to approve/ reject for the credit class of the project
+	// Rejector needs to be someone who has the authority to approve/ reject for the credit type of the project
 	Rejector  string `protobuf:"bytes,1,opt,name=rejector,proto3" json:"rejector,omitempty"`
 	ProjectId uint64 `protobuf:"varint,2,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 }
@@ -1158,7 +1158,7 @@ func (m *MsgRejectProjectResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgRejectProjectResponse proto.InternalMessageInfo
 
 type MsgSuspendProject struct {
-	// updater needs to be someone who has the authority to update for the credit class of the project
+	// updater needs to be someone who has the authority to update for the credit type of the project
 	Updater   string `protobuf:"bytes,1,opt,name=updater,proto3" json:"updater,omitempty"`
 	ProjectId uint64 `protobuf:"varint,2,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 }
@@ -1716,7 +1716,7 @@ type MsgClient interface {
 	// UpdateParams defines a governance operation for updating the x/plasticcredit module parameters.
 	// The authority is defined in the keeper.
 	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
-	// CreateIssuer creates a new Issuer that can create credit types and issue new credits with those classes
+	// CreateIssuer creates a new Issuer that can create credit types and issue new credits with those types
 	// There is only a single signer in the system that is allowed to create new issuers and it is defined in Params as "issuer_creator"
 	CreateIssuer(ctx context.Context, in *MsgCreateIssuer, opts ...grpc.CallOption) (*MsgCreateIssuerResponse, error)
 	// UpdateIssuer updates an existing issuer details.
@@ -1726,11 +1726,11 @@ type MsgClient interface {
 	CreateApplicant(ctx context.Context, in *MsgCreateApplicant, opts ...grpc.CallOption) (*MsgCreateApplicantResponse, error)
 	// UpdateApplicant updates an existing Applicant by admin
 	UpdateApplicant(ctx context.Context, in *MsgUpdateApplicant, opts ...grpc.CallOption) (*MsgUpdateApplicantResponse, error)
-	// CreateCreditType creates a new Credit Class for an issuer.
+	// CreateCreditType creates a new Credit Type for an issuer.
 	CreateCreditType(ctx context.Context, in *MsgCreateCreditType, opts ...grpc.CallOption) (*MsgCreateCreditTypeResponse, error)
-	// UpdateCreditType update an existing Credit Class for an issuer. Only the admin from the Issuer that owns the Credit Class is allowed and only change the name
+	// UpdateCreditType update an existing Credit Type for an issuer. Only the admin from the Issuer that owns the Credit Type is allowed and only change the name
 	UpdateCreditType(ctx context.Context, in *MsgUpdateCreditType, opts ...grpc.CallOption) (*MsgUpdateCreditTypeResponse, error)
-	// CreateProject creates a new Project for an applicant that can be approved be an issuer for issuing under a credit class
+	// CreateProject creates a new Project for an applicant that can be approved be an issuer for issuing under a credit type
 	CreateProject(ctx context.Context, in *MsgCreateProject, opts ...grpc.CallOption) (*MsgCreateProjectResponse, error)
 	// UpdateProject updates an existing Project. Can only be done by the admin from the Applicant that owns the Project and only change the name of the project
 	UpdateProject(ctx context.Context, in *MsgUpdateProject, opts ...grpc.CallOption) (*MsgUpdateProjectResponse, error)
@@ -1740,7 +1740,7 @@ type MsgClient interface {
 	RejectProject(ctx context.Context, in *MsgRejectProject, opts ...grpc.CallOption) (*MsgRejectProjectResponse, error)
 	// SuspendProject suspends an approved project, even if it has already been issued credits. Not allowed to suspend a new or rejected project.
 	SuspendProject(ctx context.Context, in *MsgSuspendProject, opts ...grpc.CallOption) (*MsgSuspendProjectResponse, error)
-	// IssueCredits mints new credits related to given credit class and project
+	// IssueCredits mints new credits related to given credit type and project
 	IssueCredits(ctx context.Context, in *MsgIssueCredits, opts ...grpc.CallOption) (*MsgIssueCreditsResponse, error)
 	// TransferCredits transfers credits from one account to another and can optionally retire them by doing so
 	TransferCredits(ctx context.Context, in *MsgTransferCredits, opts ...grpc.CallOption) (*MsgTransferCreditsResponse, error)
@@ -1896,7 +1896,7 @@ type MsgServer interface {
 	// UpdateParams defines a governance operation for updating the x/plasticcredit module parameters.
 	// The authority is defined in the keeper.
 	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
-	// CreateIssuer creates a new Issuer that can create credit types and issue new credits with those classes
+	// CreateIssuer creates a new Issuer that can create credit types and issue new credits with those types
 	// There is only a single signer in the system that is allowed to create new issuers and it is defined in Params as "issuer_creator"
 	CreateIssuer(context.Context, *MsgCreateIssuer) (*MsgCreateIssuerResponse, error)
 	// UpdateIssuer updates an existing issuer details.
@@ -1906,11 +1906,11 @@ type MsgServer interface {
 	CreateApplicant(context.Context, *MsgCreateApplicant) (*MsgCreateApplicantResponse, error)
 	// UpdateApplicant updates an existing Applicant by admin
 	UpdateApplicant(context.Context, *MsgUpdateApplicant) (*MsgUpdateApplicantResponse, error)
-	// CreateCreditType creates a new Credit Class for an issuer.
+	// CreateCreditType creates a new Credit Type for an issuer.
 	CreateCreditType(context.Context, *MsgCreateCreditType) (*MsgCreateCreditTypeResponse, error)
-	// UpdateCreditType update an existing Credit Class for an issuer. Only the admin from the Issuer that owns the Credit Class is allowed and only change the name
+	// UpdateCreditType update an existing Credit Type for an issuer. Only the admin from the Issuer that owns the Credit Type is allowed and only change the name
 	UpdateCreditType(context.Context, *MsgUpdateCreditType) (*MsgUpdateCreditTypeResponse, error)
-	// CreateProject creates a new Project for an applicant that can be approved be an issuer for issuing under a credit class
+	// CreateProject creates a new Project for an applicant that can be approved be an issuer for issuing under a credit type
 	CreateProject(context.Context, *MsgCreateProject) (*MsgCreateProjectResponse, error)
 	// UpdateProject updates an existing Project. Can only be done by the admin from the Applicant that owns the Project and only change the name of the project
 	UpdateProject(context.Context, *MsgUpdateProject) (*MsgUpdateProjectResponse, error)
@@ -1920,7 +1920,7 @@ type MsgServer interface {
 	RejectProject(context.Context, *MsgRejectProject) (*MsgRejectProjectResponse, error)
 	// SuspendProject suspends an approved project, even if it has already been issued credits. Not allowed to suspend a new or rejected project.
 	SuspendProject(context.Context, *MsgSuspendProject) (*MsgSuspendProjectResponse, error)
-	// IssueCredits mints new credits related to given credit class and project
+	// IssueCredits mints new credits related to given credit type and project
 	IssueCredits(context.Context, *MsgIssueCredits) (*MsgIssueCreditsResponse, error)
 	// TransferCredits transfers credits from one account to another and can optionally retire them by doing so
 	TransferCredits(context.Context, *MsgTransferCredits) (*MsgTransferCreditsResponse, error)

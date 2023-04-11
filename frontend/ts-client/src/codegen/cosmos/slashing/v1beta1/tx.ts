@@ -1,6 +1,6 @@
 import { Params, ParamsSDKType } from "./slashing";
 import * as _m0 from "protobufjs/minimal";
-import { DeepPartial } from "../../../helpers";
+import { isSet } from "../../../helpers";
 /** MsgUnjail defines the Msg/Unjail request type */
 
 export interface MsgUnjail {
@@ -105,7 +105,19 @@ export const MsgUnjail = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<MsgUnjail>): MsgUnjail {
+  fromJSON(object: any): MsgUnjail {
+    return {
+      validatorAddr: isSet(object.validatorAddr) ? String(object.validatorAddr) : ""
+    };
+  },
+
+  toJSON(message: MsgUnjail): unknown {
+    const obj: any = {};
+    message.validatorAddr !== undefined && (obj.validatorAddr = message.validatorAddr);
+    return obj;
+  },
+
+  fromPartial(object: Partial<MsgUnjail>): MsgUnjail {
     const message = createBaseMsgUnjail();
     message.validatorAddr = object.validatorAddr ?? "";
     return message;
@@ -140,7 +152,16 @@ export const MsgUnjailResponse = {
     return message;
   },
 
-  fromPartial(_: DeepPartial<MsgUnjailResponse>): MsgUnjailResponse {
+  fromJSON(_: any): MsgUnjailResponse {
+    return {};
+  },
+
+  toJSON(_: MsgUnjailResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: Partial<MsgUnjailResponse>): MsgUnjailResponse {
     const message = createBaseMsgUnjailResponse();
     return message;
   }
@@ -193,7 +214,21 @@ export const MsgUpdateParams = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<MsgUpdateParams>): MsgUpdateParams {
+  fromJSON(object: any): MsgUpdateParams {
+    return {
+      authority: isSet(object.authority) ? String(object.authority) : "",
+      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined
+    };
+  },
+
+  toJSON(message: MsgUpdateParams): unknown {
+    const obj: any = {};
+    message.authority !== undefined && (obj.authority = message.authority);
+    message.params !== undefined && (obj.params = message.params ? Params.toJSON(message.params) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: Partial<MsgUpdateParams>): MsgUpdateParams {
     const message = createBaseMsgUpdateParams();
     message.authority = object.authority ?? "";
     message.params = object.params !== undefined && object.params !== null ? Params.fromPartial(object.params) : undefined;
@@ -229,7 +264,16 @@ export const MsgUpdateParamsResponse = {
     return message;
   },
 
-  fromPartial(_: DeepPartial<MsgUpdateParamsResponse>): MsgUpdateParamsResponse {
+  fromJSON(_: any): MsgUpdateParamsResponse {
+    return {};
+  },
+
+  toJSON(_: MsgUpdateParamsResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: Partial<MsgUpdateParamsResponse>): MsgUpdateParamsResponse {
     const message = createBaseMsgUpdateParamsResponse();
     return message;
   }

@@ -1,6 +1,6 @@
 import { ModuleOptions, ModuleOptionsSDKType } from "./options";
 import * as _m0 from "protobufjs/minimal";
-import { DeepPartial } from "../../../helpers";
+import { isSet, isObject } from "../../../helpers";
 /** AppOptionsRequest is the RemoteInfoService/AppOptions request type. */
 
 export interface AppOptionsRequest {}
@@ -59,7 +59,16 @@ export const AppOptionsRequest = {
     return message;
   },
 
-  fromPartial(_: DeepPartial<AppOptionsRequest>): AppOptionsRequest {
+  fromJSON(_: any): AppOptionsRequest {
+    return {};
+  },
+
+  toJSON(_: AppOptionsRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: Partial<AppOptionsRequest>): AppOptionsRequest {
     const message = createBaseAppOptionsRequest();
     return message;
   }
@@ -112,7 +121,21 @@ export const AppOptionsResponse_ModuleOptionsEntry = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<AppOptionsResponse_ModuleOptionsEntry>): AppOptionsResponse_ModuleOptionsEntry {
+  fromJSON(object: any): AppOptionsResponse_ModuleOptionsEntry {
+    return {
+      key: isSet(object.key) ? String(object.key) : "",
+      value: isSet(object.value) ? ModuleOptions.fromJSON(object.value) : undefined
+    };
+  },
+
+  toJSON(message: AppOptionsResponse_ModuleOptionsEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value ? ModuleOptions.toJSON(message.value) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: Partial<AppOptionsResponse_ModuleOptionsEntry>): AppOptionsResponse_ModuleOptionsEntry {
     const message = createBaseAppOptionsResponse_ModuleOptionsEntry();
     message.key = object.key ?? "";
     message.value = object.value !== undefined && object.value !== null ? ModuleOptions.fromPartial(object.value) : undefined;
@@ -165,7 +188,31 @@ export const AppOptionsResponse = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<AppOptionsResponse>): AppOptionsResponse {
+  fromJSON(object: any): AppOptionsResponse {
+    return {
+      moduleOptions: isObject(object.moduleOptions) ? Object.entries(object.moduleOptions).reduce<{
+        [key: string]: ModuleOptions;
+      }>((acc, [key, value]) => {
+        acc[key] = ModuleOptions.fromJSON(value);
+        return acc;
+      }, {}) : {}
+    };
+  },
+
+  toJSON(message: AppOptionsResponse): unknown {
+    const obj: any = {};
+    obj.moduleOptions = {};
+
+    if (message.moduleOptions) {
+      Object.entries(message.moduleOptions).forEach(([k, v]) => {
+        obj.moduleOptions[k] = ModuleOptions.toJSON(v);
+      });
+    }
+
+    return obj;
+  },
+
+  fromPartial(object: Partial<AppOptionsResponse>): AppOptionsResponse {
     const message = createBaseAppOptionsResponse();
     message.moduleOptions = Object.entries(object.moduleOptions ?? {}).reduce<{
       [key: string]: ModuleOptions;
