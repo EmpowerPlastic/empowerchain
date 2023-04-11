@@ -79,7 +79,7 @@ func (s *E2ETestSuite) TestBuyCreditsWithoutFeeSplit() {
 	// Check that the credits were transferred
 	buyerCreditBalance := s.GetCreditBalance(e2e.RandomAddress, "PTEST/00001")
 	s.Require().Equal(plasticcredit.CreditAmount{
-		Active:  buyerCreditBalanceBefore.Active+2,
+		Active:  buyerCreditBalanceBefore.Active + 2,
 		Retired: buyerCreditBalanceBefore.Retired,
 	}, buyerCreditBalance)
 	contractCreditBalance := s.GetCreditBalance(marketplaceAddress, "PTEST/00001")
@@ -171,7 +171,7 @@ func (s *E2ETestSuite) TestBuyCreditsWithFeeSplit() {
 	// Check that the credits were transferred
 	buyerCreditBalance := s.GetCreditBalance(e2e.RandomAddress, "PTEST/00001")
 	s.Require().Equal(plasticcredit.CreditAmount{
-		Active:  buyerCreditBalanceBefore.Active+2,
+		Active:  buyerCreditBalanceBefore.Active + 2,
 		Retired: buyerCreditBalanceBefore.Retired,
 	}, buyerCreditBalance)
 	contractCreditBalance := s.GetCreditBalance(marketplaceAddress, "PTEST/00001")
