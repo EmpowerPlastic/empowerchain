@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { DeepPartial, Long } from "../../../helpers";
+import { isSet, Long } from "../../../helpers";
 /** Minter represents the minting state. */
 
 export interface Minter {
@@ -107,7 +107,21 @@ export const Minter = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<Minter>): Minter {
+  fromJSON(object: any): Minter {
+    return {
+      inflation: isSet(object.inflation) ? String(object.inflation) : "",
+      annualProvisions: isSet(object.annualProvisions) ? String(object.annualProvisions) : ""
+    };
+  },
+
+  toJSON(message: Minter): unknown {
+    const obj: any = {};
+    message.inflation !== undefined && (obj.inflation = message.inflation);
+    message.annualProvisions !== undefined && (obj.annualProvisions = message.annualProvisions);
+    return obj;
+  },
+
+  fromPartial(object: Partial<Minter>): Minter {
     const message = createBaseMinter();
     message.inflation = object.inflation ?? "";
     message.annualProvisions = object.annualProvisions ?? "";
@@ -198,7 +212,29 @@ export const Params = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<Params>): Params {
+  fromJSON(object: any): Params {
+    return {
+      mintDenom: isSet(object.mintDenom) ? String(object.mintDenom) : "",
+      inflationRateChange: isSet(object.inflationRateChange) ? String(object.inflationRateChange) : "",
+      inflationMax: isSet(object.inflationMax) ? String(object.inflationMax) : "",
+      inflationMin: isSet(object.inflationMin) ? String(object.inflationMin) : "",
+      goalBonded: isSet(object.goalBonded) ? String(object.goalBonded) : "",
+      blocksPerYear: isSet(object.blocksPerYear) ? Long.fromValue(object.blocksPerYear) : Long.UZERO
+    };
+  },
+
+  toJSON(message: Params): unknown {
+    const obj: any = {};
+    message.mintDenom !== undefined && (obj.mintDenom = message.mintDenom);
+    message.inflationRateChange !== undefined && (obj.inflationRateChange = message.inflationRateChange);
+    message.inflationMax !== undefined && (obj.inflationMax = message.inflationMax);
+    message.inflationMin !== undefined && (obj.inflationMin = message.inflationMin);
+    message.goalBonded !== undefined && (obj.goalBonded = message.goalBonded);
+    message.blocksPerYear !== undefined && (obj.blocksPerYear = (message.blocksPerYear || Long.UZERO).toString());
+    return obj;
+  },
+
+  fromPartial(object: Partial<Params>): Params {
     const message = createBaseParams();
     message.mintDenom = object.mintDenom ?? "";
     message.inflationRateChange = object.inflationRateChange ?? "";

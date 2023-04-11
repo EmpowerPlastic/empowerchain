@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { DeepPartial } from "../../helpers";
+import { isSet } from "../../helpers";
 /** GenesisState defines the accesscontrol module's genesis state. */
 
 export interface GenesisState {
@@ -84,7 +84,25 @@ export const GenesisState = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<GenesisState>): GenesisState {
+  fromJSON(object: any): GenesisState {
+    return {
+      permStores: Array.isArray(object?.permStores) ? object.permStores.map((e: any) => ModulePermStore.fromJSON(e)) : []
+    };
+  },
+
+  toJSON(message: GenesisState): unknown {
+    const obj: any = {};
+
+    if (message.permStores) {
+      obj.permStores = message.permStores.map(e => e ? ModulePermStore.toJSON(e) : undefined);
+    } else {
+      obj.permStores = [];
+    }
+
+    return obj;
+  },
+
+  fromPartial(object: Partial<GenesisState>): GenesisState {
     const message = createBaseGenesisState();
     message.permStores = object.permStores?.map(e => ModulePermStore.fromPartial(e)) || [];
     return message;
@@ -138,7 +156,27 @@ export const ModulePermStore = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<ModulePermStore>): ModulePermStore {
+  fromJSON(object: any): ModulePermStore {
+    return {
+      moduleName: isSet(object.moduleName) ? String(object.moduleName) : "",
+      accesses: Array.isArray(object?.accesses) ? object.accesses.map((e: any) => Access.fromJSON(e)) : []
+    };
+  },
+
+  toJSON(message: ModulePermStore): unknown {
+    const obj: any = {};
+    message.moduleName !== undefined && (obj.moduleName = message.moduleName);
+
+    if (message.accesses) {
+      obj.accesses = message.accesses.map(e => e ? Access.toJSON(e) : undefined);
+    } else {
+      obj.accesses = [];
+    }
+
+    return obj;
+  },
+
+  fromPartial(object: Partial<ModulePermStore>): ModulePermStore {
     const message = createBaseModulePermStore();
     message.moduleName = object.moduleName ?? "";
     message.accesses = object.accesses?.map(e => Access.fromPartial(e)) || [];
@@ -193,7 +231,21 @@ export const Access = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<Access>): Access {
+  fromJSON(object: any): Access {
+    return {
+      address: isSet(object.address) ? String(object.address) : "",
+      msgType: isSet(object.msgType) ? String(object.msgType) : ""
+    };
+  },
+
+  toJSON(message: Access): unknown {
+    const obj: any = {};
+    message.address !== undefined && (obj.address = message.address);
+    message.msgType !== undefined && (obj.msgType = message.msgType);
+    return obj;
+  },
+
+  fromPartial(object: Partial<Access>): Access {
     const message = createBaseAccess();
     message.address = object.address ?? "";
     message.msgType = object.msgType ?? "";
