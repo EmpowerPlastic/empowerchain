@@ -1,6 +1,6 @@
 import { Params, ParamsSDKType, CreditCollection, CreditCollectionSDKType, CreditBalance, CreditBalanceSDKType } from "./types";
 import * as _m0 from "protobufjs/minimal";
-import { isSet, Long } from "../../helpers";
+import { DeepPartial, Long } from "../../helpers";
 export interface MsgUpdateParams {
   /** authority is the address that controls the module (defaults to x/gov unless overwritten in keeper). */
   authority: string;
@@ -95,60 +95,60 @@ export interface MsgUpdateApplicantSDKType {
 }
 export interface MsgUpdateApplicantResponse {}
 export interface MsgUpdateApplicantResponseSDKType {}
-export interface MsgCreateCreditType {
+export interface MsgCreateCreditClass {
   /** creator is the signer and needs to have permissions on the issuer referenced in issuer_id */
   creator: string;
-  /** abbreviation is the short-hand name, as well as the ID of the credit type */
+  /** abbreviation is the short-hand name, as well as the ID of the credit class */
 
   abbreviation: string;
-  /** issuer_id is the ID of the issuer creating and owning the credit type */
+  /** issuer_id is the ID of the issuer creating and owning the credit class */
 
   issuerId: Long;
   /** name is the human friendly name of the credits (e.g. Empower Plastic Credits) */
 
   name: string;
 }
-export interface MsgCreateCreditTypeSDKType {
+export interface MsgCreateCreditClassSDKType {
   /** creator is the signer and needs to have permissions on the issuer referenced in issuer_id */
   creator: string;
-  /** abbreviation is the short-hand name, as well as the ID of the credit type */
+  /** abbreviation is the short-hand name, as well as the ID of the credit class */
 
   abbreviation: string;
-  /** issuer_id is the ID of the issuer creating and owning the credit type */
+  /** issuer_id is the ID of the issuer creating and owning the credit class */
 
   issuer_id: Long;
   /** name is the human friendly name of the credits (e.g. Empower Plastic Credits) */
 
   name: string;
 }
-export interface MsgCreateCreditTypeResponse {}
-export interface MsgCreateCreditTypeResponseSDKType {}
-export interface MsgUpdateCreditType {
-  /** abbreviation is the short-hand name, as well as the ID of the credit type */
+export interface MsgCreateCreditClassResponse {}
+export interface MsgCreateCreditClassResponseSDKType {}
+export interface MsgUpdateCreditClass {
+  /** abbreviation is the short-hand name, as well as the ID of the credit class */
   updater: string;
   abbreviation: string;
   name: string;
 }
-export interface MsgUpdateCreditTypeSDKType {
-  /** abbreviation is the short-hand name, as well as the ID of the credit type */
+export interface MsgUpdateCreditClassSDKType {
+  /** abbreviation is the short-hand name, as well as the ID of the credit class */
   updater: string;
   abbreviation: string;
   name: string;
 }
-export interface MsgUpdateCreditTypeResponse {}
-export interface MsgUpdateCreditTypeResponseSDKType {}
+export interface MsgUpdateCreditClassResponse {}
+export interface MsgUpdateCreditClassResponseSDKType {}
 export interface MsgCreateProject {
   /** creator needs to have access to the applicant references in applicant_id */
   creator: string;
   applicantId: Long;
-  creditTypeAbbreviation: string;
+  creditClassAbbreviation: string;
   name: string;
 }
 export interface MsgCreateProjectSDKType {
   /** creator needs to have access to the applicant references in applicant_id */
   creator: string;
   applicant_id: Long;
-  credit_type_abbreviation: string;
+  credit_class_abbreviation: string;
   name: string;
 }
 export interface MsgCreateProjectResponse {
@@ -172,36 +172,36 @@ export interface MsgUpdateProjectSDKType {
 export interface MsgUpdateProjectResponse {}
 export interface MsgUpdateProjectResponseSDKType {}
 export interface MsgApproveProject {
-  /** Approver needs to be someone who has the authority to approve for the credit type of the project */
+  /** Approver needs to be someone who has the authority to approve for the credit class of the project */
   approver: string;
   projectId: Long;
 }
 export interface MsgApproveProjectSDKType {
-  /** Approver needs to be someone who has the authority to approve for the credit type of the project */
+  /** Approver needs to be someone who has the authority to approve for the credit class of the project */
   approver: string;
   project_id: Long;
 }
 export interface MsgApproveProjectResponse {}
 export interface MsgApproveProjectResponseSDKType {}
 export interface MsgRejectProject {
-  /** Rejector needs to be someone who has the authority to approve/ reject for the credit type of the project */
+  /** Rejector needs to be someone who has the authority to approve/ reject for the credit class of the project */
   rejector: string;
   projectId: Long;
 }
 export interface MsgRejectProjectSDKType {
-  /** Rejector needs to be someone who has the authority to approve/ reject for the credit type of the project */
+  /** Rejector needs to be someone who has the authority to approve/ reject for the credit class of the project */
   rejector: string;
   project_id: Long;
 }
 export interface MsgRejectProjectResponse {}
 export interface MsgRejectProjectResponseSDKType {}
 export interface MsgSuspendProject {
-  /** updater needs to be someone who has the authority to update for the credit type of the project */
+  /** updater needs to be someone who has the authority to update for the credit class of the project */
   updater: string;
   projectId: Long;
 }
 export interface MsgSuspendProjectSDKType {
-  /** updater needs to be someone who has the authority to update for the credit type of the project */
+  /** updater needs to be someone who has the authority to update for the credit class of the project */
   updater: string;
   project_id: Long;
 }
@@ -306,21 +306,7 @@ export const MsgUpdateParams = {
     return message;
   },
 
-  fromJSON(object: any): MsgUpdateParams {
-    return {
-      authority: isSet(object.authority) ? String(object.authority) : "",
-      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined
-    };
-  },
-
-  toJSON(message: MsgUpdateParams): unknown {
-    const obj: any = {};
-    message.authority !== undefined && (obj.authority = message.authority);
-    message.params !== undefined && (obj.params = message.params ? Params.toJSON(message.params) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgUpdateParams>): MsgUpdateParams {
+  fromPartial(object: DeepPartial<MsgUpdateParams>): MsgUpdateParams {
     const message = createBaseMsgUpdateParams();
     message.authority = object.authority ?? "";
     message.params = object.params !== undefined && object.params !== null ? Params.fromPartial(object.params) : undefined;
@@ -356,16 +342,7 @@ export const MsgUpdateParamsResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgUpdateParamsResponse {
-    return {};
-  },
-
-  toJSON(_: MsgUpdateParamsResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgUpdateParamsResponse>): MsgUpdateParamsResponse {
+  fromPartial(_: DeepPartial<MsgUpdateParamsResponse>): MsgUpdateParamsResponse {
     const message = createBaseMsgUpdateParamsResponse();
     return message;
   }
@@ -436,25 +413,7 @@ export const MsgCreateIssuer = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreateIssuer {
-    return {
-      creator: isSet(object.creator) ? String(object.creator) : "",
-      name: isSet(object.name) ? String(object.name) : "",
-      description: isSet(object.description) ? String(object.description) : "",
-      admin: isSet(object.admin) ? String(object.admin) : ""
-    };
-  },
-
-  toJSON(message: MsgCreateIssuer): unknown {
-    const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.name !== undefined && (obj.name = message.name);
-    message.description !== undefined && (obj.description = message.description);
-    message.admin !== undefined && (obj.admin = message.admin);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgCreateIssuer>): MsgCreateIssuer {
+  fromPartial(object: DeepPartial<MsgCreateIssuer>): MsgCreateIssuer {
     const message = createBaseMsgCreateIssuer();
     message.creator = object.creator ?? "";
     message.name = object.name ?? "";
@@ -502,19 +461,7 @@ export const MsgCreateIssuerResponse = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreateIssuerResponse {
-    return {
-      issuerId: isSet(object.issuerId) ? Long.fromValue(object.issuerId) : Long.UZERO
-    };
-  },
-
-  toJSON(message: MsgCreateIssuerResponse): unknown {
-    const obj: any = {};
-    message.issuerId !== undefined && (obj.issuerId = (message.issuerId || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgCreateIssuerResponse>): MsgCreateIssuerResponse {
+  fromPartial(object: DeepPartial<MsgCreateIssuerResponse>): MsgCreateIssuerResponse {
     const message = createBaseMsgCreateIssuerResponse();
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
     return message;
@@ -595,27 +542,7 @@ export const MsgUpdateIssuer = {
     return message;
   },
 
-  fromJSON(object: any): MsgUpdateIssuer {
-    return {
-      updater: isSet(object.updater) ? String(object.updater) : "",
-      issuerId: isSet(object.issuerId) ? Long.fromValue(object.issuerId) : Long.UZERO,
-      name: isSet(object.name) ? String(object.name) : "",
-      description: isSet(object.description) ? String(object.description) : "",
-      admin: isSet(object.admin) ? String(object.admin) : ""
-    };
-  },
-
-  toJSON(message: MsgUpdateIssuer): unknown {
-    const obj: any = {};
-    message.updater !== undefined && (obj.updater = message.updater);
-    message.issuerId !== undefined && (obj.issuerId = (message.issuerId || Long.UZERO).toString());
-    message.name !== undefined && (obj.name = message.name);
-    message.description !== undefined && (obj.description = message.description);
-    message.admin !== undefined && (obj.admin = message.admin);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgUpdateIssuer>): MsgUpdateIssuer {
+  fromPartial(object: DeepPartial<MsgUpdateIssuer>): MsgUpdateIssuer {
     const message = createBaseMsgUpdateIssuer();
     message.updater = object.updater ?? "";
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
@@ -654,16 +581,7 @@ export const MsgUpdateIssuerResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgUpdateIssuerResponse {
-    return {};
-  },
-
-  toJSON(_: MsgUpdateIssuerResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgUpdateIssuerResponse>): MsgUpdateIssuerResponse {
+  fromPartial(_: DeepPartial<MsgUpdateIssuerResponse>): MsgUpdateIssuerResponse {
     const message = createBaseMsgUpdateIssuerResponse();
     return message;
   }
@@ -725,23 +643,7 @@ export const MsgCreateApplicant = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreateApplicant {
-    return {
-      name: isSet(object.name) ? String(object.name) : "",
-      description: isSet(object.description) ? String(object.description) : "",
-      admin: isSet(object.admin) ? String(object.admin) : ""
-    };
-  },
-
-  toJSON(message: MsgCreateApplicant): unknown {
-    const obj: any = {};
-    message.name !== undefined && (obj.name = message.name);
-    message.description !== undefined && (obj.description = message.description);
-    message.admin !== undefined && (obj.admin = message.admin);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgCreateApplicant>): MsgCreateApplicant {
+  fromPartial(object: DeepPartial<MsgCreateApplicant>): MsgCreateApplicant {
     const message = createBaseMsgCreateApplicant();
     message.name = object.name ?? "";
     message.description = object.description ?? "";
@@ -788,19 +690,7 @@ export const MsgCreateApplicantResponse = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreateApplicantResponse {
-    return {
-      applicantId: isSet(object.applicantId) ? Long.fromValue(object.applicantId) : Long.UZERO
-    };
-  },
-
-  toJSON(message: MsgCreateApplicantResponse): unknown {
-    const obj: any = {};
-    message.applicantId !== undefined && (obj.applicantId = (message.applicantId || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgCreateApplicantResponse>): MsgCreateApplicantResponse {
+  fromPartial(object: DeepPartial<MsgCreateApplicantResponse>): MsgCreateApplicantResponse {
     const message = createBaseMsgCreateApplicantResponse();
     message.applicantId = object.applicantId !== undefined && object.applicantId !== null ? Long.fromValue(object.applicantId) : Long.UZERO;
     return message;
@@ -881,27 +771,7 @@ export const MsgUpdateApplicant = {
     return message;
   },
 
-  fromJSON(object: any): MsgUpdateApplicant {
-    return {
-      updater: isSet(object.updater) ? String(object.updater) : "",
-      applicantId: isSet(object.applicantId) ? Long.fromValue(object.applicantId) : Long.UZERO,
-      name: isSet(object.name) ? String(object.name) : "",
-      description: isSet(object.description) ? String(object.description) : "",
-      admin: isSet(object.admin) ? String(object.admin) : ""
-    };
-  },
-
-  toJSON(message: MsgUpdateApplicant): unknown {
-    const obj: any = {};
-    message.updater !== undefined && (obj.updater = message.updater);
-    message.applicantId !== undefined && (obj.applicantId = (message.applicantId || Long.UZERO).toString());
-    message.name !== undefined && (obj.name = message.name);
-    message.description !== undefined && (obj.description = message.description);
-    message.admin !== undefined && (obj.admin = message.admin);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgUpdateApplicant>): MsgUpdateApplicant {
+  fromPartial(object: DeepPartial<MsgUpdateApplicant>): MsgUpdateApplicant {
     const message = createBaseMsgUpdateApplicant();
     message.updater = object.updater ?? "";
     message.applicantId = object.applicantId !== undefined && object.applicantId !== null ? Long.fromValue(object.applicantId) : Long.UZERO;
@@ -940,23 +810,14 @@ export const MsgUpdateApplicantResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgUpdateApplicantResponse {
-    return {};
-  },
-
-  toJSON(_: MsgUpdateApplicantResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgUpdateApplicantResponse>): MsgUpdateApplicantResponse {
+  fromPartial(_: DeepPartial<MsgUpdateApplicantResponse>): MsgUpdateApplicantResponse {
     const message = createBaseMsgUpdateApplicantResponse();
     return message;
   }
 
 };
 
-function createBaseMsgCreateCreditType(): MsgCreateCreditType {
+function createBaseMsgCreateCreditClass(): MsgCreateCreditClass {
   return {
     creator: "",
     abbreviation: "",
@@ -965,8 +826,8 @@ function createBaseMsgCreateCreditType(): MsgCreateCreditType {
   };
 }
 
-export const MsgCreateCreditType = {
-  encode(message: MsgCreateCreditType, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgCreateCreditClass = {
+  encode(message: MsgCreateCreditClass, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
@@ -986,10 +847,10 @@ export const MsgCreateCreditType = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateCreditType {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateCreditClass {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgCreateCreditType();
+    const message = createBaseMsgCreateCreditClass();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1020,26 +881,8 @@ export const MsgCreateCreditType = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreateCreditType {
-    return {
-      creator: isSet(object.creator) ? String(object.creator) : "",
-      abbreviation: isSet(object.abbreviation) ? String(object.abbreviation) : "",
-      issuerId: isSet(object.issuerId) ? Long.fromValue(object.issuerId) : Long.UZERO,
-      name: isSet(object.name) ? String(object.name) : ""
-    };
-  },
-
-  toJSON(message: MsgCreateCreditType): unknown {
-    const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.abbreviation !== undefined && (obj.abbreviation = message.abbreviation);
-    message.issuerId !== undefined && (obj.issuerId = (message.issuerId || Long.UZERO).toString());
-    message.name !== undefined && (obj.name = message.name);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgCreateCreditType>): MsgCreateCreditType {
-    const message = createBaseMsgCreateCreditType();
+  fromPartial(object: DeepPartial<MsgCreateCreditClass>): MsgCreateCreditClass {
+    const message = createBaseMsgCreateCreditClass();
     message.creator = object.creator ?? "";
     message.abbreviation = object.abbreviation ?? "";
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
@@ -1049,19 +892,19 @@ export const MsgCreateCreditType = {
 
 };
 
-function createBaseMsgCreateCreditTypeResponse(): MsgCreateCreditTypeResponse {
+function createBaseMsgCreateCreditClassResponse(): MsgCreateCreditClassResponse {
   return {};
 }
 
-export const MsgCreateCreditTypeResponse = {
-  encode(_: MsgCreateCreditTypeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgCreateCreditClassResponse = {
+  encode(_: MsgCreateCreditClassResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateCreditTypeResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateCreditClassResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgCreateCreditTypeResponse();
+    const message = createBaseMsgCreateCreditClassResponse();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1076,23 +919,14 @@ export const MsgCreateCreditTypeResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgCreateCreditTypeResponse {
-    return {};
-  },
-
-  toJSON(_: MsgCreateCreditTypeResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgCreateCreditTypeResponse>): MsgCreateCreditTypeResponse {
-    const message = createBaseMsgCreateCreditTypeResponse();
+  fromPartial(_: DeepPartial<MsgCreateCreditClassResponse>): MsgCreateCreditClassResponse {
+    const message = createBaseMsgCreateCreditClassResponse();
     return message;
   }
 
 };
 
-function createBaseMsgUpdateCreditType(): MsgUpdateCreditType {
+function createBaseMsgUpdateCreditClass(): MsgUpdateCreditClass {
   return {
     updater: "",
     abbreviation: "",
@@ -1100,8 +934,8 @@ function createBaseMsgUpdateCreditType(): MsgUpdateCreditType {
   };
 }
 
-export const MsgUpdateCreditType = {
-  encode(message: MsgUpdateCreditType, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgUpdateCreditClass = {
+  encode(message: MsgUpdateCreditClass, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.updater !== "") {
       writer.uint32(10).string(message.updater);
     }
@@ -1117,10 +951,10 @@ export const MsgUpdateCreditType = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateCreditType {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateCreditClass {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgUpdateCreditType();
+    const message = createBaseMsgUpdateCreditClass();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1147,24 +981,8 @@ export const MsgUpdateCreditType = {
     return message;
   },
 
-  fromJSON(object: any): MsgUpdateCreditType {
-    return {
-      updater: isSet(object.updater) ? String(object.updater) : "",
-      abbreviation: isSet(object.abbreviation) ? String(object.abbreviation) : "",
-      name: isSet(object.name) ? String(object.name) : ""
-    };
-  },
-
-  toJSON(message: MsgUpdateCreditType): unknown {
-    const obj: any = {};
-    message.updater !== undefined && (obj.updater = message.updater);
-    message.abbreviation !== undefined && (obj.abbreviation = message.abbreviation);
-    message.name !== undefined && (obj.name = message.name);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgUpdateCreditType>): MsgUpdateCreditType {
-    const message = createBaseMsgUpdateCreditType();
+  fromPartial(object: DeepPartial<MsgUpdateCreditClass>): MsgUpdateCreditClass {
+    const message = createBaseMsgUpdateCreditClass();
     message.updater = object.updater ?? "";
     message.abbreviation = object.abbreviation ?? "";
     message.name = object.name ?? "";
@@ -1173,19 +991,19 @@ export const MsgUpdateCreditType = {
 
 };
 
-function createBaseMsgUpdateCreditTypeResponse(): MsgUpdateCreditTypeResponse {
+function createBaseMsgUpdateCreditClassResponse(): MsgUpdateCreditClassResponse {
   return {};
 }
 
-export const MsgUpdateCreditTypeResponse = {
-  encode(_: MsgUpdateCreditTypeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgUpdateCreditClassResponse = {
+  encode(_: MsgUpdateCreditClassResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateCreditTypeResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateCreditClassResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgUpdateCreditTypeResponse();
+    const message = createBaseMsgUpdateCreditClassResponse();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1200,17 +1018,8 @@ export const MsgUpdateCreditTypeResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgUpdateCreditTypeResponse {
-    return {};
-  },
-
-  toJSON(_: MsgUpdateCreditTypeResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgUpdateCreditTypeResponse>): MsgUpdateCreditTypeResponse {
-    const message = createBaseMsgUpdateCreditTypeResponse();
+  fromPartial(_: DeepPartial<MsgUpdateCreditClassResponse>): MsgUpdateCreditClassResponse {
+    const message = createBaseMsgUpdateCreditClassResponse();
     return message;
   }
 
@@ -1220,7 +1029,7 @@ function createBaseMsgCreateProject(): MsgCreateProject {
   return {
     creator: "",
     applicantId: Long.UZERO,
-    creditTypeAbbreviation: "",
+    creditClassAbbreviation: "",
     name: ""
   };
 }
@@ -1235,8 +1044,8 @@ export const MsgCreateProject = {
       writer.uint32(16).uint64(message.applicantId);
     }
 
-    if (message.creditTypeAbbreviation !== "") {
-      writer.uint32(26).string(message.creditTypeAbbreviation);
+    if (message.creditClassAbbreviation !== "") {
+      writer.uint32(26).string(message.creditClassAbbreviation);
     }
 
     if (message.name !== "") {
@@ -1264,7 +1073,7 @@ export const MsgCreateProject = {
           break;
 
         case 3:
-          message.creditTypeAbbreviation = reader.string();
+          message.creditClassAbbreviation = reader.string();
           break;
 
         case 4:
@@ -1280,29 +1089,11 @@ export const MsgCreateProject = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreateProject {
-    return {
-      creator: isSet(object.creator) ? String(object.creator) : "",
-      applicantId: isSet(object.applicantId) ? Long.fromValue(object.applicantId) : Long.UZERO,
-      creditTypeAbbreviation: isSet(object.creditTypeAbbreviation) ? String(object.creditTypeAbbreviation) : "",
-      name: isSet(object.name) ? String(object.name) : ""
-    };
-  },
-
-  toJSON(message: MsgCreateProject): unknown {
-    const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.applicantId !== undefined && (obj.applicantId = (message.applicantId || Long.UZERO).toString());
-    message.creditTypeAbbreviation !== undefined && (obj.creditTypeAbbreviation = message.creditTypeAbbreviation);
-    message.name !== undefined && (obj.name = message.name);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgCreateProject>): MsgCreateProject {
+  fromPartial(object: DeepPartial<MsgCreateProject>): MsgCreateProject {
     const message = createBaseMsgCreateProject();
     message.creator = object.creator ?? "";
     message.applicantId = object.applicantId !== undefined && object.applicantId !== null ? Long.fromValue(object.applicantId) : Long.UZERO;
-    message.creditTypeAbbreviation = object.creditTypeAbbreviation ?? "";
+    message.creditClassAbbreviation = object.creditClassAbbreviation ?? "";
     message.name = object.name ?? "";
     return message;
   }
@@ -1346,19 +1137,7 @@ export const MsgCreateProjectResponse = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreateProjectResponse {
-    return {
-      projectId: isSet(object.projectId) ? Long.fromValue(object.projectId) : Long.UZERO
-    };
-  },
-
-  toJSON(message: MsgCreateProjectResponse): unknown {
-    const obj: any = {};
-    message.projectId !== undefined && (obj.projectId = (message.projectId || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgCreateProjectResponse>): MsgCreateProjectResponse {
+  fromPartial(object: DeepPartial<MsgCreateProjectResponse>): MsgCreateProjectResponse {
     const message = createBaseMsgCreateProjectResponse();
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
     return message;
@@ -1421,23 +1200,7 @@ export const MsgUpdateProject = {
     return message;
   },
 
-  fromJSON(object: any): MsgUpdateProject {
-    return {
-      updater: isSet(object.updater) ? String(object.updater) : "",
-      projectId: isSet(object.projectId) ? Long.fromValue(object.projectId) : Long.UZERO,
-      name: isSet(object.name) ? String(object.name) : ""
-    };
-  },
-
-  toJSON(message: MsgUpdateProject): unknown {
-    const obj: any = {};
-    message.updater !== undefined && (obj.updater = message.updater);
-    message.projectId !== undefined && (obj.projectId = (message.projectId || Long.UZERO).toString());
-    message.name !== undefined && (obj.name = message.name);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgUpdateProject>): MsgUpdateProject {
+  fromPartial(object: DeepPartial<MsgUpdateProject>): MsgUpdateProject {
     const message = createBaseMsgUpdateProject();
     message.updater = object.updater ?? "";
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
@@ -1474,16 +1237,7 @@ export const MsgUpdateProjectResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgUpdateProjectResponse {
-    return {};
-  },
-
-  toJSON(_: MsgUpdateProjectResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgUpdateProjectResponse>): MsgUpdateProjectResponse {
+  fromPartial(_: DeepPartial<MsgUpdateProjectResponse>): MsgUpdateProjectResponse {
     const message = createBaseMsgUpdateProjectResponse();
     return message;
   }
@@ -1536,21 +1290,7 @@ export const MsgApproveProject = {
     return message;
   },
 
-  fromJSON(object: any): MsgApproveProject {
-    return {
-      approver: isSet(object.approver) ? String(object.approver) : "",
-      projectId: isSet(object.projectId) ? Long.fromValue(object.projectId) : Long.UZERO
-    };
-  },
-
-  toJSON(message: MsgApproveProject): unknown {
-    const obj: any = {};
-    message.approver !== undefined && (obj.approver = message.approver);
-    message.projectId !== undefined && (obj.projectId = (message.projectId || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgApproveProject>): MsgApproveProject {
+  fromPartial(object: DeepPartial<MsgApproveProject>): MsgApproveProject {
     const message = createBaseMsgApproveProject();
     message.approver = object.approver ?? "";
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
@@ -1586,16 +1326,7 @@ export const MsgApproveProjectResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgApproveProjectResponse {
-    return {};
-  },
-
-  toJSON(_: MsgApproveProjectResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgApproveProjectResponse>): MsgApproveProjectResponse {
+  fromPartial(_: DeepPartial<MsgApproveProjectResponse>): MsgApproveProjectResponse {
     const message = createBaseMsgApproveProjectResponse();
     return message;
   }
@@ -1648,21 +1379,7 @@ export const MsgRejectProject = {
     return message;
   },
 
-  fromJSON(object: any): MsgRejectProject {
-    return {
-      rejector: isSet(object.rejector) ? String(object.rejector) : "",
-      projectId: isSet(object.projectId) ? Long.fromValue(object.projectId) : Long.UZERO
-    };
-  },
-
-  toJSON(message: MsgRejectProject): unknown {
-    const obj: any = {};
-    message.rejector !== undefined && (obj.rejector = message.rejector);
-    message.projectId !== undefined && (obj.projectId = (message.projectId || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgRejectProject>): MsgRejectProject {
+  fromPartial(object: DeepPartial<MsgRejectProject>): MsgRejectProject {
     const message = createBaseMsgRejectProject();
     message.rejector = object.rejector ?? "";
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
@@ -1698,16 +1415,7 @@ export const MsgRejectProjectResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgRejectProjectResponse {
-    return {};
-  },
-
-  toJSON(_: MsgRejectProjectResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgRejectProjectResponse>): MsgRejectProjectResponse {
+  fromPartial(_: DeepPartial<MsgRejectProjectResponse>): MsgRejectProjectResponse {
     const message = createBaseMsgRejectProjectResponse();
     return message;
   }
@@ -1760,21 +1468,7 @@ export const MsgSuspendProject = {
     return message;
   },
 
-  fromJSON(object: any): MsgSuspendProject {
-    return {
-      updater: isSet(object.updater) ? String(object.updater) : "",
-      projectId: isSet(object.projectId) ? Long.fromValue(object.projectId) : Long.UZERO
-    };
-  },
-
-  toJSON(message: MsgSuspendProject): unknown {
-    const obj: any = {};
-    message.updater !== undefined && (obj.updater = message.updater);
-    message.projectId !== undefined && (obj.projectId = (message.projectId || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgSuspendProject>): MsgSuspendProject {
+  fromPartial(object: DeepPartial<MsgSuspendProject>): MsgSuspendProject {
     const message = createBaseMsgSuspendProject();
     message.updater = object.updater ?? "";
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
@@ -1810,16 +1504,7 @@ export const MsgSuspendProjectResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgSuspendProjectResponse {
-    return {};
-  },
-
-  toJSON(_: MsgSuspendProjectResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgSuspendProjectResponse>): MsgSuspendProjectResponse {
+  fromPartial(_: DeepPartial<MsgSuspendProjectResponse>): MsgSuspendProjectResponse {
     const message = createBaseMsgSuspendProjectResponse();
     return message;
   }
@@ -1899,33 +1584,7 @@ export const MsgIssueCredits = {
     return message;
   },
 
-  fromJSON(object: any): MsgIssueCredits {
-    return {
-      creator: isSet(object.creator) ? String(object.creator) : "",
-      projectId: isSet(object.projectId) ? Long.fromValue(object.projectId) : Long.UZERO,
-      serialNumber: isSet(object.serialNumber) ? String(object.serialNumber) : "",
-      creditAmount: isSet(object.creditAmount) ? Long.fromValue(object.creditAmount) : Long.UZERO,
-      metadataUris: Array.isArray(object?.metadataUris) ? object.metadataUris.map((e: any) => String(e)) : []
-    };
-  },
-
-  toJSON(message: MsgIssueCredits): unknown {
-    const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.projectId !== undefined && (obj.projectId = (message.projectId || Long.UZERO).toString());
-    message.serialNumber !== undefined && (obj.serialNumber = message.serialNumber);
-    message.creditAmount !== undefined && (obj.creditAmount = (message.creditAmount || Long.UZERO).toString());
-
-    if (message.metadataUris) {
-      obj.metadataUris = message.metadataUris.map(e => e);
-    } else {
-      obj.metadataUris = [];
-    }
-
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgIssueCredits>): MsgIssueCredits {
+  fromPartial(object: DeepPartial<MsgIssueCredits>): MsgIssueCredits {
     const message = createBaseMsgIssueCredits();
     message.creator = object.creator ?? "";
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
@@ -1974,19 +1633,7 @@ export const MsgIssueCreditsResponse = {
     return message;
   },
 
-  fromJSON(object: any): MsgIssueCreditsResponse {
-    return {
-      collection: isSet(object.collection) ? CreditCollection.fromJSON(object.collection) : undefined
-    };
-  },
-
-  toJSON(message: MsgIssueCreditsResponse): unknown {
-    const obj: any = {};
-    message.collection !== undefined && (obj.collection = message.collection ? CreditCollection.toJSON(message.collection) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgIssueCreditsResponse>): MsgIssueCreditsResponse {
+  fromPartial(object: DeepPartial<MsgIssueCreditsResponse>): MsgIssueCreditsResponse {
     const message = createBaseMsgIssueCreditsResponse();
     message.collection = object.collection !== undefined && object.collection !== null ? CreditCollection.fromPartial(object.collection) : undefined;
     return message;
@@ -2067,27 +1714,7 @@ export const MsgTransferCredits = {
     return message;
   },
 
-  fromJSON(object: any): MsgTransferCredits {
-    return {
-      from: isSet(object.from) ? String(object.from) : "",
-      to: isSet(object.to) ? String(object.to) : "",
-      denom: isSet(object.denom) ? String(object.denom) : "",
-      amount: isSet(object.amount) ? Long.fromValue(object.amount) : Long.UZERO,
-      retire: isSet(object.retire) ? Boolean(object.retire) : false
-    };
-  },
-
-  toJSON(message: MsgTransferCredits): unknown {
-    const obj: any = {};
-    message.from !== undefined && (obj.from = message.from);
-    message.to !== undefined && (obj.to = message.to);
-    message.denom !== undefined && (obj.denom = message.denom);
-    message.amount !== undefined && (obj.amount = (message.amount || Long.UZERO).toString());
-    message.retire !== undefined && (obj.retire = message.retire);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgTransferCredits>): MsgTransferCredits {
+  fromPartial(object: DeepPartial<MsgTransferCredits>): MsgTransferCredits {
     const message = createBaseMsgTransferCredits();
     message.from = object.from ?? "";
     message.to = object.to ?? "";
@@ -2126,16 +1753,7 @@ export const MsgTransferCreditsResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgTransferCreditsResponse {
-    return {};
-  },
-
-  toJSON(_: MsgTransferCreditsResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgTransferCreditsResponse>): MsgTransferCreditsResponse {
+  fromPartial(_: DeepPartial<MsgTransferCreditsResponse>): MsgTransferCreditsResponse {
     const message = createBaseMsgTransferCreditsResponse();
     return message;
   }
@@ -2197,23 +1815,7 @@ export const MsgRetireCredits = {
     return message;
   },
 
-  fromJSON(object: any): MsgRetireCredits {
-    return {
-      owner: isSet(object.owner) ? String(object.owner) : "",
-      denom: isSet(object.denom) ? String(object.denom) : "",
-      amount: isSet(object.amount) ? Long.fromValue(object.amount) : Long.UZERO
-    };
-  },
-
-  toJSON(message: MsgRetireCredits): unknown {
-    const obj: any = {};
-    message.owner !== undefined && (obj.owner = message.owner);
-    message.denom !== undefined && (obj.denom = message.denom);
-    message.amount !== undefined && (obj.amount = (message.amount || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgRetireCredits>): MsgRetireCredits {
+  fromPartial(object: DeepPartial<MsgRetireCredits>): MsgRetireCredits {
     const message = createBaseMsgRetireCredits();
     message.owner = object.owner ?? "";
     message.denom = object.denom ?? "";
@@ -2260,19 +1862,7 @@ export const MsgRetireCreditsResponse = {
     return message;
   },
 
-  fromJSON(object: any): MsgRetireCreditsResponse {
-    return {
-      balance: isSet(object.balance) ? CreditBalance.fromJSON(object.balance) : undefined
-    };
-  },
-
-  toJSON(message: MsgRetireCreditsResponse): unknown {
-    const obj: any = {};
-    message.balance !== undefined && (obj.balance = message.balance ? CreditBalance.toJSON(message.balance) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgRetireCreditsResponse>): MsgRetireCreditsResponse {
+  fromPartial(object: DeepPartial<MsgRetireCreditsResponse>): MsgRetireCreditsResponse {
     const message = createBaseMsgRetireCreditsResponse();
     message.balance = object.balance !== undefined && object.balance !== null ? CreditBalance.fromPartial(object.balance) : undefined;
     return message;

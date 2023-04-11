@@ -310,7 +310,7 @@ func (m *Applicant) GetAdmin() string {
 }
 
 type CreditType struct {
-	// abbreviation is the short-hand name *and* the identifier for a credit type
+	// abbreviation is the short-hand name *and* the identifier for a credit class
 	Abbreviation string `protobuf:"bytes,1,opt,name=abbreviation,proto3" json:"abbreviation,omitempty"`
 	IssuerId     uint64 `protobuf:"varint,2,opt,name=issuer_id,json=issuerId,proto3" json:"issuer_id,omitempty"`
 	Name         string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`

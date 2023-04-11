@@ -1,6 +1,6 @@
 import { ConsensusParams, ConsensusParamsSDKType } from "../../../tendermint/types/params";
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../../helpers";
+import { DeepPartial } from "../../../helpers";
 /** QueryParamsRequest defines the request type for querying x/consensus parameters. */
 
 export interface QueryParamsRequest {}
@@ -55,16 +55,7 @@ export const QueryParamsRequest = {
     return message;
   },
 
-  fromJSON(_: any): QueryParamsRequest {
-    return {};
-  },
-
-  toJSON(_: QueryParamsRequest): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<QueryParamsRequest>): QueryParamsRequest {
+  fromPartial(_: DeepPartial<QueryParamsRequest>): QueryParamsRequest {
     const message = createBaseQueryParamsRequest();
     return message;
   }
@@ -108,19 +99,7 @@ export const QueryParamsResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryParamsResponse {
-    return {
-      params: isSet(object.params) ? ConsensusParams.fromJSON(object.params) : undefined
-    };
-  },
-
-  toJSON(message: QueryParamsResponse): unknown {
-    const obj: any = {};
-    message.params !== undefined && (obj.params = message.params ? ConsensusParams.toJSON(message.params) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryParamsResponse>): QueryParamsResponse {
+  fromPartial(object: DeepPartial<QueryParamsResponse>): QueryParamsResponse {
     const message = createBaseQueryParamsResponse();
     message.params = object.params !== undefined && object.params !== null ? ConsensusParams.fromPartial(object.params) : undefined;
     return message;

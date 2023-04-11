@@ -39,38 +39,6 @@ export const MessageComposer = {
     }
 
   },
-  toJSON: {
-    unjail(value: MsgUnjail) {
-      return {
-        typeUrl: "/cosmos.slashing.v1beta1.MsgUnjail",
-        value: MsgUnjail.toJSON(value)
-      };
-    },
-
-    updateParams(value: MsgUpdateParams) {
-      return {
-        typeUrl: "/cosmos.slashing.v1beta1.MsgUpdateParams",
-        value: MsgUpdateParams.toJSON(value)
-      };
-    }
-
-  },
-  fromJSON: {
-    unjail(value: any) {
-      return {
-        typeUrl: "/cosmos.slashing.v1beta1.MsgUnjail",
-        value: MsgUnjail.fromJSON(value)
-      };
-    },
-
-    updateParams(value: any) {
-      return {
-        typeUrl: "/cosmos.slashing.v1beta1.MsgUpdateParams",
-        value: MsgUpdateParams.fromJSON(value)
-      };
-    }
-
-  },
   fromPartial: {
     unjail(value: MsgUnjail) {
       return {

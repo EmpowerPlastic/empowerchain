@@ -1,7 +1,7 @@
 import { Params, ParamsSDKType, Metadata, MetadataSDKType, SendEnabled, SendEnabledSDKType } from "./bank";
 import { Coin, CoinSDKType } from "../../base/v1beta1/coin";
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../../helpers";
+import { DeepPartial } from "../../../helpers";
 /** GenesisState defines the bank module's genesis state. */
 
 export interface GenesisState {
@@ -150,48 +150,7 @@ export const GenesisState = {
     return message;
   },
 
-  fromJSON(object: any): GenesisState {
-    return {
-      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
-      balances: Array.isArray(object?.balances) ? object.balances.map((e: any) => Balance.fromJSON(e)) : [],
-      supply: Array.isArray(object?.supply) ? object.supply.map((e: any) => Coin.fromJSON(e)) : [],
-      denomMetadata: Array.isArray(object?.denomMetadata) ? object.denomMetadata.map((e: any) => Metadata.fromJSON(e)) : [],
-      sendEnabled: Array.isArray(object?.sendEnabled) ? object.sendEnabled.map((e: any) => SendEnabled.fromJSON(e)) : []
-    };
-  },
-
-  toJSON(message: GenesisState): unknown {
-    const obj: any = {};
-    message.params !== undefined && (obj.params = message.params ? Params.toJSON(message.params) : undefined);
-
-    if (message.balances) {
-      obj.balances = message.balances.map(e => e ? Balance.toJSON(e) : undefined);
-    } else {
-      obj.balances = [];
-    }
-
-    if (message.supply) {
-      obj.supply = message.supply.map(e => e ? Coin.toJSON(e) : undefined);
-    } else {
-      obj.supply = [];
-    }
-
-    if (message.denomMetadata) {
-      obj.denomMetadata = message.denomMetadata.map(e => e ? Metadata.toJSON(e) : undefined);
-    } else {
-      obj.denomMetadata = [];
-    }
-
-    if (message.sendEnabled) {
-      obj.sendEnabled = message.sendEnabled.map(e => e ? SendEnabled.toJSON(e) : undefined);
-    } else {
-      obj.sendEnabled = [];
-    }
-
-    return obj;
-  },
-
-  fromPartial(object: Partial<GenesisState>): GenesisState {
+  fromPartial(object: DeepPartial<GenesisState>): GenesisState {
     const message = createBaseGenesisState();
     message.params = object.params !== undefined && object.params !== null ? Params.fromPartial(object.params) : undefined;
     message.balances = object.balances?.map(e => Balance.fromPartial(e)) || [];
@@ -249,27 +208,7 @@ export const Balance = {
     return message;
   },
 
-  fromJSON(object: any): Balance {
-    return {
-      address: isSet(object.address) ? String(object.address) : "",
-      coins: Array.isArray(object?.coins) ? object.coins.map((e: any) => Coin.fromJSON(e)) : []
-    };
-  },
-
-  toJSON(message: Balance): unknown {
-    const obj: any = {};
-    message.address !== undefined && (obj.address = message.address);
-
-    if (message.coins) {
-      obj.coins = message.coins.map(e => e ? Coin.toJSON(e) : undefined);
-    } else {
-      obj.coins = [];
-    }
-
-    return obj;
-  },
-
-  fromPartial(object: Partial<Balance>): Balance {
+  fromPartial(object: DeepPartial<Balance>): Balance {
     const message = createBaseBalance();
     message.address = object.address ?? "";
     message.coins = object.coins?.map(e => Coin.fromPartial(e)) || [];

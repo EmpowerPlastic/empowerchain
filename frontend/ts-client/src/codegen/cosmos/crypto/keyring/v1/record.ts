@@ -1,7 +1,7 @@
 import { Any, AnySDKType } from "../../../../google/protobuf/any";
 import { BIP44Params, BIP44ParamsSDKType } from "../../hd/v1/hd";
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../../../helpers";
+import { DeepPartial } from "../../../../helpers";
 /** Record is used for representing a key in the keyring. */
 
 export interface Record {
@@ -165,29 +165,7 @@ export const Record = {
     return message;
   },
 
-  fromJSON(object: any): Record {
-    return {
-      name: isSet(object.name) ? String(object.name) : "",
-      pubKey: isSet(object.pubKey) ? Any.fromJSON(object.pubKey) : undefined,
-      local: isSet(object.local) ? Record_Local.fromJSON(object.local) : undefined,
-      ledger: isSet(object.ledger) ? Record_Ledger.fromJSON(object.ledger) : undefined,
-      multi: isSet(object.multi) ? Record_Multi.fromJSON(object.multi) : undefined,
-      offline: isSet(object.offline) ? Record_Offline.fromJSON(object.offline) : undefined
-    };
-  },
-
-  toJSON(message: Record): unknown {
-    const obj: any = {};
-    message.name !== undefined && (obj.name = message.name);
-    message.pubKey !== undefined && (obj.pubKey = message.pubKey ? Any.toJSON(message.pubKey) : undefined);
-    message.local !== undefined && (obj.local = message.local ? Record_Local.toJSON(message.local) : undefined);
-    message.ledger !== undefined && (obj.ledger = message.ledger ? Record_Ledger.toJSON(message.ledger) : undefined);
-    message.multi !== undefined && (obj.multi = message.multi ? Record_Multi.toJSON(message.multi) : undefined);
-    message.offline !== undefined && (obj.offline = message.offline ? Record_Offline.toJSON(message.offline) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<Record>): Record {
+  fromPartial(object: DeepPartial<Record>): Record {
     const message = createBaseRecord();
     message.name = object.name ?? "";
     message.pubKey = object.pubKey !== undefined && object.pubKey !== null ? Any.fromPartial(object.pubKey) : undefined;
@@ -237,19 +215,7 @@ export const Record_Local = {
     return message;
   },
 
-  fromJSON(object: any): Record_Local {
-    return {
-      privKey: isSet(object.privKey) ? Any.fromJSON(object.privKey) : undefined
-    };
-  },
-
-  toJSON(message: Record_Local): unknown {
-    const obj: any = {};
-    message.privKey !== undefined && (obj.privKey = message.privKey ? Any.toJSON(message.privKey) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<Record_Local>): Record_Local {
+  fromPartial(object: DeepPartial<Record_Local>): Record_Local {
     const message = createBaseRecord_Local();
     message.privKey = object.privKey !== undefined && object.privKey !== null ? Any.fromPartial(object.privKey) : undefined;
     return message;
@@ -294,19 +260,7 @@ export const Record_Ledger = {
     return message;
   },
 
-  fromJSON(object: any): Record_Ledger {
-    return {
-      path: isSet(object.path) ? BIP44Params.fromJSON(object.path) : undefined
-    };
-  },
-
-  toJSON(message: Record_Ledger): unknown {
-    const obj: any = {};
-    message.path !== undefined && (obj.path = message.path ? BIP44Params.toJSON(message.path) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<Record_Ledger>): Record_Ledger {
+  fromPartial(object: DeepPartial<Record_Ledger>): Record_Ledger {
     const message = createBaseRecord_Ledger();
     message.path = object.path !== undefined && object.path !== null ? BIP44Params.fromPartial(object.path) : undefined;
     return message;
@@ -341,16 +295,7 @@ export const Record_Multi = {
     return message;
   },
 
-  fromJSON(_: any): Record_Multi {
-    return {};
-  },
-
-  toJSON(_: Record_Multi): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<Record_Multi>): Record_Multi {
+  fromPartial(_: DeepPartial<Record_Multi>): Record_Multi {
     const message = createBaseRecord_Multi();
     return message;
   }
@@ -384,16 +329,7 @@ export const Record_Offline = {
     return message;
   },
 
-  fromJSON(_: any): Record_Offline {
-    return {};
-  },
-
-  toJSON(_: Record_Offline): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<Record_Offline>): Record_Offline {
+  fromPartial(_: DeepPartial<Record_Offline>): Record_Offline {
     const message = createBaseRecord_Offline();
     return message;
   }

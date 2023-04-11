@@ -154,7 +154,7 @@ func (proj Project) Validate() error {
 	}
 
 	if proj.CreditTypeAbbreviation == "" {
-		return errors.Wrap(utils.ErrInvalidValue, "project credit_type_abbreviation is empty")
+		return errors.Wrap(utils.ErrInvalidValue, "project credit_class_abbreviation is empty")
 	}
 
 	if !utils.IsBasicValidName(proj.Name) {

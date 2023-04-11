@@ -33,8 +33,8 @@ A REST interface for state queries
 | GET | /empowerchain/empowerchain/plasticcredit/creditbalances/{owner}/{denom} | [credit balance](#credit-balance) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/creditbalances | [credit balances](#credit-balances) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/creditcollections/{denom} | [credit collection](#credit-collection) |  |
-| GET | /empowerchain/empowerchain/plasticcredit/credit-types/{credit_type_abbreviation} | [credit type](#credit-type) |  |
-| GET | /empowerchain/empowerchain/plasticcredit/credit-types | [credit types](#credit-types) |  |
+| GET | /empowerchain/empowerchain/plasticcredit/credit-classes/{credit_type_abbreviation} | [credit type](#credit-type) |  |
+| GET | /empowerchain/empowerchain/plasticcredit/credit-classes | [credit types](#credit-types) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/issuers/{issuer_id} | [issuer](#issuer) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/issuers | [issuers](#issuers) |  |
 | GET | /empowerchain/empowerchain/plasticcredit/params | [plastic credit params](#plastic-credit-params) |  |
@@ -720,7 +720,7 @@ An unexpected error response.
 ### <span id="credit-type"></span> credit type (*CreditType*)
 
 ```
-GET /empowerchain/empowerchain/plasticcredit/credit-types/{credit_type_abbreviation}
+GET /empowerchain/empowerchain/plasticcredit/credit-classes/{credit_type_abbreviation}
 ```
 
 #### Parameters
@@ -827,7 +827,7 @@ An unexpected error response.
 ### <span id="credit-types"></span> credit types (*CreditTypes*)
 
 ```
-GET /empowerchain/empowerchain/plasticcredit/credit-types
+GET /empowerchain/empowerchain/plasticcredit/credit-classes
 ```
 
 #### Parameters
