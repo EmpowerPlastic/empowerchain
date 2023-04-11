@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../../../helpers";
+import { DeepPartial } from "../../../../helpers";
 /** Module is the config object of the upgrade module. */
 
 export interface Module {
@@ -50,19 +50,7 @@ export const Module = {
     return message;
   },
 
-  fromJSON(object: any): Module {
-    return {
-      authority: isSet(object.authority) ? String(object.authority) : ""
-    };
-  },
-
-  toJSON(message: Module): unknown {
-    const obj: any = {};
-    message.authority !== undefined && (obj.authority = message.authority);
-    return obj;
-  },
-
-  fromPartial(object: Partial<Module>): Module {
+  fromPartial(object: DeepPartial<Module>): Module {
     const message = createBaseModule();
     message.authority = object.authority ?? "";
     return message;

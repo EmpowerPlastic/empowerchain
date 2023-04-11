@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { Long, isSet } from "../../../../helpers";
+import { Long, DeepPartial } from "../../../../helpers";
 /** Module is the config object of the gov module. */
 
 export interface Module {
@@ -71,21 +71,7 @@ export const Module = {
     return message;
   },
 
-  fromJSON(object: any): Module {
-    return {
-      maxMetadataLen: isSet(object.maxMetadataLen) ? Long.fromValue(object.maxMetadataLen) : Long.UZERO,
-      authority: isSet(object.authority) ? String(object.authority) : ""
-    };
-  },
-
-  toJSON(message: Module): unknown {
-    const obj: any = {};
-    message.maxMetadataLen !== undefined && (obj.maxMetadataLen = (message.maxMetadataLen || Long.UZERO).toString());
-    message.authority !== undefined && (obj.authority = message.authority);
-    return obj;
-  },
-
-  fromPartial(object: Partial<Module>): Module {
+  fromPartial(object: DeepPartial<Module>): Module {
     const message = createBaseModule();
     message.maxMetadataLen = object.maxMetadataLen !== undefined && object.maxMetadataLen !== null ? Long.fromValue(object.maxMetadataLen) : Long.UZERO;
     message.authority = object.authority ?? "";

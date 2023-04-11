@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../../../helpers";
+import { DeepPartial } from "../../../../helpers";
 /** Config is the config object of the x/auth/tx package. */
 
 export interface Config {
@@ -77,21 +77,7 @@ export const Config = {
     return message;
   },
 
-  fromJSON(object: any): Config {
-    return {
-      skipAnteHandler: isSet(object.skipAnteHandler) ? Boolean(object.skipAnteHandler) : false,
-      skipPostHandler: isSet(object.skipPostHandler) ? Boolean(object.skipPostHandler) : false
-    };
-  },
-
-  toJSON(message: Config): unknown {
-    const obj: any = {};
-    message.skipAnteHandler !== undefined && (obj.skipAnteHandler = message.skipAnteHandler);
-    message.skipPostHandler !== undefined && (obj.skipPostHandler = message.skipPostHandler);
-    return obj;
-  },
-
-  fromPartial(object: Partial<Config>): Config {
+  fromPartial(object: DeepPartial<Config>): Config {
     const message = createBaseConfig();
     message.skipAnteHandler = object.skipAnteHandler ?? false;
     message.skipPostHandler = object.skipPostHandler ?? false;

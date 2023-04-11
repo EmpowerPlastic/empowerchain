@@ -1,6 +1,6 @@
 import { RequestDeliverTx, RequestDeliverTxSDKType, ResponseDeliverTx, ResponseDeliverTxSDKType, RequestBeginBlock, RequestBeginBlockSDKType, ResponseBeginBlock, ResponseBeginBlockSDKType, RequestEndBlock, RequestEndBlockSDKType, ResponseEndBlock, ResponseEndBlockSDKType, ResponseCommit, ResponseCommitSDKType } from "../../../../tendermint/abci/types";
 import * as _m0 from "protobufjs/minimal";
-import { isSet, bytesFromBase64, base64FromBytes } from "../../../../helpers";
+import { DeepPartial } from "../../../../helpers";
 /**
  * StoreKVPair is a KVStore KVPair used for listening to state changes (Sets and Deletes)
  * It optionally includes the StoreKey for the originating KVStore and a Boolean flag to distinguish between Sets and
@@ -138,25 +138,7 @@ export const StoreKVPair = {
     return message;
   },
 
-  fromJSON(object: any): StoreKVPair {
-    return {
-      storeKey: isSet(object.storeKey) ? String(object.storeKey) : "",
-      delete: isSet(object.delete) ? Boolean(object.delete) : false,
-      key: isSet(object.key) ? bytesFromBase64(object.key) : new Uint8Array(),
-      value: isSet(object.value) ? bytesFromBase64(object.value) : new Uint8Array()
-    };
-  },
-
-  toJSON(message: StoreKVPair): unknown {
-    const obj: any = {};
-    message.storeKey !== undefined && (obj.storeKey = message.storeKey);
-    message.delete !== undefined && (obj.delete = message.delete);
-    message.key !== undefined && (obj.key = base64FromBytes(message.key !== undefined ? message.key : new Uint8Array()));
-    message.value !== undefined && (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()));
-    return obj;
-  },
-
-  fromPartial(object: Partial<StoreKVPair>): StoreKVPair {
+  fromPartial(object: DeepPartial<StoreKVPair>): StoreKVPair {
     const message = createBaseStoreKVPair();
     message.storeKey = object.storeKey ?? "";
     message.delete = object.delete ?? false;
@@ -249,35 +231,7 @@ export const BlockMetadata = {
     return message;
   },
 
-  fromJSON(object: any): BlockMetadata {
-    return {
-      requestBeginBlock: isSet(object.requestBeginBlock) ? RequestBeginBlock.fromJSON(object.requestBeginBlock) : undefined,
-      responseBeginBlock: isSet(object.responseBeginBlock) ? ResponseBeginBlock.fromJSON(object.responseBeginBlock) : undefined,
-      deliverTxs: Array.isArray(object?.deliverTxs) ? object.deliverTxs.map((e: any) => BlockMetadata_DeliverTx.fromJSON(e)) : [],
-      requestEndBlock: isSet(object.requestEndBlock) ? RequestEndBlock.fromJSON(object.requestEndBlock) : undefined,
-      responseEndBlock: isSet(object.responseEndBlock) ? ResponseEndBlock.fromJSON(object.responseEndBlock) : undefined,
-      responseCommit: isSet(object.responseCommit) ? ResponseCommit.fromJSON(object.responseCommit) : undefined
-    };
-  },
-
-  toJSON(message: BlockMetadata): unknown {
-    const obj: any = {};
-    message.requestBeginBlock !== undefined && (obj.requestBeginBlock = message.requestBeginBlock ? RequestBeginBlock.toJSON(message.requestBeginBlock) : undefined);
-    message.responseBeginBlock !== undefined && (obj.responseBeginBlock = message.responseBeginBlock ? ResponseBeginBlock.toJSON(message.responseBeginBlock) : undefined);
-
-    if (message.deliverTxs) {
-      obj.deliverTxs = message.deliverTxs.map(e => e ? BlockMetadata_DeliverTx.toJSON(e) : undefined);
-    } else {
-      obj.deliverTxs = [];
-    }
-
-    message.requestEndBlock !== undefined && (obj.requestEndBlock = message.requestEndBlock ? RequestEndBlock.toJSON(message.requestEndBlock) : undefined);
-    message.responseEndBlock !== undefined && (obj.responseEndBlock = message.responseEndBlock ? ResponseEndBlock.toJSON(message.responseEndBlock) : undefined);
-    message.responseCommit !== undefined && (obj.responseCommit = message.responseCommit ? ResponseCommit.toJSON(message.responseCommit) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<BlockMetadata>): BlockMetadata {
+  fromPartial(object: DeepPartial<BlockMetadata>): BlockMetadata {
     const message = createBaseBlockMetadata();
     message.requestBeginBlock = object.requestBeginBlock !== undefined && object.requestBeginBlock !== null ? RequestBeginBlock.fromPartial(object.requestBeginBlock) : undefined;
     message.responseBeginBlock = object.responseBeginBlock !== undefined && object.responseBeginBlock !== null ? ResponseBeginBlock.fromPartial(object.responseBeginBlock) : undefined;
@@ -336,21 +290,7 @@ export const BlockMetadata_DeliverTx = {
     return message;
   },
 
-  fromJSON(object: any): BlockMetadata_DeliverTx {
-    return {
-      request: isSet(object.request) ? RequestDeliverTx.fromJSON(object.request) : undefined,
-      response: isSet(object.response) ? ResponseDeliverTx.fromJSON(object.response) : undefined
-    };
-  },
-
-  toJSON(message: BlockMetadata_DeliverTx): unknown {
-    const obj: any = {};
-    message.request !== undefined && (obj.request = message.request ? RequestDeliverTx.toJSON(message.request) : undefined);
-    message.response !== undefined && (obj.response = message.response ? ResponseDeliverTx.toJSON(message.response) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<BlockMetadata_DeliverTx>): BlockMetadata_DeliverTx {
+  fromPartial(object: DeepPartial<BlockMetadata_DeliverTx>): BlockMetadata_DeliverTx {
     const message = createBaseBlockMetadata_DeliverTx();
     message.request = object.request !== undefined && object.request !== null ? RequestDeliverTx.fromPartial(object.request) : undefined;
     message.response = object.response !== undefined && object.response !== null ? ResponseDeliverTx.fromPartial(object.response) : undefined;

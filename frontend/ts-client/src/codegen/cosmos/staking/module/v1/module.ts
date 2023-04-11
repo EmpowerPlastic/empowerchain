@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../../../helpers";
+import { DeepPartial } from "../../../../helpers";
 /** Module is the config object of the staking module. */
 
 export interface Module {
@@ -73,27 +73,7 @@ export const Module = {
     return message;
   },
 
-  fromJSON(object: any): Module {
-    return {
-      hooksOrder: Array.isArray(object?.hooksOrder) ? object.hooksOrder.map((e: any) => String(e)) : [],
-      authority: isSet(object.authority) ? String(object.authority) : ""
-    };
-  },
-
-  toJSON(message: Module): unknown {
-    const obj: any = {};
-
-    if (message.hooksOrder) {
-      obj.hooksOrder = message.hooksOrder.map(e => e);
-    } else {
-      obj.hooksOrder = [];
-    }
-
-    message.authority !== undefined && (obj.authority = message.authority);
-    return obj;
-  },
-
-  fromPartial(object: Partial<Module>): Module {
+  fromPartial(object: DeepPartial<Module>): Module {
     const message = createBaseModule();
     message.hooksOrder = object.hooksOrder?.map(e => e) || [];
     message.authority = object.authority ?? "";

@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../../../helpers";
+import { DeepPartial } from "../../../../helpers";
 /** ListAllInterfacesRequest is the request type of the ListAllInterfaces RPC. */
 
 export interface ListAllInterfacesRequest {}
@@ -80,16 +80,7 @@ export const ListAllInterfacesRequest = {
     return message;
   },
 
-  fromJSON(_: any): ListAllInterfacesRequest {
-    return {};
-  },
-
-  toJSON(_: ListAllInterfacesRequest): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<ListAllInterfacesRequest>): ListAllInterfacesRequest {
+  fromPartial(_: DeepPartial<ListAllInterfacesRequest>): ListAllInterfacesRequest {
     const message = createBaseListAllInterfacesRequest();
     return message;
   }
@@ -133,25 +124,7 @@ export const ListAllInterfacesResponse = {
     return message;
   },
 
-  fromJSON(object: any): ListAllInterfacesResponse {
-    return {
-      interfaceNames: Array.isArray(object?.interfaceNames) ? object.interfaceNames.map((e: any) => String(e)) : []
-    };
-  },
-
-  toJSON(message: ListAllInterfacesResponse): unknown {
-    const obj: any = {};
-
-    if (message.interfaceNames) {
-      obj.interfaceNames = message.interfaceNames.map(e => e);
-    } else {
-      obj.interfaceNames = [];
-    }
-
-    return obj;
-  },
-
-  fromPartial(object: Partial<ListAllInterfacesResponse>): ListAllInterfacesResponse {
+  fromPartial(object: DeepPartial<ListAllInterfacesResponse>): ListAllInterfacesResponse {
     const message = createBaseListAllInterfacesResponse();
     message.interfaceNames = object.interfaceNames?.map(e => e) || [];
     return message;
@@ -196,19 +169,7 @@ export const ListImplementationsRequest = {
     return message;
   },
 
-  fromJSON(object: any): ListImplementationsRequest {
-    return {
-      interfaceName: isSet(object.interfaceName) ? String(object.interfaceName) : ""
-    };
-  },
-
-  toJSON(message: ListImplementationsRequest): unknown {
-    const obj: any = {};
-    message.interfaceName !== undefined && (obj.interfaceName = message.interfaceName);
-    return obj;
-  },
-
-  fromPartial(object: Partial<ListImplementationsRequest>): ListImplementationsRequest {
+  fromPartial(object: DeepPartial<ListImplementationsRequest>): ListImplementationsRequest {
     const message = createBaseListImplementationsRequest();
     message.interfaceName = object.interfaceName ?? "";
     return message;
@@ -253,25 +214,7 @@ export const ListImplementationsResponse = {
     return message;
   },
 
-  fromJSON(object: any): ListImplementationsResponse {
-    return {
-      implementationMessageNames: Array.isArray(object?.implementationMessageNames) ? object.implementationMessageNames.map((e: any) => String(e)) : []
-    };
-  },
-
-  toJSON(message: ListImplementationsResponse): unknown {
-    const obj: any = {};
-
-    if (message.implementationMessageNames) {
-      obj.implementationMessageNames = message.implementationMessageNames.map(e => e);
-    } else {
-      obj.implementationMessageNames = [];
-    }
-
-    return obj;
-  },
-
-  fromPartial(object: Partial<ListImplementationsResponse>): ListImplementationsResponse {
+  fromPartial(object: DeepPartial<ListImplementationsResponse>): ListImplementationsResponse {
     const message = createBaseListImplementationsResponse();
     message.implementationMessageNames = object.implementationMessageNames?.map(e => e) || [];
     return message;

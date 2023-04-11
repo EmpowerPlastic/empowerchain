@@ -1,6 +1,6 @@
 import { Any, AnySDKType } from "../../../google/protobuf/any";
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../../helpers";
+import { DeepPartial } from "../../../helpers";
 /**
  * Config represents the configuration for a Cosmos SDK ABCI app.
  * It is intended that all state machine logic including the version of
@@ -168,32 +168,7 @@ export const Config = {
     return message;
   },
 
-  fromJSON(object: any): Config {
-    return {
-      modules: Array.isArray(object?.modules) ? object.modules.map((e: any) => ModuleConfig.fromJSON(e)) : [],
-      golangBindings: Array.isArray(object?.golangBindings) ? object.golangBindings.map((e: any) => GolangBinding.fromJSON(e)) : []
-    };
-  },
-
-  toJSON(message: Config): unknown {
-    const obj: any = {};
-
-    if (message.modules) {
-      obj.modules = message.modules.map(e => e ? ModuleConfig.toJSON(e) : undefined);
-    } else {
-      obj.modules = [];
-    }
-
-    if (message.golangBindings) {
-      obj.golangBindings = message.golangBindings.map(e => e ? GolangBinding.toJSON(e) : undefined);
-    } else {
-      obj.golangBindings = [];
-    }
-
-    return obj;
-  },
-
-  fromPartial(object: Partial<Config>): Config {
+  fromPartial(object: DeepPartial<Config>): Config {
     const message = createBaseConfig();
     message.modules = object.modules?.map(e => ModuleConfig.fromPartial(e)) || [];
     message.golangBindings = object.golangBindings?.map(e => GolangBinding.fromPartial(e)) || [];
@@ -257,29 +232,7 @@ export const ModuleConfig = {
     return message;
   },
 
-  fromJSON(object: any): ModuleConfig {
-    return {
-      name: isSet(object.name) ? String(object.name) : "",
-      config: isSet(object.config) ? Any.fromJSON(object.config) : undefined,
-      golangBindings: Array.isArray(object?.golangBindings) ? object.golangBindings.map((e: any) => GolangBinding.fromJSON(e)) : []
-    };
-  },
-
-  toJSON(message: ModuleConfig): unknown {
-    const obj: any = {};
-    message.name !== undefined && (obj.name = message.name);
-    message.config !== undefined && (obj.config = message.config ? Any.toJSON(message.config) : undefined);
-
-    if (message.golangBindings) {
-      obj.golangBindings = message.golangBindings.map(e => e ? GolangBinding.toJSON(e) : undefined);
-    } else {
-      obj.golangBindings = [];
-    }
-
-    return obj;
-  },
-
-  fromPartial(object: Partial<ModuleConfig>): ModuleConfig {
+  fromPartial(object: DeepPartial<ModuleConfig>): ModuleConfig {
     const message = createBaseModuleConfig();
     message.name = object.name ?? "";
     message.config = object.config !== undefined && object.config !== null ? Any.fromPartial(object.config) : undefined;
@@ -335,21 +288,7 @@ export const GolangBinding = {
     return message;
   },
 
-  fromJSON(object: any): GolangBinding {
-    return {
-      interfaceType: isSet(object.interfaceType) ? String(object.interfaceType) : "",
-      implementation: isSet(object.implementation) ? String(object.implementation) : ""
-    };
-  },
-
-  toJSON(message: GolangBinding): unknown {
-    const obj: any = {};
-    message.interfaceType !== undefined && (obj.interfaceType = message.interfaceType);
-    message.implementation !== undefined && (obj.implementation = message.implementation);
-    return obj;
-  },
-
-  fromPartial(object: Partial<GolangBinding>): GolangBinding {
+  fromPartial(object: DeepPartial<GolangBinding>): GolangBinding {
     const message = createBaseGolangBinding();
     message.interfaceType = object.interfaceType ?? "";
     message.implementation = object.implementation ?? "";

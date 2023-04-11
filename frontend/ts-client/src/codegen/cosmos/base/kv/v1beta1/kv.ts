@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { isSet, bytesFromBase64, base64FromBytes } from "../../../../helpers";
+import { DeepPartial } from "../../../../helpers";
 /** Pairs defines a repeated slice of Pair objects. */
 
 export interface Pairs {
@@ -60,25 +60,7 @@ export const Pairs = {
     return message;
   },
 
-  fromJSON(object: any): Pairs {
-    return {
-      pairs: Array.isArray(object?.pairs) ? object.pairs.map((e: any) => Pair.fromJSON(e)) : []
-    };
-  },
-
-  toJSON(message: Pairs): unknown {
-    const obj: any = {};
-
-    if (message.pairs) {
-      obj.pairs = message.pairs.map(e => e ? Pair.toJSON(e) : undefined);
-    } else {
-      obj.pairs = [];
-    }
-
-    return obj;
-  },
-
-  fromPartial(object: Partial<Pairs>): Pairs {
+  fromPartial(object: DeepPartial<Pairs>): Pairs {
     const message = createBasePairs();
     message.pairs = object.pairs?.map(e => Pair.fromPartial(e)) || [];
     return message;
@@ -132,21 +114,7 @@ export const Pair = {
     return message;
   },
 
-  fromJSON(object: any): Pair {
-    return {
-      key: isSet(object.key) ? bytesFromBase64(object.key) : new Uint8Array(),
-      value: isSet(object.value) ? bytesFromBase64(object.value) : new Uint8Array()
-    };
-  },
-
-  toJSON(message: Pair): unknown {
-    const obj: any = {};
-    message.key !== undefined && (obj.key = base64FromBytes(message.key !== undefined ? message.key : new Uint8Array()));
-    message.value !== undefined && (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()));
-    return obj;
-  },
-
-  fromPartial(object: Partial<Pair>): Pair {
+  fromPartial(object: DeepPartial<Pair>): Pair {
     const message = createBasePair();
     message.key = object.key ?? new Uint8Array();
     message.value = object.value ?? new Uint8Array();

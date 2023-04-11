@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { Long, isSet } from "../../helpers";
+import { Long, DeepPartial } from "../../helpers";
 /** EventCreateIssuer is an event emitted when a new issuer is created */
 
 export interface EventCreateIssuer {
@@ -312,27 +312,7 @@ export const EventCreateIssuer = {
     return message;
   },
 
-  fromJSON(object: any): EventCreateIssuer {
-    return {
-      issuerId: isSet(object.issuerId) ? Long.fromValue(object.issuerId) : Long.UZERO,
-      creator: isSet(object.creator) ? String(object.creator) : "",
-      name: isSet(object.name) ? String(object.name) : "",
-      description: isSet(object.description) ? String(object.description) : "",
-      admin: isSet(object.admin) ? String(object.admin) : ""
-    };
-  },
-
-  toJSON(message: EventCreateIssuer): unknown {
-    const obj: any = {};
-    message.issuerId !== undefined && (obj.issuerId = (message.issuerId || Long.UZERO).toString());
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.name !== undefined && (obj.name = message.name);
-    message.description !== undefined && (obj.description = message.description);
-    message.admin !== undefined && (obj.admin = message.admin);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventCreateIssuer>): EventCreateIssuer {
+  fromPartial(object: DeepPartial<EventCreateIssuer>): EventCreateIssuer {
     const message = createBaseEventCreateIssuer();
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
     message.creator = object.creator ?? "";
@@ -417,27 +397,7 @@ export const EventUpdateIssuer = {
     return message;
   },
 
-  fromJSON(object: any): EventUpdateIssuer {
-    return {
-      issuerId: isSet(object.issuerId) ? Long.fromValue(object.issuerId) : Long.UZERO,
-      creator: isSet(object.creator) ? String(object.creator) : "",
-      name: isSet(object.name) ? String(object.name) : "",
-      description: isSet(object.description) ? String(object.description) : "",
-      admin: isSet(object.admin) ? String(object.admin) : ""
-    };
-  },
-
-  toJSON(message: EventUpdateIssuer): unknown {
-    const obj: any = {};
-    message.issuerId !== undefined && (obj.issuerId = (message.issuerId || Long.UZERO).toString());
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.name !== undefined && (obj.name = message.name);
-    message.description !== undefined && (obj.description = message.description);
-    message.admin !== undefined && (obj.admin = message.admin);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventUpdateIssuer>): EventUpdateIssuer {
+  fromPartial(object: DeepPartial<EventUpdateIssuer>): EventUpdateIssuer {
     const message = createBaseEventUpdateIssuer();
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
     message.creator = object.creator ?? "";
@@ -513,25 +473,7 @@ export const EventCreateProject = {
     return message;
   },
 
-  fromJSON(object: any): EventCreateProject {
-    return {
-      creator: isSet(object.creator) ? String(object.creator) : "",
-      applicantId: isSet(object.applicantId) ? Long.fromValue(object.applicantId) : Long.UZERO,
-      creditTypeAbbreviation: isSet(object.creditTypeAbbreviation) ? String(object.creditTypeAbbreviation) : "",
-      name: isSet(object.name) ? String(object.name) : ""
-    };
-  },
-
-  toJSON(message: EventCreateProject): unknown {
-    const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.applicantId !== undefined && (obj.applicantId = (message.applicantId || Long.UZERO).toString());
-    message.creditTypeAbbreviation !== undefined && (obj.creditTypeAbbreviation = message.creditTypeAbbreviation);
-    message.name !== undefined && (obj.name = message.name);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventCreateProject>): EventCreateProject {
+  fromPartial(object: DeepPartial<EventCreateProject>): EventCreateProject {
     const message = createBaseEventCreateProject();
     message.creator = object.creator ?? "";
     message.applicantId = object.applicantId !== undefined && object.applicantId !== null ? Long.fromValue(object.applicantId) : Long.UZERO;
@@ -597,23 +539,7 @@ export const EventUpdateProject = {
     return message;
   },
 
-  fromJSON(object: any): EventUpdateProject {
-    return {
-      updater: isSet(object.updater) ? String(object.updater) : "",
-      projectId: isSet(object.projectId) ? Long.fromValue(object.projectId) : Long.UZERO,
-      name: isSet(object.name) ? String(object.name) : ""
-    };
-  },
-
-  toJSON(message: EventUpdateProject): unknown {
-    const obj: any = {};
-    message.updater !== undefined && (obj.updater = message.updater);
-    message.projectId !== undefined && (obj.projectId = (message.projectId || Long.UZERO).toString());
-    message.name !== undefined && (obj.name = message.name);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventUpdateProject>): EventUpdateProject {
+  fromPartial(object: DeepPartial<EventUpdateProject>): EventUpdateProject {
     const message = createBaseEventUpdateProject();
     message.updater = object.updater ?? "";
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
@@ -687,25 +613,7 @@ export const EventProjectApproved = {
     return message;
   },
 
-  fromJSON(object: any): EventProjectApproved {
-    return {
-      projectId: isSet(object.projectId) ? Long.fromValue(object.projectId) : Long.UZERO,
-      approvedForCreditTypeAbbreviation: isSet(object.approvedForCreditTypeAbbreviation) ? String(object.approvedForCreditTypeAbbreviation) : "",
-      approvingIssuerId: isSet(object.approvingIssuerId) ? Long.fromValue(object.approvingIssuerId) : Long.UZERO,
-      approvedBy: isSet(object.approvedBy) ? String(object.approvedBy) : ""
-    };
-  },
-
-  toJSON(message: EventProjectApproved): unknown {
-    const obj: any = {};
-    message.projectId !== undefined && (obj.projectId = (message.projectId || Long.UZERO).toString());
-    message.approvedForCreditTypeAbbreviation !== undefined && (obj.approvedForCreditTypeAbbreviation = message.approvedForCreditTypeAbbreviation);
-    message.approvingIssuerId !== undefined && (obj.approvingIssuerId = (message.approvingIssuerId || Long.UZERO).toString());
-    message.approvedBy !== undefined && (obj.approvedBy = message.approvedBy);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventProjectApproved>): EventProjectApproved {
+  fromPartial(object: DeepPartial<EventProjectApproved>): EventProjectApproved {
     const message = createBaseEventProjectApproved();
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
     message.approvedForCreditTypeAbbreviation = object.approvedForCreditTypeAbbreviation ?? "";
@@ -780,25 +688,7 @@ export const EventProjectRejected = {
     return message;
   },
 
-  fromJSON(object: any): EventProjectRejected {
-    return {
-      projectId: isSet(object.projectId) ? Long.fromValue(object.projectId) : Long.UZERO,
-      rejectedForCreditTypeAbbreviation: isSet(object.rejectedForCreditTypeAbbreviation) ? String(object.rejectedForCreditTypeAbbreviation) : "",
-      rejectingIssuerId: isSet(object.rejectingIssuerId) ? Long.fromValue(object.rejectingIssuerId) : Long.UZERO,
-      rejectedBy: isSet(object.rejectedBy) ? String(object.rejectedBy) : ""
-    };
-  },
-
-  toJSON(message: EventProjectRejected): unknown {
-    const obj: any = {};
-    message.projectId !== undefined && (obj.projectId = (message.projectId || Long.UZERO).toString());
-    message.rejectedForCreditTypeAbbreviation !== undefined && (obj.rejectedForCreditTypeAbbreviation = message.rejectedForCreditTypeAbbreviation);
-    message.rejectingIssuerId !== undefined && (obj.rejectingIssuerId = (message.rejectingIssuerId || Long.UZERO).toString());
-    message.rejectedBy !== undefined && (obj.rejectedBy = message.rejectedBy);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventProjectRejected>): EventProjectRejected {
+  fromPartial(object: DeepPartial<EventProjectRejected>): EventProjectRejected {
     const message = createBaseEventProjectRejected();
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
     message.rejectedForCreditTypeAbbreviation = object.rejectedForCreditTypeAbbreviation ?? "";
@@ -873,25 +763,7 @@ export const EventProjectSuspended = {
     return message;
   },
 
-  fromJSON(object: any): EventProjectSuspended {
-    return {
-      projectId: isSet(object.projectId) ? Long.fromValue(object.projectId) : Long.UZERO,
-      suspendedForCreditTypeAbbreviation: isSet(object.suspendedForCreditTypeAbbreviation) ? String(object.suspendedForCreditTypeAbbreviation) : "",
-      suspendingIssuerId: isSet(object.suspendingIssuerId) ? Long.fromValue(object.suspendingIssuerId) : Long.UZERO,
-      suspendedBy: isSet(object.suspendedBy) ? String(object.suspendedBy) : ""
-    };
-  },
-
-  toJSON(message: EventProjectSuspended): unknown {
-    const obj: any = {};
-    message.projectId !== undefined && (obj.projectId = (message.projectId || Long.UZERO).toString());
-    message.suspendedForCreditTypeAbbreviation !== undefined && (obj.suspendedForCreditTypeAbbreviation = message.suspendedForCreditTypeAbbreviation);
-    message.suspendingIssuerId !== undefined && (obj.suspendingIssuerId = (message.suspendingIssuerId || Long.UZERO).toString());
-    message.suspendedBy !== undefined && (obj.suspendedBy = message.suspendedBy);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventProjectSuspended>): EventProjectSuspended {
+  fromPartial(object: DeepPartial<EventProjectSuspended>): EventProjectSuspended {
     const message = createBaseEventProjectSuspended();
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
     message.suspendedForCreditTypeAbbreviation = object.suspendedForCreditTypeAbbreviation ?? "";
@@ -993,37 +865,7 @@ export const EventIssuedCredits = {
     return message;
   },
 
-  fromJSON(object: any): EventIssuedCredits {
-    return {
-      issuerId: isSet(object.issuerId) ? Long.fromValue(object.issuerId) : Long.UZERO,
-      projectId: isSet(object.projectId) ? Long.fromValue(object.projectId) : Long.UZERO,
-      creditTypeAbbreviation: isSet(object.creditTypeAbbreviation) ? String(object.creditTypeAbbreviation) : "",
-      denom: isSet(object.denom) ? String(object.denom) : "",
-      amount: isSet(object.amount) ? Long.fromValue(object.amount) : Long.UZERO,
-      issuerAddress: isSet(object.issuerAddress) ? String(object.issuerAddress) : "",
-      metadataUris: Array.isArray(object?.metadataUris) ? object.metadataUris.map((e: any) => String(e)) : []
-    };
-  },
-
-  toJSON(message: EventIssuedCredits): unknown {
-    const obj: any = {};
-    message.issuerId !== undefined && (obj.issuerId = (message.issuerId || Long.UZERO).toString());
-    message.projectId !== undefined && (obj.projectId = (message.projectId || Long.UZERO).toString());
-    message.creditTypeAbbreviation !== undefined && (obj.creditTypeAbbreviation = message.creditTypeAbbreviation);
-    message.denom !== undefined && (obj.denom = message.denom);
-    message.amount !== undefined && (obj.amount = (message.amount || Long.UZERO).toString());
-    message.issuerAddress !== undefined && (obj.issuerAddress = message.issuerAddress);
-
-    if (message.metadataUris) {
-      obj.metadataUris = message.metadataUris.map(e => e);
-    } else {
-      obj.metadataUris = [];
-    }
-
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventIssuedCredits>): EventIssuedCredits {
+  fromPartial(object: DeepPartial<EventIssuedCredits>): EventIssuedCredits {
     const message = createBaseEventIssuedCredits();
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
@@ -1119,29 +961,7 @@ export const EventTransferCredits = {
     return message;
   },
 
-  fromJSON(object: any): EventTransferCredits {
-    return {
-      sender: isSet(object.sender) ? String(object.sender) : "",
-      recipient: isSet(object.recipient) ? String(object.recipient) : "",
-      denom: isSet(object.denom) ? String(object.denom) : "",
-      amount: isSet(object.amount) ? Long.fromValue(object.amount) : Long.UZERO,
-      issuerId: isSet(object.issuerId) ? Long.fromValue(object.issuerId) : Long.UZERO,
-      creditTypeAbbreviation: isSet(object.creditTypeAbbreviation) ? String(object.creditTypeAbbreviation) : ""
-    };
-  },
-
-  toJSON(message: EventTransferCredits): unknown {
-    const obj: any = {};
-    message.sender !== undefined && (obj.sender = message.sender);
-    message.recipient !== undefined && (obj.recipient = message.recipient);
-    message.denom !== undefined && (obj.denom = message.denom);
-    message.amount !== undefined && (obj.amount = (message.amount || Long.UZERO).toString());
-    message.issuerId !== undefined && (obj.issuerId = (message.issuerId || Long.UZERO).toString());
-    message.creditTypeAbbreviation !== undefined && (obj.creditTypeAbbreviation = message.creditTypeAbbreviation);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventTransferCredits>): EventTransferCredits {
+  fromPartial(object: DeepPartial<EventTransferCredits>): EventTransferCredits {
     const message = createBaseEventTransferCredits();
     message.sender = object.sender ?? "";
     message.recipient = object.recipient ?? "";
@@ -1227,27 +1047,7 @@ export const EventRetiredCredits = {
     return message;
   },
 
-  fromJSON(object: any): EventRetiredCredits {
-    return {
-      owner: isSet(object.owner) ? String(object.owner) : "",
-      denom: isSet(object.denom) ? String(object.denom) : "",
-      amount: isSet(object.amount) ? Long.fromValue(object.amount) : Long.UZERO,
-      issuerId: isSet(object.issuerId) ? Long.fromValue(object.issuerId) : Long.UZERO,
-      creditTypeAbbreviation: isSet(object.creditTypeAbbreviation) ? String(object.creditTypeAbbreviation) : ""
-    };
-  },
-
-  toJSON(message: EventRetiredCredits): unknown {
-    const obj: any = {};
-    message.owner !== undefined && (obj.owner = message.owner);
-    message.denom !== undefined && (obj.denom = message.denom);
-    message.amount !== undefined && (obj.amount = (message.amount || Long.UZERO).toString());
-    message.issuerId !== undefined && (obj.issuerId = (message.issuerId || Long.UZERO).toString());
-    message.creditTypeAbbreviation !== undefined && (obj.creditTypeAbbreviation = message.creditTypeAbbreviation);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventRetiredCredits>): EventRetiredCredits {
+  fromPartial(object: DeepPartial<EventRetiredCredits>): EventRetiredCredits {
     const message = createBaseEventRetiredCredits();
     message.owner = object.owner ?? "";
     message.denom = object.denom ?? "";
@@ -1323,25 +1123,7 @@ export const EventCreateApplicant = {
     return message;
   },
 
-  fromJSON(object: any): EventCreateApplicant {
-    return {
-      applicantId: isSet(object.applicantId) ? Long.fromValue(object.applicantId) : Long.UZERO,
-      name: isSet(object.name) ? String(object.name) : "",
-      description: isSet(object.description) ? String(object.description) : "",
-      admin: isSet(object.admin) ? String(object.admin) : ""
-    };
-  },
-
-  toJSON(message: EventCreateApplicant): unknown {
-    const obj: any = {};
-    message.applicantId !== undefined && (obj.applicantId = (message.applicantId || Long.UZERO).toString());
-    message.name !== undefined && (obj.name = message.name);
-    message.description !== undefined && (obj.description = message.description);
-    message.admin !== undefined && (obj.admin = message.admin);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventCreateApplicant>): EventCreateApplicant {
+  fromPartial(object: DeepPartial<EventCreateApplicant>): EventCreateApplicant {
     const message = createBaseEventCreateApplicant();
     message.applicantId = object.applicantId !== undefined && object.applicantId !== null ? Long.fromValue(object.applicantId) : Long.UZERO;
     message.name = object.name ?? "";
@@ -1425,27 +1207,7 @@ export const EventUpdateApplicant = {
     return message;
   },
 
-  fromJSON(object: any): EventUpdateApplicant {
-    return {
-      applicantId: isSet(object.applicantId) ? Long.fromValue(object.applicantId) : Long.UZERO,
-      name: isSet(object.name) ? String(object.name) : "",
-      description: isSet(object.description) ? String(object.description) : "",
-      admin: isSet(object.admin) ? String(object.admin) : "",
-      updater: isSet(object.updater) ? String(object.updater) : ""
-    };
-  },
-
-  toJSON(message: EventUpdateApplicant): unknown {
-    const obj: any = {};
-    message.applicantId !== undefined && (obj.applicantId = (message.applicantId || Long.UZERO).toString());
-    message.name !== undefined && (obj.name = message.name);
-    message.description !== undefined && (obj.description = message.description);
-    message.admin !== undefined && (obj.admin = message.admin);
-    message.updater !== undefined && (obj.updater = message.updater);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventUpdateApplicant>): EventUpdateApplicant {
+  fromPartial(object: DeepPartial<EventUpdateApplicant>): EventUpdateApplicant {
     const message = createBaseEventUpdateApplicant();
     message.applicantId = object.applicantId !== undefined && object.applicantId !== null ? Long.fromValue(object.applicantId) : Long.UZERO;
     message.name = object.name ?? "";
@@ -1521,25 +1283,7 @@ export const EventCreateCreditType = {
     return message;
   },
 
-  fromJSON(object: any): EventCreateCreditType {
-    return {
-      creator: isSet(object.creator) ? String(object.creator) : "",
-      abbreviation: isSet(object.abbreviation) ? String(object.abbreviation) : "",
-      issuerId: isSet(object.issuerId) ? Long.fromValue(object.issuerId) : Long.UZERO,
-      name: isSet(object.name) ? String(object.name) : ""
-    };
-  },
-
-  toJSON(message: EventCreateCreditType): unknown {
-    const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.abbreviation !== undefined && (obj.abbreviation = message.abbreviation);
-    message.issuerId !== undefined && (obj.issuerId = (message.issuerId || Long.UZERO).toString());
-    message.name !== undefined && (obj.name = message.name);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventCreateCreditType>): EventCreateCreditType {
+  fromPartial(object: DeepPartial<EventCreateCreditType>): EventCreateCreditType {
     const message = createBaseEventCreateCreditType();
     message.creator = object.creator ?? "";
     message.abbreviation = object.abbreviation ?? "";
@@ -1605,23 +1349,7 @@ export const EventUpdateCreditType = {
     return message;
   },
 
-  fromJSON(object: any): EventUpdateCreditType {
-    return {
-      updater: isSet(object.updater) ? String(object.updater) : "",
-      abbreviation: isSet(object.abbreviation) ? String(object.abbreviation) : "",
-      name: isSet(object.name) ? String(object.name) : ""
-    };
-  },
-
-  toJSON(message: EventUpdateCreditType): unknown {
-    const obj: any = {};
-    message.updater !== undefined && (obj.updater = message.updater);
-    message.abbreviation !== undefined && (obj.abbreviation = message.abbreviation);
-    message.name !== undefined && (obj.name = message.name);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventUpdateCreditType>): EventUpdateCreditType {
+  fromPartial(object: DeepPartial<EventUpdateCreditType>): EventUpdateCreditType {
     const message = createBaseEventUpdateCreditType();
     message.updater = object.updater ?? "";
     message.abbreviation = object.abbreviation ?? "";

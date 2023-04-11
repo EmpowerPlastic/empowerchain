@@ -1,6 +1,6 @@
 import { Params, ParamsSDKType, IDCounters, IDCountersSDKType, Issuer, IssuerSDKType, Applicant, ApplicantSDKType, CreditType, CreditTypeSDKType, Project, ProjectSDKType, CreditCollection, CreditCollectionSDKType, CreditBalance, CreditBalanceSDKType } from "./types";
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../helpers";
+import { DeepPartial } from "../../helpers";
 /** GenesisState defines the plasticcredit module's genesis state. */
 
 export interface GenesisState {
@@ -126,64 +126,7 @@ export const GenesisState = {
     return message;
   },
 
-  fromJSON(object: any): GenesisState {
-    return {
-      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
-      idCounters: isSet(object.idCounters) ? IDCounters.fromJSON(object.idCounters) : undefined,
-      issuers: Array.isArray(object?.issuers) ? object.issuers.map((e: any) => Issuer.fromJSON(e)) : [],
-      applicants: Array.isArray(object?.applicants) ? object.applicants.map((e: any) => Applicant.fromJSON(e)) : [],
-      creditTypes: Array.isArray(object?.creditTypes) ? object.creditTypes.map((e: any) => CreditType.fromJSON(e)) : [],
-      projects: Array.isArray(object?.projects) ? object.projects.map((e: any) => Project.fromJSON(e)) : [],
-      creditCollections: Array.isArray(object?.creditCollections) ? object.creditCollections.map((e: any) => CreditCollection.fromJSON(e)) : [],
-      creditBalances: Array.isArray(object?.creditBalances) ? object.creditBalances.map((e: any) => CreditBalance.fromJSON(e)) : []
-    };
-  },
-
-  toJSON(message: GenesisState): unknown {
-    const obj: any = {};
-    message.params !== undefined && (obj.params = message.params ? Params.toJSON(message.params) : undefined);
-    message.idCounters !== undefined && (obj.idCounters = message.idCounters ? IDCounters.toJSON(message.idCounters) : undefined);
-
-    if (message.issuers) {
-      obj.issuers = message.issuers.map(e => e ? Issuer.toJSON(e) : undefined);
-    } else {
-      obj.issuers = [];
-    }
-
-    if (message.applicants) {
-      obj.applicants = message.applicants.map(e => e ? Applicant.toJSON(e) : undefined);
-    } else {
-      obj.applicants = [];
-    }
-
-    if (message.creditTypes) {
-      obj.creditTypes = message.creditTypes.map(e => e ? CreditType.toJSON(e) : undefined);
-    } else {
-      obj.creditTypes = [];
-    }
-
-    if (message.projects) {
-      obj.projects = message.projects.map(e => e ? Project.toJSON(e) : undefined);
-    } else {
-      obj.projects = [];
-    }
-
-    if (message.creditCollections) {
-      obj.creditCollections = message.creditCollections.map(e => e ? CreditCollection.toJSON(e) : undefined);
-    } else {
-      obj.creditCollections = [];
-    }
-
-    if (message.creditBalances) {
-      obj.creditBalances = message.creditBalances.map(e => e ? CreditBalance.toJSON(e) : undefined);
-    } else {
-      obj.creditBalances = [];
-    }
-
-    return obj;
-  },
-
-  fromPartial(object: Partial<GenesisState>): GenesisState {
+  fromPartial(object: DeepPartial<GenesisState>): GenesisState {
     const message = createBaseGenesisState();
     message.params = object.params !== undefined && object.params !== null ? Params.fromPartial(object.params) : undefined;
     message.idCounters = object.idCounters !== undefined && object.idCounters !== null ? IDCounters.fromPartial(object.idCounters) : undefined;

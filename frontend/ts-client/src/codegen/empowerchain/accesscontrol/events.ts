@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../helpers";
+import { DeepPartial } from "../../helpers";
 /** EventAccessGranted is an event emitted when access is granted to a given message for a given address */
 
 export interface EventAccessGranted {
@@ -84,23 +84,7 @@ export const EventAccessGranted = {
     return message;
   },
 
-  fromJSON(object: any): EventAccessGranted {
-    return {
-      moduleName: isSet(object.moduleName) ? String(object.moduleName) : "",
-      account: isSet(object.account) ? String(object.account) : "",
-      msgType: isSet(object.msgType) ? String(object.msgType) : ""
-    };
-  },
-
-  toJSON(message: EventAccessGranted): unknown {
-    const obj: any = {};
-    message.moduleName !== undefined && (obj.moduleName = message.moduleName);
-    message.account !== undefined && (obj.account = message.account);
-    message.msgType !== undefined && (obj.msgType = message.msgType);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventAccessGranted>): EventAccessGranted {
+  fromPartial(object: DeepPartial<EventAccessGranted>): EventAccessGranted {
     const message = createBaseEventAccessGranted();
     message.moduleName = object.moduleName ?? "";
     message.account = object.account ?? "";
@@ -165,23 +149,7 @@ export const EventAccessRevoked = {
     return message;
   },
 
-  fromJSON(object: any): EventAccessRevoked {
-    return {
-      moduleName: isSet(object.moduleName) ? String(object.moduleName) : "",
-      account: isSet(object.account) ? String(object.account) : "",
-      msgType: isSet(object.msgType) ? String(object.msgType) : ""
-    };
-  },
-
-  toJSON(message: EventAccessRevoked): unknown {
-    const obj: any = {};
-    message.moduleName !== undefined && (obj.moduleName = message.moduleName);
-    message.account !== undefined && (obj.account = message.account);
-    message.msgType !== undefined && (obj.msgType = message.msgType);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventAccessRevoked>): EventAccessRevoked {
+  fromPartial(object: DeepPartial<EventAccessRevoked>): EventAccessRevoked {
     const message = createBaseEventAccessRevoked();
     message.moduleName = object.moduleName ?? "";
     message.account = object.account ?? "";

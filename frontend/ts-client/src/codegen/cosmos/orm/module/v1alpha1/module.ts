@@ -1,4 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
+import { DeepPartial } from "../../../../helpers";
 /**
  * Module defines the ORM module which adds providers to the app container for
  * module-scoped DB's. In the future it may provide gRPC services for interacting
@@ -41,16 +42,7 @@ export const Module = {
     return message;
   },
 
-  fromJSON(_: any): Module {
-    return {};
-  },
-
-  toJSON(_: Module): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<Module>): Module {
+  fromPartial(_: DeepPartial<Module>): Module {
     const message = createBaseModule();
     return message;
   }

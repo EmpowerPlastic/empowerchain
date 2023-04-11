@@ -1,6 +1,6 @@
 import { Duration, DurationSDKType } from "../../../../google/protobuf/duration";
 import * as _m0 from "protobufjs/minimal";
-import { Long, isSet } from "../../../../helpers";
+import { Long, DeepPartial } from "../../../../helpers";
 /** Module is the config object of the group module. */
 
 export interface Module {
@@ -78,21 +78,7 @@ export const Module = {
     return message;
   },
 
-  fromJSON(object: any): Module {
-    return {
-      maxExecutionPeriod: isSet(object.maxExecutionPeriod) ? Duration.fromJSON(object.maxExecutionPeriod) : undefined,
-      maxMetadataLen: isSet(object.maxMetadataLen) ? Long.fromValue(object.maxMetadataLen) : Long.UZERO
-    };
-  },
-
-  toJSON(message: Module): unknown {
-    const obj: any = {};
-    message.maxExecutionPeriod !== undefined && (obj.maxExecutionPeriod = message.maxExecutionPeriod ? Duration.toJSON(message.maxExecutionPeriod) : undefined);
-    message.maxMetadataLen !== undefined && (obj.maxMetadataLen = (message.maxMetadataLen || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: Partial<Module>): Module {
+  fromPartial(object: DeepPartial<Module>): Module {
     const message = createBaseModule();
     message.maxExecutionPeriod = object.maxExecutionPeriod !== undefined && object.maxExecutionPeriod !== null ? Duration.fromPartial(object.maxExecutionPeriod) : undefined;
     message.maxMetadataLen = object.maxMetadataLen !== undefined && object.maxMetadataLen !== null ? Long.fromValue(object.maxMetadataLen) : Long.UZERO;

@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../../../helpers";
+import { DeepPartial } from "../../../../helpers";
 /** Module is the config object of the capability module. */
 
 export interface Module {
@@ -56,19 +56,7 @@ export const Module = {
     return message;
   },
 
-  fromJSON(object: any): Module {
-    return {
-      sealKeeper: isSet(object.sealKeeper) ? Boolean(object.sealKeeper) : false
-    };
-  },
-
-  toJSON(message: Module): unknown {
-    const obj: any = {};
-    message.sealKeeper !== undefined && (obj.sealKeeper = message.sealKeeper);
-    return obj;
-  },
-
-  fromPartial(object: Partial<Module>): Module {
+  fromPartial(object: DeepPartial<Module>): Module {
     const message = createBaseModule();
     message.sealKeeper = object.sealKeeper ?? false;
     return message;

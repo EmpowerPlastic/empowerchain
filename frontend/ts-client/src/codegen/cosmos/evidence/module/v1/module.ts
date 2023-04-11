@@ -1,4 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
+import { DeepPartial } from "../../../../helpers";
 /** Module is the config object of the evidence module. */
 
 export interface Module {}
@@ -33,16 +34,7 @@ export const Module = {
     return message;
   },
 
-  fromJSON(_: any): Module {
-    return {};
-  },
-
-  toJSON(_: Module): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<Module>): Module {
+  fromPartial(_: DeepPartial<Module>): Module {
     const message = createBaseModule();
     return message;
   }

@@ -1,6 +1,6 @@
 import { ProofMetadata, ProofMetadataSDKType } from "./types";
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../helpers";
+import { DeepPartial } from "../../helpers";
 /** GenesisState defines the proofofexistence module's genesis state. */
 
 export interface GenesisState {
@@ -67,25 +67,7 @@ export const GenesisState = {
     return message;
   },
 
-  fromJSON(object: any): GenesisState {
-    return {
-      proofList: Array.isArray(object?.proofList) ? object.proofList.map((e: any) => Proof.fromJSON(e)) : []
-    };
-  },
-
-  toJSON(message: GenesisState): unknown {
-    const obj: any = {};
-
-    if (message.proofList) {
-      obj.proofList = message.proofList.map(e => e ? Proof.toJSON(e) : undefined);
-    } else {
-      obj.proofList = [];
-    }
-
-    return obj;
-  },
-
-  fromPartial(object: Partial<GenesisState>): GenesisState {
+  fromPartial(object: DeepPartial<GenesisState>): GenesisState {
     const message = createBaseGenesisState();
     message.proofList = object.proofList?.map(e => Proof.fromPartial(e)) || [];
     return message;
@@ -139,21 +121,7 @@ export const Proof = {
     return message;
   },
 
-  fromJSON(object: any): Proof {
-    return {
-      hash: isSet(object.hash) ? String(object.hash) : "",
-      metadata: isSet(object.metadata) ? ProofMetadata.fromJSON(object.metadata) : undefined
-    };
-  },
-
-  toJSON(message: Proof): unknown {
-    const obj: any = {};
-    message.hash !== undefined && (obj.hash = message.hash);
-    message.metadata !== undefined && (obj.metadata = message.metadata ? ProofMetadata.toJSON(message.metadata) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<Proof>): Proof {
+  fromPartial(object: DeepPartial<Proof>): Proof {
     const message = createBaseProof();
     message.hash = object.hash ?? "";
     message.metadata = object.metadata !== undefined && object.metadata !== null ? ProofMetadata.fromPartial(object.metadata) : undefined;

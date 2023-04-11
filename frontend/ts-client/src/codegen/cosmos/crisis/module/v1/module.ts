@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../../../helpers";
+import { DeepPartial } from "../../../../helpers";
 /** Module is the config object of the crisis module. */
 
 export interface Module {
@@ -65,21 +65,7 @@ export const Module = {
     return message;
   },
 
-  fromJSON(object: any): Module {
-    return {
-      feeCollectorName: isSet(object.feeCollectorName) ? String(object.feeCollectorName) : "",
-      authority: isSet(object.authority) ? String(object.authority) : ""
-    };
-  },
-
-  toJSON(message: Module): unknown {
-    const obj: any = {};
-    message.feeCollectorName !== undefined && (obj.feeCollectorName = message.feeCollectorName);
-    message.authority !== undefined && (obj.authority = message.authority);
-    return obj;
-  },
-
-  fromPartial(object: Partial<Module>): Module {
+  fromPartial(object: DeepPartial<Module>): Module {
     const message = createBaseModule();
     message.feeCollectorName = object.feeCollectorName ?? "";
     message.authority = object.authority ?? "";

@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../../../helpers";
+import { DeepPartial } from "../../../../helpers";
 /** Module is the config object for the auth module. */
 
 export interface Module {
@@ -104,29 +104,7 @@ export const Module = {
     return message;
   },
 
-  fromJSON(object: any): Module {
-    return {
-      bech32Prefix: isSet(object.bech32Prefix) ? String(object.bech32Prefix) : "",
-      moduleAccountPermissions: Array.isArray(object?.moduleAccountPermissions) ? object.moduleAccountPermissions.map((e: any) => ModuleAccountPermission.fromJSON(e)) : [],
-      authority: isSet(object.authority) ? String(object.authority) : ""
-    };
-  },
-
-  toJSON(message: Module): unknown {
-    const obj: any = {};
-    message.bech32Prefix !== undefined && (obj.bech32Prefix = message.bech32Prefix);
-
-    if (message.moduleAccountPermissions) {
-      obj.moduleAccountPermissions = message.moduleAccountPermissions.map(e => e ? ModuleAccountPermission.toJSON(e) : undefined);
-    } else {
-      obj.moduleAccountPermissions = [];
-    }
-
-    message.authority !== undefined && (obj.authority = message.authority);
-    return obj;
-  },
-
-  fromPartial(object: Partial<Module>): Module {
+  fromPartial(object: DeepPartial<Module>): Module {
     const message = createBaseModule();
     message.bech32Prefix = object.bech32Prefix ?? "";
     message.moduleAccountPermissions = object.moduleAccountPermissions?.map(e => ModuleAccountPermission.fromPartial(e)) || [];
@@ -182,27 +160,7 @@ export const ModuleAccountPermission = {
     return message;
   },
 
-  fromJSON(object: any): ModuleAccountPermission {
-    return {
-      account: isSet(object.account) ? String(object.account) : "",
-      permissions: Array.isArray(object?.permissions) ? object.permissions.map((e: any) => String(e)) : []
-    };
-  },
-
-  toJSON(message: ModuleAccountPermission): unknown {
-    const obj: any = {};
-    message.account !== undefined && (obj.account = message.account);
-
-    if (message.permissions) {
-      obj.permissions = message.permissions.map(e => e);
-    } else {
-      obj.permissions = [];
-    }
-
-    return obj;
-  },
-
-  fromPartial(object: Partial<ModuleAccountPermission>): ModuleAccountPermission {
+  fromPartial(object: DeepPartial<ModuleAccountPermission>): ModuleAccountPermission {
     const message = createBaseModuleAccountPermission();
     message.account = object.account ?? "";
     message.permissions = object.permissions?.map(e => e) || [];

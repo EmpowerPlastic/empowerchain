@@ -1,6 +1,6 @@
 import { Coin, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import * as _m0 from "protobufjs/minimal";
-import { isSet, Long } from "../../helpers";
+import { DeepPartial, Long } from "../../helpers";
 export enum ProjectStatus {
   NEW = 0,
   APPROVED = 1,
@@ -257,21 +257,7 @@ export const Params = {
     return message;
   },
 
-  fromJSON(object: any): Params {
-    return {
-      issuerCreator: isSet(object.issuerCreator) ? String(object.issuerCreator) : "",
-      creditTypeCreationFee: isSet(object.creditTypeCreationFee) ? Coin.fromJSON(object.creditTypeCreationFee) : undefined
-    };
-  },
-
-  toJSON(message: Params): unknown {
-    const obj: any = {};
-    message.issuerCreator !== undefined && (obj.issuerCreator = message.issuerCreator);
-    message.creditTypeCreationFee !== undefined && (obj.creditTypeCreationFee = message.creditTypeCreationFee ? Coin.toJSON(message.creditTypeCreationFee) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<Params>): Params {
+  fromPartial(object: DeepPartial<Params>): Params {
     const message = createBaseParams();
     message.issuerCreator = object.issuerCreator ?? "";
     message.creditTypeCreationFee = object.creditTypeCreationFee !== undefined && object.creditTypeCreationFee !== null ? Coin.fromPartial(object.creditTypeCreationFee) : undefined;
@@ -335,23 +321,7 @@ export const IDCounters = {
     return message;
   },
 
-  fromJSON(object: any): IDCounters {
-    return {
-      nextIssuerId: isSet(object.nextIssuerId) ? Long.fromValue(object.nextIssuerId) : Long.UZERO,
-      nextApplicantId: isSet(object.nextApplicantId) ? Long.fromValue(object.nextApplicantId) : Long.UZERO,
-      nextProjectId: isSet(object.nextProjectId) ? Long.fromValue(object.nextProjectId) : Long.UZERO
-    };
-  },
-
-  toJSON(message: IDCounters): unknown {
-    const obj: any = {};
-    message.nextIssuerId !== undefined && (obj.nextIssuerId = (message.nextIssuerId || Long.UZERO).toString());
-    message.nextApplicantId !== undefined && (obj.nextApplicantId = (message.nextApplicantId || Long.UZERO).toString());
-    message.nextProjectId !== undefined && (obj.nextProjectId = (message.nextProjectId || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: Partial<IDCounters>): IDCounters {
+  fromPartial(object: DeepPartial<IDCounters>): IDCounters {
     const message = createBaseIDCounters();
     message.nextIssuerId = object.nextIssuerId !== undefined && object.nextIssuerId !== null ? Long.fromValue(object.nextIssuerId) : Long.UZERO;
     message.nextApplicantId = object.nextApplicantId !== undefined && object.nextApplicantId !== null ? Long.fromValue(object.nextApplicantId) : Long.UZERO;
@@ -425,25 +395,7 @@ export const Issuer = {
     return message;
   },
 
-  fromJSON(object: any): Issuer {
-    return {
-      id: isSet(object.id) ? Long.fromValue(object.id) : Long.UZERO,
-      name: isSet(object.name) ? String(object.name) : "",
-      description: isSet(object.description) ? String(object.description) : "",
-      admin: isSet(object.admin) ? String(object.admin) : ""
-    };
-  },
-
-  toJSON(message: Issuer): unknown {
-    const obj: any = {};
-    message.id !== undefined && (obj.id = (message.id || Long.UZERO).toString());
-    message.name !== undefined && (obj.name = message.name);
-    message.description !== undefined && (obj.description = message.description);
-    message.admin !== undefined && (obj.admin = message.admin);
-    return obj;
-  },
-
-  fromPartial(object: Partial<Issuer>): Issuer {
+  fromPartial(object: DeepPartial<Issuer>): Issuer {
     const message = createBaseIssuer();
     message.id = object.id !== undefined && object.id !== null ? Long.fromValue(object.id) : Long.UZERO;
     message.name = object.name ?? "";
@@ -518,25 +470,7 @@ export const Applicant = {
     return message;
   },
 
-  fromJSON(object: any): Applicant {
-    return {
-      id: isSet(object.id) ? Long.fromValue(object.id) : Long.UZERO,
-      name: isSet(object.name) ? String(object.name) : "",
-      description: isSet(object.description) ? String(object.description) : "",
-      admin: isSet(object.admin) ? String(object.admin) : ""
-    };
-  },
-
-  toJSON(message: Applicant): unknown {
-    const obj: any = {};
-    message.id !== undefined && (obj.id = (message.id || Long.UZERO).toString());
-    message.name !== undefined && (obj.name = message.name);
-    message.description !== undefined && (obj.description = message.description);
-    message.admin !== undefined && (obj.admin = message.admin);
-    return obj;
-  },
-
-  fromPartial(object: Partial<Applicant>): Applicant {
+  fromPartial(object: DeepPartial<Applicant>): Applicant {
     const message = createBaseApplicant();
     message.id = object.id !== undefined && object.id !== null ? Long.fromValue(object.id) : Long.UZERO;
     message.name = object.name ?? "";
@@ -602,23 +536,7 @@ export const CreditType = {
     return message;
   },
 
-  fromJSON(object: any): CreditType {
-    return {
-      abbreviation: isSet(object.abbreviation) ? String(object.abbreviation) : "",
-      issuerId: isSet(object.issuerId) ? Long.fromValue(object.issuerId) : Long.UZERO,
-      name: isSet(object.name) ? String(object.name) : ""
-    };
-  },
-
-  toJSON(message: CreditType): unknown {
-    const obj: any = {};
-    message.abbreviation !== undefined && (obj.abbreviation = message.abbreviation);
-    message.issuerId !== undefined && (obj.issuerId = (message.issuerId || Long.UZERO).toString());
-    message.name !== undefined && (obj.name = message.name);
-    return obj;
-  },
-
-  fromPartial(object: Partial<CreditType>): CreditType {
+  fromPartial(object: DeepPartial<CreditType>): CreditType {
     const message = createBaseCreditType();
     message.abbreviation = object.abbreviation ?? "";
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
@@ -701,27 +619,7 @@ export const Project = {
     return message;
   },
 
-  fromJSON(object: any): Project {
-    return {
-      id: isSet(object.id) ? Long.fromValue(object.id) : Long.UZERO,
-      applicantId: isSet(object.applicantId) ? Long.fromValue(object.applicantId) : Long.UZERO,
-      creditTypeAbbreviation: isSet(object.creditTypeAbbreviation) ? String(object.creditTypeAbbreviation) : "",
-      name: isSet(object.name) ? String(object.name) : "",
-      status: isSet(object.status) ? projectStatusFromJSON(object.status) : 0
-    };
-  },
-
-  toJSON(message: Project): unknown {
-    const obj: any = {};
-    message.id !== undefined && (obj.id = (message.id || Long.UZERO).toString());
-    message.applicantId !== undefined && (obj.applicantId = (message.applicantId || Long.UZERO).toString());
-    message.creditTypeAbbreviation !== undefined && (obj.creditTypeAbbreviation = message.creditTypeAbbreviation);
-    message.name !== undefined && (obj.name = message.name);
-    message.status !== undefined && (obj.status = projectStatusToJSON(message.status));
-    return obj;
-  },
-
-  fromPartial(object: Partial<Project>): Project {
+  fromPartial(object: DeepPartial<Project>): Project {
     const message = createBaseProject();
     message.id = object.id !== undefined && object.id !== null ? Long.fromValue(object.id) : Long.UZERO;
     message.applicantId = object.applicantId !== undefined && object.applicantId !== null ? Long.fromValue(object.applicantId) : Long.UZERO;
@@ -797,31 +695,7 @@ export const CreditCollection = {
     return message;
   },
 
-  fromJSON(object: any): CreditCollection {
-    return {
-      denom: isSet(object.denom) ? String(object.denom) : "",
-      projectId: isSet(object.projectId) ? Long.fromValue(object.projectId) : Long.UZERO,
-      totalAmount: isSet(object.totalAmount) ? CreditAmount.fromJSON(object.totalAmount) : undefined,
-      metadataUris: Array.isArray(object?.metadataUris) ? object.metadataUris.map((e: any) => String(e)) : []
-    };
-  },
-
-  toJSON(message: CreditCollection): unknown {
-    const obj: any = {};
-    message.denom !== undefined && (obj.denom = message.denom);
-    message.projectId !== undefined && (obj.projectId = (message.projectId || Long.UZERO).toString());
-    message.totalAmount !== undefined && (obj.totalAmount = message.totalAmount ? CreditAmount.toJSON(message.totalAmount) : undefined);
-
-    if (message.metadataUris) {
-      obj.metadataUris = message.metadataUris.map(e => e);
-    } else {
-      obj.metadataUris = [];
-    }
-
-    return obj;
-  },
-
-  fromPartial(object: Partial<CreditCollection>): CreditCollection {
+  fromPartial(object: DeepPartial<CreditCollection>): CreditCollection {
     const message = createBaseCreditCollection();
     message.denom = object.denom ?? "";
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
@@ -887,23 +761,7 @@ export const CreditBalance = {
     return message;
   },
 
-  fromJSON(object: any): CreditBalance {
-    return {
-      owner: isSet(object.owner) ? String(object.owner) : "",
-      denom: isSet(object.denom) ? String(object.denom) : "",
-      balance: isSet(object.balance) ? CreditAmount.fromJSON(object.balance) : undefined
-    };
-  },
-
-  toJSON(message: CreditBalance): unknown {
-    const obj: any = {};
-    message.owner !== undefined && (obj.owner = message.owner);
-    message.denom !== undefined && (obj.denom = message.denom);
-    message.balance !== undefined && (obj.balance = message.balance ? CreditAmount.toJSON(message.balance) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<CreditBalance>): CreditBalance {
+  fromPartial(object: DeepPartial<CreditBalance>): CreditBalance {
     const message = createBaseCreditBalance();
     message.owner = object.owner ?? "";
     message.denom = object.denom ?? "";
@@ -959,21 +817,7 @@ export const CreditAmount = {
     return message;
   },
 
-  fromJSON(object: any): CreditAmount {
-    return {
-      active: isSet(object.active) ? Long.fromValue(object.active) : Long.UZERO,
-      retired: isSet(object.retired) ? Long.fromValue(object.retired) : Long.UZERO
-    };
-  },
-
-  toJSON(message: CreditAmount): unknown {
-    const obj: any = {};
-    message.active !== undefined && (obj.active = (message.active || Long.UZERO).toString());
-    message.retired !== undefined && (obj.retired = (message.retired || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: Partial<CreditAmount>): CreditAmount {
+  fromPartial(object: DeepPartial<CreditAmount>): CreditAmount {
     const message = createBaseCreditAmount();
     message.active = object.active !== undefined && object.active !== null ? Long.fromValue(object.active) : Long.UZERO;
     message.retired = object.retired !== undefined && object.retired !== null ? Long.fromValue(object.retired) : Long.UZERO;
@@ -1028,21 +872,7 @@ export const ProvenData = {
     return message;
   },
 
-  fromJSON(object: any): ProvenData {
-    return {
-      uri: isSet(object.uri) ? String(object.uri) : "",
-      hash: isSet(object.hash) ? String(object.hash) : ""
-    };
-  },
-
-  toJSON(message: ProvenData): unknown {
-    const obj: any = {};
-    message.uri !== undefined && (obj.uri = message.uri);
-    message.hash !== undefined && (obj.hash = message.hash);
-    return obj;
-  },
-
-  fromPartial(object: Partial<ProvenData>): ProvenData {
+  fromPartial(object: DeepPartial<ProvenData>): ProvenData {
     const message = createBaseProvenData();
     message.uri = object.uri ?? "";
     message.hash = object.hash ?? "";

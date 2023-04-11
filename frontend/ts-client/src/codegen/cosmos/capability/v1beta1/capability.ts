@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { Long, isSet } from "../../../helpers";
+import { Long, DeepPartial } from "../../../helpers";
 /**
  * Capability defines an implementation of an object capability. The index
  * provided to a Capability must be globally unique.
@@ -88,19 +88,7 @@ export const Capability = {
     return message;
   },
 
-  fromJSON(object: any): Capability {
-    return {
-      index: isSet(object.index) ? Long.fromValue(object.index) : Long.UZERO
-    };
-  },
-
-  toJSON(message: Capability): unknown {
-    const obj: any = {};
-    message.index !== undefined && (obj.index = (message.index || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: Partial<Capability>): Capability {
+  fromPartial(object: DeepPartial<Capability>): Capability {
     const message = createBaseCapability();
     message.index = object.index !== undefined && object.index !== null ? Long.fromValue(object.index) : Long.UZERO;
     return message;
@@ -154,21 +142,7 @@ export const Owner = {
     return message;
   },
 
-  fromJSON(object: any): Owner {
-    return {
-      module: isSet(object.module) ? String(object.module) : "",
-      name: isSet(object.name) ? String(object.name) : ""
-    };
-  },
-
-  toJSON(message: Owner): unknown {
-    const obj: any = {};
-    message.module !== undefined && (obj.module = message.module);
-    message.name !== undefined && (obj.name = message.name);
-    return obj;
-  },
-
-  fromPartial(object: Partial<Owner>): Owner {
+  fromPartial(object: DeepPartial<Owner>): Owner {
     const message = createBaseOwner();
     message.module = object.module ?? "";
     message.name = object.name ?? "";
@@ -214,25 +188,7 @@ export const CapabilityOwners = {
     return message;
   },
 
-  fromJSON(object: any): CapabilityOwners {
-    return {
-      owners: Array.isArray(object?.owners) ? object.owners.map((e: any) => Owner.fromJSON(e)) : []
-    };
-  },
-
-  toJSON(message: CapabilityOwners): unknown {
-    const obj: any = {};
-
-    if (message.owners) {
-      obj.owners = message.owners.map(e => e ? Owner.toJSON(e) : undefined);
-    } else {
-      obj.owners = [];
-    }
-
-    return obj;
-  },
-
-  fromPartial(object: Partial<CapabilityOwners>): CapabilityOwners {
+  fromPartial(object: DeepPartial<CapabilityOwners>): CapabilityOwners {
     const message = createBaseCapabilityOwners();
     message.owners = object.owners?.map(e => Owner.fromPartial(e)) || [];
     return message;
