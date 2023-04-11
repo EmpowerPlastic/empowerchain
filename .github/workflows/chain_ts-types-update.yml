@@ -17,7 +17,9 @@ jobs:
         with:
           version: v0.6.22
 
-      - run: earthly --ci --output +update-empowerjs
+      - run: earthly --ci --output +update-empowerjs --NPM_TOKEN="$NPM_TOKEN"
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         working-directory: ./frontend/empowerjs
 
       - name: Create Pull Request
