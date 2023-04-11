@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { DeepPartial } from "../../../helpers";
+import { isSet } from "../../../helpers";
 /**
  * Coin defines a token with a denomination and an amount.
  * 
@@ -111,7 +111,21 @@ export const Coin = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<Coin>): Coin {
+  fromJSON(object: any): Coin {
+    return {
+      denom: isSet(object.denom) ? String(object.denom) : "",
+      amount: isSet(object.amount) ? String(object.amount) : ""
+    };
+  },
+
+  toJSON(message: Coin): unknown {
+    const obj: any = {};
+    message.denom !== undefined && (obj.denom = message.denom);
+    message.amount !== undefined && (obj.amount = message.amount);
+    return obj;
+  },
+
+  fromPartial(object: Partial<Coin>): Coin {
     const message = createBaseCoin();
     message.denom = object.denom ?? "";
     message.amount = object.amount ?? "";
@@ -166,7 +180,21 @@ export const DecCoin = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<DecCoin>): DecCoin {
+  fromJSON(object: any): DecCoin {
+    return {
+      denom: isSet(object.denom) ? String(object.denom) : "",
+      amount: isSet(object.amount) ? String(object.amount) : ""
+    };
+  },
+
+  toJSON(message: DecCoin): unknown {
+    const obj: any = {};
+    message.denom !== undefined && (obj.denom = message.denom);
+    message.amount !== undefined && (obj.amount = message.amount);
+    return obj;
+  },
+
+  fromPartial(object: Partial<DecCoin>): DecCoin {
     const message = createBaseDecCoin();
     message.denom = object.denom ?? "";
     message.amount = object.amount ?? "";
@@ -212,7 +240,19 @@ export const IntProto = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<IntProto>): IntProto {
+  fromJSON(object: any): IntProto {
+    return {
+      int: isSet(object.int) ? String(object.int) : ""
+    };
+  },
+
+  toJSON(message: IntProto): unknown {
+    const obj: any = {};
+    message.int !== undefined && (obj.int = message.int);
+    return obj;
+  },
+
+  fromPartial(object: Partial<IntProto>): IntProto {
     const message = createBaseIntProto();
     message.int = object.int ?? "";
     return message;
@@ -257,7 +297,19 @@ export const DecProto = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<DecProto>): DecProto {
+  fromJSON(object: any): DecProto {
+    return {
+      dec: isSet(object.dec) ? String(object.dec) : ""
+    };
+  },
+
+  toJSON(message: DecProto): unknown {
+    const obj: any = {};
+    message.dec !== undefined && (obj.dec = message.dec);
+    return obj;
+  },
+
+  fromPartial(object: Partial<DecProto>): DecProto {
     const message = createBaseDecProto();
     message.dec = object.dec ?? "";
     return message;

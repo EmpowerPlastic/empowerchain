@@ -1,5 +1,4 @@
 import * as _m0 from "protobufjs/minimal";
-import { DeepPartial } from "../../helpers";
 /**
  * A generic empty message that you can re-use to avoid defining duplicated
  * empty messages in your APIs. A typical example is to use it as the request
@@ -54,7 +53,16 @@ export const Empty = {
     return message;
   },
 
-  fromPartial(_: DeepPartial<Empty>): Empty {
+  fromJSON(_: any): Empty {
+    return {};
+  },
+
+  toJSON(_: Empty): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: Partial<Empty>): Empty {
     const message = createBaseEmpty();
     return message;
   }

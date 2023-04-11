@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { DeepPartial } from "../../../../helpers";
+import { isSet } from "../../../../helpers";
 /** Module is the config object for the runtime module. */
 
 export interface Module {
@@ -187,7 +187,55 @@ export const Module = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<Module>): Module {
+  fromJSON(object: any): Module {
+    return {
+      appName: isSet(object.appName) ? String(object.appName) : "",
+      beginBlockers: Array.isArray(object?.beginBlockers) ? object.beginBlockers.map((e: any) => String(e)) : [],
+      endBlockers: Array.isArray(object?.endBlockers) ? object.endBlockers.map((e: any) => String(e)) : [],
+      initGenesis: Array.isArray(object?.initGenesis) ? object.initGenesis.map((e: any) => String(e)) : [],
+      exportGenesis: Array.isArray(object?.exportGenesis) ? object.exportGenesis.map((e: any) => String(e)) : [],
+      overrideStoreKeys: Array.isArray(object?.overrideStoreKeys) ? object.overrideStoreKeys.map((e: any) => StoreKeyConfig.fromJSON(e)) : []
+    };
+  },
+
+  toJSON(message: Module): unknown {
+    const obj: any = {};
+    message.appName !== undefined && (obj.appName = message.appName);
+
+    if (message.beginBlockers) {
+      obj.beginBlockers = message.beginBlockers.map(e => e);
+    } else {
+      obj.beginBlockers = [];
+    }
+
+    if (message.endBlockers) {
+      obj.endBlockers = message.endBlockers.map(e => e);
+    } else {
+      obj.endBlockers = [];
+    }
+
+    if (message.initGenesis) {
+      obj.initGenesis = message.initGenesis.map(e => e);
+    } else {
+      obj.initGenesis = [];
+    }
+
+    if (message.exportGenesis) {
+      obj.exportGenesis = message.exportGenesis.map(e => e);
+    } else {
+      obj.exportGenesis = [];
+    }
+
+    if (message.overrideStoreKeys) {
+      obj.overrideStoreKeys = message.overrideStoreKeys.map(e => e ? StoreKeyConfig.toJSON(e) : undefined);
+    } else {
+      obj.overrideStoreKeys = [];
+    }
+
+    return obj;
+  },
+
+  fromPartial(object: Partial<Module>): Module {
     const message = createBaseModule();
     message.appName = object.appName ?? "";
     message.beginBlockers = object.beginBlockers?.map(e => e) || [];
@@ -246,7 +294,21 @@ export const StoreKeyConfig = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<StoreKeyConfig>): StoreKeyConfig {
+  fromJSON(object: any): StoreKeyConfig {
+    return {
+      moduleName: isSet(object.moduleName) ? String(object.moduleName) : "",
+      kvStoreKey: isSet(object.kvStoreKey) ? String(object.kvStoreKey) : ""
+    };
+  },
+
+  toJSON(message: StoreKeyConfig): unknown {
+    const obj: any = {};
+    message.moduleName !== undefined && (obj.moduleName = message.moduleName);
+    message.kvStoreKey !== undefined && (obj.kvStoreKey = message.kvStoreKey);
+    return obj;
+  },
+
+  fromPartial(object: Partial<StoreKeyConfig>): StoreKeyConfig {
     const message = createBaseStoreKeyConfig();
     message.moduleName = object.moduleName ?? "";
     message.kvStoreKey = object.kvStoreKey ?? "";

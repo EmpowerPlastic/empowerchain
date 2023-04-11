@@ -42,7 +42,7 @@ message Applicant {
 }
 
 message CreditType {
-  // abbreviation is the short-hand name *and* the identifier for a credit class
+  // abbreviation is the short-hand name *and* the identifier for a credit type
   string abbreviation = 1;
   uint64 issuer_id = 2;
   string name = 3;

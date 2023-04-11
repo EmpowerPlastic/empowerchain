@@ -33,7 +33,7 @@ const (
 
 	OpWeightMsgApproveProject   = "op_weight_msg_approve_project"
 	OpWeightMsgCreateApplicant  = "op_weight_msg_create_applicant"
-	OpWeightMsgCreateCreditType = "op_weight_msg_create_credit_class"
+	OpWeightMsgCreateCreditType = "op_weight_msg_create_credit_type"
 	OpWeightMsgCreateIssuer     = "op_weight_msg_create_issuer"
 	OpWeightMsgCreateProject    = "op_weight_msg_create_project"
 	OpWeightMsgIssueCredits     = "op_weight_msg_issue_credits"
@@ -42,7 +42,7 @@ const (
 	OpWeightMsgSuspendProject   = "op_weight_msg_suspend_project"
 	OpWeightMsgTransferCredits  = "op_weight_msg_transfer_credits"
 	OpWeightMsgUpdateApplicant  = "op_weight_msg_update_applicant"
-	OpWeightMsgUpdateCreditType = "op_weight_msg_update_credit_class"
+	OpWeightMsgUpdateCreditType = "op_weight_msg_update_credit_type"
 	OpWeightMsgUpdateIssuer     = "op_weight_msg_update_issuer"
 	OpWeightMsgUpdateProject    = "op_weight_msg_update_project"
 )

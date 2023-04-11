@@ -39,6 +39,38 @@ export const MessageComposer = {
     }
 
   },
+  toJSON: {
+    verifyInvariant(value: MsgVerifyInvariant) {
+      return {
+        typeUrl: "/cosmos.crisis.v1beta1.MsgVerifyInvariant",
+        value: MsgVerifyInvariant.toJSON(value)
+      };
+    },
+
+    updateParams(value: MsgUpdateParams) {
+      return {
+        typeUrl: "/cosmos.crisis.v1beta1.MsgUpdateParams",
+        value: MsgUpdateParams.toJSON(value)
+      };
+    }
+
+  },
+  fromJSON: {
+    verifyInvariant(value: any) {
+      return {
+        typeUrl: "/cosmos.crisis.v1beta1.MsgVerifyInvariant",
+        value: MsgVerifyInvariant.fromJSON(value)
+      };
+    },
+
+    updateParams(value: any) {
+      return {
+        typeUrl: "/cosmos.crisis.v1beta1.MsgUpdateParams",
+        value: MsgUpdateParams.fromJSON(value)
+      };
+    }
+
+  },
   fromPartial: {
     verifyInvariant(value: MsgVerifyInvariant) {
       return {
