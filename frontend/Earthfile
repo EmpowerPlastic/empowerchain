@@ -5,7 +5,7 @@ WORKDIR /app
 # Frontend
 frontend-context:
     COPY package.json package-lock.json lerna.json ./
-    COPY ts-client ts-client
+    COPY empowerjs empowerjs
     COPY proof-of-existence proof-of-existence
     SAVE ARTIFACT .
 

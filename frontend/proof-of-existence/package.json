@@ -12,7 +12,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "@empowerplastic/empowerchain-ts-client": "*",
+    "@empower-plastic/empowerjs": "*",
     "flowbite": "^1.6.3",
     "flowbite-vue": "^0.0.10",
     "vue": "^3.2.45",

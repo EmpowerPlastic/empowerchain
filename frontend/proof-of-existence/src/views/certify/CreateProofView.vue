@@ -4,7 +4,7 @@ import router from "@/router";
 import SelectWalletModel from "@/views/certify/SelectWalletModel.vue";
 import { ref } from "vue";
 import { getSigningEmpowerchainClient } from "@/helpers/signing-client";
-import { empowerchain } from "@empowerplastic/empowerchain-ts-client";
+import { empowerchain } from "@empower-plastic/empowerjs";
 import { Wallet } from "@/types/enums";
 import { CHAIN_ID, RPC_URL } from "@/config/config";
 import type { OfflineSigner } from "@cosmjs/proto-signing";
