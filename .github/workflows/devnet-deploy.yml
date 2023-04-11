@@ -18,4 +18,5 @@ jobs:
           password: ${{ secrets.DEVNET_PASSWORD }}
           port: ${{ secrets.DEVNET_PORT }}
           script: |
+            source .zshrc
             ./deploy.sh
