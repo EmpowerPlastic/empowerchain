@@ -1306,7 +1306,7 @@ definitions:
         type: string
         title: >-
           abbreviation is the short-hand name *and* the identifier for a credit
-          class
+          type
       issuer_id:
         type: string
         format: uint64
