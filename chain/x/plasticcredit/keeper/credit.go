@@ -214,7 +214,7 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 	}
 	// Check if creator is issuer admin
 	if issuer.Admin != creator {
-		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrIssuerNotAllowed, "%s is not allowed to issue credits for class with abbreviation %s", creator, creditType.Abbreviation)
+		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrIssuerNotAllowed, "%s is not allowed to issue credits for type with abbreviation %s", creator, creditType.Abbreviation)
 	}
 
 	applicant, found := k.GetApplicant(ctx, project.ApplicantId)

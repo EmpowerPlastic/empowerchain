@@ -1,6 +1,6 @@
 import { Any, AnySDKType } from "../../../google/protobuf/any";
 import * as _m0 from "protobufjs/minimal";
-import { DeepPartial } from "../../../helpers";
+import { isSet } from "../../../helpers";
 /**
  * MsgGrantAllowance adds permission for Grantee to spend up to Allowance
  * of fees from the account of Granter.
@@ -117,7 +117,23 @@ export const MsgGrantAllowance = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<MsgGrantAllowance>): MsgGrantAllowance {
+  fromJSON(object: any): MsgGrantAllowance {
+    return {
+      granter: isSet(object.granter) ? String(object.granter) : "",
+      grantee: isSet(object.grantee) ? String(object.grantee) : "",
+      allowance: isSet(object.allowance) ? Any.fromJSON(object.allowance) : undefined
+    };
+  },
+
+  toJSON(message: MsgGrantAllowance): unknown {
+    const obj: any = {};
+    message.granter !== undefined && (obj.granter = message.granter);
+    message.grantee !== undefined && (obj.grantee = message.grantee);
+    message.allowance !== undefined && (obj.allowance = message.allowance ? Any.toJSON(message.allowance) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: Partial<MsgGrantAllowance>): MsgGrantAllowance {
     const message = createBaseMsgGrantAllowance();
     message.granter = object.granter ?? "";
     message.grantee = object.grantee ?? "";
@@ -154,7 +170,16 @@ export const MsgGrantAllowanceResponse = {
     return message;
   },
 
-  fromPartial(_: DeepPartial<MsgGrantAllowanceResponse>): MsgGrantAllowanceResponse {
+  fromJSON(_: any): MsgGrantAllowanceResponse {
+    return {};
+  },
+
+  toJSON(_: MsgGrantAllowanceResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: Partial<MsgGrantAllowanceResponse>): MsgGrantAllowanceResponse {
     const message = createBaseMsgGrantAllowanceResponse();
     return message;
   }
@@ -207,7 +232,21 @@ export const MsgRevokeAllowance = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<MsgRevokeAllowance>): MsgRevokeAllowance {
+  fromJSON(object: any): MsgRevokeAllowance {
+    return {
+      granter: isSet(object.granter) ? String(object.granter) : "",
+      grantee: isSet(object.grantee) ? String(object.grantee) : ""
+    };
+  },
+
+  toJSON(message: MsgRevokeAllowance): unknown {
+    const obj: any = {};
+    message.granter !== undefined && (obj.granter = message.granter);
+    message.grantee !== undefined && (obj.grantee = message.grantee);
+    return obj;
+  },
+
+  fromPartial(object: Partial<MsgRevokeAllowance>): MsgRevokeAllowance {
     const message = createBaseMsgRevokeAllowance();
     message.granter = object.granter ?? "";
     message.grantee = object.grantee ?? "";
@@ -243,7 +282,16 @@ export const MsgRevokeAllowanceResponse = {
     return message;
   },
 
-  fromPartial(_: DeepPartial<MsgRevokeAllowanceResponse>): MsgRevokeAllowanceResponse {
+  fromJSON(_: any): MsgRevokeAllowanceResponse {
+    return {};
+  },
+
+  toJSON(_: MsgRevokeAllowanceResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: Partial<MsgRevokeAllowanceResponse>): MsgRevokeAllowanceResponse {
     const message = createBaseMsgRevokeAllowanceResponse();
     return message;
   }

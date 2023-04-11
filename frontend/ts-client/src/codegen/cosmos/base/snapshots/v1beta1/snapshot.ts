@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { Long, DeepPartial } from "../../../../helpers";
+import { Long, isSet, bytesFromBase64, base64FromBytes } from "../../../../helpers";
 /** Snapshot contains Tendermint state sync snapshot info. */
 
 export interface Snapshot {
@@ -278,7 +278,27 @@ export const Snapshot = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<Snapshot>): Snapshot {
+  fromJSON(object: any): Snapshot {
+    return {
+      height: isSet(object.height) ? Long.fromValue(object.height) : Long.UZERO,
+      format: isSet(object.format) ? Number(object.format) : 0,
+      chunks: isSet(object.chunks) ? Number(object.chunks) : 0,
+      hash: isSet(object.hash) ? bytesFromBase64(object.hash) : new Uint8Array(),
+      metadata: isSet(object.metadata) ? Metadata.fromJSON(object.metadata) : undefined
+    };
+  },
+
+  toJSON(message: Snapshot): unknown {
+    const obj: any = {};
+    message.height !== undefined && (obj.height = (message.height || Long.UZERO).toString());
+    message.format !== undefined && (obj.format = Math.round(message.format));
+    message.chunks !== undefined && (obj.chunks = Math.round(message.chunks));
+    message.hash !== undefined && (obj.hash = base64FromBytes(message.hash !== undefined ? message.hash : new Uint8Array()));
+    message.metadata !== undefined && (obj.metadata = message.metadata ? Metadata.toJSON(message.metadata) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: Partial<Snapshot>): Snapshot {
     const message = createBaseSnapshot();
     message.height = object.height !== undefined && object.height !== null ? Long.fromValue(object.height) : Long.UZERO;
     message.format = object.format ?? 0;
@@ -327,7 +347,25 @@ export const Metadata = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<Metadata>): Metadata {
+  fromJSON(object: any): Metadata {
+    return {
+      chunkHashes: Array.isArray(object?.chunkHashes) ? object.chunkHashes.map((e: any) => bytesFromBase64(e)) : []
+    };
+  },
+
+  toJSON(message: Metadata): unknown {
+    const obj: any = {};
+
+    if (message.chunkHashes) {
+      obj.chunkHashes = message.chunkHashes.map(e => base64FromBytes(e !== undefined ? e : new Uint8Array()));
+    } else {
+      obj.chunkHashes = [];
+    }
+
+    return obj;
+  },
+
+  fromPartial(object: Partial<Metadata>): Metadata {
     const message = createBaseMetadata();
     message.chunkHashes = object.chunkHashes?.map(e => e) || [];
     return message;
@@ -417,7 +455,29 @@ export const SnapshotItem = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<SnapshotItem>): SnapshotItem {
+  fromJSON(object: any): SnapshotItem {
+    return {
+      store: isSet(object.store) ? SnapshotStoreItem.fromJSON(object.store) : undefined,
+      iavl: isSet(object.iavl) ? SnapshotIAVLItem.fromJSON(object.iavl) : undefined,
+      extension: isSet(object.extension) ? SnapshotExtensionMeta.fromJSON(object.extension) : undefined,
+      extensionPayload: isSet(object.extensionPayload) ? SnapshotExtensionPayload.fromJSON(object.extensionPayload) : undefined,
+      kv: isSet(object.kv) ? SnapshotKVItem.fromJSON(object.kv) : undefined,
+      schema: isSet(object.schema) ? SnapshotSchema.fromJSON(object.schema) : undefined
+    };
+  },
+
+  toJSON(message: SnapshotItem): unknown {
+    const obj: any = {};
+    message.store !== undefined && (obj.store = message.store ? SnapshotStoreItem.toJSON(message.store) : undefined);
+    message.iavl !== undefined && (obj.iavl = message.iavl ? SnapshotIAVLItem.toJSON(message.iavl) : undefined);
+    message.extension !== undefined && (obj.extension = message.extension ? SnapshotExtensionMeta.toJSON(message.extension) : undefined);
+    message.extensionPayload !== undefined && (obj.extensionPayload = message.extensionPayload ? SnapshotExtensionPayload.toJSON(message.extensionPayload) : undefined);
+    message.kv !== undefined && (obj.kv = message.kv ? SnapshotKVItem.toJSON(message.kv) : undefined);
+    message.schema !== undefined && (obj.schema = message.schema ? SnapshotSchema.toJSON(message.schema) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: Partial<SnapshotItem>): SnapshotItem {
     const message = createBaseSnapshotItem();
     message.store = object.store !== undefined && object.store !== null ? SnapshotStoreItem.fromPartial(object.store) : undefined;
     message.iavl = object.iavl !== undefined && object.iavl !== null ? SnapshotIAVLItem.fromPartial(object.iavl) : undefined;
@@ -467,7 +527,19 @@ export const SnapshotStoreItem = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<SnapshotStoreItem>): SnapshotStoreItem {
+  fromJSON(object: any): SnapshotStoreItem {
+    return {
+      name: isSet(object.name) ? String(object.name) : ""
+    };
+  },
+
+  toJSON(message: SnapshotStoreItem): unknown {
+    const obj: any = {};
+    message.name !== undefined && (obj.name = message.name);
+    return obj;
+  },
+
+  fromPartial(object: Partial<SnapshotStoreItem>): SnapshotStoreItem {
     const message = createBaseSnapshotStoreItem();
     message.name = object.name ?? "";
     return message;
@@ -539,7 +611,25 @@ export const SnapshotIAVLItem = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<SnapshotIAVLItem>): SnapshotIAVLItem {
+  fromJSON(object: any): SnapshotIAVLItem {
+    return {
+      key: isSet(object.key) ? bytesFromBase64(object.key) : new Uint8Array(),
+      value: isSet(object.value) ? bytesFromBase64(object.value) : new Uint8Array(),
+      version: isSet(object.version) ? Long.fromValue(object.version) : Long.ZERO,
+      height: isSet(object.height) ? Number(object.height) : 0
+    };
+  },
+
+  toJSON(message: SnapshotIAVLItem): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = base64FromBytes(message.key !== undefined ? message.key : new Uint8Array()));
+    message.value !== undefined && (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()));
+    message.version !== undefined && (obj.version = (message.version || Long.ZERO).toString());
+    message.height !== undefined && (obj.height = Math.round(message.height));
+    return obj;
+  },
+
+  fromPartial(object: Partial<SnapshotIAVLItem>): SnapshotIAVLItem {
     const message = createBaseSnapshotIAVLItem();
     message.key = object.key ?? new Uint8Array();
     message.value = object.value ?? new Uint8Array();
@@ -596,7 +686,21 @@ export const SnapshotExtensionMeta = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<SnapshotExtensionMeta>): SnapshotExtensionMeta {
+  fromJSON(object: any): SnapshotExtensionMeta {
+    return {
+      name: isSet(object.name) ? String(object.name) : "",
+      format: isSet(object.format) ? Number(object.format) : 0
+    };
+  },
+
+  toJSON(message: SnapshotExtensionMeta): unknown {
+    const obj: any = {};
+    message.name !== undefined && (obj.name = message.name);
+    message.format !== undefined && (obj.format = Math.round(message.format));
+    return obj;
+  },
+
+  fromPartial(object: Partial<SnapshotExtensionMeta>): SnapshotExtensionMeta {
     const message = createBaseSnapshotExtensionMeta();
     message.name = object.name ?? "";
     message.format = object.format ?? 0;
@@ -642,7 +746,19 @@ export const SnapshotExtensionPayload = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<SnapshotExtensionPayload>): SnapshotExtensionPayload {
+  fromJSON(object: any): SnapshotExtensionPayload {
+    return {
+      payload: isSet(object.payload) ? bytesFromBase64(object.payload) : new Uint8Array()
+    };
+  },
+
+  toJSON(message: SnapshotExtensionPayload): unknown {
+    const obj: any = {};
+    message.payload !== undefined && (obj.payload = base64FromBytes(message.payload !== undefined ? message.payload : new Uint8Array()));
+    return obj;
+  },
+
+  fromPartial(object: Partial<SnapshotExtensionPayload>): SnapshotExtensionPayload {
     const message = createBaseSnapshotExtensionPayload();
     message.payload = object.payload ?? new Uint8Array();
     return message;
@@ -696,7 +812,21 @@ export const SnapshotKVItem = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<SnapshotKVItem>): SnapshotKVItem {
+  fromJSON(object: any): SnapshotKVItem {
+    return {
+      key: isSet(object.key) ? bytesFromBase64(object.key) : new Uint8Array(),
+      value: isSet(object.value) ? bytesFromBase64(object.value) : new Uint8Array()
+    };
+  },
+
+  toJSON(message: SnapshotKVItem): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = base64FromBytes(message.key !== undefined ? message.key : new Uint8Array()));
+    message.value !== undefined && (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()));
+    return obj;
+  },
+
+  fromPartial(object: Partial<SnapshotKVItem>): SnapshotKVItem {
     const message = createBaseSnapshotKVItem();
     message.key = object.key ?? new Uint8Array();
     message.value = object.value ?? new Uint8Array();
@@ -742,7 +872,25 @@ export const SnapshotSchema = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<SnapshotSchema>): SnapshotSchema {
+  fromJSON(object: any): SnapshotSchema {
+    return {
+      keys: Array.isArray(object?.keys) ? object.keys.map((e: any) => bytesFromBase64(e)) : []
+    };
+  },
+
+  toJSON(message: SnapshotSchema): unknown {
+    const obj: any = {};
+
+    if (message.keys) {
+      obj.keys = message.keys.map(e => base64FromBytes(e !== undefined ? e : new Uint8Array()));
+    } else {
+      obj.keys = [];
+    }
+
+    return obj;
+  },
+
+  fromPartial(object: Partial<SnapshotSchema>): SnapshotSchema {
     const message = createBaseSnapshotSchema();
     message.keys = object.keys?.map(e => e) || [];
     return message;

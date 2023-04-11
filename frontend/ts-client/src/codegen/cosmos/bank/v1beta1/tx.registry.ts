@@ -67,6 +67,66 @@ export const MessageComposer = {
     }
 
   },
+  toJSON: {
+    send(value: MsgSend) {
+      return {
+        typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+        value: MsgSend.toJSON(value)
+      };
+    },
+
+    multiSend(value: MsgMultiSend) {
+      return {
+        typeUrl: "/cosmos.bank.v1beta1.MsgMultiSend",
+        value: MsgMultiSend.toJSON(value)
+      };
+    },
+
+    updateParams(value: MsgUpdateParams) {
+      return {
+        typeUrl: "/cosmos.bank.v1beta1.MsgUpdateParams",
+        value: MsgUpdateParams.toJSON(value)
+      };
+    },
+
+    setSendEnabled(value: MsgSetSendEnabled) {
+      return {
+        typeUrl: "/cosmos.bank.v1beta1.MsgSetSendEnabled",
+        value: MsgSetSendEnabled.toJSON(value)
+      };
+    }
+
+  },
+  fromJSON: {
+    send(value: any) {
+      return {
+        typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+        value: MsgSend.fromJSON(value)
+      };
+    },
+
+    multiSend(value: any) {
+      return {
+        typeUrl: "/cosmos.bank.v1beta1.MsgMultiSend",
+        value: MsgMultiSend.fromJSON(value)
+      };
+    },
+
+    updateParams(value: any) {
+      return {
+        typeUrl: "/cosmos.bank.v1beta1.MsgUpdateParams",
+        value: MsgUpdateParams.fromJSON(value)
+      };
+    },
+
+    setSendEnabled(value: any) {
+      return {
+        typeUrl: "/cosmos.bank.v1beta1.MsgSetSendEnabled",
+        value: MsgSetSendEnabled.fromJSON(value)
+      };
+    }
+
+  },
   fromPartial: {
     send(value: MsgSend) {
       return {

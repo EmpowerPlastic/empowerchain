@@ -1,5 +1,4 @@
 import * as _m0 from "protobufjs/minimal";
-import { DeepPartial } from "../../helpers";
 export interface Permission {}
 export interface PermissionSDKType {}
 
@@ -30,7 +29,16 @@ export const Permission = {
     return message;
   },
 
-  fromPartial(_: DeepPartial<Permission>): Permission {
+  fromJSON(_: any): Permission {
+    return {};
+  },
+
+  toJSON(_: Permission): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: Partial<Permission>): Permission {
     const message = createBasePermission();
     return message;
   }

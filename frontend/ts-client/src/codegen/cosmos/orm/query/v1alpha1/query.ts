@@ -1,9 +1,9 @@
 import { PageRequest, PageRequestSDKType, PageResponse, PageResponseSDKType } from "../../../base/query/v1beta1/pagination";
 import { Any, AnySDKType } from "../../../../google/protobuf/any";
-import { Timestamp } from "../../../../google/protobuf/timestamp";
+import { Timestamp, TimestampSDKType } from "../../../../google/protobuf/timestamp";
 import { Duration, DurationSDKType } from "../../../../google/protobuf/duration";
 import * as _m0 from "protobufjs/minimal";
-import { DeepPartial, toTimestamp, Long, fromTimestamp } from "../../../../helpers";
+import { isSet, Long, bytesFromBase64, fromJsonTimestamp, base64FromBytes, fromTimestamp } from "../../../../helpers";
 /** GetRequest is the Query/Get request type. */
 
 export interface GetRequest {
@@ -204,7 +204,7 @@ export interface IndexValue {
   bool?: boolean;
   /** timestamp specifies a value for a timestamp index field. */
 
-  timestamp?: Date;
+  timestamp?: Timestamp;
   /** duration specifies a value for a duration index field. */
 
   duration?: Duration;
@@ -237,7 +237,7 @@ export interface IndexValueSDKType {
   bool?: boolean;
   /** timestamp specifies a value for a timestamp index field. */
 
-  timestamp?: Date;
+  timestamp?: TimestampSDKType;
   /** duration specifies a value for a duration index field. */
 
   duration?: DurationSDKType;
@@ -298,7 +298,29 @@ export const GetRequest = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<GetRequest>): GetRequest {
+  fromJSON(object: any): GetRequest {
+    return {
+      messageName: isSet(object.messageName) ? String(object.messageName) : "",
+      index: isSet(object.index) ? String(object.index) : "",
+      values: Array.isArray(object?.values) ? object.values.map((e: any) => IndexValue.fromJSON(e)) : []
+    };
+  },
+
+  toJSON(message: GetRequest): unknown {
+    const obj: any = {};
+    message.messageName !== undefined && (obj.messageName = message.messageName);
+    message.index !== undefined && (obj.index = message.index);
+
+    if (message.values) {
+      obj.values = message.values.map(e => e ? IndexValue.toJSON(e) : undefined);
+    } else {
+      obj.values = [];
+    }
+
+    return obj;
+  },
+
+  fromPartial(object: Partial<GetRequest>): GetRequest {
     const message = createBaseGetRequest();
     message.messageName = object.messageName ?? "";
     message.index = object.index ?? "";
@@ -345,7 +367,19 @@ export const GetResponse = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<GetResponse>): GetResponse {
+  fromJSON(object: any): GetResponse {
+    return {
+      result: isSet(object.result) ? Any.fromJSON(object.result) : undefined
+    };
+  },
+
+  toJSON(message: GetResponse): unknown {
+    const obj: any = {};
+    message.result !== undefined && (obj.result = message.result ? Any.toJSON(message.result) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: Partial<GetResponse>): GetResponse {
     const message = createBaseGetResponse();
     message.result = object.result !== undefined && object.result !== null ? Any.fromPartial(object.result) : undefined;
     return message;
@@ -426,7 +460,27 @@ export const ListRequest = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<ListRequest>): ListRequest {
+  fromJSON(object: any): ListRequest {
+    return {
+      messageName: isSet(object.messageName) ? String(object.messageName) : "",
+      index: isSet(object.index) ? String(object.index) : "",
+      prefix: isSet(object.prefix) ? ListRequest_Prefix.fromJSON(object.prefix) : undefined,
+      range: isSet(object.range) ? ListRequest_Range.fromJSON(object.range) : undefined,
+      pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined
+    };
+  },
+
+  toJSON(message: ListRequest): unknown {
+    const obj: any = {};
+    message.messageName !== undefined && (obj.messageName = message.messageName);
+    message.index !== undefined && (obj.index = message.index);
+    message.prefix !== undefined && (obj.prefix = message.prefix ? ListRequest_Prefix.toJSON(message.prefix) : undefined);
+    message.range !== undefined && (obj.range = message.range ? ListRequest_Range.toJSON(message.range) : undefined);
+    message.pagination !== undefined && (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: Partial<ListRequest>): ListRequest {
     const message = createBaseListRequest();
     message.messageName = object.messageName ?? "";
     message.index = object.index ?? "";
@@ -475,7 +529,25 @@ export const ListRequest_Prefix = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<ListRequest_Prefix>): ListRequest_Prefix {
+  fromJSON(object: any): ListRequest_Prefix {
+    return {
+      values: Array.isArray(object?.values) ? object.values.map((e: any) => IndexValue.fromJSON(e)) : []
+    };
+  },
+
+  toJSON(message: ListRequest_Prefix): unknown {
+    const obj: any = {};
+
+    if (message.values) {
+      obj.values = message.values.map(e => e ? IndexValue.toJSON(e) : undefined);
+    } else {
+      obj.values = [];
+    }
+
+    return obj;
+  },
+
+  fromPartial(object: Partial<ListRequest_Prefix>): ListRequest_Prefix {
     const message = createBaseListRequest_Prefix();
     message.values = object.values?.map(e => IndexValue.fromPartial(e)) || [];
     return message;
@@ -529,7 +601,32 @@ export const ListRequest_Range = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<ListRequest_Range>): ListRequest_Range {
+  fromJSON(object: any): ListRequest_Range {
+    return {
+      start: Array.isArray(object?.start) ? object.start.map((e: any) => IndexValue.fromJSON(e)) : [],
+      end: Array.isArray(object?.end) ? object.end.map((e: any) => IndexValue.fromJSON(e)) : []
+    };
+  },
+
+  toJSON(message: ListRequest_Range): unknown {
+    const obj: any = {};
+
+    if (message.start) {
+      obj.start = message.start.map(e => e ? IndexValue.toJSON(e) : undefined);
+    } else {
+      obj.start = [];
+    }
+
+    if (message.end) {
+      obj.end = message.end.map(e => e ? IndexValue.toJSON(e) : undefined);
+    } else {
+      obj.end = [];
+    }
+
+    return obj;
+  },
+
+  fromPartial(object: Partial<ListRequest_Range>): ListRequest_Range {
     const message = createBaseListRequest_Range();
     message.start = object.start?.map(e => IndexValue.fromPartial(e)) || [];
     message.end = object.end?.map(e => IndexValue.fromPartial(e)) || [];
@@ -584,7 +681,27 @@ export const ListResponse = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<ListResponse>): ListResponse {
+  fromJSON(object: any): ListResponse {
+    return {
+      results: Array.isArray(object?.results) ? object.results.map((e: any) => Any.fromJSON(e)) : [],
+      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined
+    };
+  },
+
+  toJSON(message: ListResponse): unknown {
+    const obj: any = {};
+
+    if (message.results) {
+      obj.results = message.results.map(e => e ? Any.toJSON(e) : undefined);
+    } else {
+      obj.results = [];
+    }
+
+    message.pagination !== undefined && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: Partial<ListResponse>): ListResponse {
     const message = createBaseListResponse();
     message.results = object.results?.map(e => Any.fromPartial(e)) || [];
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
@@ -633,7 +750,7 @@ export const IndexValue = {
     }
 
     if (message.timestamp !== undefined) {
-      Timestamp.encode(toTimestamp(message.timestamp), writer.uint32(58).fork()).ldelim();
+      Timestamp.encode(message.timestamp, writer.uint32(58).fork()).ldelim();
     }
 
     if (message.duration !== undefined) {
@@ -677,7 +794,7 @@ export const IndexValue = {
           break;
 
         case 7:
-          message.timestamp = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.timestamp = Timestamp.decode(reader, reader.uint32());
           break;
 
         case 8:
@@ -693,7 +810,33 @@ export const IndexValue = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<IndexValue>): IndexValue {
+  fromJSON(object: any): IndexValue {
+    return {
+      uint: isSet(object.uint) ? Long.fromValue(object.uint) : undefined,
+      int: isSet(object.int) ? Long.fromValue(object.int) : undefined,
+      str: isSet(object.str) ? String(object.str) : undefined,
+      bytes: isSet(object.bytes) ? bytesFromBase64(object.bytes) : undefined,
+      enum: isSet(object.enum) ? String(object.enum) : undefined,
+      bool: isSet(object.bool) ? Boolean(object.bool) : undefined,
+      timestamp: isSet(object.timestamp) ? fromJsonTimestamp(object.timestamp) : undefined,
+      duration: isSet(object.duration) ? Duration.fromJSON(object.duration) : undefined
+    };
+  },
+
+  toJSON(message: IndexValue): unknown {
+    const obj: any = {};
+    message.uint !== undefined && (obj.uint = (message.uint || undefined).toString());
+    message.int !== undefined && (obj.int = (message.int || undefined).toString());
+    message.str !== undefined && (obj.str = message.str);
+    message.bytes !== undefined && (obj.bytes = message.bytes !== undefined ? base64FromBytes(message.bytes) : undefined);
+    message.enum !== undefined && (obj.enum = message.enum);
+    message.bool !== undefined && (obj.bool = message.bool);
+    message.timestamp !== undefined && (obj.timestamp = fromTimestamp(message.timestamp).toISOString());
+    message.duration !== undefined && (obj.duration = message.duration ? Duration.toJSON(message.duration) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: Partial<IndexValue>): IndexValue {
     const message = createBaseIndexValue();
     message.uint = object.uint !== undefined && object.uint !== null ? Long.fromValue(object.uint) : undefined;
     message.int = object.int !== undefined && object.int !== null ? Long.fromValue(object.int) : undefined;
@@ -701,7 +844,7 @@ export const IndexValue = {
     message.bytes = object.bytes ?? undefined;
     message.enum = object.enum ?? undefined;
     message.bool = object.bool ?? undefined;
-    message.timestamp = object.timestamp ?? undefined;
+    message.timestamp = object.timestamp !== undefined && object.timestamp !== null ? Timestamp.fromPartial(object.timestamp) : undefined;
     message.duration = object.duration !== undefined && object.duration !== null ? Duration.fromPartial(object.duration) : undefined;
     return message;
   }

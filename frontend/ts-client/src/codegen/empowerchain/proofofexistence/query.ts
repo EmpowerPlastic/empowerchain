@@ -1,6 +1,6 @@
 import { ProofMetadata, ProofMetadataSDKType } from "./types";
 import * as _m0 from "protobufjs/minimal";
-import { DeepPartial } from "../../helpers";
+import { isSet } from "../../helpers";
 export interface QueryProofRequest {
   hash: string;
 }
@@ -51,7 +51,19 @@ export const QueryProofRequest = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<QueryProofRequest>): QueryProofRequest {
+  fromJSON(object: any): QueryProofRequest {
+    return {
+      hash: isSet(object.hash) ? String(object.hash) : ""
+    };
+  },
+
+  toJSON(message: QueryProofRequest): unknown {
+    const obj: any = {};
+    message.hash !== undefined && (obj.hash = message.hash);
+    return obj;
+  },
+
+  fromPartial(object: Partial<QueryProofRequest>): QueryProofRequest {
     const message = createBaseQueryProofRequest();
     message.hash = object.hash ?? "";
     return message;
@@ -96,7 +108,19 @@ export const QueryProofResponse = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<QueryProofResponse>): QueryProofResponse {
+  fromJSON(object: any): QueryProofResponse {
+    return {
+      metadata: isSet(object.metadata) ? ProofMetadata.fromJSON(object.metadata) : undefined
+    };
+  },
+
+  toJSON(message: QueryProofResponse): unknown {
+    const obj: any = {};
+    message.metadata !== undefined && (obj.metadata = message.metadata ? ProofMetadata.toJSON(message.metadata) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: Partial<QueryProofResponse>): QueryProofResponse {
     const message = createBaseQueryProofResponse();
     message.metadata = object.metadata !== undefined && object.metadata !== null ? ProofMetadata.fromPartial(object.metadata) : undefined;
     return message;
