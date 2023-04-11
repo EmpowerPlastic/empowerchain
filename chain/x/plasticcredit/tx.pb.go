@@ -1896,7 +1896,7 @@ type MsgServer interface {
 	// UpdateParams defines a governance operation for updating the x/plasticcredit module parameters.
 	// The authority is defined in the keeper.
 	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
-	// CreateIssuer creates a new Issuer that can create credit types and issue new credits with those types.
+	// CreateIssuer creates a new Issuer that can create credit types and issue new credits with those types
 	// There is only a single signer in the system that is allowed to create new issuers and it is defined in Params as "issuer_creator"
 	CreateIssuer(context.Context, *MsgCreateIssuer) (*MsgCreateIssuerResponse, error)
 	// UpdateIssuer updates an existing issuer details.
