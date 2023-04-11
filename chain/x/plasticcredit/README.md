@@ -65,7 +65,7 @@ The entity relationship diagram below shows the different parts that a single cr
 All credits within a single credit collection are fungible with each other, but no credits are fungible between credit collections.
 ```mermaid
 erDiagram
-    CREDIT-COLLECTION }o--|| CREDIT-CLASS: "of credit type"
+    CREDIT-COLLECTION }o--|| CREDIT-TYPE: "of credit type"
     CREDIT-COLLECTION }o--|| PROJECT: "issued for"
     CREDIT-COLLECTION ||--|| SERIAL-NUMBER: "identified by"
 ```
@@ -99,11 +99,11 @@ Below is an Entity Relationship diagram of the on-chain entities
 
 ```mermaid
 erDiagram
-    ISSUER ||--o{ CREDIT-CLASS: owns
+    ISSUER ||--o{ CREDIT-TYPE: owns
     APPLICANT ||--o{ PROJECT: runs
     PROJECT ||--o{ CREDIT-COLLECTION: "gets issued"
-    PROJECT }o--|| CREDIT-CLASS: for
-    CREDIT-CLASS ||--o{ CREDIT-COLLECTION: "type of credit for"
+    PROJECT }o--|| CREDIT-TYPE: for
+    CREDIT-TYPE ||--o{ CREDIT-COLLECTION: "type of credit for"
     ISSUER ||..o{ CREDIT-COLLECTION: issues
     CREDIT-COLLECTION ||--o{ CREDIT-BALANCES: "ownerships are tracked in"
 ```
@@ -120,13 +120,13 @@ If the issuer_creator is empty (it is by default), the controlling entity is the
 ### ID Counters
 
 ID Counters is a global object to keep track of ID indexes. It keeps at all times the next id for the entities that need it:
-`next_issuer_id`, `next_collector_id`, `next_project_id` and `next_credit_class_id`.
+`next_issuer_id`, `next_collector_id` and `next_project_id`.
 
 - ID Counters: `0x01 | ProtocolBuffer(IDCounters)`
 
 ### Issuer
 
-An Issuer is an entity that is allowed to create credit types and issue Credits under their own Classes.
+An Issuer is an entity that is allowed to create credit types and issue Credits under their own Types.
 They are the entity responsible for the data, quality and trust of the plastic credits they issue.
 
 An issuer consists of the following fields: `id`, `name`, `description`, `admin`, with `id` being the unique identifier for an issuer.
@@ -164,17 +164,17 @@ The `issuer_id` field is the direct link to the Issuer that has created and oper
 
 `denom` is the short unique denominator for the plastic credits in this credit type (e.g. "PTEST")
 
-- Credit Type: `0x04 | creditClassID | -> ProtocolBuffer(CreditClass)`
+- Credit Type: `0x04 | creditTypeID | -> ProtocolBuffer(CreditType)`
 
 ### Project
 
 A Project is the context within credits gets issued. A project is created by an applicant and needs to be approved by an issuer.
 
-A project consists of the following fields: `id`, `applicant_id`, `credit_class_abbreviation`, `name` and `status`, with `id` being the unique identifier for an application.
+A project consists of the following fields: `id`, `applicant_id`, `credit_type_abbreviation`, `name` and `status`, with `id` being the unique identifier for an application.
 
 The `applicant_id` field is the direct link to the Applicant that owns the project and will get any issued credits.
 
-`credit_class_abbreviation` is a direct link to the CreditClass which is the type of credits that the project can get issued.
+`credit_type_abbreviation` is a direct link to the CreditType which is the type of credits that the project can get issued.
 
 `name` is the name of the project.
 

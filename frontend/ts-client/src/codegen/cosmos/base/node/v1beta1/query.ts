@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { DeepPartial } from "../../../../helpers";
+import { isSet } from "../../../../helpers";
 /** ConfigRequest defines the request structure for the Config gRPC query. */
 
 export interface ConfigRequest {}
@@ -44,7 +44,16 @@ export const ConfigRequest = {
     return message;
   },
 
-  fromPartial(_: DeepPartial<ConfigRequest>): ConfigRequest {
+  fromJSON(_: any): ConfigRequest {
+    return {};
+  },
+
+  toJSON(_: ConfigRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: Partial<ConfigRequest>): ConfigRequest {
     const message = createBaseConfigRequest();
     return message;
   }
@@ -88,7 +97,19 @@ export const ConfigResponse = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<ConfigResponse>): ConfigResponse {
+  fromJSON(object: any): ConfigResponse {
+    return {
+      minimumGasPrice: isSet(object.minimumGasPrice) ? String(object.minimumGasPrice) : ""
+    };
+  },
+
+  toJSON(message: ConfigResponse): unknown {
+    const obj: any = {};
+    message.minimumGasPrice !== undefined && (obj.minimumGasPrice = message.minimumGasPrice);
+    return obj;
+  },
+
+  fromPartial(object: Partial<ConfigResponse>): ConfigResponse {
     const message = createBaseConfigResponse();
     message.minimumGasPrice = object.minimumGasPrice ?? "";
     return message;

@@ -1,6 +1,6 @@
 import { GroupInfo, GroupInfoSDKType, GroupMember, GroupMemberSDKType, GroupPolicyInfo, GroupPolicyInfoSDKType, Proposal, ProposalSDKType, Vote, VoteSDKType } from "./types";
 import * as _m0 from "protobufjs/minimal";
-import { Long, DeepPartial } from "../../../helpers";
+import { Long, isSet } from "../../../helpers";
 /** GenesisState defines the group module's genesis state. */
 
 export interface GenesisState {
@@ -174,7 +174,61 @@ export const GenesisState = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<GenesisState>): GenesisState {
+  fromJSON(object: any): GenesisState {
+    return {
+      groupSeq: isSet(object.groupSeq) ? Long.fromValue(object.groupSeq) : Long.UZERO,
+      groups: Array.isArray(object?.groups) ? object.groups.map((e: any) => GroupInfo.fromJSON(e)) : [],
+      groupMembers: Array.isArray(object?.groupMembers) ? object.groupMembers.map((e: any) => GroupMember.fromJSON(e)) : [],
+      groupPolicySeq: isSet(object.groupPolicySeq) ? Long.fromValue(object.groupPolicySeq) : Long.UZERO,
+      groupPolicies: Array.isArray(object?.groupPolicies) ? object.groupPolicies.map((e: any) => GroupPolicyInfo.fromJSON(e)) : [],
+      proposalSeq: isSet(object.proposalSeq) ? Long.fromValue(object.proposalSeq) : Long.UZERO,
+      proposals: Array.isArray(object?.proposals) ? object.proposals.map((e: any) => Proposal.fromJSON(e)) : [],
+      votes: Array.isArray(object?.votes) ? object.votes.map((e: any) => Vote.fromJSON(e)) : []
+    };
+  },
+
+  toJSON(message: GenesisState): unknown {
+    const obj: any = {};
+    message.groupSeq !== undefined && (obj.groupSeq = (message.groupSeq || Long.UZERO).toString());
+
+    if (message.groups) {
+      obj.groups = message.groups.map(e => e ? GroupInfo.toJSON(e) : undefined);
+    } else {
+      obj.groups = [];
+    }
+
+    if (message.groupMembers) {
+      obj.groupMembers = message.groupMembers.map(e => e ? GroupMember.toJSON(e) : undefined);
+    } else {
+      obj.groupMembers = [];
+    }
+
+    message.groupPolicySeq !== undefined && (obj.groupPolicySeq = (message.groupPolicySeq || Long.UZERO).toString());
+
+    if (message.groupPolicies) {
+      obj.groupPolicies = message.groupPolicies.map(e => e ? GroupPolicyInfo.toJSON(e) : undefined);
+    } else {
+      obj.groupPolicies = [];
+    }
+
+    message.proposalSeq !== undefined && (obj.proposalSeq = (message.proposalSeq || Long.UZERO).toString());
+
+    if (message.proposals) {
+      obj.proposals = message.proposals.map(e => e ? Proposal.toJSON(e) : undefined);
+    } else {
+      obj.proposals = [];
+    }
+
+    if (message.votes) {
+      obj.votes = message.votes.map(e => e ? Vote.toJSON(e) : undefined);
+    } else {
+      obj.votes = [];
+    }
+
+    return obj;
+  },
+
+  fromPartial(object: Partial<GenesisState>): GenesisState {
     const message = createBaseGenesisState();
     message.groupSeq = object.groupSeq !== undefined && object.groupSeq !== null ? Long.fromValue(object.groupSeq) : Long.UZERO;
     message.groups = object.groups?.map(e => GroupInfo.fromPartial(e)) || [];

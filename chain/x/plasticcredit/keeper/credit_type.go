@@ -70,7 +70,7 @@ func (k Keeper) CreateCreditType(ctx sdk.Context, creator sdk.AccAddress, abbrev
 	err := k.distrKeeper.FundCommunityPool(ctx, sdk.NewCoins(params.CreditTypeCreationFee), creator)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInsufficientFee,
-			"creator %s does not have enough funds to cover credit class creation fee %s",
+			"creator %s does not have enough funds to cover credit type creation fee %s",
 			creator.String(), params.CreditTypeCreationFee.String(),
 		)
 	}
@@ -146,7 +146,7 @@ func (k Keeper) iterateCreditTypes(ctx sdk.Context, handler func(creditType plas
 
 func (k Keeper) getCreditTypeStore(ctx sdk.Context) storetypes.KVStore {
 	store := ctx.KVStore(k.storeKey)
-	creditClassStore := prefix.NewStore(store, plasticcredit.CreditTypeKey)
+	creditTypeStore := prefix.NewStore(store, plasticcredit.CreditTypeKey)
 
-	return creditClassStore
+	return creditTypeStore
 }
