@@ -8,25 +8,25 @@ import (
 func (s *TestSuite) TestCreateCreditDenom() {
 	testCases := map[string]struct {
 		creditTypeAbbreviation string
-		serialNumber            string
-		expectedValue           string
-		err                     error
+		serialNumber           string
+		expectedValue          string
+		err                    error
 	}{
 		"happy path": {
 			creditTypeAbbreviation: "PTEST",
-			serialNumber:            "123",
-			expectedValue:           "PTEST/123",
-			err:                     nil,
+			serialNumber:           "123",
+			expectedValue:          "PTEST/123",
+			err:                    nil,
 		},
 		"empty abbrev": {
 			creditTypeAbbreviation: "",
-			serialNumber:            "123",
-			err:                     utils.ErrInvalidValue,
+			serialNumber:           "123",
+			err:                    utils.ErrInvalidValue,
 		},
 		"empty serial number": {
 			creditTypeAbbreviation: "PTEST",
-			serialNumber:            "",
-			err:                     utils.ErrInvalidValue,
+			serialNumber:           "",
+			err:                    utils.ErrInvalidValue,
 		},
 	}
 
