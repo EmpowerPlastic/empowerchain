@@ -213,10 +213,10 @@ func (k Keeper) SuspendProject(ctx sdk.Context, updater sdk.AccAddress, projectI
 	}
 
 	return ctx.EventManager().EmitTypedEvent(&plasticcredit.EventProjectSuspended{
-		ProjectId:                           project.Id,
+		ProjectId:                          project.Id,
 		SuspendedForCreditTypeAbbreviation: creditType.Abbreviation,
-		SuspendingIssuerId:                  issuer.Id,
-		SuspendedBy:                         updater.String(),
+		SuspendingIssuerId:                 issuer.Id,
+		SuspendedBy:                        updater.String(),
 	})
 }
 
