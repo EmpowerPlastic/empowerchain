@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { DeepPartial } from "../../helpers";
+import { isSet } from "../../helpers";
 /** MsgCreateProof is the message used for creating a new proof of existence */
 
 export interface MsgCreateProof {
@@ -71,7 +71,21 @@ export const MsgCreateProof = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<MsgCreateProof>): MsgCreateProof {
+  fromJSON(object: any): MsgCreateProof {
+    return {
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      hash: isSet(object.hash) ? String(object.hash) : ""
+    };
+  },
+
+  toJSON(message: MsgCreateProof): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    message.hash !== undefined && (obj.hash = message.hash);
+    return obj;
+  },
+
+  fromPartial(object: Partial<MsgCreateProof>): MsgCreateProof {
     const message = createBaseMsgCreateProof();
     message.creator = object.creator ?? "";
     message.hash = object.hash ?? "";
@@ -107,7 +121,16 @@ export const MsgCreateProofResponse = {
     return message;
   },
 
-  fromPartial(_: DeepPartial<MsgCreateProofResponse>): MsgCreateProofResponse {
+  fromJSON(_: any): MsgCreateProofResponse {
+    return {};
+  },
+
+  toJSON(_: MsgCreateProofResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: Partial<MsgCreateProofResponse>): MsgCreateProofResponse {
     const message = createBaseMsgCreateProofResponse();
     return message;
   }

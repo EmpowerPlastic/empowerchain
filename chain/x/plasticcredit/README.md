@@ -126,7 +126,7 @@ ID Counters is a global object to keep track of ID indexes. It keeps at all time
 
 ### Issuer
 
-An Issuer is an entity that is allowed to create credit types and issue Credits under their own Classes.
+An Issuer is an entity that is allowed to create credit types and issue Credits under their own Types.
 They are the entity responsible for the data, quality and trust of the plastic credits they issue.
 
 An issuer consists of the following fields: `id`, `name`, `description`, `admin`, with `id` being the unique identifier for an issuer.
