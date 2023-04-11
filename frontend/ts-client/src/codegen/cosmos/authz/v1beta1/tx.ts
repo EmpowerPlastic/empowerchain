@@ -1,7 +1,7 @@
 import { Grant, GrantSDKType } from "./authz";
 import { Any, AnySDKType } from "../../../google/protobuf/any";
 import * as _m0 from "protobufjs/minimal";
-import { DeepPartial } from "../../../helpers";
+import { isSet, bytesFromBase64, base64FromBytes } from "../../../helpers";
 /**
  * MsgGrant is a request type for Grant method. It declares authorization to the grantee
  * on behalf of the granter with the provided expiration time.
@@ -152,7 +152,23 @@ export const MsgGrant = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<MsgGrant>): MsgGrant {
+  fromJSON(object: any): MsgGrant {
+    return {
+      granter: isSet(object.granter) ? String(object.granter) : "",
+      grantee: isSet(object.grantee) ? String(object.grantee) : "",
+      grant: isSet(object.grant) ? Grant.fromJSON(object.grant) : undefined
+    };
+  },
+
+  toJSON(message: MsgGrant): unknown {
+    const obj: any = {};
+    message.granter !== undefined && (obj.granter = message.granter);
+    message.grantee !== undefined && (obj.grantee = message.grantee);
+    message.grant !== undefined && (obj.grant = message.grant ? Grant.toJSON(message.grant) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: Partial<MsgGrant>): MsgGrant {
     const message = createBaseMsgGrant();
     message.granter = object.granter ?? "";
     message.grantee = object.grantee ?? "";
@@ -199,7 +215,25 @@ export const MsgExecResponse = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<MsgExecResponse>): MsgExecResponse {
+  fromJSON(object: any): MsgExecResponse {
+    return {
+      results: Array.isArray(object?.results) ? object.results.map((e: any) => bytesFromBase64(e)) : []
+    };
+  },
+
+  toJSON(message: MsgExecResponse): unknown {
+    const obj: any = {};
+
+    if (message.results) {
+      obj.results = message.results.map(e => base64FromBytes(e !== undefined ? e : new Uint8Array()));
+    } else {
+      obj.results = [];
+    }
+
+    return obj;
+  },
+
+  fromPartial(object: Partial<MsgExecResponse>): MsgExecResponse {
     const message = createBaseMsgExecResponse();
     message.results = object.results?.map(e => e) || [];
     return message;
@@ -253,7 +287,27 @@ export const MsgExec = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<MsgExec>): MsgExec {
+  fromJSON(object: any): MsgExec {
+    return {
+      grantee: isSet(object.grantee) ? String(object.grantee) : "",
+      msgs: Array.isArray(object?.msgs) ? object.msgs.map((e: any) => Any.fromJSON(e)) : []
+    };
+  },
+
+  toJSON(message: MsgExec): unknown {
+    const obj: any = {};
+    message.grantee !== undefined && (obj.grantee = message.grantee);
+
+    if (message.msgs) {
+      obj.msgs = message.msgs.map(e => e ? Any.toJSON(e) : undefined);
+    } else {
+      obj.msgs = [];
+    }
+
+    return obj;
+  },
+
+  fromPartial(object: Partial<MsgExec>): MsgExec {
     const message = createBaseMsgExec();
     message.grantee = object.grantee ?? "";
     message.msgs = object.msgs?.map(e => Any.fromPartial(e)) || [];
@@ -289,7 +343,16 @@ export const MsgGrantResponse = {
     return message;
   },
 
-  fromPartial(_: DeepPartial<MsgGrantResponse>): MsgGrantResponse {
+  fromJSON(_: any): MsgGrantResponse {
+    return {};
+  },
+
+  toJSON(_: MsgGrantResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: Partial<MsgGrantResponse>): MsgGrantResponse {
     const message = createBaseMsgGrantResponse();
     return message;
   }
@@ -351,7 +414,23 @@ export const MsgRevoke = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<MsgRevoke>): MsgRevoke {
+  fromJSON(object: any): MsgRevoke {
+    return {
+      granter: isSet(object.granter) ? String(object.granter) : "",
+      grantee: isSet(object.grantee) ? String(object.grantee) : "",
+      msgTypeUrl: isSet(object.msgTypeUrl) ? String(object.msgTypeUrl) : ""
+    };
+  },
+
+  toJSON(message: MsgRevoke): unknown {
+    const obj: any = {};
+    message.granter !== undefined && (obj.granter = message.granter);
+    message.grantee !== undefined && (obj.grantee = message.grantee);
+    message.msgTypeUrl !== undefined && (obj.msgTypeUrl = message.msgTypeUrl);
+    return obj;
+  },
+
+  fromPartial(object: Partial<MsgRevoke>): MsgRevoke {
     const message = createBaseMsgRevoke();
     message.granter = object.granter ?? "";
     message.grantee = object.grantee ?? "";
@@ -388,7 +467,16 @@ export const MsgRevokeResponse = {
     return message;
   },
 
-  fromPartial(_: DeepPartial<MsgRevokeResponse>): MsgRevokeResponse {
+  fromJSON(_: any): MsgRevokeResponse {
+    return {};
+  },
+
+  toJSON(_: MsgRevokeResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: Partial<MsgRevokeResponse>): MsgRevokeResponse {
     const message = createBaseMsgRevokeResponse();
     return message;
   }

@@ -234,7 +234,7 @@ func MsgUpdateCreditTypeCmd() *cobra.Command {
 
 func MsgCreateProjectCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-project [applicant-id] [credit-class-abbreviation] [name]",
+		Use:   "create-project [applicant-id] [credit-type-abbreviation] [name]",
 		Short: "Create project",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -303,7 +303,7 @@ func MsgUpdateProjectCmd() *cobra.Command {
 func MsgApproveProjectCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "approve-project [project-id]",
-		Short: "Approve a project for the credit-class they are associated with.",
+		Short: "Approve a project for the credit-type they are associated with.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -334,7 +334,7 @@ func MsgApproveProjectCmd() *cobra.Command {
 func MsgRejectProjectCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "reject-project [project-id]",
-		Short: "Reject a project for the credit-class they are associated with.",
+		Short: "Reject a project for the credit-type they are associated with.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx, err := client.GetClientTxContext(cmd)

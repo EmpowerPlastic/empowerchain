@@ -336,7 +336,7 @@ func TestMsgUpdateApplicant_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgCreateCreditClass_ValidateBasic(t *testing.T) {
+func TestMsgCreateTypeClass_ValidateBasic(t *testing.T) {
 	testCases := map[string]validateTest{
 		"happy path": {
 			msgUnderTest: &MsgCreateCreditType{
@@ -393,7 +393,7 @@ func TestMsgCreateCreditClass_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgUpdateCreditClass_ValidateBasic(t *testing.T) {
+func TestMsgUpdateCreditType_ValidateBasic(t *testing.T) {
 	testCases := map[string]validateTest{
 		"happy path": {
 			msgUnderTest: &MsgUpdateCreditType{

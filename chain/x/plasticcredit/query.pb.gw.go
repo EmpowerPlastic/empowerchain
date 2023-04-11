@@ -1154,9 +1154,9 @@ var (
 
 	pattern_Query_Applicant_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"empowerchain", "plasticcredit", "applicants", "applicant_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_CreditTypes_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1, 2, 2}, []string{"empowerchain", "plasticcredit", "credit-classes"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_CreditTypes_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1, 2, 2}, []string{"empowerchain", "plasticcredit", "credit-types"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_CreditType_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"empowerchain", "plasticcredit", "credit-classes", "credit_type_abbreviation"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_CreditType_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"empowerchain", "plasticcredit", "credit-types", "credit_type_abbreviation"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_Projects_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1, 2, 2}, []string{"empowerchain", "plasticcredit", "projects"}, "", runtime.AssumeColonVerbOpt(false)))
 

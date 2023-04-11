@@ -85,6 +85,38 @@ var (
 )
 ```
 
+## Testing
+
+We are using the Test Pyramid approach to cover new code with tests. Everything should be tested on the lowest possible level.
+Duplicating exactly the same tests in different test types is discuraged. Below are types of tests used listed from the lowest
+to highest level of test pyramid. Simulation and smoke tests are not a part of test pyramid as they do not provide code coverage in a standard way, but are also encouraged.
+### Unit Tests
+
+Should be used to handle message and various objects validation testing, so we don't have to care about empty or invalid messages in more complex tests. Genesis tests are also a part of this category. Most of the unit tests are in:
+- `types_test.go`
+- `msgs_test.go`
+- `genesis_test.go`
+
+### Integration Tests
+
+Second level of the Test Pyramid. Should be used to test messages, queries and various interactions between modules and states. Tests are usually placed in:
+- `msg_server_test.go`
+- `query_server_test.go`
+
+### End to End Tests
+
+Highest level of the Test Pyramid. Spins up a local instance of the chain that can be interacted with using cli commands. Should be used whenever test scenario is complex enough that it cannot be properly implemented on the integration test level, for example, when it concerns IBC.
+
+E2E Tests are placed in a separate package `tests/e2e`.
+
+### Simulation Tests
+
+Simulation tests are an automated way to create pseudorandom blockchain states and verify the integrity of the data. It is encouraged to cover keeper messages with simulation tests.
+
+### Smoke Tests
+
+Similar to E2E tests, but automated using Bash instead of Go Test Suite, smoke tests spin up a local blockchain node and run test scenarios using blockchain's cli. It is encouraged to cover every new cli command with a smoke test.
+
 ## Coding tips
 
 ### Where to look for typical ways of doing this

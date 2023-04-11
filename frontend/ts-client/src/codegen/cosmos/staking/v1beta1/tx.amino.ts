@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { AminoMsg, decodeBech32Pubkey, encodeBech32Pubkey } from "@cosmjs/amino";
 import { fromBase64, toBase64 } from "@cosmjs/encoding";
 import { Long } from "../../../helpers";
@@ -92,7 +93,7 @@ export interface AminoMsgCancelUnbondingDelegation extends AminoMsg {
   };
 }
 export interface AminoMsgUpdateParams extends AminoMsg {
-  type: "cosmos-sdk/MsgUpdateParams";
+  type: "cosmos-sdk/x/staking/MsgUpdateParams";
   value: {
     authority: string;
     params: {
@@ -356,7 +357,7 @@ export const AminoConverter = {
     }
   },
   "/cosmos.staking.v1beta1.MsgUpdateParams": {
-    aminoType: "cosmos-sdk/MsgUpdateParams",
+    aminoType: "cosmos-sdk/x/staking/MsgUpdateParams",
     toAmino: ({
       authority,
       params
