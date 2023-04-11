@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { Long, isSet } from "../../helpers";
+import { Long, DeepPartial } from "../../helpers";
 export interface TransferAuthorization {
   denom: string;
   maxCredits: Long;
@@ -55,21 +55,7 @@ export const TransferAuthorization = {
     return message;
   },
 
-  fromJSON(object: any): TransferAuthorization {
-    return {
-      denom: isSet(object.denom) ? String(object.denom) : "",
-      maxCredits: isSet(object.maxCredits) ? Long.fromValue(object.maxCredits) : Long.UZERO
-    };
-  },
-
-  toJSON(message: TransferAuthorization): unknown {
-    const obj: any = {};
-    message.denom !== undefined && (obj.denom = message.denom);
-    message.maxCredits !== undefined && (obj.maxCredits = (message.maxCredits || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: Partial<TransferAuthorization>): TransferAuthorization {
+  fromPartial(object: DeepPartial<TransferAuthorization>): TransferAuthorization {
     const message = createBaseTransferAuthorization();
     message.denom = object.denom ?? "";
     message.maxCredits = object.maxCredits !== undefined && object.maxCredits !== null ? Long.fromValue(object.maxCredits) : Long.UZERO;

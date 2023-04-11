@@ -25,24 +25,6 @@ export const MessageComposer = {
     }
 
   },
-  toJSON: {
-    updateParams(value: MsgUpdateParams) {
-      return {
-        typeUrl: "/cosmos.consensus.v1.MsgUpdateParams",
-        value: MsgUpdateParams.toJSON(value)
-      };
-    }
-
-  },
-  fromJSON: {
-    updateParams(value: any) {
-      return {
-        typeUrl: "/cosmos.consensus.v1.MsgUpdateParams",
-        value: MsgUpdateParams.fromJSON(value)
-      };
-    }
-
-  },
   fromPartial: {
     updateParams(value: MsgUpdateParams) {
       return {

@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { isSet, bytesFromBase64, base64FromBytes } from "../../../helpers";
+import { DeepPartial } from "../../../helpers";
 /** StorageType */
 
 export enum StorageType {
@@ -261,27 +261,7 @@ export const ModuleSchemaDescriptor = {
     return message;
   },
 
-  fromJSON(object: any): ModuleSchemaDescriptor {
-    return {
-      schemaFile: Array.isArray(object?.schemaFile) ? object.schemaFile.map((e: any) => ModuleSchemaDescriptor_FileEntry.fromJSON(e)) : [],
-      prefix: isSet(object.prefix) ? bytesFromBase64(object.prefix) : new Uint8Array()
-    };
-  },
-
-  toJSON(message: ModuleSchemaDescriptor): unknown {
-    const obj: any = {};
-
-    if (message.schemaFile) {
-      obj.schemaFile = message.schemaFile.map(e => e ? ModuleSchemaDescriptor_FileEntry.toJSON(e) : undefined);
-    } else {
-      obj.schemaFile = [];
-    }
-
-    message.prefix !== undefined && (obj.prefix = base64FromBytes(message.prefix !== undefined ? message.prefix : new Uint8Array()));
-    return obj;
-  },
-
-  fromPartial(object: Partial<ModuleSchemaDescriptor>): ModuleSchemaDescriptor {
+  fromPartial(object: DeepPartial<ModuleSchemaDescriptor>): ModuleSchemaDescriptor {
     const message = createBaseModuleSchemaDescriptor();
     message.schemaFile = object.schemaFile?.map(e => ModuleSchemaDescriptor_FileEntry.fromPartial(e)) || [];
     message.prefix = object.prefix ?? new Uint8Array();
@@ -345,23 +325,7 @@ export const ModuleSchemaDescriptor_FileEntry = {
     return message;
   },
 
-  fromJSON(object: any): ModuleSchemaDescriptor_FileEntry {
-    return {
-      id: isSet(object.id) ? Number(object.id) : 0,
-      protoFileName: isSet(object.protoFileName) ? String(object.protoFileName) : "",
-      storageType: isSet(object.storageType) ? storageTypeFromJSON(object.storageType) : 0
-    };
-  },
-
-  toJSON(message: ModuleSchemaDescriptor_FileEntry): unknown {
-    const obj: any = {};
-    message.id !== undefined && (obj.id = Math.round(message.id));
-    message.protoFileName !== undefined && (obj.protoFileName = message.protoFileName);
-    message.storageType !== undefined && (obj.storageType = storageTypeToJSON(message.storageType));
-    return obj;
-  },
-
-  fromPartial(object: Partial<ModuleSchemaDescriptor_FileEntry>): ModuleSchemaDescriptor_FileEntry {
+  fromPartial(object: DeepPartial<ModuleSchemaDescriptor_FileEntry>): ModuleSchemaDescriptor_FileEntry {
     const message = createBaseModuleSchemaDescriptor_FileEntry();
     message.id = object.id ?? 0;
     message.protoFileName = object.protoFileName ?? "";

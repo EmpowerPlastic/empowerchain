@@ -1,7 +1,7 @@
 import { PageRequest, PageRequestSDKType, PageResponse, PageResponseSDKType } from "../../cosmos/base/query/v1beta1/pagination";
-import { Params, ParamsSDKType, Issuer, IssuerSDKType, Applicant, ApplicantSDKType, CreditType, CreditTypeSDKType, Project, ProjectSDKType, CreditCollection, CreditCollectionSDKType, CreditBalance, CreditBalanceSDKType } from "./types";
+import { Params, ParamsSDKType, Issuer, IssuerSDKType, Applicant, ApplicantSDKType, CreditClass, CreditClassSDKType, Project, ProjectSDKType, CreditCollection, CreditCollectionSDKType, CreditBalance, CreditBalanceSDKType } from "./types";
 import * as _m0 from "protobufjs/minimal";
-import { isSet, Long } from "../../helpers";
+import { DeepPartial, Long } from "../../helpers";
 export interface QueryParamsRequest {}
 export interface QueryParamsRequestSDKType {}
 export interface QueryParamsResponse {
@@ -62,31 +62,31 @@ export interface QueryApplicantResponse {
 export interface QueryApplicantResponseSDKType {
   applicant?: ApplicantSDKType;
 }
-export interface QueryCreditTypesRequest {
+export interface QueryCreditClassesRequest {
   pagination?: PageRequest;
 }
-export interface QueryCreditTypesRequestSDKType {
+export interface QueryCreditClassesRequestSDKType {
   pagination?: PageRequestSDKType;
 }
-export interface QueryCreditTypesResponse {
-  creditTypes: CreditType[];
+export interface QueryCreditClassesResponse {
+  creditClasses: CreditClass[];
   pagination?: PageResponse;
 }
-export interface QueryCreditTypesResponseSDKType {
-  credit_types: CreditTypeSDKType[];
+export interface QueryCreditClassesResponseSDKType {
+  credit_classes: CreditClassSDKType[];
   pagination?: PageResponseSDKType;
 }
-export interface QueryCreditTypeRequest {
-  creditTypeAbbreviation: string;
+export interface QueryCreditClassRequest {
+  creditClassAbbreviation: string;
 }
-export interface QueryCreditTypeRequestSDKType {
-  credit_type_abbreviation: string;
+export interface QueryCreditClassRequestSDKType {
+  credit_class_abbreviation: string;
 }
-export interface QueryCreditTypeResponse {
-  creditType?: CreditType;
+export interface QueryCreditClassResponse {
+  creditClass?: CreditClass;
 }
-export interface QueryCreditTypeResponseSDKType {
-  credit_type?: CreditTypeSDKType;
+export interface QueryCreditClassResponseSDKType {
+  credit_class?: CreditClassSDKType;
 }
 export interface QueryProjectsRequest {
   pagination?: PageRequest;
@@ -182,16 +182,7 @@ export const QueryParamsRequest = {
     return message;
   },
 
-  fromJSON(_: any): QueryParamsRequest {
-    return {};
-  },
-
-  toJSON(_: QueryParamsRequest): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<QueryParamsRequest>): QueryParamsRequest {
+  fromPartial(_: DeepPartial<QueryParamsRequest>): QueryParamsRequest {
     const message = createBaseQueryParamsRequest();
     return message;
   }
@@ -235,19 +226,7 @@ export const QueryParamsResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryParamsResponse {
-    return {
-      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined
-    };
-  },
-
-  toJSON(message: QueryParamsResponse): unknown {
-    const obj: any = {};
-    message.params !== undefined && (obj.params = message.params ? Params.toJSON(message.params) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryParamsResponse>): QueryParamsResponse {
+  fromPartial(object: DeepPartial<QueryParamsResponse>): QueryParamsResponse {
     const message = createBaseQueryParamsResponse();
     message.params = object.params !== undefined && object.params !== null ? Params.fromPartial(object.params) : undefined;
     return message;
@@ -292,19 +271,7 @@ export const QueryIssuersRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryIssuersRequest {
-    return {
-      pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined
-    };
-  },
-
-  toJSON(message: QueryIssuersRequest): unknown {
-    const obj: any = {};
-    message.pagination !== undefined && (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryIssuersRequest>): QueryIssuersRequest {
+  fromPartial(object: DeepPartial<QueryIssuersRequest>): QueryIssuersRequest {
     const message = createBaseQueryIssuersRequest();
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
     return message;
@@ -358,27 +325,7 @@ export const QueryIssuersResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryIssuersResponse {
-    return {
-      issuers: Array.isArray(object?.issuers) ? object.issuers.map((e: any) => Issuer.fromJSON(e)) : [],
-      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined
-    };
-  },
-
-  toJSON(message: QueryIssuersResponse): unknown {
-    const obj: any = {};
-
-    if (message.issuers) {
-      obj.issuers = message.issuers.map(e => e ? Issuer.toJSON(e) : undefined);
-    } else {
-      obj.issuers = [];
-    }
-
-    message.pagination !== undefined && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryIssuersResponse>): QueryIssuersResponse {
+  fromPartial(object: DeepPartial<QueryIssuersResponse>): QueryIssuersResponse {
     const message = createBaseQueryIssuersResponse();
     message.issuers = object.issuers?.map(e => Issuer.fromPartial(e)) || [];
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
@@ -424,19 +371,7 @@ export const QueryIssuerRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryIssuerRequest {
-    return {
-      issuerId: isSet(object.issuerId) ? Long.fromValue(object.issuerId) : Long.UZERO
-    };
-  },
-
-  toJSON(message: QueryIssuerRequest): unknown {
-    const obj: any = {};
-    message.issuerId !== undefined && (obj.issuerId = (message.issuerId || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryIssuerRequest>): QueryIssuerRequest {
+  fromPartial(object: DeepPartial<QueryIssuerRequest>): QueryIssuerRequest {
     const message = createBaseQueryIssuerRequest();
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
     return message;
@@ -481,19 +416,7 @@ export const QueryIssuerResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryIssuerResponse {
-    return {
-      issuer: isSet(object.issuer) ? Issuer.fromJSON(object.issuer) : undefined
-    };
-  },
-
-  toJSON(message: QueryIssuerResponse): unknown {
-    const obj: any = {};
-    message.issuer !== undefined && (obj.issuer = message.issuer ? Issuer.toJSON(message.issuer) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryIssuerResponse>): QueryIssuerResponse {
+  fromPartial(object: DeepPartial<QueryIssuerResponse>): QueryIssuerResponse {
     const message = createBaseQueryIssuerResponse();
     message.issuer = object.issuer !== undefined && object.issuer !== null ? Issuer.fromPartial(object.issuer) : undefined;
     return message;
@@ -538,19 +461,7 @@ export const QueryApplicantsRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryApplicantsRequest {
-    return {
-      pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined
-    };
-  },
-
-  toJSON(message: QueryApplicantsRequest): unknown {
-    const obj: any = {};
-    message.pagination !== undefined && (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryApplicantsRequest>): QueryApplicantsRequest {
+  fromPartial(object: DeepPartial<QueryApplicantsRequest>): QueryApplicantsRequest {
     const message = createBaseQueryApplicantsRequest();
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
     return message;
@@ -604,27 +515,7 @@ export const QueryApplicantsResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryApplicantsResponse {
-    return {
-      applicants: Array.isArray(object?.applicants) ? object.applicants.map((e: any) => Applicant.fromJSON(e)) : [],
-      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined
-    };
-  },
-
-  toJSON(message: QueryApplicantsResponse): unknown {
-    const obj: any = {};
-
-    if (message.applicants) {
-      obj.applicants = message.applicants.map(e => e ? Applicant.toJSON(e) : undefined);
-    } else {
-      obj.applicants = [];
-    }
-
-    message.pagination !== undefined && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryApplicantsResponse>): QueryApplicantsResponse {
+  fromPartial(object: DeepPartial<QueryApplicantsResponse>): QueryApplicantsResponse {
     const message = createBaseQueryApplicantsResponse();
     message.applicants = object.applicants?.map(e => Applicant.fromPartial(e)) || [];
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
@@ -670,19 +561,7 @@ export const QueryApplicantRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryApplicantRequest {
-    return {
-      applicantId: isSet(object.applicantId) ? Long.fromValue(object.applicantId) : Long.UZERO
-    };
-  },
-
-  toJSON(message: QueryApplicantRequest): unknown {
-    const obj: any = {};
-    message.applicantId !== undefined && (obj.applicantId = (message.applicantId || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryApplicantRequest>): QueryApplicantRequest {
+  fromPartial(object: DeepPartial<QueryApplicantRequest>): QueryApplicantRequest {
     const message = createBaseQueryApplicantRequest();
     message.applicantId = object.applicantId !== undefined && object.applicantId !== null ? Long.fromValue(object.applicantId) : Long.UZERO;
     return message;
@@ -727,19 +606,7 @@ export const QueryApplicantResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryApplicantResponse {
-    return {
-      applicant: isSet(object.applicant) ? Applicant.fromJSON(object.applicant) : undefined
-    };
-  },
-
-  toJSON(message: QueryApplicantResponse): unknown {
-    const obj: any = {};
-    message.applicant !== undefined && (obj.applicant = message.applicant ? Applicant.toJSON(message.applicant) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryApplicantResponse>): QueryApplicantResponse {
+  fromPartial(object: DeepPartial<QueryApplicantResponse>): QueryApplicantResponse {
     const message = createBaseQueryApplicantResponse();
     message.applicant = object.applicant !== undefined && object.applicant !== null ? Applicant.fromPartial(object.applicant) : undefined;
     return message;
@@ -747,14 +614,14 @@ export const QueryApplicantResponse = {
 
 };
 
-function createBaseQueryCreditTypesRequest(): QueryCreditTypesRequest {
+function createBaseQueryCreditClassesRequest(): QueryCreditClassesRequest {
   return {
     pagination: undefined
   };
 }
 
-export const QueryCreditTypesRequest = {
-  encode(message: QueryCreditTypesRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const QueryCreditClassesRequest = {
+  encode(message: QueryCreditClassesRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.pagination !== undefined) {
       PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
     }
@@ -762,10 +629,10 @@ export const QueryCreditTypesRequest = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreditTypesRequest {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreditClassesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryCreditTypesRequest();
+    const message = createBaseQueryCreditClassesRequest();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -784,37 +651,25 @@ export const QueryCreditTypesRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryCreditTypesRequest {
-    return {
-      pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined
-    };
-  },
-
-  toJSON(message: QueryCreditTypesRequest): unknown {
-    const obj: any = {};
-    message.pagination !== undefined && (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryCreditTypesRequest>): QueryCreditTypesRequest {
-    const message = createBaseQueryCreditTypesRequest();
+  fromPartial(object: DeepPartial<QueryCreditClassesRequest>): QueryCreditClassesRequest {
+    const message = createBaseQueryCreditClassesRequest();
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
     return message;
   }
 
 };
 
-function createBaseQueryCreditTypesResponse(): QueryCreditTypesResponse {
+function createBaseQueryCreditClassesResponse(): QueryCreditClassesResponse {
   return {
-    creditTypes: [],
+    creditClasses: [],
     pagination: undefined
   };
 }
 
-export const QueryCreditTypesResponse = {
-  encode(message: QueryCreditTypesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.creditTypes) {
-      CreditType.encode(v!, writer.uint32(10).fork()).ldelim();
+export const QueryCreditClassesResponse = {
+  encode(message: QueryCreditClassesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.creditClasses) {
+      CreditClass.encode(v!, writer.uint32(10).fork()).ldelim();
     }
 
     if (message.pagination !== undefined) {
@@ -824,17 +679,17 @@ export const QueryCreditTypesResponse = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreditTypesResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreditClassesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryCreditTypesResponse();
+    const message = createBaseQueryCreditClassesResponse();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
 
       switch (tag >>> 3) {
         case 1:
-          message.creditTypes.push(CreditType.decode(reader, reader.uint32()));
+          message.creditClasses.push(CreditClass.decode(reader, reader.uint32()));
           break;
 
         case 2:
@@ -850,61 +705,41 @@ export const QueryCreditTypesResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryCreditTypesResponse {
-    return {
-      creditTypes: Array.isArray(object?.creditTypes) ? object.creditTypes.map((e: any) => CreditType.fromJSON(e)) : [],
-      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined
-    };
-  },
-
-  toJSON(message: QueryCreditTypesResponse): unknown {
-    const obj: any = {};
-
-    if (message.creditTypes) {
-      obj.creditTypes = message.creditTypes.map(e => e ? CreditType.toJSON(e) : undefined);
-    } else {
-      obj.creditTypes = [];
-    }
-
-    message.pagination !== undefined && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryCreditTypesResponse>): QueryCreditTypesResponse {
-    const message = createBaseQueryCreditTypesResponse();
-    message.creditTypes = object.creditTypes?.map(e => CreditType.fromPartial(e)) || [];
+  fromPartial(object: DeepPartial<QueryCreditClassesResponse>): QueryCreditClassesResponse {
+    const message = createBaseQueryCreditClassesResponse();
+    message.creditClasses = object.creditClasses?.map(e => CreditClass.fromPartial(e)) || [];
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
     return message;
   }
 
 };
 
-function createBaseQueryCreditTypeRequest(): QueryCreditTypeRequest {
+function createBaseQueryCreditClassRequest(): QueryCreditClassRequest {
   return {
-    creditTypeAbbreviation: ""
+    creditClassAbbreviation: ""
   };
 }
 
-export const QueryCreditTypeRequest = {
-  encode(message: QueryCreditTypeRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.creditTypeAbbreviation !== "") {
-      writer.uint32(10).string(message.creditTypeAbbreviation);
+export const QueryCreditClassRequest = {
+  encode(message: QueryCreditClassRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.creditClassAbbreviation !== "") {
+      writer.uint32(10).string(message.creditClassAbbreviation);
     }
 
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreditTypeRequest {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreditClassRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryCreditTypeRequest();
+    const message = createBaseQueryCreditClassRequest();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
 
       switch (tag >>> 3) {
         case 1:
-          message.creditTypeAbbreviation = reader.string();
+          message.creditClassAbbreviation = reader.string();
           break;
 
         default:
@@ -916,52 +751,40 @@ export const QueryCreditTypeRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryCreditTypeRequest {
-    return {
-      creditTypeAbbreviation: isSet(object.creditTypeAbbreviation) ? String(object.creditTypeAbbreviation) : ""
-    };
-  },
-
-  toJSON(message: QueryCreditTypeRequest): unknown {
-    const obj: any = {};
-    message.creditTypeAbbreviation !== undefined && (obj.creditTypeAbbreviation = message.creditTypeAbbreviation);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryCreditTypeRequest>): QueryCreditTypeRequest {
-    const message = createBaseQueryCreditTypeRequest();
-    message.creditTypeAbbreviation = object.creditTypeAbbreviation ?? "";
+  fromPartial(object: DeepPartial<QueryCreditClassRequest>): QueryCreditClassRequest {
+    const message = createBaseQueryCreditClassRequest();
+    message.creditClassAbbreviation = object.creditClassAbbreviation ?? "";
     return message;
   }
 
 };
 
-function createBaseQueryCreditTypeResponse(): QueryCreditTypeResponse {
+function createBaseQueryCreditClassResponse(): QueryCreditClassResponse {
   return {
-    creditType: undefined
+    creditClass: undefined
   };
 }
 
-export const QueryCreditTypeResponse = {
-  encode(message: QueryCreditTypeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.creditType !== undefined) {
-      CreditType.encode(message.creditType, writer.uint32(10).fork()).ldelim();
+export const QueryCreditClassResponse = {
+  encode(message: QueryCreditClassResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.creditClass !== undefined) {
+      CreditClass.encode(message.creditClass, writer.uint32(10).fork()).ldelim();
     }
 
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreditTypeResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCreditClassResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryCreditTypeResponse();
+    const message = createBaseQueryCreditClassResponse();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
 
       switch (tag >>> 3) {
         case 1:
-          message.creditType = CreditType.decode(reader, reader.uint32());
+          message.creditClass = CreditClass.decode(reader, reader.uint32());
           break;
 
         default:
@@ -973,21 +796,9 @@ export const QueryCreditTypeResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryCreditTypeResponse {
-    return {
-      creditType: isSet(object.creditType) ? CreditType.fromJSON(object.creditType) : undefined
-    };
-  },
-
-  toJSON(message: QueryCreditTypeResponse): unknown {
-    const obj: any = {};
-    message.creditType !== undefined && (obj.creditType = message.creditType ? CreditType.toJSON(message.creditType) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryCreditTypeResponse>): QueryCreditTypeResponse {
-    const message = createBaseQueryCreditTypeResponse();
-    message.creditType = object.creditType !== undefined && object.creditType !== null ? CreditType.fromPartial(object.creditType) : undefined;
+  fromPartial(object: DeepPartial<QueryCreditClassResponse>): QueryCreditClassResponse {
+    const message = createBaseQueryCreditClassResponse();
+    message.creditClass = object.creditClass !== undefined && object.creditClass !== null ? CreditClass.fromPartial(object.creditClass) : undefined;
     return message;
   }
 
@@ -1030,19 +841,7 @@ export const QueryProjectsRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryProjectsRequest {
-    return {
-      pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined
-    };
-  },
-
-  toJSON(message: QueryProjectsRequest): unknown {
-    const obj: any = {};
-    message.pagination !== undefined && (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryProjectsRequest>): QueryProjectsRequest {
+  fromPartial(object: DeepPartial<QueryProjectsRequest>): QueryProjectsRequest {
     const message = createBaseQueryProjectsRequest();
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
     return message;
@@ -1096,27 +895,7 @@ export const QueryProjectsResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryProjectsResponse {
-    return {
-      projects: Array.isArray(object?.projects) ? object.projects.map((e: any) => Project.fromJSON(e)) : [],
-      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined
-    };
-  },
-
-  toJSON(message: QueryProjectsResponse): unknown {
-    const obj: any = {};
-
-    if (message.projects) {
-      obj.projects = message.projects.map(e => e ? Project.toJSON(e) : undefined);
-    } else {
-      obj.projects = [];
-    }
-
-    message.pagination !== undefined && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryProjectsResponse>): QueryProjectsResponse {
+  fromPartial(object: DeepPartial<QueryProjectsResponse>): QueryProjectsResponse {
     const message = createBaseQueryProjectsResponse();
     message.projects = object.projects?.map(e => Project.fromPartial(e)) || [];
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
@@ -1162,19 +941,7 @@ export const QueryProjectRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryProjectRequest {
-    return {
-      projectId: isSet(object.projectId) ? Long.fromValue(object.projectId) : Long.UZERO
-    };
-  },
-
-  toJSON(message: QueryProjectRequest): unknown {
-    const obj: any = {};
-    message.projectId !== undefined && (obj.projectId = (message.projectId || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryProjectRequest>): QueryProjectRequest {
+  fromPartial(object: DeepPartial<QueryProjectRequest>): QueryProjectRequest {
     const message = createBaseQueryProjectRequest();
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
     return message;
@@ -1219,19 +986,7 @@ export const QueryProjectResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryProjectResponse {
-    return {
-      project: isSet(object.project) ? Project.fromJSON(object.project) : undefined
-    };
-  },
-
-  toJSON(message: QueryProjectResponse): unknown {
-    const obj: any = {};
-    message.project !== undefined && (obj.project = message.project ? Project.toJSON(message.project) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryProjectResponse>): QueryProjectResponse {
+  fromPartial(object: DeepPartial<QueryProjectResponse>): QueryProjectResponse {
     const message = createBaseQueryProjectResponse();
     message.project = object.project !== undefined && object.project !== null ? Project.fromPartial(object.project) : undefined;
     return message;
@@ -1276,19 +1031,7 @@ export const QueryCreditCollectionRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryCreditCollectionRequest {
-    return {
-      denom: isSet(object.denom) ? String(object.denom) : ""
-    };
-  },
-
-  toJSON(message: QueryCreditCollectionRequest): unknown {
-    const obj: any = {};
-    message.denom !== undefined && (obj.denom = message.denom);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryCreditCollectionRequest>): QueryCreditCollectionRequest {
+  fromPartial(object: DeepPartial<QueryCreditCollectionRequest>): QueryCreditCollectionRequest {
     const message = createBaseQueryCreditCollectionRequest();
     message.denom = object.denom ?? "";
     return message;
@@ -1333,19 +1076,7 @@ export const QueryCreditCollectionResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryCreditCollectionResponse {
-    return {
-      creditCollection: isSet(object.creditCollection) ? CreditCollection.fromJSON(object.creditCollection) : undefined
-    };
-  },
-
-  toJSON(message: QueryCreditCollectionResponse): unknown {
-    const obj: any = {};
-    message.creditCollection !== undefined && (obj.creditCollection = message.creditCollection ? CreditCollection.toJSON(message.creditCollection) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryCreditCollectionResponse>): QueryCreditCollectionResponse {
+  fromPartial(object: DeepPartial<QueryCreditCollectionResponse>): QueryCreditCollectionResponse {
     const message = createBaseQueryCreditCollectionResponse();
     message.creditCollection = object.creditCollection !== undefined && object.creditCollection !== null ? CreditCollection.fromPartial(object.creditCollection) : undefined;
     return message;
@@ -1390,19 +1121,7 @@ export const QueryCreditBalancesRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryCreditBalancesRequest {
-    return {
-      pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined
-    };
-  },
-
-  toJSON(message: QueryCreditBalancesRequest): unknown {
-    const obj: any = {};
-    message.pagination !== undefined && (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryCreditBalancesRequest>): QueryCreditBalancesRequest {
+  fromPartial(object: DeepPartial<QueryCreditBalancesRequest>): QueryCreditBalancesRequest {
     const message = createBaseQueryCreditBalancesRequest();
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
     return message;
@@ -1456,27 +1175,7 @@ export const QueryCreditBalancesResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryCreditBalancesResponse {
-    return {
-      creditBalances: Array.isArray(object?.creditBalances) ? object.creditBalances.map((e: any) => CreditBalance.fromJSON(e)) : [],
-      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined
-    };
-  },
-
-  toJSON(message: QueryCreditBalancesResponse): unknown {
-    const obj: any = {};
-
-    if (message.creditBalances) {
-      obj.creditBalances = message.creditBalances.map(e => e ? CreditBalance.toJSON(e) : undefined);
-    } else {
-      obj.creditBalances = [];
-    }
-
-    message.pagination !== undefined && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryCreditBalancesResponse>): QueryCreditBalancesResponse {
+  fromPartial(object: DeepPartial<QueryCreditBalancesResponse>): QueryCreditBalancesResponse {
     const message = createBaseQueryCreditBalancesResponse();
     message.creditBalances = object.creditBalances?.map(e => CreditBalance.fromPartial(e)) || [];
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
@@ -1531,21 +1230,7 @@ export const QueryCreditBalanceRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryCreditBalanceRequest {
-    return {
-      owner: isSet(object.owner) ? String(object.owner) : "",
-      denom: isSet(object.denom) ? String(object.denom) : ""
-    };
-  },
-
-  toJSON(message: QueryCreditBalanceRequest): unknown {
-    const obj: any = {};
-    message.owner !== undefined && (obj.owner = message.owner);
-    message.denom !== undefined && (obj.denom = message.denom);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryCreditBalanceRequest>): QueryCreditBalanceRequest {
+  fromPartial(object: DeepPartial<QueryCreditBalanceRequest>): QueryCreditBalanceRequest {
     const message = createBaseQueryCreditBalanceRequest();
     message.owner = object.owner ?? "";
     message.denom = object.denom ?? "";
@@ -1591,19 +1276,7 @@ export const QueryCreditBalanceResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryCreditBalanceResponse {
-    return {
-      balance: isSet(object.balance) ? CreditBalance.fromJSON(object.balance) : undefined
-    };
-  },
-
-  toJSON(message: QueryCreditBalanceResponse): unknown {
-    const obj: any = {};
-    message.balance !== undefined && (obj.balance = message.balance ? CreditBalance.toJSON(message.balance) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryCreditBalanceResponse>): QueryCreditBalanceResponse {
+  fromPartial(object: DeepPartial<QueryCreditBalanceResponse>): QueryCreditBalanceResponse {
     const message = createBaseQueryCreditBalanceResponse();
     message.balance = object.balance !== undefined && object.balance !== null ? CreditBalance.fromPartial(object.balance) : undefined;
     return message;

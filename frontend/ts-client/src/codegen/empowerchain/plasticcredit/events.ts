@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { Long, isSet } from "../../helpers";
+import { Long, DeepPartial } from "../../helpers";
 /** EventCreateIssuer is an event emitted when a new issuer is created */
 
 export interface EventCreateIssuer {
@@ -41,7 +41,7 @@ export interface EventUpdateIssuerSDKType {
 export interface EventCreateProject {
   creator: string;
   applicantId: Long;
-  creditTypeAbbreviation: string;
+  creditClassAbbreviation: string;
   name: string;
 }
 /** EventCreateProject is an event emitted when a new Project is created */
@@ -49,7 +49,7 @@ export interface EventCreateProject {
 export interface EventCreateProjectSDKType {
   creator: string;
   applicant_id: Long;
-  credit_type_abbreviation: string;
+  credit_class_abbreviation: string;
   name: string;
 }
 /** EventUpdateProject is an event emitted when a Project is updated */
@@ -66,51 +66,51 @@ export interface EventUpdateProjectSDKType {
   project_id: Long;
   name: string;
 }
-/** EventProjectApproved is an event emitted when a project is approved by the issuer associated with the projects credit type */
+/** EventProjectApproved is an event emitted when a project is approved by the issuer associated with the projects credit class */
 
 export interface EventProjectApproved {
   projectId: Long;
-  approvedForCreditTypeAbbreviation: string;
+  approvedForCreditClassAbbreviation: string;
   approvingIssuerId: Long;
   approvedBy: string;
 }
-/** EventProjectApproved is an event emitted when a project is approved by the issuer associated with the projects credit type */
+/** EventProjectApproved is an event emitted when a project is approved by the issuer associated with the projects credit class */
 
 export interface EventProjectApprovedSDKType {
   project_id: Long;
-  approved_for_credit_type_abbreviation: string;
+  approved_for_credit_class_abbreviation: string;
   approving_issuer_id: Long;
   approved_by: string;
 }
-/** EventProjectRejected is an event emitted when a project is rejected by the issuer associated with the projects credit type */
+/** EventProjectRejected is an event emitted when a project is rejected by the issuer associated with the projects credit class */
 
 export interface EventProjectRejected {
   projectId: Long;
-  rejectedForCreditTypeAbbreviation: string;
+  rejectedForCreditClassAbbreviation: string;
   rejectingIssuerId: Long;
   rejectedBy: string;
 }
-/** EventProjectRejected is an event emitted when a project is rejected by the issuer associated with the projects credit type */
+/** EventProjectRejected is an event emitted when a project is rejected by the issuer associated with the projects credit class */
 
 export interface EventProjectRejectedSDKType {
   project_id: Long;
-  rejected_for_credit_type_abbreviation: string;
+  rejected_for_credit_class_abbreviation: string;
   rejecting_issuer_id: Long;
   rejected_by: string;
 }
-/** EventProjectSuspended is an event emitted when a project is suspended by the issuer associated with the projects credit type */
+/** EventProjectSuspended is an event emitted when a project is suspended by the issuer associated with the projects credit class */
 
 export interface EventProjectSuspended {
   projectId: Long;
-  suspendedForCreditTypeAbbreviation: string;
+  suspendedForCreditClassAbbreviation: string;
   suspendingIssuerId: Long;
   suspendedBy: string;
 }
-/** EventProjectSuspended is an event emitted when a project is suspended by the issuer associated with the projects credit type */
+/** EventProjectSuspended is an event emitted when a project is suspended by the issuer associated with the projects credit class */
 
 export interface EventProjectSuspendedSDKType {
   project_id: Long;
-  suspended_for_credit_type_abbreviation: string;
+  suspended_for_credit_class_abbreviation: string;
   suspending_issuer_id: Long;
   suspended_by: string;
 }
@@ -119,7 +119,7 @@ export interface EventProjectSuspendedSDKType {
 export interface EventIssuedCredits {
   issuerId: Long;
   projectId: Long;
-  creditTypeAbbreviation: string;
+  creditClassAbbreviation: string;
   denom: string;
   amount: Long;
   issuerAddress: string;
@@ -130,7 +130,7 @@ export interface EventIssuedCredits {
 export interface EventIssuedCreditsSDKType {
   issuer_id: Long;
   project_id: Long;
-  credit_type_abbreviation: string;
+  credit_class_abbreviation: string;
   denom: string;
   amount: Long;
   issuer_address: string;
@@ -144,7 +144,7 @@ export interface EventTransferCredits {
   denom: string;
   amount: Long;
   issuerId: Long;
-  creditTypeAbbreviation: string;
+  creditClassAbbreviation: string;
 }
 /** EventTransferCredits is an event emitted when credits are being transfered from one account to another */
 
@@ -154,7 +154,7 @@ export interface EventTransferCreditsSDKType {
   denom: string;
   amount: Long;
   issuer_id: Long;
-  credit_type_abbreviation: string;
+  credit_class_abbreviation: string;
 }
 /** EventRetiredCredits is an event emitted when credits are retired */
 
@@ -163,7 +163,7 @@ export interface EventRetiredCredits {
   denom: string;
   amount: Long;
   issuerId: Long;
-  creditTypeAbbreviation: string;
+  creditClassAbbreviation: string;
 }
 /** EventRetiredCredits is an event emitted when credits are retired */
 
@@ -172,7 +172,7 @@ export interface EventRetiredCreditsSDKType {
   denom: string;
   amount: Long;
   issuer_id: Long;
-  credit_type_abbreviation: string;
+  credit_class_abbreviation: string;
 }
 /** EventCreateApplicant is an event emitted when a new applicant is created */
 
@@ -208,32 +208,32 @@ export interface EventUpdateApplicantSDKType {
   admin: string;
   updater: string;
 }
-/** EventCreateCreditType is an event emitted when a new Credit Type is created */
+/** EventCreateCreditClass is an event emitted when a new Credit Class is created */
 
-export interface EventCreateCreditType {
+export interface EventCreateCreditClass {
   creator: string;
   abbreviation: string;
   issuerId: Long;
   name: string;
 }
-/** EventCreateCreditType is an event emitted when a new Credit Type is created */
+/** EventCreateCreditClass is an event emitted when a new Credit Class is created */
 
-export interface EventCreateCreditTypeSDKType {
+export interface EventCreateCreditClassSDKType {
   creator: string;
   abbreviation: string;
   issuer_id: Long;
   name: string;
 }
-/** EventUpdateCreditType is an event emitted when a Credit Type is updated */
+/** EventUpdateCreditClass is an event emitted when a Credit Class is updated */
 
-export interface EventUpdateCreditType {
+export interface EventUpdateCreditClass {
   updater: string;
   abbreviation: string;
   name: string;
 }
-/** EventUpdateCreditType is an event emitted when a Credit Type is updated */
+/** EventUpdateCreditClass is an event emitted when a Credit Class is updated */
 
-export interface EventUpdateCreditTypeSDKType {
+export interface EventUpdateCreditClassSDKType {
   updater: string;
   abbreviation: string;
   name: string;
@@ -312,27 +312,7 @@ export const EventCreateIssuer = {
     return message;
   },
 
-  fromJSON(object: any): EventCreateIssuer {
-    return {
-      issuerId: isSet(object.issuerId) ? Long.fromValue(object.issuerId) : Long.UZERO,
-      creator: isSet(object.creator) ? String(object.creator) : "",
-      name: isSet(object.name) ? String(object.name) : "",
-      description: isSet(object.description) ? String(object.description) : "",
-      admin: isSet(object.admin) ? String(object.admin) : ""
-    };
-  },
-
-  toJSON(message: EventCreateIssuer): unknown {
-    const obj: any = {};
-    message.issuerId !== undefined && (obj.issuerId = (message.issuerId || Long.UZERO).toString());
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.name !== undefined && (obj.name = message.name);
-    message.description !== undefined && (obj.description = message.description);
-    message.admin !== undefined && (obj.admin = message.admin);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventCreateIssuer>): EventCreateIssuer {
+  fromPartial(object: DeepPartial<EventCreateIssuer>): EventCreateIssuer {
     const message = createBaseEventCreateIssuer();
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
     message.creator = object.creator ?? "";
@@ -417,27 +397,7 @@ export const EventUpdateIssuer = {
     return message;
   },
 
-  fromJSON(object: any): EventUpdateIssuer {
-    return {
-      issuerId: isSet(object.issuerId) ? Long.fromValue(object.issuerId) : Long.UZERO,
-      creator: isSet(object.creator) ? String(object.creator) : "",
-      name: isSet(object.name) ? String(object.name) : "",
-      description: isSet(object.description) ? String(object.description) : "",
-      admin: isSet(object.admin) ? String(object.admin) : ""
-    };
-  },
-
-  toJSON(message: EventUpdateIssuer): unknown {
-    const obj: any = {};
-    message.issuerId !== undefined && (obj.issuerId = (message.issuerId || Long.UZERO).toString());
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.name !== undefined && (obj.name = message.name);
-    message.description !== undefined && (obj.description = message.description);
-    message.admin !== undefined && (obj.admin = message.admin);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventUpdateIssuer>): EventUpdateIssuer {
+  fromPartial(object: DeepPartial<EventUpdateIssuer>): EventUpdateIssuer {
     const message = createBaseEventUpdateIssuer();
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
     message.creator = object.creator ?? "";
@@ -453,7 +413,7 @@ function createBaseEventCreateProject(): EventCreateProject {
   return {
     creator: "",
     applicantId: Long.UZERO,
-    creditTypeAbbreviation: "",
+    creditClassAbbreviation: "",
     name: ""
   };
 }
@@ -468,8 +428,8 @@ export const EventCreateProject = {
       writer.uint32(16).uint64(message.applicantId);
     }
 
-    if (message.creditTypeAbbreviation !== "") {
-      writer.uint32(26).string(message.creditTypeAbbreviation);
+    if (message.creditClassAbbreviation !== "") {
+      writer.uint32(26).string(message.creditClassAbbreviation);
     }
 
     if (message.name !== "") {
@@ -497,7 +457,7 @@ export const EventCreateProject = {
           break;
 
         case 3:
-          message.creditTypeAbbreviation = reader.string();
+          message.creditClassAbbreviation = reader.string();
           break;
 
         case 4:
@@ -513,29 +473,11 @@ export const EventCreateProject = {
     return message;
   },
 
-  fromJSON(object: any): EventCreateProject {
-    return {
-      creator: isSet(object.creator) ? String(object.creator) : "",
-      applicantId: isSet(object.applicantId) ? Long.fromValue(object.applicantId) : Long.UZERO,
-      creditTypeAbbreviation: isSet(object.creditTypeAbbreviation) ? String(object.creditTypeAbbreviation) : "",
-      name: isSet(object.name) ? String(object.name) : ""
-    };
-  },
-
-  toJSON(message: EventCreateProject): unknown {
-    const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.applicantId !== undefined && (obj.applicantId = (message.applicantId || Long.UZERO).toString());
-    message.creditTypeAbbreviation !== undefined && (obj.creditTypeAbbreviation = message.creditTypeAbbreviation);
-    message.name !== undefined && (obj.name = message.name);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventCreateProject>): EventCreateProject {
+  fromPartial(object: DeepPartial<EventCreateProject>): EventCreateProject {
     const message = createBaseEventCreateProject();
     message.creator = object.creator ?? "";
     message.applicantId = object.applicantId !== undefined && object.applicantId !== null ? Long.fromValue(object.applicantId) : Long.UZERO;
-    message.creditTypeAbbreviation = object.creditTypeAbbreviation ?? "";
+    message.creditClassAbbreviation = object.creditClassAbbreviation ?? "";
     message.name = object.name ?? "";
     return message;
   }
@@ -597,23 +539,7 @@ export const EventUpdateProject = {
     return message;
   },
 
-  fromJSON(object: any): EventUpdateProject {
-    return {
-      updater: isSet(object.updater) ? String(object.updater) : "",
-      projectId: isSet(object.projectId) ? Long.fromValue(object.projectId) : Long.UZERO,
-      name: isSet(object.name) ? String(object.name) : ""
-    };
-  },
-
-  toJSON(message: EventUpdateProject): unknown {
-    const obj: any = {};
-    message.updater !== undefined && (obj.updater = message.updater);
-    message.projectId !== undefined && (obj.projectId = (message.projectId || Long.UZERO).toString());
-    message.name !== undefined && (obj.name = message.name);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventUpdateProject>): EventUpdateProject {
+  fromPartial(object: DeepPartial<EventUpdateProject>): EventUpdateProject {
     const message = createBaseEventUpdateProject();
     message.updater = object.updater ?? "";
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
@@ -626,7 +552,7 @@ export const EventUpdateProject = {
 function createBaseEventProjectApproved(): EventProjectApproved {
   return {
     projectId: Long.UZERO,
-    approvedForCreditTypeAbbreviation: "",
+    approvedForCreditClassAbbreviation: "",
     approvingIssuerId: Long.UZERO,
     approvedBy: ""
   };
@@ -638,8 +564,8 @@ export const EventProjectApproved = {
       writer.uint32(8).uint64(message.projectId);
     }
 
-    if (message.approvedForCreditTypeAbbreviation !== "") {
-      writer.uint32(18).string(message.approvedForCreditTypeAbbreviation);
+    if (message.approvedForCreditClassAbbreviation !== "") {
+      writer.uint32(18).string(message.approvedForCreditClassAbbreviation);
     }
 
     if (!message.approvingIssuerId.isZero()) {
@@ -667,7 +593,7 @@ export const EventProjectApproved = {
           break;
 
         case 2:
-          message.approvedForCreditTypeAbbreviation = reader.string();
+          message.approvedForCreditClassAbbreviation = reader.string();
           break;
 
         case 3:
@@ -687,28 +613,10 @@ export const EventProjectApproved = {
     return message;
   },
 
-  fromJSON(object: any): EventProjectApproved {
-    return {
-      projectId: isSet(object.projectId) ? Long.fromValue(object.projectId) : Long.UZERO,
-      approvedForCreditTypeAbbreviation: isSet(object.approvedForCreditTypeAbbreviation) ? String(object.approvedForCreditTypeAbbreviation) : "",
-      approvingIssuerId: isSet(object.approvingIssuerId) ? Long.fromValue(object.approvingIssuerId) : Long.UZERO,
-      approvedBy: isSet(object.approvedBy) ? String(object.approvedBy) : ""
-    };
-  },
-
-  toJSON(message: EventProjectApproved): unknown {
-    const obj: any = {};
-    message.projectId !== undefined && (obj.projectId = (message.projectId || Long.UZERO).toString());
-    message.approvedForCreditTypeAbbreviation !== undefined && (obj.approvedForCreditTypeAbbreviation = message.approvedForCreditTypeAbbreviation);
-    message.approvingIssuerId !== undefined && (obj.approvingIssuerId = (message.approvingIssuerId || Long.UZERO).toString());
-    message.approvedBy !== undefined && (obj.approvedBy = message.approvedBy);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventProjectApproved>): EventProjectApproved {
+  fromPartial(object: DeepPartial<EventProjectApproved>): EventProjectApproved {
     const message = createBaseEventProjectApproved();
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
-    message.approvedForCreditTypeAbbreviation = object.approvedForCreditTypeAbbreviation ?? "";
+    message.approvedForCreditClassAbbreviation = object.approvedForCreditClassAbbreviation ?? "";
     message.approvingIssuerId = object.approvingIssuerId !== undefined && object.approvingIssuerId !== null ? Long.fromValue(object.approvingIssuerId) : Long.UZERO;
     message.approvedBy = object.approvedBy ?? "";
     return message;
@@ -719,7 +627,7 @@ export const EventProjectApproved = {
 function createBaseEventProjectRejected(): EventProjectRejected {
   return {
     projectId: Long.UZERO,
-    rejectedForCreditTypeAbbreviation: "",
+    rejectedForCreditClassAbbreviation: "",
     rejectingIssuerId: Long.UZERO,
     rejectedBy: ""
   };
@@ -731,8 +639,8 @@ export const EventProjectRejected = {
       writer.uint32(8).uint64(message.projectId);
     }
 
-    if (message.rejectedForCreditTypeAbbreviation !== "") {
-      writer.uint32(18).string(message.rejectedForCreditTypeAbbreviation);
+    if (message.rejectedForCreditClassAbbreviation !== "") {
+      writer.uint32(18).string(message.rejectedForCreditClassAbbreviation);
     }
 
     if (!message.rejectingIssuerId.isZero()) {
@@ -760,7 +668,7 @@ export const EventProjectRejected = {
           break;
 
         case 2:
-          message.rejectedForCreditTypeAbbreviation = reader.string();
+          message.rejectedForCreditClassAbbreviation = reader.string();
           break;
 
         case 3:
@@ -780,28 +688,10 @@ export const EventProjectRejected = {
     return message;
   },
 
-  fromJSON(object: any): EventProjectRejected {
-    return {
-      projectId: isSet(object.projectId) ? Long.fromValue(object.projectId) : Long.UZERO,
-      rejectedForCreditTypeAbbreviation: isSet(object.rejectedForCreditTypeAbbreviation) ? String(object.rejectedForCreditTypeAbbreviation) : "",
-      rejectingIssuerId: isSet(object.rejectingIssuerId) ? Long.fromValue(object.rejectingIssuerId) : Long.UZERO,
-      rejectedBy: isSet(object.rejectedBy) ? String(object.rejectedBy) : ""
-    };
-  },
-
-  toJSON(message: EventProjectRejected): unknown {
-    const obj: any = {};
-    message.projectId !== undefined && (obj.projectId = (message.projectId || Long.UZERO).toString());
-    message.rejectedForCreditTypeAbbreviation !== undefined && (obj.rejectedForCreditTypeAbbreviation = message.rejectedForCreditTypeAbbreviation);
-    message.rejectingIssuerId !== undefined && (obj.rejectingIssuerId = (message.rejectingIssuerId || Long.UZERO).toString());
-    message.rejectedBy !== undefined && (obj.rejectedBy = message.rejectedBy);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventProjectRejected>): EventProjectRejected {
+  fromPartial(object: DeepPartial<EventProjectRejected>): EventProjectRejected {
     const message = createBaseEventProjectRejected();
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
-    message.rejectedForCreditTypeAbbreviation = object.rejectedForCreditTypeAbbreviation ?? "";
+    message.rejectedForCreditClassAbbreviation = object.rejectedForCreditClassAbbreviation ?? "";
     message.rejectingIssuerId = object.rejectingIssuerId !== undefined && object.rejectingIssuerId !== null ? Long.fromValue(object.rejectingIssuerId) : Long.UZERO;
     message.rejectedBy = object.rejectedBy ?? "";
     return message;
@@ -812,7 +702,7 @@ export const EventProjectRejected = {
 function createBaseEventProjectSuspended(): EventProjectSuspended {
   return {
     projectId: Long.UZERO,
-    suspendedForCreditTypeAbbreviation: "",
+    suspendedForCreditClassAbbreviation: "",
     suspendingIssuerId: Long.UZERO,
     suspendedBy: ""
   };
@@ -824,8 +714,8 @@ export const EventProjectSuspended = {
       writer.uint32(8).uint64(message.projectId);
     }
 
-    if (message.suspendedForCreditTypeAbbreviation !== "") {
-      writer.uint32(18).string(message.suspendedForCreditTypeAbbreviation);
+    if (message.suspendedForCreditClassAbbreviation !== "") {
+      writer.uint32(18).string(message.suspendedForCreditClassAbbreviation);
     }
 
     if (!message.suspendingIssuerId.isZero()) {
@@ -853,7 +743,7 @@ export const EventProjectSuspended = {
           break;
 
         case 2:
-          message.suspendedForCreditTypeAbbreviation = reader.string();
+          message.suspendedForCreditClassAbbreviation = reader.string();
           break;
 
         case 3:
@@ -873,28 +763,10 @@ export const EventProjectSuspended = {
     return message;
   },
 
-  fromJSON(object: any): EventProjectSuspended {
-    return {
-      projectId: isSet(object.projectId) ? Long.fromValue(object.projectId) : Long.UZERO,
-      suspendedForCreditTypeAbbreviation: isSet(object.suspendedForCreditTypeAbbreviation) ? String(object.suspendedForCreditTypeAbbreviation) : "",
-      suspendingIssuerId: isSet(object.suspendingIssuerId) ? Long.fromValue(object.suspendingIssuerId) : Long.UZERO,
-      suspendedBy: isSet(object.suspendedBy) ? String(object.suspendedBy) : ""
-    };
-  },
-
-  toJSON(message: EventProjectSuspended): unknown {
-    const obj: any = {};
-    message.projectId !== undefined && (obj.projectId = (message.projectId || Long.UZERO).toString());
-    message.suspendedForCreditTypeAbbreviation !== undefined && (obj.suspendedForCreditTypeAbbreviation = message.suspendedForCreditTypeAbbreviation);
-    message.suspendingIssuerId !== undefined && (obj.suspendingIssuerId = (message.suspendingIssuerId || Long.UZERO).toString());
-    message.suspendedBy !== undefined && (obj.suspendedBy = message.suspendedBy);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventProjectSuspended>): EventProjectSuspended {
+  fromPartial(object: DeepPartial<EventProjectSuspended>): EventProjectSuspended {
     const message = createBaseEventProjectSuspended();
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
-    message.suspendedForCreditTypeAbbreviation = object.suspendedForCreditTypeAbbreviation ?? "";
+    message.suspendedForCreditClassAbbreviation = object.suspendedForCreditClassAbbreviation ?? "";
     message.suspendingIssuerId = object.suspendingIssuerId !== undefined && object.suspendingIssuerId !== null ? Long.fromValue(object.suspendingIssuerId) : Long.UZERO;
     message.suspendedBy = object.suspendedBy ?? "";
     return message;
@@ -906,7 +778,7 @@ function createBaseEventIssuedCredits(): EventIssuedCredits {
   return {
     issuerId: Long.UZERO,
     projectId: Long.UZERO,
-    creditTypeAbbreviation: "",
+    creditClassAbbreviation: "",
     denom: "",
     amount: Long.UZERO,
     issuerAddress: "",
@@ -924,8 +796,8 @@ export const EventIssuedCredits = {
       writer.uint32(16).uint64(message.projectId);
     }
 
-    if (message.creditTypeAbbreviation !== "") {
-      writer.uint32(26).string(message.creditTypeAbbreviation);
+    if (message.creditClassAbbreviation !== "") {
+      writer.uint32(26).string(message.creditClassAbbreviation);
     }
 
     if (message.denom !== "") {
@@ -965,7 +837,7 @@ export const EventIssuedCredits = {
           break;
 
         case 3:
-          message.creditTypeAbbreviation = reader.string();
+          message.creditClassAbbreviation = reader.string();
           break;
 
         case 4:
@@ -993,41 +865,11 @@ export const EventIssuedCredits = {
     return message;
   },
 
-  fromJSON(object: any): EventIssuedCredits {
-    return {
-      issuerId: isSet(object.issuerId) ? Long.fromValue(object.issuerId) : Long.UZERO,
-      projectId: isSet(object.projectId) ? Long.fromValue(object.projectId) : Long.UZERO,
-      creditTypeAbbreviation: isSet(object.creditTypeAbbreviation) ? String(object.creditTypeAbbreviation) : "",
-      denom: isSet(object.denom) ? String(object.denom) : "",
-      amount: isSet(object.amount) ? Long.fromValue(object.amount) : Long.UZERO,
-      issuerAddress: isSet(object.issuerAddress) ? String(object.issuerAddress) : "",
-      metadataUris: Array.isArray(object?.metadataUris) ? object.metadataUris.map((e: any) => String(e)) : []
-    };
-  },
-
-  toJSON(message: EventIssuedCredits): unknown {
-    const obj: any = {};
-    message.issuerId !== undefined && (obj.issuerId = (message.issuerId || Long.UZERO).toString());
-    message.projectId !== undefined && (obj.projectId = (message.projectId || Long.UZERO).toString());
-    message.creditTypeAbbreviation !== undefined && (obj.creditTypeAbbreviation = message.creditTypeAbbreviation);
-    message.denom !== undefined && (obj.denom = message.denom);
-    message.amount !== undefined && (obj.amount = (message.amount || Long.UZERO).toString());
-    message.issuerAddress !== undefined && (obj.issuerAddress = message.issuerAddress);
-
-    if (message.metadataUris) {
-      obj.metadataUris = message.metadataUris.map(e => e);
-    } else {
-      obj.metadataUris = [];
-    }
-
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventIssuedCredits>): EventIssuedCredits {
+  fromPartial(object: DeepPartial<EventIssuedCredits>): EventIssuedCredits {
     const message = createBaseEventIssuedCredits();
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
     message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
-    message.creditTypeAbbreviation = object.creditTypeAbbreviation ?? "";
+    message.creditClassAbbreviation = object.creditClassAbbreviation ?? "";
     message.denom = object.denom ?? "";
     message.amount = object.amount !== undefined && object.amount !== null ? Long.fromValue(object.amount) : Long.UZERO;
     message.issuerAddress = object.issuerAddress ?? "";
@@ -1044,7 +886,7 @@ function createBaseEventTransferCredits(): EventTransferCredits {
     denom: "",
     amount: Long.UZERO,
     issuerId: Long.UZERO,
-    creditTypeAbbreviation: ""
+    creditClassAbbreviation: ""
   };
 }
 
@@ -1070,8 +912,8 @@ export const EventTransferCredits = {
       writer.uint32(40).uint64(message.issuerId);
     }
 
-    if (message.creditTypeAbbreviation !== "") {
-      writer.uint32(50).string(message.creditTypeAbbreviation);
+    if (message.creditClassAbbreviation !== "") {
+      writer.uint32(50).string(message.creditClassAbbreviation);
     }
 
     return writer;
@@ -1107,7 +949,7 @@ export const EventTransferCredits = {
           break;
 
         case 6:
-          message.creditTypeAbbreviation = reader.string();
+          message.creditClassAbbreviation = reader.string();
           break;
 
         default:
@@ -1119,36 +961,14 @@ export const EventTransferCredits = {
     return message;
   },
 
-  fromJSON(object: any): EventTransferCredits {
-    return {
-      sender: isSet(object.sender) ? String(object.sender) : "",
-      recipient: isSet(object.recipient) ? String(object.recipient) : "",
-      denom: isSet(object.denom) ? String(object.denom) : "",
-      amount: isSet(object.amount) ? Long.fromValue(object.amount) : Long.UZERO,
-      issuerId: isSet(object.issuerId) ? Long.fromValue(object.issuerId) : Long.UZERO,
-      creditTypeAbbreviation: isSet(object.creditTypeAbbreviation) ? String(object.creditTypeAbbreviation) : ""
-    };
-  },
-
-  toJSON(message: EventTransferCredits): unknown {
-    const obj: any = {};
-    message.sender !== undefined && (obj.sender = message.sender);
-    message.recipient !== undefined && (obj.recipient = message.recipient);
-    message.denom !== undefined && (obj.denom = message.denom);
-    message.amount !== undefined && (obj.amount = (message.amount || Long.UZERO).toString());
-    message.issuerId !== undefined && (obj.issuerId = (message.issuerId || Long.UZERO).toString());
-    message.creditTypeAbbreviation !== undefined && (obj.creditTypeAbbreviation = message.creditTypeAbbreviation);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventTransferCredits>): EventTransferCredits {
+  fromPartial(object: DeepPartial<EventTransferCredits>): EventTransferCredits {
     const message = createBaseEventTransferCredits();
     message.sender = object.sender ?? "";
     message.recipient = object.recipient ?? "";
     message.denom = object.denom ?? "";
     message.amount = object.amount !== undefined && object.amount !== null ? Long.fromValue(object.amount) : Long.UZERO;
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
-    message.creditTypeAbbreviation = object.creditTypeAbbreviation ?? "";
+    message.creditClassAbbreviation = object.creditClassAbbreviation ?? "";
     return message;
   }
 
@@ -1160,7 +980,7 @@ function createBaseEventRetiredCredits(): EventRetiredCredits {
     denom: "",
     amount: Long.UZERO,
     issuerId: Long.UZERO,
-    creditTypeAbbreviation: ""
+    creditClassAbbreviation: ""
   };
 }
 
@@ -1182,8 +1002,8 @@ export const EventRetiredCredits = {
       writer.uint32(32).uint64(message.issuerId);
     }
 
-    if (message.creditTypeAbbreviation !== "") {
-      writer.uint32(42).string(message.creditTypeAbbreviation);
+    if (message.creditClassAbbreviation !== "") {
+      writer.uint32(42).string(message.creditClassAbbreviation);
     }
 
     return writer;
@@ -1215,7 +1035,7 @@ export const EventRetiredCredits = {
           break;
 
         case 5:
-          message.creditTypeAbbreviation = reader.string();
+          message.creditClassAbbreviation = reader.string();
           break;
 
         default:
@@ -1227,33 +1047,13 @@ export const EventRetiredCredits = {
     return message;
   },
 
-  fromJSON(object: any): EventRetiredCredits {
-    return {
-      owner: isSet(object.owner) ? String(object.owner) : "",
-      denom: isSet(object.denom) ? String(object.denom) : "",
-      amount: isSet(object.amount) ? Long.fromValue(object.amount) : Long.UZERO,
-      issuerId: isSet(object.issuerId) ? Long.fromValue(object.issuerId) : Long.UZERO,
-      creditTypeAbbreviation: isSet(object.creditTypeAbbreviation) ? String(object.creditTypeAbbreviation) : ""
-    };
-  },
-
-  toJSON(message: EventRetiredCredits): unknown {
-    const obj: any = {};
-    message.owner !== undefined && (obj.owner = message.owner);
-    message.denom !== undefined && (obj.denom = message.denom);
-    message.amount !== undefined && (obj.amount = (message.amount || Long.UZERO).toString());
-    message.issuerId !== undefined && (obj.issuerId = (message.issuerId || Long.UZERO).toString());
-    message.creditTypeAbbreviation !== undefined && (obj.creditTypeAbbreviation = message.creditTypeAbbreviation);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventRetiredCredits>): EventRetiredCredits {
+  fromPartial(object: DeepPartial<EventRetiredCredits>): EventRetiredCredits {
     const message = createBaseEventRetiredCredits();
     message.owner = object.owner ?? "";
     message.denom = object.denom ?? "";
     message.amount = object.amount !== undefined && object.amount !== null ? Long.fromValue(object.amount) : Long.UZERO;
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
-    message.creditTypeAbbreviation = object.creditTypeAbbreviation ?? "";
+    message.creditClassAbbreviation = object.creditClassAbbreviation ?? "";
     return message;
   }
 
@@ -1323,25 +1123,7 @@ export const EventCreateApplicant = {
     return message;
   },
 
-  fromJSON(object: any): EventCreateApplicant {
-    return {
-      applicantId: isSet(object.applicantId) ? Long.fromValue(object.applicantId) : Long.UZERO,
-      name: isSet(object.name) ? String(object.name) : "",
-      description: isSet(object.description) ? String(object.description) : "",
-      admin: isSet(object.admin) ? String(object.admin) : ""
-    };
-  },
-
-  toJSON(message: EventCreateApplicant): unknown {
-    const obj: any = {};
-    message.applicantId !== undefined && (obj.applicantId = (message.applicantId || Long.UZERO).toString());
-    message.name !== undefined && (obj.name = message.name);
-    message.description !== undefined && (obj.description = message.description);
-    message.admin !== undefined && (obj.admin = message.admin);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventCreateApplicant>): EventCreateApplicant {
+  fromPartial(object: DeepPartial<EventCreateApplicant>): EventCreateApplicant {
     const message = createBaseEventCreateApplicant();
     message.applicantId = object.applicantId !== undefined && object.applicantId !== null ? Long.fromValue(object.applicantId) : Long.UZERO;
     message.name = object.name ?? "";
@@ -1425,27 +1207,7 @@ export const EventUpdateApplicant = {
     return message;
   },
 
-  fromJSON(object: any): EventUpdateApplicant {
-    return {
-      applicantId: isSet(object.applicantId) ? Long.fromValue(object.applicantId) : Long.UZERO,
-      name: isSet(object.name) ? String(object.name) : "",
-      description: isSet(object.description) ? String(object.description) : "",
-      admin: isSet(object.admin) ? String(object.admin) : "",
-      updater: isSet(object.updater) ? String(object.updater) : ""
-    };
-  },
-
-  toJSON(message: EventUpdateApplicant): unknown {
-    const obj: any = {};
-    message.applicantId !== undefined && (obj.applicantId = (message.applicantId || Long.UZERO).toString());
-    message.name !== undefined && (obj.name = message.name);
-    message.description !== undefined && (obj.description = message.description);
-    message.admin !== undefined && (obj.admin = message.admin);
-    message.updater !== undefined && (obj.updater = message.updater);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventUpdateApplicant>): EventUpdateApplicant {
+  fromPartial(object: DeepPartial<EventUpdateApplicant>): EventUpdateApplicant {
     const message = createBaseEventUpdateApplicant();
     message.applicantId = object.applicantId !== undefined && object.applicantId !== null ? Long.fromValue(object.applicantId) : Long.UZERO;
     message.name = object.name ?? "";
@@ -1457,7 +1219,7 @@ export const EventUpdateApplicant = {
 
 };
 
-function createBaseEventCreateCreditType(): EventCreateCreditType {
+function createBaseEventCreateCreditClass(): EventCreateCreditClass {
   return {
     creator: "",
     abbreviation: "",
@@ -1466,8 +1228,8 @@ function createBaseEventCreateCreditType(): EventCreateCreditType {
   };
 }
 
-export const EventCreateCreditType = {
-  encode(message: EventCreateCreditType, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const EventCreateCreditClass = {
+  encode(message: EventCreateCreditClass, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
@@ -1487,10 +1249,10 @@ export const EventCreateCreditType = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): EventCreateCreditType {
+  decode(input: _m0.Reader | Uint8Array, length?: number): EventCreateCreditClass {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseEventCreateCreditType();
+    const message = createBaseEventCreateCreditClass();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1521,26 +1283,8 @@ export const EventCreateCreditType = {
     return message;
   },
 
-  fromJSON(object: any): EventCreateCreditType {
-    return {
-      creator: isSet(object.creator) ? String(object.creator) : "",
-      abbreviation: isSet(object.abbreviation) ? String(object.abbreviation) : "",
-      issuerId: isSet(object.issuerId) ? Long.fromValue(object.issuerId) : Long.UZERO,
-      name: isSet(object.name) ? String(object.name) : ""
-    };
-  },
-
-  toJSON(message: EventCreateCreditType): unknown {
-    const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.abbreviation !== undefined && (obj.abbreviation = message.abbreviation);
-    message.issuerId !== undefined && (obj.issuerId = (message.issuerId || Long.UZERO).toString());
-    message.name !== undefined && (obj.name = message.name);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventCreateCreditType>): EventCreateCreditType {
-    const message = createBaseEventCreateCreditType();
+  fromPartial(object: DeepPartial<EventCreateCreditClass>): EventCreateCreditClass {
+    const message = createBaseEventCreateCreditClass();
     message.creator = object.creator ?? "";
     message.abbreviation = object.abbreviation ?? "";
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? Long.fromValue(object.issuerId) : Long.UZERO;
@@ -1550,7 +1294,7 @@ export const EventCreateCreditType = {
 
 };
 
-function createBaseEventUpdateCreditType(): EventUpdateCreditType {
+function createBaseEventUpdateCreditClass(): EventUpdateCreditClass {
   return {
     updater: "",
     abbreviation: "",
@@ -1558,8 +1302,8 @@ function createBaseEventUpdateCreditType(): EventUpdateCreditType {
   };
 }
 
-export const EventUpdateCreditType = {
-  encode(message: EventUpdateCreditType, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const EventUpdateCreditClass = {
+  encode(message: EventUpdateCreditClass, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.updater !== "") {
       writer.uint32(10).string(message.updater);
     }
@@ -1575,10 +1319,10 @@ export const EventUpdateCreditType = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): EventUpdateCreditType {
+  decode(input: _m0.Reader | Uint8Array, length?: number): EventUpdateCreditClass {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseEventUpdateCreditType();
+    const message = createBaseEventUpdateCreditClass();
 
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1605,24 +1349,8 @@ export const EventUpdateCreditType = {
     return message;
   },
 
-  fromJSON(object: any): EventUpdateCreditType {
-    return {
-      updater: isSet(object.updater) ? String(object.updater) : "",
-      abbreviation: isSet(object.abbreviation) ? String(object.abbreviation) : "",
-      name: isSet(object.name) ? String(object.name) : ""
-    };
-  },
-
-  toJSON(message: EventUpdateCreditType): unknown {
-    const obj: any = {};
-    message.updater !== undefined && (obj.updater = message.updater);
-    message.abbreviation !== undefined && (obj.abbreviation = message.abbreviation);
-    message.name !== undefined && (obj.name = message.name);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventUpdateCreditType>): EventUpdateCreditType {
-    const message = createBaseEventUpdateCreditType();
+  fromPartial(object: DeepPartial<EventUpdateCreditClass>): EventUpdateCreditClass {
+    const message = createBaseEventUpdateCreditClass();
     message.updater = object.updater ?? "";
     message.abbreviation = object.abbreviation ?? "";
     message.name = object.name ?? "";

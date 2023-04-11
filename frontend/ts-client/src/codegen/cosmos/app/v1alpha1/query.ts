@@ -1,6 +1,6 @@
 import { Config, ConfigSDKType } from "./config";
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../../helpers";
+import { DeepPartial } from "../../../helpers";
 /** QueryConfigRequest is the Query/Config request type. */
 
 export interface QueryConfigRequest {}
@@ -47,16 +47,7 @@ export const QueryConfigRequest = {
     return message;
   },
 
-  fromJSON(_: any): QueryConfigRequest {
-    return {};
-  },
-
-  toJSON(_: QueryConfigRequest): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<QueryConfigRequest>): QueryConfigRequest {
+  fromPartial(_: DeepPartial<QueryConfigRequest>): QueryConfigRequest {
     const message = createBaseQueryConfigRequest();
     return message;
   }
@@ -100,19 +91,7 @@ export const QueryConfigResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryConfigResponse {
-    return {
-      config: isSet(object.config) ? Config.fromJSON(object.config) : undefined
-    };
-  },
-
-  toJSON(message: QueryConfigResponse): unknown {
-    const obj: any = {};
-    message.config !== undefined && (obj.config = message.config ? Config.toJSON(message.config) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryConfigResponse>): QueryConfigResponse {
+  fromPartial(object: DeepPartial<QueryConfigResponse>): QueryConfigResponse {
     const message = createBaseQueryConfigResponse();
     message.config = object.config !== undefined && object.config !== null ? Config.fromPartial(object.config) : undefined;
     return message;

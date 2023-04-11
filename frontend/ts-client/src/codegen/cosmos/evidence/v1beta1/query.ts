@@ -1,7 +1,7 @@
 import { PageRequest, PageRequestSDKType, PageResponse, PageResponseSDKType } from "../../base/query/v1beta1/pagination";
 import { Any, AnySDKType } from "../../../google/protobuf/any";
 import * as _m0 from "protobufjs/minimal";
-import { isSet, bytesFromBase64, base64FromBytes } from "../../../helpers";
+import { DeepPartial } from "../../../helpers";
 /** QueryEvidenceRequest is the request type for the Query/Evidence RPC method. */
 
 export interface QueryEvidenceRequest {
@@ -139,21 +139,7 @@ export const QueryEvidenceRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryEvidenceRequest {
-    return {
-      evidenceHash: isSet(object.evidenceHash) ? bytesFromBase64(object.evidenceHash) : new Uint8Array(),
-      hash: isSet(object.hash) ? String(object.hash) : ""
-    };
-  },
-
-  toJSON(message: QueryEvidenceRequest): unknown {
-    const obj: any = {};
-    message.evidenceHash !== undefined && (obj.evidenceHash = base64FromBytes(message.evidenceHash !== undefined ? message.evidenceHash : new Uint8Array()));
-    message.hash !== undefined && (obj.hash = message.hash);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryEvidenceRequest>): QueryEvidenceRequest {
+  fromPartial(object: DeepPartial<QueryEvidenceRequest>): QueryEvidenceRequest {
     const message = createBaseQueryEvidenceRequest();
     message.evidenceHash = object.evidenceHash ?? new Uint8Array();
     message.hash = object.hash ?? "";
@@ -199,19 +185,7 @@ export const QueryEvidenceResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryEvidenceResponse {
-    return {
-      evidence: isSet(object.evidence) ? Any.fromJSON(object.evidence) : undefined
-    };
-  },
-
-  toJSON(message: QueryEvidenceResponse): unknown {
-    const obj: any = {};
-    message.evidence !== undefined && (obj.evidence = message.evidence ? Any.toJSON(message.evidence) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryEvidenceResponse>): QueryEvidenceResponse {
+  fromPartial(object: DeepPartial<QueryEvidenceResponse>): QueryEvidenceResponse {
     const message = createBaseQueryEvidenceResponse();
     message.evidence = object.evidence !== undefined && object.evidence !== null ? Any.fromPartial(object.evidence) : undefined;
     return message;
@@ -256,19 +230,7 @@ export const QueryAllEvidenceRequest = {
     return message;
   },
 
-  fromJSON(object: any): QueryAllEvidenceRequest {
-    return {
-      pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined
-    };
-  },
-
-  toJSON(message: QueryAllEvidenceRequest): unknown {
-    const obj: any = {};
-    message.pagination !== undefined && (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryAllEvidenceRequest>): QueryAllEvidenceRequest {
+  fromPartial(object: DeepPartial<QueryAllEvidenceRequest>): QueryAllEvidenceRequest {
     const message = createBaseQueryAllEvidenceRequest();
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
     return message;
@@ -322,27 +284,7 @@ export const QueryAllEvidenceResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryAllEvidenceResponse {
-    return {
-      evidence: Array.isArray(object?.evidence) ? object.evidence.map((e: any) => Any.fromJSON(e)) : [],
-      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined
-    };
-  },
-
-  toJSON(message: QueryAllEvidenceResponse): unknown {
-    const obj: any = {};
-
-    if (message.evidence) {
-      obj.evidence = message.evidence.map(e => e ? Any.toJSON(e) : undefined);
-    } else {
-      obj.evidence = [];
-    }
-
-    message.pagination !== undefined && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryAllEvidenceResponse>): QueryAllEvidenceResponse {
+  fromPartial(object: DeepPartial<QueryAllEvidenceResponse>): QueryAllEvidenceResponse {
     const message = createBaseQueryAllEvidenceResponse();
     message.evidence = object.evidence?.map(e => Any.fromPartial(e)) || [];
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;

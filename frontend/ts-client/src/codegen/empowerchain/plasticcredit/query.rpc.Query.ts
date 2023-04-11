@@ -1,15 +1,15 @@
 import { Rpc } from "../../helpers";
 import * as _m0 from "protobufjs/minimal";
 import { QueryClient, createProtobufRpcClient } from "@cosmjs/stargate";
-import { QueryParamsRequest, QueryParamsResponse, QueryIssuersRequest, QueryIssuersResponse, QueryIssuerRequest, QueryIssuerResponse, QueryApplicantsRequest, QueryApplicantsResponse, QueryApplicantRequest, QueryApplicantResponse, QueryCreditTypesRequest, QueryCreditTypesResponse, QueryCreditTypeRequest, QueryCreditTypeResponse, QueryProjectsRequest, QueryProjectsResponse, QueryProjectRequest, QueryProjectResponse, QueryCreditCollectionRequest, QueryCreditCollectionResponse, QueryCreditBalancesRequest, QueryCreditBalancesResponse, QueryCreditBalanceRequest, QueryCreditBalanceResponse } from "./query";
+import { QueryParamsRequest, QueryParamsResponse, QueryIssuersRequest, QueryIssuersResponse, QueryIssuerRequest, QueryIssuerResponse, QueryApplicantsRequest, QueryApplicantsResponse, QueryApplicantRequest, QueryApplicantResponse, QueryCreditClassesRequest, QueryCreditClassesResponse, QueryCreditClassRequest, QueryCreditClassResponse, QueryProjectsRequest, QueryProjectsResponse, QueryProjectRequest, QueryProjectResponse, QueryCreditCollectionRequest, QueryCreditCollectionResponse, QueryCreditBalancesRequest, QueryCreditBalancesResponse, QueryCreditBalanceRequest, QueryCreditBalanceResponse } from "./query";
 export interface Query {
   params(request?: QueryParamsRequest): Promise<QueryParamsResponse>;
   issuers(request?: QueryIssuersRequest): Promise<QueryIssuersResponse>;
   issuer(request: QueryIssuerRequest): Promise<QueryIssuerResponse>;
   applicants(request?: QueryApplicantsRequest): Promise<QueryApplicantsResponse>;
   applicant(request: QueryApplicantRequest): Promise<QueryApplicantResponse>;
-  creditTypes(request?: QueryCreditTypesRequest): Promise<QueryCreditTypesResponse>;
-  creditType(request: QueryCreditTypeRequest): Promise<QueryCreditTypeResponse>;
+  creditClasses(request?: QueryCreditClassesRequest): Promise<QueryCreditClassesResponse>;
+  creditClass(request: QueryCreditClassRequest): Promise<QueryCreditClassResponse>;
   projects(request?: QueryProjectsRequest): Promise<QueryProjectsResponse>;
   project(request: QueryProjectRequest): Promise<QueryProjectResponse>;
   creditCollection(request: QueryCreditCollectionRequest): Promise<QueryCreditCollectionResponse>;
@@ -26,8 +26,8 @@ export class QueryClientImpl implements Query {
     this.issuer = this.issuer.bind(this);
     this.applicants = this.applicants.bind(this);
     this.applicant = this.applicant.bind(this);
-    this.creditTypes = this.creditTypes.bind(this);
-    this.creditType = this.creditType.bind(this);
+    this.creditClasses = this.creditClasses.bind(this);
+    this.creditClass = this.creditClass.bind(this);
     this.projects = this.projects.bind(this);
     this.project = this.project.bind(this);
     this.creditCollection = this.creditCollection.bind(this);
@@ -69,18 +69,18 @@ export class QueryClientImpl implements Query {
     return promise.then(data => QueryApplicantResponse.decode(new _m0.Reader(data)));
   }
 
-  creditTypes(request: QueryCreditTypesRequest = {
+  creditClasses(request: QueryCreditClassesRequest = {
     pagination: undefined
-  }): Promise<QueryCreditTypesResponse> {
-    const data = QueryCreditTypesRequest.encode(request).finish();
-    const promise = this.rpc.request("empowerchain.plasticcredit.Query", "CreditTypes", data);
-    return promise.then(data => QueryCreditTypesResponse.decode(new _m0.Reader(data)));
+  }): Promise<QueryCreditClassesResponse> {
+    const data = QueryCreditClassesRequest.encode(request).finish();
+    const promise = this.rpc.request("empowerchain.plasticcredit.Query", "CreditClasses", data);
+    return promise.then(data => QueryCreditClassesResponse.decode(new _m0.Reader(data)));
   }
 
-  creditType(request: QueryCreditTypeRequest): Promise<QueryCreditTypeResponse> {
-    const data = QueryCreditTypeRequest.encode(request).finish();
-    const promise = this.rpc.request("empowerchain.plasticcredit.Query", "CreditType", data);
-    return promise.then(data => QueryCreditTypeResponse.decode(new _m0.Reader(data)));
+  creditClass(request: QueryCreditClassRequest): Promise<QueryCreditClassResponse> {
+    const data = QueryCreditClassRequest.encode(request).finish();
+    const promise = this.rpc.request("empowerchain.plasticcredit.Query", "CreditClass", data);
+    return promise.then(data => QueryCreditClassResponse.decode(new _m0.Reader(data)));
   }
 
   projects(request: QueryProjectsRequest = {
@@ -142,12 +142,12 @@ export const createRpcQueryExtension = (base: QueryClient) => {
       return queryService.applicant(request);
     },
 
-    creditTypes(request?: QueryCreditTypesRequest): Promise<QueryCreditTypesResponse> {
-      return queryService.creditTypes(request);
+    creditClasses(request?: QueryCreditClassesRequest): Promise<QueryCreditClassesResponse> {
+      return queryService.creditClasses(request);
     },
 
-    creditType(request: QueryCreditTypeRequest): Promise<QueryCreditTypeResponse> {
-      return queryService.creditType(request);
+    creditClass(request: QueryCreditClassRequest): Promise<QueryCreditClassResponse> {
+      return queryService.creditClass(request);
     },
 
     projects(request?: QueryProjectsRequest): Promise<QueryProjectsResponse> {

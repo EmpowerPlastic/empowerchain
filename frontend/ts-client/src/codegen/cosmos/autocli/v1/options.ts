@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { isSet, isObject } from "../../../helpers";
+import { DeepPartial } from "../../../helpers";
 /** ModuleOptions describes the CLI options for a Cosmos SDK module. */
 
 export interface ModuleOptions {
@@ -359,21 +359,7 @@ export const ModuleOptions = {
     return message;
   },
 
-  fromJSON(object: any): ModuleOptions {
-    return {
-      tx: isSet(object.tx) ? ServiceCommandDescriptor.fromJSON(object.tx) : undefined,
-      query: isSet(object.query) ? ServiceCommandDescriptor.fromJSON(object.query) : undefined
-    };
-  },
-
-  toJSON(message: ModuleOptions): unknown {
-    const obj: any = {};
-    message.tx !== undefined && (obj.tx = message.tx ? ServiceCommandDescriptor.toJSON(message.tx) : undefined);
-    message.query !== undefined && (obj.query = message.query ? ServiceCommandDescriptor.toJSON(message.query) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<ModuleOptions>): ModuleOptions {
+  fromPartial(object: DeepPartial<ModuleOptions>): ModuleOptions {
     const message = createBaseModuleOptions();
     message.tx = object.tx !== undefined && object.tx !== null ? ServiceCommandDescriptor.fromPartial(object.tx) : undefined;
     message.query = object.query !== undefined && object.query !== null ? ServiceCommandDescriptor.fromPartial(object.query) : undefined;
@@ -428,21 +414,7 @@ export const ServiceCommandDescriptor_SubCommandsEntry = {
     return message;
   },
 
-  fromJSON(object: any): ServiceCommandDescriptor_SubCommandsEntry {
-    return {
-      key: isSet(object.key) ? String(object.key) : "",
-      value: isSet(object.value) ? ServiceCommandDescriptor.fromJSON(object.value) : undefined
-    };
-  },
-
-  toJSON(message: ServiceCommandDescriptor_SubCommandsEntry): unknown {
-    const obj: any = {};
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined && (obj.value = message.value ? ServiceCommandDescriptor.toJSON(message.value) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<ServiceCommandDescriptor_SubCommandsEntry>): ServiceCommandDescriptor_SubCommandsEntry {
+  fromPartial(object: DeepPartial<ServiceCommandDescriptor_SubCommandsEntry>): ServiceCommandDescriptor_SubCommandsEntry {
     const message = createBaseServiceCommandDescriptor_SubCommandsEntry();
     message.key = object.key ?? "";
     message.value = object.value !== undefined && object.value !== null ? ServiceCommandDescriptor.fromPartial(object.value) : undefined;
@@ -513,41 +485,7 @@ export const ServiceCommandDescriptor = {
     return message;
   },
 
-  fromJSON(object: any): ServiceCommandDescriptor {
-    return {
-      service: isSet(object.service) ? String(object.service) : "",
-      rpcCommandOptions: Array.isArray(object?.rpcCommandOptions) ? object.rpcCommandOptions.map((e: any) => RpcCommandOptions.fromJSON(e)) : [],
-      subCommands: isObject(object.subCommands) ? Object.entries(object.subCommands).reduce<{
-        [key: string]: ServiceCommandDescriptor;
-      }>((acc, [key, value]) => {
-        acc[key] = ServiceCommandDescriptor.fromJSON(value);
-        return acc;
-      }, {}) : {}
-    };
-  },
-
-  toJSON(message: ServiceCommandDescriptor): unknown {
-    const obj: any = {};
-    message.service !== undefined && (obj.service = message.service);
-
-    if (message.rpcCommandOptions) {
-      obj.rpcCommandOptions = message.rpcCommandOptions.map(e => e ? RpcCommandOptions.toJSON(e) : undefined);
-    } else {
-      obj.rpcCommandOptions = [];
-    }
-
-    obj.subCommands = {};
-
-    if (message.subCommands) {
-      Object.entries(message.subCommands).forEach(([k, v]) => {
-        obj.subCommands[k] = ServiceCommandDescriptor.toJSON(v);
-      });
-    }
-
-    return obj;
-  },
-
-  fromPartial(object: Partial<ServiceCommandDescriptor>): ServiceCommandDescriptor {
+  fromPartial(object: DeepPartial<ServiceCommandDescriptor>): ServiceCommandDescriptor {
     const message = createBaseServiceCommandDescriptor();
     message.service = object.service ?? "";
     message.rpcCommandOptions = object.rpcCommandOptions?.map(e => RpcCommandOptions.fromPartial(e)) || [];
@@ -611,21 +549,7 @@ export const RpcCommandOptions_FlagOptionsEntry = {
     return message;
   },
 
-  fromJSON(object: any): RpcCommandOptions_FlagOptionsEntry {
-    return {
-      key: isSet(object.key) ? String(object.key) : "",
-      value: isSet(object.value) ? FlagOptions.fromJSON(object.value) : undefined
-    };
-  },
-
-  toJSON(message: RpcCommandOptions_FlagOptionsEntry): unknown {
-    const obj: any = {};
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined && (obj.value = message.value ? FlagOptions.toJSON(message.value) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<RpcCommandOptions_FlagOptionsEntry>): RpcCommandOptions_FlagOptionsEntry {
+  fromPartial(object: DeepPartial<RpcCommandOptions_FlagOptionsEntry>): RpcCommandOptions_FlagOptionsEntry {
     const message = createBaseRpcCommandOptions_FlagOptionsEntry();
     message.key = object.key ?? "";
     message.value = object.value !== undefined && object.value !== null ? FlagOptions.fromPartial(object.value) : undefined;
@@ -778,69 +702,7 @@ export const RpcCommandOptions = {
     return message;
   },
 
-  fromJSON(object: any): RpcCommandOptions {
-    return {
-      rpcMethod: isSet(object.rpcMethod) ? String(object.rpcMethod) : "",
-      use: isSet(object.use) ? String(object.use) : "",
-      long: isSet(object.long) ? String(object.long) : "",
-      short: isSet(object.short) ? String(object.short) : "",
-      example: isSet(object.example) ? String(object.example) : "",
-      alias: Array.isArray(object?.alias) ? object.alias.map((e: any) => String(e)) : [],
-      suggestFor: Array.isArray(object?.suggestFor) ? object.suggestFor.map((e: any) => String(e)) : [],
-      deprecated: isSet(object.deprecated) ? String(object.deprecated) : "",
-      version: isSet(object.version) ? String(object.version) : "",
-      flagOptions: isObject(object.flagOptions) ? Object.entries(object.flagOptions).reduce<{
-        [key: string]: FlagOptions;
-      }>((acc, [key, value]) => {
-        acc[key] = FlagOptions.fromJSON(value);
-        return acc;
-      }, {}) : {},
-      positionalArgs: Array.isArray(object?.positionalArgs) ? object.positionalArgs.map((e: any) => PositionalArgDescriptor.fromJSON(e)) : [],
-      skip: isSet(object.skip) ? Boolean(object.skip) : false
-    };
-  },
-
-  toJSON(message: RpcCommandOptions): unknown {
-    const obj: any = {};
-    message.rpcMethod !== undefined && (obj.rpcMethod = message.rpcMethod);
-    message.use !== undefined && (obj.use = message.use);
-    message.long !== undefined && (obj.long = message.long);
-    message.short !== undefined && (obj.short = message.short);
-    message.example !== undefined && (obj.example = message.example);
-
-    if (message.alias) {
-      obj.alias = message.alias.map(e => e);
-    } else {
-      obj.alias = [];
-    }
-
-    if (message.suggestFor) {
-      obj.suggestFor = message.suggestFor.map(e => e);
-    } else {
-      obj.suggestFor = [];
-    }
-
-    message.deprecated !== undefined && (obj.deprecated = message.deprecated);
-    message.version !== undefined && (obj.version = message.version);
-    obj.flagOptions = {};
-
-    if (message.flagOptions) {
-      Object.entries(message.flagOptions).forEach(([k, v]) => {
-        obj.flagOptions[k] = FlagOptions.toJSON(v);
-      });
-    }
-
-    if (message.positionalArgs) {
-      obj.positionalArgs = message.positionalArgs.map(e => e ? PositionalArgDescriptor.toJSON(e) : undefined);
-    } else {
-      obj.positionalArgs = [];
-    }
-
-    message.skip !== undefined && (obj.skip = message.skip);
-    return obj;
-  },
-
-  fromPartial(object: Partial<RpcCommandOptions>): RpcCommandOptions {
+  fromPartial(object: DeepPartial<RpcCommandOptions>): RpcCommandOptions {
     const message = createBaseRpcCommandOptions();
     message.rpcMethod = object.rpcMethod ?? "";
     message.use = object.use ?? "";
@@ -967,33 +829,7 @@ export const FlagOptions = {
     return message;
   },
 
-  fromJSON(object: any): FlagOptions {
-    return {
-      name: isSet(object.name) ? String(object.name) : "",
-      shorthand: isSet(object.shorthand) ? String(object.shorthand) : "",
-      usage: isSet(object.usage) ? String(object.usage) : "",
-      defaultValue: isSet(object.defaultValue) ? String(object.defaultValue) : "",
-      noOptDefaultValue: isSet(object.noOptDefaultValue) ? String(object.noOptDefaultValue) : "",
-      deprecated: isSet(object.deprecated) ? String(object.deprecated) : "",
-      shorthandDeprecated: isSet(object.shorthandDeprecated) ? String(object.shorthandDeprecated) : "",
-      hidden: isSet(object.hidden) ? Boolean(object.hidden) : false
-    };
-  },
-
-  toJSON(message: FlagOptions): unknown {
-    const obj: any = {};
-    message.name !== undefined && (obj.name = message.name);
-    message.shorthand !== undefined && (obj.shorthand = message.shorthand);
-    message.usage !== undefined && (obj.usage = message.usage);
-    message.defaultValue !== undefined && (obj.defaultValue = message.defaultValue);
-    message.noOptDefaultValue !== undefined && (obj.noOptDefaultValue = message.noOptDefaultValue);
-    message.deprecated !== undefined && (obj.deprecated = message.deprecated);
-    message.shorthandDeprecated !== undefined && (obj.shorthandDeprecated = message.shorthandDeprecated);
-    message.hidden !== undefined && (obj.hidden = message.hidden);
-    return obj;
-  },
-
-  fromPartial(object: Partial<FlagOptions>): FlagOptions {
+  fromPartial(object: DeepPartial<FlagOptions>): FlagOptions {
     const message = createBaseFlagOptions();
     message.name = object.name ?? "";
     message.shorthand = object.shorthand ?? "";
@@ -1054,21 +890,7 @@ export const PositionalArgDescriptor = {
     return message;
   },
 
-  fromJSON(object: any): PositionalArgDescriptor {
-    return {
-      protoField: isSet(object.protoField) ? String(object.protoField) : "",
-      varargs: isSet(object.varargs) ? Boolean(object.varargs) : false
-    };
-  },
-
-  toJSON(message: PositionalArgDescriptor): unknown {
-    const obj: any = {};
-    message.protoField !== undefined && (obj.protoField = message.protoField);
-    message.varargs !== undefined && (obj.varargs = message.varargs);
-    return obj;
-  },
-
-  fromPartial(object: Partial<PositionalArgDescriptor>): PositionalArgDescriptor {
+  fromPartial(object: DeepPartial<PositionalArgDescriptor>): PositionalArgDescriptor {
     const message = createBasePositionalArgDescriptor();
     message.protoField = object.protoField ?? "";
     message.varargs = object.varargs ?? false;

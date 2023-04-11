@@ -1,13 +1,13 @@
 import { AminoMsg } from "@cosmjs/amino";
 import { Long } from "../../helpers";
-import { MsgUpdateParams, MsgCreateIssuer, MsgUpdateIssuer, MsgCreateApplicant, MsgUpdateApplicant, MsgCreateCreditType, MsgUpdateCreditType, MsgCreateProject, MsgUpdateProject, MsgApproveProject, MsgRejectProject, MsgSuspendProject, MsgIssueCredits, MsgTransferCredits, MsgRetireCredits } from "./tx";
+import { MsgUpdateParams, MsgCreateIssuer, MsgUpdateIssuer, MsgCreateApplicant, MsgUpdateApplicant, MsgCreateCreditClass, MsgUpdateCreditClass, MsgCreateProject, MsgUpdateProject, MsgApproveProject, MsgRejectProject, MsgSuspendProject, MsgIssueCredits, MsgTransferCredits, MsgRetireCredits } from "./tx";
 export interface AminoMsgUpdateParams extends AminoMsg {
   type: "/empowerchain.plasticcredit.MsgUpdateParams";
   value: {
     authority: string;
     params: {
       issuer_creator: string;
-      credit_type_creation_fee: {
+      credit_class_creation_fee: {
         denom: string;
         amount: string;
       };
@@ -51,8 +51,8 @@ export interface AminoMsgUpdateApplicant extends AminoMsg {
     admin: string;
   };
 }
-export interface AminoMsgCreateCreditType extends AminoMsg {
-  type: "/empowerchain.plasticcredit.MsgCreateCreditType";
+export interface AminoMsgCreateCreditClass extends AminoMsg {
+  type: "/empowerchain.plasticcredit.MsgCreateCreditClass";
   value: {
     creator: string;
     abbreviation: string;
@@ -60,8 +60,8 @@ export interface AminoMsgCreateCreditType extends AminoMsg {
     name: string;
   };
 }
-export interface AminoMsgUpdateCreditType extends AminoMsg {
-  type: "/empowerchain.plasticcredit.MsgUpdateCreditType";
+export interface AminoMsgUpdateCreditClass extends AminoMsg {
+  type: "/empowerchain.plasticcredit.MsgUpdateCreditClass";
   value: {
     updater: string;
     abbreviation: string;
@@ -73,7 +73,7 @@ export interface AminoMsgCreateProject extends AminoMsg {
   value: {
     creator: string;
     applicant_id: string;
-    credit_type_abbreviation: string;
+    credit_class_abbreviation: string;
     name: string;
   };
 }
@@ -145,9 +145,9 @@ export const AminoConverter = {
         authority,
         params: {
           issuer_creator: params.issuerCreator,
-          credit_type_creation_fee: {
-            denom: params.creditTypeCreationFee.denom,
-            amount: Long.fromValue(params.creditTypeCreationFee.amount).toString()
+          credit_class_creation_fee: {
+            denom: params.creditClassCreationFee.denom,
+            amount: Long.fromValue(params.creditClassCreationFee.amount).toString()
           }
         }
       };
@@ -160,9 +160,9 @@ export const AminoConverter = {
         authority,
         params: {
           issuerCreator: params.issuer_creator,
-          creditTypeCreationFee: {
-            denom: params.credit_type_creation_fee.denom,
-            amount: params.credit_type_creation_fee.amount
+          creditClassCreationFee: {
+            denom: params.credit_class_creation_fee.denom,
+            amount: params.credit_class_creation_fee.amount
           }
         }
       };
@@ -288,14 +288,14 @@ export const AminoConverter = {
       };
     }
   },
-  "/empowerchain.plasticcredit.MsgCreateCreditType": {
-    aminoType: "/empowerchain.plasticcredit.MsgCreateCreditType",
+  "/empowerchain.plasticcredit.MsgCreateCreditClass": {
+    aminoType: "/empowerchain.plasticcredit.MsgCreateCreditClass",
     toAmino: ({
       creator,
       abbreviation,
       issuerId,
       name
-    }: MsgCreateCreditType): AminoMsgCreateCreditType["value"] => {
+    }: MsgCreateCreditClass): AminoMsgCreateCreditClass["value"] => {
       return {
         creator,
         abbreviation,
@@ -308,7 +308,7 @@ export const AminoConverter = {
       abbreviation,
       issuer_id,
       name
-    }: AminoMsgCreateCreditType["value"]): MsgCreateCreditType => {
+    }: AminoMsgCreateCreditClass["value"]): MsgCreateCreditClass => {
       return {
         creator,
         abbreviation,
@@ -317,13 +317,13 @@ export const AminoConverter = {
       };
     }
   },
-  "/empowerchain.plasticcredit.MsgUpdateCreditType": {
-    aminoType: "/empowerchain.plasticcredit.MsgUpdateCreditType",
+  "/empowerchain.plasticcredit.MsgUpdateCreditClass": {
+    aminoType: "/empowerchain.plasticcredit.MsgUpdateCreditClass",
     toAmino: ({
       updater,
       abbreviation,
       name
-    }: MsgUpdateCreditType): AminoMsgUpdateCreditType["value"] => {
+    }: MsgUpdateCreditClass): AminoMsgUpdateCreditClass["value"] => {
       return {
         updater,
         abbreviation,
@@ -334,7 +334,7 @@ export const AminoConverter = {
       updater,
       abbreviation,
       name
-    }: AminoMsgUpdateCreditType["value"]): MsgUpdateCreditType => {
+    }: AminoMsgUpdateCreditClass["value"]): MsgUpdateCreditClass => {
       return {
         updater,
         abbreviation,
@@ -347,26 +347,26 @@ export const AminoConverter = {
     toAmino: ({
       creator,
       applicantId,
-      creditTypeAbbreviation,
+      creditClassAbbreviation,
       name
     }: MsgCreateProject): AminoMsgCreateProject["value"] => {
       return {
         creator,
         applicant_id: applicantId.toString(),
-        credit_type_abbreviation: creditTypeAbbreviation,
+        credit_class_abbreviation: creditClassAbbreviation,
         name
       };
     },
     fromAmino: ({
       creator,
       applicant_id,
-      credit_type_abbreviation,
+      credit_class_abbreviation,
       name
     }: AminoMsgCreateProject["value"]): MsgCreateProject => {
       return {
         creator,
         applicantId: Long.fromString(applicant_id),
-        creditTypeAbbreviation: credit_type_abbreviation,
+        creditClassAbbreviation: credit_class_abbreviation,
         name
       };
     }

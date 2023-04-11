@@ -1,6 +1,6 @@
-import { Timestamp, TimestampSDKType } from "../../google/protobuf/timestamp";
+import { Timestamp } from "../../google/protobuf/timestamp";
 import * as _m0 from "protobufjs/minimal";
-import { isSet, fromJsonTimestamp, fromTimestamp } from "../../helpers";
+import { toTimestamp, fromTimestamp, DeepPartial } from "../../helpers";
 /**
  * ProofMetadata is the metadata attached to a specific data proof
  * Because the proof itself is also the key, the data structure is hash -> ProofMetadata
@@ -9,7 +9,7 @@ import { isSet, fromJsonTimestamp, fromTimestamp } from "../../helpers";
 
 export interface ProofMetadata {
   /** timestamp is the time the proof was added on-chain (block time) */
-  timestamp?: Timestamp;
+  timestamp?: Date;
   /** creator is the account address that created the proof */
 
   creator: string;
@@ -22,7 +22,7 @@ export interface ProofMetadata {
 
 export interface ProofMetadataSDKType {
   /** timestamp is the time the proof was added on-chain (block time) */
-  timestamp?: TimestampSDKType;
+  timestamp?: Date;
   /** creator is the account address that created the proof */
 
   creator: string;
@@ -38,7 +38,7 @@ function createBaseProofMetadata(): ProofMetadata {
 export const ProofMetadata = {
   encode(message: ProofMetadata, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.timestamp !== undefined) {
-      Timestamp.encode(message.timestamp, writer.uint32(10).fork()).ldelim();
+      Timestamp.encode(toTimestamp(message.timestamp), writer.uint32(10).fork()).ldelim();
     }
 
     if (message.creator !== "") {
@@ -58,7 +58,7 @@ export const ProofMetadata = {
 
       switch (tag >>> 3) {
         case 1:
-          message.timestamp = Timestamp.decode(reader, reader.uint32());
+          message.timestamp = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           break;
 
         case 2:
@@ -74,23 +74,9 @@ export const ProofMetadata = {
     return message;
   },
 
-  fromJSON(object: any): ProofMetadata {
-    return {
-      timestamp: isSet(object.timestamp) ? fromJsonTimestamp(object.timestamp) : undefined,
-      creator: isSet(object.creator) ? String(object.creator) : ""
-    };
-  },
-
-  toJSON(message: ProofMetadata): unknown {
-    const obj: any = {};
-    message.timestamp !== undefined && (obj.timestamp = fromTimestamp(message.timestamp).toISOString());
-    message.creator !== undefined && (obj.creator = message.creator);
-    return obj;
-  },
-
-  fromPartial(object: Partial<ProofMetadata>): ProofMetadata {
+  fromPartial(object: DeepPartial<ProofMetadata>): ProofMetadata {
     const message = createBaseProofMetadata();
-    message.timestamp = object.timestamp !== undefined && object.timestamp !== null ? Timestamp.fromPartial(object.timestamp) : undefined;
+    message.timestamp = object.timestamp ?? undefined;
     message.creator = object.creator ?? "";
     return message;
   }
