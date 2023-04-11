@@ -1,6 +1,6 @@
 import { Any, AnySDKType } from "../../../google/protobuf/any";
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../../helpers";
+import { DeepPartial } from "../../../helpers";
 /** Class defines the class of the nft type. */
 
 export interface Class {
@@ -177,31 +177,7 @@ export const Class = {
     return message;
   },
 
-  fromJSON(object: any): Class {
-    return {
-      id: isSet(object.id) ? String(object.id) : "",
-      name: isSet(object.name) ? String(object.name) : "",
-      symbol: isSet(object.symbol) ? String(object.symbol) : "",
-      description: isSet(object.description) ? String(object.description) : "",
-      uri: isSet(object.uri) ? String(object.uri) : "",
-      uriHash: isSet(object.uriHash) ? String(object.uriHash) : "",
-      data: isSet(object.data) ? Any.fromJSON(object.data) : undefined
-    };
-  },
-
-  toJSON(message: Class): unknown {
-    const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
-    message.name !== undefined && (obj.name = message.name);
-    message.symbol !== undefined && (obj.symbol = message.symbol);
-    message.description !== undefined && (obj.description = message.description);
-    message.uri !== undefined && (obj.uri = message.uri);
-    message.uriHash !== undefined && (obj.uriHash = message.uriHash);
-    message.data !== undefined && (obj.data = message.data ? Any.toJSON(message.data) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<Class>): Class {
+  fromPartial(object: DeepPartial<Class>): Class {
     const message = createBaseClass();
     message.id = object.id ?? "";
     message.name = object.name ?? "";
@@ -288,27 +264,7 @@ export const NFT = {
     return message;
   },
 
-  fromJSON(object: any): NFT {
-    return {
-      classId: isSet(object.classId) ? String(object.classId) : "",
-      id: isSet(object.id) ? String(object.id) : "",
-      uri: isSet(object.uri) ? String(object.uri) : "",
-      uriHash: isSet(object.uriHash) ? String(object.uriHash) : "",
-      data: isSet(object.data) ? Any.fromJSON(object.data) : undefined
-    };
-  },
-
-  toJSON(message: NFT): unknown {
-    const obj: any = {};
-    message.classId !== undefined && (obj.classId = message.classId);
-    message.id !== undefined && (obj.id = message.id);
-    message.uri !== undefined && (obj.uri = message.uri);
-    message.uriHash !== undefined && (obj.uriHash = message.uriHash);
-    message.data !== undefined && (obj.data = message.data ? Any.toJSON(message.data) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<NFT>): NFT {
+  fromPartial(object: DeepPartial<NFT>): NFT {
     const message = createBaseNFT();
     message.classId = object.classId ?? "";
     message.id = object.id ?? "";

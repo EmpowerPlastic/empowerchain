@@ -25,24 +25,6 @@ export const MessageComposer = {
     }
 
   },
-  toJSON: {
-    send(value: MsgSend) {
-      return {
-        typeUrl: "/cosmos.nft.v1beta1.MsgSend",
-        value: MsgSend.toJSON(value)
-      };
-    }
-
-  },
-  fromJSON: {
-    send(value: any) {
-      return {
-        typeUrl: "/cosmos.nft.v1beta1.MsgSend",
-        value: MsgSend.fromJSON(value)
-      };
-    }
-
-  },
   fromPartial: {
     send(value: MsgSend) {
       return {

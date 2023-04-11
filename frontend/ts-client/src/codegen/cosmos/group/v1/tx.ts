@@ -1,7 +1,7 @@
-import { MemberRequest, MemberRequestSDKType, VoteOption, VoteOptionSDKType, ProposalExecutorResult, ProposalExecutorResultSDKType, voteOptionFromJSON, voteOptionToJSON, proposalExecutorResultFromJSON, proposalExecutorResultToJSON } from "./types";
+import { MemberRequest, MemberRequestSDKType, VoteOption, VoteOptionSDKType, ProposalExecutorResult, ProposalExecutorResultSDKType } from "./types";
 import { Any, AnySDKType } from "../../../google/protobuf/any";
 import * as _m0 from "protobufjs/minimal";
-import { isSet, Long } from "../../../helpers";
+import { DeepPartial, Long } from "../../../helpers";
 /** Exec defines modes of execution of a proposal on creation or on new vote. */
 
 export enum Exec {
@@ -669,29 +669,7 @@ export const MsgCreateGroup = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreateGroup {
-    return {
-      admin: isSet(object.admin) ? String(object.admin) : "",
-      members: Array.isArray(object?.members) ? object.members.map((e: any) => MemberRequest.fromJSON(e)) : [],
-      metadata: isSet(object.metadata) ? String(object.metadata) : ""
-    };
-  },
-
-  toJSON(message: MsgCreateGroup): unknown {
-    const obj: any = {};
-    message.admin !== undefined && (obj.admin = message.admin);
-
-    if (message.members) {
-      obj.members = message.members.map(e => e ? MemberRequest.toJSON(e) : undefined);
-    } else {
-      obj.members = [];
-    }
-
-    message.metadata !== undefined && (obj.metadata = message.metadata);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgCreateGroup>): MsgCreateGroup {
+  fromPartial(object: DeepPartial<MsgCreateGroup>): MsgCreateGroup {
     const message = createBaseMsgCreateGroup();
     message.admin = object.admin ?? "";
     message.members = object.members?.map(e => MemberRequest.fromPartial(e)) || [];
@@ -738,19 +716,7 @@ export const MsgCreateGroupResponse = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreateGroupResponse {
-    return {
-      groupId: isSet(object.groupId) ? Long.fromValue(object.groupId) : Long.UZERO
-    };
-  },
-
-  toJSON(message: MsgCreateGroupResponse): unknown {
-    const obj: any = {};
-    message.groupId !== undefined && (obj.groupId = (message.groupId || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgCreateGroupResponse>): MsgCreateGroupResponse {
+  fromPartial(object: DeepPartial<MsgCreateGroupResponse>): MsgCreateGroupResponse {
     const message = createBaseMsgCreateGroupResponse();
     message.groupId = object.groupId !== undefined && object.groupId !== null ? Long.fromValue(object.groupId) : Long.UZERO;
     return message;
@@ -813,29 +779,7 @@ export const MsgUpdateGroupMembers = {
     return message;
   },
 
-  fromJSON(object: any): MsgUpdateGroupMembers {
-    return {
-      admin: isSet(object.admin) ? String(object.admin) : "",
-      groupId: isSet(object.groupId) ? Long.fromValue(object.groupId) : Long.UZERO,
-      memberUpdates: Array.isArray(object?.memberUpdates) ? object.memberUpdates.map((e: any) => MemberRequest.fromJSON(e)) : []
-    };
-  },
-
-  toJSON(message: MsgUpdateGroupMembers): unknown {
-    const obj: any = {};
-    message.admin !== undefined && (obj.admin = message.admin);
-    message.groupId !== undefined && (obj.groupId = (message.groupId || Long.UZERO).toString());
-
-    if (message.memberUpdates) {
-      obj.memberUpdates = message.memberUpdates.map(e => e ? MemberRequest.toJSON(e) : undefined);
-    } else {
-      obj.memberUpdates = [];
-    }
-
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgUpdateGroupMembers>): MsgUpdateGroupMembers {
+  fromPartial(object: DeepPartial<MsgUpdateGroupMembers>): MsgUpdateGroupMembers {
     const message = createBaseMsgUpdateGroupMembers();
     message.admin = object.admin ?? "";
     message.groupId = object.groupId !== undefined && object.groupId !== null ? Long.fromValue(object.groupId) : Long.UZERO;
@@ -872,16 +816,7 @@ export const MsgUpdateGroupMembersResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgUpdateGroupMembersResponse {
-    return {};
-  },
-
-  toJSON(_: MsgUpdateGroupMembersResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgUpdateGroupMembersResponse>): MsgUpdateGroupMembersResponse {
+  fromPartial(_: DeepPartial<MsgUpdateGroupMembersResponse>): MsgUpdateGroupMembersResponse {
     const message = createBaseMsgUpdateGroupMembersResponse();
     return message;
   }
@@ -943,23 +878,7 @@ export const MsgUpdateGroupAdmin = {
     return message;
   },
 
-  fromJSON(object: any): MsgUpdateGroupAdmin {
-    return {
-      admin: isSet(object.admin) ? String(object.admin) : "",
-      groupId: isSet(object.groupId) ? Long.fromValue(object.groupId) : Long.UZERO,
-      newAdmin: isSet(object.newAdmin) ? String(object.newAdmin) : ""
-    };
-  },
-
-  toJSON(message: MsgUpdateGroupAdmin): unknown {
-    const obj: any = {};
-    message.admin !== undefined && (obj.admin = message.admin);
-    message.groupId !== undefined && (obj.groupId = (message.groupId || Long.UZERO).toString());
-    message.newAdmin !== undefined && (obj.newAdmin = message.newAdmin);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgUpdateGroupAdmin>): MsgUpdateGroupAdmin {
+  fromPartial(object: DeepPartial<MsgUpdateGroupAdmin>): MsgUpdateGroupAdmin {
     const message = createBaseMsgUpdateGroupAdmin();
     message.admin = object.admin ?? "";
     message.groupId = object.groupId !== undefined && object.groupId !== null ? Long.fromValue(object.groupId) : Long.UZERO;
@@ -996,16 +915,7 @@ export const MsgUpdateGroupAdminResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgUpdateGroupAdminResponse {
-    return {};
-  },
-
-  toJSON(_: MsgUpdateGroupAdminResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgUpdateGroupAdminResponse>): MsgUpdateGroupAdminResponse {
+  fromPartial(_: DeepPartial<MsgUpdateGroupAdminResponse>): MsgUpdateGroupAdminResponse {
     const message = createBaseMsgUpdateGroupAdminResponse();
     return message;
   }
@@ -1067,23 +977,7 @@ export const MsgUpdateGroupMetadata = {
     return message;
   },
 
-  fromJSON(object: any): MsgUpdateGroupMetadata {
-    return {
-      admin: isSet(object.admin) ? String(object.admin) : "",
-      groupId: isSet(object.groupId) ? Long.fromValue(object.groupId) : Long.UZERO,
-      metadata: isSet(object.metadata) ? String(object.metadata) : ""
-    };
-  },
-
-  toJSON(message: MsgUpdateGroupMetadata): unknown {
-    const obj: any = {};
-    message.admin !== undefined && (obj.admin = message.admin);
-    message.groupId !== undefined && (obj.groupId = (message.groupId || Long.UZERO).toString());
-    message.metadata !== undefined && (obj.metadata = message.metadata);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgUpdateGroupMetadata>): MsgUpdateGroupMetadata {
+  fromPartial(object: DeepPartial<MsgUpdateGroupMetadata>): MsgUpdateGroupMetadata {
     const message = createBaseMsgUpdateGroupMetadata();
     message.admin = object.admin ?? "";
     message.groupId = object.groupId !== undefined && object.groupId !== null ? Long.fromValue(object.groupId) : Long.UZERO;
@@ -1120,16 +1014,7 @@ export const MsgUpdateGroupMetadataResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgUpdateGroupMetadataResponse {
-    return {};
-  },
-
-  toJSON(_: MsgUpdateGroupMetadataResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgUpdateGroupMetadataResponse>): MsgUpdateGroupMetadataResponse {
+  fromPartial(_: DeepPartial<MsgUpdateGroupMetadataResponse>): MsgUpdateGroupMetadataResponse {
     const message = createBaseMsgUpdateGroupMetadataResponse();
     return message;
   }
@@ -1200,25 +1085,7 @@ export const MsgCreateGroupPolicy = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreateGroupPolicy {
-    return {
-      admin: isSet(object.admin) ? String(object.admin) : "",
-      groupId: isSet(object.groupId) ? Long.fromValue(object.groupId) : Long.UZERO,
-      metadata: isSet(object.metadata) ? String(object.metadata) : "",
-      decisionPolicy: isSet(object.decisionPolicy) ? Any.fromJSON(object.decisionPolicy) : undefined
-    };
-  },
-
-  toJSON(message: MsgCreateGroupPolicy): unknown {
-    const obj: any = {};
-    message.admin !== undefined && (obj.admin = message.admin);
-    message.groupId !== undefined && (obj.groupId = (message.groupId || Long.UZERO).toString());
-    message.metadata !== undefined && (obj.metadata = message.metadata);
-    message.decisionPolicy !== undefined && (obj.decisionPolicy = message.decisionPolicy ? Any.toJSON(message.decisionPolicy) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgCreateGroupPolicy>): MsgCreateGroupPolicy {
+  fromPartial(object: DeepPartial<MsgCreateGroupPolicy>): MsgCreateGroupPolicy {
     const message = createBaseMsgCreateGroupPolicy();
     message.admin = object.admin ?? "";
     message.groupId = object.groupId !== undefined && object.groupId !== null ? Long.fromValue(object.groupId) : Long.UZERO;
@@ -1266,19 +1133,7 @@ export const MsgCreateGroupPolicyResponse = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreateGroupPolicyResponse {
-    return {
-      address: isSet(object.address) ? String(object.address) : ""
-    };
-  },
-
-  toJSON(message: MsgCreateGroupPolicyResponse): unknown {
-    const obj: any = {};
-    message.address !== undefined && (obj.address = message.address);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgCreateGroupPolicyResponse>): MsgCreateGroupPolicyResponse {
+  fromPartial(object: DeepPartial<MsgCreateGroupPolicyResponse>): MsgCreateGroupPolicyResponse {
     const message = createBaseMsgCreateGroupPolicyResponse();
     message.address = object.address ?? "";
     return message;
@@ -1341,23 +1196,7 @@ export const MsgUpdateGroupPolicyAdmin = {
     return message;
   },
 
-  fromJSON(object: any): MsgUpdateGroupPolicyAdmin {
-    return {
-      admin: isSet(object.admin) ? String(object.admin) : "",
-      groupPolicyAddress: isSet(object.groupPolicyAddress) ? String(object.groupPolicyAddress) : "",
-      newAdmin: isSet(object.newAdmin) ? String(object.newAdmin) : ""
-    };
-  },
-
-  toJSON(message: MsgUpdateGroupPolicyAdmin): unknown {
-    const obj: any = {};
-    message.admin !== undefined && (obj.admin = message.admin);
-    message.groupPolicyAddress !== undefined && (obj.groupPolicyAddress = message.groupPolicyAddress);
-    message.newAdmin !== undefined && (obj.newAdmin = message.newAdmin);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgUpdateGroupPolicyAdmin>): MsgUpdateGroupPolicyAdmin {
+  fromPartial(object: DeepPartial<MsgUpdateGroupPolicyAdmin>): MsgUpdateGroupPolicyAdmin {
     const message = createBaseMsgUpdateGroupPolicyAdmin();
     message.admin = object.admin ?? "";
     message.groupPolicyAddress = object.groupPolicyAddress ?? "";
@@ -1394,16 +1233,7 @@ export const MsgUpdateGroupPolicyAdminResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgUpdateGroupPolicyAdminResponse {
-    return {};
-  },
-
-  toJSON(_: MsgUpdateGroupPolicyAdminResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgUpdateGroupPolicyAdminResponse>): MsgUpdateGroupPolicyAdminResponse {
+  fromPartial(_: DeepPartial<MsgUpdateGroupPolicyAdminResponse>): MsgUpdateGroupPolicyAdminResponse {
     const message = createBaseMsgUpdateGroupPolicyAdminResponse();
     return message;
   }
@@ -1492,35 +1322,7 @@ export const MsgCreateGroupWithPolicy = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreateGroupWithPolicy {
-    return {
-      admin: isSet(object.admin) ? String(object.admin) : "",
-      members: Array.isArray(object?.members) ? object.members.map((e: any) => MemberRequest.fromJSON(e)) : [],
-      groupMetadata: isSet(object.groupMetadata) ? String(object.groupMetadata) : "",
-      groupPolicyMetadata: isSet(object.groupPolicyMetadata) ? String(object.groupPolicyMetadata) : "",
-      groupPolicyAsAdmin: isSet(object.groupPolicyAsAdmin) ? Boolean(object.groupPolicyAsAdmin) : false,
-      decisionPolicy: isSet(object.decisionPolicy) ? Any.fromJSON(object.decisionPolicy) : undefined
-    };
-  },
-
-  toJSON(message: MsgCreateGroupWithPolicy): unknown {
-    const obj: any = {};
-    message.admin !== undefined && (obj.admin = message.admin);
-
-    if (message.members) {
-      obj.members = message.members.map(e => e ? MemberRequest.toJSON(e) : undefined);
-    } else {
-      obj.members = [];
-    }
-
-    message.groupMetadata !== undefined && (obj.groupMetadata = message.groupMetadata);
-    message.groupPolicyMetadata !== undefined && (obj.groupPolicyMetadata = message.groupPolicyMetadata);
-    message.groupPolicyAsAdmin !== undefined && (obj.groupPolicyAsAdmin = message.groupPolicyAsAdmin);
-    message.decisionPolicy !== undefined && (obj.decisionPolicy = message.decisionPolicy ? Any.toJSON(message.decisionPolicy) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgCreateGroupWithPolicy>): MsgCreateGroupWithPolicy {
+  fromPartial(object: DeepPartial<MsgCreateGroupWithPolicy>): MsgCreateGroupWithPolicy {
     const message = createBaseMsgCreateGroupWithPolicy();
     message.admin = object.admin ?? "";
     message.members = object.members?.map(e => MemberRequest.fromPartial(e)) || [];
@@ -1579,21 +1381,7 @@ export const MsgCreateGroupWithPolicyResponse = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreateGroupWithPolicyResponse {
-    return {
-      groupId: isSet(object.groupId) ? Long.fromValue(object.groupId) : Long.UZERO,
-      groupPolicyAddress: isSet(object.groupPolicyAddress) ? String(object.groupPolicyAddress) : ""
-    };
-  },
-
-  toJSON(message: MsgCreateGroupWithPolicyResponse): unknown {
-    const obj: any = {};
-    message.groupId !== undefined && (obj.groupId = (message.groupId || Long.UZERO).toString());
-    message.groupPolicyAddress !== undefined && (obj.groupPolicyAddress = message.groupPolicyAddress);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgCreateGroupWithPolicyResponse>): MsgCreateGroupWithPolicyResponse {
+  fromPartial(object: DeepPartial<MsgCreateGroupWithPolicyResponse>): MsgCreateGroupWithPolicyResponse {
     const message = createBaseMsgCreateGroupWithPolicyResponse();
     message.groupId = object.groupId !== undefined && object.groupId !== null ? Long.fromValue(object.groupId) : Long.UZERO;
     message.groupPolicyAddress = object.groupPolicyAddress ?? "";
@@ -1657,23 +1445,7 @@ export const MsgUpdateGroupPolicyDecisionPolicy = {
     return message;
   },
 
-  fromJSON(object: any): MsgUpdateGroupPolicyDecisionPolicy {
-    return {
-      admin: isSet(object.admin) ? String(object.admin) : "",
-      groupPolicyAddress: isSet(object.groupPolicyAddress) ? String(object.groupPolicyAddress) : "",
-      decisionPolicy: isSet(object.decisionPolicy) ? Any.fromJSON(object.decisionPolicy) : undefined
-    };
-  },
-
-  toJSON(message: MsgUpdateGroupPolicyDecisionPolicy): unknown {
-    const obj: any = {};
-    message.admin !== undefined && (obj.admin = message.admin);
-    message.groupPolicyAddress !== undefined && (obj.groupPolicyAddress = message.groupPolicyAddress);
-    message.decisionPolicy !== undefined && (obj.decisionPolicy = message.decisionPolicy ? Any.toJSON(message.decisionPolicy) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgUpdateGroupPolicyDecisionPolicy>): MsgUpdateGroupPolicyDecisionPolicy {
+  fromPartial(object: DeepPartial<MsgUpdateGroupPolicyDecisionPolicy>): MsgUpdateGroupPolicyDecisionPolicy {
     const message = createBaseMsgUpdateGroupPolicyDecisionPolicy();
     message.admin = object.admin ?? "";
     message.groupPolicyAddress = object.groupPolicyAddress ?? "";
@@ -1710,16 +1482,7 @@ export const MsgUpdateGroupPolicyDecisionPolicyResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgUpdateGroupPolicyDecisionPolicyResponse {
-    return {};
-  },
-
-  toJSON(_: MsgUpdateGroupPolicyDecisionPolicyResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgUpdateGroupPolicyDecisionPolicyResponse>): MsgUpdateGroupPolicyDecisionPolicyResponse {
+  fromPartial(_: DeepPartial<MsgUpdateGroupPolicyDecisionPolicyResponse>): MsgUpdateGroupPolicyDecisionPolicyResponse {
     const message = createBaseMsgUpdateGroupPolicyDecisionPolicyResponse();
     return message;
   }
@@ -1781,23 +1544,7 @@ export const MsgUpdateGroupPolicyMetadata = {
     return message;
   },
 
-  fromJSON(object: any): MsgUpdateGroupPolicyMetadata {
-    return {
-      admin: isSet(object.admin) ? String(object.admin) : "",
-      groupPolicyAddress: isSet(object.groupPolicyAddress) ? String(object.groupPolicyAddress) : "",
-      metadata: isSet(object.metadata) ? String(object.metadata) : ""
-    };
-  },
-
-  toJSON(message: MsgUpdateGroupPolicyMetadata): unknown {
-    const obj: any = {};
-    message.admin !== undefined && (obj.admin = message.admin);
-    message.groupPolicyAddress !== undefined && (obj.groupPolicyAddress = message.groupPolicyAddress);
-    message.metadata !== undefined && (obj.metadata = message.metadata);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgUpdateGroupPolicyMetadata>): MsgUpdateGroupPolicyMetadata {
+  fromPartial(object: DeepPartial<MsgUpdateGroupPolicyMetadata>): MsgUpdateGroupPolicyMetadata {
     const message = createBaseMsgUpdateGroupPolicyMetadata();
     message.admin = object.admin ?? "";
     message.groupPolicyAddress = object.groupPolicyAddress ?? "";
@@ -1834,16 +1581,7 @@ export const MsgUpdateGroupPolicyMetadataResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgUpdateGroupPolicyMetadataResponse {
-    return {};
-  },
-
-  toJSON(_: MsgUpdateGroupPolicyMetadataResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgUpdateGroupPolicyMetadataResponse>): MsgUpdateGroupPolicyMetadataResponse {
+  fromPartial(_: DeepPartial<MsgUpdateGroupPolicyMetadataResponse>): MsgUpdateGroupPolicyMetadataResponse {
     const message = createBaseMsgUpdateGroupPolicyMetadataResponse();
     return message;
   }
@@ -1941,43 +1679,7 @@ export const MsgSubmitProposal = {
     return message;
   },
 
-  fromJSON(object: any): MsgSubmitProposal {
-    return {
-      groupPolicyAddress: isSet(object.groupPolicyAddress) ? String(object.groupPolicyAddress) : "",
-      proposers: Array.isArray(object?.proposers) ? object.proposers.map((e: any) => String(e)) : [],
-      metadata: isSet(object.metadata) ? String(object.metadata) : "",
-      messages: Array.isArray(object?.messages) ? object.messages.map((e: any) => Any.fromJSON(e)) : [],
-      exec: isSet(object.exec) ? execFromJSON(object.exec) : 0,
-      title: isSet(object.title) ? String(object.title) : "",
-      summary: isSet(object.summary) ? String(object.summary) : ""
-    };
-  },
-
-  toJSON(message: MsgSubmitProposal): unknown {
-    const obj: any = {};
-    message.groupPolicyAddress !== undefined && (obj.groupPolicyAddress = message.groupPolicyAddress);
-
-    if (message.proposers) {
-      obj.proposers = message.proposers.map(e => e);
-    } else {
-      obj.proposers = [];
-    }
-
-    message.metadata !== undefined && (obj.metadata = message.metadata);
-
-    if (message.messages) {
-      obj.messages = message.messages.map(e => e ? Any.toJSON(e) : undefined);
-    } else {
-      obj.messages = [];
-    }
-
-    message.exec !== undefined && (obj.exec = execToJSON(message.exec));
-    message.title !== undefined && (obj.title = message.title);
-    message.summary !== undefined && (obj.summary = message.summary);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgSubmitProposal>): MsgSubmitProposal {
+  fromPartial(object: DeepPartial<MsgSubmitProposal>): MsgSubmitProposal {
     const message = createBaseMsgSubmitProposal();
     message.groupPolicyAddress = object.groupPolicyAddress ?? "";
     message.proposers = object.proposers?.map(e => e) || [];
@@ -2028,19 +1730,7 @@ export const MsgSubmitProposalResponse = {
     return message;
   },
 
-  fromJSON(object: any): MsgSubmitProposalResponse {
-    return {
-      proposalId: isSet(object.proposalId) ? Long.fromValue(object.proposalId) : Long.UZERO
-    };
-  },
-
-  toJSON(message: MsgSubmitProposalResponse): unknown {
-    const obj: any = {};
-    message.proposalId !== undefined && (obj.proposalId = (message.proposalId || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgSubmitProposalResponse>): MsgSubmitProposalResponse {
+  fromPartial(object: DeepPartial<MsgSubmitProposalResponse>): MsgSubmitProposalResponse {
     const message = createBaseMsgSubmitProposalResponse();
     message.proposalId = object.proposalId !== undefined && object.proposalId !== null ? Long.fromValue(object.proposalId) : Long.UZERO;
     return message;
@@ -2094,21 +1784,7 @@ export const MsgWithdrawProposal = {
     return message;
   },
 
-  fromJSON(object: any): MsgWithdrawProposal {
-    return {
-      proposalId: isSet(object.proposalId) ? Long.fromValue(object.proposalId) : Long.UZERO,
-      address: isSet(object.address) ? String(object.address) : ""
-    };
-  },
-
-  toJSON(message: MsgWithdrawProposal): unknown {
-    const obj: any = {};
-    message.proposalId !== undefined && (obj.proposalId = (message.proposalId || Long.UZERO).toString());
-    message.address !== undefined && (obj.address = message.address);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgWithdrawProposal>): MsgWithdrawProposal {
+  fromPartial(object: DeepPartial<MsgWithdrawProposal>): MsgWithdrawProposal {
     const message = createBaseMsgWithdrawProposal();
     message.proposalId = object.proposalId !== undefined && object.proposalId !== null ? Long.fromValue(object.proposalId) : Long.UZERO;
     message.address = object.address ?? "";
@@ -2144,16 +1820,7 @@ export const MsgWithdrawProposalResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgWithdrawProposalResponse {
-    return {};
-  },
-
-  toJSON(_: MsgWithdrawProposalResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgWithdrawProposalResponse>): MsgWithdrawProposalResponse {
+  fromPartial(_: DeepPartial<MsgWithdrawProposalResponse>): MsgWithdrawProposalResponse {
     const message = createBaseMsgWithdrawProposalResponse();
     return message;
   }
@@ -2233,27 +1900,7 @@ export const MsgVote = {
     return message;
   },
 
-  fromJSON(object: any): MsgVote {
-    return {
-      proposalId: isSet(object.proposalId) ? Long.fromValue(object.proposalId) : Long.UZERO,
-      voter: isSet(object.voter) ? String(object.voter) : "",
-      option: isSet(object.option) ? voteOptionFromJSON(object.option) : 0,
-      metadata: isSet(object.metadata) ? String(object.metadata) : "",
-      exec: isSet(object.exec) ? execFromJSON(object.exec) : 0
-    };
-  },
-
-  toJSON(message: MsgVote): unknown {
-    const obj: any = {};
-    message.proposalId !== undefined && (obj.proposalId = (message.proposalId || Long.UZERO).toString());
-    message.voter !== undefined && (obj.voter = message.voter);
-    message.option !== undefined && (obj.option = voteOptionToJSON(message.option));
-    message.metadata !== undefined && (obj.metadata = message.metadata);
-    message.exec !== undefined && (obj.exec = execToJSON(message.exec));
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgVote>): MsgVote {
+  fromPartial(object: DeepPartial<MsgVote>): MsgVote {
     const message = createBaseMsgVote();
     message.proposalId = object.proposalId !== undefined && object.proposalId !== null ? Long.fromValue(object.proposalId) : Long.UZERO;
     message.voter = object.voter ?? "";
@@ -2292,16 +1939,7 @@ export const MsgVoteResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgVoteResponse {
-    return {};
-  },
-
-  toJSON(_: MsgVoteResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgVoteResponse>): MsgVoteResponse {
+  fromPartial(_: DeepPartial<MsgVoteResponse>): MsgVoteResponse {
     const message = createBaseMsgVoteResponse();
     return message;
   }
@@ -2354,21 +1992,7 @@ export const MsgExec = {
     return message;
   },
 
-  fromJSON(object: any): MsgExec {
-    return {
-      proposalId: isSet(object.proposalId) ? Long.fromValue(object.proposalId) : Long.UZERO,
-      executor: isSet(object.executor) ? String(object.executor) : ""
-    };
-  },
-
-  toJSON(message: MsgExec): unknown {
-    const obj: any = {};
-    message.proposalId !== undefined && (obj.proposalId = (message.proposalId || Long.UZERO).toString());
-    message.executor !== undefined && (obj.executor = message.executor);
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgExec>): MsgExec {
+  fromPartial(object: DeepPartial<MsgExec>): MsgExec {
     const message = createBaseMsgExec();
     message.proposalId = object.proposalId !== undefined && object.proposalId !== null ? Long.fromValue(object.proposalId) : Long.UZERO;
     message.executor = object.executor ?? "";
@@ -2414,19 +2038,7 @@ export const MsgExecResponse = {
     return message;
   },
 
-  fromJSON(object: any): MsgExecResponse {
-    return {
-      result: isSet(object.result) ? proposalExecutorResultFromJSON(object.result) : 0
-    };
-  },
-
-  toJSON(message: MsgExecResponse): unknown {
-    const obj: any = {};
-    message.result !== undefined && (obj.result = proposalExecutorResultToJSON(message.result));
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgExecResponse>): MsgExecResponse {
+  fromPartial(object: DeepPartial<MsgExecResponse>): MsgExecResponse {
     const message = createBaseMsgExecResponse();
     message.result = object.result ?? 0;
     return message;
@@ -2480,21 +2092,7 @@ export const MsgLeaveGroup = {
     return message;
   },
 
-  fromJSON(object: any): MsgLeaveGroup {
-    return {
-      address: isSet(object.address) ? String(object.address) : "",
-      groupId: isSet(object.groupId) ? Long.fromValue(object.groupId) : Long.UZERO
-    };
-  },
-
-  toJSON(message: MsgLeaveGroup): unknown {
-    const obj: any = {};
-    message.address !== undefined && (obj.address = message.address);
-    message.groupId !== undefined && (obj.groupId = (message.groupId || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: Partial<MsgLeaveGroup>): MsgLeaveGroup {
+  fromPartial(object: DeepPartial<MsgLeaveGroup>): MsgLeaveGroup {
     const message = createBaseMsgLeaveGroup();
     message.address = object.address ?? "";
     message.groupId = object.groupId !== undefined && object.groupId !== null ? Long.fromValue(object.groupId) : Long.UZERO;
@@ -2530,16 +2128,7 @@ export const MsgLeaveGroupResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgLeaveGroupResponse {
-    return {};
-  },
-
-  toJSON(_: MsgLeaveGroupResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<MsgLeaveGroupResponse>): MsgLeaveGroupResponse {
+  fromPartial(_: DeepPartial<MsgLeaveGroupResponse>): MsgLeaveGroupResponse {
     const message = createBaseMsgLeaveGroupResponse();
     return message;
   }

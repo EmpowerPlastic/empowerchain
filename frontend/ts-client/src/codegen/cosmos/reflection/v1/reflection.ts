@@ -1,5 +1,6 @@
 import { FileDescriptorProto, FileDescriptorProtoSDKType } from "../../../google/protobuf/descriptor";
 import * as _m0 from "protobufjs/minimal";
+import { DeepPartial } from "../../../helpers";
 /** FileDescriptorsRequest is the Query/FileDescriptors request type. */
 
 export interface FileDescriptorsRequest {}
@@ -46,16 +47,7 @@ export const FileDescriptorsRequest = {
     return message;
   },
 
-  fromJSON(_: any): FileDescriptorsRequest {
-    return {};
-  },
-
-  toJSON(_: FileDescriptorsRequest): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<FileDescriptorsRequest>): FileDescriptorsRequest {
+  fromPartial(_: DeepPartial<FileDescriptorsRequest>): FileDescriptorsRequest {
     const message = createBaseFileDescriptorsRequest();
     return message;
   }
@@ -99,25 +91,7 @@ export const FileDescriptorsResponse = {
     return message;
   },
 
-  fromJSON(object: any): FileDescriptorsResponse {
-    return {
-      files: Array.isArray(object?.files) ? object.files.map((e: any) => FileDescriptorProto.fromJSON(e)) : []
-    };
-  },
-
-  toJSON(message: FileDescriptorsResponse): unknown {
-    const obj: any = {};
-
-    if (message.files) {
-      obj.files = message.files.map(e => e ? FileDescriptorProto.toJSON(e) : undefined);
-    } else {
-      obj.files = [];
-    }
-
-    return obj;
-  },
-
-  fromPartial(object: Partial<FileDescriptorsResponse>): FileDescriptorsResponse {
+  fromPartial(object: DeepPartial<FileDescriptorsResponse>): FileDescriptorsResponse {
     const message = createBaseFileDescriptorsResponse();
     message.files = object.files?.map(e => FileDescriptorProto.fromPartial(e)) || [];
     return message;

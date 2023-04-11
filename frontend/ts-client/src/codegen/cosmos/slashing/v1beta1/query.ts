@@ -1,7 +1,7 @@
 import { PageRequest, PageRequestSDKType, PageResponse, PageResponseSDKType } from "../../base/query/v1beta1/pagination";
 import { Params, ParamsSDKType, ValidatorSigningInfo, ValidatorSigningInfoSDKType } from "./slashing";
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../../helpers";
+import { DeepPartial } from "../../../helpers";
 /** QueryParamsRequest is the request type for the Query/Params RPC method */
 
 export interface QueryParamsRequest {}
@@ -118,16 +118,7 @@ export const QueryParamsRequest = {
     return message;
   },
 
-  fromJSON(_: any): QueryParamsRequest {
-    return {};
-  },
-
-  toJSON(_: QueryParamsRequest): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: Partial<QueryParamsRequest>): QueryParamsRequest {
+  fromPartial(_: DeepPartial<QueryParamsRequest>): QueryParamsRequest {
     const message = createBaseQueryParamsRequest();
     return message;
   }
@@ -171,19 +162,7 @@ export const QueryParamsResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryParamsResponse {
-    return {
-      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined
-    };
-  },
-
-  toJSON(message: QueryParamsResponse): unknown {
-    const obj: any = {};
-    message.params !== undefined && (obj.params = message.params ? Params.toJSON(message.params) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QueryParamsResponse>): QueryParamsResponse {
+  fromPartial(object: DeepPartial<QueryParamsResponse>): QueryParamsResponse {
     const message = createBaseQueryParamsResponse();
     message.params = object.params !== undefined && object.params !== null ? Params.fromPartial(object.params) : undefined;
     return message;
@@ -228,19 +207,7 @@ export const QuerySigningInfoRequest = {
     return message;
   },
 
-  fromJSON(object: any): QuerySigningInfoRequest {
-    return {
-      consAddress: isSet(object.consAddress) ? String(object.consAddress) : ""
-    };
-  },
-
-  toJSON(message: QuerySigningInfoRequest): unknown {
-    const obj: any = {};
-    message.consAddress !== undefined && (obj.consAddress = message.consAddress);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QuerySigningInfoRequest>): QuerySigningInfoRequest {
+  fromPartial(object: DeepPartial<QuerySigningInfoRequest>): QuerySigningInfoRequest {
     const message = createBaseQuerySigningInfoRequest();
     message.consAddress = object.consAddress ?? "";
     return message;
@@ -285,19 +252,7 @@ export const QuerySigningInfoResponse = {
     return message;
   },
 
-  fromJSON(object: any): QuerySigningInfoResponse {
-    return {
-      valSigningInfo: isSet(object.valSigningInfo) ? ValidatorSigningInfo.fromJSON(object.valSigningInfo) : undefined
-    };
-  },
-
-  toJSON(message: QuerySigningInfoResponse): unknown {
-    const obj: any = {};
-    message.valSigningInfo !== undefined && (obj.valSigningInfo = message.valSigningInfo ? ValidatorSigningInfo.toJSON(message.valSigningInfo) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QuerySigningInfoResponse>): QuerySigningInfoResponse {
+  fromPartial(object: DeepPartial<QuerySigningInfoResponse>): QuerySigningInfoResponse {
     const message = createBaseQuerySigningInfoResponse();
     message.valSigningInfo = object.valSigningInfo !== undefined && object.valSigningInfo !== null ? ValidatorSigningInfo.fromPartial(object.valSigningInfo) : undefined;
     return message;
@@ -342,19 +297,7 @@ export const QuerySigningInfosRequest = {
     return message;
   },
 
-  fromJSON(object: any): QuerySigningInfosRequest {
-    return {
-      pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined
-    };
-  },
-
-  toJSON(message: QuerySigningInfosRequest): unknown {
-    const obj: any = {};
-    message.pagination !== undefined && (obj.pagination = message.pagination ? PageRequest.toJSON(message.pagination) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QuerySigningInfosRequest>): QuerySigningInfosRequest {
+  fromPartial(object: DeepPartial<QuerySigningInfosRequest>): QuerySigningInfosRequest {
     const message = createBaseQuerySigningInfosRequest();
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
     return message;
@@ -408,27 +351,7 @@ export const QuerySigningInfosResponse = {
     return message;
   },
 
-  fromJSON(object: any): QuerySigningInfosResponse {
-    return {
-      info: Array.isArray(object?.info) ? object.info.map((e: any) => ValidatorSigningInfo.fromJSON(e)) : [],
-      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined
-    };
-  },
-
-  toJSON(message: QuerySigningInfosResponse): unknown {
-    const obj: any = {};
-
-    if (message.info) {
-      obj.info = message.info.map(e => e ? ValidatorSigningInfo.toJSON(e) : undefined);
-    } else {
-      obj.info = [];
-    }
-
-    message.pagination !== undefined && (obj.pagination = message.pagination ? PageResponse.toJSON(message.pagination) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<QuerySigningInfosResponse>): QuerySigningInfosResponse {
+  fromPartial(object: DeepPartial<QuerySigningInfosResponse>): QuerySigningInfosResponse {
     const message = createBaseQuerySigningInfosResponse();
     message.info = object.info?.map(e => ValidatorSigningInfo.fromPartial(e)) || [];
     message.pagination = object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;

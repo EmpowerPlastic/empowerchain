@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../../helpers";
+import { DeepPartial } from "../../../helpers";
 /** TableDescriptor describes an ORM table. */
 
 export interface TableDescriptor {
@@ -248,29 +248,7 @@ export const TableDescriptor = {
     return message;
   },
 
-  fromJSON(object: any): TableDescriptor {
-    return {
-      primaryKey: isSet(object.primaryKey) ? PrimaryKeyDescriptor.fromJSON(object.primaryKey) : undefined,
-      index: Array.isArray(object?.index) ? object.index.map((e: any) => SecondaryIndexDescriptor.fromJSON(e)) : [],
-      id: isSet(object.id) ? Number(object.id) : 0
-    };
-  },
-
-  toJSON(message: TableDescriptor): unknown {
-    const obj: any = {};
-    message.primaryKey !== undefined && (obj.primaryKey = message.primaryKey ? PrimaryKeyDescriptor.toJSON(message.primaryKey) : undefined);
-
-    if (message.index) {
-      obj.index = message.index.map(e => e ? SecondaryIndexDescriptor.toJSON(e) : undefined);
-    } else {
-      obj.index = [];
-    }
-
-    message.id !== undefined && (obj.id = Math.round(message.id));
-    return obj;
-  },
-
-  fromPartial(object: Partial<TableDescriptor>): TableDescriptor {
+  fromPartial(object: DeepPartial<TableDescriptor>): TableDescriptor {
     const message = createBaseTableDescriptor();
     message.primaryKey = object.primaryKey !== undefined && object.primaryKey !== null ? PrimaryKeyDescriptor.fromPartial(object.primaryKey) : undefined;
     message.index = object.index?.map(e => SecondaryIndexDescriptor.fromPartial(e)) || [];
@@ -326,21 +304,7 @@ export const PrimaryKeyDescriptor = {
     return message;
   },
 
-  fromJSON(object: any): PrimaryKeyDescriptor {
-    return {
-      fields: isSet(object.fields) ? String(object.fields) : "",
-      autoIncrement: isSet(object.autoIncrement) ? Boolean(object.autoIncrement) : false
-    };
-  },
-
-  toJSON(message: PrimaryKeyDescriptor): unknown {
-    const obj: any = {};
-    message.fields !== undefined && (obj.fields = message.fields);
-    message.autoIncrement !== undefined && (obj.autoIncrement = message.autoIncrement);
-    return obj;
-  },
-
-  fromPartial(object: Partial<PrimaryKeyDescriptor>): PrimaryKeyDescriptor {
+  fromPartial(object: DeepPartial<PrimaryKeyDescriptor>): PrimaryKeyDescriptor {
     const message = createBasePrimaryKeyDescriptor();
     message.fields = object.fields ?? "";
     message.autoIncrement = object.autoIncrement ?? false;
@@ -404,23 +368,7 @@ export const SecondaryIndexDescriptor = {
     return message;
   },
 
-  fromJSON(object: any): SecondaryIndexDescriptor {
-    return {
-      fields: isSet(object.fields) ? String(object.fields) : "",
-      id: isSet(object.id) ? Number(object.id) : 0,
-      unique: isSet(object.unique) ? Boolean(object.unique) : false
-    };
-  },
-
-  toJSON(message: SecondaryIndexDescriptor): unknown {
-    const obj: any = {};
-    message.fields !== undefined && (obj.fields = message.fields);
-    message.id !== undefined && (obj.id = Math.round(message.id));
-    message.unique !== undefined && (obj.unique = message.unique);
-    return obj;
-  },
-
-  fromPartial(object: Partial<SecondaryIndexDescriptor>): SecondaryIndexDescriptor {
+  fromPartial(object: DeepPartial<SecondaryIndexDescriptor>): SecondaryIndexDescriptor {
     const message = createBaseSecondaryIndexDescriptor();
     message.fields = object.fields ?? "";
     message.id = object.id ?? 0;
@@ -467,19 +415,7 @@ export const SingletonDescriptor = {
     return message;
   },
 
-  fromJSON(object: any): SingletonDescriptor {
-    return {
-      id: isSet(object.id) ? Number(object.id) : 0
-    };
-  },
-
-  toJSON(message: SingletonDescriptor): unknown {
-    const obj: any = {};
-    message.id !== undefined && (obj.id = Math.round(message.id));
-    return obj;
-  },
-
-  fromPartial(object: Partial<SingletonDescriptor>): SingletonDescriptor {
+  fromPartial(object: DeepPartial<SingletonDescriptor>): SingletonDescriptor {
     const message = createBaseSingletonDescriptor();
     message.id = object.id ?? 0;
     return message;

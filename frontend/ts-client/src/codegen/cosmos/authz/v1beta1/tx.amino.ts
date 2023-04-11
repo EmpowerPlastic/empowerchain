@@ -1,4 +1,3 @@
-//@ts-nocheck
 import { AminoMsg } from "@cosmjs/amino";
 import { MsgGrant, MsgExec, MsgRevoke } from "./tx";
 export interface AminoMsgGrant extends AminoMsg {

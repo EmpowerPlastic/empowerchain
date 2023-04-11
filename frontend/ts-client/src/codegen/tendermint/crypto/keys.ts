@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { isSet, bytesFromBase64, base64FromBytes } from "../../helpers";
+import { DeepPartial } from "../../helpers";
 /** PublicKey defines the keys available for use with Validators */
 
 export interface PublicKey {
@@ -59,21 +59,7 @@ export const PublicKey = {
     return message;
   },
 
-  fromJSON(object: any): PublicKey {
-    return {
-      ed25519: isSet(object.ed25519) ? bytesFromBase64(object.ed25519) : undefined,
-      secp256k1: isSet(object.secp256k1) ? bytesFromBase64(object.secp256k1) : undefined
-    };
-  },
-
-  toJSON(message: PublicKey): unknown {
-    const obj: any = {};
-    message.ed25519 !== undefined && (obj.ed25519 = message.ed25519 !== undefined ? base64FromBytes(message.ed25519) : undefined);
-    message.secp256k1 !== undefined && (obj.secp256k1 = message.secp256k1 !== undefined ? base64FromBytes(message.secp256k1) : undefined);
-    return obj;
-  },
-
-  fromPartial(object: Partial<PublicKey>): PublicKey {
+  fromPartial(object: DeepPartial<PublicKey>): PublicKey {
     const message = createBasePublicKey();
     message.ed25519 = object.ed25519 ?? undefined;
     message.secp256k1 = object.secp256k1 ?? undefined;

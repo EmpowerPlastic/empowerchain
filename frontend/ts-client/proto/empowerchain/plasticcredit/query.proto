@@ -21,24 +21,16 @@ service Query {
     option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/issuers/{issuer_id}";
   }
 
-  rpc Applicants(QueryApplicantsRequest) returns (QueryApplicantsResponse) {
-    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/applicants";
-  }
-
   rpc Applicant(QueryApplicantRequest) returns (QueryApplicantResponse) {
     option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/applicants/{applicant_id}";
   }
 
   rpc CreditTypes(QueryCreditTypesRequest) returns (QueryCreditTypesResponse) {
-    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit-types";
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit-classes";
   }
 
-  rpc CreditType(QueryCreditTypeRequest) returns (QueryCreditTypeResponse) {
-    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit-types/{credit_type_abbreviation}";
-  }
-
-  rpc Projects(QueryProjectsRequest) returns (QueryProjectsResponse) {
-    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/projects";
+  rpc CreditType(QueryCreditClassRequest) returns (QueryCreditClassResponse) {
+    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/credit-classes/{credit_class_abbreviation}";
   }
 
   rpc Project(QueryProjectRequest) returns (QueryProjectResponse) {
@@ -47,10 +39,6 @@ service Query {
 
   rpc CreditCollection(QueryCreditCollectionRequest) returns (QueryCreditCollectionResponse) {
     option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/creditcollections/{denom}";
-  }
-
-  rpc CreditBalances(QueryCreditBalancesRequest) returns (QueryCreditBalancesResponse) {
-    option (google.api.http).get = "/empowerchain/empowerchain/plasticcredit/creditbalances";
   }
 
   rpc CreditBalance(QueryCreditBalanceRequest) returns (QueryCreditBalanceResponse) {
@@ -81,15 +69,6 @@ message QueryIssuerResponse {
   Issuer issuer = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryApplicantsRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryApplicantsResponse {
-  repeated Applicant applicants = 1 [(gogoproto.nullable) = false];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = false];
-}
-
 message QueryApplicantRequest {
   uint64 applicant_id = 1;
 }
@@ -115,15 +94,6 @@ message QueryCreditTypeResponse {
   CreditType credit_type = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryProjectsRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryProjectsResponse {
-  repeated Project projects = 1 [(gogoproto.nullable) = false];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = false];
-}
-
 message QueryProjectRequest {
   uint64 project_id = 1;
 }
@@ -138,15 +108,6 @@ message QueryCreditCollectionRequest {
 
 message QueryCreditCollectionResponse {
   CreditCollection credit_collection = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryCreditBalancesRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryCreditBalancesResponse {
-  repeated CreditBalance credit_balances = 1 [(gogoproto.nullable) = false];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = false];
 }
 
 message QueryCreditBalanceRequest {

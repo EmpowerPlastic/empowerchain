@@ -25,24 +25,6 @@ export const MessageComposer = {
     }
 
   },
-  toJSON: {
-    createProof(value: MsgCreateProof) {
-      return {
-        typeUrl: "/empowerchain.proofofexistence.MsgCreateProof",
-        value: MsgCreateProof.toJSON(value)
-      };
-    }
-
-  },
-  fromJSON: {
-    createProof(value: any) {
-      return {
-        typeUrl: "/empowerchain.proofofexistence.MsgCreateProof",
-        value: MsgCreateProof.fromJSON(value)
-      };
-    }
-
-  },
   fromPartial: {
     createProof(value: MsgCreateProof) {
       return {

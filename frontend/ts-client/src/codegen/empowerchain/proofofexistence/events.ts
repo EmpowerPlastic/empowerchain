@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { isSet } from "../../helpers";
+import { DeepPartial } from "../../helpers";
 /** EventCreateProof is an event emitted when a new proof has been created */
 
 export interface EventCreateProof {
@@ -59,21 +59,7 @@ export const EventCreateProof = {
     return message;
   },
 
-  fromJSON(object: any): EventCreateProof {
-    return {
-      hash: isSet(object.hash) ? String(object.hash) : "",
-      creator: isSet(object.creator) ? String(object.creator) : ""
-    };
-  },
-
-  toJSON(message: EventCreateProof): unknown {
-    const obj: any = {};
-    message.hash !== undefined && (obj.hash = message.hash);
-    message.creator !== undefined && (obj.creator = message.creator);
-    return obj;
-  },
-
-  fromPartial(object: Partial<EventCreateProof>): EventCreateProof {
+  fromPartial(object: DeepPartial<EventCreateProof>): EventCreateProof {
     const message = createBaseEventCreateProof();
     message.hash = object.hash ?? "";
     message.creator = object.creator ?? "";

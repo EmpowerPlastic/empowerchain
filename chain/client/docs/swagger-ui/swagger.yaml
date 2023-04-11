@@ -187,7 +187,7 @@ paths:
           format: uint64
       tags:
         - Query
-  /empowerchain/empowerchain/plasticcredit/credit-types:
+  /empowerchain/empowerchain/plasticcredit/credit-classes:
     get:
       operationId: CreditTypes
       responses:
@@ -205,7 +205,7 @@ paths:
                       type: string
                       title: >-
                         abbreviation is the short-hand name *and* the identifier
-                        for a credit type
+                        for a credit class
                     issuer_id:
                       type: string
                       format: uint64
@@ -320,7 +320,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /empowerchain/empowerchain/plasticcredit/credit-types/{credit_type_abbreviation}:
+  /empowerchain/empowerchain/plasticcredit/credit-classes/{credit_type_abbreviation}:
     get:
       operationId: CreditType
       responses:
@@ -336,7 +336,7 @@ paths:
                     type: string
                     title: >-
                       abbreviation is the short-hand name *and* the identifier
-                      for a credit type
+                      for a credit class
                   issuer_id:
                     type: string
                     format: uint64
@@ -1549,7 +1549,7 @@ definitions:
             type: string
             title: >-
               abbreviation is the short-hand name *and* the identifier for a
-              credit type
+              credit class
           issuer_id:
             type: string
             format: uint64
@@ -1567,7 +1567,7 @@ definitions:
               type: string
               title: >-
                 abbreviation is the short-hand name *and* the identifier for a
-                credit type
+                credit class
             issuer_id:
               type: string
               format: uint64
