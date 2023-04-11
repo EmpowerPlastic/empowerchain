@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -36,6 +37,10 @@ func (s *TestSuite) GetCreditBalance(address, denom string) plasticcredit.Credit
 
 	cmdQueryBalance := cli.CmdQueryCreditBalance()
 	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmdQueryBalance, []string{address, denom})
+	if err != nil && strings.Contains(err.Error(), "credit balance not found") {
+		return plasticcredit.CreditAmount{}
+	}
+
 	s.Require().NoError(err)
 	var creditBalanceResponse plasticcredit.QueryCreditBalanceResponse
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &creditBalanceResponse))

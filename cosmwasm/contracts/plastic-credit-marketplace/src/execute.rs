@@ -1,8 +1,11 @@
 use cosmos_sdk_proto::cosmos::authz::v1beta1::MsgExec;
 use cosmos_sdk_proto::traits::{Message, TypeUrl};
 use cosmos_sdk_proto::traits::MessageExt;
-use cosmwasm_std::{entry_point, Binary, DepsMut, Env, MessageInfo, Response, Uint64, Coin, CosmosMsg, BankMsg, Addr};
+use cosmwasm_std::{entry_point, Binary, DepsMut, Env, MessageInfo, Response, Uint64, Coin, CosmosMsg, BankMsg, Addr, Decimal};
+use fee_splitter::{edit_fee_split_config, get_fee_split, Share};
 use crate::{msg::ExecuteMsg, error::ContractError, state::{LISTINGS, Listing}};
+use crate::error::ContractError::FeeSplitError;
+use crate::state::ADMIN;
 
 #[entry_point]
 pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> Result<Response, ContractError> {
@@ -11,6 +14,7 @@ pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> R
         ExecuteMsg::BuyCredits { owner, denom, number_of_credits_to_buy } => execute_buy_credits(deps, env, info, owner, denom, number_of_credits_to_buy),
         ExecuteMsg::UpdateListing { denom, number_of_credits, price_per_credit } => execute_update_listing(deps, env, info, denom, number_of_credits, price_per_credit),
         ExecuteMsg::CancelListing { denom } => execute_cancel_listing(deps, env, info, denom),
+        ExecuteMsg::EditFeeSplitConfig { fee_percentage, shares } => execute_edit_fee_split_config(deps, info, fee_percentage, shares),
     }
 }
 
@@ -82,7 +86,7 @@ pub fn execute_buy_credits(
         return Err(ContractError::NotEnoughFunds {});
     }
     if info.funds[0].amount > total_price {
-        return Err(ContractError::TooMuchFunds {})
+        return Err(ContractError::TooMuchFunds {});
     }
 
     listing.number_of_credits = listing.number_of_credits.checked_sub(number_of_credits_to_buy.into()).unwrap();
@@ -97,14 +101,22 @@ pub fn execute_buy_credits(
         listing.denom.clone(),
         number_of_credits_to_buy,
     );
-    let transfer_funds_msg = CosmosMsg::Bank(BankMsg::Send {
+
+    let funds_before_fee_split = Coin {
+        denom: listing.price_per_credit.denom,
+        amount: total_price,
+    };
+    let (fee_split_msgs, funds_after_split) = get_fee_split(deps.storage, funds_before_fee_split).unwrap();
+    let transfer_funds_to_seller_msg = CosmosMsg::Bank(BankMsg::Send {
         to_address: listing.owner.to_string(),
-        amount: vec![Coin {
-            denom: listing.price_per_credit.denom,
-            amount: total_price,
-        }],
+        amount: vec![funds_after_split],
     });
-    
+
+    let mut msgs = vec![transfer_credits_msg, transfer_funds_to_seller_msg];
+    if fee_split_msgs.len() > 0 {
+        msgs.extend(fee_split_msgs);
+    }
+
     Ok(Response::new()
         .add_attribute("action", "buy_credits")
         .add_attribute("listing_owner", listing.owner)
@@ -112,7 +124,7 @@ pub fn execute_buy_credits(
         .add_attribute("buyer", info.sender)
         .add_attribute("number_of_credits_bought", number_of_credits_to_buy.to_string())
         .add_attribute("total_price", total_price.to_string())
-        .add_messages(vec![transfer_credits_msg, transfer_funds_msg])
+        .add_messages(msgs)
     )
 }
 
@@ -172,7 +184,7 @@ fn execute_update_listing(
         .add_attribute("denom", denom)
         .add_attribute("number_of_credits", number_of_credits.to_string())
         .add_attribute("price_per_credit", price_per_credit.to_string());
-    
+
     if let Some(msg) = exec_credit_transfer_msg {
         Ok(res.add_message(msg))
     } else {
@@ -202,6 +214,38 @@ fn execute_cancel_listing(
         .add_attribute("listing_owner", info.sender)
         .add_attribute("denom", denom)
         .add_message(exec_credit_transfer_msg)
+    )
+}
+
+fn execute_edit_fee_split_config(
+    deps: DepsMut,
+    info: MessageInfo,
+    fee_percentage: Decimal,
+    shares: Vec<Share>,
+) -> Result<Response, ContractError> {
+    // Only admin can edit the fee split config
+    let admin = ADMIN.load(deps.storage)?;
+    if info.sender != admin {
+        return Err(ContractError::Unauthorized {});
+    }
+
+    // Format shares before consuming it
+    let formatted_shares = shares
+        .iter()
+        .map(|s| format!("{addr} -> {share}", addr = s.address, share = s.percentage))
+        .collect::<Vec<_>>()
+        .join(", ");
+
+    edit_fee_split_config(deps.storage, fee_percentage, shares).map_err(|e| FeeSplitError(e))?;
+
+    Ok(Response::new()
+        .add_attribute("action", "edit_fee_split_config")
+        .add_attribute("fee_percentage", fee_percentage.to_string())
+        .add_attribute(
+            "shares",
+            formatted_shares
+        )
+        .add_attribute("admin", info.sender)
     )
 }
 
@@ -265,7 +309,8 @@ mod tests {
             traits::Message,
         };
         use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info, MOCK_CONTRACT_ADDR};
-        use cosmwasm_std::{Coin, coins, CosmosMsg, Empty, Order, Uint128, Uint64, Addr};
+        use cosmwasm_std::{Coin, coins, CosmosMsg, Order, Uint128, Uint64, Addr, Decimal};
+        use crate::msg::InstantiateMsg;
         use crate::{
             execute::{execute, MsgTransferCredits},
             instantiate,
@@ -278,7 +323,7 @@ mod tests {
         fn test_create_listing() {
             let mut deps = mock_dependencies();
             let info = mock_info("creator", &coins(2, "token"));
-            instantiate(deps.as_mut(), mock_env(), info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), info.clone(), InstantiateMsg { admin: info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -323,7 +368,6 @@ mod tests {
                 .map(|item| item.unwrap())
                 .collect::<Vec<((Addr, String), Listing)>>();
             assert_eq!(all_listings.len(), 1);
-
         }
 
         #[test]
@@ -332,7 +376,7 @@ mod tests {
             let info = mock_info("creator", &coins(2, "token"));
             let info2 = mock_info("creator2", &coins(2, "token"));
             let info3 = mock_info("creator3", &coins(2, "token"));
-            instantiate(deps.as_mut(), mock_env(), info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), info.clone(), InstantiateMsg { admin: info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -351,14 +395,13 @@ mod tests {
                 .map(|item| item.unwrap())
                 .collect::<Vec<((Addr, String), Listing)>>();
             assert_eq!(all_listings.len(), 3);
-
         }
 
         #[test]
         fn test_create_listing_zero_credits() {
             let mut deps = mock_dependencies();
             let info = mock_info("creator", &coins(2, "token"));
-            instantiate(deps.as_mut(), mock_env(), info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), info.clone(), InstantiateMsg { admin: info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -382,7 +425,7 @@ mod tests {
         fn test_create_listing_zero_price() {
             let mut deps = mock_dependencies();
             let info = mock_info("creator", &coins(2, "token"));
-            instantiate(deps.as_mut(), mock_env(), info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), info.clone(), InstantiateMsg { admin: info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -401,11 +444,12 @@ mod tests {
                 .collect::<Vec<((Addr, String), Listing)>>();
             assert_eq!(all_listings.len(), 0);
         }
+
         #[test]
         fn test_create_listing_already_exists() {
             let mut deps = mock_dependencies();
             let info = mock_info("creator", &coins(2, "token"));
-            instantiate(deps.as_mut(), mock_env(), info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), info.clone(), InstantiateMsg { admin: info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -427,6 +471,7 @@ mod tests {
             assert_eq!(all_listings.len(), 1);
         }
     }
+
     mod update_listing_tests {
         use cosmos_sdk_proto::traits::TypeUrl;
         use cosmos_sdk_proto::{
@@ -434,19 +479,19 @@ mod tests {
             traits::MessageExt,
             traits::Message,
         };
-        use cosmwasm_std::{Coin, CosmosMsg, Empty, Uint128, Uint64};
+        use cosmwasm_std::{Coin, CosmosMsg, Decimal, Uint128, Uint64};
         use cosmwasm_std::testing::{MOCK_CONTRACT_ADDR, mock_dependencies, mock_env, mock_info};
         use crate::error::ContractError;
         use crate::execute::{execute, MsgTransferCredits};
         use crate::instantiate;
-        use crate::msg::ExecuteMsg;
+        use crate::msg::{ExecuteMsg, InstantiateMsg};
         use crate::state::LISTINGS;
 
         #[test]
         fn test_update_listing_happy_path_increase_credits() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
-            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let create_listing_msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -461,7 +506,7 @@ mod tests {
             let update_listing_msg = ExecuteMsg::UpdateListing {
                 denom: "pcrd".to_string(),
                 number_of_credits: Uint64::from(100u64),
-                price_per_credit:Coin {
+                price_per_credit: Coin {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 },
@@ -500,7 +545,7 @@ mod tests {
         fn test_update_listing_happy_path_decrease_credits() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
-            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let create_listing_msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -515,7 +560,7 @@ mod tests {
             let update_listing_msg = ExecuteMsg::UpdateListing {
                 denom: "pcrd".to_string(),
                 number_of_credits: Uint64::from(10u64),
-                price_per_credit:Coin {
+                price_per_credit: Coin {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 },
@@ -550,7 +595,7 @@ mod tests {
         fn test_update_listing_happy_path_change_price_per_credit_only() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
-            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let create_listing_msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -565,7 +610,7 @@ mod tests {
             let update_listing_msg = ExecuteMsg::UpdateListing {
                 denom: "pcrd".to_string(),
                 number_of_credits: Uint64::from(42u64),
-                price_per_credit:Coin {
+                price_per_credit: Coin {
                     denom: "token".to_string(),
                     amount: Uint128::from(42u128),
                 },
@@ -573,7 +618,7 @@ mod tests {
             let res = execute(deps.as_mut(), mock_env(), creator_info.clone(), update_listing_msg).unwrap();
             assert_eq!(res.attributes.len(), 5);
             assert_eq!(res.messages.len(), 0);
-            
+
             let listing = LISTINGS.load(deps.as_ref().storage, (creator_info.sender.clone(), "pcrd".to_string())).unwrap();
             assert_eq!(listing.owner, creator_info.sender);
             assert_eq!(listing.denom, "pcrd");
@@ -588,12 +633,12 @@ mod tests {
         fn test_update_listing_non_existing_listing() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
-            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let update_listing_msg = ExecuteMsg::UpdateListing {
                 denom: "pcrd".to_string(),
                 number_of_credits: Uint64::from(1337u64),
-                price_per_credit:Coin {
+                price_per_credit: Coin {
                     denom: "token".to_string(),
                     amount: Uint128::from(42u128),
                 },
@@ -606,7 +651,7 @@ mod tests {
         fn test_update_listing_not_owner() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
-            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let create_listing_msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -621,7 +666,7 @@ mod tests {
             let update_listing_msg = ExecuteMsg::UpdateListing {
                 denom: "pcrd".to_string(),
                 number_of_credits: Uint64::from(1337u64),
-                price_per_credit:Coin {
+                price_per_credit: Coin {
                     denom: "token".to_string(),
                     amount: Uint128::from(42u128),
                 },
@@ -634,7 +679,7 @@ mod tests {
         fn test_update_listing_zero_price() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
-            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let create_listing_msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -649,7 +694,7 @@ mod tests {
             let update_listing_msg = ExecuteMsg::UpdateListing {
                 denom: "pcrd".to_string(),
                 number_of_credits: Uint64::from(1337u64),
-                price_per_credit:Coin {
+                price_per_credit: Coin {
                     denom: "token".to_string(),
                     amount: Uint128::from(0u128),
                 },
@@ -662,7 +707,7 @@ mod tests {
         fn test_update_listing_zero_credits() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
-            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let create_listing_msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -677,7 +722,7 @@ mod tests {
             let update_listing_msg = ExecuteMsg::UpdateListing {
                 denom: "pcrd".to_string(),
                 number_of_credits: Uint64::from(0u64),
-                price_per_credit:Coin {
+                price_per_credit: Coin {
                     denom: "token".to_string(),
                     amount: Uint128::from(42u128),
                 },
@@ -686,22 +731,23 @@ mod tests {
             assert_eq!(err, ContractError::ZeroCredits {});
         }
     }
-    
+
     mod buy_credits_tests {
         use cosmos_sdk_proto::traits::{Message, TypeUrl};
-        use cosmwasm_std::{BankMsg, Coin, coins, CosmosMsg, Empty, Uint128, Uint64, Addr};
+        use cosmwasm_std::{BankMsg, Coin, coins, CosmosMsg, Uint128, Uint64, Addr, Decimal};
         use cosmwasm_std::testing::{MOCK_CONTRACT_ADDR, mock_dependencies, mock_env, mock_info};
+        use fee_splitter::Share;
         use crate::error::ContractError;
         use crate::execute::{execute, MsgTransferCredits};
         use crate::instantiate;
-        use crate::msg::ExecuteMsg;
+        use crate::msg::{ExecuteMsg, InstantiateMsg};
         use crate::state::LISTINGS;
 
         #[test]
-        fn test_buy_credits_happy_path() {
+        fn test_buy_credits_happy_path_with_no_fee_share() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
-            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let create_listing_msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -750,10 +796,88 @@ mod tests {
         }
 
         #[test]
+        fn test_buy_credits_happy_path_with_fee_share() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            let dev_share = Share {
+                address: "dev".to_string(),
+                percentage: Decimal::percent(90),
+            };
+            let user_share = Share {
+                address: "user".to_string(),
+                percentage: Decimal::percent(10),
+            };
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::permille(5), shares: vec![dev_share, user_share] }).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "umpwr".to_string(),
+                    amount: Uint128::from(1000u128),
+                },
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let buyer_info = mock_info("buyer", &coins(10_000, "umpwr"));
+            let buy_credits_msg = ExecuteMsg::BuyCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_buy: 10u64,
+            };
+            let res = execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg).unwrap();
+            assert_eq!(res.attributes.len(), 6);
+
+            let listing = LISTINGS.load(deps.as_ref().storage, (Addr::unchecked(creator_info.sender.clone()), "pcrd".to_string())).unwrap();
+            assert_eq!(listing.number_of_credits, Uint64::from(32u64)); // Because 10 were bought
+
+            assert_eq!(res.messages.len(), 4);
+            if let CosmosMsg::Stargate { type_url, value } = &res.messages[0].msg {
+                assert_eq!(type_url, MsgTransferCredits::TYPE_URL);
+
+                let transfer_msg = MsgTransferCredits::decode(value.as_slice()).unwrap();
+                assert_eq!(transfer_msg.from, MOCK_CONTRACT_ADDR.to_string());
+                assert_eq!(transfer_msg.to, buyer_info.sender.to_string());
+                assert_eq!(transfer_msg.denom, "pcrd");
+                assert_eq!(transfer_msg.amount, 10);
+                assert_eq!(transfer_msg.retire, false);
+            } else {
+                panic!("Expected Stargate message");
+            }
+
+            if let CosmosMsg::Bank(BankMsg::Send { to_address, amount }) = &res.messages[1].msg {
+                assert_eq!(to_address, &creator_info.sender);
+                assert_eq!(amount.len(), 1);
+                assert_eq!(amount[0].denom, "umpwr");
+                assert_eq!(amount[0].amount, Uint128::from(9950u128));
+            } else {
+                panic!("Expected Bank message");
+            }
+
+            if let CosmosMsg::Bank(BankMsg::Send { to_address, amount }) = &res.messages[2].msg {
+                assert_eq!(to_address, &Addr::unchecked("dev".to_string()));
+                assert_eq!(amount.len(), 1);
+                assert_eq!(amount[0].denom, "umpwr");
+                assert_eq!(amount[0].amount, Uint128::from(45u128));
+            } else {
+                panic!("Expected Bank message");
+            }
+
+            if let CosmosMsg::Bank(BankMsg::Send { to_address, amount }) = &res.messages[3].msg {
+                assert_eq!(to_address, &Addr::unchecked("user".to_string()));
+                assert_eq!(amount.len(), 1);
+                assert_eq!(amount[0].denom, "umpwr");
+                assert_eq!(amount[0].amount, Uint128::from(5u128));
+            } else {
+                panic!("Expected Bank message");
+            }
+        }
+
+        #[test]
         fn test_buy_multiple_times_from_same_listing() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
-            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let create_listing_msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -783,7 +907,7 @@ mod tests {
         fn test_listing_does_not_exist() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
-            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let buyer_info = mock_info("buyer", &coins(1337, "umpwr"));
             let buy_credits_msg = ExecuteMsg::BuyCredits {
@@ -799,7 +923,7 @@ mod tests {
         fn test_buying_zero_credits() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
-            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let create_listing_msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -825,7 +949,7 @@ mod tests {
         fn test_buying_without_enough_funds() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
-            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let create_listing_msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -851,7 +975,7 @@ mod tests {
         fn test_buying_with_too_much_funds() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
-            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let create_listing_msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -877,7 +1001,7 @@ mod tests {
         fn test_buying_more_credits_than_available() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
-            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let create_listing_msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -898,25 +1022,24 @@ mod tests {
             let err = execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg).unwrap_err();
             assert_eq!(err, ContractError::NotEnoughCredits {});
         }
-
     }
 
     mod cancel_lists_tests {
         use cosmos_sdk_proto::traits::TypeUrl;
-        use cosmwasm_std::{Coin, Empty, Uint128, Uint64, CosmosMsg};
+        use cosmwasm_std::{Coin, Uint128, Uint64, CosmosMsg, Decimal};
         use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info, MOCK_CONTRACT_ADDR};
         use cosmos_sdk_proto::{traits::Message};
         use crate::error::ContractError;
         use crate::execute::{execute, MsgTransferCredits};
         use crate::instantiate;
-        use crate::msg::ExecuteMsg;
+        use crate::msg::{ExecuteMsg, InstantiateMsg};
         use crate::state::LISTINGS;
 
         #[test]
         fn test_cancel_listing_happy_path() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
-            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -934,7 +1057,7 @@ mod tests {
                 denom: "pcrd".to_string(),
             };
             let cancel_res = execute(deps.as_mut(), mock_env(), creator_info.clone(), cancel_listing_msg).unwrap();
-            
+
             assert_eq!(cancel_res.messages.len(), 1);
             if let CosmosMsg::Stargate { type_url, value } = &cancel_res.messages[0].msg {
                 assert_eq!(type_url, MsgTransferCredits::TYPE_URL);
@@ -957,7 +1080,7 @@ mod tests {
         fn test_cancel_listing_that_does_not_exist() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
-            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let cancel_listing_msg = ExecuteMsg::CancelListing {
                 denom: "pcrd".to_string(),
@@ -970,7 +1093,7 @@ mod tests {
         fn test_cancel_listing_already_cancelled() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
-            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), Empty {}).unwrap();
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
 
             let create_listing_msg = ExecuteMsg::CreateListing {
                 denom: "pcrd".to_string(),
@@ -992,6 +1115,78 @@ mod tests {
             assert_eq!(listing.unwrap_err(), ContractError::ListingNotFound {});
             let err = execute(deps.as_mut(), mock_env(), creator_info.clone(), cancel_listing_msg).unwrap_err();
             assert_eq!(err, ContractError::ListingNotFound {});
+        }
+    }
+
+    mod edit_fee_split_config_tests {
+        use cosmwasm_std::Decimal;
+        use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
+        use fee_splitter::Share;
+        use crate::error::ContractError;
+        use crate::execute::execute;
+        use crate::instantiate;
+        use crate::msg::{ExecuteMsg, InstantiateMsg};
+
+        #[test]
+        fn test_edit_fee_split_config_happy_path() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+
+            let edit_fee_split_config_msg = ExecuteMsg::EditFeeSplitConfig {
+                fee_percentage: Decimal::percent(10),
+                shares: vec![
+                    Share{ address: "addr1".to_string(), percentage: Decimal::percent(50) },
+                    Share{ address: "addr2".to_string(), percentage: Decimal::percent(50) }
+                ],
+            };
+            let res = execute(deps.as_mut(), mock_env(), creator_info.clone(), edit_fee_split_config_msg).unwrap();
+            assert_eq!(res.attributes.len(), 4);
+
+            let config = fee_splitter::get_config(deps.as_ref().storage).unwrap();
+            assert_eq!(config.fee_percentage, Decimal::percent(10));
+            assert_eq!(config.shares.len(), 2);
+            assert_eq!(config.shares[0].address, "addr1");
+            assert_eq!(config.shares[0].percentage, Decimal::percent(50));
+            assert_eq!(config.shares[1].address, "addr2");
+            assert_eq!(config.shares[1].percentage, Decimal::percent(50));
+        }
+
+        #[test]
+        fn test_edit_fee_split_config_with_invalid_percentage() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+
+            let edit_fee_split_config_msg = ExecuteMsg::EditFeeSplitConfig {
+                fee_percentage: Decimal::percent(110),
+                shares: vec![
+                    Share{ address: "addr1".to_string(), percentage: Decimal::percent(50) },
+                    Share{ address: "addr2".to_string(), percentage: Decimal::percent(50) }
+                ],
+            };
+            let err = execute(deps.as_mut(), mock_env(), creator_info.clone(), edit_fee_split_config_msg).unwrap_err();
+            assert_eq!(err, ContractError::FeeSplitError(
+                fee_splitter::error::FeeSplitterError::InvalidFeePercentage{ fee_percentage: Decimal::percent(110) }
+            ));
+        }
+
+        #[test]
+        fn test_edit_fee_split_with_non_admin() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+
+            let edit_fee_split_config_msg = ExecuteMsg::EditFeeSplitConfig {
+                fee_percentage: Decimal::percent(10),
+                shares: vec![
+                    Share{ address: "addr1".to_string(), percentage: Decimal::percent(50) },
+                    Share{ address: "addr2".to_string(), percentage: Decimal::percent(50) }
+                ],
+            };
+            let non_admin_info = mock_info("non_admin", &[]);
+            let err = execute(deps.as_mut(), mock_env(), non_admin_info.clone(), edit_fee_split_config_msg).unwrap_err();
+            assert_eq!(err, ContractError::Unauthorized {});
         }
     }
 }

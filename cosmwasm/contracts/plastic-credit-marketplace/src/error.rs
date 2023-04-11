@@ -1,10 +1,14 @@
 use cosmwasm_std::StdError;
 use thiserror::Error;
+use fee_splitter::error::FeeSplitterError;
 
 #[derive(Error, Debug, PartialEq)]
 pub enum ContractError {
     #[error("{0}")]
     Std(#[from] StdError),
+
+    #[error("unauthorized")]
+    Unauthorized {},
 
     #[error("listing needs to have more than zero credits listed")]
     ZeroCredits {},
@@ -26,4 +30,7 @@ pub enum ContractError {
 
     #[error("listing already exists")]
     ListingAlreadyExists {},
+
+    #[error("fee split error {0}")]
+    FeeSplitError(#[from] FeeSplitterError),
 }

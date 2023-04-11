@@ -14,7 +14,11 @@ import (
 func (s *E2ETestSuite) TestUpdateListing() {
 	val := s.Network.Validators[0]
 	// Instantiate marketplace contract
-	marketplaceAddress := s.instantiateMarketplace()
+	marketplaceAddress := s.instantiateMarketplace(MarketplaceInstantiateMessage{
+		Admin:         e2e.ContractAdminAddress,
+		FeePercentage: "0",
+		Shares:        []MarketplaceFeeShare{},
+	})
 	creditOwnerKey, err := val.ClientCtx.Keyring.Key(e2e.ApplicantKeyName)
 	s.Require().NoError(err)
 	creditOwnerAddress, err := creditOwnerKey.GetAddress()
