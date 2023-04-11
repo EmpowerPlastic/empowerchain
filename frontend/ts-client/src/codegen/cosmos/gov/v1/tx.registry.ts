@@ -95,6 +95,94 @@ export const MessageComposer = {
     }
 
   },
+  toJSON: {
+    submitProposal(value: MsgSubmitProposal) {
+      return {
+        typeUrl: "/cosmos.gov.v1.MsgSubmitProposal",
+        value: MsgSubmitProposal.toJSON(value)
+      };
+    },
+
+    execLegacyContent(value: MsgExecLegacyContent) {
+      return {
+        typeUrl: "/cosmos.gov.v1.MsgExecLegacyContent",
+        value: MsgExecLegacyContent.toJSON(value)
+      };
+    },
+
+    vote(value: MsgVote) {
+      return {
+        typeUrl: "/cosmos.gov.v1.MsgVote",
+        value: MsgVote.toJSON(value)
+      };
+    },
+
+    voteWeighted(value: MsgVoteWeighted) {
+      return {
+        typeUrl: "/cosmos.gov.v1.MsgVoteWeighted",
+        value: MsgVoteWeighted.toJSON(value)
+      };
+    },
+
+    deposit(value: MsgDeposit) {
+      return {
+        typeUrl: "/cosmos.gov.v1.MsgDeposit",
+        value: MsgDeposit.toJSON(value)
+      };
+    },
+
+    updateParams(value: MsgUpdateParams) {
+      return {
+        typeUrl: "/cosmos.gov.v1.MsgUpdateParams",
+        value: MsgUpdateParams.toJSON(value)
+      };
+    }
+
+  },
+  fromJSON: {
+    submitProposal(value: any) {
+      return {
+        typeUrl: "/cosmos.gov.v1.MsgSubmitProposal",
+        value: MsgSubmitProposal.fromJSON(value)
+      };
+    },
+
+    execLegacyContent(value: any) {
+      return {
+        typeUrl: "/cosmos.gov.v1.MsgExecLegacyContent",
+        value: MsgExecLegacyContent.fromJSON(value)
+      };
+    },
+
+    vote(value: any) {
+      return {
+        typeUrl: "/cosmos.gov.v1.MsgVote",
+        value: MsgVote.fromJSON(value)
+      };
+    },
+
+    voteWeighted(value: any) {
+      return {
+        typeUrl: "/cosmos.gov.v1.MsgVoteWeighted",
+        value: MsgVoteWeighted.fromJSON(value)
+      };
+    },
+
+    deposit(value: any) {
+      return {
+        typeUrl: "/cosmos.gov.v1.MsgDeposit",
+        value: MsgDeposit.fromJSON(value)
+      };
+    },
+
+    updateParams(value: any) {
+      return {
+        typeUrl: "/cosmos.gov.v1.MsgUpdateParams",
+        value: MsgUpdateParams.fromJSON(value)
+      };
+    }
+
+  },
   fromPartial: {
     submitProposal(value: MsgSubmitProposal) {
       return {

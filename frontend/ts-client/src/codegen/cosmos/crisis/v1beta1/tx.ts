@@ -1,6 +1,6 @@
 import { Coin, CoinSDKType } from "../../base/v1beta1/coin";
 import * as _m0 from "protobufjs/minimal";
-import { DeepPartial } from "../../../helpers";
+import { isSet } from "../../../helpers";
 /** MsgVerifyInvariant represents a message to verify a particular invariance. */
 
 export interface MsgVerifyInvariant {
@@ -129,7 +129,23 @@ export const MsgVerifyInvariant = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<MsgVerifyInvariant>): MsgVerifyInvariant {
+  fromJSON(object: any): MsgVerifyInvariant {
+    return {
+      sender: isSet(object.sender) ? String(object.sender) : "",
+      invariantModuleName: isSet(object.invariantModuleName) ? String(object.invariantModuleName) : "",
+      invariantRoute: isSet(object.invariantRoute) ? String(object.invariantRoute) : ""
+    };
+  },
+
+  toJSON(message: MsgVerifyInvariant): unknown {
+    const obj: any = {};
+    message.sender !== undefined && (obj.sender = message.sender);
+    message.invariantModuleName !== undefined && (obj.invariantModuleName = message.invariantModuleName);
+    message.invariantRoute !== undefined && (obj.invariantRoute = message.invariantRoute);
+    return obj;
+  },
+
+  fromPartial(object: Partial<MsgVerifyInvariant>): MsgVerifyInvariant {
     const message = createBaseMsgVerifyInvariant();
     message.sender = object.sender ?? "";
     message.invariantModuleName = object.invariantModuleName ?? "";
@@ -166,7 +182,16 @@ export const MsgVerifyInvariantResponse = {
     return message;
   },
 
-  fromPartial(_: DeepPartial<MsgVerifyInvariantResponse>): MsgVerifyInvariantResponse {
+  fromJSON(_: any): MsgVerifyInvariantResponse {
+    return {};
+  },
+
+  toJSON(_: MsgVerifyInvariantResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: Partial<MsgVerifyInvariantResponse>): MsgVerifyInvariantResponse {
     const message = createBaseMsgVerifyInvariantResponse();
     return message;
   }
@@ -219,7 +244,21 @@ export const MsgUpdateParams = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<MsgUpdateParams>): MsgUpdateParams {
+  fromJSON(object: any): MsgUpdateParams {
+    return {
+      authority: isSet(object.authority) ? String(object.authority) : "",
+      constantFee: isSet(object.constantFee) ? Coin.fromJSON(object.constantFee) : undefined
+    };
+  },
+
+  toJSON(message: MsgUpdateParams): unknown {
+    const obj: any = {};
+    message.authority !== undefined && (obj.authority = message.authority);
+    message.constantFee !== undefined && (obj.constantFee = message.constantFee ? Coin.toJSON(message.constantFee) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: Partial<MsgUpdateParams>): MsgUpdateParams {
     const message = createBaseMsgUpdateParams();
     message.authority = object.authority ?? "";
     message.constantFee = object.constantFee !== undefined && object.constantFee !== null ? Coin.fromPartial(object.constantFee) : undefined;
@@ -255,7 +294,16 @@ export const MsgUpdateParamsResponse = {
     return message;
   },
 
-  fromPartial(_: DeepPartial<MsgUpdateParamsResponse>): MsgUpdateParamsResponse {
+  fromJSON(_: any): MsgUpdateParamsResponse {
+    return {};
+  },
+
+  toJSON(_: MsgUpdateParamsResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: Partial<MsgUpdateParamsResponse>): MsgUpdateParamsResponse {
     const message = createBaseMsgUpdateParamsResponse();
     return message;
   }

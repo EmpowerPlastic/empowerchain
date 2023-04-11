@@ -1,6 +1,6 @@
 import { Class, ClassSDKType, NFT, NFTSDKType } from "./nft";
 import * as _m0 from "protobufjs/minimal";
-import { DeepPartial } from "../../../helpers";
+import { isSet } from "../../../helpers";
 /** GenesisState defines the nft module's genesis state. */
 
 export interface GenesisState {
@@ -84,7 +84,32 @@ export const GenesisState = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<GenesisState>): GenesisState {
+  fromJSON(object: any): GenesisState {
+    return {
+      classes: Array.isArray(object?.classes) ? object.classes.map((e: any) => Class.fromJSON(e)) : [],
+      entries: Array.isArray(object?.entries) ? object.entries.map((e: any) => Entry.fromJSON(e)) : []
+    };
+  },
+
+  toJSON(message: GenesisState): unknown {
+    const obj: any = {};
+
+    if (message.classes) {
+      obj.classes = message.classes.map(e => e ? Class.toJSON(e) : undefined);
+    } else {
+      obj.classes = [];
+    }
+
+    if (message.entries) {
+      obj.entries = message.entries.map(e => e ? Entry.toJSON(e) : undefined);
+    } else {
+      obj.entries = [];
+    }
+
+    return obj;
+  },
+
+  fromPartial(object: Partial<GenesisState>): GenesisState {
     const message = createBaseGenesisState();
     message.classes = object.classes?.map(e => Class.fromPartial(e)) || [];
     message.entries = object.entries?.map(e => Entry.fromPartial(e)) || [];
@@ -139,7 +164,27 @@ export const Entry = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<Entry>): Entry {
+  fromJSON(object: any): Entry {
+    return {
+      owner: isSet(object.owner) ? String(object.owner) : "",
+      nfts: Array.isArray(object?.nfts) ? object.nfts.map((e: any) => NFT.fromJSON(e)) : []
+    };
+  },
+
+  toJSON(message: Entry): unknown {
+    const obj: any = {};
+    message.owner !== undefined && (obj.owner = message.owner);
+
+    if (message.nfts) {
+      obj.nfts = message.nfts.map(e => e ? NFT.toJSON(e) : undefined);
+    } else {
+      obj.nfts = [];
+    }
+
+    return obj;
+  },
+
+  fromPartial(object: Partial<Entry>): Entry {
     const message = createBaseEntry();
     message.owner = object.owner ?? "";
     message.nfts = object.nfts?.map(e => NFT.fromPartial(e)) || [];
