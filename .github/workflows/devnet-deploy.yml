@@ -18,5 +18,6 @@ jobs:
           password: ${{ secrets.DEVNET_PASSWORD }}
           port: ${{ secrets.DEVNET_PORT }}
           script: |
-            source .zshrc # load shell env manually as it's not getting loaded by the job
+            # load shell env manually as it's not getting loaded by the job
+            source .zshrc
             ./deploy.sh
