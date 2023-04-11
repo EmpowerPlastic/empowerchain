@@ -18,12 +18,6 @@ jobs:
           password: ${{ secrets.DEVNET_PASSWORD }}
           port: ${{ secrets.DEVNET_PORT }}
           script: |
-            cd ./empowerchain && \
-            git pull && \
-            cd chain && \
-            make install && \
-            sudo systemctl stop empowerd && \
-            empowerd tendermint unsafe-reset-all && \
-            sudo systemctl start empowerd && \
-            sleep 5 && \
-            empowerd status
+            # load shell env manually as it's not getting loaded by the job
+            source .zshrc
+            ./deploy.sh
