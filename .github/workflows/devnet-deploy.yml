@@ -3,7 +3,7 @@ name: "Devnet depoly"
 on:
   push:
     branches:
-      - '*'
+      - main
 
 jobs:
   build:
