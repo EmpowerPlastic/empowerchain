@@ -417,7 +417,7 @@ func TestApplicant_AddressHasAuthorization(t *testing.T) {
 func TestCreditTypeValidation(t *testing.T) {
 	testCases := map[string]struct {
 		creditType CreditType
-		err         error
+		err        error
 	}{
 		"happy path": {
 			creditType: CreditType{
