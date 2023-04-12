@@ -1,6 +1,7 @@
 export default {
     title: 'EmpowerChain Docs',
     description: 'Documentation for everything EmpowerChain.',
+    cleanUrls: true,
     themeConfig: {
         sidebar: [
             {
