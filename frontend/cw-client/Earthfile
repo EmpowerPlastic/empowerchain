@@ -5,7 +5,7 @@ WORKDIR /empowerchain/frontend/cw-client
 install-ts-codegen:
   RUN npm install -g @cosmwasm/ts-codegen@0.25.2
 
-update-ts-client:
+generate-ts-types:
   FROM +install-ts-codegen
   COPY ../../+get-cw-schema/* .
   RUN cosmwasm-ts-codegen generate \
