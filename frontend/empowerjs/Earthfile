@@ -2,13 +2,16 @@ VERSION 0.6
 FROM node:lts-alpine
 WORKDIR /empowerchain/frontend/empowerjs
 
-update-empowerjs:
-    ARG NPM_TOKEN
+codegen:
     COPY . .
     COPY ../../+get-proto/* ./proto
     RUN npm i
     RUN npx telescope transpile --protoDirs=./proto --outPath=./src/codegen --includeAminos=true --includeLCDClients=true --includeRPCClients=true
     SAVE ARTIFACT ./src/codegen AS LOCAL ./src/codegen
+
+publish:
+    ARG NPM_TOKEN
+    FROM +codegen
     RUN npm config set registry https://registry.npmjs.org/
     RUN npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
     RUN npm version patch
