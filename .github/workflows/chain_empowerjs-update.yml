@@ -1,0 +1,31 @@
+name: "Chain typeScript types update"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'chain/proto/**' # On updating proto
+
+jobs:
+  build:
+    name: Update empowerjs
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: earthly/actions/setup-earthly@v1
+        with:
+          version: v0.6.22
+
+      - run: earthly --ci --output +publish --NPM_TOKEN="$NPM_TOKEN"
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        working-directory: ./frontend/empowerjs
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          commit-message: Update empowerjs
+          title: Update empowerjs
+          branch: update-empowerjs
+      
