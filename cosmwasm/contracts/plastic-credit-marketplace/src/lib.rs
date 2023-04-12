@@ -33,7 +33,7 @@ mod tests {
 	use super::*;
 	use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
 	use cosmwasm_std::{coins, Decimal};
-use fee_splitter::Share;
+	use fee_splitter::Share;
 	use crate::state::ADMIN;
 
 	#[test]
