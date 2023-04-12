@@ -17,6 +17,7 @@ build-prep:
     COPY Cargo.toml .
     COPY .cargo .cargo
     COPY contracts contracts
+    COPY packages packages
 
 build:
     FROM +build-prep

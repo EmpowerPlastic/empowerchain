@@ -373,6 +373,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "fee-splitter"
+version = "0.1.0"
+dependencies = [
+ "cosmwasm-schema",
+ "cosmwasm-std",
+ "cw-storage-plus",
+ "thiserror",
+]
+
+[[package]]
 name = "ff"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -543,6 +553,7 @@ dependencies = [
  "cosmwasm-std",
  "cw-multi-test",
  "cw-storage-plus",
+ "fee-splitter",
  "prost 0.11.8",
  "prost-types",
  "serde",

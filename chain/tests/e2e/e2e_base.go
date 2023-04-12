@@ -44,6 +44,8 @@ const (
 	RandomAddress             = "empower15hxwswcmmkasaar65n3vkmp6skurvtas3xzl7s"
 	ContractAdminAddress      = "empower1reurz37gn2sk3vgr3fupcultkagzverqczer0l"
 	NoCoinsIssuerAdminAddress = "empower1xgsaene8aqfknmldemvl5q0mtgcgjv9svupqwu"
+	DevAddress                = "empower1egyu4d0zn38cs7fsynf2zq6ckppe9ecn0eh5zh"
+	SomeOtherRandomAddress    = "empower1skasndc8qy35zwymj62h4m6vl423vrf34de6xz"
 )
 
 var DefaultFee = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10))

@@ -1,7 +1,15 @@
 use cosmwasm_schema::{cw_serde, QueryResponses};
-use cosmwasm_std::{Uint64, Coin, Addr};
+use cosmwasm_std::{Uint64, Coin, Addr, Decimal};
+use fee_splitter::Share;
 
 use crate::state::Listing;
+
+#[cw_serde]
+pub struct InstantiateMsg {
+    pub admin: String,
+    pub fee_percentage: Decimal,
+    pub shares: Vec<Share>,
+}
 
 #[cw_serde]
 pub enum ExecuteMsg {
@@ -22,7 +30,11 @@ pub enum ExecuteMsg {
     },
     CancelListing {
         denom: String,
-    }
+    },
+    EditFeeSplitConfig {
+        fee_percentage: Decimal,
+        shares: Vec<Share>
+    },
 }
 
 #[cw_serde]
@@ -44,6 +56,8 @@ pub enum QueryMsg {
         owner: Addr,
         denom: String,
     },
+    #[returns(fee_splitter::Config)]
+    FeeSplitConfig {},
 }
 
 #[cw_serde]

@@ -13,7 +13,11 @@ import (
 
 func (s *E2ETestSuite) TestCreateListing() {
 	val := s.Network.Validators[0]
-	marketplaceAddress := s.instantiateMarketplace()
+	marketplaceAddress := s.instantiateMarketplace(MarketplaceInstantiateMessage{
+		Admin:         e2e.ContractAdminAddress,
+		FeePercentage: "0",
+		Shares:        []MarketplaceFeeShare{},
+	})
 	creditOwnerKey, err := val.ClientCtx.Keyring.Key(e2e.ApplicantKeyName)
 	s.Require().NoError(err)
 
@@ -57,7 +61,11 @@ func (s *E2ETestSuite) TestCreateListing() {
 
 func (s *E2ETestSuite) TestCreateListingWithFailingTransferMessage() {
 	val := s.Network.Validators[0]
-	marketplaceAddress := s.instantiateMarketplace()
+	marketplaceAddress := s.instantiateMarketplace(MarketplaceInstantiateMessage{
+		Admin:         e2e.ContractAdminAddress,
+		FeePercentage: "0",
+		Shares:        []MarketplaceFeeShare{},
+	})
 	creditOwnerKey, err := val.ClientCtx.Keyring.Key(e2e.ApplicantKeyName)
 	s.Require().NoError(err)
 
