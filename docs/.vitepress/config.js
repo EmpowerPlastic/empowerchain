@@ -8,6 +8,7 @@ export default withMermaid(
     defineConfig({
         title: 'EmpowerChain Docs',
         description: 'Documentation for everything EmpowerChain.',
+        cleanUrls: true,
         themeConfig: {
             logo: '/logo.svg',
             socialLinks: [
