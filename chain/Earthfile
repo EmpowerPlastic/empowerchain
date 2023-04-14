@@ -123,8 +123,11 @@ swagger-gen:
 docgen:
     FROM +build-prep
     RUN cd ./scripts/docgen && go run ./...
-    RUN false
     SAVE ARTIFACT scripts/docgen/output/* AS LOCAL scripts/docgen/output/
+
+docs-gen-all:
+    BUILD +swagger-gen
+    BUILD +docgen
 
 devnet:
     FROM golang:1.20-bullseye
