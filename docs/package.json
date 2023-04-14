@@ -9,7 +9,10 @@
     "docs:serve": "vitepress serve ."
   },
   "devDependencies": {
-    "vitepress": "^1.0.0-alpha.46",
+    "@mermaid-js/mermaid-mindmap": "^9.3.0",
+    "mermaid": "9.1.7",
+    "vitepress": "^1.0.0-alpha.65",
+    "vitepress-plugin-mermaid": "^2.0.10",
     "vue": "^3.2.47"
   }
 }
