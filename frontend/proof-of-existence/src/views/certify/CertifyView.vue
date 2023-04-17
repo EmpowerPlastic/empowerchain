@@ -44,13 +44,13 @@ const readFile = async (file: File): Promise<ArrayBuffer> => {
 
 const hashAndSetResult = (byteArray: Uint8Array) => {
   const result = window.empSha256(byteArray);
-  redirectToWalletPage(result?.value, file.value?.name, new Date().getTime());
+  redirectToWalletPage(file.value?.name, new Date().getTime(), result?.value);
 };
 
 const redirectToWalletPage = (
-  hash: string,
   fileName: string | undefined,
-  timestamp: number
+  timestamp: number,
+  hash?: string
 ) => {
   if (hash) {
     router.push({
@@ -64,7 +64,7 @@ const redirectToWalletPage = (
 
 const handleInputHash = () => {
   if (inputHash.value) {
-    redirectToWalletPage(inputHash.value, undefined, new Date().getTime());
+    redirectToWalletPage(undefined, new Date().getTime(), inputHash.value);
   }
 };
 </script>
