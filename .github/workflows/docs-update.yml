@@ -1,11 +1,12 @@
 name: "Docs update"
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
     paths:
-      - 'chain/proto/**' # On updating proto
+      - 'chain/**' # On updating chain
 
 jobs:
   build:
