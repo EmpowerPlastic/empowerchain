@@ -52,11 +52,16 @@ const redirectToWalletPage = (
   fileName: string | undefined,
   timestamp: number
 ) => {
-  router.push({
-    path: `/proof/${hash}`,
-    query: { fileName: fileName, time: timestamp },
-  });
+  if (hash) {
+    router.push({
+      path: `/proof/${hash}`,
+      query: { fileName: fileName, time: timestamp },
+    });
+  } else {
+    console.error("Hash value is undefined");
+  }
 };
+
 const handleInputHash = () => {
   if (inputHash.value) {
     redirectToWalletPage(inputHash.value, undefined, new Date().getTime());
