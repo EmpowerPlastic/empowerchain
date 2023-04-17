@@ -17,12 +17,18 @@ jobs:
         with:
           version: 0.6.30
 
-      - run: earthly --ci --output +swagger-gen
+      - run: earthly --ci --output +docs-gen-all
         working-directory: ./chain
 
       - run: |
             mv ./chain/swagger.yaml ./chain/client/docs/swagger-ui/swagger.yaml
             mv ./chain/swagger.md ./docs/api_docs/swagger.md
+            mv ./chain/scripts/docgen/output/.vitepress/* ./docs/.vitepress
+          
+            mkdir -p ./docs/cli_docs
+            mkdir -p ./docs/module_docs
+            mv ./chain/scripts/docgen/output/cli_docs/* ./docs/cli_docs
+            mv ./chain/scripts/docgen/output/module_docs/* ./docs/module_docs
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:

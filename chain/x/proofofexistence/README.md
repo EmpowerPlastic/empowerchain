@@ -1,4 +1,6 @@
-# `proofofexistence`
+# Proof of Existence
+
+The `proofofexistence` module enables uploading a proof of existence by combining blockchain immutability with hashing integrity.
 
 ## Abstract
 
@@ -50,6 +52,8 @@ They only need to run the data through the same hashing function and compare the
 If they are the same, the data has not been altered and existed at the time the transaction was entered into the blockchain.
 
 ### Hash collision
+
+...or the potential for fake proofs:
 
 Whenever you map something large (or at least larger than the output) into something small there will also be the
 theoretical possibility of collisions, where two different datasets yield the same result.
