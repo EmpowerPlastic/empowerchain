@@ -1,11 +1,12 @@
 name: "Docs update"
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
     paths:
-      - 'chain/proto/**' # On updating proto
+      - 'chain/**' # On updating chain
 
 jobs:
   build:
@@ -21,7 +22,7 @@ jobs:
         working-directory: ./docs
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v5
         with:
           commit-message: Update Swagger docs
           title: Update Swagger docs

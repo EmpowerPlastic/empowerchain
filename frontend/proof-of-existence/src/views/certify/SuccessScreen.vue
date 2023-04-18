@@ -12,7 +12,7 @@
       transaction was confirmed.
     </p>
     <div
-      class="flex justify-center bg-lightGray rounded-lg break-words text-center items-center flex flex-col p-4"
+      class="flex justify-center bg-lightGray rounded-lg break-words text-center items-center flex flex-col p-4 mb-5"
     >
       <img class="w-20 mb-4" src="../../assets/images/certificate.png" />
       <p class="text-lightGreen text-title14 break-all">File</p>

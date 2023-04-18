@@ -3,7 +3,8 @@ import { ref } from "vue";
 import router from "@/router";
 
 const file = ref<File | undefined>(undefined);
-
+const inputHash = ref<string | undefined>(undefined);
+const isValid = ref<boolean>(false);
 //Methods
 const handleFileUpload = async (e: Event) => {
   const target = e.target as HTMLInputElement;
@@ -43,10 +44,28 @@ const readFile = async (file: File): Promise<ArrayBuffer> => {
 
 const hashAndSetResult = (byteArray: Uint8Array) => {
   const result = window.empSha256(byteArray);
-  router.push({
-    path: `/proof/${result?.value}`,
-    query: { fileName: file.value?.name, time: new Date().getTime() },
-  });
+  redirectToWalletPage(file.value?.name, new Date().getTime(), result?.value);
+};
+
+const redirectToWalletPage = (
+  fileName: string | undefined,
+  timestamp: number,
+  hash?: string
+) => {
+  if (hash) {
+    router.push({
+      path: `/proof/${hash}`,
+      query: { fileName: fileName, time: timestamp },
+    });
+  } else {
+    console.error("Hash value is undefined");
+  }
+};
+
+const handleInputHash = () => {
+  if (inputHash.value) {
+    redirectToWalletPage(undefined, new Date().getTime(), inputHash.value);
+  }
 };
 </script>
 
@@ -55,18 +74,18 @@ const hashAndSetResult = (byteArray: Uint8Array) => {
     src="../../assets/images/emp-astro-1.png"
     class="left-28 top-full sm:top-auto sm:left-auto w-32 absolute animate-bounce -m-24"
   />
-  <div class="w-full p-4 text-left bg-lightBlack rounded-lg sm:p-8">
+  <div class="p-4 text-left bg-lightBlack rounded-lg sm:p-8 lg:w-[700px]">
     <h5 class="mb-2 mt-3 text-2xl font-bold text-white text-title28">
       Certify documents
     </h5>
-    <div class="mt-3 p-4">
+    <div class="mt-3 p-4 w-30">
       <ul
         class="flex flex-wrap text-center text-lightGreen border-gray-200 rounded-t-lg"
         id="defaultTab"
         data-tabs-toggle="#defaultTabContent"
         role="tablist"
       >
-        <li class="mr-2">
+        <li>
           <button
             id="file-tab"
             data-tabs-target="#file"
@@ -74,12 +93,12 @@ const hashAndSetResult = (byteArray: Uint8Array) => {
             role="tab"
             aria-controls="file"
             aria-selected="true"
-            class="inline-block p-4 text-white text-title16 hover:text-gray-600 hover:bg-gray-100"
+            class="flex flex-col justify-center text-center px-6 text-title16 aria-selected:bg-lightWhite aria-selected:text-white rounded-t-lg h-9"
           >
             File
           </button>
         </li>
-        <li class="mr-2">
+        <li>
           <button
             id="hash-tab"
             data-tabs-target="#hash"
@@ -87,7 +106,7 @@ const hashAndSetResult = (byteArray: Uint8Array) => {
             role="tab"
             aria-controls="hash"
             aria-selected="false"
-            class="inline-block p-4 text-title16 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+            class="flex flex-col justify-center text-center px-6 text-title16 aria-selected:bg-lightWhite aria-selected:text-white rounded-t-lg h-9"
           >
             Hash
           </button>
@@ -95,12 +114,12 @@ const hashAndSetResult = (byteArray: Uint8Array) => {
       </ul>
       <div id="defaultTabContent">
         <div
-          class="hidden md:p-1 border-t border-lightGray"
+          class="hidden md:p-1 border-t border-lightGray w-full"
           id="file"
           role="tabpanel"
           aria-labelledby="file-tab"
         >
-          <p class="mb-3 text-white text-title14">
+          <p class="mb-3 text-white text-title14 mt-2">
             Drag and drop your document here, or choose a file. Your file will
             <b>not</b> be uploaded.
             <a
@@ -140,11 +159,33 @@ const hashAndSetResult = (byteArray: Uint8Array) => {
           </div>
         </div>
         <div
-          class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800"
+          class="hidden md:p-1 border-t border-lightGray"
           id="hash"
           role="tabpanel"
           aria-labelledby="hash-tab"
-        ></div>
+        >
+          <p class="mb-3 text-white text-title14 mt-2">
+            Input the SHA256 checksum hexadecimal digest for your file here.
+          </p>
+          <div class="w-full p-3 mt-7 rounded bg-lightGray">
+            <label class="cursor-pointer" for="file_input">
+              <input
+                placeholder="Document Hash"
+                v-model="inputHash"
+                class="p-1 rounded bg-lightGray w-full mr-4 text-white text-title16 h-36 md:h-auto"
+              />
+            </label>
+          </div>
+          <div class="flex flex-row justify-center">
+            <button
+              :disabled="!/\b[A-Fa-f0-9]{64}\b/.test(inputHash || '')"
+              @click="handleInputHash"
+              class="bg-lightGreen mt-10 content-center p-1 px-9 rounded text-white text-title22 disabled:bg-lightGray disabled:text-gray"
+            >
+              Register
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

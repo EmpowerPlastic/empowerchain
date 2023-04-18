@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Deploy Devnet
-        uses: appleboy/ssh-action@v0.1.9
+        uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.DEVNET_HOST }}
           username: ${{ secrets.DEVNET_USER }}
