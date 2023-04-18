@@ -20,11 +20,11 @@ EmpowerChain will support bespoke deposit systems for parties interested in coll
 
 ## Deposit App
 The Deposit App is designed as an all-in-one application for managing collection rewards and other assets and NFTs related to EmpowerChain. Users can deliver their plastic waste through this mobile app by visiting a collection point and receiving collection incentives in exchange for their collected Plastic.
-On-Chain Tracking Data Marketplace
 
+## On-Chain Tracking Data Marketplace
 In the future, EmpowerChain plans to introduce an on-chain marketplace for buying and selling tracking data. This privacy-enabled marketplace will allow stakeholders to securely access and exchange verifiable tracking data, improving transparency and trust in the circular economy.
-Bridging Off-Chain Plastic Credits
 
+## Bridging Off-Chain Plastic Credits
 To increase participation and accessibility, EmpowerChain intends to allow bridging off-chain plastic credits to its platform. This will require proof of retirement of these credits, enabling a broader range of businesses and individuals to contribute to global waste collection funding and participate in the worldwide cleanup effort.
 
 ## Conclusion
