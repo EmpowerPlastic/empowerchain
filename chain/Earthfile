@@ -117,17 +117,13 @@ swagger-gen:
     RUN go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@latest
     RUN make swagger-gen
     RUN cd client/docs/swagger-ui && swagger generate markdown
-    SAVE ARTIFACT client/docs/swagger-ui/swagger.yaml AS LOCAL swagger.yaml
-    SAVE ARTIFACT client/docs/swagger-ui/markdown.md AS LOCAL swagger.md
+    SAVE ARTIFACT client/docs/swagger-ui/swagger.yaml
+    SAVE ARTIFACT client/docs/swagger-ui/markdown.md
 
 docgen:
     FROM +build-prep
     RUN cd ./scripts/docgen && go run ./...
-    SAVE ARTIFACT scripts/docgen/output/* AS LOCAL scripts/docgen/output/
-
-docs-gen-all:
-    BUILD +swagger-gen
-    BUILD +docgen
+    SAVE ARTIFACT scripts/docgen/output
 
 devnet:
     FROM golang:1.20-bullseye
