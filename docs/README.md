@@ -21,7 +21,7 @@ The api documentation for the chain is under `api_docs` and is automatically gen
 
 ```shell
 $ npm install
-$ npm run docs:dev
+$ npm run dev
 ```
 
 ### Build

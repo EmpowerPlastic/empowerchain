@@ -24,6 +24,18 @@ export default withMermaid(
                             text: 'What is EmpowerChain?',
                             link: '/introduction/what-is-empowerchain'
                         },
+                        {
+                            text: 'Circular Economy',
+                            link: '/introduction/circular-economy'
+                        },
+                        {
+                            text: 'How it works',
+                            link: '/introduction/how-it-works'
+                        },
+                        {
+                            text: 'Applications',
+                            link: '/introduction/applications'
+                        },
                         // TODO: Sections for each part of EmpowerChain?
                         {
                             text: 'Tokenomics',
