@@ -96,10 +96,10 @@ empowerd version --long
 
 ### Initialize the Empowerchain Node
 
-Replace the `$chain_id` variable with the chain-id for the desired network.
+Replace the `<chain-id>` field with the chain-id of the desired network.
 
 ```bash
-empowerd init "custom_moniker" --chain-id $chain_id
+empowerd init "custom_moniker" --chain-id <chain-id>
 ```
 
 Example for the `circulus-1` testnet:
@@ -110,10 +110,10 @@ empowerd init "custom_moniker" --chain-id circulus-1
 
 ### Retrieve the Genesis File
 
-Retrieve a copy of the genesis file for the desired chain. The genesis file defines the initial state of the chain. Replace the `$GENESIS_URL` with the desire chain's genesis file URL from the official Empowerchain repo. For pre-genesis validator nodes, skip to the [Validator Setup](/validators/validator-setup) page to continue following pre-genesis setup steps.
+Retrieve a copy of the genesis file for the desired chain. The genesis file defines the initial state of the chain. Replace the `<genesis-url>` with the desire chain's genesis file URL from the official Empowerchain repo. For pre-genesis validator nodes, skip to the [Validator Setup](/validators/validator-setup) page to continue following pre-genesis setup steps.
 
 ```bash
-wget -O $HOME/empowerchain/config/genesis.json $GENESIS_URL
+wget -O $HOME/empowerchain/config/genesis.json <genesis-url>
 ```
 
 Example for the `circulus-1` testnet:
