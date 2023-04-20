@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+
 	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
@@ -16,13 +17,13 @@ type Querier struct {
 
 var _ certificates.QueryServer = Querier{}
 
-func (k Querier) Params(goCtx context.Context, req *certificates.QueryParamsRequest) (*certificates.QueryParamsResponse, error) {
+func (q Querier) Params(goCtx context.Context, req *certificates.QueryParamsRequest) (*certificates.QueryParamsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	params := k.GetParams(ctx)
+	params := q.GetParams(ctx)
 
 	return &certificates.QueryParamsResponse{Params: params}, nil
 }

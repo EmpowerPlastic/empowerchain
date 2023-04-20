@@ -3,10 +3,10 @@ package certificates_test
 import (
 	"testing"
 
-	"github.com/EmpowerPlastic/empowerchain/testutil/nullify"
+	"github.com/stretchr/testify/require"
+
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"github.com/EmpowerPlastic/empowerchain/x/certificates"
-	"github.com/stretchr/testify/require"
 )
 
 func TestGenesisState_Validate(t *testing.T) {

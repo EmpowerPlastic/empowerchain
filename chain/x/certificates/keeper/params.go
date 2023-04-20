@@ -1,8 +1,9 @@
 package keeper
 
 import (
-	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 )
 
 // GetParams get all parameters as types.Params

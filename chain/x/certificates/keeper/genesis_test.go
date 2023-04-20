@@ -1,8 +1,9 @@
 package keeper_test
 
 import (
-	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 )
 
 func (s *TestSuite) TestGenesis() {

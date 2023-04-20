@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
+
+	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 )
 
 // GetQueryCmd returns the cli query commands for this module

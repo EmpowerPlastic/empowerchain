@@ -2,13 +2,14 @@ package keeper
 
 import (
 	"cosmossdk.io/errors"
-	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"golang.org/x/exp/slices"
+
+	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 )
 
 func (k Keeper) GetCertificate(ctx sdk.Context, owner sdk.AccAddress, id uint64) (certificates.Certificate, bool) {

@@ -1,11 +1,13 @@
 package certificates
 
 import (
-	"cosmossdk.io/errors"
 	"encoding/binary"
-	"github.com/EmpowerPlastic/empowerchain/utils"
+
+	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
+
+	"github.com/EmpowerPlastic/empowerchain/utils"
 )
 
 var (

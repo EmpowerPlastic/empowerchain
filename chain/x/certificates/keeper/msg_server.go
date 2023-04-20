@@ -2,8 +2,10 @@ package keeper
 
 import (
 	"context"
-	"github.com/EmpowerPlastic/empowerchain/x/certificates"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 )
 
 type msgServer struct {
@@ -28,13 +30,13 @@ func (m msgServer) UpdateParams(goCtx context.Context, req *certificates.MsgUpda
 func (m msgServer) CreateCertificate(goCtx context.Context, req *certificates.MsgCreateCertificate) (*certificates.MsgCreateCertificateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	certificateId, err := m.Keeper.createCertificate(ctx, req.Type, req.Owner, req.Issuer)
+	certificateID, err := m.Keeper.createCertificate(ctx, req.Type, req.Owner, req.Issuer)
 	if err != nil {
 		return nil, err
 	}
 
 	return &certificates.MsgCreateCertificateResponse{
-		CertificateId: certificateId,
+		CertificateId: certificateID,
 	}, nil
 }
 

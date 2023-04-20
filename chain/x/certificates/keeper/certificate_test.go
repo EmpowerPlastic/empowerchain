@@ -1,9 +1,10 @@
 package keeper_test
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/EmpowerPlastic/empowerchain/utils"
 	"github.com/EmpowerPlastic/empowerchain/x/certificates"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (s *TestSuite) TestCreateCertificateKey() {
@@ -39,5 +40,4 @@ func (s *TestSuite) TestCreateCertificateKey() {
 			}
 		})
 	}
-
 }

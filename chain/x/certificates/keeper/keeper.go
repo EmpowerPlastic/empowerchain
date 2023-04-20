@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"github.com/cometbft/cometbft/libs/log"
-
-	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 )
 
 type (

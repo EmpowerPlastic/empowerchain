@@ -8,10 +8,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/stretchr/testify/suite"
-	//tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	"github.com/EmpowerPlastic/empowerchain/app"
 	"github.com/EmpowerPlastic/empowerchain/app/params"
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 	"github.com/EmpowerPlastic/empowerchain/x/certificates/keeper"
 )
