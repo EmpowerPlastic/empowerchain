@@ -5,7 +5,6 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "cosmos_proto/cosmos.proto";
-//import "empowerchain/certificates/params.proto";
 import "empowerchain/certificates/types.proto";
 
 option go_package = "github.com/EmpowerPlastic/empowerchain/x/certificates";

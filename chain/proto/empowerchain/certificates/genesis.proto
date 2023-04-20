@@ -2,7 +2,6 @@ syntax = "proto3";
 package empowerchain.certificates;
 
 import "gogoproto/gogo.proto";
-//import "empowerchain/certificates/params.proto";
 import "empowerchain/certificates/types.proto";
 
 option go_package = "github.com/EmpowerPlastic/empowerchain/x/certificates";
