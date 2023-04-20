@@ -497,6 +497,7 @@ func New(
 	app.CertificateKeeper = *certificatemodulekeeper.NewKeeper(appCodec,
 		storeKeys[certificatemoduletypes.StoreKey],
 		storeKeys[certificatemoduletypes.MemStoreKey],
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	app.IBCFeeKeeper = ibcfeekeeper.NewKeeper(

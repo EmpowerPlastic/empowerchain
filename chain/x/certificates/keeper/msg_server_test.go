@@ -18,6 +18,7 @@ func (s *TestSuite) TestUpdateParams() {
 		"happy path": {
 			msg: func(empowerApp *app.EmpowerApp) *certificates.MsgUpdateParams {
 				return &certificates.MsgUpdateParams{
+					Authority: empowerApp.CertificateKeeper.Authority(),
 					Params: certificates.Params{
 						AllowedIssuer: []string{s.sampleIssuerAdmin},
 					},
@@ -28,14 +29,18 @@ func (s *TestSuite) TestUpdateParams() {
 		"unauthorized caller": {
 			msg: func(empowerApp *app.EmpowerApp) *certificates.MsgUpdateParams {
 				return &certificates.MsgUpdateParams{
-					Params: certificates.Params{},
+					Authority: sample.AccAddress(),
+					Params: certificates.Params{
+						AllowedIssuer: []string{s.sampleIssuerAdmin},
+					},
 				}
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
-		"invalid issuer creator params": {
+		"invalid issuer params": {
 			msg: func(empowerApp *app.EmpowerApp) *certificates.MsgUpdateParams {
 				return &certificates.MsgUpdateParams{
+					Authority: empowerApp.CertificateKeeper.Authority(),
 					Params: certificates.Params{
 						AllowedIssuer: []string{""},
 					},

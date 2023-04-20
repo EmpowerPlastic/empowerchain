@@ -64,6 +64,7 @@ func (s *TestSuite) PopulateWithSamples() {
 	ms := keeper.NewMsgServerImpl(k)
 
 	_, err := ms.UpdateParams(goCtx, &certificates.MsgUpdateParams{
+		Authority: k.Authority(),
 		Params: certificates.Params{
 			AllowedIssuer: []string{s.sampleIssuerAdmin},
 		},

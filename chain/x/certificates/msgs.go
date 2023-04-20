@@ -12,6 +12,10 @@ var (
 )
 
 func (m *MsgUpdateParams) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Authority)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid authority address (%s)", err)
+	}
 	// We allow empty issuer creator (which means only gov can create issuers)
 	if len(m.Params.AllowedIssuer) == 0 {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "issuer name cannot be empty")
@@ -21,7 +25,11 @@ func (m *MsgUpdateParams) ValidateBasic() error {
 }
 
 func (m *MsgUpdateParams) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.GetSigners()[0]}
+	authority, err := sdk.AccAddressFromBech32(m.Authority)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{authority}
 }
 
 func (m *MsgCreateCertificate) ValidateBasic() error {

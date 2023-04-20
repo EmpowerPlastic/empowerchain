@@ -19,6 +19,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 	testCases := map[string]validateTest{
 		"happy path": {
 			msgUnderTest: &MsgUpdateParams{
+				Authority: sample.AccAddress(),
 				Params: Params{
 					AllowedIssuer: []string{sample.AccAddress()},
 				},
@@ -27,6 +28,7 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 		},
 		"invalid issuers params": {
 			msgUnderTest: &MsgUpdateParams{
+				Authority: sample.AccAddress(),
 				Params: Params{
 					AllowedIssuer: []string{"invalid"},
 				},

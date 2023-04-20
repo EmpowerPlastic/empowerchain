@@ -10,9 +10,15 @@ import (
 
 func (s *TestSuite) TestParamsQuery() {
 	k := s.empowerApp.CertificateKeeper
+	ms := keeper.NewMsgServerImpl(k)
 	goCtx := sdk.WrapSDKContext(s.ctx)
 
 	updatedParams := certificates.DefaultParams()
+	_, err := ms.UpdateParams(goCtx, &certificates.MsgUpdateParams{
+		Authority: k.Authority(),
+		Params:    updatedParams,
+	})
+	s.Require().NoError(err)
 
 	querier := keeper.Querier{Keeper: k}
 	response, err := querier.Params(goCtx, &certificates.QueryParamsRequest{})

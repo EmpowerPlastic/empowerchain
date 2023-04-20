@@ -2,6 +2,8 @@ package keeper
 
 import (
 	"context"
+	"cosmossdk.io/errors"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -19,6 +21,15 @@ func NewMsgServerImpl(keeper Keeper) certificates.MsgServer {
 }
 
 func (m msgServer) UpdateParams(goCtx context.Context, req *certificates.MsgUpdateParams) (*certificates.MsgUpdateParamsResponse, error) {
+	if m.authority != req.Authority {
+		return nil, errors.Wrapf(sdkerrors.ErrUnauthorized, "invalid authority; expected %s, got %s", m.authority, req.Authority)
+	}
+	for _, issuer := range req.Params.AllowedIssuer {
+		if len(issuer) == 0 || sdk.AccAddress(issuer).Empty() {
+			return nil, errors.Wrap(sdkerrors.ErrInvalidAddress, "invalid issuer parameter")
+		}
+	}
+
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	if err := m.SetParams(ctx, req.Params); err != nil {
 		return nil, err
