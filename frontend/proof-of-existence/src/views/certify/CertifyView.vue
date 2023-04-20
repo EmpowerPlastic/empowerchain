@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import router from "@/router";
+import SupportedFilesModal from "@/views/certify/SupportedFilesModal.vue";
 
 const file = ref<File | undefined>(undefined);
-const inputString = ref<string | undefined>(undefined);
+const inputString = ref<string>();
 const isValid = ref<boolean>(false);
 const includeWhiteSpace = ref<boolean>(false);
 const includeLetterCasing = ref<boolean>(false);
+const showModal = ref(false);
 
 //Methods
 const handleFileUpload = async (e: Event) => {
@@ -83,9 +85,18 @@ const handleInputString = () => {
     redirectToWalletPage(undefined, new Date().getTime(), result?.value);
   }
 };
+
+const openModal = () => {
+  showModal.value = true;
+};
+
+const closeModal = () => {
+  showModal.value = false;
+};
 </script>
 
 <template>
+  <SupportedFilesModal v-show="showModal" :close-modal="closeModal" />
   <img
     src="../../assets/images/emp-astro-1.png"
     class="left-28 top-full sm:top-auto sm:left-auto w-32 absolute animate-bounce -m-24"
@@ -140,6 +151,7 @@ const handleInputString = () => {
             <b>not</b> be uploaded.
             <a
               href="#"
+              @click="openModal"
               class="inline-flex items-center font-medium text-lightGreen"
               >Learn more.</a
             >
