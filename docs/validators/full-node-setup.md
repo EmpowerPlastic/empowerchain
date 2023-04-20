@@ -1,0 +1,197 @@
+# Run a Full Node
+
+## System Configuration
+This documentation assumes that a Linux operating system is being used. All commands have been tested against Ubuntu 20.04 LTS, but other distributions of Linux can be used in place of this. Recent versions of macOS can also be used to compile the empowerd daemon.
+
+## Hardware Requirements
+Hardare requirements for Empowerchain vary based on the purpose of the full node. RPC nodes, validators, and archive nodes all server different purposes with different system recommendations. For example, an archive node will need more storage than an RPC or Validator node require. The below recommendation is a starting point and should be modified to fit the ndoe's use case. Since CosmWasm is active on the network, higher system specifications are needed compared to other cosmos-sdk chains.
+
+- 4 CPU Cores
+- 32gb RAM
+- 500+ GB SSD (SATA or NVMe)
+
+## Installation Prerequesites
+
+### Golang
+Golang version 1.20.0 or higher is required to build empowerd.
+
+Download the golang tarball
+
+```bash
+curl -OL https://golang.org/dl/go1.20.3.linux-amd64.tar.gz
+```
+
+Unpack the tarball
+
+```bash
+sudo tar -C /usr/local -xvf go1.20.3.linux-amd64.tar.gz
+```
+
+Open the `~/.profile` file to add Golang environment variables
+
+```bash
+nano ~/.profile
+```
+
+Edit the contents of `~/.profile` to include the following variables
+
+```bash
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/go
+export PATH=$PATH:/usr/local/go/bin
+```
+
+Refresh the active profile
+
+```bash
+source ~/.profile
+```
+
+Verify go is installed
+
+```bash
+$ go version
+
+Output:
+go version go1.20.3 linux/amd64
+```
+
+### Linux Dependencies
+
+Install the following build dependencies
+
+```bash
+sudo apt update
+sudo apt install -y curl tar wget clang pkg-config libssl-dev jq build-essential bsdmainutils git make ncdu gcc git jq chrony liblz4-tool
+```
+
+## Build Empowerd
+
+Clone the Empowerchain source code and enter the directory
+
+```bash
+git clone https://github.com/EmpowerPlastic/empowerchain.git
+cd empowerchain
+```
+
+Checkout the desired version to build. The latest release tag can be found in the [EmpowerChain Release Page](https://github.com/EmpowerPlastic/empowerchain/releases/)
+
+```bash
+git checkout v0.0.3
+```
+
+Compile the empowerd binary
+
+```bash
+make install
+```
+
+Verify empowerd was built and can be found in the existing PATH.
+
+```bash
+empowerd version --long
+```
+
+## Configure Empowerd
+
+### Initialize the Empowerchain Node
+
+Replace the `$chain_id` variable with the chain-id for the desired network.
+
+```bash
+empowerd init "custom_moniker" --chain-id $chain_id
+```
+
+Example for the `circulus-1` testnet:
+
+```bash
+empowerd init "custom_moniker" --chain-id circulus-1
+```
+
+### Retrieve the Genesis File
+
+Retrieve a copy of the genesis file for the desired chain. The genesis file defines the initial state of the chain. Replace the `$GENESIS_URL` with the desire chain's genesis file URL from the official Empowerchain repo. For pre-genesis validator nodes, skip to the [Validator Setup](/validators/validator-setup) page to continue following pre-genesis setup steps.
+
+```bash
+wget -O $HOME/empowerchain/config/genesis.json $GENESIS_URL
+```
+
+Example for the `circulus-1` testnet:
+```bash
+wget -O $HOME/empowerchain/config/genesis.json https://raw.githubusercontent.com/EmpowerPlastic/empowerchain/main/testnets/circulus-1/genesis.json
+```
+
+### Set Persistent Peers and Seeds
+
+Retrieve the persistent peers and seeds from the Empowerchain official repo. All peer addresses follow the format of `<NODE-ID>@<IP-ADDRESS>:<PORT>`
+
+```bash
+# Obtain the peers and seeds from the Empowerchain repository
+PEERS="$(curl -s https://raw.githubusercontent.com/EmpowerPlastic/empowerchain/main/testnets/circulus-1/persistent_peers.txt)"
+SEEDS="$(curl -s https://raw.githubusercontent.com/EmpowerPlastic/empowerchain/main/testnets/circulus-1/seeds.txt)"
+
+# Set the peers and seeds in the empowerd configuration file
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" ~/.empowerchain/config/config.toml
+sed -i.bak -e "s/^seeds *=.*/seeds = \"$SEEDS\"/" ~/.empowerchain/config/config.toml
+```
+
+### Set the minimum gas price
+
+The minimum gas price should be set in the empowerd configuration. The following command adds a minimum gas value of `0.025umpwr` to the configuration.
+
+```bash
+sed -i.bak -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.025umpwr\"/" $HOME/.empowerchain/config/app.toml
+```
+
+## Syncing Empowerd
+There are three main ways to sync a node on Empowerchain: from scratch, state sync, and snapshots. Each of these has their own benefits and drawbacks.
+
+| Method            	| Benefits                                          	| Drawbacks                                                                                           	| Restrictions                              	|
+|-------------------	|---------------------------------------------------	|-----------------------------------------------------------------------------------------------------	|-------------------------------------------	|
+| Sync from genesis 	| - Full network history is processed during the sync 	| - Slow<br>- Requires the most disk space<br>- Upgrades must be handled at their apprioriate block heights 	| - Required for Archive nodes                	|
+| State Sync        	| - Very Fast<br>- Low Disk Usage                       	| - May be reliable than snapshots                                                                        	| - Must be using the latest empowerd version 	|
+| Snapshot          	| - Reliable<br>- Moderately Fast                       	| - Slower than state sync<br>- May require more disk space than state sync                               	|                                           	|
+
+### Sync from genesis
+
+TODO
+
+### State Sync
+
+TODO
+
+### Snapshot
+
+TODO
+
+## Starting Empowerd
+
+Once configured, the daemon can be directly started to connect to the network. However, it is recommended to either use a systemd service file or Cosmovisor to control the `empowerd` daemon.
+
+To start it directly, run the following:
+
+```bash
+empowerd start
+```
+
+To use a systemd service file without Cosmovisor, the service file must be created. 
+
+```bash
+sudo tee /etc/systemd/system/empowerd.service > /dev/null <<EOF
+[Unit]
+Description=EmpowerChain Node
+After=network.target
+
+[Service]
+User=$USER
+Type=simple
+ExecStart=$(which empowerd) start
+Restart=on-failure
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+To use Cosmovisor to handle autoamtic upgrades, refer to the [Cosmovisor Setup](/validators/cosmovisor-setup) page.

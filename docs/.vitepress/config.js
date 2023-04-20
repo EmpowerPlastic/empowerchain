@@ -65,7 +65,20 @@ export default withMermaid(
                 {
                     text: 'Validators',
                     collapsed: true,
-                    items: [],
+                    items: [
+                        {
+                            text: 'Full Node Setup',
+                            link: '/validators/full-node-setup'
+                        },
+                        {
+                            text: 'Validator Setup',
+                            link: '/validators/validator-setup'
+                        },
+                        {
+                            text: 'Cosmovisor Setup',
+                            link: '/validators/cosmovisor-setup'
+                        }
+                    ]
                 },
                 {
                     text: 'References',
