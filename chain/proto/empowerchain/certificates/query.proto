@@ -13,6 +13,14 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/EmpowerPlastic/empowerchain/certificates/params";
   }
+
+  rpc Certificate(QueryCertificateRequest) returns (QueryCertificateResponse) {
+    option (google.api.http).get = "/EmpowerPlastic/empowerchain/certificates/{id}/{owner}";
+  }
+
+  rpc AllCertificatesByUser(QueryAllCertificatesByUserRequest) returns (QueryAllCertificatesByUserResponse) {
+    option (google.api.http).get = "/EmpowerPlastic/empowerchain/certificates/{owner}";
+  }
 }
 
 message QueryParamsRequest {}

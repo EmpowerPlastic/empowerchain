@@ -65,7 +65,7 @@ func (s *TestSuite) TestCertificatesQuery() {
 	goCtx := sdk.WrapSDKContext(s.ctx)
 
 	querier := keeper.Querier{Keeper: k}
-	resp, err := querier.Certificates(goCtx, &certificates.QueryAllCertificatesByUserRequest{})
+	resp, err := querier.AllCertificatesByUser(goCtx, &certificates.QueryAllCertificatesByUserRequest{})
 	s.Require().NoError(err)
 	s.Require().Len(resp.Certificates, 0)
 
@@ -81,7 +81,7 @@ func (s *TestSuite) TestCertificatesQuery() {
 		s.Require().NoError(err)
 	}
 
-	resp2, err := querier.Certificates(goCtx, &certificates.QueryAllCertificatesByUserRequest{
+	resp2, err := querier.AllCertificatesByUser(goCtx, &certificates.QueryAllCertificatesByUserRequest{
 		Owner: s.sampleOwner,
 		Pagination: query.PageRequest{
 			Offset: 0,

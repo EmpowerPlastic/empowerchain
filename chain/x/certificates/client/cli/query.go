@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"fmt"
+	"github.com/spf13/cast"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -23,6 +24,8 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	}
 
 	cmd.AddCommand(CmdQueryParams())
+	cmd.AddCommand(CmdQueryCertificate())
+	cmd.AddCommand(CmdQueryCertificates())
 
 	return cmd
 }
@@ -48,5 +51,63 @@ func CmdQueryParams() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 
+	return cmd
+}
+
+func CmdQueryCertificate() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "certificate [owner-address] [certificate-id]",
+		Short: "query for an certificate by its [owner-address] and [certificate-id]",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+			queryClient := certificates.NewQueryClient(clientCtx)
+
+			certificateID, err := cast.ToUint64E(args[1])
+			if err != nil {
+				return err
+			}
+			res, err := queryClient.Certificate(
+				context.Background(),
+				&certificates.QueryCertificateRequest{
+					Id:    certificateID,
+					Owner: args[0],
+				},
+			)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func CmdQueryCertificates() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "certificates [owner-address]",
+		Short: "query for all certificates of an owner by its [owner-address]",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+			queryClient := certificates.NewQueryClient(clientCtx)
+
+			res, err := queryClient.AllCertificatesByUser(
+				context.Background(),
+				&certificates.QueryAllCertificatesByUserRequest{
+					Owner: args[0],
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
 }

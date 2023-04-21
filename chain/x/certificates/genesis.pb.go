@@ -270,7 +270,7 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Certificates", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AllCertificatesByUser", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {

@@ -28,7 +28,7 @@ func (q Querier) Params(goCtx context.Context, req *certificates.QueryParamsRequ
 	return &certificates.QueryParamsResponse{Params: params}, nil
 }
 
-func (q Querier) Certificates(goCtx context.Context, req *certificates.QueryAllCertificatesByUserRequest) (*certificates.QueryAllCertificatesByUserResponse, error) {
+func (q Querier) AllCertificatesByUser(goCtx context.Context, req *certificates.QueryAllCertificatesByUserRequest) (*certificates.QueryAllCertificatesByUserResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}

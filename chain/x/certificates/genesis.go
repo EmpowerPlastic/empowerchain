@@ -30,7 +30,7 @@ func (gs GenesisState) Validate() error {
 		}
 
 		if _, exists := mapCertificates[certificate.Id]; exists {
-			return errors.Wrapf(ErrCertificateDuplicate, "duplicate issuer with id %d was found", certificate.Id)
+			return errors.Wrapf(ErrCertificateDuplicate, "duplicate certificate with id %d was found", certificate.Id)
 		}
 		mapCertificates[certificate.Id] = certificate
 	}
