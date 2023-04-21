@@ -44,11 +44,13 @@ func (s *TestSuite) TestCertificateQuery() {
 		Type:   s.sampleCertificationType,
 		Data:   s.sampleCertificationData,
 	}
-	_, err = ms.CreateCertificate(goCtx, &createMsg)
+	createdCert, err := ms.CreateCertificate(goCtx, &createMsg)
+	s.Require().Equal(uint64(1), createdCert.CertificateId)
 	s.Require().NoError(err)
 
 	resp, err := querier.Certificate(goCtx, &certificates.QueryCertificateRequest{
-		Id: 1,
+		Id:    1,
+		Owner: s.sampleOwner,
 	})
 
 	s.Require().NoError(err)
@@ -83,7 +85,7 @@ func (s *TestSuite) TestCertificatesQuery() {
 		Owner: s.sampleOwner,
 		Pagination: query.PageRequest{
 			Offset: 0,
-			Limit:  2,
+			Limit:  11,
 		},
 	})
 	s.Require().NoError(err)

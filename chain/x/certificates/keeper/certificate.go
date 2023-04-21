@@ -15,9 +15,12 @@ import (
 func (k Keeper) GetCertificate(ctx sdk.Context, owner sdk.AccAddress, id uint64) (certificates.Certificate, bool) {
 	store := k.getCertificatesStore(ctx)
 
-	key, _ := certificates.CreateCertificateKey(owner, id)
+	key, err := certificates.CreateCertificateKey(owner, id)
+	if err != nil {
+		return certificates.Certificate{}, false
+	}
 	bz := store.Get(key)
-	if bz == nil {
+	if len(bz) == 0 {
 		return certificates.Certificate{}, false
 	}
 	var certificate certificates.Certificate
@@ -62,16 +65,17 @@ func (k Keeper) createCertificate(ctx sdk.Context, certificateType certificates.
 	}
 
 	idc := k.GetIDCounters(ctx)
-
 	nextID := idc.NextCertificateId
-
 	certificate := certificates.Certificate{
 		Id:     nextID,
 		Type:   certificateType,
 		Owner:  owner,
 		Issuer: issuer,
 	}
-
+	if err := k.setCertificate(ctx, certificate); err != nil {
+		return 0, err
+	}
+	idc.NextCertificateId = nextID + 1
 	if err := k.setIDCounters(ctx, idc); err != nil {
 		return 0, err
 	}
@@ -85,15 +89,22 @@ func (k Keeper) createCertificate(ctx sdk.Context, certificateType certificates.
 }
 
 func (k Keeper) setCertificate(ctx sdk.Context, certificate certificates.Certificate) error {
-	store := k.getCertificatesStore(ctx)
-
-	key, _ := certificates.CreateCertificateKey(sdk.AccAddress(certificate.Owner), certificate.Id)
-	bz, err := k.cdc.Marshal(&certificate)
+	err := certificate.Validate()
 	if err != nil {
 		return err
 	}
+	store := k.getCertificatesStore(ctx)
 
-	store.Set(key, bz)
+	b, err := k.cdc.Marshal(&certificate)
+	if err != nil {
+		return err
+	}
+	owner, err := sdk.AccAddressFromBech32(certificate.Owner)
+	if err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
+	}
+	key, _ := certificates.CreateCertificateKey(owner, certificate.Id)
+	store.Set(key, b)
 
 	return nil
 }

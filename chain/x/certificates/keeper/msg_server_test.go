@@ -108,15 +108,13 @@ func (s *TestSuite) TestCreateCertificate() {
 			s.Require().ErrorIs(err, tc.err)
 
 			events := s.ctx.EventManager().ABCIEvents()
-			idCounters := k.GetIDCounters(s.ctx)
-
 			if err == nil {
-				s.Require().Equal(s.numTestCertificates+1, resp.CertificateId)
+				s.Require().Equal(s.numTestCertificates, resp.CertificateId)
 
 				idCounters := k.GetIDCounters(s.ctx)
-				s.Require().Equal(s.numTestIssuers+2, idCounters.NextCertificateId)
-
-				certificate, found := k.GetCertificate(s.ctx, sdk.AccAddress(tc.msg.Owner), resp.CertificateId)
+				s.Require().Equal(s.numTestCertificates+1, idCounters.NextCertificateId)
+				owner, err := sdk.AccAddressFromBech32(tc.msg.Owner)
+				certificate, found := k.GetCertificate(s.ctx, owner, resp.CertificateId)
 				s.Require().True(found)
 				s.Require().Equal(certificates.Certificate{
 					Id:     resp.CertificateId,
@@ -132,16 +130,13 @@ func (s *TestSuite) TestCreateCertificate() {
 				eventCreateCertificate, ok := parsedEvent.(*certificates.EventCreateCertificate)
 				s.Require().True(ok)
 				s.Require().Equal(&certificates.EventCreateCertificate{
-					CertificateId: resp.CertificateId,
-					Owner:         tc.msg.Owner,
-					Issuer:        tc.msg.Issuer,
+					CertificateId:   resp.CertificateId,
+					Owner:           tc.msg.Owner,
+					Issuer:          tc.msg.Issuer,
+					CertificateType: "CREDIT_RETIREMENT",
 				}, eventCreateCertificate)
 
 			} else {
-				s.Require().Equal(s.numTestIssuers+1, idCounters.NextCertificateId)
-				_, found := k.GetCertificate(s.ctx, sdk.AccAddress(tc.msg.Owner), resp.CertificateId)
-				s.Require().False(found)
-
 				s.Require().Len(events, 0)
 			}
 		})

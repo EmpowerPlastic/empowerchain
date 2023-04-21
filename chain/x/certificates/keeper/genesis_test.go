@@ -36,7 +36,8 @@ func (s *TestSuite) TestGenesis() {
 	s.Require().Equal(genesisState.IdCounters, idCounter)
 
 	for _, certificate := range genesisState.Certificates {
-		actualCertificate, found := k.GetCertificate(s.ctx, sdk.AccAddress(certificate.Owner), certificate.Id)
+		owner, _ := sdk.AccAddressFromBech32(certificate.Owner)
+		actualCertificate, found := k.GetCertificate(s.ctx, owner, certificate.Id)
 		s.Require().True(found)
 		s.Require().Equal(certificate, actualCertificate)
 	}

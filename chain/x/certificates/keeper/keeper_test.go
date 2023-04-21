@@ -79,7 +79,7 @@ func TestTestSuite(t *testing.T) {
 
 	ts := &TestSuite{}
 	ts.numTestIssuers = 2
-	ts.numTestCertificates = 0
+	ts.numTestCertificates = 1
 	ts.issuerCreator = sample.AccAddress()
 	ts.sampleIssuerID = 1
 	ts.sampleIssuerAdmin = sample.AccAddress()

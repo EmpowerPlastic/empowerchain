@@ -36,7 +36,6 @@ const (
 func CreateKeyFromUint64(id uint64) []byte {
 	key := make([]byte, 8)
 	binary.LittleEndian.PutUint64(key, id)
-
 	return key
 }
 
@@ -45,7 +44,7 @@ func CreateKeyFromString(key string) []byte {
 }
 
 func CreateCertificateKey(owner sdk.AccAddress, id uint64) ([]byte, error) {
-	if len(owner) == 0 || id == 0 {
+	if len(owner) == 0 {
 		return nil, errors.Wrap(utils.ErrInvalidValue, "invalid value for owner or id")
 	}
 	d := CreateKeyFromUint64(id)

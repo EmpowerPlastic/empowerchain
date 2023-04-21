@@ -17,17 +17,12 @@ func (s *TestSuite) TestCreateCertificateKey() {
 		"happy path": {
 			owner:         sdk.AccAddress("test"),
 			id:            123,
-			expectedValue: []byte{0},
+			expectedValue: []byte{0x4, 0x74, 0x65, 0x73, 0x74, 0x7b, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
 			err:           nil,
 		},
 		"empty owner": {
 			owner: sdk.AccAddress(""),
 			id:    123,
-			err:   utils.ErrInvalidValue,
-		},
-		"empty id": {
-			owner: sdk.AccAddress("test"),
-			id:    0,
 			err:   utils.ErrInvalidValue,
 		},
 	}
