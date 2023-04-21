@@ -113,7 +113,7 @@ func (s *TestSuite) TestCreateCertificate() {
 
 				idCounters := k.GetIDCounters(s.ctx)
 				s.Require().Equal(s.numTestCertificates+1, idCounters.NextCertificateId)
-				owner, err := sdk.AccAddressFromBech32(tc.msg.Owner)
+				owner, _ := sdk.AccAddressFromBech32(tc.msg.Owner)
 				certificate, found := k.GetCertificate(s.ctx, owner, resp.CertificateId)
 				s.Require().True(found)
 				s.Require().Equal(certificates.Certificate{

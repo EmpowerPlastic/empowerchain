@@ -30,10 +30,10 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: sample.AccAddress(),
 				Params: Params{
-					AllowedIssuer: []string{"invalid"},
+					AllowedIssuer: []string{},
 				},
 			},
-			expectedError: sdkerrors.ErrInvalidAddress,
+			expectedError: sdkerrors.ErrInvalidRequest,
 		},
 	}
 

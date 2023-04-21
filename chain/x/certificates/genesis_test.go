@@ -34,11 +34,11 @@ func TestGenesisState_Validate(t *testing.T) {
 					AllowedIssuer: []string{validIssuer},
 				},
 				IdCounters: certificates.IDCounters{
-					NextCertificateId: 1,
+					NextCertificateId: 10,
 				},
 				Certificates: []certificates.Certificate{
 					{
-						Id:     1,
+						Id:     5,
 						Owner:  sample.AccAddress(),
 						Type:   0,
 						Issuer: validIssuer,
@@ -54,11 +54,11 @@ func TestGenesisState_Validate(t *testing.T) {
 					AllowedIssuer: []string{validIssuer},
 				},
 				IdCounters: certificates.IDCounters{
-					NextCertificateId: 1,
+					NextCertificateId: 5,
 				},
 				Certificates: []certificates.Certificate{
 					{
-						Id:     1,
+						Id:     4,
 						Owner:  sample.AccAddress(),
 						Type:   100,
 						Issuer: validIssuer,
