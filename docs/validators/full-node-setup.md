@@ -116,7 +116,7 @@ Retrieve a copy of the genesis file for the desired chain. The genesis file defi
 wget -O $HOME/empowerchain/config/genesis.json <genesis-url>
 ```
 
-Example for the `circulus-1` testnet:
+Example for the `altruistic-1` testnet:
 ```bash
 wget -O $HOME/empowerchain/config/genesis.json https://github.com/EmpowerPlastic/empowerchain/blob/main/testnets/altruistic-1/genesis.json
 ```
