@@ -118,7 +118,7 @@ wget -O $HOME/empowerchain/config/genesis.json <genesis-url>
 
 Example for the `circulus-1` testnet:
 ```bash
-wget -O $HOME/empowerchain/config/genesis.json https://raw.githubusercontent.com/EmpowerPlastic/empowerchain/main/testnets/circulus-1/genesis.json
+wget -O $HOME/empowerchain/config/genesis.json https://github.com/EmpowerPlastic/empowerchain/blob/main/testnets/altruistic-1/genesis.json
 ```
 
 ### Set Persistent Peers and Seeds
