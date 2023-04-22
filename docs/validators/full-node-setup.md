@@ -4,7 +4,7 @@
 This documentation assumes that a Linux operating system is being used. All commands have been tested against Ubuntu 20.04 LTS, but other distributions of Linux can be used in place of this. Recent versions of macOS can also be used to compile the empowerd daemon.
 
 ## Hardware Requirements
-Hardare requirements for Empowerchain vary based on the purpose of the full node. RPC nodes, validators, and archive nodes all server different purposes with different system recommendations. For example, an archive node will need more storage than an RPC or Validator node require. The below recommendation is a starting point and should be modified to fit the ndoe's use case. Since CosmWasm is active on the network, higher system specifications are needed compared to other cosmos-sdk chains.
+Hardware requirements for Empowerchain vary based on the purpose of the full node. RPC nodes, validators, and archive nodes all serve different purposes with different system recommendations. For example, an archive node will need more storage than an RPC or Validator node require. The below recommendation is a starting point and should be modified to fit the node's use case. Since CosmWasm is active on the network, higher system specifications are needed compared to other cosmos-sdk chains.
 
 - 4 CPU Cores
 - 32gb RAM
