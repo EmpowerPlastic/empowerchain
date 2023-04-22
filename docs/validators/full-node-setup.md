@@ -102,10 +102,10 @@ Replace the `<chain-id>` field with the chain-id of the desired network.
 empowerd init "custom_moniker" --chain-id <chain-id>
 ```
 
-Example for the `circulus-1` testnet:
+Example for the `altruistic-1` testnet:
 
 ```bash
-empowerd init "custom_moniker" --chain-id circulus-1
+empowerd init "custom_moniker" --chain-id altruistic-1
 ```
 
 ### Retrieve the Genesis File
