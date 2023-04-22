@@ -59,7 +59,7 @@ empowerd status 2>&1 | jq .SyncInfo.catching_up
 
 The command should output either `true` to represent that the node is still syncing, or `false` to represent that the node has been fully synced to the network.
 
-Once the node is synced and the wallet is funds in it, the ndoe can be upgraded from a standard node to a validator node by submitting a `create-validator` transaction:
+Once the node is synced and the wallet has funds in it, the node can be upgraded from a standard node to a validator node by submitting a `create-validator` transaction:
 
 ```bash
 empowerd tx staking create-validator \
