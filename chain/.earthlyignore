@@ -4,7 +4,13 @@
 .github
 .devcontainer
 .idea
-*.pdf
+**/*.pdf
+**/coverage.out
+**/.idea/
+**/artifacts/
+**/.vscode/
 **/target/
 **/build/
 **/node_modules/
+**/Earthfile
+**/*.iml

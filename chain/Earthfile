@@ -156,3 +156,18 @@ devnet:
     RUN mv ~/.empowerchain/config/genesis.json.generated ~/.empowerchain/config/genesis.json
 
     SAVE IMAGE --push ${IMAGE_NAME}:${VERSION} ${IMAGE_NAME}:latest
+
+interchaintest-prep:
+    FROM golang:1.20-bullseye
+    WORKDIR /interchaintest
+    GIT CLONE https://github.com/strangelove-ventures/interchaintest /interchaintest
+    RUN make interchaintest
+    SAVE ARTIFACT bin/interchaintest
+
+ibc-conformance-test:
+    FROM +build
+    COPY +interchaintest-prep/interchaintest interchaintest
+    WITH DOCKER --load empowerchain-devnet:interchaintest=(+devnet --VERSION=interchaintest)
+        RUN ./interchaintest -matrix tests/e2e/interchaintest.json
+    END
+    SAVE ARTIFACT /root/.interchaintest/reports/* AS LOCAL build/interchaintest-reports/

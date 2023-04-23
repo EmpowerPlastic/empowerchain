@@ -8,7 +8,7 @@
         "Version": "latest"
       },
       {
-        "NumValidators": 1,
+        "NumValidators": 2,
         "NumFullNodes": 1,
 
         "Type": "cosmos",
@@ -16,8 +16,8 @@
         "ChainID": "empowerchain-local-1",
         "Images": [
           {
-            "Repository": "empowerchain",
-            "Version": "local",
+            "Repository": "empowerchain-devnet",
+            "Version": "interchaintest",
             "UidGid": "1025:1025"
           }
         ],
