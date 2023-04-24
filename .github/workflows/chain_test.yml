@@ -48,11 +48,24 @@ jobs:
     name: Simulation non-determinism tests EmpowerChain
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - uses: earthly/actions-setup@v1
-      with:
-        version: 0.6.30
+      - uses: earthly/actions-setup@v1
+        with:
+          version: 0.6.30
 
-    - run: earthly --ci -P +test-sim-nondeterminism
-      working-directory: ./chain
+      - run: earthly --ci -P +test-sim-nondeterminism
+        working-directory: ./chain
+
+  ibc-conformance-test:
+    name: Run interchaintest IBC conformace test suite
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: earthly/actions-setup@v1
+        with:
+          version: 0.6.30
+
+      - run: earthly --ci --output -P +ibc-conformance-test
+        working-directory: ./chain
