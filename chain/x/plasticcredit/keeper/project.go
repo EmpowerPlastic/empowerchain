@@ -79,6 +79,7 @@ func (k Keeper) CreateProject(ctx sdk.Context, creator sdk.AccAddress, applicant
 
 	return nextID, ctx.EventManager().EmitTypedEvent(&plasticcredit.EventCreateProject{
 		Creator:                creator.String(),
+		ProjectId:              nextID,
 		ApplicantId:            applicantID,
 		CreditTypeAbbreviation: creditTypeAbbreviation,
 		Name:                   name,

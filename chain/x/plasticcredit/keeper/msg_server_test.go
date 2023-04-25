@@ -734,6 +734,7 @@ func (s *TestSuite) TestCreateProject() {
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventCreateProject{
 					Creator:                s.sampleApplicantAdmin,
+					ProjectId:              project.Id,
 					ApplicantId:            project.ApplicantId,
 					CreditTypeAbbreviation: project.CreditTypeAbbreviation,
 					Name:                   project.Name,
