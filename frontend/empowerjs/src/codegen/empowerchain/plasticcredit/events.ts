@@ -40,6 +40,7 @@ export interface EventUpdateIssuerSDKType {
 
 export interface EventCreateProject {
   creator: string;
+  projectId: Long;
   applicantId: Long;
   creditTypeAbbreviation: string;
   name: string;
@@ -48,6 +49,7 @@ export interface EventCreateProject {
 
 export interface EventCreateProjectSDKType {
   creator: string;
+  project_id: Long;
   applicant_id: Long;
   credit_type_abbreviation: string;
   name: string;
@@ -412,6 +414,7 @@ export const EventUpdateIssuer = {
 function createBaseEventCreateProject(): EventCreateProject {
   return {
     creator: "",
+    projectId: Long.UZERO,
     applicantId: Long.UZERO,
     creditTypeAbbreviation: "",
     name: ""
@@ -424,16 +427,20 @@ export const EventCreateProject = {
       writer.uint32(10).string(message.creator);
     }
 
+    if (!message.projectId.isZero()) {
+      writer.uint32(16).uint64(message.projectId);
+    }
+
     if (!message.applicantId.isZero()) {
-      writer.uint32(16).uint64(message.applicantId);
+      writer.uint32(24).uint64(message.applicantId);
     }
 
     if (message.creditTypeAbbreviation !== "") {
-      writer.uint32(26).string(message.creditTypeAbbreviation);
+      writer.uint32(34).string(message.creditTypeAbbreviation);
     }
 
     if (message.name !== "") {
-      writer.uint32(34).string(message.name);
+      writer.uint32(42).string(message.name);
     }
 
     return writer;
@@ -453,14 +460,18 @@ export const EventCreateProject = {
           break;
 
         case 2:
-          message.applicantId = (reader.uint64() as Long);
+          message.projectId = (reader.uint64() as Long);
           break;
 
         case 3:
-          message.creditTypeAbbreviation = reader.string();
+          message.applicantId = (reader.uint64() as Long);
           break;
 
         case 4:
+          message.creditTypeAbbreviation = reader.string();
+          break;
+
+        case 5:
           message.name = reader.string();
           break;
 
@@ -476,6 +487,7 @@ export const EventCreateProject = {
   fromPartial(object: DeepPartial<EventCreateProject>): EventCreateProject {
     const message = createBaseEventCreateProject();
     message.creator = object.creator ?? "";
+    message.projectId = object.projectId !== undefined && object.projectId !== null ? Long.fromValue(object.projectId) : Long.UZERO;
     message.applicantId = object.applicantId !== undefined && object.applicantId !== null ? Long.fromValue(object.applicantId) : Long.UZERO;
     message.creditTypeAbbreviation = object.creditTypeAbbreviation ?? "";
     message.name = object.name ?? "";

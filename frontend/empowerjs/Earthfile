@@ -8,6 +8,7 @@ codegen:
     RUN npm i
     RUN npx telescope transpile --protoDirs=./proto --outPath=./src/codegen --includeAminos=true --includeLCDClients=true --includeRPCClients=true
     SAVE ARTIFACT ./src/codegen AS LOCAL ./src/codegen
+    SAVE ARTIFACT ./proto AS LOCAL ./proto
 
 publish:
     ARG NPM_TOKEN
