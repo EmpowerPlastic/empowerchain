@@ -65,7 +65,46 @@ func (s *TestSuite) TestCertificatesQuery() {
 	goCtx := sdk.WrapSDKContext(s.ctx)
 
 	querier := keeper.Querier{Keeper: k}
-	resp, err := querier.AllCertificatesByUser(goCtx, &certificates.QueryAllCertificatesByUserRequest{})
+	resp, err := querier.Certificates(goCtx, &certificates.QueryCertificatesRequest{})
+	s.Require().NoError(err)
+	s.Require().Len(resp.Certificates, 0)
+
+	ms := keeper.NewMsgServerImpl(k)
+	for i := 0; i < 11; i++ {
+		createMsg := certificates.MsgCreateCertificate{
+			Owner:  s.sampleOwner,
+			Issuer: s.sampleIssuerAdmin,
+			Type:   s.sampleCertificationType,
+			Data:   s.sampleCertificationData,
+		}
+		_, err = ms.CreateCertificate(goCtx, &createMsg)
+		s.Require().NoError(err)
+	}
+
+	resp2, err := querier.Certificates(goCtx, &certificates.QueryCertificatesRequest{
+		Pagination: query.PageRequest{
+			Offset: 0,
+			Limit:  11,
+		},
+	})
+	s.Require().NoError(err)
+	s.Require().Len(resp2.Certificates, 11)
+
+	for i, certificate := range resp2.Certificates {
+		id := i + 1
+		s.Require().Equal(uint64(id), certificate.Id)
+		s.Require().Equal(s.sampleCertificationType, certificate.Type)
+	}
+}
+
+func (s *TestSuite) TestCertificatesByUserQuery() {
+	k := s.empowerApp.CertificateKeeper
+	goCtx := sdk.WrapSDKContext(s.ctx)
+
+	querier := keeper.Querier{Keeper: k}
+	resp, err := querier.AllCertificatesByUser(goCtx, &certificates.QueryAllCertificatesByUserRequest{
+		Owner: s.sampleOwner,
+	})
 	s.Require().NoError(err)
 	s.Require().Len(resp.Certificates, 0)
 

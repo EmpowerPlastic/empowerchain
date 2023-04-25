@@ -12,7 +12,7 @@ import (
 )
 
 func (k Keeper) GetCertificate(ctx sdk.Context, owner sdk.AccAddress, id uint64) (certificates.Certificate, bool) {
-	store := k.getCertificatesStore(ctx)
+	store := k.getCertificatesStore(ctx, owner)
 
 	key, err := certificates.CreateCertificateKey(owner, id)
 	if err != nil {
@@ -29,29 +29,7 @@ func (k Keeper) GetCertificate(ctx sdk.Context, owner sdk.AccAddress, id uint64)
 }
 
 func (k Keeper) GetAllCertificatesByOwner(ctx sdk.Context, owner sdk.AccAddress, pageReq query.PageRequest) ([]certificates.Certificate, query.PageResponse, error) {
-	store := k.getCertificatesStore(ctx)
-
-	var allCertificates []certificates.Certificate
-	pageRes, err := query.Paginate(store, &pageReq, func(_ []byte, value []byte) error {
-		var certificate certificates.Certificate
-		iterator := sdk.KVStorePrefixIterator(store, owner)
-		defer iterator.Close()
-
-		for ; iterator.Valid(); iterator.Next() {
-			k.cdc.MustUnmarshal(iterator.Value(), &certificate)
-			allCertificates = append(allCertificates, certificate)
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, query.PageResponse{}, err
-	}
-
-	return allCertificates, *pageRes, nil
-}
-
-func (k Keeper) GetAllCertificates(ctx sdk.Context, pageReq query.PageRequest) ([]certificates.Certificate, query.PageResponse, error) {
-	store := k.getCertificatesStore(ctx)
+	store := k.getCertificatesStore(ctx, owner)
 
 	var allCertificates []certificates.Certificate
 	pageRes, err := query.Paginate(store, &pageReq, func(_ []byte, value []byte) error {
@@ -70,11 +48,29 @@ func (k Keeper) GetAllCertificates(ctx sdk.Context, pageReq query.PageRequest) (
 	return allCertificates, *pageRes, nil
 }
 
-func (k Keeper) getCertificatesStore(ctx sdk.Context) storetypes.KVStore {
-	store := ctx.KVStore(k.storeKey)
-	certificatesStore := prefix.NewStore(store, certificates.CertificateKey)
+func (k Keeper) GetAllCertificates(ctx sdk.Context, pageReq query.PageRequest) ([]certificates.Certificate, query.PageResponse, error) {
+	store := k.getCertificatesStore(ctx, nil)
 
-	return certificatesStore
+	var allCertificates []certificates.Certificate
+	pageRes, err := query.Paginate(store, &pageReq, func(_ []byte, value []byte) error {
+		var certificate certificates.Certificate
+		if err := k.cdc.Unmarshal(value, &certificate); err != nil {
+			return err
+		}
+		allCertificates = append(allCertificates, certificate)
+
+		return nil
+	})
+	if err != nil {
+		return nil, query.PageResponse{}, err
+	}
+
+	return allCertificates, *pageRes, nil
+}
+
+func (k Keeper) getCertificatesStore(ctx sdk.Context, owner []byte) storetypes.KVStore {
+	store := ctx.KVStore(k.storeKey)
+	return prefix.NewStore(store, certificates.CertificateKey)
 }
 
 func (k Keeper) createCertificate(ctx sdk.Context, certificateType certificates.CertificateType, owner string, issuer string) (uint64, error) {
@@ -114,7 +110,7 @@ func (k Keeper) setCertificate(ctx sdk.Context, certificate certificates.Certifi
 	if err != nil {
 		return err
 	}
-	store := k.getCertificatesStore(ctx)
+	store := k.getCertificatesStore(ctx, []byte(certificate.Owner))
 
 	b, err := k.cdc.Marshal(&certificate)
 	if err != nil {
@@ -131,7 +127,7 @@ func (k Keeper) setCertificate(ctx sdk.Context, certificate certificates.Certifi
 }
 
 func (k Keeper) iterateCertificates(ctx sdk.Context, handler func(certificate certificates.Certificate)) {
-	store := k.getCertificatesStore(ctx)
+	store := k.getCertificatesStore(ctx, nil)
 
 	iterator := sdk.KVStorePrefixIterator(store, nil)
 	defer iterator.Close()
