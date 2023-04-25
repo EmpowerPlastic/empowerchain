@@ -1,6 +1,7 @@
 package certificates_test
 
 import (
+	"github.com/EmpowerPlastic/empowerchain/utils"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -11,25 +12,22 @@ import (
 
 func TestGenesisState_Validate(t *testing.T) {
 	validIssuer := sample.AccAddress()
-	testCases := []struct {
-		name string
-		gen  certificates.GenesisState
-		err  bool
+	testCases := map[string]struct {
+		genState certificates.GenesisState
+		err      error
 	}{
-		{
-			name: "default is valid",
-			gen:  certificates.DefaultGenesis(),
+		"default is valid": {
+			genState: certificates.DefaultGenesis(),
+			err:      nil,
 		},
-		{
-			name: "invalid params",
-			gen: certificates.GenesisState{
+		"invalid params": {
+			genState: certificates.GenesisState{
 				Params: certificates.Params{},
 			},
-			err: true,
+			err: utils.ErrInvalidValue,
 		},
-		{
-			name: "valid genesis with certificate",
-			gen: certificates.GenesisState{
+		"valid genesis with certificate": {
+			genState: certificates.GenesisState{
 				Params: certificates.Params{
 					AllowedIssuer: []string{validIssuer},
 				},
@@ -45,11 +43,10 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 			},
-			err: false,
+			err: nil,
 		},
-		{
-			name: "invalid certificate type",
-			gen: certificates.GenesisState{
+		"invalid certificate type": {
+			genState: certificates.GenesisState{
 				Params: certificates.Params{
 					AllowedIssuer: []string{validIssuer},
 				},
@@ -65,20 +62,13 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 			},
-			err: true,
+			err: utils.ErrInvalidValue,
 		},
 	}
-
-	for _, tc := range testCases {
-		tc := tc
-
-		t.Run(tc.name, func(t *testing.T) {
-			err := tc.gen.Validate()
-			if tc.err {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			err := tc.genState.Validate()
+			require.ErrorIs(t, err, tc.err)
 		})
 	}
 }

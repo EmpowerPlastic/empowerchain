@@ -3,11 +3,8 @@ package certificates
 import (
 	"encoding/binary"
 
-	"cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
-
-	"github.com/EmpowerPlastic/empowerchain/utils"
 )
 
 var (
@@ -44,9 +41,6 @@ func CreateKeyFromString(key string) []byte {
 }
 
 func CreateCertificateKey(owner sdk.AccAddress, id uint64) ([]byte, error) {
-	if len(owner) == 0 {
-		return nil, errors.Wrap(utils.ErrInvalidValue, "invalid value for owner or id")
-	}
 	d := CreateKeyFromUint64(id)
 	owner = address.MustLengthPrefix(owner)
 	key := sdk.AppendLengthPrefixedBytes(owner, d)

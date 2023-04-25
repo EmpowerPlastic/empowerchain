@@ -26,6 +26,7 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	cmd.AddCommand(CmdQueryParams())
 	cmd.AddCommand(CmdQueryCertificate())
 	cmd.AddCommand(CmdQueryCertificates())
+	cmd.AddCommand(CmdQueryCertificatesByOwner())
 
 	return cmd
 }
@@ -88,6 +89,28 @@ func CmdQueryCertificate() *cobra.Command {
 }
 
 func CmdQueryCertificates() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "certificates",
+		Short: "query for all certificates",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+			queryClient := certificates.NewQueryClient(clientCtx)
+
+			res, err := queryClient.Certificates(
+				context.Background(),
+				&certificates.QueryCertificatesRequest{},
+			)
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+func CmdQueryCertificatesByOwner() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "certificates [owner-address]",
 		Short: "query for all certificates of an owner by its [owner-address]",

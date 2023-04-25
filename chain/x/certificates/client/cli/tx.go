@@ -3,6 +3,7 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
+	"path/filepath"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -23,6 +24,40 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(MsgCreateCertificateCmd())
+	cmd.AddCommand(MsgUpdateParamsCmd())
+	return cmd
+}
+
+func MsgUpdateParamsCmd() *cobra.Command {
+	currentDir, err := filepath.Abs("./")
+	if err == nil {
+		fmt.Println("Error: ", err)
+	}
+	testDataDir := currentDir + "/testdata"
+	testData := []string{testDataDir + "/certificate_update_params.json"}
+	cmd := &cobra.Command{
+		Use:   "update-params [authority] [allowed-issuers]",
+		Short: "set the parameters of the module",
+		Args:  cobra.MinimumNArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+			authority := args[0]
+			issuers := testData
+			err := json.Unmarshal([]byte(args[1]), &issuers)
+			if err != nil {
+				return err
+			}
+
+			msg := certificates.MsgUpdateParams {
+				Authority: authority,
+				Params: certificates.Params{
+					AllowedIssuer : issuers,
+				},
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 

@@ -2,14 +2,13 @@ package keeper
 
 import (
 	"cosmossdk.io/errors"
+	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"golang.org/x/exp/slices"
-
-	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 )
 
 func (k Keeper) GetCertificate(ctx sdk.Context, owner sdk.AccAddress, id uint64) (certificates.Certificate, bool) {
@@ -30,6 +29,28 @@ func (k Keeper) GetCertificate(ctx sdk.Context, owner sdk.AccAddress, id uint64)
 }
 
 func (k Keeper) GetAllCertificatesByOwner(ctx sdk.Context, owner sdk.AccAddress, pageReq query.PageRequest) ([]certificates.Certificate, query.PageResponse, error) {
+	store := k.getCertificatesStore(ctx)
+
+	var allCertificates []certificates.Certificate
+	pageRes, err := query.Paginate(store, &pageReq, func(_ []byte, value []byte) error {
+		var certificate certificates.Certificate
+		iterator := sdk.KVStorePrefixIterator(store, owner)
+		defer iterator.Close()
+
+		for ; iterator.Valid(); iterator.Next() {
+			k.cdc.MustUnmarshal(iterator.Value(), &certificate)
+			allCertificates = append(allCertificates, certificate)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, query.PageResponse{}, err
+	}
+
+	return allCertificates, *pageRes, nil
+}
+
+func (k Keeper) GetAllCertificates(ctx sdk.Context, pageReq query.PageRequest) ([]certificates.Certificate, query.PageResponse, error) {
 	store := k.getCertificatesStore(ctx)
 
 	var allCertificates []certificates.Certificate

@@ -28,6 +28,23 @@ func (q Querier) Params(goCtx context.Context, req *certificates.QueryParamsRequ
 	return &certificates.QueryParamsResponse{Params: params}, nil
 }
 
+func (q Querier) Certificates(goCtx context.Context, req *certificates.QueryCertificatesRequest) (*certificates.QueryCertificatesResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	certificatesByOwner, pageRes, err := q.GetAllCertificates(ctx, req.Pagination)
+	if err != nil {
+		return nil, err
+	}
+
+	return &certificates.QueryCertificatesResponse{
+		Certificates: certificatesByOwner,
+		Pagination:   pageRes,
+	}, nil
+}
+
 func (q Querier) AllCertificatesByUser(goCtx context.Context, req *certificates.QueryAllCertificatesByUserRequest) (*certificates.QueryAllCertificatesByUserResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
@@ -60,7 +77,8 @@ func (q Querier) Certificate(goCtx context.Context, req *certificates.QueryCerti
 		return nil, errors.Wrapf(certificates.ErrCertificateNotFound, "certificate for address %s not found", req.Owner)
 	}
 
-	return &certificates.QueryCertificateResponse{
+	return &certificates.QueryCertificateResponse {
 		Certificate: certificate,
 	}, nil
 }
+
