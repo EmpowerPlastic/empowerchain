@@ -20,7 +20,6 @@ func (k Keeper) GetCertificate(ctx sdk.Context, owner string, id uint64) (certif
 	if err != nil {
 		return certificates.Certificate{}, false
 	}
-	println("get", key)
 	bz := store.Get(key)
 	if len(bz) == 0 {
 		return certificates.Certificate{}, false
@@ -79,7 +78,6 @@ func (k Keeper) getCertificatesStoreByOwner(ctx sdk.Context, owner []byte) store
 
 func (k Keeper) getCertificateStore(ctx sdk.Context) storetypes.KVStore {
 	return ctx.KVStore(k.storeKey)
-	//return prefix.NewStore(store, nil)
 }
 func (k Keeper) createCertificate(ctx sdk.Context, certificateType certificates.CertificateType, owner string, issuer string) (uint64, error) {
 	params := k.GetParams(ctx)
@@ -129,7 +127,6 @@ func (k Keeper) setCertificate(ctx sdk.Context, certificate certificates.Certifi
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
 	}
 	key, _ := certificates.CreateCertificateKey(owner, certificate.Id)
-	println("set", key)
 	store.Set(key, b)
 
 	return nil
@@ -139,7 +136,12 @@ func (k Keeper) iterateCertificates(ctx sdk.Context, handler func(certificate ce
 	store := k.getCertificateStore(ctx)
 
 	iterator := sdk.KVStorePrefixIterator(store, nil)
-	defer iterator.Close()
+	defer func(iterator sdk.Iterator) {
+		err := iterator.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(iterator)
 
 	for ; iterator.Valid(); iterator.Next() {
 		var certificate certificates.Certificate
