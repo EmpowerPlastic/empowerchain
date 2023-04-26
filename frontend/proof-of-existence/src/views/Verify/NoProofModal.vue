@@ -31,15 +31,15 @@ defineProps<ModalProps>();
         <div class="flex flex-wrap flex-col items-center p-2">
           <img
             src="../../assets/images/emp-astro-4.svg"
-            v-if="modalType === ErrorModalType.FILE"
+            v-show="modalType === ErrorModalType.FILE"
             class="w-32"
           />
           <img
             src="../../assets/images/emp-astro-5.svg"
-            v-if="modalType === ErrorModalType.STRING"
+            v-show="modalType === ErrorModalType.STRING"
             class="w-32"
           />
-          <h3 class="font-bold text-black text-title22 my-3">
+          <h3 class="font-bold text-black text-title22 my-3 text-center">
             {{
               modalType === ErrorModalType.FILE
                 ? "No proof of existence for this data!"

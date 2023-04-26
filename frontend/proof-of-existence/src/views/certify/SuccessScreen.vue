@@ -15,10 +15,12 @@
       class="flex justify-center bg-lightGray rounded-lg break-words text-center items-center flex flex-col p-4 mb-5"
     >
       <img class="w-20 mb-4" src="../../assets/images/certificate.png" />
-      <p class="text-lightGreen text-title14 break-all">File</p>
-      <p class="text-white text-title18 mb-3 break-all">
-        {{ $route.query.fileName }}
-      </p>
+      <div v-show="$route.query.fileName">
+        <p class="text-lightGreen text-title14 break-all">File</p>
+        <p class="text-white text-title18 mb-3 break-all">
+          {{ $route.query.fileName }}
+        </p>
+      </div>
       <p class="text-lightGreen text-title14" break-all>Received Time</p>
       <p class="text-white text-title18 mb-3 break-all">
         {{ new Date(Number($route.query.time)).toLocaleString() }}
