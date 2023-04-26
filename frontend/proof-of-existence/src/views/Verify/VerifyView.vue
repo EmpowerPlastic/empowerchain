@@ -8,7 +8,7 @@ import NoProofModal from "@/views/Verify/NoProofModal.vue";
 import { ErrorModalType } from "@/types/enums";
 
 const file = ref<File | undefined>(undefined);
-const inputHash = ref<string | undefined>(undefined);
+const inputString = ref<string>();
 const isValid = ref<boolean>(false);
 const showModal = ref<boolean>(false);
 const modalType = ref<ErrorModalType>(ErrorModalType.FILE);
@@ -51,24 +51,27 @@ const readFile = async (file: File): Promise<ArrayBuffer> => {
   });
 };
 
-const hashAndSetResult = (byteArray: Uint8Array) => {
-  const result = window.empSha256(byteArray);
-  verifyHash(result?.value);
+const hashAndSetResult = async (byteArray: Uint8Array) => {
+  try {
+    const result = window.empSha256(byteArray);
+    const verifyResult = await verifyHash(result?.value);
+    console.log(verifyResult, "verifyResult");
+    pushToSuccessPage(
+      result?.value,
+      new Date(verifyResult.metadata.timestamp).getTime()
+    );
+  } catch (error) {
+    console.log(error, "error");
+    openModal();
+  }
 };
 
 const verifyHash = async (hash: string) => {
-  console.log(hash, "verifyHash");
-  try {
-    const client = await createRPCQueryClient({ rpcEndpoint: RPC_URL });
-    const proof = await client.empowerchain.proofofexistence.proof({
-      hash: hash,
-    });
-    pushToSuccessPage(hash, new Date(proof.metadata.timestamp).getTime());
-    console.log(proof, "proof");
-  } catch (error) {
-    console.log(error);
-    openModal();
-  }
+  const client = await createRPCQueryClient({ rpcEndpoint: RPC_URL });
+  const proof = await client.empowerchain.proofofexistence.proof({
+    hash: hash,
+  });
+  return proof;
 };
 
 const pushToSuccessPage = (hash: string, timeStamp: number) => {
@@ -80,6 +83,53 @@ const pushToSuccessPage = (hash: string, timeStamp: number) => {
       time: timeStamp,
     },
   });
+};
+
+const handleInputString = async () => {
+  const userInput = inputString?.value || "";
+  const possibleStringValues = [
+    userInput,
+    userInput.replace(/\s/g, ""),
+    userInput.toLowerCase(),
+    userInput.toLowerCase().replace(/\s/g, ""),
+  ];
+  //Remove duplicate values
+  const uniqueValues = [...new Set(possibleStringValues)];
+
+  console.log(possibleStringValues, uniqueValues);
+
+  const encoder = new TextEncoder();
+  const verifyResults = await Promise.all(
+    uniqueValues.map(async (userString) => {
+      const arrayBuffer = encoder.encode(userString);
+      const hash = window.empSha256(arrayBuffer);
+      try {
+        const result = await verifyHash(hash?.value);
+        return {
+          success: true,
+          hash: hash?.value,
+          timestamp: result.metadata.timestamp,
+        };
+      } catch (error) {
+        return { success: false, result: error };
+      }
+    })
+  );
+
+  console.log(
+    verifyResults,
+    verifyResults.find((result) => result.success === true),
+    "verifyResults"
+  );
+  const finalResult = verifyResults.find((result) => result.success === true);
+  if (finalResult?.hash) {
+    pushToSuccessPage(
+      finalResult?.hash,
+      new Date(finalResult.timestamp).getTime()
+    );
+  } else {
+    openModal();
+  }
 };
 
 const openModal = () => {
@@ -192,21 +242,22 @@ const closeModal = () => {
           aria-labelledby="hash-tab"
         >
           <p class="mb-3 text-white text-title14 mt-2">
-            Input the SHA256 checksum hexadecimal digest for your file here.
+            You can input arbitrary plain text below to verify a proof of it's
           </p>
           <div class="w-full p-3 mt-7 rounded bg-lightGray">
             <label class="cursor-pointer" for="file_input">
-              <input
+              <textarea
+                rows="3"
                 placeholder="Document Hash"
-                v-model="inputHash"
+                v-model="inputString"
                 class="p-1 rounded bg-lightGray w-full mr-4 text-white text-title16 h-36 md:h-auto"
               />
             </label>
           </div>
           <div class="flex flex-row justify-center">
             <button
-              :disabled="!/\b[A-Fa-f0-9]{64}\b/.test(inputHash || '')"
-              @click="handleInputHash"
+              :disabled="!inputString"
+              @click="handleInputString"
               class="bg-lightGreen mt-10 content-center p-1 px-9 rounded text-white text-title22 disabled:bg-lightGray disabled:text-gray"
             >
               Verify
