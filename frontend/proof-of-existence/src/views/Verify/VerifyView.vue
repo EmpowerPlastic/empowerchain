@@ -4,10 +4,14 @@ import router from "@/router";
 import { RPC_URL } from "@/config/config";
 import { empowerchain } from "@empower-plastic/empowerjs";
 import { Data } from "@empower-plastic/empowerjs/src/codegen/tendermint/types/types";
+import NoProofModal from "@/views/Verify/NoProofModal.vue";
+import { ErrorModalType } from "@/types/enums";
 
 const file = ref<File | undefined>(undefined);
 const inputHash = ref<string | undefined>(undefined);
 const isValid = ref<boolean>(false);
+const showModal = ref<boolean>(false);
+const modalType = ref<ErrorModalType>(ErrorModalType.FILE);
 
 const { createRPCQueryClient } = empowerchain.ClientFactory;
 //Methods
@@ -50,7 +54,6 @@ const readFile = async (file: File): Promise<ArrayBuffer> => {
 const hashAndSetResult = (byteArray: Uint8Array) => {
   const result = window.empSha256(byteArray);
   verifyHash(result?.value);
-  //redirectToWalletPage(file.value?.name, new Date().getTime(), result?.value);
 };
 
 const verifyHash = async (hash: string) => {
@@ -61,9 +64,10 @@ const verifyHash = async (hash: string) => {
       hash: hash,
     });
     pushToSuccessPage(hash, new Date(proof.metadata.timestamp).getTime());
-    console.log(new Date(proof.metadata.timestamp).getTime(), "proof");
+    console.log(proof, "proof");
   } catch (error) {
     console.log(error);
+    openModal();
   }
 };
 
@@ -77,9 +81,22 @@ const pushToSuccessPage = (hash: string, timeStamp: number) => {
     },
   });
 };
+
+const openModal = () => {
+  showModal.value = true;
+};
+
+const closeModal = () => {
+  showModal.value = false;
+};
 </script>
 
 <template>
+  <NoProofModal
+    v-show="showModal"
+    :close-modal="closeModal"
+    :modal-type="modalType"
+  />
   <img
     src="../../assets/images/emp-astro-3.svg"
     class="left-28 top-full sm:top-auto sm:left-auto sm:ml-[500px] w-32 absolute animate-bounce -m-12"

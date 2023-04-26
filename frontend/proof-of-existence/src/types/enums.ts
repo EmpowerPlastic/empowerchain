@@ -3,3 +3,7 @@ export enum Wallet {
   Cosmostation = "Cosmostation",
   Leap = "Leap",
 }
+export enum ErrorModalType {
+  FILE = "FILE",
+  HASH = "HASH",
+}
