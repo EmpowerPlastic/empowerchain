@@ -71,7 +71,7 @@ const handleInputString = () => {
   let userInput = inputString?.value || "";
 
   if (!includeWhiteSpace.value) {
-    userInput = userInput.replace(/ +/g, "");
+    userInput = userInput.replace(/\s/g, "");
   }
 
   if (!includeLetterCasing.value) {
