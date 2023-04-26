@@ -51,7 +51,7 @@ func (q Querier) AllCertificatesByUser(goCtx context.Context, req *certificates.
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	certificatesByOwner, pageRes, err := q.GetAllCertificatesByOwner(ctx, sdk.MustAccAddressFromBech32(req.Owner), req.Pagination)
+	certificatesByOwner, pageRes, err := q.GetAllCertificatesByOwner(ctx, sdk.AccAddress(req.Owner), req.Pagination)
 	if err != nil {
 		return nil, err
 	}

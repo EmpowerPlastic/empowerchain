@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"fmt"
-	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -26,7 +25,7 @@ func IDCountersInvariant(k InvariantKeeper) sdk.Invariant {
 		broken := false
 		idCounters := k.GetIDCounters(ctx)
 		// check if certificate with ID pointed by IDCounters exist
-		_, found := k.GetCertificate(ctx, sample.AccAddress(), idCounters.NextCertificateId)
+		_, found := k.GetCertificate(ctx, "string", idCounters.NextCertificateId)
 		if found {
 			invalidInvariants = append(invalidInvariants, "certificate id")
 			broken = true

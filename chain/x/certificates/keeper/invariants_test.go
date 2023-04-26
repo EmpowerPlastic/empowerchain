@@ -18,7 +18,7 @@ func (k MockInvariantKeeper) GetIDCounters(ctx sdk.Context) (idc certificates.ID
 	return k.idCounters
 }
 
-func (k MockInvariantKeeper) GetCertificate(ctx sdk.Context, owner sdk.AccAddress, id uint64) (certificate certificates.Certificate, found bool) {
+func (k MockInvariantKeeper) GetCertificate(ctx sdk.Context, owner string, id uint64) (certificate certificates.Certificate, found bool) {
 	if k.certificate.Id == id {
 		return k.certificate, true
 	}

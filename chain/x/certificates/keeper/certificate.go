@@ -15,11 +15,7 @@ func (k Keeper) GetCertificate(ctx sdk.Context, owner string, id uint64) (certif
 	accAddress := sdk.AccAddress(owner)
 	store := k.getCertificatesStoreByOwner(ctx, accAddress)
 	println(owner, id)
-	bech32Owner, err := sdk.AccAddressFromBech32(owner)
-	key, err := certificates.CreateCertificateKey(bech32Owner, id)
-	if err != nil {
-		return certificates.Certificate{}, false
-	}
+	key := certificates.CreateKeyFromUint64(id)
 	bz := store.Get(key)
 	if len(bz) == 0 {
 		return certificates.Certificate{}, false
@@ -122,11 +118,7 @@ func (k Keeper) setCertificate(ctx sdk.Context, certificate certificates.Certifi
 	if err != nil {
 		return err
 	}
-	owner, err := sdk.AccAddressFromBech32(certificate.Owner)
-	if err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
-	}
-	key, _ := certificates.CreateCertificateKey(owner, certificate.Id)
+	key := certificates.CreateKeyFromUint64(certificate.Id)
 	store.Set(key, b)
 
 	return nil
