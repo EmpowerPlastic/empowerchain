@@ -3,7 +3,6 @@ import { ref } from "vue";
 import router from "@/router";
 import { RPC_URL } from "@/config/config";
 import { empowerchain } from "@empower-plastic/empowerjs";
-import { Data } from "@empower-plastic/empowerjs/src/codegen/tendermint/types/types";
 import NoProofModal from "@/views/Verify/NoProofModal.vue";
 import { ErrorModalType } from "@/types/enums";
 
@@ -55,13 +54,12 @@ const hashAndSetResult = async (byteArray: Uint8Array) => {
   try {
     const result = window.empSha256(byteArray);
     const verifyResult = await verifyHash(result?.value);
-    console.log(verifyResult, "verifyResult");
     pushToSuccessPage(
       result?.value,
       new Date(verifyResult.metadata.timestamp).getTime()
     );
   } catch (error) {
-    console.log(error, "error");
+    modalType.value = ErrorModalType.FILE;
     openModal();
   }
 };
@@ -96,8 +94,6 @@ const handleInputString = async () => {
   //Remove duplicate values
   const uniqueValues = [...new Set(possibleStringValues)];
 
-  console.log(possibleStringValues, uniqueValues);
-
   const encoder = new TextEncoder();
   const verifyResults = await Promise.all(
     uniqueValues.map(async (userString) => {
@@ -116,11 +112,6 @@ const handleInputString = async () => {
     })
   );
 
-  console.log(
-    verifyResults,
-    verifyResults.find((result) => result.success === true),
-    "verifyResults"
-  );
   const finalResult = verifyResults.find((result) => result.success === true);
   if (finalResult?.hash) {
     pushToSuccessPage(
@@ -128,6 +119,7 @@ const handleInputString = async () => {
       new Date(finalResult.timestamp).getTime()
     );
   } else {
+    modalType.value = ErrorModalType.STRING;
     openModal();
   }
 };

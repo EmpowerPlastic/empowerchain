@@ -5,5 +5,5 @@ export enum Wallet {
 }
 export enum ErrorModalType {
   FILE = "FILE",
-  HASH = "HASH",
+  STRING = "STRING",
 }

@@ -29,9 +29,22 @@ defineProps<ModalProps>();
         </div>
         <!-- Modal body -->
         <div class="flex flex-wrap flex-col items-center p-2">
-          <img src="../../assets/images/emp-astro-4.svg" class="w-32" />
+          <img
+            src="../../assets/images/emp-astro-4.svg"
+            v-if="modalType === ErrorModalType.FILE"
+            class="w-32"
+          />
+          <img
+            src="../../assets/images/emp-astro-5.svg"
+            v-if="modalType === ErrorModalType.STRING"
+            class="w-32"
+          />
           <h3 class="font-bold text-black text-title22 my-3">
-            No proof of existence for this data!
+            {{
+              modalType === ErrorModalType.FILE
+                ? "No proof of existence for this data!"
+                : "Data verification failed!"
+            }}
           </h3>
           <button
             class="bg-lightGreen px-5 py-2 rounded text-white my-3"
