@@ -12,7 +12,7 @@ import (
 
 type InvariantKeeper interface {
 	GetIDCounters(ctx sdk.Context) (idc certificates.IDCounters)
-	GetCertificate(ctx sdk.Context, owner sdk.AccAddress, id uint64) (certificate certificates.Certificate, found bool)
+	GetCertificate(ctx sdk.Context, owner string, id uint64) (certificate certificates.Certificate, found bool)
 }
 
 func RegisterInvariants(ir sdk.InvariantRegistry, k Keeper) {
@@ -26,7 +26,7 @@ func IDCountersInvariant(k InvariantKeeper) sdk.Invariant {
 		broken := false
 		idCounters := k.GetIDCounters(ctx)
 		// check if certificate with ID pointed by IDCounters exist
-		_, found := k.GetCertificate(ctx, sdk.AccAddress(sample.AccAddress()), idCounters.NextCertificateId)
+		_, found := k.GetCertificate(ctx, sample.AccAddress(), idCounters.NextCertificateId)
 		if found {
 			invalidInvariants = append(invalidInvariants, "certificate id")
 			broken = true

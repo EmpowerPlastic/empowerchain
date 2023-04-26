@@ -1,8 +1,6 @@
 package keeper_test
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 )
 
@@ -36,8 +34,7 @@ func (s *TestSuite) TestGenesis() {
 	s.Require().Equal(genesisState.IdCounters, idCounter)
 
 	for _, certificate := range genesisState.Certificates {
-		owner, _ := sdk.AccAddressFromBech32(certificate.Owner)
-		actualCertificate, found := k.GetCertificate(s.ctx, owner, certificate.Id)
+		actualCertificate, found := k.GetCertificate(s.ctx, certificate.Owner, certificate.Id)
 		s.Require().True(found)
 		s.Require().Equal(certificate, actualCertificate)
 	}

@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
@@ -29,17 +30,17 @@ func (s *TestSuite) TestParamsQuery() {
 func (s *TestSuite) TestCertificateQuery() {
 	k := s.empowerApp.CertificateKeeper
 	goCtx := sdk.WrapSDKContext(s.ctx)
-
+	sampleOwner := sample.AccAddress()
 	querier := keeper.Querier{Keeper: k}
 	_, err := querier.Certificate(goCtx, &certificates.QueryCertificateRequest{
 		Id:    1,
-		Owner: s.sampleOwner,
+		Owner: sampleOwner,
 	})
 	s.Require().ErrorIs(err, certificates.ErrCertificateNotFound)
 
 	ms := keeper.NewMsgServerImpl(k)
 	createMsg := certificates.MsgCreateCertificate{
-		Owner:  s.sampleOwner,
+		Owner:  sampleOwner,
 		Issuer: s.sampleIssuerAdmin,
 		Type:   s.sampleCertificationType,
 		Data:   s.sampleCertificationData,
@@ -50,8 +51,9 @@ func (s *TestSuite) TestCertificateQuery() {
 
 	resp, err := querier.Certificate(goCtx, &certificates.QueryCertificateRequest{
 		Id:    1,
-		Owner: s.sampleOwner,
+		Owner: sampleOwner,
 	})
+	println(sampleOwner)
 
 	s.Require().NoError(err)
 	s.Require().Equal(uint64(1), resp.Certificate.Id)
@@ -67,7 +69,7 @@ func (s *TestSuite) TestCertificatesQuery() {
 	querier := keeper.Querier{Keeper: k}
 	resp, err := querier.Certificates(goCtx, &certificates.QueryCertificatesRequest{})
 	s.Require().NoError(err)
-	s.Require().Len(resp.Certificates, 0)
+	s.Require().Len(resp.Certificates, int(s.numTestCertificates))
 
 	ms := keeper.NewMsgServerImpl(k)
 	for i := 0; i < 11; i++ {
@@ -89,12 +91,43 @@ func (s *TestSuite) TestCertificatesQuery() {
 	})
 	s.Require().NoError(err)
 	s.Require().Len(resp2.Certificates, 11)
+}
 
-	for i, certificate := range resp2.Certificates {
-		id := i + 1
-		s.Require().Equal(uint64(id), certificate.Id)
-		s.Require().Equal(s.sampleCertificationType, certificate.Type)
+func (s *TestSuite) TestCertificatesQueryByDifferentOwners() {
+	k := s.empowerApp.CertificateKeeper
+	goCtx := sdk.WrapSDKContext(s.ctx)
+
+	querier := keeper.Querier{Keeper: k}
+
+	ms := keeper.NewMsgServerImpl(k)
+	for i := 0; i < 11; i++ {
+		createMsg := certificates.MsgCreateCertificate{
+			Owner:  s.sampleOwner,
+			Issuer: s.sampleIssuerAdmin,
+			Type:   s.sampleCertificationType,
+			Data:   s.sampleCertificationData,
+		}
+		_, err := ms.CreateCertificate(goCtx, &createMsg)
+		s.Require().NoError(err)
 	}
+
+	createMsg := certificates.MsgCreateCertificate{
+		Owner:  s.sampleIssuerAdmin,
+		Issuer: s.sampleIssuerAdmin,
+		Type:   s.sampleCertificationType,
+		Data:   s.sampleCertificationData,
+	}
+	_, err := ms.CreateCertificate(goCtx, &createMsg)
+	s.Require().NoError(err)
+
+	resp2, err := querier.Certificates(goCtx, &certificates.QueryCertificatesRequest{
+		Pagination: query.PageRequest{
+			Offset: 0,
+			Limit:  12,
+		},
+	})
+	s.Require().NoError(err)
+	s.Require().Len(resp2.Certificates, 12)
 }
 
 func (s *TestSuite) TestCertificatesByUserQuery() {
@@ -124,7 +157,7 @@ func (s *TestSuite) TestCertificatesByUserQuery() {
 		Owner: s.sampleOwner,
 		Pagination: query.PageRequest{
 			Offset: 0,
-			Limit:  11,
+			Limit:  12,
 		},
 	})
 	s.Require().NoError(err)

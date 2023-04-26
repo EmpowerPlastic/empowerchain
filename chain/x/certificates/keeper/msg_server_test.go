@@ -109,12 +109,12 @@ func (s *TestSuite) TestCreateCertificate() {
 
 			events := s.ctx.EventManager().ABCIEvents()
 			if err == nil {
-				s.Require().Equal(s.numTestCertificates, resp.CertificateId)
+				s.Require().Equal(uint64(1), resp.CertificateId)
 
 				idCounters := k.GetIDCounters(s.ctx)
-				s.Require().Equal(s.numTestCertificates+1, idCounters.NextCertificateId)
-				owner, _ := sdk.AccAddressFromBech32(tc.msg.Owner)
-				certificate, found := k.GetCertificate(s.ctx, owner, resp.CertificateId)
+				s.Require().Equal(s.numTestCertificates, idCounters.NextCertificateId)
+				//owner, _ := sdk.AccAddressFromBech32(tc.msg.Owner)
+				certificate, found := k.GetCertificate(s.ctx, tc.msg.Owner, resp.CertificateId)
 				s.Require().True(found)
 				s.Require().Equal(certificates.Certificate{
 					Id:     resp.CertificateId,

@@ -68,17 +68,16 @@ func (q Querier) Certificate(goCtx context.Context, req *certificates.QueryCerti
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	owner, err := sdk.AccAddressFromBech32(req.Owner)
-	if err != nil {
+	//owner, err := sdk.AccAddressFromBech32(req.Owner)
+	/*if err != nil {
 		return &certificates.QueryCertificateResponse{}, err
-	}
-	certificate, found := q.GetCertificate(ctx, owner, req.Id)
+	}*/
+	certificate, found := q.GetCertificate(ctx, req.Owner, req.Id)
 	if !found {
 		return nil, errors.Wrapf(certificates.ErrCertificateNotFound, "certificate for address %s not found", req.Owner)
 	}
 
-	return &certificates.QueryCertificateResponse {
+	return &certificates.QueryCertificateResponse{
 		Certificate: certificate,
 	}, nil
 }
-
