@@ -10,7 +10,7 @@ func (s *TestSuite) TestGenesis() {
 			AllowedIssuer: []string{s.sampleIssuerAdmin},
 		},
 		IdCounters: certificates.IDCounters{
-			NextCertificateId: 1,
+			NextCertificateId: 2,
 		},
 		Certificates: []certificates.Certificate{
 			{

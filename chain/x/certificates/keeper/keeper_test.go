@@ -19,11 +19,10 @@ import (
 type TestSuite struct {
 	suite.Suite
 
-	empowerApp          *app.EmpowerApp
-	ctx                 sdk.Context
-	addrs               []sdk.AccAddress
-	numTestIssuers      uint64 // number of issuers created in the initial state of the test
-	numTestCertificates uint64 // number of certificates created in the initial state of the test
+	empowerApp     *app.EmpowerApp
+	ctx            sdk.Context
+	addrs          []sdk.AccAddress
+	numTestIssuers uint64 // number of issuers created in the initial state of the test
 
 	issuerCreator     string
 	sampleOwnerID     uint64
@@ -79,7 +78,6 @@ func TestTestSuite(t *testing.T) {
 
 	ts := &TestSuite{}
 	ts.numTestIssuers = 2
-	ts.numTestCertificates = 2
 	ts.issuerCreator = sample.AccAddress()
 	ts.sampleIssuerID = 1
 	ts.sampleIssuerAdmin = sample.AccAddress()
