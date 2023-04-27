@@ -36,7 +36,6 @@ export default withMermaid(
                             text: 'Applications',
                             link: '/introduction/applications'
                         },
-                        // TODO: Sections for each part of EmpowerChain?
                         {
                             text: 'Tokenomics',
                             link: '/introduction/tokenomics'
@@ -53,14 +52,32 @@ export default withMermaid(
                     items: []
                 },
                 {
-                    text: 'Users',
+                    text: 'Proof of Existence',
                     collapsed: true,
                     items: []
                 },
                 {
-                    text: 'Developers',
+                    text: 'Plastic Credits',
                     collapsed: true,
                     items: [],
+                },
+                {
+                    text: 'Developers',
+                    collapsed: true,
+                    items: [
+                        {
+                            text: 'Why and what to build on EmpwoerChain?',
+                            link: '/developers/why-and-what-to-build-on-empowerchain'
+                        },
+                        {
+                            text: 'Ways to build on EmpowerChain',
+                            link: '/developers/ways-to-build-on-empowerchain'
+                        },
+                        {
+                            text: 'Architecture',
+                            link: '/developers/architecture'
+                        }
+                    ]
                 },
                 {
                     text: 'Validators',
