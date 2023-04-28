@@ -4,7 +4,8 @@
   "workspaces": [
     "empowerjs",
     "cw-client",
-    "proof-of-existence"
+    "proof-of-existence",
+    "marketplace"
   ],
   "devDependencies": {
     "crypto-browserify": "^3.12.0",
