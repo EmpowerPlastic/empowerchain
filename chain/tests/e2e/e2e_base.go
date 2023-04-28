@@ -44,6 +44,8 @@ const (
 	RandomAddress             = "empower15hxwswcmmkasaar65n3vkmp6skurvtas3xzl7s"
 	ContractAdminAddress      = "empower1reurz37gn2sk3vgr3fupcultkagzverqczer0l"
 	NoCoinsIssuerAdminAddress = "empower1xgsaene8aqfknmldemvl5q0mtgcgjv9svupqwu"
+	DevAddress                = "empower1egyu4d0zn38cs7fsynf2zq6ckppe9ecn0eh5zh"
+	SomeOtherRandomAddress    = "empower1skasndc8qy35zwymj62h4m6vl423vrf34de6xz"
 )
 
 var DefaultFee = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10))
@@ -51,11 +53,11 @@ var DefaultFee = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10))
 type TestSuite struct {
 	suite.Suite
 
-	Config                 network.Config
-	Network                *network.Network
-	CommonFlags            []string
-	CreditClassCreationFee sdk.Coin
-	BeforeAllHook          func(suite *TestSuite)
+	Config                network.Config
+	Network               *network.Network
+	CommonFlags           []string
+	CreditTypeCreationFee sdk.Coin
+	BeforeAllHook         func(suite *TestSuite)
 }
 
 func (s *TestSuite) SetupSuite() {
@@ -73,7 +75,7 @@ func (s *TestSuite) SetupSuite() {
 	}
 
 	s.Config.NumValidators = 3
-	s.CreditClassCreationFee = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(50000))
+	s.CreditTypeCreationFee = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(50000))
 
 	genesisStateRaw := s.Config.GenesisState
 
@@ -83,13 +85,13 @@ func (s *TestSuite) SetupSuite() {
 	s.Require().NoError(s.Config.Codec.UnmarshalJSON(genesisStateRaw[authtypes.ModuleName], &e2eGenesisState.AuthGenesis))
 	s.Require().NoError(s.Config.Codec.UnmarshalJSON(genesisStateRaw[govtypes.ModuleName], &e2eGenesisState.GovGenesis))
 
-	AddGenesisE2ETestData(s.Config.Codec, &e2eGenesisState, s.Config.BondDenom, s.Config.StakingTokens, s.CreditClassCreationFee)
+	AddGenesisE2ETestData(s.Config.Codec, &e2eGenesisState, s.Config.BondDenom, s.Config.StakingTokens, s.CreditTypeCreationFee)
 
-	e2eGenesisState.PlasticcreditGenesis.Params.CreditTypeCreationFee = s.CreditClassCreationFee
+	e2eGenesisState.PlasticcreditGenesis.Params.CreditTypeCreationFee = s.CreditTypeCreationFee
 	*e2eGenesisState.GovGenesis.Params.VotingPeriod = 10 * time.Second
 
 	// initialize community pool with small amount
-	communityPoolAmt := s.CreditClassCreationFee
+	communityPoolAmt := s.CreditTypeCreationFee
 	e2eGenesisState.DistrGenesis.FeePool.CommunityPool = sdk.NewDecCoins(sdk.NewDecCoinFromCoin(communityPoolAmt))
 
 	distrModuleAcct := authtypes.NewModuleAddress(distrtypes.ModuleName)
@@ -244,10 +246,10 @@ func (s *TestSuite) GetCliResponse(ctx client.Context, txJSONResponse []byte) (s
 }
 
 // AddGenesisE2ETestData adds e2e test data to the genesis state
-func AddGenesisE2ETestData(cdc codec.Codec, genesisState *genesistools.GenesisState, bondDenom string, tokens math.Int, creditClassCreationFee sdk.Coin) {
+func AddGenesisE2ETestData(cdc codec.Codec, genesisState *genesistools.GenesisState, bondDenom string, tokens math.Int, creditTypeCreationFee sdk.Coin) {
 	currentNoOfIssuers := uint64(len(genesisState.PlasticcreditGenesis.Issuers))
 	currentNoOfApplicants := uint64(len(genesisState.PlasticcreditGenesis.Applicants))
-	currentNoOfCreditClasses := uint64(len(genesisState.PlasticcreditGenesis.CreditTypes))
+	currentNoOfCreditTypes := uint64(len(genesisState.PlasticcreditGenesis.CreditTypes))
 	currentNoOfProjects := uint64(len(genesisState.PlasticcreditGenesis.Projects))
 
 	genesisState.PlasticcreditGenesis.Issuers = append(genesisState.PlasticcreditGenesis.Issuers, []plasticcredit.Issuer{
@@ -293,12 +295,12 @@ func AddGenesisE2ETestData(cdc codec.Codec, genesisState *genesistools.GenesisSt
 	genesisState.PlasticcreditGenesis.CreditTypes = []plasticcredit.CreditType{
 		{
 			Abbreviation: "ETEST",
-			IssuerId:     currentNoOfCreditClasses + 1,
+			IssuerId:     currentNoOfCreditTypes + 1,
 			Name:         "Empower Plastic",
 		},
 		{
 			Abbreviation: "PTEST",
-			IssuerId:     currentNoOfCreditClasses + 2,
+			IssuerId:     currentNoOfCreditTypes + 2,
 			Name:         "Plastic Credit",
 		},
 	}

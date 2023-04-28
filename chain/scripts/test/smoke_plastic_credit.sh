@@ -59,9 +59,9 @@ sleep 5
 empowerd q plasticcredit credit-type PTEST
 empowerd q plasticcredit credit-type RCRD
 empowerd q plasticcredit credit-types
-NUM_CREDIT_CLASSES=$(empowerd q plasticcredit credit-types -o json | jq ".credit_types | length")
-if [ "$NUM_CREDIT_CLASSES" != "2" ]; then
-  echo "Error: number of credit types from credit-types query was: $NUM_CREDIT_CLASSES"
+NUM_CREDIT_TYPES=$(empowerd q plasticcredit credit-types -o json | jq ".credit_types | length")
+if [ "$NUM_CREDIT_TYPES" != "2" ]; then
+  echo "Error: number of credit types from credit-types query was: $NUM_CREDIT_TYPES"
   exit 1
 fi
 

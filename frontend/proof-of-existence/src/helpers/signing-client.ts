@@ -2,7 +2,7 @@ import type { GeneratedType, OfflineSigner } from "@cosmjs/proto-signing";
 import { SigningStargateClient, defaultRegistryTypes } from "@cosmjs/stargate";
 import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
 import type { HttpEndpoint } from "@cosmjs/tendermint-rpc";
-import { getSigningEmpowerchainClientOptions } from "@empowerplastic/empowerchain-ts-client";
+import { getSigningEmpowerchainClientOptions } from "@empower-plastic/empowerjs";
 
 export const getSigningEmpowerchainClient = async ({
   rpcEndpoint,

@@ -4,7 +4,7 @@ import router from "@/router";
 import SelectWalletModel from "@/views/certify/SelectWalletModel.vue";
 import { ref } from "vue";
 import { getSigningEmpowerchainClient } from "@/helpers/signing-client";
-import { empowerchain } from "@empowerplastic/empowerchain-ts-client";
+import { empowerchain } from "@empower-plastic/empowerjs";
 import { Wallet } from "@/types/enums";
 import { CHAIN_ID, RPC_URL } from "@/config/config";
 import type { OfflineSigner } from "@cosmjs/proto-signing";
@@ -118,7 +118,6 @@ const pushToSuccessPage = () => {
 <template>
   <SelectWalletModel
     v-show="showModal"
-    :show-modal="showModal"
     :close-modal="closeModal"
     @selected-wallet="handleSelectedWallet"
   />
@@ -135,10 +134,13 @@ const pushToSuccessPage = () => {
           class="bg-lightGray rounded-lg break-words text-center items-center flex flex-col p-4"
         >
           <img class="w-20 mb-4" src="../../assets/images/certificate.png" />
-          <p class="text-lightGreen text-title14 break-all">File</p>
-          <p class="text-white text-title18 mb-3 break-all">
-            {{ $route.query.fileName }}
-          </p>
+          <div v-show="$route.query.fileName">
+            <p class="text-lightGreen text-title14 break-all">File</p>
+            <p class="text-white text-title18 mb-3 break-all">
+              {{ $route.query.fileName }}
+            </p>
+          </div>
+
           <p class="text-lightGreen text-title14" break-all>Received Time</p>
           <p class="text-white text-title18 mb-3 break-all">
             {{ new Date(Number($route.query.time)).toLocaleString() }}
@@ -198,8 +200,6 @@ const pushToSuccessPage = () => {
         />
         <button
           @click="openModal"
-          data-modal-target="selectWalletModal"
-          data-modal-toggle="selectWalletModal"
           class="bg-lightGreen mt-7 content-center p-1 px-7 rounded text-white"
         >
           {{ selectedWallet ? "Change wallet" : "Connect your wallet" }}

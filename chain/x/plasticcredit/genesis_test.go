@@ -241,7 +241,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
-		"invalid credit class creation fee params": {
+		"invalid credit type creation fee params": {
 			genState: plasticcredit.GenesisState{
 				Params: plasticcredit.Params{
 					IssuerCreator:         sample.AccAddress(),
@@ -440,7 +440,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			},
 			err: plasticcredit.ErrApplicantDuplicate,
 		},
-		"invalid credit class": {
+		"invalid credit type": {
 			genState: plasticcredit.GenesisState{
 				Params:            plasticcredit.DefaultGenesis().Params,
 				IdCounters:        plasticcredit.DefaultGenesis().IdCounters,
@@ -453,7 +453,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			},
 			err: utils.ErrInvalidValue,
 		},
-		"duplicate credit class ids": {
+		"duplicate credit type ids": {
 			genState: plasticcredit.GenesisState{
 				Params:     plasticcredit.DefaultGenesis().Params,
 				IdCounters: plasticcredit.DefaultGenesis().IdCounters,
@@ -484,7 +484,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			},
 			err: plasticcredit.ErrCreditTypeDuplicate,
 		},
-		"credit class with non-existent issuer id": {
+		"credit type with non-existent issuer id": {
 			genState: plasticcredit.GenesisState{
 				Params:     plasticcredit.DefaultGenesis().Params,
 				IdCounters: plasticcredit.DefaultGenesis().IdCounters,
@@ -595,7 +595,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			},
 			err: plasticcredit.ErrApplicantNotFound,
 		},
-		"project with not found credit class": {
+		"project with not found credit type": {
 			genState: plasticcredit.GenesisState{
 				Params:     plasticcredit.DefaultGenesis().Params,
 				IdCounters: plasticcredit.DefaultGenesis().IdCounters,

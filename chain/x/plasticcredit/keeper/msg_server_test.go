@@ -541,8 +541,8 @@ func (s *TestSuite) TestCreateCreditType() {
 				// verify community pool has increased by fee amount
 				communityPool := dk.GetFeePool(s.ctx).CommunityPool
 				diff := communityPool.Sub(initialCommunityPool)
-				feeDiff := diff.AmountOf(s.creditClassCreationFee.Denom)
-				s.Require().Equal(sdk.NewDecFromInt(s.creditClassCreationFee.Amount), feeDiff)
+				feeDiff := diff.AmountOf(s.creditTypeCreationFee.Denom)
+				s.Require().Equal(sdk.NewDecFromInt(s.creditTypeCreationFee.Amount), feeDiff)
 
 				parsedEvent, err := sdk.ParseTypedEvent(events[len(events)-1])
 				s.Require().NoError(err)
@@ -736,6 +736,7 @@ func (s *TestSuite) TestCreateProject() {
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventCreateProject{
 					Creator:                s.sampleApplicantAdmin,
+					ProjectId:              project.Id,
 					ApplicantId:            project.ApplicantId,
 					CreditTypeAbbreviation: project.CreditTypeAbbreviation,
 					Name:                   project.Name,
@@ -1118,10 +1119,10 @@ func (s *TestSuite) TestSuspendProject() {
 				eventProjectSuspended, ok := parsedEvent.(*plasticcredit.EventProjectSuspended)
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventProjectSuspended{
-					ProjectId:                           s.sampleProjectID,
-					SuspendedForCreditClassAbbreviation: s.sampleCreditTypeAbbreviation,
-					SuspendingIssuerId:                  s.sampleIssuerID,
-					SuspendedBy:                         tc.msg.Updater,
+					ProjectId:                          s.sampleProjectID,
+					SuspendedForCreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
+					SuspendingIssuerId:                 s.sampleIssuerID,
+					SuspendedBy:                        tc.msg.Updater,
 				}, eventProjectSuspended)
 
 			}

@@ -18,7 +18,7 @@ const (
 	IssuerCreatorFeeKey  = "issuer-creator-fee"
 	IssuersKey           = "issuers"
 	ApplicantsKey        = "applicants"
-	CreditTypesKey       = "credit-classes"
+	CreditTypesKey       = "credit-types"
 	ProjectsKey          = "projects"
 	CreditCollectionsKey = "credit-collections"
 	CreditBalancesKey    = "credit-balances"
