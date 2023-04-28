@@ -43,11 +43,15 @@ func (m *MsgCreateCertificate) ValidateBasic() error {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid issuer address (%s)", err)
 	}
 
+	if m.Data == nil || len(m.Data) == 0 {
+		return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Data cannot be empty")
+	}
+
 	return nil
 }
 
 func (m *MsgCreateCertificate) GetSigners() []sdk.AccAddress {
-	owner, err := sdk.AccAddressFromBech32(m.Owner)
+	owner, err := sdk.AccAddressFromBech32(m.Issuer)
 	if err != nil {
 		panic(err)
 	}

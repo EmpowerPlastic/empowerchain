@@ -25,7 +25,8 @@ func (m msgServer) UpdateParams(goCtx context.Context, req *certificates.MsgUpda
 		return nil, errors.Wrapf(sdkerrors.ErrUnauthorized, "invalid authority; expected %s, got %s", m.authority, req.Authority)
 	}
 	for _, issuer := range req.Params.AllowedIssuer {
-		if len(issuer) == 0 || sdk.AccAddress(issuer).Empty() {
+		_, err := sdk.AccAddressFromBech32(issuer)
+		if len(issuer) == 0 || err != nil {
 			return nil, errors.Wrap(sdkerrors.ErrInvalidAddress, "invalid issuer parameter")
 		}
 	}

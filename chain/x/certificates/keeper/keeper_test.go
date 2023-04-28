@@ -84,5 +84,9 @@ func TestTestSuite(t *testing.T) {
 	ts.sampleOwner = sample.AccAddress()
 	ts.sampleOwnerID = 1
 	ts.sampleCertificationType = 0
+	m := make(map[string]string)
+	m["owner"] = "owner"
+	m["issuer"] = "issuer"
+	ts.sampleCertificationData = m
 	suite.Run(t, ts)
 }

@@ -82,6 +82,7 @@ func (s *TestSuite) TestCreateCertificate() {
 				Owner:  s.sampleOwner,
 				Type:   s.sampleCertificationType,
 				Issuer: s.sampleIssuerAdmin,
+				Data:   s.sampleCertificationData,
 			},
 			err: nil,
 		},
@@ -90,6 +91,7 @@ func (s *TestSuite) TestCreateCertificate() {
 				Owner:  s.sampleOwner,
 				Type:   s.sampleCertificationType,
 				Issuer: sample.AccAddress(),
+				Data:   s.sampleCertificationData,
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
@@ -120,7 +122,7 @@ func (s *TestSuite) TestCreateCertificate() {
 					Type:   tc.msg.Type,
 					Owner:  tc.msg.Owner,
 					Issuer: tc.msg.Issuer,
-					Data:   nil,
+					Data:   s.sampleCertificationData,
 				}, certificate)
 
 				s.Require().Len(events, 1)

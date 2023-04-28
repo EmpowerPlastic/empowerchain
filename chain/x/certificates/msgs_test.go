@@ -53,7 +53,9 @@ func TestMsgCreateCertificate_ValidateBasic(t *testing.T) {
 				Owner:  sample.AccAddress(),
 				Issuer: sample.AccAddress(),
 				Type:   0,
-				Data:   map[string]string{},
+				Data: map[string]string{
+					"test": "test",
+				},
 			},
 			expectedError: nil,
 		},
@@ -62,7 +64,9 @@ func TestMsgCreateCertificate_ValidateBasic(t *testing.T) {
 				Owner:  "invalid",
 				Issuer: sample.AccAddress(),
 				Type:   0,
-				Data:   map[string]string{},
+				Data: map[string]string{
+					"test": "test",
+				},
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
 		},
@@ -71,9 +75,20 @@ func TestMsgCreateCertificate_ValidateBasic(t *testing.T) {
 				Owner:  sample.AccAddress(),
 				Issuer: "invalid",
 				Type:   0,
-				Data:   map[string]string{},
+				Data: map[string]string{
+					"test": "test",
+				},
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
+		},
+		"invalid data": {
+			msgUnderTest: &MsgCreateCertificate{
+				Owner:  sample.AccAddress(),
+				Issuer: sample.AccAddress(),
+				Type:   0,
+				Data:   map[string]string{},
+			},
+			expectedError: sdkerrors.ErrInvalidRequest,
 		},
 	}
 

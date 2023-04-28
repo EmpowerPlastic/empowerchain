@@ -60,7 +60,3 @@ func (cert Certificate) Validate() error {
 
 	return nil
 }
-
-func (cert Certificate) AddressHasAuthorization(addr sdk.AccAddress) bool {
-	return cert.Owner == addr.String()
-}
