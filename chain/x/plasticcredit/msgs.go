@@ -12,8 +12,8 @@ var (
 	_ sdk.Msg = &MsgUpdateIssuer{}
 	_ sdk.Msg = &MsgCreateApplicant{}
 	_ sdk.Msg = &MsgUpdateApplicant{}
-	_ sdk.Msg = &MsgCreateCreditClass{}
-	_ sdk.Msg = &MsgUpdateCreditClass{}
+	_ sdk.Msg = &MsgCreateCreditType{}
+	_ sdk.Msg = &MsgUpdateCreditType{}
 	_ sdk.Msg = &MsgCreateProject{}
 	_ sdk.Msg = &MsgUpdateProject{}
 	_ sdk.Msg = &MsgApproveProject{}
@@ -155,7 +155,7 @@ func (m *MsgUpdateApplicant) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{updater}
 }
 
-func (m *MsgCreateCreditClass) ValidateBasic() error {
+func (m *MsgCreateCreditType) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Creator)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
@@ -170,13 +170,13 @@ func (m *MsgCreateCreditClass) ValidateBasic() error {
 	}
 
 	if m.Name == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "credit class name cannot be empty")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "credit type name cannot be empty")
 	}
 
 	return nil
 }
 
-func (m *MsgCreateCreditClass) GetSigners() []sdk.AccAddress {
+func (m *MsgCreateCreditType) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(m.Creator)
 	if err != nil {
 		panic(err)
@@ -184,7 +184,7 @@ func (m *MsgCreateCreditClass) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (m *MsgUpdateCreditClass) ValidateBasic() error {
+func (m *MsgUpdateCreditType) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Updater)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid updater address (%s)", err)
@@ -193,13 +193,13 @@ func (m *MsgUpdateCreditClass) ValidateBasic() error {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "abbreviation cannot be empty")
 	}
 	if m.Name == "" {
-		return errors.Wrap(sdkerrors.ErrInvalidRequest, "credit class name cannot be empty")
+		return errors.Wrap(sdkerrors.ErrInvalidRequest, "credit type name cannot be empty")
 	}
 
 	return nil
 }
 
-func (m *MsgUpdateCreditClass) GetSigners() []sdk.AccAddress {
+func (m *MsgUpdateCreditType) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(m.Updater)
 	if err != nil {
 		panic(err)
@@ -217,7 +217,7 @@ func (m *MsgCreateProject) ValidateBasic() error {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "applicant_id cannot be 0")
 	}
 
-	if m.CreditClassAbbreviation == "" {
+	if m.CreditTypeAbbreviation == "" {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "abbreviation cannot be empty")
 	}
 

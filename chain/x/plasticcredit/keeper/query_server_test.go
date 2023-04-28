@@ -19,7 +19,7 @@ func (s *TestSuite) TestParamsQuery() {
 	goCtx := sdk.WrapSDKContext(s.ctx)
 
 	updatedParams := plasticcredit.DefaultParams()
-	updatedParams.CreditClassCreationFee = sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63()))
+	updatedParams.CreditTypeCreationFee = sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63()))
 	_, err := ms.UpdateParams(goCtx, &plasticcredit.MsgUpdateParams{
 		Authority: k.Authority(),
 		Params:    updatedParams,
@@ -188,7 +188,7 @@ func (s *TestSuite) TestApplicantQuery() {
 	s.Require().Equal(createMsg.Admin, resp.Applicant.Admin)
 }
 
-func (s *TestSuite) TestCreditClassQuery() {
+func (s *TestSuite) TestCreditTypeQuery() {
 	k := s.empowerApp.PlasticcreditKeeper
 	goCtx := sdk.WrapSDKContext(s.ctx)
 	ms := keeper.NewMsgServerImpl(k)
@@ -201,34 +201,34 @@ func (s *TestSuite) TestCreditClassQuery() {
 		Admin:       issuerAdmin,
 	})
 	s.Require().NoError(err)
-	creditClassAbbreviation := "CRDT"
+	creditTypeAbbreviation := "CRDT"
 
 	querier := keeper.Querier{Keeper: k}
-	_, err = querier.CreditClass(goCtx, &plasticcredit.QueryCreditClassRequest{
-		CreditClassAbbreviation: creditClassAbbreviation,
+	_, err = querier.CreditType(goCtx, &plasticcredit.QueryCreditTypeRequest{
+		CreditTypeAbbreviation: creditTypeAbbreviation,
 	})
-	s.Require().ErrorIs(err, plasticcredit.ErrCreditClassNotFound)
+	s.Require().ErrorIs(err, plasticcredit.ErrCreditTypeNotFound)
 
-	createMsg := plasticcredit.MsgCreateCreditClass{
+	createMsg := plasticcredit.MsgCreateCreditType{
 		Creator:      issuerAdmin,
-		Abbreviation: creditClassAbbreviation,
+		Abbreviation: creditTypeAbbreviation,
 		IssuerId:     1,
 		Name:         "Empower Plastic Credits",
 	}
-	_, err = ms.CreateCreditClass(goCtx, &createMsg)
+	_, err = ms.CreateCreditType(goCtx, &createMsg)
 	s.Require().NoError(err)
 
-	resp, err := querier.CreditClass(goCtx, &plasticcredit.QueryCreditClassRequest{
-		CreditClassAbbreviation: creditClassAbbreviation,
+	resp, err := querier.CreditType(goCtx, &plasticcredit.QueryCreditTypeRequest{
+		CreditTypeAbbreviation: creditTypeAbbreviation,
 	})
 
 	s.Require().NoError(err)
-	s.Require().Equal(createMsg.Abbreviation, resp.CreditClass.Abbreviation)
-	s.Require().Equal(createMsg.IssuerId, resp.CreditClass.IssuerId)
-	s.Require().Equal(createMsg.Name, resp.CreditClass.Name)
+	s.Require().Equal(createMsg.Abbreviation, resp.CreditType.Abbreviation)
+	s.Require().Equal(createMsg.IssuerId, resp.CreditType.IssuerId)
+	s.Require().Equal(createMsg.Name, resp.CreditType.Name)
 }
 
-func (s *TestSuite) TestCreditClassesQuery() {
+func (s *TestSuite) TestCreditTypesQuery() {
 	k := s.empowerApp.PlasticcreditKeeper
 	goCtx := sdk.WrapSDKContext(s.ctx)
 	ms := keeper.NewMsgServerImpl(k)
@@ -244,45 +244,45 @@ func (s *TestSuite) TestCreditClassesQuery() {
 	s.Require().NoError(err)
 
 	querier := keeper.Querier{Keeper: k}
-	resp, err := querier.CreditClasses(goCtx, &plasticcredit.QueryCreditClassesRequest{})
+	resp, err := querier.CreditTypes(goCtx, &plasticcredit.QueryCreditTypesRequest{})
 	s.Require().NoError(err)
-	s.Require().Len(resp.CreditClasses, 0)
+	s.Require().Len(resp.CreditTypes, 0)
 
-	var expectedCreditClasses []plasticcredit.CreditClass
+	var expectedCreditTypes []plasticcredit.CreditType
 	for i := 0; i < 11; i++ {
 		abbreviation := fmt.Sprintf("ABC%d", i)
 		name := fmt.Sprintf("Empower Credits (%s)", abbreviation)
 
-		createMsg := plasticcredit.MsgCreateCreditClass{
+		createMsg := plasticcredit.MsgCreateCreditType{
 			Creator:      issuerAdmin,
 			Abbreviation: abbreviation,
 			IssuerId:     1,
 			Name:         name,
 		}
-		_, err = ms.CreateCreditClass(goCtx, &createMsg)
+		_, err = ms.CreateCreditType(goCtx, &createMsg)
 		s.Require().NoError(err)
 
-		expectedCreditClasses = append(expectedCreditClasses, plasticcredit.CreditClass{
+		expectedCreditTypes = append(expectedCreditTypes, plasticcredit.CreditType{
 			Abbreviation: createMsg.Abbreviation,
 			IssuerId:     createMsg.IssuerId,
 			Name:         createMsg.Name,
 		})
 	}
 
-	resp2, err := querier.CreditClasses(goCtx, &plasticcredit.QueryCreditClassesRequest{})
+	resp2, err := querier.CreditTypes(goCtx, &plasticcredit.QueryCreditTypesRequest{})
 	s.Require().NoError(err)
-	s.Require().Len(resp2.CreditClasses, 11)
+	s.Require().Len(resp2.CreditTypes, 11)
 
-	s.Require().ElementsMatch(expectedCreditClasses, resp2.CreditClasses)
+	s.Require().ElementsMatch(expectedCreditTypes, resp2.CreditTypes)
 
-	resp3, err := querier.CreditClasses(goCtx, &plasticcredit.QueryCreditClassesRequest{
+	resp3, err := querier.CreditTypes(goCtx, &plasticcredit.QueryCreditTypesRequest{
 		Pagination: query.PageRequest{
 			Offset: 0,
 			Limit:  10,
 		},
 	})
 	s.Require().NoError(err)
-	s.Require().Len(resp3.CreditClasses, 10)
+	s.Require().Len(resp3.CreditTypes, 10)
 }
 
 func (s *TestSuite) TestProjectsQuery() {
@@ -293,7 +293,7 @@ func (s *TestSuite) TestProjectsQuery() {
 	// fund the issuerAdmin account for fee
 	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NormalizeCoin(sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(10e6)))))
 	applicantAdmin := sample.AccAddress()
-	creditClassAbbreviation := "DRP"
+	creditTypeAbbreviation := "DRP"
 	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),
 		Name:        "Empower",
@@ -301,9 +301,9 @@ func (s *TestSuite) TestProjectsQuery() {
 		Admin:       issuerAdmin,
 	})
 	s.Require().NoError(err)
-	_, err = ms.CreateCreditClass(goCtx, &plasticcredit.MsgCreateCreditClass{
+	_, err = ms.CreateCreditType(goCtx, &plasticcredit.MsgCreateCreditType{
 		Creator:      issuerAdmin,
-		Abbreviation: creditClassAbbreviation,
+		Abbreviation: creditTypeAbbreviation,
 		IssuerId:     1,
 		Name:         "Empower Plastic Credits",
 	})
@@ -326,20 +326,20 @@ func (s *TestSuite) TestProjectsQuery() {
 		name := fmt.Sprintf("Empower Project (%s)", abbreviation)
 
 		createMsg := plasticcredit.MsgCreateProject{
-			Creator:                 applicantAdmin,
-			ApplicantId:             1,
-			Name:                    name,
-			CreditClassAbbreviation: creditClassAbbreviation,
+			Creator:                applicantAdmin,
+			ApplicantId:            1,
+			Name:                   name,
+			CreditTypeAbbreviation: creditTypeAbbreviation,
 		}
 		_, err = ms.CreateProject(goCtx, &createMsg)
 		s.Require().NoError(err)
 
 		expectedProjects = append(expectedProjects, plasticcredit.Project{
-			Id:                      uint64(i + 1),
-			ApplicantId:             createMsg.ApplicantId,
-			CreditClassAbbreviation: creditClassAbbreviation,
-			Name:                    createMsg.Name,
-			Status:                  plasticcredit.ProjectStatus_NEW,
+			Id:                     uint64(i + 1),
+			ApplicantId:            createMsg.ApplicantId,
+			CreditTypeAbbreviation: creditTypeAbbreviation,
+			Name:                   createMsg.Name,
+			Status:                 plasticcredit.ProjectStatus_NEW,
 		})
 	}
 
@@ -366,7 +366,7 @@ func (s *TestSuite) TestProjectQuery() {
 	issuerAdmin := sample.AccAddress()
 	s.fundAccount(issuerAdmin, sdk.NewCoins(sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(10e12))))
 	applicantAdmin := sample.AccAddress()
-	creditClassAbbreviation := "PTEST"
+	creditTypeAbbreviation := "PTEST"
 
 	_, err := ms.CreateIssuer(goCtx, &plasticcredit.MsgCreateIssuer{
 		Creator:     k.Authority(),
@@ -375,9 +375,9 @@ func (s *TestSuite) TestProjectQuery() {
 		Admin:       issuerAdmin,
 	})
 	s.Require().NoError(err)
-	_, err = ms.CreateCreditClass(goCtx, &plasticcredit.MsgCreateCreditClass{
+	_, err = ms.CreateCreditType(goCtx, &plasticcredit.MsgCreateCreditType{
 		Creator:      issuerAdmin,
-		Abbreviation: creditClassAbbreviation,
+		Abbreviation: creditTypeAbbreviation,
 		IssuerId:     1,
 		Name:         "Empower Plastic Credits",
 	})
@@ -396,10 +396,10 @@ func (s *TestSuite) TestProjectQuery() {
 	s.Require().ErrorIs(err, plasticcredit.ErrProjectNotFound)
 
 	createMsg := plasticcredit.MsgCreateProject{
-		Creator:                 applicantAdmin,
-		ApplicantId:             1,
-		CreditClassAbbreviation: creditClassAbbreviation,
-		Name:                    "Project 420x",
+		Creator:                applicantAdmin,
+		ApplicantId:            1,
+		CreditTypeAbbreviation: creditTypeAbbreviation,
+		Name:                   "Project 420x",
 	}
 	_, err = ms.CreateProject(goCtx, &createMsg)
 	s.Require().NoError(err)
@@ -411,7 +411,7 @@ func (s *TestSuite) TestProjectQuery() {
 	s.Require().NoError(err)
 	s.Require().Equal(uint64(1), resp.Project.Id)
 	s.Require().Equal(createMsg.ApplicantId, resp.Project.ApplicantId)
-	s.Require().Equal(createMsg.CreditClassAbbreviation, resp.Project.CreditClassAbbreviation)
+	s.Require().Equal(createMsg.CreditTypeAbbreviation, resp.Project.CreditTypeAbbreviation)
 	s.Require().Equal(createMsg.Name, resp.Project.Name)
 	s.Require().Equal(plasticcredit.ProjectStatus_NEW, resp.Project.Status)
 }

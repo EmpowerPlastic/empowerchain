@@ -8,13 +8,12 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/EmpowerPlastic/empowerchain/app"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/simulation"
 )
 
 func TestNewDecodeStore(t *testing.T) {
-	cdc := params.MakeEncodingConfig(app.ModuleBasics).Codec
+	cdc := app.MakeEncodingConfig().Codec
 	decodeStore := simulation.NewDecodeStore(cdc)
 
 	idCounters := plasticcredit.IDCounters{
@@ -34,17 +33,17 @@ func TestNewDecodeStore(t *testing.T) {
 		Description: "test applicant description",
 		Admin:       "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
 	}
-	creditClass := plasticcredit.CreditClass{
+	creditType := plasticcredit.CreditType{
 		Abbreviation: "PTEST",
 		IssuerId:     1,
-		Name:         "test credit class",
+		Name:         "test credit type",
 	}
 	project := plasticcredit.Project{
-		Id:                      1,
-		ApplicantId:             1,
-		CreditClassAbbreviation: "PTEST",
-		Name:                    "test project",
-		Status:                  plasticcredit.ProjectStatus_NEW,
+		Id:                     1,
+		ApplicantId:            1,
+		CreditTypeAbbreviation: "PTEST",
+		Name:                   "test project",
+		Status:                 plasticcredit.ProjectStatus_NEW,
 	}
 	creditCollection := plasticcredit.CreditCollection{
 		Denom:     "PTEST",
@@ -92,13 +91,13 @@ func TestNewDecodeStore(t *testing.T) {
 			expectErr:     false,
 			expectedValue: fmt.Sprintf("%v\n%v", applicant, applicant),
 		},
-		"credit class": {
+		"credit type": {
 			kvPair: kv.Pair{
-				Key:   plasticcredit.CreditClassKey,
-				Value: cdc.MustMarshal(&creditClass),
+				Key:   plasticcredit.CreditTypeKey,
+				Value: cdc.MustMarshal(&creditType),
 			},
 			expectErr:     false,
-			expectedValue: fmt.Sprintf("%v\n%v", creditClass, creditClass),
+			expectedValue: fmt.Sprintf("%v\n%v", creditType, creditType),
 		},
 		"project": {
 			kvPair: kv.Pair{

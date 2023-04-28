@@ -70,14 +70,16 @@ $BINARY start --log_format json --home $CHAIN_DIR --pruning=nothing --rpc.unsafe
 
 sleep 3
 
-if ! $BINARY --home $CHAIN_DIR --node tcp://:$RPC_PORT status; then
-  echo "Chain failed to start"
-fi
-
 echo ""
 echo "----------- Config -------------"
 echo "RPC: tcp://0.0.0.0:$RPC_PORT"
 echo "REST: tcp://0.0.0.0:$REST_PORT"
 echo "chain-id: $CHAIN_ID"
 echo ""
+
+if ! $BINARY --home $CHAIN_DIR --node tcp://:$RPC_PORT status; then
+  echo "Chain failed to start"
+  exit 1
+fi
+
 echo "-------- Chain started! --------"

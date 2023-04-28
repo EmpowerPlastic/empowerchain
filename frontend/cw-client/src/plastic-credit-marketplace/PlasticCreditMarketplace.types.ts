@@ -25,14 +25,28 @@ export type ExecuteMsg = {
     number_of_credits_to_buy: number;
     owner: Addr;
   };
+} | {
+  cancel_listing: {
+    denom: string;
+  };
+} | {
+  edit_fee_split_config: {
+    fee_percentage: Decimal;
+    shares: Share[];
+  };
 };
 export type Uint64 = string;
 export type Uint128 = string;
 export type Addr = string;
+export type Decimal = string;
 export interface Coin {
   amount: Uint128;
   denom: string;
   [k: string]: unknown;
+}
+export interface Share {
+  address: string;
+  percentage: Decimal;
 }
 export type QueryMsg = {
   listings: {
@@ -44,7 +58,13 @@ export type QueryMsg = {
     denom: string;
     owner: Addr;
   };
+} | {
+  fee_split_config: {};
 };
+export interface Config {
+  fee_percentage: Decimal;
+  shares: Share[];
+}
 export interface ListingResponse {
   listing: Listing;
 }

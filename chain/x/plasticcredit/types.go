@@ -12,15 +12,15 @@ import (
 	"github.com/EmpowerPlastic/empowerchain/utils"
 )
 
-const defaultCreditClassCreationFeeAmt = 50 // 50 $mpwr
+const defaultCreditTypeCreationFeeAmt = 50 // 50 $mpwr
 
-var DefaultCreditClassCreationFee = sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(defaultCreditClassCreationFeeAmt))
+var DefaultCreditTypeCreationFee = sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(defaultCreditTypeCreationFeeAmt))
 
 // NewParams creates a new Params instance
-func NewParams(issuerCreator string, creditClassCreationFee sdk.Coin) Params {
+func NewParams(issuerCreator string, creditTypeCreationFee sdk.Coin) Params {
 	return Params{
-		IssuerCreator:          issuerCreator,
-		CreditClassCreationFee: creditClassCreationFee,
+		IssuerCreator:         issuerCreator,
+		CreditTypeCreationFee: creditTypeCreationFee,
 	}
 }
 
@@ -28,7 +28,7 @@ func NewParams(issuerCreator string, creditClassCreationFee sdk.Coin) Params {
 func DefaultParams() Params {
 	return NewParams(
 		"",
-		DefaultCreditClassCreationFee,
+		DefaultCreditTypeCreationFee,
 	)
 }
 
@@ -41,8 +41,8 @@ func (p Params) Validate() error {
 		}
 	}
 
-	if err := p.CreditClassCreationFee.Validate(); err != nil {
-		return errors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid creditClassCreationFee: %s", err.Error())
+	if err := p.CreditTypeCreationFee.Validate(); err != nil {
+		return errors.Wrapf(sdkerrors.ErrInvalidCoins, "invalid creditTypeCreationFee: %s", err.Error())
 	}
 
 	return nil
@@ -126,19 +126,19 @@ func (a Applicant) AddressHasAuthorization(addr sdk.AccAddress) bool {
 	return a.Admin == addr.String()
 }
 
-var creditClassAbbreviationRegex = regexp.MustCompile(`^[A-Z0-9]{2,5}$`)
+var creditTypeAbbreviationRegex = regexp.MustCompile(`^[A-Z0-9]{2,5}$`)
 
-func (cc CreditClass) Validate() error {
-	if !creditClassAbbreviationRegex.MatchString(cc.Abbreviation) {
-		return errors.Wrapf(utils.ErrInvalidValue, "credit class abbreviation %q is invalid, must match %s", cc.Abbreviation, creditClassAbbreviationRegex.String())
+func (cc CreditType) Validate() error {
+	if !creditTypeAbbreviationRegex.MatchString(cc.Abbreviation) {
+		return errors.Wrapf(utils.ErrInvalidValue, "credit type abbreviation %q is invalid, must match %s", cc.Abbreviation, creditTypeAbbreviationRegex.String())
 	}
 
 	if cc.IssuerId == 0 {
-		return errors.Wrap(utils.ErrInvalidValue, "credit class issuer_id is zero")
+		return errors.Wrap(utils.ErrInvalidValue, "credit type issuer_id is zero")
 	}
 
 	if !utils.IsBasicValidName(cc.Name) {
-		return errors.Wrapf(utils.ErrInvalidValue, "credit class name is invalid (%s)", cc.Name)
+		return errors.Wrapf(utils.ErrInvalidValue, "credit type name is invalid (%s)", cc.Name)
 	}
 
 	return nil
@@ -153,8 +153,8 @@ func (proj Project) Validate() error {
 		return errors.Wrap(utils.ErrInvalidValue, "project applicant_id is zero")
 	}
 
-	if proj.CreditClassAbbreviation == "" {
-		return errors.Wrap(utils.ErrInvalidValue, "project credit_class_abbreviation is empty")
+	if proj.CreditTypeAbbreviation == "" {
+		return errors.Wrap(utils.ErrInvalidValue, "project credit_type_abbreviation is empty")
 	}
 
 	if !utils.IsBasicValidName(proj.Name) {

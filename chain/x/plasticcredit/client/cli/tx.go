@@ -29,8 +29,8 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(MsgCreateApplicantCmd())
-	cmd.AddCommand(MsgCreateCreditClassCmd())
-	cmd.AddCommand(MsgUpdateCreditClassCmd())
+	cmd.AddCommand(MsgCreateCreditTypeCmd())
+	cmd.AddCommand(MsgUpdateCreditTypeCmd())
 	cmd.AddCommand(MsgCreateProjectCmd())
 	cmd.AddCommand(MsgUpdateProjectCmd())
 	cmd.AddCommand(MsgApproveProjectCmd())
@@ -164,10 +164,10 @@ func MsgUpdateIssuerCmd() *cobra.Command {
 	return cmd
 }
 
-func MsgCreateCreditClassCmd() *cobra.Command {
+func MsgCreateCreditTypeCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-credit-class [abbreviation] [issuer-id] [name]",
-		Short: "Create a new credit class.",
+		Use:   "create-credit-type [abbreviation] [issuer-id] [name]",
+		Short: "Create a new credit type.",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -183,7 +183,7 @@ func MsgCreateCreditClassCmd() *cobra.Command {
 			}
 			name := args[2]
 
-			msg := plasticcredit.MsgCreateCreditClass{
+			msg := plasticcredit.MsgCreateCreditType{
 				Creator:      creator.String(),
 				Abbreviation: abbreviation,
 				IssuerId:     issuerID,
@@ -199,10 +199,10 @@ func MsgCreateCreditClassCmd() *cobra.Command {
 	return cmd
 }
 
-func MsgUpdateCreditClassCmd() *cobra.Command {
+func MsgUpdateCreditTypeCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-credit-class [abbreviation] [name]",
-		Short: "Update an existing credit class name.",
+		Use:   "update-credit-type [abbreviation] [name]",
+		Short: "Update an existing credit type name.",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -217,7 +217,7 @@ func MsgUpdateCreditClassCmd() *cobra.Command {
 			}
 			name := args[1]
 
-			msg := plasticcredit.MsgUpdateCreditClass{
+			msg := plasticcredit.MsgUpdateCreditType{
 				Updater:      updater.String(),
 				Abbreviation: abbreviation,
 				Name:         name,
@@ -234,7 +234,7 @@ func MsgUpdateCreditClassCmd() *cobra.Command {
 
 func MsgCreateProjectCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-project [applicant-id] [credit-class-abbreviation] [name]",
+		Use:   "create-project [applicant-id] [credit-type-abbreviation] [name]",
 		Short: "Create project",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -248,14 +248,14 @@ func MsgCreateProjectCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			creditClassAbbreviation := args[1]
+			creditTypeAbbreviation := args[1]
 			name := args[2]
 
 			msg := plasticcredit.MsgCreateProject{
-				Creator:                 creator.String(),
-				ApplicantId:             applicantID,
-				CreditClassAbbreviation: creditClassAbbreviation,
-				Name:                    name,
+				Creator:                creator.String(),
+				ApplicantId:            applicantID,
+				CreditTypeAbbreviation: creditTypeAbbreviation,
+				Name:                   name,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
@@ -303,7 +303,7 @@ func MsgUpdateProjectCmd() *cobra.Command {
 func MsgApproveProjectCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "approve-project [project-id]",
-		Short: "Approve a project for the credit-class they are associated with.",
+		Short: "Approve a project for the credit-type they are associated with.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -334,7 +334,7 @@ func MsgApproveProjectCmd() *cobra.Command {
 func MsgRejectProjectCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "reject-project [project-id]",
-		Short: "Reject a project for the credit-class they are associated with.",
+		Short: "Reject a project for the credit-type they are associated with.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx, err := client.GetClientTxContext(cmd)

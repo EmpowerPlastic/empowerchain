@@ -11,19 +11,13 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Deploy Devnet
-        uses: appleboy/ssh-action@v0.1.7
+        uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.DEVNET_HOST }}
           username: ${{ secrets.DEVNET_USER }}
           password: ${{ secrets.DEVNET_PASSWORD }}
           port: ${{ secrets.DEVNET_PORT }}
           script: |
-            cd ./empowerchain && \
-            git pull && \
-            cd chain && \
-            make install && \
-            sudo systemctl stop empowerd && \
-            empowerd tendermint unsafe-reset-all && \
-            sudo systemctl start empowerd && \
-            sleep 5 && \
-            empowerd status
+            # load shell env manually as it's not getting loaded by the job
+            source .zshrc
+            ./deploy.sh

@@ -1,6 +1,6 @@
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::{Coin, Uint64, Addr};
-use cw_storage_plus::{Map};
+use cw_storage_plus::{Item, Map};
 
 #[cw_serde]
 pub struct Listing<> {
@@ -11,3 +11,5 @@ pub struct Listing<> {
 }
 
 pub const LISTINGS: Map<(Addr, String), Listing> = Map::new("listings");
+
+pub const ADMIN: Item<Addr> = Item::new("admin");

@@ -28,8 +28,8 @@ func (s *TestSuite) TestUpdateParams() {
 				return &plasticcredit.MsgUpdateParams{
 					Authority: empowerApp.PlasticcreditKeeper.Authority(),
 					Params: plasticcredit.Params{
-						IssuerCreator:          sample.AccAddress(),
-						CreditClassCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
+						IssuerCreator:         sample.AccAddress(),
+						CreditTypeCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
 					},
 				}
 			},
@@ -49,20 +49,20 @@ func (s *TestSuite) TestUpdateParams() {
 				return &plasticcredit.MsgUpdateParams{
 					Authority: empowerApp.PlasticcreditKeeper.Authority(),
 					Params: plasticcredit.Params{
-						IssuerCreator:          "invalid",
-						CreditClassCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
+						IssuerCreator:         "invalid",
+						CreditTypeCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
 					},
 				}
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
-		"invalid credit class creation fee params": {
+		"invalid credit type creation fee params": {
 			msg: func(empowerApp *app.EmpowerApp) *plasticcredit.MsgUpdateParams {
 				return &plasticcredit.MsgUpdateParams{
 					Authority: empowerApp.PlasticcreditKeeper.Authority(),
 					Params: plasticcredit.Params{
-						IssuerCreator:          sample.AccAddress(),
-						CreditClassCreationFee: sdk.Coin{},
+						IssuerCreator:         sample.AccAddress(),
+						CreditTypeCreationFee: sdk.Coin{},
 					},
 				}
 			},
@@ -85,8 +85,8 @@ func (s *TestSuite) TestUpdateParams() {
 			if err == nil {
 				s.Require().NoError(err)
 
-				params := k.GetParams(s.ctx)
-				s.Require().Equal(msg.Params, params)
+				getParams := k.GetParams(s.ctx)
+				s.Require().Equal(msg.Params, getParams)
 			}
 		})
 	}
@@ -251,25 +251,15 @@ func (s *TestSuite) TestUpdateIssuer() {
 			},
 			err: plasticcredit.ErrIssuerNotFound,
 		},
-		"invalid name": {
+		"change admin": {
 			msg: &plasticcredit.MsgUpdateIssuer{
 				Updater:     s.sampleIssuerAdmin,
 				IssuerId:    s.sampleIssuerID,
-				Name:        "",
+				Name:        "EmpowerUpdated",
 				Description: "Empower is cool",
-				Admin:       s.sampleIssuerAdmin,
+				Admin:       s.noCoinsIssuerAdmin,
 			},
-			err: utils.ErrInvalidValue,
-		},
-		"invalid description": {
-			msg: &plasticcredit.MsgUpdateIssuer{
-				Updater:     s.sampleIssuerAdmin,
-				IssuerId:    s.sampleIssuerID,
-				Name:        "Empower",
-				Description: sample.String(257),
-				Admin:       sample.AccAddress(),
-			},
-			err: utils.ErrInvalidValue,
+			err: nil,
 		},
 	}
 
@@ -334,22 +324,6 @@ func (s *TestSuite) TestCreateApplicant() {
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
-		"invalid name": {
-			msg: &plasticcredit.MsgCreateApplicant{
-				Name:        "VeryveryveryVeryveryveryVeryveryveryVeryveryveryVeryveryveryVeryveryverylong",
-				Description: "Empower is cool",
-				Admin:       sample.AccAddress(),
-			},
-			err: utils.ErrInvalidValue,
-		},
-		"invalid description": {
-			msg: &plasticcredit.MsgCreateApplicant{
-				Name:        "Empower",
-				Description: sample.String(257),
-				Admin:       sample.AccAddress(),
-			},
-			err: utils.ErrInvalidValue,
-		},
 	}
 
 	for name, tc := range testCases {
@@ -410,7 +384,7 @@ func (s *TestSuite) TestUpdateApplicant() {
 			},
 			err: nil,
 		},
-		"applicant not found": {
+		"update non-existing applicant": {
 			msg: &plasticcredit.MsgUpdateApplicant{
 				ApplicantId: 0,
 				Name:        "Empower",
@@ -420,7 +394,7 @@ func (s *TestSuite) TestUpdateApplicant() {
 			},
 			err: plasticcredit.ErrApplicantNotFound,
 		},
-		"unauthorized caller": {
+		"unauthorized caller / wrong signer": {
 			msg: &plasticcredit.MsgUpdateApplicant{
 				Updater:     sample.AccAddress(), // not allowed!
 				ApplicantId: 1,
@@ -449,16 +423,6 @@ func (s *TestSuite) TestUpdateApplicant() {
 				Admin:       "invalid", // invalid
 			},
 			err: sdkerrors.ErrInvalidAddress,
-		},
-		"invalid name": {
-			msg: &plasticcredit.MsgUpdateApplicant{
-				ApplicantId: s.sampleApplicantID,
-				Name:        " Starting with a space is not OK",
-				Description: "Empower is cool",
-				Admin:       issuerAdmin,
-				Updater:     issuerAdmin,
-			},
-			err: utils.ErrInvalidValue,
 		},
 	}
 
@@ -505,13 +469,13 @@ func (s *TestSuite) TestUpdateApplicant() {
 	}
 }
 
-func (s *TestSuite) TestCreateCreditClass() {
+func (s *TestSuite) TestCreateCreditType() {
 	testCases := map[string]struct {
-		msg *plasticcredit.MsgCreateCreditClass
+		msg *plasticcredit.MsgCreateCreditType
 		err error
 	}{
 		"happy path": {
-			msg: &plasticcredit.MsgCreateCreditClass{
+			msg: &plasticcredit.MsgCreateCreditType{
 				Creator:      s.sampleIssuerAdmin,
 				Abbreviation: "PTEST",
 				IssuerId:     s.sampleIssuerID,
@@ -520,7 +484,7 @@ func (s *TestSuite) TestCreateCreditClass() {
 			err: nil,
 		},
 		"unable to cover fee": {
-			msg: &plasticcredit.MsgCreateCreditClass{
+			msg: &plasticcredit.MsgCreateCreditType{
 				Creator:      s.noCoinsIssuerAdmin,
 				Abbreviation: "PTEST",
 				IssuerId:     s.noCoinsIssuerID,
@@ -529,7 +493,7 @@ func (s *TestSuite) TestCreateCreditClass() {
 			err: sdkerrors.ErrInsufficientFee,
 		},
 		"unauthorized creator on the issuer": {
-			msg: &plasticcredit.MsgCreateCreditClass{
+			msg: &plasticcredit.MsgCreateCreditType{
 				Creator:      sample.AccAddress(),
 				Abbreviation: "PTEST",
 				IssuerId:     s.sampleIssuerID,
@@ -537,41 +501,14 @@ func (s *TestSuite) TestCreateCreditClass() {
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
-		"invalid abbreviation with empty": {
-			msg: &plasticcredit.MsgCreateCreditClass{
-				Creator:      s.sampleIssuerAdmin,
-				Abbreviation: "",
-				IssuerId:     s.sampleIssuerID,
-				Name:         "Empower Plastic Credits",
-			},
-			err: utils.ErrInvalidValue,
-		},
-		"invalid abbreviation with special characters": {
-			msg: &plasticcredit.MsgCreateCreditClass{
-				Creator:      s.sampleIssuerAdmin,
-				Abbreviation: "PTEST!",
-				IssuerId:     s.sampleIssuerID,
-				Name:         "Empower Plastic Credits",
-			},
-			err: utils.ErrInvalidValue,
-		},
 		"non-existent issuer": {
-			msg: &plasticcredit.MsgCreateCreditClass{
+			msg: &plasticcredit.MsgCreateCreditType{
 				Creator:      s.sampleIssuerAdmin,
 				Abbreviation: "VPC",
 				IssuerId:     42,
 				Name:         "Someone else's PCs",
 			},
 			err: plasticcredit.ErrIssuerNotFound,
-		},
-		"invalid name": {
-			msg: &plasticcredit.MsgCreateCreditClass{
-				Creator:      s.sampleIssuerAdmin,
-				Abbreviation: "PTEST",
-				IssuerId:     s.sampleIssuerID,
-				Name:         "",
-			},
-			err: utils.ErrInvalidValue,
 		},
 	}
 
@@ -586,76 +523,68 @@ func (s *TestSuite) TestCreateCreditClass() {
 			goCtx := sdk.WrapSDKContext(s.ctx)
 			ms := keeper.NewMsgServerImpl(k)
 
-			_, err := ms.CreateCreditClass(goCtx, tc.msg)
+			_, err := ms.CreateCreditType(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
 			events := s.ctx.EventManager().ABCIEvents()
 
 			if err == nil {
-				creditClass, found := k.GetCreditClass(s.ctx, tc.msg.Abbreviation)
+				creditType, found := k.GetCreditType(s.ctx, tc.msg.Abbreviation)
 				s.Require().True(found)
-				s.Require().Equal(plasticcredit.CreditClass{
+				s.Require().Equal(plasticcredit.CreditType{
 					Abbreviation: tc.msg.Abbreviation,
 					IssuerId:     tc.msg.IssuerId,
 					Name:         tc.msg.Name,
-				}, creditClass)
+				}, creditType)
 
 				// verify community pool has increased by fee amount
 				communityPool := dk.GetFeePool(s.ctx).CommunityPool
 				diff := communityPool.Sub(initialCommunityPool)
-				feeDiff := diff.AmountOf(s.creditClassCreationFee.Denom)
-				s.Require().Equal(sdk.NewDecFromInt(s.creditClassCreationFee.Amount), feeDiff)
+				feeDiff := diff.AmountOf(s.creditTypeCreationFee.Denom)
+				s.Require().Equal(sdk.NewDecFromInt(s.creditTypeCreationFee.Amount), feeDiff)
 
 				parsedEvent, err := sdk.ParseTypedEvent(events[len(events)-1])
 				s.Require().NoError(err)
-				eventCreateCreditClass, ok := parsedEvent.(*plasticcredit.EventCreateCreditClass)
+				eventCreateCreditType, ok := parsedEvent.(*plasticcredit.EventCreateCreditType)
 				s.Require().True(ok)
-				s.Require().Equal(&plasticcredit.EventCreateCreditClass{
+				s.Require().Equal(&plasticcredit.EventCreateCreditType{
 					Creator:      tc.msg.Creator,
-					Abbreviation: creditClass.Abbreviation,
-					IssuerId:     creditClass.IssuerId,
-					Name:         creditClass.Name,
-				}, eventCreateCreditClass)
+					Abbreviation: creditType.Abbreviation,
+					IssuerId:     creditType.IssuerId,
+					Name:         creditType.Name,
+				}, eventCreateCreditType)
 			}
 		})
 	}
 }
 
-func (s *TestSuite) TestUpdateCreditClass() {
+func (s *TestSuite) TestUpdateCreditType() {
 	testCases := map[string]struct {
-		msg *plasticcredit.MsgUpdateCreditClass
+		msg *plasticcredit.MsgUpdateCreditType
 		err error
 	}{
 		"happy path": {
-			msg: &plasticcredit.MsgUpdateCreditClass{
+			msg: &plasticcredit.MsgUpdateCreditType{
 				Updater:      s.sampleIssuerAdmin,
-				Abbreviation: s.sampleCreditClassAbbreviation,
+				Abbreviation: s.sampleCreditTypeAbbreviation,
 				Name:         "Updated Empower Plastic Credits",
 			},
 			err: nil,
 		},
 		"unauthorized updater on the issuer": {
-			msg: &plasticcredit.MsgUpdateCreditClass{
+			msg: &plasticcredit.MsgUpdateCreditType{
 				Updater:      sample.AccAddress(),
-				Abbreviation: s.sampleCreditClassAbbreviation,
+				Abbreviation: s.sampleCreditTypeAbbreviation,
 				Name:         "Empower Plastic Credits",
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
-		"invalid abbreviation": {
-			msg: &plasticcredit.MsgUpdateCreditClass{
+		"non-existent abbreviation": {
+			msg: &plasticcredit.MsgUpdateCreditType{
 				Updater:      s.sampleIssuerAdmin,
-				Abbreviation: "",
-				Name:         "Empower Plastic Credits",
+				Abbreviation: "XX",
+				Name:         "Someone else's PCs",
 			},
-			err: plasticcredit.ErrCreditClassNotFound,
-		},
-		"invalid name": {
-			msg: &plasticcredit.MsgUpdateCreditClass{
-				Updater:      s.sampleIssuerAdmin,
-				Abbreviation: s.sampleCreditClassAbbreviation,
-				Name:         "",
-			},
-			err: utils.ErrInvalidValue,
+			err: plasticcredit.ErrCreditTypeNotFound,
 		},
 	}
 
@@ -666,30 +595,30 @@ func (s *TestSuite) TestUpdateCreditClass() {
 			k := s.empowerApp.PlasticcreditKeeper
 			goCtx := sdk.WrapSDKContext(s.ctx)
 			ms := keeper.NewMsgServerImpl(k)
-			_, err := ms.UpdateCreditClass(goCtx, tc.msg)
+			_, err := ms.UpdateCreditType(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
 			events := s.ctx.EventManager().ABCIEvents()
 
 			if err == nil {
-				creditClass, found := k.GetCreditClass(s.ctx, tc.msg.Abbreviation)
+				creditType, found := k.GetCreditType(s.ctx, tc.msg.Abbreviation)
 				s.Require().True(found)
-				s.Require().Equal(tc.msg.Name, creditClass.Name)
+				s.Require().Equal(tc.msg.Name, creditType.Name)
 				s.Require().Len(events, 1)
 				parsedEvent, err := sdk.ParseTypedEvent(events[0])
 				s.Require().NoError(err)
-				eventCreateCreditClass, ok := parsedEvent.(*plasticcredit.EventUpdateCreditClass)
+				eventUpdateCreditType, ok := parsedEvent.(*plasticcredit.EventUpdateCreditType)
 				s.Require().True(ok)
-				s.Require().Equal(&plasticcredit.EventUpdateCreditClass{
+				s.Require().Equal(&plasticcredit.EventUpdateCreditType{
 					Updater:      tc.msg.Updater,
-					Abbreviation: creditClass.Abbreviation,
-					Name:         creditClass.Name,
-				}, eventCreateCreditClass)
+					Abbreviation: creditType.Abbreviation,
+					Name:         creditType.Name,
+				}, eventUpdateCreditType)
 			}
 		})
 	}
 }
 
-func (s *TestSuite) TestCreateDuplicateCreditClass() {
+func (s *TestSuite) TestCreateDuplicateCreditType() {
 	k := s.empowerApp.PlasticcreditKeeper
 	goCtx := sdk.WrapSDKContext(s.ctx)
 	ms := keeper.NewMsgServerImpl(k)
@@ -713,7 +642,7 @@ func (s *TestSuite) TestCreateDuplicateCreditClass() {
 	})
 	s.Require().NoError(err)
 
-	_, err = ms.CreateCreditClass(goCtx, &plasticcredit.MsgCreateCreditClass{
+	_, err = ms.CreateCreditType(goCtx, &plasticcredit.MsgCreateCreditType{
 		Creator:      admin1,
 		Abbreviation: "PTEST",
 		IssuerId:     1,
@@ -721,13 +650,13 @@ func (s *TestSuite) TestCreateDuplicateCreditClass() {
 	})
 	s.Require().NoError(err)
 
-	_, err = ms.CreateCreditClass(goCtx, &plasticcredit.MsgCreateCreditClass{
+	_, err = ms.CreateCreditType(goCtx, &plasticcredit.MsgCreateCreditType{
 		Creator:      admin2,
 		Abbreviation: "PTEST",
 		IssuerId:     2,
 		Name:         "What about _MY_ PTESTS?",
 	})
-	s.Require().ErrorIs(err, plasticcredit.ErrCreditClassAbbreviationTaken)
+	s.Require().ErrorIs(err, plasticcredit.ErrCreditTypeAbbreviationTaken)
 }
 
 func (s *TestSuite) TestCreateProject() {
@@ -737,48 +666,39 @@ func (s *TestSuite) TestCreateProject() {
 	}{
 		"happy path": {
 			msg: &plasticcredit.MsgCreateProject{
-				Creator:                 s.sampleApplicantAdmin,
-				ApplicantId:             s.sampleApplicantID,
-				CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-				Name:                    "My happy path project",
+				Creator:                s.sampleApplicantAdmin,
+				ApplicantId:            s.sampleApplicantID,
+				CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
+				Name:                   "My happy path project",
 			},
 			err: nil,
 		},
 		"unauthorized creator on the issuer": {
 			msg: &plasticcredit.MsgCreateProject{
-				Creator:                 sample.AccAddress(),
-				ApplicantId:             s.sampleApplicantID,
-				CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-				Name:                    "My project",
+				Creator:                sample.AccAddress(),
+				ApplicantId:            s.sampleApplicantID,
+				CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
+				Name:                   "My project",
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
 		"non-existent applicant": {
 			msg: &plasticcredit.MsgCreateProject{
-				Creator:                 s.sampleApplicantAdmin,
-				ApplicantId:             37,
-				CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-				Name:                    "My project",
+				Creator:                s.sampleApplicantAdmin,
+				ApplicantId:            37,
+				CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
+				Name:                   "My project",
 			},
 			err: plasticcredit.ErrApplicantNotFound,
 		},
-		"non-existent credit class": {
+		"non-existent credit type": {
 			msg: &plasticcredit.MsgCreateProject{
-				Creator:                 s.sampleApplicantAdmin,
-				ApplicantId:             s.sampleApplicantID,
-				CreditClassAbbreviation: "Not here",
-				Name:                    "My project",
+				Creator:                s.sampleApplicantAdmin,
+				ApplicantId:            s.sampleApplicantID,
+				CreditTypeAbbreviation: "Not here",
+				Name:                   "My project",
 			},
-			err: plasticcredit.ErrCreditClassNotFound,
-		},
-		"invalid name": {
-			msg: &plasticcredit.MsgCreateProject{
-				Creator:                 s.sampleApplicantAdmin,
-				ApplicantId:             s.sampleApplicantID,
-				CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-				Name:                    "",
-			},
-			err: utils.ErrInvalidValue,
+			err: plasticcredit.ErrCreditTypeNotFound,
 		},
 	}
 
@@ -801,11 +721,11 @@ func (s *TestSuite) TestCreateProject() {
 				project, found := k.GetProject(s.ctx, resp.ProjectId)
 				s.Require().True(found)
 				s.Require().Equal(plasticcredit.Project{
-					Id:                      5,
-					ApplicantId:             tc.msg.ApplicantId,
-					CreditClassAbbreviation: tc.msg.CreditClassAbbreviation,
-					Name:                    tc.msg.Name,
-					Status:                  plasticcredit.ProjectStatus_NEW,
+					Id:                     5,
+					ApplicantId:            tc.msg.ApplicantId,
+					CreditTypeAbbreviation: tc.msg.CreditTypeAbbreviation,
+					Name:                   tc.msg.Name,
+					Status:                 plasticcredit.ProjectStatus_NEW,
 				}, project)
 				s.Require().Len(events, 1)
 				parsedEvent, err := sdk.ParseTypedEvent(events[0])
@@ -813,10 +733,11 @@ func (s *TestSuite) TestCreateProject() {
 				eventCreateProject, ok := parsedEvent.(*plasticcredit.EventCreateProject)
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventCreateProject{
-					Creator:                 s.sampleApplicantAdmin,
-					ApplicantId:             project.ApplicantId,
-					CreditClassAbbreviation: project.CreditClassAbbreviation,
-					Name:                    project.Name,
+					Creator:                s.sampleApplicantAdmin,
+					ProjectId:              project.Id,
+					ApplicantId:            project.ApplicantId,
+					CreditTypeAbbreviation: project.CreditTypeAbbreviation,
+					Name:                   project.Name,
 				}, eventCreateProject)
 			}
 		})
@@ -836,7 +757,7 @@ func (s *TestSuite) TestUpdateProject() {
 			},
 			err: nil,
 		},
-		"unauthorized creator on the issuer": {
+		"unauthorized creator on the issuer / invalid applicant": {
 			msg: &plasticcredit.MsgUpdateProject{
 				Updater:   sample.AccAddress(),
 				ProjectId: s.sampleUnapprovedProjectID,
@@ -844,15 +765,7 @@ func (s *TestSuite) TestUpdateProject() {
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
-		"invalid name": {
-			msg: &plasticcredit.MsgUpdateProject{
-				Updater:   s.sampleApplicantAdmin,
-				ProjectId: s.sampleUnapprovedProjectID,
-				Name:      "",
-			},
-			err: utils.ErrInvalidValue,
-		},
-		"project not found": {
+		"update non-existing project": {
 			msg: &plasticcredit.MsgUpdateProject{
 				Updater:   s.sampleApplicantAdmin,
 				ProjectId: 42,
@@ -949,6 +862,13 @@ func (s *TestSuite) TestApproveProject() {
 			},
 			err: nil,
 		},
+		"project already approved": {
+			msg: &plasticcredit.MsgApproveProject{
+				Approver:  s.sampleIssuerAdmin,
+				ProjectId: 1,
+			},
+			err: plasticcredit.ErrProjectNotNew,
+		},
 	}
 
 	for name, tc := range testCases {
@@ -981,10 +901,10 @@ func (s *TestSuite) TestApproveProject() {
 				eventProjectApproved, ok := parsedEvent.(*plasticcredit.EventProjectApproved)
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventProjectApproved{
-					ProjectId:                          project.Id,
-					ApprovedForCreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-					ApprovingIssuerId:                  s.sampleIssuerID,
-					ApprovedBy:                         tc.msg.Approver,
+					ProjectId:                         project.Id,
+					ApprovedForCreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
+					ApprovingIssuerId:                 s.sampleIssuerID,
+					ApprovedBy:                        tc.msg.Approver,
 				}, eventProjectApproved)
 
 			} else {
@@ -1089,10 +1009,10 @@ func (s *TestSuite) TestRejectProject() {
 				eventProjectRejected, ok := parsedEvent.(*plasticcredit.EventProjectRejected)
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventProjectRejected{
-					ProjectId:                          project.Id,
-					RejectedForCreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-					RejectingIssuerId:                  s.sampleIssuerID,
-					RejectedBy:                         tc.msg.Rejector,
+					ProjectId:                         project.Id,
+					RejectedForCreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
+					RejectingIssuerId:                 s.sampleIssuerID,
+					RejectedBy:                        tc.msg.Rejector,
 				}, eventProjectRejected)
 
 			} else {
@@ -1197,10 +1117,10 @@ func (s *TestSuite) TestSuspendProject() {
 				eventProjectSuspended, ok := parsedEvent.(*plasticcredit.EventProjectSuspended)
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventProjectSuspended{
-					ProjectId:                           s.sampleProjectID,
-					SuspendedForCreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-					SuspendingIssuerId:                  s.sampleIssuerID,
-					SuspendedBy:                         tc.msg.Updater,
+					ProjectId:                          s.sampleProjectID,
+					SuspendedForCreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
+					SuspendingIssuerId:                 s.sampleIssuerID,
+					SuspendedBy:                        tc.msg.Updater,
 				}, eventProjectSuspended)
 
 			}
@@ -1257,17 +1177,6 @@ func (s *TestSuite) TestIssueCredits() {
 			},
 			expectedAmount: 0,
 			err:            plasticcredit.ErrProjectNotFound,
-		},
-		"empty serial number": {
-			msg: &plasticcredit.MsgIssueCredits{
-				Creator:      s.sampleIssuerAdmin,
-				ProjectId:    s.sampleProjectID,
-				SerialNumber: "",
-				CreditAmount: 1000,
-				MetadataUris: []string{"ipfs://CID1", "ipfs://CID2"},
-			},
-			expectedAmount: 0,
-			err:            utils.ErrInvalidValue,
 		},
 		"issue zero credits": {
 			msg: &plasticcredit.MsgIssueCredits{
@@ -1339,7 +1248,7 @@ func (s *TestSuite) TestIssueCredits() {
 
 			events := s.ctx.EventManager().ABCIEvents()
 			if tc.err == nil {
-				denom, err := keeper.CreateCreditDenom(s.sampleCreditClassAbbreviation, tc.msg.SerialNumber)
+				denom, err := keeper.CreateCreditDenom(s.sampleCreditTypeAbbreviation, tc.msg.SerialNumber)
 				s.Require().NoError(err)
 				creditCollection, found := k.GetCreditCollection(s.ctx, denom)
 				s.Require().True(found)
@@ -1359,13 +1268,13 @@ func (s *TestSuite) TestIssueCredits() {
 				eventIssuedCredits, ok := parsedEvent.(*plasticcredit.EventIssuedCredits)
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventIssuedCredits{
-					IssuerId:                s.sampleIssuerID,
-					ProjectId:               tc.msg.ProjectId,
-					CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-					Denom:                   denom,
-					Amount:                  tc.msg.CreditAmount,
-					IssuerAddress:           tc.msg.Creator,
-					MetadataUris:            tc.msg.MetadataUris,
+					IssuerId:               s.sampleIssuerID,
+					ProjectId:              tc.msg.ProjectId,
+					CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
+					Denom:                  denom,
+					Amount:                 tc.msg.CreditAmount,
+					IssuerAddress:          tc.msg.Creator,
+					MetadataUris:           tc.msg.MetadataUris,
 				}, eventIssuedCredits)
 			} else {
 				s.Require().Len(events, 0)
@@ -1532,11 +1441,11 @@ func (s *TestSuite) TestTransferCredits() {
 					eventRetiredCredits, ok := parsedEvent.(*plasticcredit.EventRetiredCredits)
 					s.Require().True(ok)
 					s.Require().Equal(&plasticcredit.EventRetiredCredits{
-						Owner:                   tc.msg.To,
-						Denom:                   tc.msg.Denom,
-						Amount:                  tc.msg.Amount,
-						IssuerId:                s.sampleIssuerID,
-						CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
+						Owner:                  tc.msg.To,
+						Denom:                  tc.msg.Denom,
+						Amount:                 tc.msg.Amount,
+						IssuerId:               s.sampleIssuerID,
+						CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
 					}, eventRetiredCredits)
 				} else {
 					s.Require().Len(events, 1)
@@ -1546,12 +1455,12 @@ func (s *TestSuite) TestTransferCredits() {
 				EventTransferCredits, ok := parsedEvent.(*plasticcredit.EventTransferCredits)
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventTransferCredits{
-					Sender:                  tc.msg.From,
-					Recipient:               tc.msg.To,
-					Denom:                   tc.msg.Denom,
-					Amount:                  tc.msg.Amount,
-					IssuerId:                s.sampleIssuerID,
-					CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
+					Sender:                 tc.msg.From,
+					Recipient:              tc.msg.To,
+					Denom:                  tc.msg.Denom,
+					Amount:                 tc.msg.Amount,
+					IssuerId:               s.sampleIssuerID,
+					CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
 				}, EventTransferCredits)
 			} else {
 				s.Require().Len(events, 0)
@@ -1744,11 +1653,11 @@ func (s *TestSuite) TestRetireCredits() {
 				eventRetiredCredits, ok := parsedEvent.(*plasticcredit.EventRetiredCredits)
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventRetiredCredits{
-					Owner:                   tc.msg.Owner,
-					Denom:                   tc.msg.Denom,
-					Amount:                  tc.msg.Amount,
-					IssuerId:                s.sampleIssuerID,
-					CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
+					Owner:                  tc.msg.Owner,
+					Denom:                  tc.msg.Denom,
+					Amount:                 tc.msg.Amount,
+					IssuerId:               s.sampleIssuerID,
+					CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
 				}, eventRetiredCredits)
 			} else {
 				s.Require().Len(events, 0)

@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	"cosmossdk.io/errors"
 	wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
@@ -30,6 +31,8 @@ const wasmFilePath = "../../../../cosmwasm/artifacts/plastic_credit_marketplace.
 type E2ETestSuite struct {
 	e2e.TestSuite
 }
+
+var ErrListingNotFound = errors.Register("plastic_credit_marketplace", 100, "rpc error: code = Unknown desc = plastic_credit_marketplace::state::Listing not found: query wasm contract failed: unknown request")
 
 // uploadContractBeforeAll uploads the marketplace contract before all tests
 // because of this, we have the code id 1 set already and can use it in other tests

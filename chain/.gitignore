@@ -1,3 +1,4 @@
 build/
 release/
 coverage.out
+scripts/docgen/output

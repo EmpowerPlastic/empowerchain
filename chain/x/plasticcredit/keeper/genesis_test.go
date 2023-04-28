@@ -13,8 +13,8 @@ import (
 func (s *TestSuite) TestGenesis() {
 	genesisState := plasticcredit.GenesisState{
 		Params: plasticcredit.Params{
-			IssuerCreator:          sample.AccAddress(),
-			CreditClassCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
+			IssuerCreator:         sample.AccAddress(),
+			CreditTypeCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
 		},
 		IdCounters: plasticcredit.IDCounters{
 			NextIssuerId:    3,
@@ -55,7 +55,7 @@ func (s *TestSuite) TestGenesis() {
 				Admin:       sample.AccAddress(),
 			},
 		},
-		CreditClasses: []plasticcredit.CreditClass{
+		CreditTypes: []plasticcredit.CreditType{
 			{
 				Abbreviation: "PTEST",
 				IssuerId:     1,
@@ -74,28 +74,28 @@ func (s *TestSuite) TestGenesis() {
 		},
 		Projects: []plasticcredit.Project{
 			{
-				Id:                      1,
-				ApplicantId:             1,
-				CreditClassAbbreviation: "PTEST",
-				Name:                    "My project",
+				Id:                     1,
+				ApplicantId:            1,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   "My project",
 			},
 			{
-				Id:                      2,
-				ApplicantId:             1,
-				CreditClassAbbreviation: "RCRD",
-				Name:                    "My other project",
+				Id:                     2,
+				ApplicantId:            1,
+				CreditTypeAbbreviation: "RCRD",
+				Name:                   "My other project",
 			},
 			{
-				Id:                      3,
-				ApplicantId:             2,
-				CreditClassAbbreviation: "WE",
-				Name:                    "The I barely care project",
+				Id:                     3,
+				ApplicantId:            2,
+				CreditTypeAbbreviation: "WE",
+				Name:                   "The I barely care project",
 			},
 			{
-				Id:                      4,
-				ApplicantId:             3,
-				CreditClassAbbreviation: "PTEST",
-				Name:                    "Project 420x",
+				Id:                     4,
+				ApplicantId:            3,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   "Project 420x",
 			},
 		},
 		CreditCollections: []plasticcredit.CreditCollection{
@@ -185,10 +185,10 @@ func (s *TestSuite) TestGenesis() {
 		s.Require().Equal(applicant, actualApplicant)
 	}
 
-	for _, creditClass := range genesisState.CreditClasses {
-		actualCreditClass, found := k.GetCreditClass(s.ctx, creditClass.Abbreviation)
+	for _, creditType := range genesisState.CreditTypes {
+		actualCreditType, found := k.GetCreditType(s.ctx, creditType.Abbreviation)
 		s.Require().True(found)
-		s.Require().Equal(creditClass, actualCreditClass)
+		s.Require().Equal(creditType, actualCreditType)
 	}
 
 	for _, project := range genesisState.Projects {
@@ -227,8 +227,8 @@ func (s *TestSuite) TestGenesis() {
 		s.Require().Equal(applicant, actualApplicant)
 	}
 
-	s.Require().Equal(len(genesisState.CreditClasses), len(export.CreditClasses))
-	s.Require().ElementsMatch(export.CreditClasses, genesisState.CreditClasses)
+	s.Require().Equal(len(genesisState.CreditTypes), len(export.CreditTypes))
+	s.Require().ElementsMatch(export.CreditTypes, genesisState.CreditTypes)
 
 	s.Require().Equal(len(genesisState.Projects), len(export.Projects))
 	s.Require().ElementsMatch(export.Projects, genesisState.Projects)

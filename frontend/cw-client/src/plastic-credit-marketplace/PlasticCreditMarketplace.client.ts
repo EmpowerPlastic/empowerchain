@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint64, Uint128, Addr, Coin, QueryMsg, ListingResponse, Listing, ListingsResponse } from "./PlasticCreditMarketplace.types";
+import { InstantiateMsg, ExecuteMsg, Uint64, Uint128, Addr, Decimal, Coin, Share, QueryMsg, Config, ListingResponse, Listing, ListingsResponse } from "./PlasticCreditMarketplace.types";
 export interface PlasticCreditMarketplaceReadOnlyInterface {
   contractAddress: string;
   listings: ({
@@ -23,6 +23,7 @@ export interface PlasticCreditMarketplaceReadOnlyInterface {
     denom: string;
     owner: Addr;
   }) => Promise<ListingResponse>;
+  feeSplitConfig: () => Promise<Config>;
 }
 export class PlasticCreditMarketplaceQueryClient implements PlasticCreditMarketplaceReadOnlyInterface {
   client: CosmWasmClient;
@@ -33,6 +34,7 @@ export class PlasticCreditMarketplaceQueryClient implements PlasticCreditMarketp
     this.contractAddress = contractAddress;
     this.listings = this.listings.bind(this);
     this.listing = this.listing.bind(this);
+    this.feeSplitConfig = this.feeSplitConfig.bind(this);
   }
 
   listings = async ({
@@ -61,6 +63,11 @@ export class PlasticCreditMarketplaceQueryClient implements PlasticCreditMarketp
         denom,
         owner
       }
+    });
+  };
+  feeSplitConfig = async (): Promise<Config> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      fee_split_config: {}
     });
   };
 }
@@ -94,6 +101,18 @@ export interface PlasticCreditMarketplaceInterface extends PlasticCreditMarketpl
     numberOfCreditsToBuy: number;
     owner: Addr;
   }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
+  cancelListing: ({
+    denom
+  }: {
+    denom: string;
+  }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
+  editFeeSplitConfig: ({
+    feePercentage,
+    shares
+  }: {
+    feePercentage: Decimal;
+    shares: Share[];
+  }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
 }
 export class PlasticCreditMarketplaceClient extends PlasticCreditMarketplaceQueryClient implements PlasticCreditMarketplaceInterface {
   client: SigningCosmWasmClient;
@@ -108,6 +127,8 @@ export class PlasticCreditMarketplaceClient extends PlasticCreditMarketplaceQuer
     this.createListing = this.createListing.bind(this);
     this.updateListing = this.updateListing.bind(this);
     this.buyCredits = this.buyCredits.bind(this);
+    this.cancelListing = this.cancelListing.bind(this);
+    this.editFeeSplitConfig = this.editFeeSplitConfig.bind(this);
   }
 
   createListing = async ({
@@ -158,6 +179,31 @@ export class PlasticCreditMarketplaceClient extends PlasticCreditMarketplaceQuer
         denom,
         number_of_credits_to_buy: numberOfCreditsToBuy,
         owner
+      }
+    }, fee, memo, funds);
+  };
+  cancelListing = async ({
+    denom
+  }: {
+    denom: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      cancel_listing: {
+        denom
+      }
+    }, fee, memo, funds);
+  };
+  editFeeSplitConfig = async ({
+    feePercentage,
+    shares
+  }: {
+    feePercentage: Decimal;
+    shares: Share[];
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      edit_fee_split_config: {
+        fee_percentage: feePercentage,
+        shares
       }
     }, fee, memo, funds);
   };

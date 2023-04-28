@@ -17,8 +17,8 @@ func createUniqueRandomAbbreviation(ctx context.Context, r *rand.Rand, querier k
 		abbreviation := createRandomAbbreviation(r)
 
 		// Check if abbreviation is unique
-		resp, _ := querier.CreditClass(ctx, &plasticcredit.QueryCreditClassRequest{
-			CreditClassAbbreviation: abbreviation,
+		resp, _ := querier.CreditType(ctx, &plasticcredit.QueryCreditTypeRequest{
+			CreditTypeAbbreviation: abbreviation,
 		})
 		if resp == nil {
 			return abbreviation
@@ -110,8 +110,8 @@ func getRandomApplicant(ctx context.Context, r *rand.Rand, querier keeper.Querie
 	return resp.Applicant, nil
 }
 
-func getRandomCreditClass(ctx context.Context, r *rand.Rand, querier keeper.Querier) (plasticcredit.CreditClass, error) {
-	resp, err := querier.CreditClasses(ctx, &plasticcredit.QueryCreditClassesRequest{
+func getRandomCreditType(ctx context.Context, r *rand.Rand, querier keeper.Querier) (plasticcredit.CreditType, error) {
+	resp, err := querier.CreditTypes(ctx, &plasticcredit.QueryCreditTypesRequest{
 		// We max the return to 25 for now, since this lookup is potentially quite expensive
 		// TODO: Get better indexes so we can look these up more directly
 		Pagination: query.PageRequest{
@@ -120,14 +120,14 @@ func getRandomCreditClass(ctx context.Context, r *rand.Rand, querier keeper.Quer
 		},
 	})
 	if err != nil {
-		return plasticcredit.CreditClass{}, err
+		return plasticcredit.CreditType{}, err
 	}
 
-	if len(resp.CreditClasses) == 0 {
-		return plasticcredit.CreditClass{}, fmt.Errorf("no credit classes found")
+	if len(resp.CreditTypes) == 0 {
+		return plasticcredit.CreditType{}, fmt.Errorf("no credit types found")
 	}
 
-	return resp.CreditClasses[safeRandIntBetween(r, 0, len(resp.CreditClasses)-1)], nil
+	return resp.CreditTypes[safeRandIntBetween(r, 0, len(resp.CreditTypes)-1)], nil
 }
 
 func getRandomProject(ctx context.Context, r *rand.Rand, querier keeper.Querier, ids plasticcredit.IDCounters) (plasticcredit.Project, error) {
@@ -169,7 +169,7 @@ func getRandomCreditBalance(ctx context.Context, r *rand.Rand, querier keeper.Qu
 // safeRandIntBetween returns a random int between min and max
 // If max is less than or equal to min, it will return min
 // This is to make this kind of code safe:
-// resp.CreditClasses[safeRandIntBetween(r, 0, len(resp.CreditClasses)-1)]
+// resp.GetCreditTypes[safeRandIntBetween(r, 0, len(resp.GetCreditTypes)-1)]
 func safeRandIntBetween(r *rand.Rand, min, max int) int {
 	if min >= max {
 		return min

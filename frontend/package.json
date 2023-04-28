@@ -2,9 +2,10 @@
   "name": "root",
   "private": true,
   "workspaces": [
-    "ts-client",
+    "empowerjs",
     "cw-client",
-    "proof-of-existence"
+    "proof-of-existence",
+    "marketplace"
   ],
   "devDependencies": {
     "crypto-browserify": "^3.12.0",

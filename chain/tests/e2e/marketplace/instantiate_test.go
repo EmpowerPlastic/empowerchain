@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"os"
 	"text/template"
@@ -18,16 +19,34 @@ import (
 	_ "embed"
 )
 
-func (s *E2ETestSuite) TestInstantiate() {
-	s.instantiateMarketplace()
+type MarketplaceInstantiateMessage struct {
+	Admin         string                `json:"admin"`
+	FeePercentage string                `json:"fee_percentage"`
+	Shares        []MarketplaceFeeShare `json:"shares"`
 }
 
-func (s *E2ETestSuite) instantiateMarketplace() string {
+type MarketplaceFeeShare struct {
+	Address    string `json:"address"`
+	Percentage string `json:"percentage"`
+}
+
+func (s *E2ETestSuite) TestInstantiate() {
+	s.instantiateMarketplace(MarketplaceInstantiateMessage{
+		Admin:         e2e.ContractAdminAddress,
+		FeePercentage: "0",
+		Shares:        []MarketplaceFeeShare{},
+	})
+}
+
+func (s *E2ETestSuite) instantiateMarketplace(marketplaceInstantiateMsg MarketplaceInstantiateMessage) string {
 	val := s.Network.Validators[0]
 	instantiateCmd := wasmcli.InstantiateContractCmd()
+
+	instantiateMessage, err := json.Marshal(marketplaceInstantiateMsg)
+	s.Require().NoError(err)
 	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, instantiateCmd, append([]string{
 		"1",
-		"{}",
+		string(instantiateMessage),
 		"--label=marketplace",
 		fmt.Sprintf("--admin=%s", e2e.ContractAdminAddress),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, e2e.ContractAdminAddress),

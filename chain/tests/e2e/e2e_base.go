@@ -24,7 +24,6 @@ import (
 
 	"github.com/EmpowerPlastic/empowerchain/app"
 	genesistools "github.com/EmpowerPlastic/empowerchain/app/genesis-tools"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
 
@@ -45,6 +44,8 @@ const (
 	RandomAddress             = "empower15hxwswcmmkasaar65n3vkmp6skurvtas3xzl7s"
 	ContractAdminAddress      = "empower1reurz37gn2sk3vgr3fupcultkagzverqczer0l"
 	NoCoinsIssuerAdminAddress = "empower1xgsaene8aqfknmldemvl5q0mtgcgjv9svupqwu"
+	DevAddress                = "empower1egyu4d0zn38cs7fsynf2zq6ckppe9ecn0eh5zh"
+	SomeOtherRandomAddress    = "empower1skasndc8qy35zwymj62h4m6vl423vrf34de6xz"
 )
 
 var DefaultFee = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10))
@@ -52,11 +53,11 @@ var DefaultFee = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10))
 type TestSuite struct {
 	suite.Suite
 
-	Config                 network.Config
-	Network                *network.Network
-	CommonFlags            []string
-	CreditClassCreationFee sdk.Coin
-	BeforeAllHook          func(suite *TestSuite)
+	Config                network.Config
+	Network               *network.Network
+	CommonFlags           []string
+	CreditTypeCreationFee sdk.Coin
+	BeforeAllHook         func(suite *TestSuite)
 }
 
 func (s *TestSuite) SetupSuite() {
@@ -74,7 +75,7 @@ func (s *TestSuite) SetupSuite() {
 	}
 
 	s.Config.NumValidators = 3
-	s.CreditClassCreationFee = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(50000))
+	s.CreditTypeCreationFee = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(50000))
 
 	genesisStateRaw := s.Config.GenesisState
 
@@ -84,13 +85,13 @@ func (s *TestSuite) SetupSuite() {
 	s.Require().NoError(s.Config.Codec.UnmarshalJSON(genesisStateRaw[authtypes.ModuleName], &e2eGenesisState.AuthGenesis))
 	s.Require().NoError(s.Config.Codec.UnmarshalJSON(genesisStateRaw[govtypes.ModuleName], &e2eGenesisState.GovGenesis))
 
-	AddGenesisE2ETestData(s.Config.Codec, &e2eGenesisState, s.Config.BondDenom, s.Config.StakingTokens, s.CreditClassCreationFee)
+	AddGenesisE2ETestData(s.Config.Codec, &e2eGenesisState, s.Config.BondDenom, s.Config.StakingTokens, s.CreditTypeCreationFee)
 
-	e2eGenesisState.PlasticcreditGenesis.Params.CreditClassCreationFee = s.CreditClassCreationFee
+	e2eGenesisState.PlasticcreditGenesis.Params.CreditTypeCreationFee = s.CreditTypeCreationFee
 	*e2eGenesisState.GovGenesis.Params.VotingPeriod = 10 * time.Second
 
 	// initialize community pool with small amount
-	communityPoolAmt := s.CreditClassCreationFee
+	communityPoolAmt := s.CreditTypeCreationFee
 	e2eGenesisState.DistrGenesis.FeePool.CommunityPool = sdk.NewDecCoins(sdk.NewDecCoinFromCoin(communityPoolAmt))
 
 	distrModuleAcct := authtypes.NewModuleAddress(distrtypes.ModuleName)
@@ -115,7 +116,7 @@ func (s *TestSuite) SetupSuite() {
 	s.Config.GenesisState = genesisStateRaw
 
 	s.Config.AppConstructor = app.NewAppConstructor()
-	encodingConfig := params.MakeEncodingConfig(app.ModuleBasics)
+	encodingConfig := app.MakeEncodingConfig()
 	s.Config.InterfaceRegistry = encodingConfig.InterfaceRegistry
 	s.Config.Codec = encodingConfig.Codec
 	s.Config.TxConfig = encodingConfig.TxConfig
@@ -245,10 +246,10 @@ func (s *TestSuite) GetCliResponse(ctx client.Context, txJSONResponse []byte) (s
 }
 
 // AddGenesisE2ETestData adds e2e test data to the genesis state
-func AddGenesisE2ETestData(cdc codec.Codec, genesisState *genesistools.GenesisState, bondDenom string, tokens math.Int, creditClassCreationFee sdk.Coin) {
+func AddGenesisE2ETestData(cdc codec.Codec, genesisState *genesistools.GenesisState, bondDenom string, tokens math.Int, creditTypeCreationFee sdk.Coin) {
 	currentNoOfIssuers := uint64(len(genesisState.PlasticcreditGenesis.Issuers))
 	currentNoOfApplicants := uint64(len(genesisState.PlasticcreditGenesis.Applicants))
-	currentNoOfCreditClasses := uint64(len(genesisState.PlasticcreditGenesis.CreditClasses))
+	currentNoOfCreditTypes := uint64(len(genesisState.PlasticcreditGenesis.CreditTypes))
 	currentNoOfProjects := uint64(len(genesisState.PlasticcreditGenesis.Projects))
 
 	genesisState.PlasticcreditGenesis.Issuers = append(genesisState.PlasticcreditGenesis.Issuers, []plasticcredit.Issuer{
@@ -291,95 +292,95 @@ func AddGenesisE2ETestData(cdc codec.Codec, genesisState *genesistools.GenesisSt
 			Admin:       ApplicantAddress,
 		},
 	}...)
-	genesisState.PlasticcreditGenesis.CreditClasses = []plasticcredit.CreditClass{
+	genesisState.PlasticcreditGenesis.CreditTypes = []plasticcredit.CreditType{
 		{
 			Abbreviation: "ETEST",
-			IssuerId:     currentNoOfCreditClasses + 1,
+			IssuerId:     currentNoOfCreditTypes + 1,
 			Name:         "Empower Plastic",
 		},
 		{
 			Abbreviation: "PTEST",
-			IssuerId:     currentNoOfCreditClasses + 2,
+			IssuerId:     currentNoOfCreditTypes + 2,
 			Name:         "Plastic Credit",
 		},
 	}
 	genesisState.PlasticcreditGenesis.Projects = append(genesisState.PlasticcreditGenesis.Projects, []plasticcredit.Project{
 		{
-			Id:                      currentNoOfProjects + 1,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "ETEST",
-			Name:                    "Approved project",
-			Status:                  plasticcredit.ProjectStatus_APPROVED,
+			Id:                     currentNoOfProjects + 1,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "ETEST",
+			Name:                   "Approved project",
+			Status:                 plasticcredit.ProjectStatus_APPROVED,
 		},
 		{
-			Id:                      currentNoOfProjects + 2,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "Suspended project",
-			Status:                  plasticcredit.ProjectStatus_SUSPENDED,
+			Id:                     currentNoOfProjects + 2,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "PTEST",
+			Name:                   "Suspended project",
+			Status:                 plasticcredit.ProjectStatus_SUSPENDED,
 		},
 		{
-			Id:                      currentNoOfProjects + 3,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "ETEST",
-			Name:                    "New project",
-			Status:                  plasticcredit.ProjectStatus_NEW,
+			Id:                     currentNoOfProjects + 3,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "ETEST",
+			Name:                   "New project",
+			Status:                 plasticcredit.ProjectStatus_NEW,
 		},
 		{
-			Id:                      currentNoOfProjects + 4,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "Rejected project",
-			Status:                  plasticcredit.ProjectStatus_REJECTED,
+			Id:                     currentNoOfProjects + 4,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "PTEST",
+			Name:                   "Rejected project",
+			Status:                 plasticcredit.ProjectStatus_REJECTED,
 		},
 		{
-			Id:                      currentNoOfProjects + 5,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "Other New Project",
-			Status:                  plasticcredit.ProjectStatus_NEW,
+			Id:                     currentNoOfProjects + 5,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "PTEST",
+			Name:                   "Other New Project",
+			Status:                 plasticcredit.ProjectStatus_NEW,
 		},
 		{
-			Id:                      currentNoOfProjects + 6,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "Another New Project",
-			Status:                  plasticcredit.ProjectStatus_NEW,
+			Id:                     currentNoOfProjects + 6,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "PTEST",
+			Name:                   "Another New Project",
+			Status:                 plasticcredit.ProjectStatus_NEW,
 		},
 		{
-			Id:                      currentNoOfProjects + 7,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "Another Rejected Project",
-			Status:                  plasticcredit.ProjectStatus_REJECTED,
+			Id:                     currentNoOfProjects + 7,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "PTEST",
+			Name:                   "Another Rejected Project",
+			Status:                 plasticcredit.ProjectStatus_REJECTED,
 		},
 		{
-			Id:                      currentNoOfProjects + 8,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "Another Suspended Project",
-			Status:                  plasticcredit.ProjectStatus_SUSPENDED,
+			Id:                     currentNoOfProjects + 8,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "PTEST",
+			Name:                   "Another Suspended Project",
+			Status:                 plasticcredit.ProjectStatus_SUSPENDED,
 		},
 		{
-			Id:                      currentNoOfProjects + 9,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "PTEST",
-			Name:                    "New Project to update",
-			Status:                  plasticcredit.ProjectStatus_NEW,
+			Id:                     currentNoOfProjects + 9,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "PTEST",
+			Name:                   "New Project to update",
+			Status:                 plasticcredit.ProjectStatus_NEW,
 		},
 		{
-			Id:                      currentNoOfProjects + 10,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "ETEST",
-			Name:                    "Approved project 2",
-			Status:                  plasticcredit.ProjectStatus_APPROVED,
+			Id:                     currentNoOfProjects + 10,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "ETEST",
+			Name:                   "Approved project 2",
+			Status:                 plasticcredit.ProjectStatus_APPROVED,
 		},
 		{
-			Id:                      currentNoOfProjects + 11,
-			ApplicantId:             currentNoOfApplicants + 1,
-			CreditClassAbbreviation: "ETEST",
-			Name:                    "Approved project to suspend",
-			Status:                  plasticcredit.ProjectStatus_APPROVED,
+			Id:                     currentNoOfProjects + 11,
+			ApplicantId:            currentNoOfApplicants + 1,
+			CreditTypeAbbreviation: "ETEST",
+			Name:                   "Approved project to suspend",
+			Status:                 plasticcredit.ProjectStatus_APPROVED,
 		},
 	}...)
 	// check if credit collection exists in genesis state
@@ -394,6 +395,8 @@ func AddGenesisE2ETestData(cdc codec.Codec, genesisState *genesistools.GenesisSt
 	genesistools.AddGenesisPlasticCreditBalance(cdc, genesisState, currentNoOfProjects+2, "PTEST/UPDATE_LISTING_5", genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin, plasticcredit.CreditAmount{Active: 1000, Retired: 200})
 	genesistools.AddGenesisPlasticCreditBalance(cdc, genesisState, currentNoOfProjects+2, "PTEST/UPDATE_LISTING_6", genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin, plasticcredit.CreditAmount{Active: 1000, Retired: 200})
 	genesistools.AddGenesisPlasticCreditBalance(cdc, genesisState, currentNoOfProjects+2, "PTEST/UPDATE_LISTING_7", genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin, plasticcredit.CreditAmount{Active: 1000, Retired: 200})
+
+	genesistools.AddGenesisPlasticCreditBalance(cdc, genesisState, currentNoOfProjects+2, "PTEST/CANCEL_LISTING_1", genesisState.PlasticcreditGenesis.Applicants[currentNoOfApplicants].Admin, plasticcredit.CreditAmount{Active: 1000, Retired: 200})
 
 	genesisState.PlasticcreditGenesis.IdCounters = plasticcredit.IDCounters{
 		NextIssuerId:    uint64(len(genesisState.PlasticcreditGenesis.Issuers) + 1),

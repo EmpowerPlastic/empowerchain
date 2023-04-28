@@ -8,6 +8,13 @@ import (
 	"time"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
+	dbm "github.com/cometbft/cometbft-db"
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtypes "github.com/cometbft/cometbft/types"
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
@@ -22,23 +29,20 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtypes "github.com/tendermint/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
-	"github.com/EmpowerPlastic/empowerchain/app/params"
 	accesscontrolmodulekeeper "github.com/EmpowerPlastic/empowerchain/x/accesscontrol/keeper"
 )
 
 func NewAppConstructor() network.AppConstructor {
 	return func(val network.ValidatorI) servertypes.Application {
 		return New(
-			val.GetCtx().Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.GetCtx().Config.RootDir, 0,
-			params.MakeEncodingConfig(ModuleBasics),
+			val.GetCtx().Logger,
+			dbm.NewMemDB(),
+			nil,
+			true,
 			simtestutils.EmptyAppOptions{},
 			[]wasm.Option{},
+			baseapp.SetChainID(val.GetCtx().Viper.GetString(flags.FlagChainID)),
 		)
 	}
 }
@@ -62,16 +66,17 @@ var DefaultConsensusParams = &tmproto.ConsensusParams{
 
 func setup(withGenesis bool) (*EmpowerApp, GenesisState) {
 	db := dbm.NewMemDB()
-	encCdc := params.MakeEncodingConfig(ModuleBasics)
-	empowerApp := New(log.NewNopLogger(), db, nil, true, map[int64]bool{},
-		DefaultNodeHome,
-		5,
-		params.MakeEncodingConfig(ModuleBasics),
+	empowerApp := New(
+		log.NewNopLogger(),
+		db,
+		nil,
+		true,
 		simtestutils.EmptyAppOptions{},
 		[]wasm.Option{},
 	)
 
 	if withGenesis {
+		encCdc := MakeEncodingConfig()
 		return empowerApp, NewDefaultGenesisState(encCdc.Codec)
 	}
 
@@ -222,9 +227,11 @@ func NewTestNetworkFixture() network.TestFixture {
 	defer os.RemoveAll(dir)
 
 	app := New(
-		log.NewNopLogger(), dbm.NewMemDB(), nil, true, make(map[int64]bool), dir, 0,
-		params.MakeEncodingConfig(ModuleBasics),
-		simtestutils.EmptyAppOptions{},
+		log.NewNopLogger(),
+		dbm.NewMemDB(),
+		nil,
+		true,
+		simtestutils.NewAppOptionsWithFlagHome(dir),
 		[]wasm.Option{},
 	)
 
