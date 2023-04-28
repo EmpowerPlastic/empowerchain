@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"strings"
 
 	"cosmossdk.io/errors"
@@ -12,6 +13,7 @@ import (
 	"github.com/cosmos/gogoproto/proto"
 
 	"github.com/EmpowerPlastic/empowerchain/utils"
+	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
 
@@ -63,35 +65,62 @@ func (k Keeper) GetCreditBalances(ctx sdk.Context, pageReq query.PageRequest) ([
 	return creditBalances, *pageRes, nil
 }
 
-func (k Keeper) retireCreditsForAddress(ctx sdk.Context, owner sdk.AccAddress, denom string, amount uint64) (plasticcredit.CreditBalance, error) {
-	creditBalance, found := k.GetCreditBalance(ctx, owner, denom)
+func (k Keeper) retireCreditsForAddress(ctx sdk.Context, req *plasticcredit.MsgRetireCredits) (plasticcredit.CreditBalance, error) {
+	owner, err := sdk.AccAddressFromBech32(req.Owner)
+	if err != nil {
+		return plasticcredit.CreditBalance{}, sdkerrors.ErrInvalidAddress
+	}
+	creditBalance, found := k.GetCreditBalance(ctx, owner, req.Denom)
 	if !found {
-		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrCreditsNotEnough, "user %s doesn't have credits of denom %s", owner.String(), denom)
+		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrCreditsNotEnough, "user %s doesn't have credits of denom %s", owner.String(), req.Denom)
 	}
-	if creditBalance.Balance.Active < amount {
-		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrActiveCreditsNotEnough, "user %s has only %d credits", owner.String(), amount)
+	if creditBalance.Balance.Active < req.Amount {
+		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrActiveCreditsNotEnough, "user %s has only %d credits", owner.String(), req.Amount)
 	}
-	creditBalance.Balance.Active -= amount
-	creditBalance.Balance.Retired += amount
+	creditBalance.Balance.Active -= req.Amount
+	creditBalance.Balance.Retired += req.Amount
 
-	err := k.setCreditBalance(ctx, creditBalance)
+	err = k.setCreditBalance(ctx, creditBalance)
 	if err != nil {
 		return plasticcredit.CreditBalance{}, err
 	}
 
-	err = k.retireCreditsInCollection(ctx, denom, amount)
+	err = k.retireCreditsInCollection(ctx, req.Denom, req.Amount)
 	if err != nil {
 		return plasticcredit.CreditBalance{}, err
 	}
-	abbrev, _ := SplitCreditDenom(denom)
+	abbrev, _ := SplitCreditDenom(req.Denom)
 	creditType, found := k.GetCreditType(ctx, abbrev)
 	if !found {
 		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit type with abbrev %s not found", abbrev)
 	}
+	issuer, found := k.GetIssuer(ctx, creditType.IssuerId)
+	if !found {
+		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrIssuerNotFound, "issuer with id %d not found", creditType.IssuerId)
+	}
+	certificate := certificates.MsgCreateCertificate{
+		Owner:  owner.String(),
+		Issuer: issuer.Admin,
+		Type:   0,
+		Data: map[string]string{
+			"denom":                           req.Denom,
+			"amount":                          fmt.Sprint(req.Amount),
+			"retiring_entity_address":         owner.String(),
+			"retiring_entity_name":            req.RetiringEntityName,
+			"retiring_entity_additional_data": req.RetiringEntityAdditionalData,
+		},
+	}
+	_, err = k.certificatesKeeper.CreateCertificateInternal(ctx, &certificate)
+	if err != nil {
+		return creditBalance, errors.Wrapf(plasticcredit.ErrFailedCreateCertificate,
+			"unable to create certificate for owner %s for issuer %s",
+			owner.String(), issuer.Admin,
+		)
+	}
 	return creditBalance, ctx.EventManager().EmitTypedEvent(&plasticcredit.EventRetiredCredits{
 		Owner:                  owner.String(),
-		Denom:                  denom,
-		Amount:                 amount,
+		Denom:                  req.Denom,
+		Amount:                 req.Amount,
 		IssuerId:               creditType.IssuerId,
 		CreditTypeAbbreviation: abbrev,
 	})

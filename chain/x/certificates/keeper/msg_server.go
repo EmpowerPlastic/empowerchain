@@ -40,8 +40,7 @@ func (m msgServer) UpdateParams(goCtx context.Context, req *certificates.MsgUpda
 
 func (m msgServer) CreateCertificate(goCtx context.Context, req *certificates.MsgCreateCertificate) (*certificates.MsgCreateCertificateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	certificateID, err := m.Keeper.createCertificate(ctx, req.Type, req.Owner, req.Issuer)
+	certificateID, err := m.Keeper.createCertificate(ctx, req)
 	if err != nil {
 		return nil, err
 	}

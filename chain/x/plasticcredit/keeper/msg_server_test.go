@@ -14,6 +14,8 @@ import (
 	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"github.com/EmpowerPlastic/empowerchain/utils"
+	"github.com/EmpowerPlastic/empowerchain/x/certificates"
+	certificateskeeper "github.com/EmpowerPlastic/empowerchain/x/certificates/keeper"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
 )
@@ -1615,7 +1617,14 @@ func (s *TestSuite) TestRetireCredits() {
 			k := s.empowerApp.PlasticcreditKeeper
 			goCtx := sdk.WrapSDKContext(s.ctx)
 			ms := keeper.NewMsgServerImpl(k)
-
+			certificatesMsgServer := certificateskeeper.NewMsgServerImpl(s.empowerApp.CertificateKeeper)
+			_, err := certificatesMsgServer.UpdateParams(goCtx, &certificates.MsgUpdateParams{
+				Authority: k.Authority(),
+				Params: certificates.Params{
+					AllowedIssuer: []string{s.sampleIssuerAdmin},
+				},
+			})
+			s.Require().NoError(err)
 			var collectionBefore, collection plasticcredit.CreditCollection
 			var balanceBefore, balance plasticcredit.CreditBalance
 			var owner sdk.AccAddress
@@ -1631,7 +1640,7 @@ func (s *TestSuite) TestRetireCredits() {
 				s.Require().True(found)
 			}
 
-			_, err := ms.RetireCredits(goCtx, tc.msg)
+			_, err = ms.RetireCredits(goCtx, tc.msg)
 			s.Require().ErrorIs(err, tc.err)
 
 			events := s.ctx.EventManager().ABCIEvents()
@@ -1646,10 +1655,16 @@ func (s *TestSuite) TestRetireCredits() {
 				s.Require().Equal(collectionBefore.TotalAmount.Retired+tc.msg.Amount, collection.TotalAmount.Retired)
 				s.Require().Equal(balanceBefore.Balance.Active-tc.msg.Amount, balance.Balance.Active)
 				s.Require().Equal(balanceBefore.Balance.Retired+tc.msg.Amount, balance.Balance.Retired)
-				s.Require().Len(events, 1)
-				parsedEvent, err := sdk.ParseTypedEvent(events[0])
+				s.Require().Len(events, 2)
+				parsedCreateCertEvent, err := sdk.ParseTypedEvent(events[0])
 				s.Require().NoError(err)
-				eventRetiredCredits, ok := parsedEvent.(*plasticcredit.EventRetiredCredits)
+				eventCreateCertificates, ok := parsedCreateCertEvent.(*certificates.EventCreateCertificate)
+				s.Require().True(ok)
+				s.Require().Equal(tc.msg.Owner, eventCreateCertificates.Owner)
+				s.Require().Equal(certificates.CertificateType_CREDIT_RETIREMENT.String(), eventCreateCertificates.CertificateType)
+				parsedRetiredCreditsEvent, err := sdk.ParseTypedEvent(events[1])
+				s.Require().NoError(err)
+				eventRetiredCredits, ok := parsedRetiredCreditsEvent.(*plasticcredit.EventRetiredCredits)
 				s.Require().True(ok)
 				s.Require().Equal(&plasticcredit.EventRetiredCredits{
 					Owner:                  tc.msg.Owner,

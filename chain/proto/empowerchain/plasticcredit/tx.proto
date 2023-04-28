@@ -234,6 +234,8 @@ message MsgTransferCredits {
   uint64 amount = 4;
 
   bool retire = 5;
+  string retiring_entity_name = 6;
+  string retiring_entity_additional_data = 7;
 }
 
 message MsgTransferCreditsResponse {}
@@ -245,7 +247,8 @@ message MsgRetireCredits {
 
   string denom = 2;
   uint64 amount = 3;
-
+  string retiring_entity_name = 4;
+  string retiring_entity_additional_data = 5;
 }
 
 message MsgRetireCreditsResponse {

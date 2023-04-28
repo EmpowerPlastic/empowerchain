@@ -486,17 +486,18 @@ func New(
 		storeKeys[proofofexistencemoduletypes.StoreKey],
 	)
 
+	app.CertificateKeeper = *certificatemodulekeeper.NewKeeper(appCodec,
+		storeKeys[certificatemoduletypes.StoreKey],
+		storeKeys[certificatemoduletypes.MemStoreKey],
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
+
 	app.PlasticcreditKeeper = *plasticcreditmodulekeeper.NewKeeper(appCodec,
 		storeKeys[plasticcreditmoduletypes.StoreKey],
 		storeKeys[plasticcreditmoduletypes.MemStoreKey],
 		accesscontrolmodulekeeper.NewSubKeeper(&app.AccessControlKeeper, plasticcreditmoduletypes.ModuleName),
 		app.DistrKeeper,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-	)
-
-	app.CertificateKeeper = *certificatemodulekeeper.NewKeeper(appCodec,
-		storeKeys[certificatemoduletypes.StoreKey],
-		storeKeys[certificatemoduletypes.MemStoreKey],
+		app.CertificateKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 

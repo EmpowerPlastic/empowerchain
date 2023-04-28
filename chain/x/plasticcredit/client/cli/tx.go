@@ -435,7 +435,7 @@ func MsgIssueCreditsCmd() *cobra.Command {
 
 func MsgTransferCreditsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "transfer [sender] [receiver] [denom] [amount] [retire?]",
+		Use:   "transfer [sender] [receiver] [denom] [amount] [retire?] [retiring_entity_name?] [retiring_entity_additional_data?]",
 		Short: "Transfer credits",
 		Long:  `Transfer credits from one address to another. Retire is optional and is set to false by default`,
 		Args:  cobra.MinimumNArgs(4),
@@ -459,13 +459,22 @@ func MsgTransferCreditsCmd() *cobra.Command {
 			if err != nil {
 				retire = false
 			}
-
+			retiringEntityName := ""
+			if len(args) > 5 && args[5] != "" {
+				retiringEntityName = args[5]
+			}
+			retiringEntitiyAdditionalData := ""
+			if len(args) > 6 && args[6] != "" {
+				retiringEntitiyAdditionalData = args[6]
+			}
 			msg := plasticcredit.MsgTransferCredits{
-				From:   from.String(),
-				To:     to,
-				Denom:  denom,
-				Amount: amount,
-				Retire: retire,
+				From:                         from.String(),
+				To:                           to,
+				Denom:                        denom,
+				Amount:                       amount,
+				Retire:                       retire,
+				RetiringEntityName:           retiringEntityName,
+				RetiringEntityAdditionalData: retiringEntitiyAdditionalData,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
@@ -479,9 +488,9 @@ func MsgTransferCreditsCmd() *cobra.Command {
 
 func MsgRetireCreditsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "retire [denom] [amount]",
+		Use:   "retire [denom] [amount] [retiring_entity_name] [retiring_entity_additional_data?]",
 		Short: "Retire credits",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -493,11 +502,16 @@ func MsgRetireCreditsCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-
+			retiringEntitiyAdditionalData := ""
+			if len(args) > 3 && args[3] != "" {
+				retiringEntitiyAdditionalData = args[3]
+			}
 			msg := plasticcredit.MsgRetireCredits{
-				Owner:  owner.String(),
-				Denom:  denom,
-				Amount: amount,
+				Owner:                        owner.String(),
+				Denom:                        denom,
+				Amount:                       amount,
+				RetiringEntityName:           args[2],
+				RetiringEntityAdditionalData: retiringEntitiyAdditionalData,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)

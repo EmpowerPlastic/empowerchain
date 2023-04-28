@@ -1,10 +1,10 @@
 package keeper_test
 
 import (
-	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
+	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 	"github.com/EmpowerPlastic/empowerchain/x/certificates/keeper"
 )

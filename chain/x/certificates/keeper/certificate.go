@@ -2,13 +2,14 @@ package keeper
 
 import (
 	"cosmossdk.io/errors"
-	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"golang.org/x/exp/slices"
+
+	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 )
 
 func (k Keeper) GetCertificate(ctx sdk.Context, owner string, id uint64) (certificates.Certificate, bool) {
@@ -58,7 +59,6 @@ func (k Keeper) GetAllCertificates(ctx sdk.Context, pageReq query.PageRequest) (
 
 		return nil
 	})
-
 	if err != nil {
 		return nil, query.PageResponse{}, err
 	}
@@ -76,21 +76,25 @@ func (k Keeper) getCertificateStore(ctx sdk.Context) storetypes.KVStore {
 	return prefix.NewStore(store, certificates.CertificateKey)
 }
 
-func (k Keeper) createCertificate(ctx sdk.Context, certificateType certificates.CertificateType, owner string, issuer string) (uint64, error) {
+func (k Keeper) createCertificate(ctx sdk.Context, req *certificates.MsgCreateCertificate) (uint64, error) {
 	params := k.GetParams(ctx)
 	if len(params.AllowedIssuer) > 0 {
-		if !slices.Contains(params.AllowedIssuer, issuer) {
-			return 0, errors.Wrapf(sdkerrors.ErrUnauthorized, "invalid issuer %s", issuer)
+		if !slices.Contains(params.AllowedIssuer, req.Issuer) {
+			return 0, errors.Wrapf(sdkerrors.ErrUnauthorized, "invalid issuer %s", req.Issuer)
 		}
 	}
+	return k.CreateCertificateInternal(ctx, req)
+}
 
+func (k Keeper) CreateCertificateInternal(ctx sdk.Context, req *certificates.MsgCreateCertificate) (uint64, error) {
 	idc := k.GetIDCounters(ctx)
 	nextID := idc.NextCertificateId
 	certificate := certificates.Certificate{
 		Id:     nextID,
-		Type:   certificateType,
-		Owner:  owner,
-		Issuer: issuer,
+		Type:   req.Type,
+		Owner:  req.Owner,
+		Issuer: req.Issuer,
+		Data:   req.Data,
 	}
 	if err := k.setCertificate(ctx, certificate); err != nil {
 		return 0, err
@@ -133,8 +137,7 @@ func (k Keeper) iterateCertificates(ctx sdk.Context, handler func(certificate ce
 
 	for ; iterator.Valid(); iterator.Next() {
 		var certificate certificates.Certificate
-		var value = iterator.Value()
-		k.cdc.MustUnmarshal(value, &certificate)
+		k.cdc.MustUnmarshal(iterator.Value(), &certificate)
 		handler(certificate)
 	}
 }

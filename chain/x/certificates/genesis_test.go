@@ -1,12 +1,12 @@
 package certificates_test
 
 import (
-	"github.com/EmpowerPlastic/empowerchain/utils"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
+	"github.com/EmpowerPlastic/empowerchain/utils"
 	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 )
 

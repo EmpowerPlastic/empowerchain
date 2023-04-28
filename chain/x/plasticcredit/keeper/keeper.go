@@ -8,6 +8,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	certificatesKeeper "github.com/EmpowerPlastic/empowerchain/x/certificates/keeper"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
 
@@ -18,7 +19,7 @@ type (
 		memKey              storetypes.StoreKey
 		accessControlKeeper plasticcredit.AccessControlKeeper
 		distrKeeper         plasticcredit.DistrKeeper
-
+		certificatesKeeper  certificatesKeeper.Keeper
 		// the address capable of executing a MsgUpdateParams message. Typically, this
 		// should be the x/gov module account.
 		authority string
@@ -31,6 +32,7 @@ func NewKeeper(
 	memKey storetypes.StoreKey,
 	accessControlKeeper plasticcredit.AccessControlKeeper,
 	distrKeeper plasticcredit.DistrKeeper,
+	certificatesKeeper certificatesKeeper.Keeper,
 	authority string,
 ) *Keeper {
 	return &Keeper{
@@ -40,6 +42,7 @@ func NewKeeper(
 		authority:           authority,
 		accessControlKeeper: accessControlKeeper,
 		distrKeeper:         distrKeeper,
+		certificatesKeeper:  certificatesKeeper,
 	}
 }
 
