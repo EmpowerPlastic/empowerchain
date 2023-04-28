@@ -54,12 +54,22 @@ export default withMermaid(
                 {
                     text: 'Proof of Existence',
                     collapsed: true,
-                    items: []
+                    items: [
+                        {
+                            text: 'High level overview',
+                            link: '/proof_of_existence/high_level_overview'
+                        }
+                    ]
                 },
                 {
                     text: 'Plastic Credits',
                     collapsed: true,
-                    items: [],
+                    items: [
+                        {
+                            text: 'High level overview',
+                            link: '/plastic_credits/high_level_overview'
+                        }
+                    ],
                 },
                 {
                     text: 'Developers',
