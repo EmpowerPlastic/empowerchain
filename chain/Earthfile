@@ -131,7 +131,6 @@ devnet:
     ARG VERSION=$EARTHLY_GIT_SHORT_HASH
     ARG IMAGE_NAME=empowerchain-devnet
     ARG VALPASS=passw0rd
-    ARG GENESISTEMPLATE=https://empowerchain-public.s3.fr-par.scw.cloud/genesis.json
     ARG VALNAME=validator
     EXPOSE 26656 26657 1317 9090
     CMD empowerd start --rpc.laddr tcp://0.0.0.0:26657
@@ -145,8 +144,8 @@ devnet:
     # Initialize empowerchain
     RUN empowerd init ${VALNAME}
 
-    # Download devnet genesis
-    RUN curl -s ${GENESISTEMPLATE} > ~/.empowerchain/config/genesis.json
+    # Get devnet genesis
+    COPY ../testnets/emp-devnet-1/+get-genesis/genesis.json ~/.empowerchain/config/genesis.json
 
     # Set up validator key
     RUN { echo ${VALPASS}; echo ${VALPASS}; } | empowerd keys add ${VALNAME}
