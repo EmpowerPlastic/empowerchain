@@ -36,7 +36,6 @@ export default withMermaid(
                             text: 'Applications',
                             link: '/introduction/applications'
                         },
-                        // TODO: Sections for each part of EmpowerChain?
                         {
                             text: 'Tokenomics',
                             link: '/introduction/tokenomics'
@@ -53,14 +52,42 @@ export default withMermaid(
                     items: []
                 },
                 {
-                    text: 'Users',
+                    text: 'Proof of Existence',
                     collapsed: true,
-                    items: []
+                    items: [
+                        {
+                            text: 'High level overview',
+                            link: '/proof_of_existence/high_level_overview'
+                        }
+                    ]
+                },
+                {
+                    text: 'Plastic Credits',
+                    collapsed: true,
+                    items: [
+                        {
+                            text: 'High level overview',
+                            link: '/plastic_credits/high_level_overview'
+                        }
+                    ],
                 },
                 {
                     text: 'Developers',
                     collapsed: true,
-                    items: [],
+                    items: [
+                        {
+                            text: 'Why and what to build on EmpwoerChain?',
+                            link: '/developers/why-and-what-to-build-on-empowerchain'
+                        },
+                        {
+                            text: 'Ways to build on EmpowerChain',
+                            link: '/developers/ways-to-build-on-empowerchain'
+                        },
+                        {
+                            text: 'Architecture',
+                            link: '/developers/architecture'
+                        }
+                    ]
                 },
                 {
                     text: 'Validators',
