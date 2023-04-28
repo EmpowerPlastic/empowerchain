@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import router from "@/router";
+import SupportedFilesModal from "@/views/certify/SupportedFilesModal.vue";
 
 const file = ref<File | undefined>(undefined);
-const inputHash = ref<string | undefined>(undefined);
+const inputString = ref<string>();
 const isValid = ref<boolean>(false);
+const includeWhiteSpace = ref<boolean>(false);
+const includeLetterCasing = ref<boolean>(false);
+const showModal = ref(false);
+
 //Methods
 const handleFileUpload = async (e: Event) => {
   const target = e.target as HTMLInputElement;
@@ -62,14 +67,36 @@ const redirectToWalletPage = (
   }
 };
 
-const handleInputHash = () => {
-  if (inputHash.value) {
-    redirectToWalletPage(undefined, new Date().getTime(), inputHash.value);
+const handleInputString = () => {
+  let userInput = inputString?.value || "";
+
+  if (!includeWhiteSpace.value) {
+    userInput = userInput.replace(/\s/g, "");
   }
+
+  if (!includeLetterCasing.value) {
+    userInput = userInput.toLowerCase();
+  }
+
+  if (userInput) {
+    const encoder = new TextEncoder();
+    const arrayBuffer = encoder.encode(userInput);
+    const result = window.empSha256(arrayBuffer);
+    redirectToWalletPage(undefined, new Date().getTime(), result?.value);
+  }
+};
+
+const openModal = () => {
+  showModal.value = true;
+};
+
+const closeModal = () => {
+  showModal.value = false;
 };
 </script>
 
 <template>
+  <SupportedFilesModal v-show="showModal" :close-modal="closeModal" />
   <img
     src="../../assets/images/emp-astro-1.png"
     class="left-28 top-full sm:top-auto sm:left-auto w-32 absolute animate-bounce -m-24"
@@ -124,6 +151,7 @@ const handleInputHash = () => {
             <b>not</b> be uploaded.
             <a
               href="#"
+              @click="openModal"
               class="inline-flex items-center font-medium text-lightGreen"
               >Learn more.</a
             >
@@ -165,24 +193,57 @@ const handleInputHash = () => {
           aria-labelledby="hash-tab"
         >
           <p class="mb-3 text-white text-title14 mt-2">
-            Input the SHA256 checksum hexadecimal digest for your file here.
+            You can input arbitrary plain text below to create a proof of it's
+            existence.
           </p>
           <div class="w-full p-3 mt-7 rounded bg-lightGray">
             <label class="cursor-pointer" for="file_input">
-              <input
+              <textarea
+                rows="3"
                 placeholder="Document Hash"
-                v-model="inputHash"
+                v-model="inputString"
                 class="p-1 rounded bg-lightGray w-full mr-4 text-white text-title16 h-36 md:h-auto"
               />
             </label>
           </div>
+
+          <div class="p-5 text-white">
+            <div class="flex items-center mb-2">
+              <input
+                id="checkbox-1"
+                type="checkbox"
+                v-model="includeWhiteSpace"
+                class="w-4 h-4 rounded"
+              />
+              <label
+                for="default-checkbox"
+                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                >Include whitespace characters (spaces, tabs, new lines,
+                etc.)</label
+              >
+            </div>
+            <div class="flex items-center">
+              <input
+                id="checkbox-2"
+                type="checkbox"
+                v-model="includeLetterCasing"
+                class="w-4 h-4 rounded"
+              />
+              <label
+                for="checked-checkbox"
+                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                >Include letter casing</label
+              >
+            </div>
+          </div>
+
           <div class="flex flex-row justify-center">
             <button
-              :disabled="!/\b[A-Fa-f0-9]{64}\b/.test(inputHash || '')"
-              @click="handleInputHash"
-              class="bg-lightGreen mt-10 content-center p-1 px-9 rounded text-white text-title22 disabled:bg-lightGray disabled:text-gray"
+              :disabled="!inputString"
+              @click="handleInputString"
+              class="bg-lightGreen mt-18 content-center p-1 px-9 rounded text-white text-title22 disabled:bg-lightGray disabled:text-gray"
             >
-              Register
+              Create proof
             </button>
           </div>
         </div>
