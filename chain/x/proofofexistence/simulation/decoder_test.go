@@ -9,13 +9,12 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/EmpowerPlastic/empowerchain/app"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
 	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
 	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence/simulation"
 )
 
 func TestNewDecodeStore(t *testing.T) {
-	cdc := params.MakeEncodingConfig(app.ModuleBasics).Codec
+	cdc := app.MakeEncodingConfig().Codec
 	decodeStore := simulation.NewDecodeStore(cdc)
 	timestamp, err := time.Parse("2006-01-02 15:04:05", "2020-01-01 00:00:00")
 	require.NoError(t, err)

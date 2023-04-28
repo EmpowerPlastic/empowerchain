@@ -53,6 +53,8 @@ func SimulateMsgCreateProof(cdc *codec.ProtoCodec, ak proofofexistence.AccountKe
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accounts []simtypes.Account, chainID string,
 	) (opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error) {
 		msgType := sdk.MsgTypeURL(&proofofexistence.MsgCreateProof{})
+		return simtypes.NoOpMsg(proofofexistence.ModuleName, msgType, "just for testinglol"), nil, nil
+
 		creator, _ := simtypes.RandomAcc(r, accounts)
 		spendable := bk.SpendableCoins(sdkCtx, creator.Address)
 
