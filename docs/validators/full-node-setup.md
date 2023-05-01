@@ -154,7 +154,7 @@ There are three main ways to sync a node on Empowerchain: from scratch, state sy
 
 ### Sync from genesis
 
-TODO
+To sync from genesis, simply start the `empowerd` daemon. No additional configuration is needed to set up this sync method.
 
 ### State Sync
 
