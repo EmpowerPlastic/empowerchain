@@ -12,7 +12,7 @@ defineProps<FAQCollapseProps>();
       {{title}}
     </div>
     <div class="collapse-content bg-lightBlack">
-      <p class="text-textWhite p-3">{{content}}</p>
+      <p class="text-textWhite px-10 py-3">{{content}}</p>
     </div>
   </div>
 </template>
