@@ -48,6 +48,10 @@ A plastic credit type is a type of plastic credit that is issued by a specific i
 It represents a specific standard or methodology for collection, cleanup or recycling of plastic waste.
 This means that there can be multiple types of plastic credits on the market, each representing different actions (and verifications) having taken place.
 
+Applicants apply to an issuer and a credit type with a specific project. The issuer can then approve the project and later issue plastic credits to the applicant.
+
+![Plastic credit type illustration](./plastic_credit_type.png 'Plastic credit type, issuer, applicant and project')
+
 ## Issuers
 An issuer is an entity that owns and creates plastic credit types, as well as issues plastic credits to applicants.
 They are the sole authority on what plastic credit types are valid and what projects are approved.
@@ -71,10 +75,19 @@ A plastic credit collection is a collection of plastic credits that are issued b
 
 Depending on the plastic credit type, a plastic credit collection can be time-bound or ongoing. Meaning that for instance an issuer can issue credits in a new collection every month so that the credits are time-bound.
 
+A plastic credit collection is unique per credit type, project and serial number. 
+It is up to the issuer and the standard of the credit type to decide what constitutes a new serial number.
+It could for instance be a time-bound serial number (e.g. a new serial number every month), 
+a serial number that is incremented for every x credits issued, or something else entirely.
+
+![Plastic credit collection illustration](./plastic_credit_collection.png 'Plastic credit collection and its unique combinations of credit type, project and serial number')
+
 ## Plastic Credits
 A plastic credit is a digital unit that represents an activity related to removing plastic from the environment. A single credit can represent a kg or ton of plastic removed/recycled/handled, or some other unit of measurement.
 
 Plastic credits are neither fully fungible, nor entirely non-fungible. A credit is fungible only within a single credit collection, but not between credit collections.
+Each credit collection (which is unique per credit type, project and serial number) is a batch of credits that are fungible within that batch, but not between batches.
+Another way to think of each collection is as it having its own type of token (ERC20 or similar) that can only be traded within that collection.
 
 ## Read more
 You can find more in-depth technical details on the implementation of the plastic credits in the [plastic credits module docs](../module_docs/plasticcredit.md)
