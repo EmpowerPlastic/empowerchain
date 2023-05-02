@@ -1,15 +1,15 @@
-name: "PoE frontend depoly"
+name: "Deploy Marketplace Frontend"
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'frontend/proof-of-existence/**' # On updating poe frontend
+      - 'frontend/marketplace/**'
 
 jobs:
   build:
-    name: Deploy Proof of Existence Frontend
+    name: Deploy Marketplace Frontend
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
@@ -23,5 +23,5 @@ jobs:
           vercel-args: '--prod'
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}
           scope: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_POE}}
-          working-directory: ./frontend/proof-of-existence/
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_MARKETPLACE}}
+          working-directory: ./frontend/marketplace/

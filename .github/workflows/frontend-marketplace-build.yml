@@ -1,4 +1,4 @@
-name: "PoE frontend build"
+name: "Marketplace frontend build"
 
 on:
   workflow_dispatch:
@@ -7,11 +7,11 @@ on:
     branches:
       - main
     paths:
-      - 'frontend/proof-of-existance/**'
+      - 'frontend/marketplace/**'
 
 jobs:
   build:
-    name: Build Proof of Existence Frontend
+    name: Build Marketplace Frontend
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
