@@ -86,16 +86,24 @@ export default withMermaid(
                     collapsed: true,
                     items: [
                         {
-                            text: 'Why and what to build on EmpwoerChain?',
-                            link: '/developers/why-and-what-to-build-on-empowerchain'
+                            text: 'Why build on EmpowerChain?',
+                            link: '/developers/why-build-on-empowerchain'
                         },
                         {
-                            text: 'Ways to build on EmpowerChain',
+                            text: 'What to build',
+                            link: '/developers/what-to-build-on-empowerchain'
+                        },
+                        {
+                            text: 'Ways to build',
                             link: '/developers/ways-to-build-on-empowerchain'
                         },
                         {
                             text: 'Architecture',
                             link: '/developers/architecture'
+                        },
+                        {
+                            text: 'Plastic Credits',
+                            link: '/developers/plastic-credits'
                         }
                     ]
                 },
