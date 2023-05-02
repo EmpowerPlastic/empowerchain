@@ -6,11 +6,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/spf13/cobra"
+
+	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 )
 
 // GetTxCmd returns the transaction commands for this module
@@ -45,6 +46,9 @@ func MsgCreateCertificateCmd() *cobra.Command {
 
 			var data certificates.MsgCreateCertificate
 			err = json.Unmarshal(fileContent, &data)
+			if err != nil {
+				return err
+			}
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err

@@ -100,11 +100,11 @@ func (k Keeper) retireCreditsForAddress(ctx sdk.Context, req *plasticcredit.MsgR
 	}
 
 	certificatesAdditionalData := []*certificates.AdditionalData{
-		&certificates.AdditionalData{Key: "denom", Value: req.Denom},
-		&certificates.AdditionalData{Key: "amount", Value: fmt.Sprint(req.Amount)},
-		&certificates.AdditionalData{Key: "retiring_entity_address", Value: owner.String()},
-		&certificates.AdditionalData{Key: "retiring_entity_name", Value: req.RetiringEntityName},
-		&certificates.AdditionalData{Key: "retiring_entity_additional_data", Value: req.RetiringEntityAdditionalData},
+		{Key: "denom", Value: req.Denom},
+		{Key: "amount", Value: fmt.Sprint(req.Amount)},
+		{Key: "retiring_entity_address", Value: owner.String()},
+		{Key: "retiring_entity_name", Value: req.RetiringEntityName},
+		{Key: "retiring_entity_additional_data", Value: req.RetiringEntityAdditionalData},
 	}
 	certificate := certificates.MsgCreateCertificate{
 		Owner:          owner.String(),
