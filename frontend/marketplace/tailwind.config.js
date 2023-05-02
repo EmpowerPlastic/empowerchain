@@ -11,6 +11,7 @@ module.exports = {
                 greenPrimary: "#00C131",
                 greenMedium: "#00B82E",
                 greenDark: "#007A1F",
+                greenTabs:'#00E33A',
                 black: "rgba(0, 0, 0, 1)",
                 lightBlack: "rgba(255, 255, 255, 0.06)",
                 dropdownBlack: "rgba(33, 33, 33, 1)",
