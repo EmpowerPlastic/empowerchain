@@ -7,6 +7,7 @@ frontend-context:
     COPY package.json package-lock.json lerna.json ./
     COPY empowerjs empowerjs
     COPY proof-of-existence proof-of-existence
+    COPY marketplace marketplace
     SAVE ARTIFACT .
 
 lerna-build:

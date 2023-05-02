@@ -609,7 +609,7 @@ func New(
 		// CosmWasm modules
 		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasm.ModuleName)),
 		// Custom modules
-		proofofexistencemodule.NewAppModule(app.ProofofexistenceKeeper),
+		proofofexistencemodule.NewAppModule(appCodec, app.ProofofexistenceKeeper, app.AccountKeeper, app.BankKeeper),
 		plasticcreditmodule.NewAppModule(appCodec, app.PlasticcreditKeeper, app.AccountKeeper, app.BankKeeper),
 		accesscontrolmodule.NewAppModule(app.AccessControlKeeper),
 		certificatemodule.NewAppModule(appCodec, app.CertificateKeeper, app.AccountKeeper, app.BankKeeper),

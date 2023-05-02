@@ -24,6 +24,6 @@ swagger-docs:
     COPY ../chain/+swagger-gen/markdown.md ./swagger_ui/swagger.md
     SAVE ARTIFACT swagger_ui AS LOCAL api_docs
 
-doc-gen-all:
+docs-gen-all:
     BUILD +swagger-docs
     BUILD +docgen

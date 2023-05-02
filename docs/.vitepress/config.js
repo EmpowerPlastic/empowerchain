@@ -1,5 +1,6 @@
 import {defineConfig} from "vitepress";
 import {withMermaid} from "vitepress-plugin-mermaid";
+import imageFigures from 'markdown-it-image-figures';
 
 import cli_docs from './sidebar_cli_docs.js'
 import module_docs from './sidebar_module_docs.js'
@@ -9,6 +10,15 @@ export default withMermaid(
         title: 'EmpowerChain Docs',
         description: 'Documentation for everything EmpowerChain.',
         cleanUrls: true,
+        markdown: {
+            config: (md) => {
+                md.use(imageFigures, {
+                    figcaption: 'title',
+                    copyAttrs: '^class$',
+                    classes: 'in-text-img',
+                });
+            },
+        },
         themeConfig: {
             logo: '/logo.svg',
             socialLinks: [
@@ -36,7 +46,6 @@ export default withMermaid(
                             text: 'Applications',
                             link: '/introduction/applications'
                         },
-                        // TODO: Sections for each part of EmpowerChain?
                         {
                             text: 'Tokenomics',
                             link: '/introduction/tokenomics'
@@ -53,14 +62,50 @@ export default withMermaid(
                     items: []
                 },
                 {
-                    text: 'Users',
+                    text: 'Proof of Existence',
                     collapsed: true,
-                    items: []
+                    items: [
+                        {
+                            text: 'High level overview',
+                            link: '/proof_of_existence/high_level_overview'
+                        }
+                    ]
+                },
+                {
+                    text: 'Plastic Credits',
+                    collapsed: true,
+                    items: [
+                        {
+                            text: 'High level overview',
+                            link: '/plastic_credits/high_level_overview'
+                        }
+                    ],
                 },
                 {
                     text: 'Developers',
                     collapsed: true,
-                    items: [],
+                    items: [
+                        {
+                            text: 'Why build on EmpowerChain?',
+                            link: '/developers/why-build-on-empowerchain'
+                        },
+                        {
+                            text: 'What to build',
+                            link: '/developers/what-to-build-on-empowerchain'
+                        },
+                        {
+                            text: 'Ways to build',
+                            link: '/developers/ways-to-build-on-empowerchain'
+                        },
+                        {
+                            text: 'Architecture',
+                            link: '/developers/architecture'
+                        },
+                        {
+                            text: 'Plastic Credits',
+                            link: '/developers/plastic-credits'
+                        }
+                    ]
                 },
                 {
                     text: 'Validators',
