@@ -11,6 +11,8 @@ export interface MsgCreateVestingAccount {
   fromAddress: string;
   toAddress: string;
   amount: Coin[];
+  /** end of vesting as unix time (in seconds). */
+
   endTime: Long;
   delayed: boolean;
 }
@@ -23,6 +25,8 @@ export interface MsgCreateVestingAccountSDKType {
   from_address: string;
   to_address: string;
   amount: CoinSDKType[];
+  /** end of vesting as unix time (in seconds). */
+
   end_time: Long;
   delayed: boolean;
 }
@@ -80,6 +84,8 @@ export interface MsgCreatePermanentLockedAccountResponseSDKType {}
 export interface MsgCreatePeriodicVestingAccount {
   fromAddress: string;
   toAddress: string;
+  /** start of vesting as unix time (in seconds). */
+
   startTime: Long;
   vestingPeriods: Period[];
 }
@@ -93,6 +99,8 @@ export interface MsgCreatePeriodicVestingAccount {
 export interface MsgCreatePeriodicVestingAccountSDKType {
   from_address: string;
   to_address: string;
+  /** start of vesting as unix time (in seconds). */
+
   start_time: Long;
   vesting_periods: PeriodSDKType[];
 }

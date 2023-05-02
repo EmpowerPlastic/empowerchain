@@ -11,5 +11,18 @@ echo "Current Cosmos SDK version: $COSMOS_SDK_VERSION"
 COSMOS_SDK_PATH=$(go env GOPATH)/pkg/mod/github.com/cosmos/cosmos-sdk@$COSMOS_SDK_VERSION
 echo "Copying proto files from $COSMOS_SDK_PATH"
 cp -r $COSMOS_SDK_PATH/proto/tendermint $PWD/proto
+chmod -R 775 $PWD/proto/tendermint
 cp -r $COSMOS_SDK_PATH/proto/cosmos $PWD/proto
+chmod -R 775 $PWD/proto/cosmos
 cp -r $COSMOS_SDK_PATH/proto/amino $PWD/proto
+chmod -R 775 $PWD/proto/amino
+
+# If we decide we need it at some point:
+# COSMWASM_VERSION=$(grep github.com/CosmWasm/wasmd ../../chain/go.mod | awk '{print $2}')
+# echo "Current CosmWasm version: $COSMWASM_VERSION"
+#
+# # Copy proto files from cosmwasm package in GOPATH.
+# COSMWASM_PATH=$(go env GOPATH)/pkg/mod/github.com/\!cosm\!wasm/wasmd@$COSMWASM_VERSION
+# echo "Copying proto files from $COSMWASM_PATH"
+# cp -r $COSMWASM_PATH/proto/cosmwasm $PWD/proto
+# chmod -R 775 $PWD/proto/cosmwasm

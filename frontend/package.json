@@ -5,7 +5,8 @@
     "empowerjs",
     "cw-client",
     "proof-of-existence",
-    "marketplace"
+    "marketplace",
+    "empowerjs-demo-application"
   ],
   "devDependencies": {
     "crypto-browserify": "^3.12.0",

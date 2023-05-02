@@ -1,5 +1,6 @@
+import { Timestamp } from "../../../../google/protobuf/timestamp";
 import * as _m0 from "protobufjs/minimal";
-import { Long, DeepPartial } from "../../../../helpers";
+import { toTimestamp, Long, fromTimestamp, DeepPartial } from "../../../../helpers";
 /**
  * CommitInfo defines commit information used by the multi-store when committing
  * a version/height.
@@ -8,6 +9,7 @@ import { Long, DeepPartial } from "../../../../helpers";
 export interface CommitInfo {
   version: Long;
   storeInfos: StoreInfo[];
+  timestamp?: Date;
 }
 /**
  * CommitInfo defines commit information used by the multi-store when committing
@@ -17,6 +19,7 @@ export interface CommitInfo {
 export interface CommitInfoSDKType {
   version: Long;
   store_infos: StoreInfoSDKType[];
+  timestamp?: Date;
 }
 /**
  * StoreInfo defines store-specific commit information. It contains a reference
@@ -58,7 +61,8 @@ export interface CommitIDSDKType {
 function createBaseCommitInfo(): CommitInfo {
   return {
     version: Long.ZERO,
-    storeInfos: []
+    storeInfos: [],
+    timestamp: undefined
   };
 }
 
@@ -70,6 +74,10 @@ export const CommitInfo = {
 
     for (const v of message.storeInfos) {
       StoreInfo.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+
+    if (message.timestamp !== undefined) {
+      Timestamp.encode(toTimestamp(message.timestamp), writer.uint32(26).fork()).ldelim();
     }
 
     return writer;
@@ -92,6 +100,10 @@ export const CommitInfo = {
           message.storeInfos.push(StoreInfo.decode(reader, reader.uint32()));
           break;
 
+        case 3:
+          message.timestamp = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          break;
+
         default:
           reader.skipType(tag & 7);
           break;
@@ -105,6 +117,7 @@ export const CommitInfo = {
     const message = createBaseCommitInfo();
     message.version = object.version !== undefined && object.version !== null ? Long.fromValue(object.version) : Long.ZERO;
     message.storeInfos = object.storeInfos?.map(e => StoreInfo.fromPartial(e)) || [];
+    message.timestamp = object.timestamp ?? undefined;
     return message;
   }
 
