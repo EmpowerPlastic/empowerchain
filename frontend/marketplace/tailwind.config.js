@@ -3,7 +3,6 @@ module.exports = {
     content: [
         "./index.html",
         "./src/**/*.{vue,js,ts,jsx,tsx}",
-        "node_modules/flowbite/**/*.{js,jsx,ts,tsx}",
     ],
 
     theme: {
@@ -66,7 +65,6 @@ module.exports = {
         prefix: "",
         darkTheme: "dark",
     },
-   // plugins: [require("flowbite/plugin"),],
     plugins: [require("daisyui")],
 }
 
