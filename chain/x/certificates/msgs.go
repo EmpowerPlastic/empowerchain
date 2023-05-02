@@ -43,8 +43,8 @@ func (m *MsgCreateCertificate) ValidateBasic() error {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid issuer address (%s)", err)
 	}
 
-	if m.Data == nil || len(m.Data) == 0 {
-		return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Data cannot be empty")
+	if m.AdditionalData == nil || len(m.AdditionalData) == 0 {
+		return errors.Wrapf(sdkerrors.ErrInvalidRequest, "Additional Data cannot be empty")
 	}
 
 	return nil

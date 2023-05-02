@@ -31,7 +31,7 @@ type TestSuite struct {
 	sampleIssuerAdmin string
 
 	sampleCertificationType certificates.CertificateType
-	sampleCertificationData map[string]string
+	sampleAdditionalData    []*certificates.AdditionalData
 }
 
 func (s *TestSuite) SetupTest() {
@@ -84,9 +84,12 @@ func TestTestSuite(t *testing.T) {
 	ts.sampleOwner = sample.AccAddress()
 	ts.sampleOwnerID = 1
 	ts.sampleCertificationType = 0
-	m := make(map[string]string)
-	m["owner"] = "owner"
-	m["issuer"] = "issuer"
-	ts.sampleCertificationData = m
+	additionalData := &certificates.AdditionalData{
+		Key:   "test",
+		Value: "test",
+	}
+	ts.sampleAdditionalData = []*certificates.AdditionalData{
+		additionalData,
+	}
 	suite.Run(t, ts)
 }

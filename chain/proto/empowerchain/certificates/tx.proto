@@ -34,7 +34,7 @@ message MsgCreateCertificate {
   string issuer = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   CertificateType type = 2;
   string owner = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  map<string, string> data = 4;
+  repeated AdditionalData additional_data = 4;
 }
 
 message MsgCreateCertificateResponse {

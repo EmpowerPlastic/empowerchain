@@ -98,17 +98,19 @@ func (k Keeper) retireCreditsForAddress(ctx sdk.Context, req *plasticcredit.MsgR
 	if !found {
 		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrIssuerNotFound, "issuer with id %d not found", creditType.IssuerId)
 	}
+
+	certificatesAdditionalData := []*certificates.AdditionalData{
+		&certificates.AdditionalData{Key: "denom", Value: req.Denom},
+		&certificates.AdditionalData{Key: "amount", Value: fmt.Sprint(req.Amount)},
+		&certificates.AdditionalData{Key: "retiring_entity_address", Value: owner.String()},
+		&certificates.AdditionalData{Key: "retiring_entity_name", Value: req.RetiringEntityName},
+		&certificates.AdditionalData{Key: "retiring_entity_additional_data", Value: req.RetiringEntityAdditionalData},
+	}
 	certificate := certificates.MsgCreateCertificate{
-		Owner:  owner.String(),
-		Issuer: issuer.Admin,
-		Type:   0,
-		Data: map[string]string{
-			"denom":                           req.Denom,
-			"amount":                          fmt.Sprint(req.Amount),
-			"retiring_entity_address":         owner.String(),
-			"retiring_entity_name":            req.RetiringEntityName,
-			"retiring_entity_additional_data": req.RetiringEntityAdditionalData,
-		},
+		Owner:          owner.String(),
+		Issuer:         issuer.Admin,
+		Type:           0,
+		AdditionalData: certificatesAdditionalData,
 	}
 	_, err = k.certificatesKeeper.CreateCertificateInternal(ctx, &certificate)
 	if err != nil {

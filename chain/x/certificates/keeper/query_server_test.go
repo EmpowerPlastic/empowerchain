@@ -40,10 +40,10 @@ func (s *TestSuite) TestCertificateQuery() {
 
 	ms := keeper.NewMsgServerImpl(k)
 	createMsg := certificates.MsgCreateCertificate{
-		Owner:  sampleOwner,
-		Issuer: s.sampleIssuerAdmin,
-		Type:   s.sampleCertificationType,
-		Data:   s.sampleCertificationData,
+		Owner:          sampleOwner,
+		Issuer:         s.sampleIssuerAdmin,
+		Type:           s.sampleCertificationType,
+		AdditionalData: s.sampleAdditionalData,
 	}
 	createdCert, err := ms.CreateCertificate(goCtx, &createMsg)
 	s.Require().Equal(uint64(1), createdCert.CertificateId)
@@ -69,10 +69,10 @@ func (s *TestSuite) TestCertificatesQuery() {
 	ms := keeper.NewMsgServerImpl(k)
 	for i := 0; i < 11; i++ {
 		createMsg := certificates.MsgCreateCertificate{
-			Owner:  sample.AccAddress(),
-			Issuer: s.sampleIssuerAdmin,
-			Type:   s.sampleCertificationType,
-			Data:   s.sampleCertificationData,
+			Owner:          sample.AccAddress(),
+			Issuer:         s.sampleIssuerAdmin,
+			Type:           s.sampleCertificationType,
+			AdditionalData: s.sampleAdditionalData,
 		}
 		_, err := ms.CreateCertificate(goCtx, &createMsg)
 		s.Require().NoError(err)
@@ -102,20 +102,20 @@ func (s *TestSuite) TestCertificatesByOwnerQuery() {
 	ms := keeper.NewMsgServerImpl(k)
 	for i := 0; i < 10; i++ {
 		createMsg := certificates.MsgCreateCertificate{
-			Owner:  s.sampleOwner,
-			Issuer: s.sampleIssuerAdmin,
-			Type:   s.sampleCertificationType,
-			Data:   s.sampleCertificationData,
+			Owner:          s.sampleOwner,
+			Issuer:         s.sampleIssuerAdmin,
+			Type:           s.sampleCertificationType,
+			AdditionalData: s.sampleAdditionalData,
 		}
 		_, err = ms.CreateCertificate(goCtx, &createMsg)
 		s.Require().NoError(err)
 	}
 	for i := 0; i < 10; i++ {
 		createMsg := certificates.MsgCreateCertificate{
-			Owner:  sample.AccAddress(),
-			Issuer: s.sampleIssuerAdmin,
-			Type:   s.sampleCertificationType,
-			Data:   s.sampleCertificationData,
+			Owner:          sample.AccAddress(),
+			Issuer:         s.sampleIssuerAdmin,
+			Type:           s.sampleCertificationType,
+			AdditionalData: s.sampleAdditionalData,
 		}
 		_, err = ms.CreateCertificate(goCtx, &createMsg)
 		s.Require().NoError(err)

@@ -90,11 +90,11 @@ func (k Keeper) CreateCertificateInternal(ctx sdk.Context, req *certificates.Msg
 	idc := k.GetIDCounters(ctx)
 	nextID := idc.NextCertificateId
 	certificate := certificates.Certificate{
-		Id:     nextID,
-		Type:   req.Type,
-		Owner:  req.Owner,
-		Issuer: req.Issuer,
-		Data:   req.Data,
+		Id:             nextID,
+		Type:           req.Type,
+		Owner:          req.Owner,
+		Issuer:         req.Issuer,
+		AdditionalData: req.AdditionalData,
 	}
 	if err := k.setCertificate(ctx, certificate); err != nil {
 		return 0, err

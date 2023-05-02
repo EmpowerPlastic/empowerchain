@@ -8,7 +8,7 @@ source scripts/serve_env.sh
 # alice is issuer admin
 
 echo "--- Test: Plastic Credit Create Issuer ---"
-empowerd tx gov submit-proposal scripts/test/testdata/proposal_create_issuer.json --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
+empowerd tx gov submit-proposal scripts/test/testdata/certificate_update_params.json --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 empowerd tx gov vote 1 yes --from validator --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
@@ -20,24 +20,10 @@ if [ "$GOV_RESULT" != "PROPOSAL_STATUS_PASSED" ]; then
   exit 1
 fi
 
-empowerd q plasticcredit issuer 1
-empowerd q plasticcredit issuers
-NUM_ISSUERS=$(empowerd q plasticcredit issuers -o json | jq ".issuers | length")
-if [ "$NUM_ISSUERS" != "1" ]; then
-  echo "Error: number of issuers from issuers query was: $NUM_ISSUERS"
-  exit 1
-fi
-# empowerd tx certificates update-params empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m '{"empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7"}' --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
-echo "--- Test: Plastic Credit Create Issuer ---"
-empowerd tx gov submit-proposal scripts/test/testdata/certificate_update_params.json --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
-sleep 5
-empowerd tx gov vote 1 yes --from validator --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
-sleep 5
-empowerd q gov proposal 1
-sleep 25
-sleep 5
-exit 0
-empowerd tx certificates create-certificate CertificateType_CREDIT_RETIREMENT empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 "{}" --from empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
+empowerd q certificates params
+empowerd tx certificates create-certificate  /scripts/test/testdata/create_certificate.json --from empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
+
+
 sleep 5
 empowerd q certificates certificates
 NUM_CERTIFICATES=$(empowerd q certificates certificates -o json | jq ".certificates | length")

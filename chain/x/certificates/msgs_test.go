@@ -47,46 +47,47 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgCreateCertificate_ValidateBasic(t *testing.T) {
+	additionalData := &AdditionalData{
+		Key:   "test",
+		Value: "test",
+	}
+	sampleAdditionalData := []*AdditionalData{
+		additionalData,
+	}
 	testCases := map[string]validateTest{
 		"happy path": {
 			msgUnderTest: &MsgCreateCertificate{
-				Owner:  sample.AccAddress(),
-				Issuer: sample.AccAddress(),
-				Type:   0,
-				Data: map[string]string{
-					"test": "test",
-				},
+				Owner:          sample.AccAddress(),
+				Issuer:         sample.AccAddress(),
+				Type:           0,
+				AdditionalData: sampleAdditionalData,
 			},
 			expectedError: nil,
 		},
 		"invalid owner": {
 			msgUnderTest: &MsgCreateCertificate{
-				Owner:  "invalid",
-				Issuer: sample.AccAddress(),
-				Type:   0,
-				Data: map[string]string{
-					"test": "test",
-				},
+				Owner:          "invalid",
+				Issuer:         sample.AccAddress(),
+				Type:           0,
+				AdditionalData: sampleAdditionalData,
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
 		},
 		"invalid issuer": {
 			msgUnderTest: &MsgCreateCertificate{
-				Owner:  sample.AccAddress(),
-				Issuer: "invalid",
-				Type:   0,
-				Data: map[string]string{
-					"test": "test",
-				},
+				Owner:          sample.AccAddress(),
+				Issuer:         "invalid",
+				Type:           0,
+				AdditionalData: sampleAdditionalData,
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
 		},
 		"invalid data": {
 			msgUnderTest: &MsgCreateCertificate{
-				Owner:  sample.AccAddress(),
-				Issuer: sample.AccAddress(),
-				Type:   0,
-				Data:   map[string]string{},
+				Owner:          sample.AccAddress(),
+				Issuer:         sample.AccAddress(),
+				Type:           0,
+				AdditionalData: sampleAdditionalData,
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},

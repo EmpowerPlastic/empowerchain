@@ -79,19 +79,19 @@ func (s *TestSuite) TestCreateCertificate() {
 	}{
 		"happy path": {
 			msg: &certificates.MsgCreateCertificate{
-				Owner:  s.sampleOwner,
-				Type:   s.sampleCertificationType,
-				Issuer: s.sampleIssuerAdmin,
-				Data:   s.sampleCertificationData,
+				Owner:          s.sampleOwner,
+				Type:           s.sampleCertificationType,
+				Issuer:         s.sampleIssuerAdmin,
+				AdditionalData: s.sampleAdditionalData,
 			},
 			err: nil,
 		},
 		"unauthorized issuer": {
 			msg: &certificates.MsgCreateCertificate{
-				Owner:  s.sampleOwner,
-				Type:   s.sampleCertificationType,
-				Issuer: sample.AccAddress(),
-				Data:   s.sampleCertificationData,
+				Owner:          s.sampleOwner,
+				Type:           s.sampleCertificationType,
+				Issuer:         sample.AccAddress(),
+				AdditionalData: s.sampleAdditionalData,
 			},
 			err: sdkerrors.ErrUnauthorized,
 		},
@@ -118,11 +118,11 @@ func (s *TestSuite) TestCreateCertificate() {
 				certificate, found := k.GetCertificate(s.ctx, tc.msg.Owner, resp.CertificateId)
 				s.Require().True(found)
 				s.Require().Equal(certificates.Certificate{
-					Id:     resp.CertificateId,
-					Type:   tc.msg.Type,
-					Owner:  tc.msg.Owner,
-					Issuer: tc.msg.Issuer,
-					Data:   s.sampleCertificationData,
+					Id:             resp.CertificateId,
+					Type:           tc.msg.Type,
+					Owner:          tc.msg.Owner,
+					Issuer:         tc.msg.Issuer,
+					AdditionalData: s.sampleAdditionalData,
 				}, certificate)
 
 				s.Require().Len(events, 1)
