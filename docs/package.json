@@ -14,5 +14,8 @@
     "vitepress": "^1.0.0-alpha.65",
     "vitepress-plugin-mermaid": "^2.0.10",
     "vue": "^3.2.47"
+  },
+  "dependencies": {
+    "markdown-it-image-figures": "^2.1.1"
   }
 }

@@ -1,5 +1,6 @@
 import {defineConfig} from "vitepress";
 import {withMermaid} from "vitepress-plugin-mermaid";
+import imageFigures from 'markdown-it-image-figures';
 
 import cli_docs from './sidebar_cli_docs.js'
 import module_docs from './sidebar_module_docs.js'
@@ -9,6 +10,15 @@ export default withMermaid(
         title: 'EmpowerChain Docs',
         description: 'Documentation for everything EmpowerChain.',
         cleanUrls: true,
+        markdown: {
+            config: (md) => {
+                md.use(imageFigures, {
+                    figcaption: 'title',
+                    copyAttrs: '^class$',
+                    classes: 'in-text-img',
+                });
+            },
+        },
         themeConfig: {
             logo: '/logo.svg',
             socialLinks: [

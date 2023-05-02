@@ -1,17 +1,19 @@
-# Architecture
+# High-level Architecture
 
 EmpowerChain is built using the Cosmos SDK, which is the world’s most popular framework for building application-specific blockchains.
 
 EmpowerChain roughly has the following tech stack:
 - Cosmos SDK as the blockchain framework
 - CometBFT as the consensus engine
-- IBC (Inter Blockchain Communication Protocol) for interchain communication
+  - IBC (Inter Blockchain Communication Protocol) for interchain communication
 - Custom Cosmos SDK modules written in Go
 - CosmWasm for smart contract development in Rust
 
 The goal is to have the stable core protocol developed as custom Cosmos SDK modules and build applications and tools on top of that in CosmWasm smart contracts.
 
-TODO: High level architecture diagram
+![EmpowerChain High Level architecture](./empowerchain_high_level_architecture.png 'EmpowerChain high level architecture')
+
+All the code for EmpowerChain is open source and can be found on our GitHub: https://github.com/EmpowerPlastic/empowerchain
 
 ## Cosmos SDK
 Cosmos SDK is a modular framework that connects all the different components and modules needed to build a blockchain, such as:

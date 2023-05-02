@@ -15,6 +15,8 @@ These smart contracts can interact directly with the core EmpowerChain protocol,
 Smart contract deployment is not open for anyone and must go through governance (either a direct governance proposal or through a group/multi-sig with deployment permissions).
 Governance-gated deployment is done not to limit development but to ensure applications on EmpowerChain are as safe as possible and contribute towards the chain's goals.
 
+Read more about CosmWasm here: https://cosmwasm.com
+
 ## Building out the core EmpowerChain protocol
 You can see more details on how EmpowerChain is built in the [architecture](architecture.md) chapter, but to explain very briefly:
 EmpowerChain is built using the Cosmos SDK, a modular framework for building blockchains. The core parts of the protocol are made using the Cosmos SDK modules.
