@@ -27,7 +27,8 @@ module.exports = {
                 dropDownText: "rgba(255, 255, 255, 0.6)",
                 navBarBlack: "rgba(0, 0, 0, 0.95)",
                 borderBlack:"rgba(255, 255, 255, 0.03)",
-                dividerGray:"rgba(255, 255, 255, 0.08)"
+                dividerGray:"rgba(255, 255, 255, 0.08)",
+                textWhite:"rgba(255, 255, 255, 0.8)"
             },
             fontSize: {
                 title32: "32px",
@@ -55,6 +56,17 @@ module.exports = {
             },
         },
     },
-    plugins: [require("flowbite/plugin")],
+    daisyui: {
+        styled: true,
+        themes: false,
+        base: false,
+        utils: true,
+        logs: true,
+        rtl: false,
+        prefix: "",
+        darkTheme: "dark",
+    },
+   // plugins: [require("flowbite/plugin"),],
+    plugins: [require("daisyui")],
 }
 
