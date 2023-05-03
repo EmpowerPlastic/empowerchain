@@ -18,5 +18,16 @@ import CreditCard from "@/components/CreditCard.vue";
     <CreditCard/>
     <CreditCard/>
 
+    <div class="w-full flex justify-center md:justify-end my-10">
+      <div class="btn-group rounded-sm">
+        <button class="btn bg-lightBlack border-none text-greenTabs text-title16">«</button>
+        <button class="btn bg-paginationBlack border-none">1</button>
+        <button class="btn bg-lightBlack border-none text-greenTabs">2</button>
+        <button class="btn bg-lightBlack border-none text-greenTabs">3</button>
+        <button class="btn bg-lightBlack border-none text-greenTabs">4</button>
+        <button class="btn bg-lightBlack border-none text-greenTabs">»</button>
+      </div>
+    </div>
+
   </div>
 </template>
