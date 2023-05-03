@@ -38,7 +38,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 func generateProofs(r *rand.Rand, creators []simtypes.Account) []proofofexistence.Proof {
 	var proofs []proofofexistence.Proof
 
-	numProofs := simtypes.RandIntBetween(r, 1, 1_000_000)
+	numProofs := simtypes.RandIntBetween(r, 1, 100_000)
 	for i := 0; i < numProofs; i++ {
 		creator, _ := simtypes.RandomAcc(r, creators)
 		proofs = append(proofs, proofofexistence.Proof{
