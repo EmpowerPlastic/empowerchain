@@ -87,7 +87,7 @@ func TestMsgCreateCertificate_ValidateBasic(t *testing.T) {
 				Owner:          sample.AccAddress(),
 				Issuer:         sample.AccAddress(),
 				Type:           0,
-				AdditionalData: sampleAdditionalData,
+				AdditionalData: nil,
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},

@@ -32,7 +32,11 @@ func MsgCreateCertificateCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-certificate [map of certificate attributes]",
 		Short: "create a new certificate",
-		Args:  cobra.MinimumNArgs(1),
+		Example: "empowerd tx certificates create-certificate  ./create_certificate.json\n" +
+			"create_certificate.json following format:\n" +
+			"{\"issuer\":\"<issuer_address>\",\"owner\":\"<owner_address>\",\"type\":\"<Certificate type>\",\"additional_data\":[{\"key\":\"test\",\"value\":\"test\"}]}",
+
+		Args: cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			currentDir, err := filepath.Abs("./")
 			if err == nil {
