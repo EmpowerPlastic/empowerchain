@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "prepare": "cd ../.. && husky install frontend/marketplace/.husky",
     "build": "run-p type-check build-only",
     "preview": "vite preview",
     "test:unit": "vitest",
@@ -14,7 +15,6 @@
   },
   "dependencies": {
     "daisyui": "^2.51.6",
-    "flowbite": "^1.6.4",
     "pinia": "^2.0.32",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6"
