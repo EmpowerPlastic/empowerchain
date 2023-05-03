@@ -28,7 +28,9 @@ module.exports = {
                 navBarBlack: "rgba(0, 0, 0, 0.95)",
                 borderBlack:"rgba(255, 255, 255, 0.03)",
                 dividerGray:"rgba(255, 255, 255, 0.08)",
-                textWhite:"rgba(255, 255, 255, 0.8)"
+                textWhite:"rgba(255, 255, 255, 0.8)",
+                borderGray:"rgba(255, 255, 255, 0.14)",
+                buttonBlack:"rgba(255, 255, 255, 0.1)",
             },
             fontSize: {
                 title32: "32px",
