@@ -10,10 +10,71 @@ Hardware requirements for Empowerchain vary based on the purpose of the full nod
 - 16GB RAM
 - 500+ GB SSD (SATA or NVMe)
 
-## Installation Prerequesites
+## Installation Prerequisites
+
+### Linux Dependencies
+
+Install the following build dependencies
+
+```bash
+sudo apt update
+sudo apt install -y curl tar wget clang pkg-config libssl-dev jq build-essential bsdmainutils git make ncdu gcc git jq chrony liblz4-tool
+```
 
 ### Golang
-Golang version 1.20.0 or higher is required to build empowerd.
+Golang version 1.20.0 or higher is required to build empowerd. Go can be installed as a stand-alone installation or as a managed installation through `gvm`.
+
+#### gvm Installation (Recommended)
+
+`gvm` requires the `bison` package to be installed in addition to the previous Linux package dependencies.
+
+```bash
+sudo apt install -y bison
+```
+
+The `gvm` documentation provides an installation script to get started with `gvm` and `go` quickly.
+
+```bash
+wget https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer
+```
+
+Inspect the file to ensure that you are aware of what it is doing on the system.
+
+```bash
+cat gvm-installer
+```
+
+Once inspected, change permissions on the file to make it executable and install it.
+
+```bash
+chmod +x gvm-installer
+./gvm-installer
+```
+
+Since Empowerchain requires a modern version of `go`, version 1.4 is needed to compile later versions of `go` through `gvm`. Install `go1.4` and set the `GOROOT_BOOTSTRAP` value to the `$GOROOT` to configure this.
+
+```bash
+gvm install go1.4 -B
+gvm use go1.4
+export GOROOT_BOOTSTRAP=$GOROOT
+```
+
+Once `go1.4` is installed, `go1.20.3` can be installed through `gvm`.
+
+```bash
+gvm install go1.20.3
+gvm use go1.20.3
+```
+
+Check to ensure that version `1.20.3` is being used as the system's default `go` version.
+
+```bash
+$ go version
+
+Output:
+go version go1.20.3 linux/amd64
+```
+#### Stand Alone Installation
 
 Download the golang tarball
 
@@ -56,15 +117,6 @@ Output:
 go version go1.20.3 linux/amd64
 ```
 
-### Linux Dependencies
-
-Install the following build dependencies
-
-```bash
-sudo apt update
-sudo apt install -y curl tar wget clang pkg-config libssl-dev jq build-essential bsdmainutils git make ncdu gcc git jq chrony liblz4-tool
-```
-
 ## Build Empowerd
 
 Clone the Empowerchain source code and enter the directory
@@ -74,7 +126,7 @@ git clone https://github.com/EmpowerPlastic/empowerchain.git
 cd empowerchain
 ```
 
-Checkout the desired version to build. The latest release tag can be found in the [EmpowerChain Release Page](https://github.com/EmpowerPlastic/empowerchain/releases/)
+Checkout the desired version to build. The latest release tag can be found on the [EmpowerChain](https://github.com/EmpowerPlastic/empowerchain/releases/) Release Page](https://github.com/EmpowerPlastic/empowerchain/releases/)
 
 ```bash
 git checkout v0.0.3
@@ -110,7 +162,7 @@ empowerd init "custom_moniker" --chain-id altruistic-1
 
 ### Retrieve the Genesis File
 
-Retrieve a copy of the genesis file for the desired chain. The genesis file defines the initial state of the chain. Replace the `<genesis-url>` with the desire chain's genesis file URL from the official Empowerchain repo. For pre-genesis validator nodes, skip to the [Validator Setup](/validators/validator-setup) page to continue following pre-genesis setup steps.
+Retrieve a copy of the genesis file for the desired chain. The genesis file defines the initial state of the chain. Replace the `<genesis-url>` with the desired chain's genesis file URL from the official Empowerchain repo. For pre-genesis validator nodes, skip to the [Validator Setup](/validators/validator-setup) page to continue following pre-genesis setup steps.
 
 ```bash
 wget -O $HOME/empowerchain/config/genesis.json <genesis-url>
@@ -144,7 +196,7 @@ sed -i.bak -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.025umpwr\"/" 
 ```
 
 ## Syncing Empowerd
-There are three main ways to sync a node on Empowerchain: from scratch, state sync, and snapshots. Each of these has their own benefits and drawbacks.
+There are three main ways to sync a node on Empowerchain: from scratch, state sync, and snapshots. Each of these has its own benefits and drawbacks.
 
 | Method            	| Benefits                                          	| Drawbacks                                                                                           	| Restrictions                              	|
 |-------------------	|---------------------------------------------------	|-----------------------------------------------------------------------------------------------------	|-------------------------------------------	|
@@ -194,4 +246,4 @@ WantedBy=multi-user.target
 EOF
 ```
 
-To use Cosmovisor to handle autoamtic upgrades, refer to the [Cosmovisor Setup](/validators/cosmovisor-setup) page.
+To use Cosmovisor to handle automatic upgrades, refer to the [Cosmovisor Setup](/validators/cosmovisor-setup) page.

@@ -51,7 +51,7 @@ For validators trying to join an existing network, follow this section to join t
 
 Ensure the wallet address created in [Create A Wallet](#create-a-wallet) has funds in it.
 
-Ensure the node is synced to the latest netowrk height. To check if the node is still syncing to the network, run the following command:
+Ensure the node is synced to the latest network height. To check if the node is still syncing to the network, run the following command:
 
 ```bash
 empowerd status 2>&1 | jq .SyncInfo.catching_up
