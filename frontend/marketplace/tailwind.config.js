@@ -31,7 +31,9 @@ module.exports = {
                 textWhite:"rgba(255, 255, 255, 0.8)",
                 borderGray:"rgba(255, 255, 255, 0.14)",
                 buttonBlack:"rgba(255, 255, 255, 0.1)",
-                paginationBlack:"rgb(155, 155, 155, 0.2)"
+                paginationBlack:"rgb(155, 155, 155, 0.2)",
+                avatarBlack:"#212121",
+                avatarBorder:"rgba(255, 255, 255, 0.23)"
             },
             fontSize: {
                 title32: "32px",

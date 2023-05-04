@@ -29,12 +29,48 @@
           </ul>
         </div>
         <div>
-          <button class="bg-lightBlack border border-borderBlack  w-full rounded-xl h-full ">Connect wallet</button>
+
+          <div class="flex flex-row items-center">
+            <button class="bg-lightBlack border border-borderBlack  w-full rounded-xl h-full ">Connect wallet</button>
+            <!--          User Profile Dropdown-->
+            <div class="dropdown dropdown-end">
+              <label tabindex="0" class="btn btn-circle m-1">
+                <div class="avatar">
+                  <div class="w-[48px] rounded-full border-borderBlack bg-lightBlack border-[1.5px]">
+                    <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d"/>
+                  </div>
+                </div>
+              </label>
+              <div tabindex="0"
+                   class="dropdown-content menu font-Inter divide-y divide-lightGray  bg-avatarBlack rounded-sm items-center border-avatarBorder border-[1.5px]">
+                <div class="menu py-5 items-center mx-16">
+                  <div class="avatar mb-3">
+                    <div class="w-[82px] rounded-full">
+                      <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d"/>
+                    </div>
+                  </div>
+                  <p class="text-title18">Natasha Shneider</p>
+                  <p class="text-title14 text-textGray">natasha@empower.eco</p>
+                </div>
+
+                <div class="menu py-2 items-center w-full">
+                  <button
+                      class="btn btn-ghost rounded-sm text-greenPrimary font-bold text-title14 normal-case border-none">
+                    Manage my account
+                  </button>
+                  <button
+                      class="btn btn-ghost rounded-sm text-greenPrimary font-bold text-title14 normal-case border-none">
+                    Sign out
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </nav>
-<!--  Navbar list for small devices-->
+  <!--  Navbar list for small devices-->
   <div
       class="absolute hidden z-10 top-0 text-white flex flex-col items-center h-full w-full bg-navBarBlack md:hidden"
       id="navbar-default">
