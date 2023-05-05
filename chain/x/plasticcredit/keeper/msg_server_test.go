@@ -1622,7 +1622,7 @@ func (s *TestSuite) TestRetireCredits() {
 			_, err := certificatesMsgServer.UpdateParams(goCtx, &certificates.MsgUpdateParams{
 				Authority: k.Authority(),
 				Params: certificates.Params{
-					AllowedIssuer: []string{s.sampleIssuerAdmin},
+					AllowedIssuers: []string{s.sampleIssuerAdmin},
 				},
 			})
 			s.Require().NoError(err)
