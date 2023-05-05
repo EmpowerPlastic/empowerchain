@@ -80,7 +80,7 @@ func (k Keeper) createCertificate(ctx sdk.Context, req *certificates.MsgCreateCe
 	params := k.GetParams(ctx)
 	if len(params.AllowedIssuer) > 0 {
 		if !slices.Contains(params.AllowedIssuer, req.Issuer) {
-			return 0, errors.Wrapf(sdkerrors.ErrUnauthorized, "invalid issuer %s", req.Issuer)
+			return 0, errors.Wrapf(sdkerrors.ErrUnauthorized, "issuer %s not in list of allowed issuers", req.Issuer)
 		}
 	}
 	return k.CreateCertificateInternal(ctx, req)
