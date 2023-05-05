@@ -86,6 +86,7 @@
     "@cosmjs/stargate": "0.30.0",
     "@cosmjs/tendermint-rpc": "0.30.0",
     "@osmonauts/lcd": "^0.10.0",
+    "jsonschema": "^1.4.1",
     "protobufjs": "^6.11.2"
   }
 }
