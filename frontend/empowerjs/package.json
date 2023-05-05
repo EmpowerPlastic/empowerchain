@@ -28,7 +28,7 @@
     "dev": "cross-env NODE_ENV=development babel-node src/index --extensions \".tsx,.ts,.js\"",
     "watch": "cross-env NODE_ENV=development babel-watch src/index --extensions \".tsx,.ts,.js\"",
     "lint": "eslint src --fix",
-    "test": "jest",
+    "test": "jest --config ./test/jest-e2e.json",
     "test:watch": "jest --watch",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand"
   },
