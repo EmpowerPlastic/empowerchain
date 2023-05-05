@@ -4,7 +4,7 @@
       "@type": "/empowerchain.certificates.MsgUpdateParams",
       "authority": "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd",
       "params": {
-        "allowed_issuer": [
+        "allowed_issuers": [
           "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7"
         ]
       }

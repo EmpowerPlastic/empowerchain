@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -33,17 +32,12 @@ func MsgCreateCertificateCmd() *cobra.Command {
 		Use:   "create-certificate [map of certificate attributes]",
 		Short: "create a new certificate",
 		Example: "empowerd tx certificates create-certificate  ./create_certificate.json\n" +
-			"create_certificate.json following format:\n" +
+			"use absolute path to create_certificate.json with following format:\n" +
 			"{\"issuer\":\"<issuer_address>\",\"owner\":\"<owner_address>\",\"type\":\"<Certificate type>\",\"additional_data\":[{\"key\":\"test\",\"value\":\"test\"}]}",
 
 		Args: cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			currentDir, err := filepath.Abs("./")
-			if err == nil {
-				fmt.Println("Error: ", err)
-			}
-			testData := currentDir + args[0]
-			fileContent, err := os.ReadFile(testData)
+			fileContent, err := os.ReadFile(args[0])
 			if err != nil {
 				return err
 			}

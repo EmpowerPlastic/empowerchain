@@ -612,7 +612,7 @@ func New(
 		proofofexistencemodule.NewAppModule(appCodec, app.ProofofexistenceKeeper, app.AccountKeeper, app.BankKeeper),
 		plasticcreditmodule.NewAppModule(appCodec, app.PlasticcreditKeeper, app.AccountKeeper, app.BankKeeper),
 		accesscontrolmodule.NewAppModule(app.AccessControlKeeper),
-		certificatemodule.NewAppModule(appCodec, app.CertificateKeeper, app.AccountKeeper, app.BankKeeper),
+		certificatemodule.NewAppModule(appCodec, app.CertificateKeeper),
 		// IBC modules
 		ibc.NewAppModule(app.IBCKeeper),
 		transfer.NewAppModule(app.TransferKeeper),

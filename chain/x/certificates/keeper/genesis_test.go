@@ -7,7 +7,7 @@ import (
 func (s *TestSuite) TestGenesis() {
 	genesisState := certificates.GenesisState{
 		Params: certificates.Params{
-			AllowedIssuer: []string{s.sampleIssuerAdmin},
+			AllowedIssuers: []string{s.sampleIssuerAdmin},
 		},
 		IdCounters: certificates.IDCounters{
 			NextCertificateId: 2,

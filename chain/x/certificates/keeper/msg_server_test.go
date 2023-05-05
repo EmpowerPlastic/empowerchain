@@ -20,7 +20,7 @@ func (s *TestSuite) TestUpdateParams() {
 				return &certificates.MsgUpdateParams{
 					Authority: empowerApp.CertificateKeeper.Authority(),
 					Params: certificates.Params{
-						AllowedIssuer: []string{s.sampleIssuerAdmin},
+						AllowedIssuers: []string{s.sampleIssuerAdmin},
 					},
 				}
 			},
@@ -31,7 +31,7 @@ func (s *TestSuite) TestUpdateParams() {
 				return &certificates.MsgUpdateParams{
 					Authority: sample.AccAddress(),
 					Params: certificates.Params{
-						AllowedIssuer: []string{s.sampleIssuerAdmin},
+						AllowedIssuers: []string{s.sampleIssuerAdmin},
 					},
 				}
 			},
@@ -42,7 +42,7 @@ func (s *TestSuite) TestUpdateParams() {
 				return &certificates.MsgUpdateParams{
 					Authority: empowerApp.CertificateKeeper.Authority(),
 					Params: certificates.Params{
-						AllowedIssuer: []string{""},
+						AllowedIssuers: []string{""},
 					},
 				}
 			},

@@ -730,7 +730,7 @@
       },
       "certificates": {
         "params": {
-          "allowed_issuer": ["empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"]
+          "allowed_issuers": ["empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"]
         },
         "id_counters": {
           "next_certificate_id": 2

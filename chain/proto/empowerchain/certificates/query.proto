@@ -15,11 +15,11 @@ service Query {
   }
 
   rpc Certificate(QueryCertificateRequest) returns (QueryCertificateResponse) {
-    option (google.api.http).get = "/EmpowerPlastic/empowerchain/certificates/{id}/{owner}";
+    option (google.api.http).get = "/EmpowerPlastic/empowerchain/certificates/{owner}/{id}";
   }
 
   rpc Certificates(QueryCertificatesRequest) returns (QueryCertificatesResponse) {
-    option (google.api.http).get = "/EmpowerPlastic/empowerchain/certificates/{pagination.key}/{pagination.offset}";
+    option (google.api.http).get = "/EmpowerPlastic/empowerchain/certificates";
   }
 
   rpc AllCertificatesByUser(QueryAllCertificatesByUserRequest) returns (QueryAllCertificatesByUserResponse) {

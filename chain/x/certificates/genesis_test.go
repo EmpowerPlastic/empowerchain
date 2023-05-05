@@ -12,6 +12,13 @@ import (
 
 func TestGenesisState_Validate(t *testing.T) {
 	validIssuer := sample.AccAddress()
+	additionalData := &certificates.AdditionalData{
+		Key:   "test",
+		Value: "test",
+	}
+	sampleAdditionalData := []*certificates.AdditionalData{
+		additionalData,
+	}
 	testCases := map[string]struct {
 		genState certificates.GenesisState
 		err      error
@@ -29,17 +36,18 @@ func TestGenesisState_Validate(t *testing.T) {
 		"valid genesis with certificate": {
 			genState: certificates.GenesisState{
 				Params: certificates.Params{
-					AllowedIssuer: []string{validIssuer},
+					AllowedIssuers: []string{validIssuer},
 				},
 				IdCounters: certificates.IDCounters{
 					NextCertificateId: 10,
 				},
 				Certificates: []certificates.Certificate{
 					{
-						Id:     5,
-						Owner:  sample.AccAddress(),
-						Type:   0,
-						Issuer: validIssuer,
+						Id:             5,
+						Owner:          sample.AccAddress(),
+						Type:           0,
+						Issuer:         validIssuer,
+						AdditionalData: sampleAdditionalData,
 					},
 				},
 			},
@@ -48,21 +56,61 @@ func TestGenesisState_Validate(t *testing.T) {
 		"invalid certificate type": {
 			genState: certificates.GenesisState{
 				Params: certificates.Params{
-					AllowedIssuer: []string{validIssuer},
+					AllowedIssuers: []string{validIssuer},
 				},
 				IdCounters: certificates.IDCounters{
 					NextCertificateId: 5,
 				},
 				Certificates: []certificates.Certificate{
 					{
-						Id:     4,
-						Owner:  sample.AccAddress(),
-						Type:   100,
-						Issuer: validIssuer,
+						Id:             4,
+						Owner:          sample.AccAddress(),
+						Type:           100,
+						Issuer:         validIssuer,
+						AdditionalData: sampleAdditionalData,
 					},
 				},
 			},
 			err: utils.ErrInvalidValue,
+		},
+		"next_certificate_id taken": {
+			genState: certificates.GenesisState{
+				Params: certificates.DefaultGenesis().Params,
+				IdCounters: certificates.IDCounters{
+					NextCertificateId: 1,
+				},
+				Certificates: []certificates.Certificate{
+					{
+						Id:             1,
+						Owner:          sample.AccAddress(),
+						Type:           100,
+						Issuer:         validIssuer,
+						AdditionalData: sampleAdditionalData,
+					},
+				},
+			},
+			err: utils.ErrInvalidValue,
+		},
+		"duplicate certificates": {
+			genState: certificates.GenesisState{
+				Params:     certificates.DefaultGenesis().Params,
+				IdCounters: certificates.DefaultGenesis().IdCounters,
+				Certificates: []certificates.Certificate{
+					{
+						Id:     1,
+						Owner:  sample.AccAddress(),
+						Type:   0,
+						Issuer: validIssuer,
+					},
+					{
+						Id:     1,
+						Owner:  sample.AccAddress(),
+						Type:   0,
+						Issuer: validIssuer,
+					},
+				},
+			},
+			err: certificates.ErrCertificateDuplicate,
 		},
 	}
 	for name, tc := range testCases {

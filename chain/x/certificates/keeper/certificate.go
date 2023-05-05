@@ -78,15 +78,15 @@ func (k Keeper) getCertificateStore(ctx sdk.Context) storetypes.KVStore {
 
 func (k Keeper) createCertificate(ctx sdk.Context, req *certificates.MsgCreateCertificate) (uint64, error) {
 	params := k.GetParams(ctx)
-	if len(params.AllowedIssuer) > 0 {
-		if !slices.Contains(params.AllowedIssuer, req.Issuer) {
+	if len(params.AllowedIssuers) > 0 {
+		if !slices.Contains(params.AllowedIssuers, req.Issuer) {
 			return 0, errors.Wrapf(sdkerrors.ErrUnauthorized, "invalid issuer %s", req.Issuer)
 		}
 	}
-	return k.CreateCertificateInternal(ctx, req)
+	return k.CreateCertificateViaInternalModule(ctx, req)
 }
 
-func (k Keeper) CreateCertificateInternal(ctx sdk.Context, req *certificates.MsgCreateCertificate) (uint64, error) {
+func (k Keeper) CreateCertificateViaInternalModule(ctx sdk.Context, req *certificates.MsgCreateCertificate) (uint64, error) {
 	idc := k.GetIDCounters(ctx)
 	nextID := idc.NextCertificateId
 	certificate := certificates.Certificate{

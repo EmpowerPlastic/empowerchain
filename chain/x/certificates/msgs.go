@@ -17,7 +17,7 @@ func (m *MsgUpdateParams) ValidateBasic() error {
 		return errors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid authority address (%s)", err)
 	}
 	// We allow empty issuer creator (which means only gov can create issuers)
-	if len(m.Params.AllowedIssuer) == 0 {
+	if len(m.Params.AllowedIssuers) == 0 {
 		return errors.Wrap(sdkerrors.ErrInvalidRequest, "issuer name cannot be empty")
 	}
 

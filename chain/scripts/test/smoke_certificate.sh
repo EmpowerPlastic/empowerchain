@@ -21,7 +21,7 @@ if [ "$GOV_RESULT" != "PROPOSAL_STATUS_PASSED" ]; then
 fi
 
 empowerd q certificates params
-empowerd tx certificates create-certificate  /scripts/test/testdata/create_certificate.json --from empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
+empowerd tx certificates create-certificate  ./scripts/test/testdata/create_certificate.json --from empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 
 
 sleep 5

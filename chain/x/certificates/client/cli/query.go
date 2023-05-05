@@ -82,7 +82,6 @@ func CmdQueryCertificate() *cobra.Command {
 			return clientCtx.PrintProto(res)
 		},
 	}
-
 	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
@@ -95,7 +94,6 @@ func CmdQueryCertificates() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 			queryClient := certificates.NewQueryClient(clientCtx)
-
 			res, err := queryClient.Certificates(
 				context.Background(),
 				&certificates.QueryCertificatesRequest{},
