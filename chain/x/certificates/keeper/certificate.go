@@ -83,10 +83,10 @@ func (k Keeper) createCertificate(ctx sdk.Context, req *certificates.MsgCreateCe
 			return 0, errors.Wrapf(sdkerrors.ErrUnauthorized, "issuer %s not in list of allowed issuers", req.Issuer)
 		}
 	}
-	return k.CreateCertificateInternal(ctx, req)
+	return k.CreateCertificateViaInternalModule(ctx, req)
 }
 
-func (k Keeper) CreateCertificateInternal(ctx sdk.Context, req *certificates.MsgCreateCertificate) (uint64, error) {
+func (k Keeper) CreateCertificateViaInternalModule(ctx sdk.Context, req *certificates.MsgCreateCertificate) (uint64, error) {
 	idc := k.GetIDCounters(ctx)
 	nextID := idc.NextCertificateId
 	certificate := certificates.Certificate{
