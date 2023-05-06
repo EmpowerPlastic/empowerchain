@@ -31,6 +31,7 @@ module.exports = {
                 textWhite:"rgba(255, 255, 255, 0.8)",
                 modalBackground:"rgba(0, 0, 0, 0.82)",
                 modalBorder:"rgba(255, 255, 255, 0.07)",
+                dashedBorderBlack:"rgba(255, 255, 255, 0.15)",
                 borderGray:"rgba(255, 255, 255, 0.14)",
                 buttonBlack:"rgba(255, 255, 255, 0.1)",
                 paginationBlack:"rgb(155, 155, 155, 0.2)",
