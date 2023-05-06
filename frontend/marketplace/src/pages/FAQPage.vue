@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import FAQCollapse from "@/components/FAQCollapse.vue";
-import RetireCreditsModal from "@/components/RetireCreditsModal.vue";
 </script>
 
 <template>
- <RetireCreditsModal show-modal="true"/>
   <div class="p-5 md:px-[10%] min-h-[50vh] font-Inter">
     <h3 class="text-white text-title24 md:mt-10">Frequently asked questions</h3>
 
