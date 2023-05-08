@@ -386,8 +386,6 @@ describe('Empower Data Creator', () => {
   });
   it('test plastic credit builder (wrong event data)', () => {
     const fileBuilder = new FileBuilder();
-    const propertyBuilder = new MaterialPropertyBuilder();
-    const eventBuilder = new EventBuilder();
     const applicantBuilder = new ApplicantBuilder();
     const plasticCreditBuilder = new PlasticCreditBuilder();
 
@@ -400,8 +398,6 @@ describe('Empower Data Creator', () => {
       .addFile('mediaFile1', 'mediaUrl1')
       .addFile('mediaFile2', 'mediaUrl2')
       .build();
-
-    const materials = propertyBuilder.addProperty('key1', 'value1').build();
 
     const applicant = applicantBuilder
       .setName('name')

@@ -11,7 +11,8 @@ On-chain Plastic Credits store metadata URLs that point to the data included in 
 Those URLs are to be handled by client applications for EmpowerChain, so there’s no specific validation to them. 
 However, Empower encourages to use a common Empower Data Format for better compatibility. 
 With Empower  Data Format, URIs have to point at specific files called Plastic Credit Index Files. 
-It is highly recommended for URIs to point to IPFS storage to ensure immutability of the data. 
+It is highly recommended for URIs to point to IPFS storage to ensure immutability of the data.
+If you're looking for a quickstart to create Plastic Credit Metadata, check # 
 Below you can see the JSON schema for Plastic Credit Index File:
 ```json
 {
@@ -29,7 +30,7 @@ Below you can see the JSON schema for Plastic Credit Index File:
                         "type": "object",
                         "properties": {
                             "id": {
-                                "const": "credit_data"
+                                "const": "empower_credit_events_data"
                             },
                             "type": {
                                 "const": "empower_credit_data"
@@ -365,7 +366,7 @@ empower_credit_data holds the data related to the material and collection events
     "type": "object",
     "properties": {
         "id": {
-            "const": "credit_data"
+            "const": "empower_credit_events_data"
         },
         "type": {
             "const": "empower_credit_data"
@@ -749,7 +750,7 @@ Description of the collector responsible for the clean up and material collectio
   "version": "v1",
   "credit_props": [
     {
-      "id": "credit_data",
+      "id": "empower_credit_events_data",
       "type": "empower_credit_data",
       "content": [
         {
@@ -841,4 +842,59 @@ Description of the collector responsible for the clean up and material collectio
     }
   ]
 }
+```
+
+### EmpowerJS' Plastic Credit Builder
+
+There is a set of JavaScript utilities available that allows for easy interaction with EmpowerChain, called `EmpowerJS`. You can use `Builders` available in `EmpowerJS` to create a Plastic Credit Metadata in code. To install `EmpowerJS` run:
+```bash
+npm i @empower-plastic/empowerjs
+```
+Example of building a Plastic Credit Metadata Index File:
+```ts
+import {
+  ApplicantBuilder,
+  EventBuilder,
+  FileBuilder,
+  MaterialPropertyBuilder,
+  PlasticCreditBuilder
+} from 'empowerjs';
+    const files = fileBuilder
+      .addFile('invoice.pdf', 'url1')
+      .addFile('handover_doc.pdf', 'url2')
+      .build();
+
+    const mediaFiles = fileBuilder
+      .addFile('cleanup_image_1.png', 'mediaUrl1')
+      .addFile('cleanup_image_2.png', 'mediaUrl2')
+      .build();
+
+    const materials = propertyBuilder.addProperty('origin', 'ocean').addProperty('type', 'plastic').build();
+
+    const event = eventBuilder
+      .setLocation({ latitude: '1', longitude: '2' })
+      .setAmount('100')
+      .setMagnitude('kg')
+      .setMaterial(materials)
+      .setRegistrationDate('2020-01-01')
+      .build();
+
+    const applicant = applicantBuilder
+      .setName('Applicant')
+      .setDescription('We\'re working towards the clean world!')
+      .setWebRefs(['https://applicant.com', 'https://www.instagram.com/applicant/'])
+      .build();
+
+    const plasticCredit = plasticCreditBuilder
+      .setIssuanceDate('2020-01-01')
+      .setCreditType('type')
+      .setApplicantData(applicant)
+      .addCreditEventData(event)
+      .addCreditEventData(event2)
+      .addCreditFilesData(files)
+      .addCreditMediaData(mediaFiles)
+      .build();
+
+    // actual data to be uploaded to IPFS and used as metadata URI for Plastic Credit
+    const plasticCreditIndexFileData = JSON.stringify(plasticCredit, null, 2);
 ```
