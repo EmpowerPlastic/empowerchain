@@ -157,11 +157,11 @@ sleep 5
 empowerd tx pc transfer empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7 PTEST/987654321 10 true --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 
-empowerd tx pc retire PTEST/123 5 --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
+empowerd tx pc retire PTEST/123 5 "test" "" --from alice --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx pc retire RCRD/00001 2 --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
+empowerd tx pc retire RCRD/00001 2 "test" "" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
-empowerd tx pc retire PTEST/987654321 9999999989 --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
+empowerd tx pc retire PTEST/987654321 9999999989 "test" "retirement by test" --from bob --yes --home $CHAIN_DIR --chain-id $CHAIN_ID --keyring-backend test --gas auto --gas-prices 0.025umpwr --gas-adjustment 1.75
 sleep 5
 
 CREDITS_1_ACTIVE=$(empowerd q pc credit-collection PTEST/123 -o json | jq .credit_collection.total_amount.active)

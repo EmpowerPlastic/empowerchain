@@ -145,7 +145,7 @@ devnet:
     RUN empowerd init ${VALNAME}
 
     # Get devnet genesis
-    COPY ../testnets/emp-devnet-1/+get-genesis/genesis.json ~/.empowerchain/config/genesis.json
+    COPY ../testnets/emp-devnet-1/+get-genesis/genesis.json /root/.empowerchain/config/genesis.json
 
     # Set up validator key
     RUN { echo ${VALPASS}; echo ${VALPASS}; } | empowerd keys add ${VALNAME}

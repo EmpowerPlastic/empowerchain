@@ -236,11 +236,7 @@ func (m msgServer) TransferCredits(goCtx context.Context, req *plasticcredit.Msg
 
 func (m msgServer) RetireCredits(goCtx context.Context, req *plasticcredit.MsgRetireCredits) (*plasticcredit.MsgRetireCreditsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	owner, err := sdk.AccAddressFromBech32(req.Owner)
-	if err != nil {
-		return &plasticcredit.MsgRetireCreditsResponse{}, sdkerrors.ErrInvalidAddress
-	}
-	newBalance, err := m.retireCreditsForAddress(ctx, owner, req.Denom, req.Amount)
+	newBalance, err := m.retireCreditsForAddress(ctx, req.Owner, req.Denom, req.Amount, req.RetiringEntityName, req.RetiringEntityAdditionalData)
 	if err != nil {
 		return &plasticcredit.MsgRetireCreditsResponse{}, err
 	}
