@@ -51,9 +51,9 @@ func (m *MsgCreateCertificate) ValidateBasic() error {
 }
 
 func (m *MsgCreateCertificate) GetSigners() []sdk.AccAddress {
-	owner, err := sdk.AccAddressFromBech32(m.Issuer)
+	issuer, err := sdk.AccAddressFromBech32(m.Issuer)
 	if err != nil {
 		panic(err)
 	}
-	return []sdk.AccAddress{owner}
+	return []sdk.AccAddress{issuer}
 }
