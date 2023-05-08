@@ -29,7 +29,7 @@ func GetTxCmd() *cobra.Command {
 
 func MsgCreateCertificateCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-certificate [map of certificate attributes]",
+		Use:   "create-certificate [certificate file path]",
 		Short: "create a new certificate",
 		Example: "empowerd tx certificates create-certificate  ./create_certificate.json\n" +
 			"use absolute path to create_certificate.json with following format:\n" +
