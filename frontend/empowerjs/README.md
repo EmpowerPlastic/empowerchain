@@ -22,6 +22,7 @@ npm install empowerjs
       - [CosmWasm Messages](#cosmwasm-messages)
       - [IBC Messages](#ibc-messages)
       - [Cosmos Messages](#cosmos-messages)
+    - [Empower Data Format Builder](#empower-data-format-builder)
   - [Connecting with Wallets and Signing Messages](#connecting-with-wallets-and-signing-messages)
     - [Initializing the Stargate Client](#initializing-the-stargate-client)
     - [Creating Signers](#creating-signers)
@@ -121,6 +122,55 @@ const {
     vote,
     voteWeighted
 } = cosmos.gov.v1beta1.MessageComposer.fromPartial;
+```
+### Empower Data Format Builder
+
+```ts
+import {
+  ApplicantBuilder,
+  EventBuilder,
+  FileBuilder,
+  MaterialPropertyBuilder,
+  PlasticCreditBuilder
+} from 'empowerjs';
+    const files = fileBuilder
+      .addFile('invoice.pdf', 'url1')
+      .addFile('handover_doc.pdf', 'url2')
+      .build();
+
+    const mediaFiles = fileBuilder
+      .addFile('cleanup_image_1.png', 'mediaUrl1')
+      .addFile('cleanup_image_2.png', 'mediaUrl2')
+      .build();
+
+    const materials = propertyBuilder.addProperty('origin', 'ocean').addProperty('type', 'plastic').build();
+
+    const event = eventBuilder
+      .setLocation({ latitude: '1', longitude: '2' })
+      .setAmount('100')
+      .setMagnitude('kg')
+      .setMaterial(materials)
+      .setRegistrationDate('2020-01-01')
+      .build();
+
+    const applicant = applicantBuilder
+      .setName('Applicant')
+      .setDescription('We\'re working towards the clean world!')
+      .setWebRefs(['https://applicant.com', 'https://www.instagram.com/applicant/'])
+      .build();
+
+    const plasticCredit = plasticCreditBuilder
+      .setIssuanceDate('2020-01-01')
+      .setCreditType('type')
+      .setApplicantData(applicant)
+      .addCreditEventData(event)
+      .addCreditEventData(event2)
+      .addCreditFilesData(files)
+      .addCreditMediaData(mediaFiles)
+      .build();
+
+    // actual data to be uploaded to IPFS and used as metadata URI for Plastic Credit
+    const plasticCreditIndexFileData = JSON.stringify(plasticCredit, null, 2);
 ```
 
 ## Connecting with Wallets and Signing Messages
