@@ -10,12 +10,12 @@ interface CreditPropBuilder {
 export class PlasticCreditBuilder {
     private creditEventsData: CreditProp;
     private creditMediaData: CreditProp;
-    private creditFilesData: CreditProp; 
+    private creditFilesData: CreditProp;
     private issuanceDate: string;
     private creditType: string;
     private applicantData: CreditProp;
 
-    constructor(){
+    constructor() {
         this.reset();
     }
 
@@ -95,7 +95,11 @@ export class PlasticCreditBuilder {
         const validationResult = schemaValidator.validate(result, schema);
 
         if (validationResult.errors.length) {
-            throw new Error("Invalid data format");
+            let errors = "";
+            for (let error of validationResult.errors) {
+                errors += error.stack + "\n";
+            }
+            throw new Error("Invalid data format:\n" + errors);
         }
 
         return result;
@@ -130,7 +134,7 @@ export class EventBuilder implements CreditPropBuilder {
     private material: Property[];
     private registrationDate: string;
 
-    constructor(){
+    constructor() {
         this.reset();
     };
 
@@ -160,7 +164,7 @@ export class EventBuilder implements CreditPropBuilder {
     }
 
     build(): CreditProp {
-        if (!this.location) {
+        if (!this.location.latitude || !this.location.longitude) {
             throw new Error("Location is required");
         }
         if (!this.amount) {
@@ -169,7 +173,7 @@ export class EventBuilder implements CreditPropBuilder {
         if (!this.magnitude) {
             throw new Error("Magnitude is required");
         }
-        if (!this.material) {
+        if (this.material.length == 0) {
             throw new Error("Material is required");
         }
         if (!this.registrationDate) {
@@ -226,7 +230,7 @@ export class ApplicantBuilder implements CreditPropBuilder {
     private description: string;
     private web_refs: string[];
 
-    constructor(){
+    constructor() {
         this.reset();
     }
 
@@ -273,7 +277,7 @@ export class ApplicantBuilder implements CreditPropBuilder {
 export class MaterialPropertyBuilder {
     private properties: Property[] = [];
 
-    constructor(){
+    constructor() {
         this.reset();
     };
 
@@ -299,7 +303,7 @@ export class MaterialPropertyBuilder {
 export class FileBuilder {
     private files: File[] = [];
 
-    constructor(){
+    constructor() {
         this.reset();
     }
 
