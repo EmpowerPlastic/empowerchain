@@ -112,7 +112,7 @@ func (k Keeper) retireCreditsForAddress(ctx sdk.Context, req *plasticcredit.MsgR
 		Type:           0,
 		AdditionalData: certificatesAdditionalData,
 	}
-	_, err = k.certificatesKeeper.CreateCertificateViaInternalModule(ctx, &certificate)
+	_, err = k.certificatesKeeper.CreateCertificateSkipAllowedIssuers(ctx, &certificate)
 	if err != nil {
 		return creditBalance, errors.Wrapf(plasticcredit.ErrFailedCreateCertificate,
 			"unable to create certificate for owner %s for issuer %s",
