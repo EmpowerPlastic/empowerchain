@@ -153,6 +153,7 @@ smoketest: install
 	./scripts/test/smoke_poe.sh
 	./scripts/test/smoke_plastic_credit.sh
 	./scripts/test/smoke_wasm.sh
+	./scripts/test/smoke_certificate.sh
 	# TODO: ADD BACK IN https://github.com/EmpowerPlastic/empowerchain/issues/516
 	#./scripts/test/smoke_ibc.sh
 

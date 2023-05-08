@@ -728,6 +728,22 @@
           }
         ]
       },
+      "certificates": {
+        "params": {
+          "allowed_issuers": ["empower1xgsaene8aqfknmldemvl5q0mtgcgjv9svupqwu"]
+        },
+        "id_counters": {
+          "next_certificate_id": 2
+        },
+        "certificates": [
+            {
+              "id":     1,
+              "owner":  "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m",
+              "type":   0,
+              "issuer": "empower1xgsaene8aqfknmldemvl5q0mtgcgjv9svupqwu"
+            }
+          ]
+      },
       "proofofexistence": {
         "proof_list": []
       },

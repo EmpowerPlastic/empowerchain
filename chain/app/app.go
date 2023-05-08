@@ -125,6 +125,9 @@ import (
 	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol"
 	accesscontrolmodulekeeper "github.com/EmpowerPlastic/empowerchain/x/accesscontrol/keeper"
 	accesscontrolmodule "github.com/EmpowerPlastic/empowerchain/x/accesscontrol/module"
+	certificatemoduletypes "github.com/EmpowerPlastic/empowerchain/x/certificates"
+	certificatemodulekeeper "github.com/EmpowerPlastic/empowerchain/x/certificates/keeper"
+	certificatemodule "github.com/EmpowerPlastic/empowerchain/x/certificates/module"
 	plasticcreditmoduletypes "github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	plasticcreditmodulekeeper "github.com/EmpowerPlastic/empowerchain/x/plasticcredit/keeper"
 	plasticcreditmodule "github.com/EmpowerPlastic/empowerchain/x/plasticcredit/module"
@@ -179,6 +182,7 @@ var (
 		proofofexistencemodule.AppModuleBasic{},
 		plasticcreditmodule.AppModuleBasic{},
 		accesscontrolmodule.AppModuleBasic{},
+		certificatemodule.AppModuleBasic{},
 
 		// IBC modules
 		ibc.AppModuleBasic{},
@@ -259,6 +263,7 @@ type EmpowerApp struct {
 	ProofofexistenceKeeper proofofexistencemodulekeeper.Keeper
 	PlasticcreditKeeper    plasticcreditmodulekeeper.Keeper
 	AccessControlKeeper    accesscontrolmodulekeeper.Keeper
+	CertificateKeeper      certificatemodulekeeper.Keeper
 
 	// IBC keepers
 	IBCKeeper           *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
@@ -314,7 +319,7 @@ func New(
 		ibcexported.StoreKey, ibctransfertypes.StoreKey, ibcfeetypes.StoreKey,
 		icahosttypes.StoreKey, icacontrollertypes.StoreKey,
 		// our own custom module store keys
-		proofofexistencemoduletypes.StoreKey, plasticcreditmoduletypes.StoreKey, accesscontrol.StoreKey,
+		proofofexistencemoduletypes.StoreKey, plasticcreditmoduletypes.StoreKey, accesscontrol.StoreKey, certificatemoduletypes.StoreKey,
 	)
 	transientStoreKeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memoryStoreKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -480,11 +485,18 @@ func New(
 		storeKeys[proofofexistencemoduletypes.StoreKey],
 	)
 
+	app.CertificateKeeper = *certificatemodulekeeper.NewKeeper(appCodec,
+		storeKeys[certificatemoduletypes.StoreKey],
+		storeKeys[certificatemoduletypes.MemStoreKey],
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
+
 	app.PlasticcreditKeeper = *plasticcreditmodulekeeper.NewKeeper(appCodec,
 		storeKeys[plasticcreditmoduletypes.StoreKey],
 		storeKeys[plasticcreditmoduletypes.MemStoreKey],
 		accesscontrolmodulekeeper.NewSubKeeper(&app.AccessControlKeeper, plasticcreditmoduletypes.ModuleName),
 		app.DistrKeeper,
+		app.CertificateKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
@@ -600,6 +612,7 @@ func New(
 		proofofexistencemodule.NewAppModule(appCodec, app.ProofofexistenceKeeper, app.AccountKeeper, app.BankKeeper),
 		plasticcreditmodule.NewAppModule(appCodec, app.PlasticcreditKeeper, app.AccountKeeper, app.BankKeeper),
 		accesscontrolmodule.NewAppModule(app.AccessControlKeeper),
+		certificatemodule.NewAppModule(appCodec, app.CertificateKeeper),
 		// IBC modules
 		ibc.NewAppModule(app.IBCKeeper),
 		transfer.NewAppModule(app.TransferKeeper),
@@ -635,6 +648,7 @@ func New(
 		proofofexistencemoduletypes.ModuleName,
 		plasticcreditmoduletypes.ModuleName,
 		accesscontrol.ModuleName,
+		certificatemoduletypes.ModuleName,
 		// IBC modules
 		ibctransfertypes.ModuleName,
 		ibcexported.ModuleName,
@@ -667,6 +681,7 @@ func New(
 		proofofexistencemoduletypes.ModuleName,
 		plasticcreditmoduletypes.ModuleName,
 		accesscontrol.ModuleName,
+		certificatemoduletypes.ModuleName,
 		// IBC modules
 		ibctransfertypes.ModuleName,
 		ibcexported.ModuleName,
@@ -704,6 +719,7 @@ func New(
 		proofofexistencemoduletypes.ModuleName,
 		plasticcreditmoduletypes.ModuleName,
 		accesscontrol.ModuleName,
+		certificatemoduletypes.ModuleName,
 		// IBC modules
 		ibctransfertypes.ModuleName,
 		ibcexported.ModuleName,
@@ -1007,6 +1023,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	// Custom modules
 	paramsKeeper.Subspace(proofofexistencemoduletypes.ModuleName)
 	paramsKeeper.Subspace(plasticcreditmoduletypes.ModuleName)
+	paramsKeeper.Subspace(certificatemoduletypes.ModuleName)
 	// IBC modules
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibcexported.ModuleName)

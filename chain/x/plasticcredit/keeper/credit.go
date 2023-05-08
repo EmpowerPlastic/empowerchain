@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"strings"
 
 	"cosmossdk.io/errors"
@@ -12,6 +13,7 @@ import (
 	"github.com/cosmos/gogoproto/proto"
 
 	"github.com/EmpowerPlastic/empowerchain/utils"
+	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
 
@@ -63,7 +65,17 @@ func (k Keeper) GetCreditBalances(ctx sdk.Context, pageReq query.PageRequest) ([
 	return creditBalances, *pageRes, nil
 }
 
-func (k Keeper) retireCreditsForAddress(ctx sdk.Context, owner sdk.AccAddress, denom string, amount uint64) (plasticcredit.CreditBalance, error) {
+func (k Keeper) retireCreditsForAddress(
+	ctx sdk.Context,
+	ownerAccAddress string,
+	denom string, amount uint64,
+	retiringEntityName string,
+	retiringEntityAdditionalData string,
+) (plasticcredit.CreditBalance, error) {
+	owner, err := sdk.AccAddressFromBech32(ownerAccAddress)
+	if err != nil {
+		return plasticcredit.CreditBalance{}, sdkerrors.ErrInvalidAddress
+	}
 	creditBalance, found := k.GetCreditBalance(ctx, owner, denom)
 	if !found {
 		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrCreditsNotEnough, "user %s doesn't have credits of denom %s", owner.String(), denom)
@@ -74,7 +86,7 @@ func (k Keeper) retireCreditsForAddress(ctx sdk.Context, owner sdk.AccAddress, d
 	creditBalance.Balance.Active -= amount
 	creditBalance.Balance.Retired += amount
 
-	err := k.setCreditBalance(ctx, creditBalance)
+	err = k.setCreditBalance(ctx, creditBalance)
 	if err != nil {
 		return plasticcredit.CreditBalance{}, err
 	}
@@ -87,6 +99,31 @@ func (k Keeper) retireCreditsForAddress(ctx sdk.Context, owner sdk.AccAddress, d
 	creditType, found := k.GetCreditType(ctx, abbrev)
 	if !found {
 		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit type with abbrev %s not found", abbrev)
+	}
+	issuer, found := k.GetIssuer(ctx, creditType.IssuerId)
+	if !found {
+		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrIssuerNotFound, "issuer with id %d not found", creditType.IssuerId)
+	}
+
+	certificatesAdditionalData := []*certificates.AdditionalData{
+		{Key: "denom", Value: denom},
+		{Key: "amount", Value: fmt.Sprint(amount)},
+		{Key: "retiring_entity_address", Value: owner.String()},
+		{Key: "retiring_entity_name", Value: retiringEntityName},
+		{Key: "retiring_entity_additional_data", Value: retiringEntityAdditionalData},
+	}
+	certificate := certificates.MsgCreateCertificate{
+		Owner:          owner.String(),
+		Issuer:         issuer.Admin,
+		Type:           0,
+		AdditionalData: certificatesAdditionalData,
+	}
+	_, err = k.certificatesKeeper.CreateCertificateSkipAllowedIssuers(ctx, &certificate)
+	if err != nil {
+		return creditBalance, errors.Wrapf(plasticcredit.ErrFailedCreateCertificate,
+			"unable to create certificate for owner %s for issuer %s",
+			owner.String(), issuer.Admin,
+		)
 	}
 	return creditBalance, ctx.EventManager().EmitTypedEvent(&plasticcredit.EventRetiredCredits{
 		Owner:                  owner.String(),
