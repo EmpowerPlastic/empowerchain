@@ -65,31 +65,37 @@ func (k Keeper) GetCreditBalances(ctx sdk.Context, pageReq query.PageRequest) ([
 	return creditBalances, *pageRes, nil
 }
 
-func (k Keeper) retireCreditsForAddress(ctx sdk.Context, req *plasticcredit.MsgRetireCredits) (plasticcredit.CreditBalance, error) {
-	owner, err := sdk.AccAddressFromBech32(req.Owner)
+func (k Keeper) retireCreditsForAddress(
+	ctx sdk.Context,
+	ownerAccAddress string,
+	denom string, amount uint64,
+	retiringEntityName string,
+	retiringEntityAdditionalData string,
+) (plasticcredit.CreditBalance, error) {
+	owner, err := sdk.AccAddressFromBech32(ownerAccAddress)
 	if err != nil {
 		return plasticcredit.CreditBalance{}, sdkerrors.ErrInvalidAddress
 	}
-	creditBalance, found := k.GetCreditBalance(ctx, owner, req.Denom)
+	creditBalance, found := k.GetCreditBalance(ctx, owner, denom)
 	if !found {
-		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrCreditsNotEnough, "user %s doesn't have credits of denom %s", owner.String(), req.Denom)
+		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrCreditsNotEnough, "user %s doesn't have credits of denom %s", owner.String(), denom)
 	}
-	if creditBalance.Balance.Active < req.Amount {
-		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrActiveCreditsNotEnough, "user %s has only %d credits", owner.String(), req.Amount)
+	if creditBalance.Balance.Active < amount {
+		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrActiveCreditsNotEnough, "user %s has only %d credits", owner.String(), amount)
 	}
-	creditBalance.Balance.Active -= req.Amount
-	creditBalance.Balance.Retired += req.Amount
+	creditBalance.Balance.Active -= amount
+	creditBalance.Balance.Retired += amount
 
 	err = k.setCreditBalance(ctx, creditBalance)
 	if err != nil {
 		return plasticcredit.CreditBalance{}, err
 	}
 
-	err = k.retireCreditsInCollection(ctx, req.Denom, req.Amount)
+	err = k.retireCreditsInCollection(ctx, denom, amount)
 	if err != nil {
 		return plasticcredit.CreditBalance{}, err
 	}
-	abbrev, _ := SplitCreditDenom(req.Denom)
+	abbrev, _ := SplitCreditDenom(denom)
 	creditType, found := k.GetCreditType(ctx, abbrev)
 	if !found {
 		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit type with abbrev %s not found", abbrev)
@@ -100,11 +106,11 @@ func (k Keeper) retireCreditsForAddress(ctx sdk.Context, req *plasticcredit.MsgR
 	}
 
 	certificatesAdditionalData := []*certificates.AdditionalData{
-		{Key: "denom", Value: req.Denom},
-		{Key: "amount", Value: fmt.Sprint(req.Amount)},
+		{Key: "denom", Value: denom},
+		{Key: "amount", Value: fmt.Sprint(amount)},
 		{Key: "retiring_entity_address", Value: owner.String()},
-		{Key: "retiring_entity_name", Value: req.RetiringEntityName},
-		{Key: "retiring_entity_additional_data", Value: req.RetiringEntityAdditionalData},
+		{Key: "retiring_entity_name", Value: retiringEntityName},
+		{Key: "retiring_entity_additional_data", Value: retiringEntityAdditionalData},
 	}
 	certificate := certificates.MsgCreateCertificate{
 		Owner:          owner.String(),
@@ -121,8 +127,8 @@ func (k Keeper) retireCreditsForAddress(ctx sdk.Context, req *plasticcredit.MsgR
 	}
 	return creditBalance, ctx.EventManager().EmitTypedEvent(&plasticcredit.EventRetiredCredits{
 		Owner:                  owner.String(),
-		Denom:                  req.Denom,
-		Amount:                 req.Amount,
+		Denom:                  denom,
+		Amount:                 amount,
 		IssuerId:               creditType.IssuerId,
 		CreditTypeAbbreviation: abbrev,
 	})
