@@ -735,12 +735,14 @@
         "id_counters": {
           "next_certificate_id": 2
         },
-        "certificates": {
-          "id":     1,
-          "owner":  "empowervalcons1herp4lzzg4242al2s97swh5qw98yrhxxvc97sz",
-          "type":   0,
-          "issuer": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
-        }
+        "certificates": [
+            {
+              "id":     1,
+              "owner":  "empowervalcons1herp4lzzg4242al2s97swh5qw98yrhxxvc97sz",
+              "type":   0,
+              "issuer": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+            }
+          ]
       },
       "proofofexistence": {
         "proof_list": []
