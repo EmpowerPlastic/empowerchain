@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import {contracts, cosmos, empowerchain, Long} from "@empower-plastic/empowerjs";
+import {contracts, cosmos, empowerchain, Long, getSigningTM37EmpowerchainClient} from "@empower-plastic/empowerjs";
 import {CosmWasmClient, SigningCosmWasmClient} from "@cosmjs/cosmwasm-stargate";
 import {Decimal} from "@cosmjs/math";
-import {getSigningEmpowerchainClient} from "proof-of-existence/src/helpers/signing-client";
 
 const offlineSigner = window.keplr.getOfflineSigner("empowerchain-local-1");
 
@@ -72,7 +71,7 @@ const createListing = async () => {
     const price = prompt("Enter price per credit")
     const credits = prompt("Enter number of credits")
 
-    const client = await getSigningEmpowerchainClient({
+    const client = await getSigningTM37EmpowerchainClient({
         rpcEndpoint: "0.0.0.0:26657",
         signer: offlineSigner,
     });
