@@ -1,6 +1,6 @@
 {
   "name": "proof-of-existence",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "prepare": "cd ../.. && husky install frontend/proof-of-existence/.husky",
@@ -12,7 +12,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "@empower-plastic/empowerjs": "*",
+    "@empower-plastic/empowerjs": "^0.1.0",
     "flowbite": "^1.6.3",
     "flowbite-vue": "^0.0.10",
     "vue": "^3.2.45",
