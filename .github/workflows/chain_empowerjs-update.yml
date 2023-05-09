@@ -25,10 +25,10 @@ jobs:
       - run: earthly --ci --output +codegen-all
         working-directory: ./frontend/empowerjs
 
-      - run: earthly --ci --output +publish --NPM_TOKEN="$NPM_TOKEN"
+      - run: earthly --ci --output +publish-empowerjs --NPM_TOKEN="$NPM_TOKEN"
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        working-directory: ./frontend/empowerjs
+        working-directory: ./frontend
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5

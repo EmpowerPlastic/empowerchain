@@ -38,13 +38,3 @@ proto-codegen:
 codegen-all:
     BUILD +cosmwasm-codegen
     BUILD +proto-codegen
-
-publish:
-    ARG NPM_TOKEN
-    FROM ../+lerna-build
-    WORKDIR /app/empowerjs
-    RUN npm config set registry https://registry.npmjs.org/
-    RUN npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
-    RUN npm version patch
-    RUN npm publish
-    SAVE ARTIFACT ./package.json AS LOCAL ./package.json
