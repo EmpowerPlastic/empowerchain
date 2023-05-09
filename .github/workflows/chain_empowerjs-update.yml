@@ -1,15 +1,17 @@
-name: "Chain typeScript types update"
+name: "EmpowerJS update and publish"
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
     paths:
       - 'chain/proto/**' # On updating proto
+      - 'frontend/empowerjs/src/**' # On updating empowerjs source files
 
 jobs:
   build:
-    name: Update empowerjs
+    name: Update and publish empowerjs
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
