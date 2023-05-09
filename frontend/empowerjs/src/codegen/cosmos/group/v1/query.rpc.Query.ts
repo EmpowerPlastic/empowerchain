@@ -1,7 +1,7 @@
 import { Rpc } from "../../../helpers";
 import * as _m0 from "protobufjs/minimal";
 import { QueryClient, createProtobufRpcClient } from "@cosmjs/stargate";
-import { QueryGroupInfoRequest, QueryGroupInfoResponse, QueryGroupPolicyInfoRequest, QueryGroupPolicyInfoResponse, QueryGroupMembersRequest, QueryGroupMembersResponse, QueryGroupsByAdminRequest, QueryGroupsByAdminResponse, QueryGroupPoliciesByGroupRequest, QueryGroupPoliciesByGroupResponse, QueryGroupPoliciesByAdminRequest, QueryGroupPoliciesByAdminResponse, QueryProposalRequest, QueryProposalResponse, QueryProposalsByGroupPolicyRequest, QueryProposalsByGroupPolicyResponse, QueryVoteByProposalVoterRequest, QueryVoteByProposalVoterResponse, QueryVotesByProposalRequest, QueryVotesByProposalResponse, QueryVotesByVoterRequest, QueryVotesByVoterResponse, QueryGroupsByMemberRequest, QueryGroupsByMemberResponse, QueryTallyResultRequest, QueryTallyResultResponse } from "./query";
+import { QueryGroupInfoRequest, QueryGroupInfoResponse, QueryGroupPolicyInfoRequest, QueryGroupPolicyInfoResponse, QueryGroupMembersRequest, QueryGroupMembersResponse, QueryGroupsByAdminRequest, QueryGroupsByAdminResponse, QueryGroupPoliciesByGroupRequest, QueryGroupPoliciesByGroupResponse, QueryGroupPoliciesByAdminRequest, QueryGroupPoliciesByAdminResponse, QueryProposalRequest, QueryProposalResponse, QueryProposalsByGroupPolicyRequest, QueryProposalsByGroupPolicyResponse, QueryVoteByProposalVoterRequest, QueryVoteByProposalVoterResponse, QueryVotesByProposalRequest, QueryVotesByProposalResponse, QueryVotesByVoterRequest, QueryVotesByVoterResponse, QueryGroupsByMemberRequest, QueryGroupsByMemberResponse, QueryTallyResultRequest, QueryTallyResultResponse, QueryGroupsRequest, QueryGroupsResponse } from "./query";
 /** Query is the cosmos.group.v1 Query service. */
 
 export interface Query {
@@ -49,6 +49,13 @@ export interface Query {
    */
 
   tallyResult(request: QueryTallyResultRequest): Promise<QueryTallyResultResponse>;
+  /**
+   * Groups queries all groups in state.
+   * 
+   * Since: cosmos-sdk 0.47.1
+   */
+
+  groups(request?: QueryGroupsRequest): Promise<QueryGroupsResponse>;
 }
 export class QueryClientImpl implements Query {
   private readonly rpc: Rpc;
@@ -68,6 +75,7 @@ export class QueryClientImpl implements Query {
     this.votesByVoter = this.votesByVoter.bind(this);
     this.groupsByMember = this.groupsByMember.bind(this);
     this.tallyResult = this.tallyResult.bind(this);
+    this.groups = this.groups.bind(this);
   }
 
   groupInfo(request: QueryGroupInfoRequest): Promise<QueryGroupInfoResponse> {
@@ -148,6 +156,14 @@ export class QueryClientImpl implements Query {
     return promise.then(data => QueryTallyResultResponse.decode(new _m0.Reader(data)));
   }
 
+  groups(request: QueryGroupsRequest = {
+    pagination: undefined
+  }): Promise<QueryGroupsResponse> {
+    const data = QueryGroupsRequest.encode(request).finish();
+    const promise = this.rpc.request("cosmos.group.v1.Query", "Groups", data);
+    return promise.then(data => QueryGroupsResponse.decode(new _m0.Reader(data)));
+  }
+
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
@@ -203,6 +219,10 @@ export const createRpcQueryExtension = (base: QueryClient) => {
 
     tallyResult(request: QueryTallyResultRequest): Promise<QueryTallyResultResponse> {
       return queryService.tallyResult(request);
+    },
+
+    groups(request?: QueryGroupsRequest): Promise<QueryGroupsResponse> {
+      return queryService.groups(request);
     }
 
   };

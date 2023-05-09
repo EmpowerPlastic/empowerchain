@@ -3,8 +3,7 @@ import { useRoute } from "vue-router";
 import router from "@/router";
 import SelectWalletModel from "@/views/certify/SelectWalletModel.vue";
 import { ref } from "vue";
-import { getSigningEmpowerchainClient } from "@/helpers/signing-client";
-import { empowerchain } from "@empower-plastic/empowerjs";
+import { empowerchain, getSigningTM37EmpowerchainClient } from "@empower-plastic/empowerjs";
 import { Wallet } from "@/types/enums";
 import { CHAIN_ID, RPC_URL } from "@/config/config";
 import type { OfflineSigner } from "@cosmjs/proto-signing";
@@ -76,7 +75,7 @@ const handleTransaction = async () => {
 
 const handleWalletTransaction = async (offlineSigner: OfflineSigner) => {
   const accounts = await offlineSigner.getAccounts();
-  const wasmChainClient = await getSigningEmpowerchainClient({
+  const wasmChainClient = await getSigningTM37EmpowerchainClient({
     rpcEndpoint: RPC_URL,
     signer: offlineSigner,
   });

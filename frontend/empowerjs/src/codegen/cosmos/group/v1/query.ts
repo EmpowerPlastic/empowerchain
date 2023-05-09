@@ -416,6 +416,52 @@ export interface QueryTallyResultResponseSDKType {
   /** tally defines the requested tally. */
   tally?: TallyResultSDKType;
 }
+/**
+ * QueryGroupsRequest is the Query/Groups request type.
+ * 
+ * Since: cosmos-sdk 0.47.1
+ */
+
+export interface QueryGroupsRequest {
+  /** pagination defines an optional pagination for the request. */
+  pagination?: PageRequest;
+}
+/**
+ * QueryGroupsRequest is the Query/Groups request type.
+ * 
+ * Since: cosmos-sdk 0.47.1
+ */
+
+export interface QueryGroupsRequestSDKType {
+  /** pagination defines an optional pagination for the request. */
+  pagination?: PageRequestSDKType;
+}
+/**
+ * QueryGroupsResponse is the Query/Groups response type.
+ * 
+ * Since: cosmos-sdk 0.47.1
+ */
+
+export interface QueryGroupsResponse {
+  /** `groups` is all the groups present in state. */
+  groups: GroupInfo[];
+  /** pagination defines the pagination in the response. */
+
+  pagination?: PageResponse;
+}
+/**
+ * QueryGroupsResponse is the Query/Groups response type.
+ * 
+ * Since: cosmos-sdk 0.47.1
+ */
+
+export interface QueryGroupsResponseSDKType {
+  /** `groups` is all the groups present in state. */
+  groups: GroupInfoSDKType[];
+  /** pagination defines the pagination in the response. */
+
+  pagination?: PageResponseSDKType;
+}
 
 function createBaseQueryGroupInfoRequest(): QueryGroupInfoRequest {
   return {
@@ -1752,6 +1798,106 @@ export const QueryTallyResultResponse = {
   fromPartial(object: DeepPartial<QueryTallyResultResponse>): QueryTallyResultResponse {
     const message = createBaseQueryTallyResultResponse();
     message.tally = object.tally !== undefined && object.tally !== null ? TallyResult.fromPartial(object.tally) : undefined;
+    return message;
+  }
+
+};
+
+function createBaseQueryGroupsRequest(): QueryGroupsRequest {
+  return {
+    pagination: undefined
+  };
+}
+
+export const QueryGroupsRequest = {
+  encode(message: QueryGroupsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.pagination !== undefined) {
+      PageRequest.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
+
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGroupsRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryGroupsRequest();
+
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+
+      switch (tag >>> 3) {
+        case 2:
+          message.pagination = PageRequest.decode(reader, reader.uint32());
+          break;
+
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<QueryGroupsRequest>): QueryGroupsRequest {
+    const message = createBaseQueryGroupsRequest();
+    message.pagination = object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
+    return message;
+  }
+
+};
+
+function createBaseQueryGroupsResponse(): QueryGroupsResponse {
+  return {
+    groups: [],
+    pagination: undefined
+  };
+}
+
+export const QueryGroupsResponse = {
+  encode(message: QueryGroupsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.groups) {
+      GroupInfo.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+
+    if (message.pagination !== undefined) {
+      PageResponse.encode(message.pagination, writer.uint32(18).fork()).ldelim();
+    }
+
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGroupsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryGroupsResponse();
+
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+
+      switch (tag >>> 3) {
+        case 1:
+          message.groups.push(GroupInfo.decode(reader, reader.uint32()));
+          break;
+
+        case 2:
+          message.pagination = PageResponse.decode(reader, reader.uint32());
+          break;
+
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<QueryGroupsResponse>): QueryGroupsResponse {
+    const message = createBaseQueryGroupsResponse();
+    message.groups = object.groups?.map(e => GroupInfo.fromPartial(e)) || [];
+    message.pagination = object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
     return message;
   }
 
