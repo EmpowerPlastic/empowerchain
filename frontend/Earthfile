@@ -5,12 +5,15 @@ WORKDIR /app
 # Frontend
 frontend-context:
     COPY package.json package-lock.json lerna.json ./
-    COPY empowerjs empowerjs
+    COPY ./empowerjs/+project-setup/* empowerjs/
     COPY proof-of-existence proof-of-existence
     COPY marketplace marketplace
     SAVE ARTIFACT .
 
+frontend-install:
+    FROM +frontend-context
+    RUN npm ci
+
 lerna-build:
-    COPY +frontend-context/app .
-    RUN npm install
+    FROM +frontend-install
     RUN npx lerna run build

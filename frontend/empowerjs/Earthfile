@@ -1,7 +1,8 @@
 VERSION 0.6
 FROM node:lts-alpine
-WORKDIR /empowerchain/frontend/empowerjs
+WORKDIR /app/empowerjs
 
+# Used by root frontend Earthfile (to not get too many files and stuff)
 project-setup:
   COPY proto proto
   COPY scripts scripts
@@ -9,24 +10,27 @@ project-setup:
   COPY test test
   COPY .babelrc.js .babelrc.js
   COPY package.json package.json
+  COPY tsconfig.json tsconfig.json
+  SAVE ARTIFACT .
 
 cosmwasm-codegen:
-  FROM +project-setup
-  COPY ../../+get-cw-schema/* .
-  RUN npx @cosmwasm/ts-codegen@0.25.2 generate \
-    --plugin client \
-    --schema ./schema \
-    --out ./src/plastic-credit-marketplace \
-    --name "Plastic Credit Marketplace" \
-    --bundle true \
-    --bundleFile index.ts \
-    --bundleScope contracts
-  SAVE ARTIFACT ./src/plastic-credit-marketplace AS LOCAL ./src/plastic-credit-marketplace
+    FROM ../+frontend-install
+    WORKDIR /app/empowerjs
+    COPY ../../+get-cw-schema/* .
+    RUN npx @cosmwasm/ts-codegen@0.25.2 generate \
+      --plugin client \
+      --schema ./schema \
+      --out ./src/plastic-credit-marketplace \
+      --name "Plastic Credit Marketplace" \
+      --bundle true \
+      --bundleFile index.ts \
+      --bundleScope contracts
+    SAVE ARTIFACT ./src/plastic-credit-marketplace AS LOCAL ./src/plastic-credit-marketplace
 
 proto-codegen:
-    FROM +project-setup
+    FROM ../+frontend-install
+    WORKDIR /app/empowerjs
     COPY ../../+get-proto/* ./proto
-    RUN npm i
     RUN npm run codegen
     SAVE ARTIFACT ./src/codegen AS LOCAL ./src/codegen
     SAVE ARTIFACT ./proto AS LOCAL ./proto
@@ -37,7 +41,8 @@ codegen-all:
 
 publish:
     ARG NPM_TOKEN
-    FROM +project-setup
+    FROM ../+lerna-build
+    WORKDIR /app/empowerjs
     RUN npm config set registry https://registry.npmjs.org/
     RUN npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
     RUN npm version patch
