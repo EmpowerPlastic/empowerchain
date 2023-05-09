@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import {contracts, cosmos, empowerchain, Long, getSigningTM37EmpowerchainClient} from "@empower-plastic/empowerjs";
+import {contracts, cosmos, empowerchain, getSigningTM37EmpowerchainClient} from "@empower-plastic/empowerjs";
 import {CosmWasmClient, SigningCosmWasmClient} from "@cosmjs/cosmwasm-stargate";
 import {Decimal} from "@cosmjs/math";
+import Long from "long";
 
 const offlineSigner = window.keplr.getOfflineSigner("empowerchain-local-1");
 
@@ -77,7 +78,7 @@ const createListing = async () => {
     });
     const w = empowerchain.plasticcredit.TransferAuthorization.fromPartial({
         denom: denom!,
-        maxCredits: Long.fromString(credits!),
+        maxCredits: BigInt(credits!),
     })
     const authz = cosmos.authz.v1beta1.MessageComposer.withTypeUrl.grant({
         granter: "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m",

@@ -2,6 +2,9 @@
   "extends": "@vue/tsconfig/tsconfig.web.json",
   "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
   "compilerOptions": {
+    "lib": [
+      "es2020", "esnext", "dom"
+    ],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

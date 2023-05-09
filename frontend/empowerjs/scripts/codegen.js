@@ -22,8 +22,9 @@ telescope({
       typingsFormat: {
         useDeepPartial: false,
         useExact: false,
-        timestamp: 'timestamp',
-        duration: 'duration'
+        timestamp: 'date',
+        duration: 'duration',
+        longLibrary: 'bigint'
       },
       methods: {
         toJSON: true,
