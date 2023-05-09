@@ -3,7 +3,6 @@
   "private": true,
   "workspaces": [
     "empowerjs",
-    "cw-client",
     "proof-of-existence",
     "marketplace",
     "empowerjs-demo-application"
