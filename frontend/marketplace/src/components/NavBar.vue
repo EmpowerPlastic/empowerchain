@@ -54,14 +54,14 @@
                 </div>
 
                 <div class="menu py-2 items-center w-full">
-                  <button
-                      class="btn btn-ghost rounded-sm text-greenPrimary font-bold text-title14 normal-case border-none">
+                  <Button
+                      class="btn nav-dropdown-button">
                     Manage my account
-                  </button>
-                  <button
-                      class="btn btn-ghost rounded-sm text-greenPrimary font-bold text-title14 normal-case border-none">
+                  </Button>
+                  <Button
+                      class="btn nav-dropdown-button">
                     Sign out
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -101,5 +101,11 @@
   </div>
 
 </template>
+
+<style scoped>
+.nav-dropdown-button{
+  @apply btn-ghost rounded-sm text-greenPrimary font-bold text-title14 normal-case border-none
+}
+</style>
 
 

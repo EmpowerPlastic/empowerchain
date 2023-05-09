@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import CreditsSearchBar from "@/components/CreditsSearchBar.vue";
 import CreditCard from "@/components/CreditCard.vue";
+
+const creditCardData = {
+  creditType: "PCRD",
+  material: "PP, PET",
+  price: "100.00"
+}
 </script>
 <template>
 
@@ -13,10 +19,10 @@ import CreditCard from "@/components/CreditCard.vue";
     </div>
 
     <CreditsSearchBar/>
-    <CreditCard/>
-    <CreditCard/>
-    <CreditCard/>
-    <CreditCard/>
+    <CreditCard :card-data="creditCardData"/>
+    <CreditCard :card-data="creditCardData"/>
+    <CreditCard :card-data="creditCardData"/>
+    <CreditCard :card-data="creditCardData"/>
 
     <div class="w-full flex justify-center md:justify-end my-10">
       <div class="btn-group rounded-sm">
