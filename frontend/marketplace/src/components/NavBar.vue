@@ -54,14 +54,14 @@
                 </div>
 
                 <div class="menu py-2 items-center w-full">
-                  <Button
+                  <button
                       class="btn nav-dropdown-button">
                     Manage my account
-                  </Button>
-                  <Button
+                  </button>
+                  <button
                       class="btn nav-dropdown-button">
                     Sign out
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>
