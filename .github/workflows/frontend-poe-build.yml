@@ -7,7 +7,7 @@ on:
     branches:
       - main
     paths:
-      - 'frontend/proof-of-existance/**'
+      - 'frontend/proof-of-frontend/**'
 
 jobs:
   build:
@@ -19,5 +19,5 @@ jobs:
         with:
           version: 0.6.30
 
-      - run: earthly --ci --output +lerna-build
-        working-directory: ./frontend
+      - run: npm ci && npm run build
+        working-directory: ./frontend/proof-of-existence

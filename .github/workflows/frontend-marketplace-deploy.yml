@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-      - run: |
-         npm i && \
-         npx lerna run build
-        working-directory: ./frontend
+
+      - run: npm ci && npm run build
+        working-directory: ./frontend/marketplace
+
       - uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
