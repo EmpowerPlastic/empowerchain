@@ -1,5 +1,5 @@
 import * as _m0 from "protobufjs/minimal";
-import { DeepPartial } from "../../helpers";
+import { isSet, bytesFromBase64, base64FromBytes } from "../../helpers";
 /**
  * `Any` contains an arbitrary serialized protocol buffer message along with a
  * URL that describes the type of the serialized message.
@@ -81,7 +81,6 @@ import { DeepPartial } from "../../helpers";
  *       "value": "1.212s"
  *     }
  */
-
 export interface Any {
   /**
    * A URL/resource name that uniquely identifies the type of the serialized
@@ -114,7 +113,6 @@ export interface Any {
    */
   typeUrl: string;
   /** Must be a valid serialized protocol buffer of the above specified type. */
-
   value: Uint8Array;
 }
 /**
@@ -198,94 +196,62 @@ export interface Any {
  *       "value": "1.212s"
  *     }
  */
-
 export interface AnySDKType {
-  /**
-   * A URL/resource name that uniquely identifies the type of the serialized
-   * protocol buffer message. This string must contain at least
-   * one "/" character. The last segment of the URL's path must represent
-   * the fully qualified name of the type (as in
-   * `path/google.protobuf.Duration`). The name should be in a canonical form
-   * (e.g., leading "." is not accepted).
-   * 
-   * In practice, teams usually precompile into the binary all types that they
-   * expect it to use in the context of Any. However, for URLs which use the
-   * scheme `http`, `https`, or no scheme, one can optionally set up a type
-   * server that maps type URLs to message definitions as follows:
-   * 
-   * * If no scheme is provided, `https` is assumed.
-   * * An HTTP GET on the URL must yield a [google.protobuf.Type][]
-   *   value in binary format, or produce an error.
-   * * Applications are allowed to cache lookup results based on the
-   *   URL, or have them precompiled into a binary to avoid any
-   *   lookup. Therefore, binary compatibility needs to be preserved
-   *   on changes to types. (Use versioned type names to manage
-   *   breaking changes.)
-   * 
-   * Note: this functionality is not currently available in the official
-   * protobuf release, and it is not used for type URLs beginning with
-   * type.googleapis.com.
-   * 
-   * Schemes other than `http`, `https` (or the empty scheme) might be
-   * used with implementation specific semantics.
-   */
   type_url: string;
-  /** Must be a valid serialized protocol buffer of the above specified type. */
-
   value: Uint8Array;
 }
-
 function createBaseAny(): Any {
   return {
     typeUrl: "",
     value: new Uint8Array()
   };
 }
-
 export const Any = {
   encode(message: Any, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.typeUrl !== "") {
       writer.uint32(10).string(message.typeUrl);
     }
-
     if (message.value.length !== 0) {
       writer.uint32(18).bytes(message.value);
     }
-
     return writer;
   },
-
   decode(input: _m0.Reader | Uint8Array, length?: number): Any {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAny();
-
     while (reader.pos < end) {
       const tag = reader.uint32();
-
       switch (tag >>> 3) {
         case 1:
           message.typeUrl = reader.string();
           break;
-
         case 2:
           message.value = reader.bytes();
           break;
-
         default:
           reader.skipType(tag & 7);
           break;
       }
     }
-
     return message;
   },
-
-  fromPartial(object: DeepPartial<Any>): Any {
+  fromJSON(object: any): Any {
+    return {
+      typeUrl: isSet(object.typeUrl) ? String(object.typeUrl) : "",
+      value: isSet(object.value) ? bytesFromBase64(object.value) : new Uint8Array()
+    };
+  },
+  toJSON(message: Any): unknown {
+    const obj: any = {};
+    message.typeUrl !== undefined && (obj.typeUrl = message.typeUrl);
+    message.value !== undefined && (obj.value = base64FromBytes(message.value !== undefined ? message.value : new Uint8Array()));
+    return obj;
+  },
+  fromPartial(object: Partial<Any>): Any {
     const message = createBaseAny();
     message.typeUrl = object.typeUrl ?? "";
     message.value = object.value ?? new Uint8Array();
     return message;
   }
-
 };

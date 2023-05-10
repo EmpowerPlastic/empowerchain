@@ -1,14 +1,13 @@
 import { AminoMsg } from "@cosmjs/amino";
-import { Long } from "../../../helpers";
 import { MsgUnjail, MsgUpdateParams } from "./tx";
-export interface AminoMsgUnjail extends AminoMsg {
+export interface MsgUnjailAminoType extends AminoMsg {
   type: "cosmos-sdk/MsgUnjail";
   value: {
     validator_addr: string;
   };
 }
-export interface AminoMsgUpdateParams extends AminoMsg {
-  type: "cosmos-sdk/MsgUpdateParams";
+export interface MsgUpdateParamsAminoType extends AminoMsg {
+  type: "cosmos-sdk/x/slashing/MsgUpdateParams";
   value: {
     authority: string;
     params: {
@@ -28,25 +27,25 @@ export const AminoConverter = {
     aminoType: "cosmos-sdk/MsgUnjail",
     toAmino: ({
       validatorAddr
-    }: MsgUnjail): AminoMsgUnjail["value"] => {
+    }: MsgUnjail): MsgUnjailAminoType["value"] => {
       return {
         validator_addr: validatorAddr
       };
     },
     fromAmino: ({
       validator_addr
-    }: AminoMsgUnjail["value"]): MsgUnjail => {
+    }: MsgUnjailAminoType["value"]): MsgUnjail => {
       return {
         validatorAddr: validator_addr
       };
     }
   },
   "/cosmos.slashing.v1beta1.MsgUpdateParams": {
-    aminoType: "cosmos-sdk/MsgUpdateParams",
+    aminoType: "cosmos-sdk/x/slashing/MsgUpdateParams",
     toAmino: ({
       authority,
       params
-    }: MsgUpdateParams): AminoMsgUpdateParams["value"] => {
+    }: MsgUpdateParams): MsgUpdateParamsAminoType["value"] => {
       return {
         authority,
         params: {
@@ -61,14 +60,14 @@ export const AminoConverter = {
     fromAmino: ({
       authority,
       params
-    }: AminoMsgUpdateParams["value"]): MsgUpdateParams => {
+    }: MsgUpdateParamsAminoType["value"]): MsgUpdateParams => {
       return {
         authority,
         params: {
-          signedBlocksWindow: Long.fromString(params.signed_blocks_window),
+          signedBlocksWindow: BigInt(params.signed_blocks_window),
           minSignedPerWindow: params.min_signed_per_window,
           downtimeJailDuration: {
-            seconds: Long.fromNumber(Math.floor(parseInt(params.downtime_jail_duration) / 1_000_000_000)),
+            seconds: BigInt(Math.floor(parseInt(params.downtime_jail_duration) / 1_000_000_000)),
             nanos: parseInt(params.downtime_jail_duration) % 1_000_000_000
           },
           slashFractionDoubleSign: params.slash_fraction_double_sign,

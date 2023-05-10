@@ -79,6 +79,7 @@ export const createRPCQueryClient = async ({
       }
     },
     empowerchain: {
+      certificates: (await import("./certificates/query.rpc.Query")).createRpcQueryExtension(client),
       plasticcredit: (await import("./plasticcredit/query.rpc.Query")).createRpcQueryExtension(client),
       proofofexistence: (await import("./proofofexistence/query.rpc.Query")).createRpcQueryExtension(client)
     }

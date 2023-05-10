@@ -14,7 +14,6 @@ export const MessageComposer = {
         value: MsgSend.encode(value).finish()
       };
     }
-
   },
   withTypeUrl: {
     send(value: MsgSend) {
@@ -23,7 +22,22 @@ export const MessageComposer = {
         value
       };
     }
-
+  },
+  toJSON: {
+    send(value: MsgSend) {
+      return {
+        typeUrl: "/cosmos.nft.v1beta1.MsgSend",
+        value: MsgSend.toJSON(value)
+      };
+    }
+  },
+  fromJSON: {
+    send(value: any) {
+      return {
+        typeUrl: "/cosmos.nft.v1beta1.MsgSend",
+        value: MsgSend.fromJSON(value)
+      };
+    }
   },
   fromPartial: {
     send(value: MsgSend) {
@@ -32,6 +46,5 @@ export const MessageComposer = {
         value: MsgSend.fromPartial(value)
       };
     }
-
   }
 };

@@ -1,7 +1,6 @@
 import { AminoMsg } from "@cosmjs/amino";
-import { Long } from "../../../helpers";
 import { MsgCreateVestingAccount, MsgCreatePermanentLockedAccount, MsgCreatePeriodicVestingAccount } from "./tx";
-export interface AminoMsgCreateVestingAccount extends AminoMsg {
+export interface MsgCreateVestingAccountAminoType extends AminoMsg {
   type: "cosmos-sdk/MsgCreateVestingAccount";
   value: {
     from_address: string;
@@ -14,8 +13,8 @@ export interface AminoMsgCreateVestingAccount extends AminoMsg {
     delayed: boolean;
   };
 }
-export interface AminoMsgCreatePermanentLockedAccount extends AminoMsg {
-  type: "cosmos-sdk/MsgCreatePermanentLockedAccount";
+export interface MsgCreatePermanentLockedAccountAminoType extends AminoMsg {
+  type: "cosmos-sdk/MsgCreatePermLockedAccount";
   value: {
     from_address: string;
     to_address: string;
@@ -25,7 +24,7 @@ export interface AminoMsgCreatePermanentLockedAccount extends AminoMsg {
     }[];
   };
 }
-export interface AminoMsgCreatePeriodicVestingAccount extends AminoMsg {
+export interface MsgCreatePeriodicVestingAccountAminoType extends AminoMsg {
   type: "cosmos-sdk/MsgCreatePeriodicVestingAccount";
   value: {
     from_address: string;
@@ -49,7 +48,7 @@ export const AminoConverter = {
       amount,
       endTime,
       delayed
-    }: MsgCreateVestingAccount): AminoMsgCreateVestingAccount["value"] => {
+    }: MsgCreateVestingAccount): MsgCreateVestingAccountAminoType["value"] => {
       return {
         from_address: fromAddress,
         to_address: toAddress,
@@ -67,7 +66,7 @@ export const AminoConverter = {
       amount,
       end_time,
       delayed
-    }: AminoMsgCreateVestingAccount["value"]): MsgCreateVestingAccount => {
+    }: MsgCreateVestingAccountAminoType["value"]): MsgCreateVestingAccount => {
       return {
         fromAddress: from_address,
         toAddress: to_address,
@@ -75,18 +74,18 @@ export const AminoConverter = {
           denom: el0.denom,
           amount: el0.amount
         })),
-        endTime: Long.fromString(end_time),
+        endTime: BigInt(end_time),
         delayed
       };
     }
   },
   "/cosmos.vesting.v1beta1.MsgCreatePermanentLockedAccount": {
-    aminoType: "cosmos-sdk/MsgCreatePermanentLockedAccount",
+    aminoType: "cosmos-sdk/MsgCreatePermLockedAccount",
     toAmino: ({
       fromAddress,
       toAddress,
       amount
-    }: MsgCreatePermanentLockedAccount): AminoMsgCreatePermanentLockedAccount["value"] => {
+    }: MsgCreatePermanentLockedAccount): MsgCreatePermanentLockedAccountAminoType["value"] => {
       return {
         from_address: fromAddress,
         to_address: toAddress,
@@ -100,7 +99,7 @@ export const AminoConverter = {
       from_address,
       to_address,
       amount
-    }: AminoMsgCreatePermanentLockedAccount["value"]): MsgCreatePermanentLockedAccount => {
+    }: MsgCreatePermanentLockedAccountAminoType["value"]): MsgCreatePermanentLockedAccount => {
       return {
         fromAddress: from_address,
         toAddress: to_address,
@@ -118,7 +117,7 @@ export const AminoConverter = {
       toAddress,
       startTime,
       vestingPeriods
-    }: MsgCreatePeriodicVestingAccount): AminoMsgCreatePeriodicVestingAccount["value"] => {
+    }: MsgCreatePeriodicVestingAccount): MsgCreatePeriodicVestingAccountAminoType["value"] => {
       return {
         from_address: fromAddress,
         to_address: toAddress,
@@ -137,13 +136,13 @@ export const AminoConverter = {
       to_address,
       start_time,
       vesting_periods
-    }: AminoMsgCreatePeriodicVestingAccount["value"]): MsgCreatePeriodicVestingAccount => {
+    }: MsgCreatePeriodicVestingAccountAminoType["value"]): MsgCreatePeriodicVestingAccount => {
       return {
         fromAddress: from_address,
         toAddress: to_address,
-        startTime: Long.fromString(start_time),
+        startTime: BigInt(start_time),
         vestingPeriods: vesting_periods.map(el0 => ({
-          length: Long.fromString(el0.length),
+          length: BigInt(el0.length),
           amount: el0.amount.map(el1 => ({
             denom: el1.denom,
             amount: el1.amount
