@@ -1,0 +1,15 @@
+.input-label{
+    @apply label-text text-white text-title18
+}
+.input-text{
+    @apply text-white text-title24 bg-mediumGray w-[180px]
+}
+.input-box{
+    @apply rounded-sm w-fit
+}
+.input-sub-text{
+    @apply bg-mediumGray text-title16 text-dropDownText
+}
+.modal-button{
+    @apply rounded-sm  font-bold text-title14 normal-case border-none px-10
+}
