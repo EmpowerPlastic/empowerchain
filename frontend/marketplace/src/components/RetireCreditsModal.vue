@@ -1,9 +1,14 @@
 <script setup lang="ts">
+import {ref} from 'vue'
+import RetireCreditTextArea from "@/components/RetireCreditTextArea.vue";
+
 export interface ModalProps {
   showModal: boolean
 }
 
 defineProps<ModalProps>();
+const messageOne = ref('')
+const messageTwo = ref('')
 </script>
 <template>
   <input type="checkbox" id="retire-credits-modal" class="modal-toggle" :checked="showModal"/>
@@ -23,41 +28,36 @@ defineProps<ModalProps>();
       <div class="grid md:grid-cols-2 gap-5 mb-6 mt-2">
         <div class="form-control">
           <label class="label">
-            <span class="label-text text-white text-title18">How many Plastic credits do you want to retire?</span>
+            <span class="input-label">How many Plastic credits do you want to retire?</span>
           </label>
-          <label class="input-group rounded-sm w-fit">
-            <input type="text" placeholder="0.01" class="input text-white text-title24 bg-mediumGray w-[180px]" />
-            <span class="bg-mediumGray text-title16 text-dropDownText">$MPWR</span>
+          <label class="input-group input-box">
+            <input type="text" placeholder="0.01" class="input-text"/>
+            <span class="input-sub-text">$MPWR</span>
           </label>
         </div>
 
         <div class="form-control">
           <label class="label">
-            <span class="label-text text-white text-title18">Available credits in your account</span>
+            <span class="input-label">Available credits in your account</span>
           </label>
-          <label class="input-group rounded-sm w-fit border-dashed border-[1px] border-dashedBorderBlack">
-            <input type="text" placeholder="0.01" class="input text-white text-title24 bg-mediumGray w-[180px]" />
-            <span class="bg-mediumGray text-title16 text-dropDownText">$MPWR</span>
+          <label class="input-group input-box border-dashed border-[1px] border-dashedBorderBlack">
+            <input type="text" placeholder="0.01" class="input-text"/>
+            <span class="input-sub-text">$MPWR</span>
           </label>
         </div>
       </div>
 
-      <div class="my-4">
-        <p class="text-title18">Provide a name of the entity that should be visible as a retriever</p>
-        <p class="text-title14 text-textGray">(will be visible on generated Plastic Credit certificate)</p>
-        <textarea class="textarea w-full bg-mediumGray rounded-sm my-1" rows="3"></textarea>
-      </div>
-
-      <div class="my-4">
-        <p class="text-title18">Provide additional data about the retriever</p>
-        <p class="text-title14 text-textGray">(will be visible on generated Plastic Credit certificate)</p>
-        <textarea class="textarea w-full bg-mediumGray  rounded-sm  my-1" rows="3"></textarea>
-      </div>
+      <RetireCreditTextArea label="Provide a name of the entity that should be visible as a retriever"
+                            sub-text="(will be visible on generated Plastic Credit certificate)"
+                            v-model="messageOne"/>
+      <RetireCreditTextArea label="Provide additional data about the retriever"
+                            sub-text="(will be visible on generated Plastic Credit certificate)"
+                            v-model="messageTwo"/>
 
       <div class="flex flex-col md:flex-row justify-between modal-action">
         <label for="retire-credits-modal"
-               class="btn rounded-sm  font-bold text-greenPrimary text-title14 bg-lightGray normal-case border-none px-10 mb-4 md:m-0">Cancel!</label>
-        <button class="btn rounded-sm  font-bold text-title14 bg-greenPrimary normal-case border-none px-10 !ml-0">
+               class="btn modal-button text-greenPrimary bg-lightGray mb-4 md:m-0">Cancel!</label>
+        <button class="btn modal-button !ml-0 bg-greenPrimary">
           Retire credits
         </button>
       </div>
@@ -65,3 +65,20 @@ defineProps<ModalProps>();
     </div>
   </div>
 </template>
+<style scoped>
+.input-label{
+  @apply label-text text-white text-title18
+}
+.input-text{
+  @apply input text-white text-title24 bg-mediumGray w-[180px]
+}
+.input-box{
+ @apply rounded-sm w-fit
+}
+.input-sub-text{
+ @apply bg-mediumGray text-title16 text-dropDownText
+}
+.modal-button{
+  @apply rounded-sm  font-bold text-title14 normal-case border-none px-10
+}
+</style>
