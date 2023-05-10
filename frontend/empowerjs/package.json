@@ -18,8 +18,8 @@
     "module"
   ],
   "scripts": {
-    "build:main": "cross-env BABEL_ENV=production babel src --out-dir main --delete-dir-on-start --extensions \".tsx,.ts,.js\"",
-    "build:module": "cross-env MODULE=true babel src --out-dir module --delete-dir-on-start  --extensions \".tsx,.ts,.js\"",
+    "build:main": "cross-env BABEL_ENV=production babel src --out-dir main --delete-dir-on-start --extensions \".tsx,.ts,.js\" --copy-files",
+    "build:module": "cross-env MODULE=true babel src --out-dir module --delete-dir-on-start  --extensions \".tsx,.ts,.js\" --copy-files",
     "build:ts": "npx tsc-silent --project ./tsconfig.json --compiler ./node_modules/typescript/lib/typescript.js --suppress @src/ @node_modules/",
     "build:src": "npm run build:module && npm run build:main",
     "build": "npm run build:src && npm run build:ts",
