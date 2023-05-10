@@ -1,26 +1,26 @@
 import { AminoMsg } from "@cosmjs/amino";
 import { MsgSetWithdrawAddress, MsgWithdrawDelegatorReward, MsgWithdrawValidatorCommission, MsgFundCommunityPool, MsgUpdateParams, MsgCommunityPoolSpend } from "./tx";
-export interface AminoMsgSetWithdrawAddress extends AminoMsg {
+export interface MsgSetWithdrawAddressAminoType extends AminoMsg {
   type: "cosmos-sdk/MsgModifyWithdrawAddress";
   value: {
     delegator_address: string;
     withdraw_address: string;
   };
 }
-export interface AminoMsgWithdrawDelegatorReward extends AminoMsg {
+export interface MsgWithdrawDelegatorRewardAminoType extends AminoMsg {
   type: "cosmos-sdk/MsgWithdrawDelegationReward";
   value: {
     delegator_address: string;
     validator_address: string;
   };
 }
-export interface AminoMsgWithdrawValidatorCommission extends AminoMsg {
-  type: "cosmos-sdk/MsgWithdrawValidatorCommission";
+export interface MsgWithdrawValidatorCommissionAminoType extends AminoMsg {
+  type: "cosmos-sdk/MsgWithdrawValCommission";
   value: {
     validator_address: string;
   };
 }
-export interface AminoMsgFundCommunityPool extends AminoMsg {
+export interface MsgFundCommunityPoolAminoType extends AminoMsg {
   type: "cosmos-sdk/MsgFundCommunityPool";
   value: {
     amount: {
@@ -30,8 +30,8 @@ export interface AminoMsgFundCommunityPool extends AminoMsg {
     depositor: string;
   };
 }
-export interface AminoMsgUpdateParams extends AminoMsg {
-  type: "cosmos-sdk/MsgUpdateParams";
+export interface MsgUpdateParamsAminoType extends AminoMsg {
+  type: "cosmos-sdk/distribution/MsgUpdateParams";
   value: {
     authority: string;
     params: {
@@ -42,8 +42,8 @@ export interface AminoMsgUpdateParams extends AminoMsg {
     };
   };
 }
-export interface AminoMsgCommunityPoolSpend extends AminoMsg {
-  type: "cosmos-sdk/MsgCommunityPoolSpend";
+export interface MsgCommunityPoolSpendAminoType extends AminoMsg {
+  type: "cosmos-sdk/distr/MsgCommunityPoolSpend";
   value: {
     authority: string;
     recipient: string;
@@ -59,7 +59,7 @@ export const AminoConverter = {
     toAmino: ({
       delegatorAddress,
       withdrawAddress
-    }: MsgSetWithdrawAddress): AminoMsgSetWithdrawAddress["value"] => {
+    }: MsgSetWithdrawAddress): MsgSetWithdrawAddressAminoType["value"] => {
       return {
         delegator_address: delegatorAddress,
         withdraw_address: withdrawAddress
@@ -68,7 +68,7 @@ export const AminoConverter = {
     fromAmino: ({
       delegator_address,
       withdraw_address
-    }: AminoMsgSetWithdrawAddress["value"]): MsgSetWithdrawAddress => {
+    }: MsgSetWithdrawAddressAminoType["value"]): MsgSetWithdrawAddress => {
       return {
         delegatorAddress: delegator_address,
         withdrawAddress: withdraw_address
@@ -80,7 +80,7 @@ export const AminoConverter = {
     toAmino: ({
       delegatorAddress,
       validatorAddress
-    }: MsgWithdrawDelegatorReward): AminoMsgWithdrawDelegatorReward["value"] => {
+    }: MsgWithdrawDelegatorReward): MsgWithdrawDelegatorRewardAminoType["value"] => {
       return {
         delegator_address: delegatorAddress,
         validator_address: validatorAddress
@@ -89,7 +89,7 @@ export const AminoConverter = {
     fromAmino: ({
       delegator_address,
       validator_address
-    }: AminoMsgWithdrawDelegatorReward["value"]): MsgWithdrawDelegatorReward => {
+    }: MsgWithdrawDelegatorRewardAminoType["value"]): MsgWithdrawDelegatorReward => {
       return {
         delegatorAddress: delegator_address,
         validatorAddress: validator_address
@@ -97,17 +97,17 @@ export const AminoConverter = {
     }
   },
   "/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission": {
-    aminoType: "cosmos-sdk/MsgWithdrawValidatorCommission",
+    aminoType: "cosmos-sdk/MsgWithdrawValCommission",
     toAmino: ({
       validatorAddress
-    }: MsgWithdrawValidatorCommission): AminoMsgWithdrawValidatorCommission["value"] => {
+    }: MsgWithdrawValidatorCommission): MsgWithdrawValidatorCommissionAminoType["value"] => {
       return {
         validator_address: validatorAddress
       };
     },
     fromAmino: ({
       validator_address
-    }: AminoMsgWithdrawValidatorCommission["value"]): MsgWithdrawValidatorCommission => {
+    }: MsgWithdrawValidatorCommissionAminoType["value"]): MsgWithdrawValidatorCommission => {
       return {
         validatorAddress: validator_address
       };
@@ -118,7 +118,7 @@ export const AminoConverter = {
     toAmino: ({
       amount,
       depositor
-    }: MsgFundCommunityPool): AminoMsgFundCommunityPool["value"] => {
+    }: MsgFundCommunityPool): MsgFundCommunityPoolAminoType["value"] => {
       return {
         amount: amount.map(el0 => ({
           denom: el0.denom,
@@ -130,7 +130,7 @@ export const AminoConverter = {
     fromAmino: ({
       amount,
       depositor
-    }: AminoMsgFundCommunityPool["value"]): MsgFundCommunityPool => {
+    }: MsgFundCommunityPoolAminoType["value"]): MsgFundCommunityPool => {
       return {
         amount: amount.map(el0 => ({
           denom: el0.denom,
@@ -141,11 +141,11 @@ export const AminoConverter = {
     }
   },
   "/cosmos.distribution.v1beta1.MsgUpdateParams": {
-    aminoType: "cosmos-sdk/MsgUpdateParams",
+    aminoType: "cosmos-sdk/distribution/MsgUpdateParams",
     toAmino: ({
       authority,
       params
-    }: MsgUpdateParams): AminoMsgUpdateParams["value"] => {
+    }: MsgUpdateParams): MsgUpdateParamsAminoType["value"] => {
       return {
         authority,
         params: {
@@ -159,7 +159,7 @@ export const AminoConverter = {
     fromAmino: ({
       authority,
       params
-    }: AminoMsgUpdateParams["value"]): MsgUpdateParams => {
+    }: MsgUpdateParamsAminoType["value"]): MsgUpdateParams => {
       return {
         authority,
         params: {
@@ -172,12 +172,12 @@ export const AminoConverter = {
     }
   },
   "/cosmos.distribution.v1beta1.MsgCommunityPoolSpend": {
-    aminoType: "cosmos-sdk/MsgCommunityPoolSpend",
+    aminoType: "cosmos-sdk/distr/MsgCommunityPoolSpend",
     toAmino: ({
       authority,
       recipient,
       amount
-    }: MsgCommunityPoolSpend): AminoMsgCommunityPoolSpend["value"] => {
+    }: MsgCommunityPoolSpend): MsgCommunityPoolSpendAminoType["value"] => {
       return {
         authority,
         recipient,
@@ -191,7 +191,7 @@ export const AminoConverter = {
       authority,
       recipient,
       amount
-    }: AminoMsgCommunityPoolSpend["value"]): MsgCommunityPoolSpend => {
+    }: MsgCommunityPoolSpendAminoType["value"]): MsgCommunityPoolSpend => {
       return {
         authority,
         recipient,

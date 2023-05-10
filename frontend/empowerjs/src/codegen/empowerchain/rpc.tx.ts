@@ -56,6 +56,7 @@ export const createRPCMsgClient = async ({
     }
   },
   empowerchain: {
+    certificates: new (await import("./certificates/tx.rpc.msg")).MsgClientImpl(rpc),
     plasticcredit: new (await import("./plasticcredit/tx.rpc.msg")).MsgClientImpl(rpc),
     proofofexistence: new (await import("./proofofexistence/tx.rpc.msg")).MsgClientImpl(rpc)
   }

@@ -14,14 +14,12 @@ export const MessageComposer = {
         value: MsgGrantAllowance.encode(value).finish()
       };
     },
-
     revokeAllowance(value: MsgRevokeAllowance) {
       return {
         typeUrl: "/cosmos.feegrant.v1beta1.MsgRevokeAllowance",
         value: MsgRevokeAllowance.encode(value).finish()
       };
     }
-
   },
   withTypeUrl: {
     grantAllowance(value: MsgGrantAllowance) {
@@ -30,14 +28,40 @@ export const MessageComposer = {
         value
       };
     },
-
     revokeAllowance(value: MsgRevokeAllowance) {
       return {
         typeUrl: "/cosmos.feegrant.v1beta1.MsgRevokeAllowance",
         value
       };
     }
-
+  },
+  toJSON: {
+    grantAllowance(value: MsgGrantAllowance) {
+      return {
+        typeUrl: "/cosmos.feegrant.v1beta1.MsgGrantAllowance",
+        value: MsgGrantAllowance.toJSON(value)
+      };
+    },
+    revokeAllowance(value: MsgRevokeAllowance) {
+      return {
+        typeUrl: "/cosmos.feegrant.v1beta1.MsgRevokeAllowance",
+        value: MsgRevokeAllowance.toJSON(value)
+      };
+    }
+  },
+  fromJSON: {
+    grantAllowance(value: any) {
+      return {
+        typeUrl: "/cosmos.feegrant.v1beta1.MsgGrantAllowance",
+        value: MsgGrantAllowance.fromJSON(value)
+      };
+    },
+    revokeAllowance(value: any) {
+      return {
+        typeUrl: "/cosmos.feegrant.v1beta1.MsgRevokeAllowance",
+        value: MsgRevokeAllowance.fromJSON(value)
+      };
+    }
   },
   fromPartial: {
     grantAllowance(value: MsgGrantAllowance) {
@@ -46,13 +70,11 @@ export const MessageComposer = {
         value: MsgGrantAllowance.fromPartial(value)
       };
     },
-
     revokeAllowance(value: MsgRevokeAllowance) {
       return {
         typeUrl: "/cosmos.feegrant.v1beta1.MsgRevokeAllowance",
         value: MsgRevokeAllowance.fromPartial(value)
       };
     }
-
   }
 };

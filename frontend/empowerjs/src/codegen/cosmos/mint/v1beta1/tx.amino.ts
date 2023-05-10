@@ -1,8 +1,7 @@
 import { AminoMsg } from "@cosmjs/amino";
-import { Long } from "../../../helpers";
 import { MsgUpdateParams } from "./tx";
-export interface AminoMsgUpdateParams extends AminoMsg {
-  type: "cosmos-sdk/MsgUpdateParams";
+export interface MsgUpdateParamsAminoType extends AminoMsg {
+  type: "cosmos-sdk/x/mint/MsgUpdateParams";
   value: {
     authority: string;
     params: {
@@ -17,11 +16,11 @@ export interface AminoMsgUpdateParams extends AminoMsg {
 }
 export const AminoConverter = {
   "/cosmos.mint.v1beta1.MsgUpdateParams": {
-    aminoType: "cosmos-sdk/MsgUpdateParams",
+    aminoType: "cosmos-sdk/x/mint/MsgUpdateParams",
     toAmino: ({
       authority,
       params
-    }: MsgUpdateParams): AminoMsgUpdateParams["value"] => {
+    }: MsgUpdateParams): MsgUpdateParamsAminoType["value"] => {
       return {
         authority,
         params: {
@@ -37,7 +36,7 @@ export const AminoConverter = {
     fromAmino: ({
       authority,
       params
-    }: AminoMsgUpdateParams["value"]): MsgUpdateParams => {
+    }: MsgUpdateParamsAminoType["value"]): MsgUpdateParams => {
       return {
         authority,
         params: {
@@ -46,7 +45,7 @@ export const AminoConverter = {
           inflationMax: params.inflation_max,
           inflationMin: params.inflation_min,
           goalBonded: params.goal_bonded,
-          blocksPerYear: Long.fromString(params.blocks_per_year)
+          blocksPerYear: BigInt(params.blocks_per_year)
         }
       };
     }

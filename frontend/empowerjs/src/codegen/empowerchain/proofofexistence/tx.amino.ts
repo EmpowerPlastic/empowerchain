@@ -1,6 +1,6 @@
 import { AminoMsg } from "@cosmjs/amino";
 import { MsgCreateProof } from "./tx";
-export interface AminoMsgCreateProof extends AminoMsg {
+export interface MsgCreateProofAminoType extends AminoMsg {
   type: "/empowerchain.proofofexistence.MsgCreateProof";
   value: {
     creator: string;
@@ -13,7 +13,7 @@ export const AminoConverter = {
     toAmino: ({
       creator,
       hash
-    }: MsgCreateProof): AminoMsgCreateProof["value"] => {
+    }: MsgCreateProof): MsgCreateProofAminoType["value"] => {
       return {
         creator,
         hash
@@ -22,7 +22,7 @@ export const AminoConverter = {
     fromAmino: ({
       creator,
       hash
-    }: AminoMsgCreateProof["value"]): MsgCreateProof => {
+    }: MsgCreateProofAminoType["value"]): MsgCreateProof => {
       return {
         creator,
         hash

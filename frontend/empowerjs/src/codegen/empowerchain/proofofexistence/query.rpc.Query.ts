@@ -7,18 +7,15 @@ export interface Query {
 }
 export class QueryClientImpl implements Query {
   private readonly rpc: Rpc;
-
   constructor(rpc: Rpc) {
     this.rpc = rpc;
     this.proof = this.proof.bind(this);
   }
-
   proof(request: QueryProofRequest): Promise<QueryProofResponse> {
     const data = QueryProofRequest.encode(request).finish();
     const promise = this.rpc.request("empowerchain.proofofexistence.Query", "Proof", data);
     return promise.then(data => QueryProofResponse.decode(new _m0.Reader(data)));
   }
-
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
@@ -27,6 +24,5 @@ export const createRpcQueryExtension = (base: QueryClient) => {
     proof(request: QueryProofRequest): Promise<QueryProofResponse> {
       return queryService.proof(request);
     }
-
   };
 };

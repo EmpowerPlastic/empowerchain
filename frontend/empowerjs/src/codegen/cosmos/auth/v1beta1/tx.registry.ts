@@ -14,7 +14,6 @@ export const MessageComposer = {
         value: MsgUpdateParams.encode(value).finish()
       };
     }
-
   },
   withTypeUrl: {
     updateParams(value: MsgUpdateParams) {
@@ -23,7 +22,22 @@ export const MessageComposer = {
         value
       };
     }
-
+  },
+  toJSON: {
+    updateParams(value: MsgUpdateParams) {
+      return {
+        typeUrl: "/cosmos.auth.v1beta1.MsgUpdateParams",
+        value: MsgUpdateParams.toJSON(value)
+      };
+    }
+  },
+  fromJSON: {
+    updateParams(value: any) {
+      return {
+        typeUrl: "/cosmos.auth.v1beta1.MsgUpdateParams",
+        value: MsgUpdateParams.fromJSON(value)
+      };
+    }
   },
   fromPartial: {
     updateParams(value: MsgUpdateParams) {
@@ -32,6 +46,5 @@ export const MessageComposer = {
         value: MsgUpdateParams.fromPartial(value)
       };
     }
-
   }
 };

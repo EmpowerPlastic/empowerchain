@@ -1,8 +1,7 @@
 import { AminoMsg } from "@cosmjs/amino";
-import { Long } from "../../../helpers";
 import { MsgUpdateParams } from "./tx";
-export interface AminoMsgUpdateParams extends AminoMsg {
-  type: "cosmos-sdk/MsgUpdateParams";
+export interface MsgUpdateParamsAminoType extends AminoMsg {
+  type: "cosmos-sdk/x/auth/MsgUpdateParams";
   value: {
     authority: string;
     params: {
@@ -16,11 +15,11 @@ export interface AminoMsgUpdateParams extends AminoMsg {
 }
 export const AminoConverter = {
   "/cosmos.auth.v1beta1.MsgUpdateParams": {
-    aminoType: "cosmos-sdk/MsgUpdateParams",
+    aminoType: "cosmos-sdk/x/auth/MsgUpdateParams",
     toAmino: ({
       authority,
       params
-    }: MsgUpdateParams): AminoMsgUpdateParams["value"] => {
+    }: MsgUpdateParams): MsgUpdateParamsAminoType["value"] => {
       return {
         authority,
         params: {
@@ -35,15 +34,15 @@ export const AminoConverter = {
     fromAmino: ({
       authority,
       params
-    }: AminoMsgUpdateParams["value"]): MsgUpdateParams => {
+    }: MsgUpdateParamsAminoType["value"]): MsgUpdateParams => {
       return {
         authority,
         params: {
-          maxMemoCharacters: Long.fromString(params.max_memo_characters),
-          txSigLimit: Long.fromString(params.tx_sig_limit),
-          txSizeCostPerByte: Long.fromString(params.tx_size_cost_per_byte),
-          sigVerifyCostEd25519: Long.fromString(params.sig_verify_cost_ed25519),
-          sigVerifyCostSecp256k1: Long.fromString(params.sig_verify_cost_secp256k1)
+          maxMemoCharacters: BigInt(params.max_memo_characters),
+          txSigLimit: BigInt(params.tx_sig_limit),
+          txSizeCostPerByte: BigInt(params.tx_size_cost_per_byte),
+          sigVerifyCostEd25519: BigInt(params.sig_verify_cost_ed25519),
+          sigVerifyCostSecp256k1: BigInt(params.sig_verify_cost_secp256k1)
         }
       };
     }
