@@ -2,7 +2,6 @@ VERSION 0.6
 FROM node:lts-alpine
 WORKDIR /app/empowerjs
 
-# Used by root frontend Earthfile (to not get too many files and stuff)
 project-setup:
   COPY proto proto
   COPY scripts scripts
@@ -10,12 +9,12 @@ project-setup:
   COPY test test
   COPY .babelrc.js .babelrc.js
   COPY package.json package.json
+  COPY package-lock.json package-lock.json
   COPY tsconfig.json tsconfig.json
-  SAVE ARTIFACT .
+  RUN npm ci
 
 cosmwasm-codegen:
-    FROM ../+frontend-install
-    WORKDIR /app/empowerjs
+    FROM +project-setup
     COPY ../../+get-cw-schema/* .
     RUN npx @cosmwasm/ts-codegen@0.25.2 generate \
       --plugin client \
@@ -28,8 +27,7 @@ cosmwasm-codegen:
     SAVE ARTIFACT ./src/plastic-credit-marketplace AS LOCAL ./src/plastic-credit-marketplace
 
 proto-codegen:
-    FROM ../+frontend-install
-    WORKDIR /app/empowerjs
+    FROM +project-setup
     COPY ../../+get-proto/* ./proto
     RUN npm run codegen
     SAVE ARTIFACT ./src/codegen AS LOCAL ./src/codegen
@@ -38,3 +36,12 @@ proto-codegen:
 codegen-all:
     BUILD +cosmwasm-codegen
     BUILD +proto-codegen
+
+publish:
+    ARG NPM_TOKEN
+    FROM +project-setup
+    RUN npm config set registry https://registry.npmjs.org/
+    RUN npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
+    RUN npm version patch
+    RUN npm publish
+    SAVE ARTIFACT ./package.json AS LOCAL ./package.json

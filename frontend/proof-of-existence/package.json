@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "prepare": "cd ../.. && husky install frontend/proof-of-existence/.husky",
+    "prepare": "cd ../../ && husky install .husky",
     "dev": "vite",
     "build": "run-p type-check build-only",
     "preview": "vite preview",
@@ -19,6 +19,7 @@
     "vue-router": "^4.1.6"
   },
   "devDependencies": {
+    "husky": "^8.0.3",
     "@keplr-wallet/types": "^0.11.51",
     "@rushstack/eslint-patch": "^1.1.4",
     "@types/node": "^18.11.12",

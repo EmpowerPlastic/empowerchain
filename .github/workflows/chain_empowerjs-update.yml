@@ -25,30 +25,17 @@ jobs:
       - run: earthly --ci --output +codegen-all
         working-directory: ./frontend/empowerjs
 
-      #- run: earthly --ci --output +publish-empowerjs --NPM_TOKEN="$NPM_TOKEN"
-      #  env:
-      #    NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      #  working-directory: ./frontend
-
       - name: Check if there are any changes
         id: verify_diff
         run: |
           git diff --quiet . || echo "changed=true" >> $GITHUB_OUTPUT
 
-      - name: "Set up node"
-        uses: actions/setup-node@v3
-        if: steps.verify_diff.outputs.changed != 'true'
-        with:
-          node-version: '18'
-      - name: Publish empowerjs
-        if: steps.verify_diff.outputs.changed != 'true'
-        working-directory: ./frontend
-        run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "${{ github.actor}}@users.noreply.github.com"
-          npm config set registry https://registry.npmjs.org/
-          npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
-          npx lerna publish patch --yes --no-private --contents empowerjs
+      - name: Publish empowerjs on npm
+        if: steps.verify_diff.outputs.changed != 'true' # Only publish if there are no more changes, first we make a pr for those, then another run will be triggered and publish
+        run: earthly --ci --output +publish --NPM_TOKEN="$NPM_TOKEN"
+        working-directory: ./frontend/empowerjs
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
