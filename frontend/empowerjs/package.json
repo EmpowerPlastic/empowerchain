@@ -1,6 +1,6 @@
 {
   "name": "@empower-plastic/empowerjs",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Typescript types for EmpowerChain",
   "author": "empower <contact@empowerchain.io>",
   "homepage": "https://github.com/EmpowerPlastic/empowerchain/tree/main/frontend/empowerjs#readme",
