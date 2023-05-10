@@ -44,6 +44,8 @@ jobs:
         if: steps.verify_diff.outputs.changed != 'true'
         working-directory: ./frontend
         run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor}}@users.noreply.github.com"
           npm config set registry https://registry.npmjs.org/
           npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
           npx lerna publish patch --yes --no-private --contents empowerjs
