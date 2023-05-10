@@ -37,11 +37,12 @@ jobs:
 
       - name: "Set up node"
         uses: actions/setup-node@v3
-        if: steps.verify_diff.outputs.changed == 'true'
+        if: steps.verify_diff.outputs.changed != 'true'
         with:
           node-version: '18'
       - name: Publish empowerjs
-        if: steps.verify_diff.outputs.changed == 'true'
+        if: steps.verify_diff.outputs.changed != 'true'
+        working-directory: ./frontend
         run: |
           npm config set registry https://registry.npmjs.org/
           npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
