@@ -13,6 +13,10 @@ project-setup:
   COPY tsconfig.json tsconfig.json
   RUN npm ci
 
+build:
+  FROM +project-setup
+  RUN npm run build
+
 cosmwasm-codegen:
     FROM +project-setup
     COPY ../../+get-cw-schema/* .
@@ -39,7 +43,8 @@ codegen-all:
 
 publish:
     ARG NPM_TOKEN
-    FROM +project-setup
+    FROM +build
+    COPY README.md README.md
     RUN npm config set registry https://registry.npmjs.org/
     RUN npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
     RUN npm version patch
