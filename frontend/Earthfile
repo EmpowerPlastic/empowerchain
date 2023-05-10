@@ -17,14 +17,3 @@ frontend-install:
 lerna-build:
     FROM +frontend-install
     RUN npx lerna run build
-
-publish-empowerjs:
-    ARG NPM_TOKEN
-    FROM +lerna-build
-    WORKDIR /app
-    RUN npm config set registry https://registry.npmjs.org/
-    RUN npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
-    RUN npx lerna publish patch --yes --no-private --contents empowerjs
-    SAVE ARTIFACT ./package.json AS LOCAL ./package.json
-    SAVE ARTIFACT ./package-lock.json AS LOCAL ./package-lock.json
-    SAVE ARTIFACT ./empowerjs/package.json AS LOCAL ./empowerjs/package.json
