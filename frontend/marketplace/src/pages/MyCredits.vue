@@ -55,6 +55,7 @@ const handlePageChange = (currentPage: number) => {
     <div class="flex justify-center md:justify-end my-10">
       <CustomPagination
         :page-count="20"
+        :item-per-page="5"
         v-model:current-page="pageNumber"
         @page-change="handlePageChange"
       />

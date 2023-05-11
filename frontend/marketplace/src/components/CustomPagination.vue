@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import Paginate from 'vuejs-paginate-next'
-
 export interface PaginationProps {
-  pageCount: number
+  total: number
+  itemPerPage:number
   currentPage: number
 }
 defineProps<PaginationProps>()
@@ -15,19 +14,17 @@ const handlePageChange = (current: number) => {
 }
 </script>
 <template>
-  <paginate
-    :v-model="currentPage"
-    :page-count="20"
-    :click-handler="handlePageChange"
-    first-last-button
-    prev-text="<"
-    next-text=">"
-    first-button-text="<<"
-    last-button-text=">>"
-    :container-class="'rounded-sm flex bg-lightBlack rounded-sm items-center cursor-pointer'"
-    :page-class="'md:px-4 px-2 py-3 bg-lightBlack border-none text-greenTabs'"
-    :prev-class="'md:px-4 px-2 py-3 bg-lightBlack border-none  text-greenTabs'"
-    :next-class="'md:px-4 px-2 py-3 bg-lightBlack border-none  text-greenTabs'"
-    :active-class="'md:px-4 px-2 py-3 bg-paginationBlack border-none  text-greenTabs'"
+  <vue-awesome-paginate
+      show-ending-buttons
+      :total-items="total"
+      v-model="$props.currentPage"
+      :items-per-page="itemPerPage"
+      :max-pages-shown="3"
+      paginate-buttons-class="md:px-4 px-3 py-3 bg-lightBlack border-none text-greenTabs"
+      pagination-container-class="rounded-sm flex bg-lightBlack rounded-sm items-center cursor-pointer"
+      active-page-class="md:px-4 px-3 py-3 bg-paginationBlack border-none  text-greenTabs"
+      :on-click="handlePageChange"
+      last-page-content=">>"
+      first-page-content="<<"
   />
 </template>
