@@ -210,11 +210,13 @@ To sync from genesis, simply start the `empowerd` daemon. No additional configur
 
 ### State Sync
 
-TODO
+To sync from a state sync server, the `config.toml` file needs to be edited to include the state sync server details.
+
+The values are not static, and will typically be provided by the state sync provider. The `rpc_servers`, `trust_height`, `trust_hash`, and `trust_period` values within the `[statesync]` section need to be set. Once set, state sync can be enabled by setting `enabled = true` in the `[statesync]` section of the config file.
 
 ### Snapshot
 
-TODO
+Exact snapshot instructions will vary by provider, but the concept is the same for all of them. A compressed archive of the current chain data is downloaded, uncompressed, and extracted into the `~/.empowerd/data` directory. Most snapshot providers include a script or set of instructions on how to download and extract the data properly based on their setup.
 
 ## Starting Empowerd
 
