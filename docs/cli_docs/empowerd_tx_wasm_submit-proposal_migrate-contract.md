@@ -1,22 +1,20 @@
-## empowerd tx gov submit-legacy-proposal instantiate-contract
+## empowerd tx wasm submit-proposal migrate-contract
 
-Submit an instantiate wasm contract proposal
+Submit a migrate wasm contract to a new code version proposal
 
 ```
-empowerd tx gov submit-legacy-proposal instantiate-contract [code_id_int64] [json_encoded_init_args] --label [text] --title [text] --description [text] --run-as [address] --admin [address,optional] --amount [coins,optional] [flags]
+empowerd tx wasm submit-proposal migrate-contract [contract_addr_bech32] [new_code_id_int64] [json_encoded_migration_args] --title [text] --summary [text] --authority [address] [flags]
 ```
 
 ### Options
 
 ```
   -a, --account-number uint      The account number of the signing account (offline mode only)
-      --admin string             Address or key name of an admin
-      --amount string            Coins to send to the contract during instantiation
+      --authority string         The address of the governance account. Default is the sdk gov module account (default "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn")
       --aux                      Generate aux signer data instead of sending a tx
   -b, --broadcast-mode string    Transaction broadcasting mode (sync|async) (default "sync")
       --chain-id string          The network chain ID
       --deposit string           Deposit of proposal
-      --description string       Description of proposal
       --dry-run                  ignore the --gas flag and perform a simulation of a transaction, but don't broadcast it (when enabled, the local Keybase is not accessible)
       --fee-granter string       Fee granter grants fees for the transaction
       --fee-payer string         Fee payer pays fees for the transaction instead of deducting from the signer
@@ -26,19 +24,17 @@ empowerd tx gov submit-legacy-proposal instantiate-contract [code_id_int64] [jso
       --gas-adjustment float     adjustment factor to be multiplied against the estimate returned by the tx simulation; if the gas limit is set manually this flag is ignored  (default 1)
       --gas-prices string        Gas prices in decimal format to determine the transaction fee (e.g. 0.1uatom)
       --generate-only            Build an unsigned transaction and write it to STDOUT (when enabled, the local Keybase only accessed when providing a key name)
-  -h, --help                     help for instantiate-contract
+  -h, --help                     help for migrate-contract
       --keyring-backend string   Select keyring's backend (os|file|kwallet|pass|test|memory) (default "os")
       --keyring-dir string       The client Keyring directory; if omitted, the default 'home' directory will be used
-      --label string             A human-readable name for this contract in lists
       --ledger                   Use a connected Ledger device
-      --no-admin                 You must set this explicitly if you don't want an admin
       --node string              \<host\>:\<port\> to tendermint rpc interface for this chain (default "tcp://localhost:26657")
       --note string              Note to add a description to the transaction (previously --memo)
       --offline                  Offline mode (does not allow any online functionality)
   -o, --output string            Output format (text|json) (default "json")
-      --run-as string            The address that pays the init funds. It is the creator of the contract and passed to the contract as sender on proposal execution
   -s, --sequence uint            The sequence number of the signing account (offline mode only)
       --sign-mode string         Choose sign mode (direct|amino-json|direct-aux), this is an advanced feature
+      --summary string           Summary of proposal
       --timeout-height uint      Set a block timeout height to prevent the tx from being committed past a certain height
       --tip string               Tip is the amount that is going to be transferred to the fee payer on the target chain. This flag is only valid when used with --aux, and is ignored if the target chain didn't enable the TipDecorator
       --title string             Title of proposal
@@ -47,5 +43,5 @@ empowerd tx gov submit-legacy-proposal instantiate-contract [code_id_int64] [jso
 
 ### SEE ALSO
 
-* [empowerd tx gov submit-legacy-proposal](empowerd_tx_gov_submit-legacy-proposal.md)	 - Submit a legacy proposal along with an initial deposit
+* [empowerd tx wasm submit-proposal](empowerd_tx_wasm_submit-proposal.md)	 - Submit a wasm proposal.
 

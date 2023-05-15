@@ -1,20 +1,20 @@
-## empowerd tx gov submit-legacy-proposal set-contract-admin
+## empowerd tx wasm submit-proposal set-contract-admin
 
 Submit a new admin for a contract proposal
 
 ```
-empowerd tx gov submit-legacy-proposal set-contract-admin [contract_addr_bech32] [new_admin_addr_bech32] [flags]
+empowerd tx wasm submit-proposal set-contract-admin [contract_addr_bech32] [new_admin_addr_bech32] --title [text] --summary [text] --authority [address] [flags]
 ```
 
 ### Options
 
 ```
   -a, --account-number uint      The account number of the signing account (offline mode only)
+      --authority string         The address of the governance account. Default is the sdk gov module account (default "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn")
       --aux                      Generate aux signer data instead of sending a tx
   -b, --broadcast-mode string    Transaction broadcasting mode (sync|async) (default "sync")
       --chain-id string          The network chain ID
       --deposit string           Deposit of proposal
-      --description string       Description of proposal
       --dry-run                  ignore the --gas flag and perform a simulation of a transaction, but don't broadcast it (when enabled, the local Keybase is not accessible)
       --fee-granter string       Fee granter grants fees for the transaction
       --fee-payer string         Fee payer pays fees for the transaction instead of deducting from the signer
@@ -34,6 +34,7 @@ empowerd tx gov submit-legacy-proposal set-contract-admin [contract_addr_bech32]
   -o, --output string            Output format (text|json) (default "json")
   -s, --sequence uint            The sequence number of the signing account (offline mode only)
       --sign-mode string         Choose sign mode (direct|amino-json|direct-aux), this is an advanced feature
+      --summary string           Summary of proposal
       --timeout-height uint      Set a block timeout height to prevent the tx from being committed past a certain height
       --tip string               Tip is the amount that is going to be transferred to the fee payer on the target chain. This flag is only valid when used with --aux, and is ignored if the target chain didn't enable the TipDecorator
       --title string             Title of proposal
@@ -42,5 +43,5 @@ empowerd tx gov submit-legacy-proposal set-contract-admin [contract_addr_bech32]
 
 ### SEE ALSO
 
-* [empowerd tx gov submit-legacy-proposal](empowerd_tx_gov_submit-legacy-proposal.md)	 - Submit a legacy proposal along with an initial deposit
+* [empowerd tx wasm submit-proposal](empowerd_tx_wasm_submit-proposal.md)	 - Submit a wasm proposal.
 

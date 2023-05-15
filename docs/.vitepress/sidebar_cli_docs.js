@@ -224,6 +224,25 @@ export default [
             "link": "/cli_docs/empowerd_query_block.md"
           },
           {
+            "text": "certificates",
+            "link": "/cli_docs/empowerd_query_certificates.md",
+            "collapsed": true,
+            "items": [
+              {
+                "text": "certificate",
+                "link": "/cli_docs/empowerd_query_certificates_certificate.md"
+              },
+              {
+                "text": "certificates",
+                "link": "/cli_docs/empowerd_query_certificates_certificates.md"
+              },
+              {
+                "text": "params",
+                "link": "/cli_docs/empowerd_query_certificates_params.md"
+              }
+            ]
+          },
+          {
             "text": "distribution",
             "link": "/cli_docs/empowerd_query_distribution.md",
             "collapsed": true,
@@ -996,6 +1015,17 @@ export default [
             "link": "/cli_docs/empowerd_tx_broadcast.md"
           },
           {
+            "text": "certificates",
+            "link": "/cli_docs/empowerd_tx_certificates.md",
+            "collapsed": true,
+            "items": [
+              {
+                "text": "create-certificate",
+                "link": "/cli_docs/empowerd_tx_certificates_create-certificate.md"
+              }
+            ]
+          },
+          {
             "text": "crisis",
             "link": "/cli_docs/empowerd_tx_crisis.md",
             "collapsed": true,
@@ -1079,68 +1109,20 @@ export default [
                     "link": "/cli_docs/empowerd_tx_gov_submit-legacy-proposal_cancel-software-upgrade.md"
                   },
                   {
-                    "text": "clear-contract-admin",
-                    "link": "/cli_docs/empowerd_tx_gov_submit-legacy-proposal_clear-contract-admin.md"
-                  },
-                  {
-                    "text": "execute-contract",
-                    "link": "/cli_docs/empowerd_tx_gov_submit-legacy-proposal_execute-contract.md"
-                  },
-                  {
                     "text": "ibc-upgrade",
                     "link": "/cli_docs/empowerd_tx_gov_submit-legacy-proposal_ibc-upgrade.md"
-                  },
-                  {
-                    "text": "instantiate-contract-2",
-                    "link": "/cli_docs/empowerd_tx_gov_submit-legacy-proposal_instantiate-contract-2.md"
-                  },
-                  {
-                    "text": "instantiate-contract",
-                    "link": "/cli_docs/empowerd_tx_gov_submit-legacy-proposal_instantiate-contract.md"
-                  },
-                  {
-                    "text": "migrate-contract",
-                    "link": "/cli_docs/empowerd_tx_gov_submit-legacy-proposal_migrate-contract.md"
                   },
                   {
                     "text": "param-change",
                     "link": "/cli_docs/empowerd_tx_gov_submit-legacy-proposal_param-change.md"
                   },
                   {
-                    "text": "pin-codes",
-                    "link": "/cli_docs/empowerd_tx_gov_submit-legacy-proposal_pin-codes.md"
-                  },
-                  {
-                    "text": "set-contract-admin",
-                    "link": "/cli_docs/empowerd_tx_gov_submit-legacy-proposal_set-contract-admin.md"
-                  },
-                  {
                     "text": "software-upgrade",
                     "link": "/cli_docs/empowerd_tx_gov_submit-legacy-proposal_software-upgrade.md"
                   },
                   {
-                    "text": "store-instantiate",
-                    "link": "/cli_docs/empowerd_tx_gov_submit-legacy-proposal_store-instantiate.md"
-                  },
-                  {
-                    "text": "sudo-contract",
-                    "link": "/cli_docs/empowerd_tx_gov_submit-legacy-proposal_sudo-contract.md"
-                  },
-                  {
-                    "text": "unpin-codes",
-                    "link": "/cli_docs/empowerd_tx_gov_submit-legacy-proposal_unpin-codes.md"
-                  },
-                  {
                     "text": "update-client",
                     "link": "/cli_docs/empowerd_tx_gov_submit-legacy-proposal_update-client.md"
-                  },
-                  {
-                    "text": "update-instantiate-config",
-                    "link": "/cli_docs/empowerd_tx_gov_submit-legacy-proposal_update-instantiate-config.md"
-                  },
-                  {
-                    "text": "wasm-store",
-                    "link": "/cli_docs/empowerd_tx_gov_submit-legacy-proposal_wasm-store.md"
                   }
                 ]
               },
@@ -1513,6 +1495,61 @@ export default [
               {
                 "text": "store",
                 "link": "/cli_docs/empowerd_tx_wasm_store.md"
+              },
+              {
+                "text": "submit-proposal",
+                "link": "/cli_docs/empowerd_tx_wasm_submit-proposal.md",
+                "collapsed": true,
+                "items": [
+                  {
+                    "text": "clear-contract-admin",
+                    "link": "/cli_docs/empowerd_tx_wasm_submit-proposal_clear-contract-admin.md"
+                  },
+                  {
+                    "text": "execute-contract",
+                    "link": "/cli_docs/empowerd_tx_wasm_submit-proposal_execute-contract.md"
+                  },
+                  {
+                    "text": "instantiate-contract-2",
+                    "link": "/cli_docs/empowerd_tx_wasm_submit-proposal_instantiate-contract-2.md"
+                  },
+                  {
+                    "text": "instantiate-contract",
+                    "link": "/cli_docs/empowerd_tx_wasm_submit-proposal_instantiate-contract.md"
+                  },
+                  {
+                    "text": "migrate-contract",
+                    "link": "/cli_docs/empowerd_tx_wasm_submit-proposal_migrate-contract.md"
+                  },
+                  {
+                    "text": "pin-codes",
+                    "link": "/cli_docs/empowerd_tx_wasm_submit-proposal_pin-codes.md"
+                  },
+                  {
+                    "text": "set-contract-admin",
+                    "link": "/cli_docs/empowerd_tx_wasm_submit-proposal_set-contract-admin.md"
+                  },
+                  {
+                    "text": "store-instantiate",
+                    "link": "/cli_docs/empowerd_tx_wasm_submit-proposal_store-instantiate.md"
+                  },
+                  {
+                    "text": "sudo-contract",
+                    "link": "/cli_docs/empowerd_tx_wasm_submit-proposal_sudo-contract.md"
+                  },
+                  {
+                    "text": "unpin-codes",
+                    "link": "/cli_docs/empowerd_tx_wasm_submit-proposal_unpin-codes.md"
+                  },
+                  {
+                    "text": "update-instantiate-config",
+                    "link": "/cli_docs/empowerd_tx_wasm_submit-proposal_update-instantiate-config.md"
+                  },
+                  {
+                    "text": "wasm-store",
+                    "link": "/cli_docs/empowerd_tx_wasm_submit-proposal_wasm-store.md"
+                  }
+                ]
               },
               {
                 "text": "update-instantiate-config",

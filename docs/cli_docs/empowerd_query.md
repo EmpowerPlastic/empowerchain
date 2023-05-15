@@ -20,6 +20,7 @@ empowerd query [flags]
 * [empowerd query authz](empowerd_query_authz.md)	 - Querying commands for the authz module
 * [empowerd query bank](empowerd_query_bank.md)	 - Querying commands for the bank module
 * [empowerd query block](empowerd_query_block.md)	 - Get verified data for the block at given height
+* [empowerd query certificates](empowerd_query_certificates.md)	 - Querying commands for the certificates module
 * [empowerd query distribution](empowerd_query_distribution.md)	 - Querying commands for the distribution module
 * [empowerd query evidence](empowerd_query_evidence.md)	 - Query for evidence by hash or for all (paginated) submitted evidence
 * [empowerd query feegrant](empowerd_query_feegrant.md)	 - Querying commands for the feegrant module
