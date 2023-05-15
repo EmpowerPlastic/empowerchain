@@ -11,6 +11,7 @@ module.exports = {
                 greenPrimary: "#00C131",
                 greenMedium: "#00B82E",
                 greenDark: "#007A1F",
+                greenTabs:'#00E33A',
                 black: "rgba(0, 0, 0, 1)",
                 lightBlack: "rgba(255, 255, 255, 0.06)",
                 dropdownBlack: "rgba(33, 33, 33, 1)",
@@ -27,7 +28,12 @@ module.exports = {
                 navBarBlack: "rgba(0, 0, 0, 0.95)",
                 borderBlack:"rgba(255, 255, 255, 0.03)",
                 dividerGray:"rgba(255, 255, 255, 0.08)",
-                textWhite:"rgba(255, 255, 255, 0.8)"
+                textWhite:"rgba(255, 255, 255, 0.8)",
+                borderGray:"rgba(255, 255, 255, 0.14)",
+                buttonBlack:"rgba(255, 255, 255, 0.1)",
+                paginationBlack:"rgb(155, 155, 155, 0.2)",
+                avatarBlack:"#212121",
+                avatarBorder:"rgba(255, 255, 255, 0.23)"
             },
             fontSize: {
                 title32: "32px",
