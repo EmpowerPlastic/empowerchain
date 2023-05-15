@@ -106,6 +106,7 @@ export interface EventProjectSuspendedSDKType {
 export interface EventIssuedCredits {
   issuerId: bigint;
   projectId: bigint;
+  applicantId: bigint;
   creditTypeAbbreviation: string;
   denom: string;
   amount: bigint;
@@ -116,6 +117,7 @@ export interface EventIssuedCredits {
 export interface EventIssuedCreditsSDKType {
   issuer_id: bigint;
   project_id: bigint;
+  applicant_id: bigint;
   credit_type_abbreviation: string;
   denom: string;
   amount: bigint;
@@ -761,6 +763,7 @@ function createBaseEventIssuedCredits(): EventIssuedCredits {
   return {
     issuerId: BigInt("0"),
     projectId: BigInt("0"),
+    applicantId: BigInt("0"),
     creditTypeAbbreviation: "",
     denom: "",
     amount: BigInt("0"),
@@ -776,20 +779,23 @@ export const EventIssuedCredits = {
     if (message.projectId !== BigInt(0)) {
       writer.uint32(16).uint64(Long.fromString(message.projectId.toString()));
     }
+    if (message.applicantId !== BigInt(0)) {
+      writer.uint32(24).uint64(Long.fromString(message.applicantId.toString()));
+    }
     if (message.creditTypeAbbreviation !== "") {
-      writer.uint32(26).string(message.creditTypeAbbreviation);
+      writer.uint32(34).string(message.creditTypeAbbreviation);
     }
     if (message.denom !== "") {
-      writer.uint32(34).string(message.denom);
+      writer.uint32(42).string(message.denom);
     }
     if (message.amount !== BigInt(0)) {
-      writer.uint32(40).uint64(Long.fromString(message.amount.toString()));
+      writer.uint32(48).uint64(Long.fromString(message.amount.toString()));
     }
     if (message.issuerAddress !== "") {
-      writer.uint32(50).string(message.issuerAddress);
+      writer.uint32(58).string(message.issuerAddress);
     }
     for (const v of message.metadataUris) {
-      writer.uint32(58).string(v!);
+      writer.uint32(66).string(v!);
     }
     return writer;
   },
@@ -807,18 +813,21 @@ export const EventIssuedCredits = {
           message.projectId = BigInt(reader.uint64().toString());
           break;
         case 3:
-          message.creditTypeAbbreviation = reader.string();
+          message.applicantId = BigInt(reader.uint64().toString());
           break;
         case 4:
-          message.denom = reader.string();
+          message.creditTypeAbbreviation = reader.string();
           break;
         case 5:
-          message.amount = BigInt(reader.uint64().toString());
+          message.denom = reader.string();
           break;
         case 6:
-          message.issuerAddress = reader.string();
+          message.amount = BigInt(reader.uint64().toString());
           break;
         case 7:
+          message.issuerAddress = reader.string();
+          break;
+        case 8:
           message.metadataUris.push(reader.string());
           break;
         default:
@@ -832,6 +841,7 @@ export const EventIssuedCredits = {
     return {
       issuerId: isSet(object.issuerId) ? BigInt(object.issuerId.toString()) : BigInt("0"),
       projectId: isSet(object.projectId) ? BigInt(object.projectId.toString()) : BigInt("0"),
+      applicantId: isSet(object.applicantId) ? BigInt(object.applicantId.toString()) : BigInt("0"),
       creditTypeAbbreviation: isSet(object.creditTypeAbbreviation) ? String(object.creditTypeAbbreviation) : "",
       denom: isSet(object.denom) ? String(object.denom) : "",
       amount: isSet(object.amount) ? BigInt(object.amount.toString()) : BigInt("0"),
@@ -843,6 +853,7 @@ export const EventIssuedCredits = {
     const obj: any = {};
     message.issuerId !== undefined && (obj.issuerId = (message.issuerId || BigInt("0")).toString());
     message.projectId !== undefined && (obj.projectId = (message.projectId || BigInt("0")).toString());
+    message.applicantId !== undefined && (obj.applicantId = (message.applicantId || BigInt("0")).toString());
     message.creditTypeAbbreviation !== undefined && (obj.creditTypeAbbreviation = message.creditTypeAbbreviation);
     message.denom !== undefined && (obj.denom = message.denom);
     message.amount !== undefined && (obj.amount = (message.amount || BigInt("0")).toString());
@@ -858,6 +869,7 @@ export const EventIssuedCredits = {
     const message = createBaseEventIssuedCredits();
     message.issuerId = object.issuerId !== undefined && object.issuerId !== null ? BigInt(object.issuerId.toString()) : BigInt("0");
     message.projectId = object.projectId !== undefined && object.projectId !== null ? BigInt(object.projectId.toString()) : BigInt("0");
+    message.applicantId = object.applicantId !== undefined && object.applicantId !== null ? BigInt(object.applicantId.toString()) : BigInt("0");
     message.creditTypeAbbreviation = object.creditTypeAbbreviation ?? "";
     message.denom = object.denom ?? "";
     message.amount = object.amount !== undefined && object.amount !== null ? BigInt(object.amount.toString()) : BigInt("0");
