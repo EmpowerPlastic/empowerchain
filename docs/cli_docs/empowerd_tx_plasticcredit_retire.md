@@ -3,7 +3,7 @@
 Retire credits
 
 ```
-empowerd tx plasticcredit retire [denom] [amount] [flags]
+empowerd tx plasticcredit retire [denom] [amount] [retiring_entity_name] [retiring_entity_additional_data?] [flags]
 ```
 
 ### Options

@@ -19,6 +19,7 @@ empowerd tx [flags]
 * [empowerd tx aux-to-fee](empowerd_tx_aux-to-fee.md)	 - Includes the aux signer data in the tx, broadcast the tx, and sends the tip amount to the broadcaster
 * [empowerd tx bank](empowerd_tx_bank.md)	 - Bank transaction subcommands
 * [empowerd tx broadcast](empowerd_tx_broadcast.md)	 - Broadcast transactions generated offline
+* [empowerd tx certificates](empowerd_tx_certificates.md)	 - certificates transactions subcommands
 * [empowerd tx crisis](empowerd_tx_crisis.md)	 - Crisis transactions subcommands
 * [empowerd tx decode](empowerd_tx_decode.md)	 - Decode a binary encoded transaction string
 * [empowerd tx distribution](empowerd_tx_distribution.md)	 - Distribution transactions subcommands
