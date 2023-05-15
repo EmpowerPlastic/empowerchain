@@ -126,7 +126,7 @@ git clone https://github.com/EmpowerPlastic/empowerchain.git
 cd empowerchain
 ```
 
-Checkout the desired version to build. The latest release tag can be found on the [EmpowerChain](https://github.com/EmpowerPlastic/empowerchain/releases/) Release Page](https://github.com/EmpowerPlastic/empowerchain/releases/)
+Checkout the desired version to build. The latest release tag can be found on the [EmpowerChain Release Page](https://github.com/EmpowerPlastic/empowerchain/releases/)
 
 ```bash
 git checkout v0.0.3
