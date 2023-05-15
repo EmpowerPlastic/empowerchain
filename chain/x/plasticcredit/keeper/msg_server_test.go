@@ -1272,6 +1272,7 @@ func (s *TestSuite) TestIssueCredits() {
 				s.Require().Equal(&plasticcredit.EventIssuedCredits{
 					IssuerId:               s.sampleIssuerID,
 					ProjectId:              tc.msg.ProjectId,
+					ApplicantId:            s.sampleApplicantID,
 					CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
 					Denom:                  denom,
 					Amount:                 tc.msg.CreditAmount,

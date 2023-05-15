@@ -316,6 +316,7 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 	return creditCollection, ctx.EventManager().EmitTypedEvent(&plasticcredit.EventIssuedCredits{
 		IssuerId:               issuer.Id,
 		ProjectId:              projectID,
+		ApplicantId:            applicant.Id,
 		CreditTypeAbbreviation: creditType.Abbreviation,
 		Denom:                  denom,
 		Amount:                 amount,
