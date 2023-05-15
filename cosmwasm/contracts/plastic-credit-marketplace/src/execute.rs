@@ -50,15 +50,17 @@ pub fn execute_create_listing(
     let exec_credit_transfer_msg = create_transfer_credits_to_contract_msg(
         info.sender.to_string(),
         env.contract.address.to_string(),
-        denom,
+        denom.clone(),
         number_of_credits.into(),
     );
 
     Ok(Response::new()
         .add_attribute("action", "create_listing")
         .add_attribute("listing_owner", info.sender)
+        .add_attribute("denom", denom)
         .add_attribute("number_of_credits", number_of_credits)
-        .add_attribute("price_per_credit", price_per_credit.to_string())
+        .add_attribute("price_per_credit_amount", price_per_credit.amount.to_string())
+        .add_attribute("price_per_credit_denom", price_per_credit.denom)
         .add_message(exec_credit_transfer_msg)
     )
 }
@@ -103,7 +105,7 @@ pub fn execute_buy_credits(
     );
 
     let funds_before_fee_split = Coin {
-        denom: listing.price_per_credit.denom,
+        denom: listing.price_per_credit.denom.clone(),
         amount: total_price,
     };
     let (fee_split_msgs, funds_after_split) = get_fee_split(deps.storage, funds_before_fee_split).unwrap();
@@ -123,7 +125,8 @@ pub fn execute_buy_credits(
         .add_attribute("denom", listing.denom)
         .add_attribute("buyer", info.sender)
         .add_attribute("number_of_credits_bought", number_of_credits_to_buy.to_string())
-        .add_attribute("total_price", total_price.to_string())
+        .add_attribute("total_price_amount", total_price.to_string())
+        .add_attribute("total_price_denom", listing.price_per_credit.denom)
         .add_messages(msgs)
     )
 }
@@ -183,7 +186,8 @@ fn execute_update_listing(
         .add_attribute("listing_owner", info.sender)
         .add_attribute("denom", denom)
         .add_attribute("number_of_credits", number_of_credits.to_string())
-        .add_attribute("price_per_credit", price_per_credit.to_string());
+        .add_attribute("price_per_credit_amount", price_per_credit.amount.to_string())
+        .add_attribute("price_per_credit_denom", price_per_credit.denom);
 
     if let Some(msg) = exec_credit_transfer_msg {
         Ok(res.add_message(msg))
@@ -335,7 +339,7 @@ mod tests {
             };
 
             let res = execute(deps.as_mut(), mock_env(), info.clone(), msg).unwrap();
-            assert_eq!(res.attributes.len(), 4);
+            assert_eq!(res.attributes.len(), 6);
 
             assert_eq!(res.messages.len(), 1);
             let sg_msg = &res.messages[0].msg;
@@ -512,7 +516,7 @@ mod tests {
                 },
             };
             let res = execute(deps.as_mut(), mock_env(), creator_info.clone(), update_listing_msg).unwrap();
-            assert_eq!(res.attributes.len(), 5);
+            assert_eq!(res.attributes.len(), 6);
             assert_eq!(res.messages.len(), 1);
             let sg_msg = &res.messages[0].msg;
             if let CosmosMsg::Stargate { type_url, value } = sg_msg {
@@ -566,7 +570,7 @@ mod tests {
                 },
             };
             let res = execute(deps.as_mut(), mock_env(), creator_info.clone(), update_listing_msg).unwrap();
-            assert_eq!(res.attributes.len(), 5);
+            assert_eq!(res.attributes.len(), 6);
             assert_eq!(res.messages.len(), 1);
             if let CosmosMsg::Stargate { type_url, value } = &res.messages[0].msg {
                 assert_eq!(type_url, MsgTransferCredits::TYPE_URL);
@@ -616,7 +620,7 @@ mod tests {
                 },
             };
             let res = execute(deps.as_mut(), mock_env(), creator_info.clone(), update_listing_msg).unwrap();
-            assert_eq!(res.attributes.len(), 5);
+            assert_eq!(res.attributes.len(), 6);
             assert_eq!(res.messages.len(), 0);
 
             let listing = LISTINGS.load(deps.as_ref().storage, (creator_info.sender.clone(), "pcrd".to_string())).unwrap();
@@ -766,7 +770,7 @@ mod tests {
                 number_of_credits_to_buy: 10u64,
             };
             let res = execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg).unwrap();
-            assert_eq!(res.attributes.len(), 6);
+            assert_eq!(res.attributes.len(), 7);
 
             let listing = LISTINGS.load(deps.as_ref().storage, (Addr::unchecked(creator_info.sender.clone()), "pcrd".to_string())).unwrap();
             assert_eq!(listing.number_of_credits, Uint64::from(32u64)); // Because 10 were bought
@@ -826,7 +830,7 @@ mod tests {
                 number_of_credits_to_buy: 10u64,
             };
             let res = execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg).unwrap();
-            assert_eq!(res.attributes.len(), 6);
+            assert_eq!(res.attributes.len(), 7);
 
             let listing = LISTINGS.load(deps.as_ref().storage, (Addr::unchecked(creator_info.sender.clone()), "pcrd".to_string())).unwrap();
             assert_eq!(listing.number_of_credits, Uint64::from(32u64)); // Because 10 were bought
@@ -1051,7 +1055,7 @@ mod tests {
             };
 
             let res = execute(deps.as_mut(), mock_env(), creator_info.clone(), msg).unwrap();
-            assert_eq!(res.attributes.len(), 4);
+            assert_eq!(res.attributes.len(), 6);
 
             let cancel_listing_msg = ExecuteMsg::CancelListing {
                 denom: "pcrd".to_string(),
