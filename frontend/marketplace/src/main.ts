@@ -6,11 +6,13 @@ import VueAwesomePaginate from "vue-awesome-paginate";
 
 import "vue-awesome-paginate/dist/style.css";
 import './index.css'
+import './css/custom.css'
 
 
 const app = createApp(App)
 
 app.use(createPinia())
-app.use(router as any);
+app.use(router as any)
+
 app.use(VueAwesomePaginate)
 app.mount('#app')
