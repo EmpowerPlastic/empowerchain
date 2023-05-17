@@ -107,15 +107,16 @@ func AddGenesisPlasticCreditBalance(cdc codec.Codec, genesisState *GenesisState,
 		}...)
 	}
 	// if credit balance is already present, update the amount
-	if collectionFound {
-		for i, creditBalance := range genesisState.PlasticcreditGenesis.CreditBalances {
-			if creditBalance.Denom == denom && creditBalance.Owner == owner {
-				genesisState.PlasticcreditGenesis.CreditBalances[i].Balance.Active += amount.Active
-				genesisState.PlasticcreditGenesis.CreditBalances[i].Balance.Retired += amount.Retired
-			}
+	balanceFound := false
+	for i, creditBalance := range genesisState.PlasticcreditGenesis.CreditBalances {
+		if creditBalance.Denom == denom && creditBalance.Owner == owner {
+			genesisState.PlasticcreditGenesis.CreditBalances[i].Balance.Active += amount.Active
+			genesisState.PlasticcreditGenesis.CreditBalances[i].Balance.Retired += amount.Retired
+			balanceFound = true
+			break
 		}
-		// if credit balance is not present, add it
-	} else {
+	}
+	if !balanceFound {
 		genesisState.PlasticcreditGenesis.CreditBalances = append(genesisState.PlasticcreditGenesis.CreditBalances, []plasticcredit.CreditBalance{
 			{
 				Owner: owner,

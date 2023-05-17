@@ -25,9 +25,6 @@ const (
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_certificates"
-
-	// QuerierRoute defines the module's query routing key
-	QuerierRoute = ModuleName
 )
 
 func CreateKeyFromUint64(id uint64) []byte {

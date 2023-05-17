@@ -110,7 +110,7 @@ func CmdQueryCertificates() *cobra.Command {
 
 func CmdQueryCertificatesByOwner() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "certificates [owner-address]",
+		Use:   "certificates-by-owner [owner-address]",
 		Short: "query for all certificates of an owner by its [owner-address]",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
