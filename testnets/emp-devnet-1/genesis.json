@@ -51,6 +51,13 @@
           },
           {
             "@type": "/cosmos.auth.v1beta1.BaseAccount",
+            "address": "empower18s4hq5tn3yp9jphlastrgdgx5da6uk4882pjym",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          {
+            "@type": "/cosmos.auth.v1beta1.BaseAccount",
             "address": "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
             "pub_key": null,
             "account_number": "0",
@@ -171,7 +178,44 @@
         ]
       },
       "authz": {
-        "authorization": []
+        "authorization": [
+          {
+            "authorization": {
+              "@type": "/cosmos.authz.v1beta1.GenericAuthorization",
+              "msg": "/empowerchain.plasticcredit.MsgApproveProject"
+            },
+            "expiration": null,
+            "grantee": "empower15tsyfjljsafh0rlarrwqa5x2z80n08se895vzs",
+            "granter": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+          },
+          {
+            "authorization": {
+              "@type": "/cosmos.authz.v1beta1.GenericAuthorization",
+              "msg": "/empowerchain.plasticcredit.MsgIssueCredits"
+            },
+            "expiration": null,
+            "grantee": "empower15tsyfjljsafh0rlarrwqa5x2z80n08se895vzs",
+            "granter": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+          },
+          {
+            "authorization": {
+              "@type": "/cosmos.authz.v1beta1.GenericAuthorization",
+              "msg": "/empowerchain.plasticcredit.MsgRejectProject"
+            },
+            "expiration": null,
+            "grantee": "empower15tsyfjljsafh0rlarrwqa5x2z80n08se895vzs",
+            "granter": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+          },
+          {
+            "authorization": {
+              "@type": "/cosmos.authz.v1beta1.GenericAuthorization",
+              "msg": "/empowerchain.plasticcredit.MsgSuspendProject"
+            },
+            "expiration": null,
+            "grantee": "empower15tsyfjljsafh0rlarrwqa5x2z80n08se895vzs",
+            "granter": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+          }
+        ]
       },
       "bank": {
         "params": {
@@ -190,6 +234,15 @@
           },
           {
             "address": "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "500000000"
+              }
+            ]
+          },
+          {
+            "address": "empower18s4hq5tn3yp9jphlastrgdgx5da6uk4882pjym",
             "coins": [
               {
                 "denom": "umpwr",
@@ -331,7 +384,7 @@
         "supply": [
           {
             "denom": "umpwr",
-            "amount": "9102500000010"
+            "amount": "9103000000010"
           }
         ],
         "denom_metadata": [],
@@ -562,19 +615,19 @@
             "id": "1",
             "name": "Plastix Inc.",
             "description": "Grab that bottle",
-            "admin": "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn"
+            "admin": "empower18s4hq5tn3yp9jphlastrgdgx5da6uk4882pjym"
           },
           {
             "id": "2",
             "name": "Ocean plastic Inc.",
             "description": "Grab that net",
-            "admin": "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn"
+            "admin": "empower18s4hq5tn3yp9jphlastrgdgx5da6uk4882pjym"
           },
           {
             "id": "3",
             "name": "Sea plastic Inc.",
             "description": "collector",
-            "admin": "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn"
+            "admin": "empower18s4hq5tn3yp9jphlastrgdgx5da6uk4882pjym"
           }
         ],
         "credit_types": [
@@ -695,7 +748,7 @@
         ],
         "credit_balances": [
           {
-            "owner": "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
+            "owner": "empower18s4hq5tn3yp9jphlastrgdgx5da6uk4882pjym",
             "denom": "ETEST/123",
             "balance": {
               "active": "1000",
@@ -703,7 +756,7 @@
             }
           },
           {
-            "owner": "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
+            "owner": "empower18s4hq5tn3yp9jphlastrgdgx5da6uk4882pjym",
             "denom": "PTEST/00001",
             "balance": {
               "active": "5000",
