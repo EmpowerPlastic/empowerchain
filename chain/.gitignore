@@ -2,3 +2,4 @@ build/
 release/
 coverage.out
 scripts/docgen/output
+tests/e2e/marketplace/wasm
