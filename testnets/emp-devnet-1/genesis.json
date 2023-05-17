@@ -178,7 +178,44 @@
         ]
       },
       "authz": {
-        "authorization": []
+        "authorization": [
+          {
+            "authorization": {
+              "@type": "/cosmos.authz.v1beta1.GenericAuthorization",
+              "msg": "/empowerchain.plasticcredit.MsgApproveProject"
+            },
+            "expiration": null,
+            "grantee": "empower15tsyfjljsafh0rlarrwqa5x2z80n08se895vzs",
+            "granter": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+          },
+          {
+            "authorization": {
+              "@type": "/cosmos.authz.v1beta1.GenericAuthorization",
+              "msg": "/empowerchain.plasticcredit.MsgIssueCredits"
+            },
+            "expiration": null,
+            "grantee": "empower15tsyfjljsafh0rlarrwqa5x2z80n08se895vzs",
+            "granter": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+          },
+          {
+            "authorization": {
+              "@type": "/cosmos.authz.v1beta1.GenericAuthorization",
+              "msg": "/empowerchain.plasticcredit.MsgRejectProject"
+            },
+            "expiration": null,
+            "grantee": "empower15tsyfjljsafh0rlarrwqa5x2z80n08se895vzs",
+            "granter": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+          },
+          {
+            "authorization": {
+              "@type": "/cosmos.authz.v1beta1.GenericAuthorization",
+              "msg": "/empowerchain.plasticcredit.MsgSuspendProject"
+            },
+            "expiration": null,
+            "grantee": "empower15tsyfjljsafh0rlarrwqa5x2z80n08se895vzs",
+            "granter": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+          }
+        ]
       },
       "bank": {
         "params": {
