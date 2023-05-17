@@ -233,6 +233,10 @@ export default [
                 "link": "/cli_docs/empowerd_query_certificates_certificate.md"
               },
               {
+                "text": "certificates-by-owner",
+                "link": "/cli_docs/empowerd_query_certificates_certificates-by-owner.md"
+              },
+              {
                 "text": "certificates",
                 "link": "/cli_docs/empowerd_query_certificates_certificates.md"
               },
