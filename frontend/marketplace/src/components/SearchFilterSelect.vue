@@ -1,11 +1,11 @@
 <script setup lang="ts">
-export interface SearchFilterSelectProps{
-  placeholder:string
-  options:[{
-    label:string,
-    value:string
-  }]
-  modelValue: string
+export interface SearchFilterSelectProps {
+  placeholder: string;
+  options: {
+    label: string;
+    value: string;
+  }[];
+  modelValue: string;
 }
 defineProps<SearchFilterSelectProps>()
 
