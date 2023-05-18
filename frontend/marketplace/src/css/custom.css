@@ -1,15 +1,35 @@
-.input-label{
+.input-label {
     @apply label-text text-white text-title18
 }
-.input-text{
+
+.input-text {
     @apply text-white text-title24 bg-mediumGray w-[180px]
 }
-.input-box{
+
+.input-box {
     @apply rounded-sm w-fit
 }
-.input-sub-text{
+
+.input-sub-text {
     @apply bg-mediumGray text-title16 text-dropDownText
 }
-.modal-button{
+
+.modal-button {
     @apply rounded-sm  font-bold text-title14 normal-case border-none px-10
+}
+
+/*Search Bar*/
+.filter-subtitle {
+    @apply text-title14 text-dropDownText
+}
+.filter-title {
+    @apply flex flex-row justify-between text-title18 text-white cursor-pointer
+}
+.filter-box{
+    @apply w-full p-3 px-4
+}
+
+/*Auctions Results Card*/
+.details-title {
+    @apply text-title14 font-bold text-textGray mb-3
 }

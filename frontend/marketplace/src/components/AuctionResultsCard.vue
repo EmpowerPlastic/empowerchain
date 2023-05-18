@@ -10,14 +10,12 @@ export interface AuctionResultsCardProps {
     imageURL: string
   }
 }
-
 defineProps<AuctionResultsCardProps>()
 </script>
 <template>
   <div
       class="bg-auctionBackground md:bg-lightBlack rounded-lg font-Inter text-white my-5 md:p-3 md:grid md:grid-cols-5 min-h-[180px]">
     <img class="h-full col-span-1" src="../assets/auctionCard.png">
-
 
     <!--      Details for Mobile UI-->
     <div class="grid grid-cols-2 p-5 gap-4 md:hidden">
@@ -90,8 +88,3 @@ defineProps<AuctionResultsCardProps>()
 
   </div>
 </template>
-<style scoped>
-.details-title {
-  @apply text-title14 font-bold text-textGray mb-3
-}
-</style>
