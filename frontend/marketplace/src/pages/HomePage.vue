@@ -7,8 +7,9 @@ import gql from 'graphql-tag';
 import {onMounted} from "vue";
 
 const loadData=()=>{
-  const { result } = useQuery(gql`query{
-  eventData(first:5){
+  const { result } = useQuery(gql`
+      query {
+        eventData(first:5){
     nodes{
       latitude
       longitude
@@ -16,8 +17,9 @@ const loadData=()=>{
       magnitude
     }
   }
-}`);
-console.log(result,'result')
+      }
+    `);
+console.log(result)
 }
 
 onMounted(()=>{

@@ -20,16 +20,12 @@ const apolloClient = new ApolloClient({
     uri: 'http://51.159.168.89:3000/',
 })
 
-const apolloProvider = createApolloProvider({
-    defaultClient: apolloClient,
-  })
-
 const app = createApp(App)
 
 app.use(createPinia())
 app.use(router as any)
-
 app.use(VueAwesomePaginate)
+app.provide(DefaultApolloClient, apolloClient)
 app.component('VueDatePicker', VueDatePicker);
 
 app.provide(DefaultApolloClient, apolloClient)
