@@ -1,6 +1,7 @@
 <script setup lang="ts">
 export interface CreditSearchBarProps {
   modelValue: string
+  placeholder:string
 }
 defineProps<CreditSearchBarProps>()
 
@@ -17,7 +18,7 @@ const updateModalValue = (e: Event) => {
     <input
       type="text"
       class="w-full rounded-sm p-3 active:border-none bg-darkGray"
-      placeholder="Search credits"
+      :placeholder="placeholder"
       :value="modelValue"
       @input="updateModalValue"
     />
@@ -31,7 +32,7 @@ const updateModalValue = (e: Event) => {
     <input
       type="text"
       class="w-full p-2 !rounded-lg active:border-none"
-      placeholder="Search credits"
+      :placeholder="placeholder"
       :value="modelValue"
       @input="updateModalValue"
     />
