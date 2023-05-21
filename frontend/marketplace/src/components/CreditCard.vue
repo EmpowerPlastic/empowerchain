@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import RetireCreditsModal from "@/components/RetireCreditsModal.vue";
 import {ref} from "vue";
+import ImageCarousel from "@/components/ImageCarousel.vue";
 
 export interface CreditCardProps {
   cardData: {
@@ -9,15 +10,16 @@ export interface CreditCardProps {
     price: string;
   }
 }
-
 defineProps<CreditCardProps>();
 
 const showRetireCreditsModal = ref(false)
+const dummyArray = ["https://dummyimage.com/16:9x1080/", "https://dummyimage.com/16:9x1080/", "https://dummyimage.com/16:9x1080/"]
+
 </script>
 <template>
   <RetireCreditsModal v-model:show-modal="showRetireCreditsModal"/>
   <div class="w-full rounded-lg bg-borderGray md:grid md:grid-cols-3 md:p-2 md:bg-lightBlack my-3">
-    <div class="h-48 bg-[#323232] rounded-lg "/>
+    <ImageCarousel class="min-h-48 rounded-lg" :image-array="dummyArray"/>
     <!--        Desktop UI-->
     <div class="hidden md:grid  md:col-span-2">
       <div class="grid-cols-4 grid gap-3 p-5">
