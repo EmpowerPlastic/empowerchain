@@ -38,7 +38,8 @@ module.exports = {
                 avatarBlack:"#212121",
                 avatarBorder:"rgba(255, 255, 255, 0.23)",
                 darkGreen:"rgba(0, 227, 58, 0.13)",
-                auctionBackground:"rgba(255, 255, 255, 0.14)"
+                auctionBackground:"rgba(255, 255, 255, 0.14)",
+                tabGray:"#3E3E3E",
             },
             fontSize: {
                 title32: "32px",

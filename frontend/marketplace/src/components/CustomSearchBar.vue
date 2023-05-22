@@ -1,13 +1,17 @@
 <script setup lang="ts">
 export interface CreditSearchBarProps {
   modelValue: string
+  placeholder:string
 }
 defineProps<CreditSearchBarProps>()
 
-const emitModalValue = defineEmits(['update:modelValue'])
+const emitSearch = defineEmits(['update:modelValue','searchClick'])
 
 const updateModalValue = (e: Event) => {
-  emitModalValue('update:modelValue', (e.target as HTMLInputElement).value)
+  emitSearch('update:modelValue', (e.target as HTMLInputElement).value)
+}
+const handleSearchButtonClick = () => {
+  emitSearch('searchClick')
 }
 </script>
 
@@ -17,11 +21,11 @@ const updateModalValue = (e: Event) => {
     <input
       type="text"
       class="w-full rounded-sm p-3 active:border-none bg-darkGray"
-      placeholder="Search credits"
+      :placeholder="placeholder"
       :value="modelValue"
       @input="updateModalValue"
     />
-    <button class="btn btn-square bg-greenPrimary ml-3">
+    <button class="btn btn-square bg-greenPrimary ml-3" @click="handleSearchButtonClick">
       <img class="h-5" src="../assets/searchIconWhite.svg" />
     </button>
   </div>
@@ -31,9 +35,10 @@ const updateModalValue = (e: Event) => {
     <input
       type="text"
       class="w-full p-2 !rounded-lg active:border-none"
-      placeholder="Search credits"
+      :placeholder="placeholder"
       :value="modelValue"
       @input="updateModalValue"
+      @keyup.enter="handleSearchButtonClick"
     />
   </div>
 </template>
