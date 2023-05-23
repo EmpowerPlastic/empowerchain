@@ -11,7 +11,7 @@ export class PlasticCreditBuilder {
     private creditEventsData: CreditProp;
     private creditMediaData: CreditProp;
     private creditFilesData: CreditProp;
-    private issuanceDate: string;
+    private issuanceDate: Date;
     private creditType: string;
     private applicantData: CreditProp;
 
@@ -34,7 +34,7 @@ export class PlasticCreditBuilder {
         return this;
     }
 
-    setIssuanceDate(issuanceDate: string): PlasticCreditBuilder {
+    setIssuanceDate(issuanceDate: Date): PlasticCreditBuilder {
         this.issuanceDate = issuanceDate;
         return this;
     }
@@ -77,8 +77,8 @@ export class PlasticCreditBuilder {
                 this.creditFilesData,
                 {
                     id: "issuance_date",
-                    type: "text",
-                    content: this.issuanceDate,
+                    type: "date",
+                    content: this.issuanceDate.toISOString(),
                 },
                 {
                     id: "credit_type",
@@ -121,7 +121,7 @@ export class PlasticCreditBuilder {
             type: "file_list",
             content: [],
         }
-        this.issuanceDate = "";
+        this.issuanceDate = null;
         this.creditType = "";
         this.applicantData = {} as CreditProp;
     }
@@ -129,10 +129,10 @@ export class PlasticCreditBuilder {
 
 export class EventBuilder implements CreditPropBuilder {
     private location: Coordinates;
-    private amount: string;
+    private amount: number;
     private magnitude: string;
     private material: Property[];
-    private registrationDate: string;
+    private registrationDate: Date;
 
     constructor() {
         this.reset();
@@ -143,7 +143,7 @@ export class EventBuilder implements CreditPropBuilder {
         return this;
     }
 
-    setAmount(amount: string): EventBuilder {
+    setAmount(amount: number): EventBuilder {
         this.amount = amount;
         return this;
     }
@@ -158,7 +158,7 @@ export class EventBuilder implements CreditPropBuilder {
         return this;
     }
 
-    setRegistrationDate(registrationDate: string): EventBuilder {
+    setRegistrationDate(registrationDate: Date): EventBuilder {
         this.registrationDate = registrationDate;
         return this;
     }
@@ -193,7 +193,7 @@ export class EventBuilder implements CreditPropBuilder {
                 },
                 {
                     id: "amount",
-                    type: "text",
+                    type: "number",
                     content: this.amount,
                 },
                 {
@@ -208,8 +208,8 @@ export class EventBuilder implements CreditPropBuilder {
                 },
                 {
                     id: "registration_date",
-                    type: "text",
-                    content: this.registrationDate,
+                    type: "date",
+                    content: this.registrationDate.toISOString(),
                 }
             ]
         };
@@ -217,10 +217,10 @@ export class EventBuilder implements CreditPropBuilder {
 
     reset(): void {
         this.location = {} as Coordinates;
-        this.amount = "";
+        this.amount = 0;
         this.magnitude = "";
         this.material = [];
-        this.registrationDate = "";
+        this.registrationDate = null;
     }
 
 }
@@ -327,8 +327,8 @@ export class FileBuilder {
 }
 
 interface Coordinates {
-    latitude: string;
-    longitude: string;
+    latitude: number;
+    longitude: number;
 }
 
 interface Property {
