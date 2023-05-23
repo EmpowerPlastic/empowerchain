@@ -5,6 +5,7 @@
 
 1. **Install binary empowerd**
 ```bash
+cd $HOME
 git clone https://github.com/EmpowerPlastic/empowerchain && \
 cd empowerchain && \
 git checkout circulus-1 && \
@@ -24,7 +25,7 @@ empowerd keys add <WALLET_NAME>
 
 4. **Copy genesis.json from empowerchain repo to your local chain home directory**
 ```bash
-cp <PATH_TO_EMPOWERCHAIN_REPO>/testnets/circulus-1/genesis.json ~/.empowerchain/config/genesis.json
+cp $HOME/empowerchain/testnets/circulus-1/genesis.json ~/.empowerchain/config/genesis.json
 ```
 
 6. **Add genesis account**
