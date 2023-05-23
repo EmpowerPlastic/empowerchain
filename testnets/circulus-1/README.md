@@ -1,3 +1,9 @@
+# Circulus-1
+
+PLEASE READ:
+> ⚠️ IMPORTANT: We do not accept gentx from anyone unless you have been explicitly told to create one. If you are supposed to do it, you will know.
+> Failure to read basic information is not a good look for future considerations for the delegation program
+
 **Prerequisites**
 - Go 1.20+
 

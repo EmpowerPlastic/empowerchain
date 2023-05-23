@@ -1,5 +1,5 @@
 {
-    "$schema":"http://json-schema.org/draft-07/schema",
+    "$schema": "http://json-schema.org/draft-07/schema",
     "type": "object",
     "properties": {
         "version": {
@@ -46,10 +46,10 @@
                                                                 "type": "object",
                                                                 "properties": {
                                                                     "latitude": {
-                                                                        "type": "string"
+                                                                        "type": "number"
                                                                     },
                                                                     "longitude": {
-                                                                        "type": "string"
+                                                                        "type": "number"
                                                                     }
                                                                 },
                                                                 "required": [
@@ -73,10 +73,10 @@
                                                                 "const": "amount"
                                                             },
                                                             "type": {
-                                                                "const": "text"
+                                                                "const": "number"
                                                             },
                                                             "content": {
-                                                                "type": "string"
+                                                                "type": "number"
                                                             }
                                                         },
                                                         "required": [
@@ -153,7 +153,7 @@
                                                                 "const": "registration_date"
                                                             },
                                                             "type": {
-                                                                "const": "text"
+                                                                "const": "date"
                                                             },
                                                             "content": {
                                                                 "type": "string"
@@ -213,7 +213,7 @@
                                         ]
                                     }
                                 ]
-                            } 
+                            }
                         },
                         "required": [
                             "id",
@@ -251,7 +251,7 @@
                                         ]
                                     }
                                 ]
-                            } 
+                            }
                         },
                         "required": [
                             "id",
@@ -268,11 +268,11 @@
                                 "const": "issuance_date"
                             },
                             "type": {
-                                "const": "text"
+                                "const": "date"
                             },
                             "content": {
                                 "type": "string"
-                            } 
+                            }
                         },
                         "required": [
                             "id",
@@ -293,7 +293,7 @@
                             },
                             "content": {
                                 "type": "string"
-                            } 
+                            }
                         },
                         "required": [
                             "id",
@@ -334,7 +334,7 @@
                                     "name",
                                     "description"
                                 ]
-                            } 
+                            }
                         },
                         "required": [
                             "id",
