@@ -39,6 +39,11 @@ module.exports = {
                 avatarBorder:"rgba(255, 255, 255, 0.23)",
                 darkGreen:"rgba(0, 227, 58, 0.13)",
                 auctionBackground:"rgba(255, 255, 255, 0.14)",
+                subTextGray:"rgba(255, 255, 255, 0.5)",
+                dropdownGray:"#575757",
+                dropdownGreen:"#1D5E0D",
+                subLabel:"#9B9B9B",
+                textInfoGray:"#B4B4B4",
                 tabGray:"#3E3E3E",
             },
             fontSize: {
