@@ -29,12 +29,12 @@ cp <PATH_TO_EMPOWERCHAIN_REPO>/testnets/circulus-1/genesis.json ~/.empowerchain/
 
 6. **Add genesis account**
 ```bash
-empowerd add-genesis-account <WALLET_NAME> 1000000umpwr
+empowerd genesis add-genesis-account <WALLET_NAME> 1000000umpwr
 ```
 
 7. **Create gentx**
 ```bash
-empowerd gentx <WALLET_NAME> 1000000umpwr \
+empowerd genesis gentx <WALLET_NAME> 1000000umpwr \
 --chain-id=circulus-1 \
 --moniker="<MONIKER>" \
 --commission-max-change-rate 0.1 \
@@ -44,9 +44,7 @@ empowerd gentx <WALLET_NAME> 1000000umpwr \
 --website="" \
 --security-contact="" \
 --identity="" \
---details="" \
---gas=auto \
---gas-prices=0.025umpwr
+--details=""
 ```
 
 8. **Copy genesis.json and gentx to empowerchain repo and submit a PR to circulus-1 branch**
