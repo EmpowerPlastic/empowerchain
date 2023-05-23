@@ -63,10 +63,10 @@ Below you can see the JSON schema for Plastic Credit Index File:
                                                                 "type": "object",
                                                                 "properties": {
                                                                     "latitude": {
-                                                                        "type": "string"
+                                                                        "type": "number"
                                                                     },
                                                                     "longitude": {
-                                                                        "type": "string"
+                                                                        "type": "number"
                                                                     }
                                                                 },
                                                                 "required": [
@@ -90,10 +90,10 @@ Below you can see the JSON schema for Plastic Credit Index File:
                                                                 "const": "amount"
                                                             },
                                                             "type": {
-                                                                "const": "text"
+                                                                "const": "number"
                                                             },
                                                             "content": {
-                                                                "type": "string"
+                                                                "type": "number"
                                                             }
                                                         },
                                                         "required": [
@@ -170,7 +170,7 @@ Below you can see the JSON schema for Plastic Credit Index File:
                                                                 "const": "registration_date"
                                                             },
                                                             "type": {
-                                                                "const": "text"
+                                                                "const": "date"
                                                             },
                                                             "content": {
                                                                 "type": "string"
@@ -285,7 +285,7 @@ Below you can see the JSON schema for Plastic Credit Index File:
                                 "const": "issuance_date"
                             },
                             "type": {
-                                "const": "text"
+                                "const": "date"
                             },
                             "content": {
                                 "type": "string"
@@ -417,10 +417,10 @@ Basic properties required for the event to work correctly with Empower Plastic C
                 "type": "object",
                 "properties": {
                     "latitude": {
-                        "type": "string"
+                        "type": "number"
                     },
                     "longitude": {
-                        "type": "string"
+                        "type": "number"
                     }
                 },
                 "required": [
@@ -448,10 +448,10 @@ Basic properties required for the event to work correctly with Empower Plastic C
                 "const": "amount"
             },
             "type": {
-                "const": "text"
+                "const": "number"
             },
             "content": {
-                "type": "string"
+                "type": "number"
             }
         },
         "required": [
@@ -530,7 +530,7 @@ Basic properties required for the event to work correctly with Empower Plastic C
 }
 ```
 
-**Registration date** - date of material acquisition / clean up.
+**Registration date** - date of material acquisition / clean up. Should be in ISO 8601 format.
 ```json
 {
       "contains": {
@@ -540,7 +540,7 @@ Basic properties required for the event to work correctly with Empower Plastic C
                   "const": "registration_date"
               },
               "type": {
-                  "const": "text"
+                  "const": "date"
               },
               "content": {
                   "type": "string"
@@ -644,7 +644,7 @@ credit_files holds the list of URLs to non-media files (documents, other binary 
 ```
 
 ### issuance_date
-Official issuance date of the Plastic Credit
+Official issuance date of the Plastic Credit. Should be formatted according to ISO 8601 standard.
 
 ```json
 {
@@ -655,7 +655,7 @@ Official issuance date of the Plastic Credit
                 "const": "issuance_date"
             },
             "type": {
-                "const": "text"
+                "const": "date"
             },
             "content": {
                 "type": "string"
@@ -761,14 +761,14 @@ Description of the collector responsible for the clean up and material collectio
               "id": "location",
               "type": "coordinates",
               "content": {
-                "latitude": "41.40338",
-                "longitude": "2.17403"
+                "latitude": 41.40338,
+                "longitude": 2.17403
               }
             },
             {
               "id": "amount",
-              "type": "text",
-              "content": "100"
+              "type": "number",
+              "content": 100
             },
             {
               "id": "magnitude",
@@ -791,8 +791,8 @@ Description of the collector responsible for the clean up and material collectio
             },
             {
               "id": "registration_date",
-              "type": "text",
-              "content": "1679483087"
+              "type": "date",
+              "content": "2020-10-22T11:07:34Z"
             }
           ]
         }
@@ -820,8 +820,8 @@ Description of the collector responsible for the clean up and material collectio
     },
     {
       "id": "issuance_date",
-      "type": "text",
-      "content": "1679483087"
+      "type": "date",
+      "content": "2020-10-22T11:07:34Z"
     },
     {
       "id": "credit_type",
@@ -872,11 +872,11 @@ import {
     const materials = propertyBuilder.addProperty('origin', 'ocean').addProperty('type', 'plastic').build();
 
     const event = eventBuilder
-      .setLocation({ latitude: '1', longitude: '2' })
-      .setAmount('100')
+      .setLocation({ latitude: 1.13613613, longitude: 2.642513 })
+      .setAmount(100)
       .setMagnitude('kg')
       .setMaterial(materials)
-      .setRegistrationDate('2020-01-01')
+      .setRegistrationDate(new Date(550000000000))
       .build();
 
     const applicant = applicantBuilder
@@ -886,7 +886,7 @@ import {
       .build();
 
     const plasticCredit = plasticCreditBuilder
-      .setIssuanceDate('2020-01-01')
+      .setIssuanceDate(new Date(550000000000))
       .setCreditType('type')
       .setApplicantData(applicant)
       .addCreditEventData(event)
