@@ -95,11 +95,11 @@ describe('Empower Data Creator', () => {
 
     const materials = propertyBuilder.addProperty('key1', 'value1').build();
     const event = eventBuilder
-      .setLocation({ latitude: '1', longitude: '2' })
-      .setAmount('123')
+      .setLocation({ latitude: 1.6456135113, longitude: 2 })
+      .setAmount(123.123)
       .setMagnitude('kg')
       .setMaterial(materials)
-      .setRegistrationDate('2020-01-01')
+      .setRegistrationDate(new Date(500000000000))
       .build();
     expect(event).toEqual({
       id: 'event_data',
@@ -109,14 +109,14 @@ describe('Empower Data Creator', () => {
           id: 'location',
           type: 'coordinates',
           content: {
-            latitude: '1',
-            longitude: '2'
+            latitude: 1.6456135113,
+            longitude: 2
           }
         },
         {
           id: 'amount',
-          type: 'text',
-          content: '123'
+          type: 'number',
+          content: 123.123
         },
         {
           id: 'magnitude',
@@ -135,8 +135,8 @@ describe('Empower Data Creator', () => {
         },
         {
           id: 'registration_date',
-          type: 'text',
-          content: '2020-01-01'
+          type: 'date',
+          content: new Date(500000000000).toISOString()
         }
       ]
     });
@@ -145,9 +145,9 @@ describe('Empower Data Creator', () => {
     const eventBuilder = new EventBuilder();
     expect(() => {
       eventBuilder
-        .setAmount('123')
+        .setAmount(123.123)
         .setMagnitude('kg')
-        .setRegistrationDate('2020-01-01')
+        .setRegistrationDate(new Date(500000000000))
         .build();
     }).toThrow('Location is required');
   });
@@ -155,9 +155,9 @@ describe('Empower Data Creator', () => {
     const eventBuilder = new EventBuilder();
     expect(() => {
       eventBuilder
-        .setLocation({ latitude: '1', longitude: '2' })
+        .setLocation({ latitude: 1.6456135113, longitude: 2 })
         .setMagnitude('kg')
-        .setRegistrationDate('2020-01-01')
+        .setRegistrationDate(new Date(500000000000))
         .build();
     }).toThrow('Amount is required');
   });
@@ -165,9 +165,9 @@ describe('Empower Data Creator', () => {
     const eventBuilder = new EventBuilder();
     expect(() => {
       eventBuilder
-        .setLocation({ latitude: '1', longitude: '2' })
-        .setAmount('123')
-        .setRegistrationDate('2020-01-01')
+        .setLocation({ latitude: 1.6456135113, longitude: 2 })
+        .setAmount(123.123)
+        .setRegistrationDate(new Date(500000000000))
         .build();
     }).toThrow('Magnitude is required');
   });
@@ -175,10 +175,10 @@ describe('Empower Data Creator', () => {
     const eventBuilder = new EventBuilder();
     expect(() => {
       eventBuilder
-        .setLocation({ latitude: '1', longitude: '2' })
-        .setAmount('123')
+        .setLocation({ latitude: 1.6456135113, longitude: 2 })
+        .setAmount(123.123)
         .setMagnitude('kg')
-        .setRegistrationDate('2020-01-01')
+        .setRegistrationDate(new Date(500000000000))
         .build();
     }).toThrow('Material is required');
   });
@@ -189,8 +189,8 @@ describe('Empower Data Creator', () => {
     const materials = propertyBuilder.addProperty('key1', 'value1').build();
     expect(() => {
       eventBuilder
-        .setLocation({ latitude: '1', longitude: '2' })
-        .setAmount('123')
+        .setLocation({ latitude: 1.6456135113, longitude: 2 })
+        .setAmount(123.123)
         .setMagnitude('kg')
         .setMaterial(materials)
         .build();
@@ -216,19 +216,19 @@ describe('Empower Data Creator', () => {
     const materials = propertyBuilder.addProperty('key1', 'value1').build();
 
     const event = eventBuilder
-      .setLocation({ latitude: '1', longitude: '2' })
-      .setAmount('123')
+      .setLocation({ latitude: 1.6456135113, longitude: 2 })
+      .setAmount(123.123)
       .setMagnitude('kg')
       .setMaterial(materials)
-      .setRegistrationDate('2020-01-01')
+      .setRegistrationDate(new Date(500000000000))
       .build();
 
     const event2 = eventBuilder
-      .setLocation({ latitude: '3', longitude: '4' })
-      .setAmount('456')
+      .setLocation({ latitude: 3.1361361351, longitude: 4 })
+      .setAmount(456.456)
       .setMagnitude('kg')
       .setMaterial(materials)
-      .setRegistrationDate('2020-01-02')
+      .setRegistrationDate(new Date(550000000000))
       .build();
 
     const applicant = applicantBuilder
@@ -238,7 +238,7 @@ describe('Empower Data Creator', () => {
       .build();
 
     const plasticCredit = plasticCreditBuilder
-      .setIssuanceDate('2020-01-01')
+      .setIssuanceDate(new Date(550000000000))
       .setCreditType('type')
       .setApplicantData(applicant)
       .addCreditEventData(event)
@@ -262,14 +262,14 @@ describe('Empower Data Creator', () => {
                   id: 'location',
                   type: 'coordinates',
                   content: {
-                    latitude: '1',
-                    longitude: '2'
+                    latitude: 1.6456135113,
+                    longitude: 2
                   }
                 },
                 {
                   id: 'amount',
-                  type: 'text',
-                  content: '123'
+                  type: 'number',
+                  content: 123.123
                 },
                 {
                   id: 'magnitude',
@@ -288,8 +288,8 @@ describe('Empower Data Creator', () => {
                 },
                 {
                   id: 'registration_date',
-                  type: 'text',
-                  content: '2020-01-01'
+                  type: 'date',
+                  content: new Date(500000000000).toISOString()
                 }
               ]
             },
@@ -301,14 +301,14 @@ describe('Empower Data Creator', () => {
                   id: 'location',
                   type: 'coordinates',
                   content: {
-                    latitude: '3',
-                    longitude: '4'
+                    latitude: 3.1361361351,
+                    longitude: 4
                   }
                 },
                 {
                   id: 'amount',
-                  type: 'text',
-                  content: '456'
+                  type: 'number',
+                  content: 456.456
                 },
                 {
                   id: 'magnitude',
@@ -327,8 +327,8 @@ describe('Empower Data Creator', () => {
                 },
                 {
                   id: 'registration_date',
-                  type: 'text',
-                  content: '2020-01-02'
+                  type: 'date',
+                  content: new Date(550000000000).toISOString()
                 }
               ]
             }
@@ -364,8 +364,8 @@ describe('Empower Data Creator', () => {
         },
         {
           id: 'issuance_date',
-          type: 'text',
-          content: '2020-01-01'
+          type: 'date',
+          content: new Date(550000000000).toISOString()
         },
         {
           id: 'credit_type',
@@ -407,7 +407,7 @@ describe('Empower Data Creator', () => {
 
     expect(() => {
       plasticCreditBuilder
-        .setIssuanceDate('2020-01-01')
+        .setIssuanceDate(new Date(550000000000))
         .setCreditType('type')
         .setApplicantData(applicant)
         .addCreditEventData({
