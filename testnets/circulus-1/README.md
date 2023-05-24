@@ -50,7 +50,8 @@ empowerd genesis gentx <WALLET_NAME> 1000000umpwr \
 --website="" \
 --security-contact="" \
 --identity="" \
---details=""
+--details="" \
+--ip="<use your public ip to help other validators find you>"
 ```
 
 8. **Copy gentx to empowerchain repo and submit a PR to circulus-1 branch**
