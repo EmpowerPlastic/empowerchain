@@ -53,9 +53,8 @@ empowerd genesis gentx <WALLET_NAME> 1000000umpwr \
 --details=""
 ```
 
-8. **Copy genesis.json and gentx to empowerchain repo and submit a PR to circulus-1 branch**
+8. **Copy gentx to empowerchain repo and submit a PR to circulus-1 branch**
 ```bash
-cp ~/.empowerchain/config/genesis.json <PATH_TO_EMPOWERCHAIN_REPO>/testnets/circulus-1/genesis.json
 cp ~/.empowerchain/config/gentx/gentx-*.json <PATH_TO_EMPOWERCHAIN_REPO>/testnets/circulus-1/gentx/
 ```
 
