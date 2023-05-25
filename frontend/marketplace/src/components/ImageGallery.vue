@@ -28,8 +28,8 @@ const handleActiveImage = (url: string) => {
       <div class=" grid grid-cols-2 gap-5">
         <img class="rounded-sm h-[150px] w-[200px] cursor-pointer"
              :src="url"
-             v-for="(url,index) in imageArray"
-             :id="index"
+             v-for="url in imageArray"
+             :id="url"
              @click="handleActiveImage(url)"
              :key="url"/>
       </div>
