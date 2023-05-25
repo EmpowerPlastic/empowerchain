@@ -34,7 +34,7 @@ const dummyArray = [
     <ImageGallery class="hidden md:flex" :image-array="dummyArray"/>
 
     <!--    Buy Credits-->
-    <BuyCredits available-credits="750/1500" v-model:selected-coin="selectedCoin" price-per-credit="$100.00"
+    <BuyCredits available-credits="750/1500" v-model:selected-coin="selectedCoin" :price-per-credit="100.00"
                 v-model:amount="amount"/>
 
     <!--    Project Details-->
