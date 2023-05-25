@@ -1,0 +1,28 @@
+name: "Deploy PoE Frontend"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/proof-of-existence/**'
+
+jobs:
+  build:
+    name: Deploy Proof of Existence Frontend
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - run: npm ci && npm run build
+        working-directory: ./frontend/proof-of-existence/
+
+      - uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-args: '--prod'
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_POE}}
+          working-directory: ./frontend/proof-of-existence/

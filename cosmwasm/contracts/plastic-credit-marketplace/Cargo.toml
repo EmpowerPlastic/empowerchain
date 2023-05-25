@@ -1,0 +1,22 @@
+[package]
+name = "plastic-credit-marketplace"
+version = { workspace = true }
+edition = { workspace = true }
+repository = { workspace = true }
+
+[dependencies]
+cosmwasm-schema = { workspace = true }
+cosmwasm-std = { workspace = true }
+cw-storage-plus = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
+cosmos-sdk-proto = { workspace = true, default-features = false }
+prost = { workspace = true }
+prost-types = { workspace = true }
+fee-splitter = { workspace = true }
+
+[dev-dependencies]
+cw-multi-test = { workspace = true }
+
+[lib]
+crate-type = ["cdylib", "rlib"]

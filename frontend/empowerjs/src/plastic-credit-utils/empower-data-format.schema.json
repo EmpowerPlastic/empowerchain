@@ -1,0 +1,349 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "version": {
+            "const": "v1"
+        },
+        "credit_props": {
+            "type": "array",
+            "allOf": [
+                {
+                    "contains": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "const": "credit_events_data"
+                            },
+                            "type": {
+                                "const": "empower_credit_events_data"
+                            },
+                            "content": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "const": "event_data"
+                                        },
+                                        "type": {
+                                            "const": "empower_event_data"
+                                        },
+                                        "content": {
+                                            "type": "array",
+                                            "allOf": [
+                                                {
+                                                    "contains": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "const": "location"
+                                                            },
+                                                            "type": {
+                                                                "const": "coordinates"
+                                                            },
+                                                            "content": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "latitude": {
+                                                                        "type": "number"
+                                                                    },
+                                                                    "longitude": {
+                                                                        "type": "number"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "latitude",
+                                                                    "longitude"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "id",
+                                                            "type",
+                                                            "content"
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    "contains": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "const": "amount"
+                                                            },
+                                                            "type": {
+                                                                "const": "number"
+                                                            },
+                                                            "content": {
+                                                                "type": "number"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "id",
+                                                            "type",
+                                                            "content"
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    "contains": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "const": "magnitude"
+                                                            },
+                                                            "type": {
+                                                                "const": "text"
+                                                            },
+                                                            "content": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "id",
+                                                            "type",
+                                                            "content"
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    "contains": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "const": "material"
+                                                            },
+                                                            "type": {
+                                                                "const": "property_map"
+                                                            },
+                                                            "content": {
+                                                                "type": "array",
+                                                                "items": [
+                                                                    {
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "key": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "value": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "key",
+                                                                            "value"
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "id",
+                                                            "type",
+                                                            "content"
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    "contains": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "id": {
+                                                                "const": "registration_date"
+                                                            },
+                                                            "type": {
+                                                                "const": "date"
+                                                            },
+                                                            "content": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "id",
+                                                            "type",
+                                                            "content"
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "id",
+                                        "type",
+                                        "content"
+                                    ]
+                                }
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "type",
+                            "content"
+                        ]
+                    }
+                },
+                {
+                    "contains": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "const": "credit_media"
+                            },
+                            "type": {
+                                "const": "file_list"
+                            },
+                            "content": {
+                                "type": "array",
+                                "items": [
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "url": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "name",
+                                            "url"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "type",
+                            "content"
+                        ]
+                    }
+                },
+                {
+                    "contains": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "const": "credit_files"
+                            },
+                            "type": {
+                                "const": "file_list"
+                            },
+                            "content": {
+                                "type": "array",
+                                "items": [
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "url": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "name",
+                                            "url"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "type",
+                            "content"
+                        ]
+                    }
+                },
+                {
+                    "contains": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "const": "issuance_date"
+                            },
+                            "type": {
+                                "const": "date"
+                            },
+                            "content": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "type",
+                            "content"
+                        ]
+                    }
+                },
+                {
+                    "contains": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "const": "credit_type"
+                            },
+                            "type": {
+                                "const": "text"
+                            },
+                            "content": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "type",
+                            "content"
+                        ]
+                    }
+                },
+                {
+                    "contains": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "const": "applicant_data"
+                            },
+                            "type": {
+                                "const": "empower_applicant_data"
+                            },
+                            "content": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "web_refs": {
+                                        "type": "array",
+                                        "items": [
+                                            {
+                                                "type": "string"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "description"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "type",
+                            "content"
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,911 @@
+{
+    "genesis_time": "2023-03-01T12:14:43.646173978Z",
+    "chain_id": "emp-devnet-1",
+    "initial_height": "1",
+    "consensus_params": {
+      "block": {
+        "max_bytes": "22020096",
+        "max_gas": "-1"
+      },
+      "evidence": {
+        "max_age_num_blocks": "100000",
+        "max_age_duration": "172800000000000",
+        "max_bytes": "1048576"
+      },
+      "validator": {
+        "pub_key_types": [
+          "ed25519"
+        ]
+      },
+      "version": {
+        "app": "0"
+      }
+    },
+    "app_hash": "",
+    "app_state": {
+      "accesscontrol": {
+        "perm_stores": []
+      },
+      "auth": {
+        "params": {
+          "max_memo_characters": "256",
+          "tx_sig_limit": "7",
+          "tx_size_cost_per_byte": "10",
+          "sig_verify_cost_ed25519": "590",
+          "sig_verify_cost_secp256k1": "1000"
+        },
+        "accounts": [
+          {
+            "@type": "/cosmos.auth.v1beta1.BaseAccount",
+            "address": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          {
+            "@type": "/cosmos.auth.v1beta1.BaseAccount",
+            "address": "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          {
+            "@type": "/cosmos.auth.v1beta1.BaseAccount",
+            "address": "empower18s4hq5tn3yp9jphlastrgdgx5da6uk4882pjym",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          {
+            "@type": "/cosmos.auth.v1beta1.BaseAccount",
+            "address": "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          {
+            "@type": "/cosmos.auth.v1beta1.BaseAccount",
+            "address": "empower15hxwswcmmkasaar65n3vkmp6skurvtas3xzl7s",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          {
+            "@type": "/cosmos.auth.v1beta1.BaseAccount",
+            "address": "empower1reurz37gn2sk3vgr3fupcultkagzverqczer0l",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          {
+            "@type": "/cosmos.auth.v1beta1.BaseAccount",
+            "address": "empower1xgsaene8aqfknmldemvl5q0mtgcgjv9svupqwu",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          {
+            "@type": "/cosmos.auth.v1beta1.BaseAccount",
+            "address": "empower13f4qk3p6hu52e3ccsctecjrzqx9sqhc89uprnu",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          {
+            "@type": "/cosmos.auth.v1beta1.BaseAccount",
+            "address": "empower1myvqq5t0d65zkwf906sxflwz40fnjxa29zrafn",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          {
+            "@type": "/cosmos.auth.v1beta1.BaseAccount",
+            "address": "empower10meawsx9u3lkl2p6amk87k6tye6qn6dkqx2ksj",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          {
+            "@type": "/cosmos.auth.v1beta1.BaseAccount",
+            "address": "empower1defgz460qy5jvkfvuz5qe0spelykpndewq2f0d",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          {
+            "@type": "/cosmos.auth.v1beta1.BaseAccount",
+            "address": "empower18ejln3k0xhds5apdgjdnyytmkw74jsgy3xxrlu",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          {
+            "@type": "/cosmos.auth.v1beta1.BaseAccount",
+            "address": "empower1zg453l326xgrk5nm2prru4teqkym8zc94wrcrw",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          {
+            "@type": "/cosmos.auth.v1beta1.BaseAccount",
+            "address": "empower15ee5hstfe6sje9am9ngxas5xhqgdqafns9zlmk",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          {
+            "@type": "/cosmos.auth.v1beta1.BaseAccount",
+            "address": "empower1yaqhrv5xn7qkprg3xlsdl884edhp3ypruy87vx",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          {
+            "@type": "/cosmos.auth.v1beta1.BaseAccount",
+            "address": "empower15tsyfjljsafh0rlarrwqa5x2z80n08se895vzs",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          {
+            "@type": "/cosmos.auth.v1beta1.ModuleAccount",
+            "base_account": {
+              "address": "empower1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3fhdyrf",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "name": "bonded_tokens_pool",
+            "permissions": [
+              "burner",
+              "staking"
+            ]
+          },
+          {
+            "@type": "/cosmos.auth.v1beta1.ModuleAccount",
+            "base_account": {
+              "address": "empower1tygms3xhhs3yv487phx3dw4a95jn7t7lah344a",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "name": "not_bonded_tokens_pool",
+            "permissions": [
+              "burner",
+              "staking"
+            ]
+          }
+        ]
+      },
+      "authz": {
+        "authorization": [
+          {
+            "authorization": {
+              "@type": "/cosmos.authz.v1beta1.GenericAuthorization",
+              "msg": "/empowerchain.plasticcredit.MsgApproveProject"
+            },
+            "expiration": null,
+            "grantee": "empower15tsyfjljsafh0rlarrwqa5x2z80n08se895vzs",
+            "granter": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+          },
+          {
+            "authorization": {
+              "@type": "/cosmos.authz.v1beta1.GenericAuthorization",
+              "msg": "/empowerchain.plasticcredit.MsgIssueCredits"
+            },
+            "expiration": null,
+            "grantee": "empower15tsyfjljsafh0rlarrwqa5x2z80n08se895vzs",
+            "granter": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+          },
+          {
+            "authorization": {
+              "@type": "/cosmos.authz.v1beta1.GenericAuthorization",
+              "msg": "/empowerchain.plasticcredit.MsgRejectProject"
+            },
+            "expiration": null,
+            "grantee": "empower15tsyfjljsafh0rlarrwqa5x2z80n08se895vzs",
+            "granter": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+          },
+          {
+            "authorization": {
+              "@type": "/cosmos.authz.v1beta1.GenericAuthorization",
+              "msg": "/empowerchain.plasticcredit.MsgSuspendProject"
+            },
+            "expiration": null,
+            "grantee": "empower15tsyfjljsafh0rlarrwqa5x2z80n08se895vzs",
+            "granter": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+          }
+        ]
+      },
+      "bank": {
+        "params": {
+          "send_enabled": [],
+          "default_send_enabled": true
+        },
+        "balances": [
+          {
+            "address": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "500000000"
+              }
+            ]
+          },
+          {
+            "address": "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "500000000"
+              }
+            ]
+          },
+          {
+            "address": "empower18s4hq5tn3yp9jphlastrgdgx5da6uk4882pjym",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "500000000"
+              }
+            ]
+          },
+          {
+            "address": "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "500000000"
+              }
+            ]
+          },
+          {
+            "address": "empower15hxwswcmmkasaar65n3vkmp6skurvtas3xzl7s",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "500000000"
+              }
+            ]
+          },
+          {
+            "address": "empower1reurz37gn2sk3vgr3fupcultkagzverqczer0l",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "500000000"
+              }
+            ]
+          },
+          {
+            "address": "empower1xgsaene8aqfknmldemvl5q0mtgcgjv9svupqwu",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "10"
+              }
+            ]
+          },
+          {
+            "address": "empower13f4qk3p6hu52e3ccsctecjrzqx9sqhc89uprnu",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "1000000000000"
+              }
+            ]
+          },
+          {
+            "address": "empower1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3fhdyrf",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "900000000000"
+              }
+            ]
+          },
+          {
+            "address": "empower1myvqq5t0d65zkwf906sxflwz40fnjxa29zrafn",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "900000000000"
+              }
+            ]
+          },
+          {
+            "address": "empower10meawsx9u3lkl2p6amk87k6tye6qn6dkqx2ksj",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "900000000000"
+              }
+            ]
+          },
+          {
+            "address": "empower1defgz460qy5jvkfvuz5qe0spelykpndewq2f0d",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "900000000000"
+              }
+            ]
+          },
+          {
+            "address": "empower18ejln3k0xhds5apdgjdnyytmkw74jsgy3xxrlu",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "900000000000"
+              }
+            ]
+          },
+          {
+            "address": "empower1zg453l326xgrk5nm2prru4teqkym8zc94wrcrw",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "900000000000"
+              }
+            ]
+          },
+          {
+            "address": "empower15ee5hstfe6sje9am9ngxas5xhqgdqafns9zlmk",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "900000000000"
+              }
+            ]
+          },
+          {
+            "address": "empower1yaqhrv5xn7qkprg3xlsdl884edhp3ypruy87vx",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "900000000000"
+              }
+            ]
+          },
+          {
+            "address": "empower15tsyfjljsafh0rlarrwqa5x2z80n08se895vzs",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "900000000000"
+              }
+            ]
+          },
+          {
+            "address": "empower1tygms3xhhs3yv487phx3dw4a95jn7t7lah344a",
+            "coins": []
+          }
+        ],
+        "supply": [
+          {
+            "denom": "umpwr",
+            "amount": "9103000000010"
+          }
+        ],
+        "denom_metadata": [],
+        "send_enabled": []
+      },
+      "capability": {
+        "index": "1",
+        "owners": []
+      },
+      "consensus": null,
+      "crisis": {
+        "constant_fee": {
+          "denom": "stake",
+          "amount": "1000"
+        }
+      },
+      "distribution": {
+        "params": {
+          "community_tax": "0.020000000000000000",
+          "base_proposer_reward": "0.000000000000000000",
+          "bonus_proposer_reward": "0.000000000000000000",
+          "withdraw_addr_enabled": true
+        },
+        "fee_pool": {
+          "community_pool": []
+        },
+        "delegator_withdraw_infos": [],
+        "previous_proposer": "empowervalcons13f4qk3p6hu52e3ccsctecjrzqx9sqhc8f5vs3g",
+        "outstanding_rewards": [
+          {
+            "validator_address": "empowervaloper13f4qk3p6hu52e3ccsctecjrzqx9sqhc8a8lvaf",
+            "outstanding_rewards": []
+          }
+        ],
+        "validator_accumulated_commissions": [
+          {
+            "validator_address": "empowervaloper13f4qk3p6hu52e3ccsctecjrzqx9sqhc8a8lvaf",
+            "accumulated": {
+              "commission": []
+            }
+          }
+        ],
+        "validator_historical_rewards": [
+          {
+            "validator_address": "empowervaloper13f4qk3p6hu52e3ccsctecjrzqx9sqhc8a8lvaf",
+            "period": "0",
+            "rewards": {
+              "cumulative_reward_ratio": [],
+              "reference_count": 2
+            }
+          }
+        ],
+        "validator_current_rewards": [
+          {
+            "validator_address": "empowervaloper13f4qk3p6hu52e3ccsctecjrzqx9sqhc8a8lvaf",
+            "rewards": {
+              "rewards": [],
+              "period": "1"
+            }
+          }
+        ],
+        "delegator_starting_infos": [
+          {
+            "delegator_address": "empower13f4qk3p6hu52e3ccsctecjrzqx9sqhc89uprnu",
+            "validator_address": "empowervaloper13f4qk3p6hu52e3ccsctecjrzqx9sqhc8a8lvaf",
+            "starting_info": {
+              "previous_period": "1",
+              "stake": "900000000000.000000000000000000",
+              "height": "0"
+            }
+          }
+        ],
+        "validator_slash_events": []
+      },
+      "evidence": {
+        "evidence": []
+      },
+      "feegrant": {
+        "allowances": []
+      },
+      "feeibc": {
+        "identified_fees": [],
+        "fee_enabled_channels": [],
+        "registered_payees": [],
+        "registered_counterparty_payees": [],
+        "forward_relayers": []
+      },
+      "genutil": {
+        "gen_txs": []
+      },
+      "gov": {
+        "starting_proposal_id": "1",
+        "deposits": [],
+        "votes": [],
+        "proposals": [],
+        "deposit_params": null,
+        "voting_params": null,
+        "tally_params": null,
+        "params": {
+          "min_deposit": [
+            {
+              "denom": "stake",
+              "amount": "10000000"
+            }
+          ],
+          "max_deposit_period": "172800s",
+          "voting_period": "172800s",
+          "quorum": "0.334000000000000000",
+          "threshold": "0.500000000000000000",
+          "veto_threshold": "0.334000000000000000",
+          "min_initial_deposit_ratio": "0.000000000000000000"
+        }
+      },
+      "group": {
+        "group_seq": "0",
+        "groups": [],
+        "group_members": [],
+        "group_policy_seq": "0",
+        "group_policies": [],
+        "proposal_seq": "0",
+        "proposals": [],
+        "votes": []
+      },
+      "ibc": {
+        "client_genesis": {
+          "clients": [],
+          "clients_consensus": [],
+          "clients_metadata": [],
+          "params": {
+            "allowed_clients": [
+              "06-solomachine",
+              "07-tendermint"
+            ]
+          },
+          "create_localhost": false,
+          "next_client_sequence": "0"
+        },
+        "connection_genesis": {
+          "connections": [],
+          "client_connection_paths": [],
+          "next_connection_sequence": "0",
+          "params": {
+            "max_expected_time_per_block": "30000000000"
+          }
+        },
+        "channel_genesis": {
+          "channels": [],
+          "acknowledgements": [],
+          "commitments": [],
+          "receipts": [],
+          "send_sequences": [],
+          "recv_sequences": [],
+          "ack_sequences": [],
+          "next_channel_sequence": "0"
+        }
+      },
+      "interchainaccounts": {
+        "controller_genesis_state": {
+          "active_channels": [],
+          "interchain_accounts": [],
+          "ports": [],
+          "params": {
+            "controller_enabled": true
+          }
+        },
+        "host_genesis_state": {
+          "active_channels": [],
+          "interchain_accounts": [],
+          "port": "icahost",
+          "params": {
+            "host_enabled": true,
+            "allow_messages": [
+              "*"
+            ]
+          }
+        }
+      },
+      "mint": {
+        "minter": {
+          "inflation": "0.130000000000000000",
+          "annual_provisions": "0.000000000000000000"
+        },
+        "params": {
+          "mint_denom": "stake",
+          "inflation_rate_change": "0.130000000000000000",
+          "inflation_max": "0.200000000000000000",
+          "inflation_min": "0.070000000000000000",
+          "goal_bonded": "0.670000000000000000",
+          "blocks_per_year": "6311520"
+        }
+      },
+      "params": null,
+      "plasticcredit": {
+        "params": {
+          "issuer_creator": "",
+          "credit_type_creation_fee": {
+            "denom": "mpwr",
+            "amount": "50"
+          }
+        },
+        "id_counters": {
+          "next_issuer_id": "4",
+          "next_applicant_id": "4",
+          "next_project_id": "12"
+        },
+        "issuers": [
+          {
+            "id": "1",
+            "name": "Empower",
+            "description": "First Issuer",
+            "admin": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+          },
+          {
+            "id": "2",
+            "name": "Test Issuer",
+            "description": "Purely for testing",
+            "admin": "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m"
+          },
+          {
+            "id": "3",
+            "name": "Test Issuer with no coins",
+            "description": "Purely for testing",
+            "admin": "empower1xgsaene8aqfknmldemvl5q0mtgcgjv9svupqwu"
+          }
+        ],
+        "applicants": [
+          {
+            "id": "1",
+            "name": "Plastix Inc.",
+            "description": "Grab that bottle",
+            "admin": "empower18s4hq5tn3yp9jphlastrgdgx5da6uk4882pjym"
+          },
+          {
+            "id": "2",
+            "name": "Ocean plastic Inc.",
+            "description": "Grab that net",
+            "admin": "empower18s4hq5tn3yp9jphlastrgdgx5da6uk4882pjym"
+          },
+          {
+            "id": "3",
+            "name": "Sea plastic Inc.",
+            "description": "collector",
+            "admin": "empower18s4hq5tn3yp9jphlastrgdgx5da6uk4882pjym"
+          }
+        ],
+        "credit_types": [
+          {
+            "abbreviation": "ETEST",
+            "issuer_id": "1",
+            "name": "Empower Plastic"
+          },
+          {
+            "abbreviation": "PTEST",
+            "issuer_id": "2",
+            "name": "Plastic Credit"
+          }
+        ],
+        "projects": [
+          {
+            "id": "1",
+            "applicant_id": "1",
+            "credit_type_abbreviation": "ETEST",
+            "name": "Approved project",
+            "status": "APPROVED"
+          },
+          {
+            "id": "2",
+            "applicant_id": "1",
+            "credit_type_abbreviation": "PTEST",
+            "name": "Suspended project",
+            "status": "SUSPENDED"
+          },
+          {
+            "id": "3",
+            "applicant_id": "1",
+            "credit_type_abbreviation": "ETEST",
+            "name": "New project",
+            "status": "NEW"
+          },
+          {
+            "id": "4",
+            "applicant_id": "1",
+            "credit_type_abbreviation": "PTEST",
+            "name": "Rejected project",
+            "status": "REJECTED"
+          },
+          {
+            "id": "5",
+            "applicant_id": "1",
+            "credit_type_abbreviation": "PTEST",
+            "name": "Other New Project",
+            "status": "NEW"
+          },
+          {
+            "id": "6",
+            "applicant_id": "1",
+            "credit_type_abbreviation": "PTEST",
+            "name": "Another New Project",
+            "status": "NEW"
+          },
+          {
+            "id": "7",
+            "applicant_id": "1",
+            "credit_type_abbreviation": "PTEST",
+            "name": "Another Rejected Project",
+            "status": "REJECTED"
+          },
+          {
+            "id": "8",
+            "applicant_id": "1",
+            "credit_type_abbreviation": "PTEST",
+            "name": "Another Suspended Project",
+            "status": "SUSPENDED"
+          },
+          {
+            "id": "9",
+            "applicant_id": "1",
+            "credit_type_abbreviation": "PTEST",
+            "name": "New Project to update",
+            "status": "NEW"
+          },
+          {
+            "id": "10",
+            "applicant_id": "1",
+            "credit_type_abbreviation": "ETEST",
+            "name": "Approved project 2",
+            "status": "APPROVED"
+          },
+          {
+            "id": "11",
+            "applicant_id": "1",
+            "credit_type_abbreviation": "ETEST",
+            "name": "Approved project to suspend",
+            "status": "APPROVED"
+          }
+        ],
+        "credit_collections": [
+          {
+            "denom": "ETEST/123",
+            "project_id": "1",
+            "total_amount": {
+              "active": "1000",
+              "retired": "200"
+            },
+        "metadata_uris": [
+              "ipfs://CID1",
+          "ipfs://CID2"
+        ]
+          },
+          {
+            "denom": "PTEST/00001",
+            "project_id": "2",
+            "total_amount": {
+              "active": "15000",
+              "retired": "0"
+            },
+        "metadata_uris": [
+              "ipfs://bafkreibwz7beb47uqy6wgjcidcxkqw2cqbfsvo3bx62zv2bd4yjx6ahcxa"
+        ]
+          }
+        ],
+        "credit_balances": [
+          {
+            "owner": "empower18s4hq5tn3yp9jphlastrgdgx5da6uk4882pjym",
+            "denom": "ETEST/123",
+            "balance": {
+              "active": "1000",
+              "retired": "200"
+            }
+          },
+          {
+            "owner": "empower18s4hq5tn3yp9jphlastrgdgx5da6uk4882pjym",
+            "denom": "PTEST/00001",
+            "balance": {
+              "active": "5000",
+              "retired": "0"
+            }
+          },
+          {
+            "owner": "empower10meawsx9u3lkl2p6amk87k6tye6qn6dkqx2ksj",
+            "denom": "PTEST/00001",
+            "balance": {
+              "active": "5000",
+              "retired": "0"
+            }
+          },
+          {
+            "owner": "empower1defgz460qy5jvkfvuz5qe0spelykpndewq2f0d",
+            "denom": "PTEST/00001",
+            "balance": {
+              "active": "5000",
+              "retired": "0"
+            }
+          }
+        ]
+      },
+      "certificates": {
+        "params": {
+          "allowed_issuers": ["empower1xgsaene8aqfknmldemvl5q0mtgcgjv9svupqwu"]
+        },
+        "id_counters": {
+          "next_certificate_id": 2
+        },
+        "certificates": [
+            {
+              "id":     1,
+              "owner":  "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m",
+              "type":   0,
+              "issuer": "empower1xgsaene8aqfknmldemvl5q0mtgcgjv9svupqwu"
+            }
+          ]
+      },
+      "proofofexistence": {
+        "proof_list": []
+      },
+      "slashing": {
+        "params": {
+          "signed_blocks_window": "100",
+          "min_signed_per_window": "0.500000000000000000",
+          "downtime_jail_duration": "600s",
+          "slash_fraction_double_sign": "0.050000000000000000",
+          "slash_fraction_downtime": "0.010000000000000000"
+        },
+        "signing_infos": [
+          {
+            "address": "empowervalcons1herp4lzzg4242al2s97swh5qw98yrhxxvc97sz",
+            "validator_signing_info": {
+              "address": "empowervalcons1herp4lzzg4242al2s97swh5qw98yrhxxvc97sz",
+              "start_height": "0",
+              "index_offset": "6",
+              "jailed_until": "0001-01-01T00:00:00Z",
+              "tombstoned": false,
+              "missed_blocks_counter": "0"
+            }
+          }
+        ],
+        "missed_blocks": []
+      },
+      "staking": {
+        "params": {
+          "unbonding_time": "300s",
+          "max_validators": 1,
+          "max_entries": 7,
+          "historical_entries": 10000,
+          "bond_denom": "umpwr",
+          "min_commission_rate": "0"
+        },
+        "last_total_power": "900000",
+        "last_validator_powers": [
+          {
+            "address": "empowervaloper13f4qk3p6hu52e3ccsctecjrzqx9sqhc8a8lvaf",
+            "power": "900000"
+          }
+        ],
+        "validators": [
+          {
+            "operator_address": "empowervaloper13f4qk3p6hu52e3ccsctecjrzqx9sqhc8a8lvaf",
+            "consensus_pubkey": {
+              "@type": "/cosmos.crypto.ed25519.PubKey",
+              "key": "1dGwzfPmDwneX2qievD3CMVXzEupNOjEBZkwqpTbXqY="
+            },
+            "jailed": false,
+            "status": "BOND_STATUS_BONDED",
+            "tokens": "900000000000",
+            "delegator_shares": "900000000000.000000000000000000",
+            "description": {
+              "moniker": "Empower Validator",
+              "identity": "",
+              "website": "",
+              "security_contact": "",
+              "details": ""
+            },
+            "unbonding_height": "0",
+            "unbonding_time": "0001-01-01T00:00:00Z",
+            "commission": {
+              "commission_rates": {
+                "rate": "0.100000000000000000",
+                "max_rate": "0.200000000000000000",
+                "max_change_rate": "0.010000000000000000"
+              },
+              "update_time": "2023-03-02T13:49:19.084731708Z"
+            },
+            "min_self_delegation": "1",
+            "unbonding_on_hold_ref_count": "0",
+            "unbonding_ids": []
+          }
+        ],
+        "delegations": [
+          {
+            "delegator_address": "empower13f4qk3p6hu52e3ccsctecjrzqx9sqhc89uprnu",
+            "validator_address": "empowervaloper13f4qk3p6hu52e3ccsctecjrzqx9sqhc8a8lvaf",
+            "shares": "900000000000.000000000000000000"
+          }
+        ],
+        "unbonding_delegations": [],
+        "redelegations": [],
+        "exported": true
+      },
+      "tendermint-client": null,
+      "transfer": {
+        "port_id": "transfer",
+        "denom_traces": [],
+        "params": {
+          "send_enabled": true,
+          "receive_enabled": true
+        }
+      },
+      "upgrade": {},
+      "vesting": {},
+      "wasm": {
+        "params": {
+          "code_upload_access": {
+            "permission": "Everybody",
+            "address": "",
+            "addresses": []
+          },
+          "instantiate_default_permission": "Everybody"
+        },
+        "codes": [],
+        "contracts": [],
+        "sequences": []
+      }
+    }
+  }

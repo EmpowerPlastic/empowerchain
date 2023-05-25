@@ -1,0 +1,12 @@
+syntax = "proto3";
+package empowerchain.proofofexistence;
+
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/proofofexistence";
+
+// EventCreateProof is an event emitted when a new proof has been created
+message EventCreateProof {
+  string hash = 1;
+  string creator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}

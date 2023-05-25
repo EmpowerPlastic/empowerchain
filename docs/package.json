@@ -4,12 +4,18 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "docs:dev": "vitepress dev .",
-    "docs:build": "vitepress build .",
-    "docs:serve": "vitepress serve ."
+    "dev": "vitepress dev .",
+    "build": "vitepress build .",
+    "serve": "vitepress serve ."
   },
   "devDependencies": {
-    "vitepress": "^1.0.0-alpha.13",
-    "vue": "^3.2.39"
+    "@mermaid-js/mermaid-mindmap": "^9.3.0",
+    "mermaid": "9.1.7",
+    "vitepress": "^1.0.0-alpha.65",
+    "vitepress-plugin-mermaid": "^2.0.10",
+    "vue": "^3.2.47"
+  },
+  "dependencies": {
+    "markdown-it-image-figures": "^2.1.1"
   }
 }
