@@ -35,7 +35,15 @@
         "sig_verify_cost_ed25519": "590",
         "sig_verify_cost_secp256k1": "1000"
       },
-      "accounts": []
+      "accounts": [
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower19kgt37h5spqffvakqjxj9dka994ag00f3zvjm4",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        }
+      ]
     },
     "authz": {
       "authorization": []
@@ -45,8 +53,23 @@
         "send_enabled": [],
         "default_send_enabled": true
       },
-      "balances": [],
-      "supply": [],
+      "balances": [
+        {
+          "address": "empower19kgt37h5spqffvakqjxj9dka994ag00f3zvjm4",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000"
+            }
+          ]
+        }
+      ],
+      "supply": [
+        {
+          "denom": "umpwr",
+          "amount": "1000000"
+        }
+      ],
       "denom_metadata": [],
       "send_enabled": []
     },
