@@ -37,7 +37,7 @@ cp <PATH_TO_EMPOWERCHAIN_REPO>/testnets/circulus-1/genesis.json ~/.empowerchain/
 
 6. **Add genesis account**
 ```bash
-empowerd genesis add-genesis-account <WALLET_NAME> 1000000umpwr
+empowerd add-genesis-account <WALLET_NAME> 1000000umpwr
 ```
 
 7. **Create gentx**
