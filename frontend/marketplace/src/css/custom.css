@@ -42,3 +42,19 @@
 .certificate-button {
     @apply rounded-sm text-greenPrimary font-bold text-title14 bg-buttonBlack normal-case border-none
 }
+
+/*Project Details*/
+.details-label{
+    @apply text-title14 text-dropDownText
+}
+.details-content{
+    @apply text-title18 mt-1
+}
+.google-map {
+    border-radius: 15px;
+}
+
+/*Image Gallery*/
+.scroll-button{
+    @apply absolute ml-[130px] btn-ghost bg-scrollButtonBackground
+}

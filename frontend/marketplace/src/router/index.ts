@@ -3,6 +3,7 @@ import HomePage from "@/pages/HomePage.vue";
 import FAQPage from "@/pages/FAQPage.vue";
 import CertificatesAndCreditsPage from "@/pages/CertificatesAndCreditsPage.vue";
 import AuctionPage from "@/pages/AuctionPage.vue";
+import ProjectDetails from "@/pages/ProjectDetails.vue";
 
 
 const router = createRouter({
@@ -27,6 +28,11 @@ const router = createRouter({
       path: '/auction',
       name: 'Auction',
       component: AuctionPage
+    },
+    {
+      path: '/project/:id',
+      name: 'ProjectDetails',
+      component: ProjectDetails
     },
   ]
 })
