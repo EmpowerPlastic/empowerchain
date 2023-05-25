@@ -54,11 +54,11 @@ empowerd genesis gentx <WALLET_NAME> 1000000umpwr \
 --ip="<use your public ip to help other validators find you>"
 ```
 
-8. **Copy gentx to empowerchain repo and submit a PR to circulus-1 branch**
+8. **Copy gentx to empowerchain repo, __rename it__ and submit a PR to circulus-1 branch**
 ```bash
-cp ~/.empowerchain/config/gentx/gentx-*.json <PATH_TO_EMPOWERCHAIN_REPO>/testnets/circulus-1/gentx/
+cp ~/.empowerchain/config/gentx/gentx-*.json <PATH_TO_EMPOWERCHAIN_REPO>/testnets/circulus-1/gentx/gentx-<VALIDATOR_NAME>.json
 ```
-
+Make sure you also do a rename of the file when copying or before submitting the PR (should be `gentx-<VALIDATOR_NAME>.json`)
 
 ## Genesis launch
 
