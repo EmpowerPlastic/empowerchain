@@ -5,6 +5,7 @@ on:
   pull_request:
     branches:
       - circulus-1
+      - main
     paths:
       - 'testnets/circulus-1/gentx/**'
 
