@@ -231,7 +231,35 @@ export function queryListings(
 
     return `query {
       marketplaceListings(filter: ${filter}) {
-
+        nodes {
+            amount
+            denom
+            pricePerCreditAmount
+            pricePerCreditDenom
+            creditCollection{
+              creditType
+              creditData{
+                nodes{
+                  eventData{
+                    nodes{
+                      country
+                      material{
+                        nodes{
+                          key
+                          value
+                        }
+                      }
+                    }
+                  }
+                  applicantDataByCreditDataId{
+                    nodes{
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          }
       }
     }`;
 }
