@@ -45,6 +45,7 @@ module.exports = {
                 subLabel:"#9B9B9B",
                 textInfoGray:"#B4B4B4",
                 tabGray:"#3E3E3E",
+                scrollButtonBackground:"rgba(255, 255, 255, 0.38)"
             },
             fontSize: {
                 title32: "32px",
