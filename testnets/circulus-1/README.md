@@ -18,6 +18,8 @@ cd chain && \
 make install
 ```
 
+> PLEASE: notice the `git checkout circulus-1`. Use this branch, and also target this branch in the PR
+
 2. **Init chain directory**
 ```bash
 empowerd init <MONIKER>
