@@ -3,11 +3,13 @@ export interface AuctionResultsCardProps {
   cardData: {
     price: number
     availableCredits: string
-    volume: number
+    amount: number
+    magnitude:string
     applicant: string
-    location: string
+    country: string
     material: string
     imageURL: string
+    pricePerCreditAmount:number
   }
 }
 defineProps<AuctionResultsCardProps>()
@@ -29,7 +31,7 @@ defineProps<AuctionResultsCardProps>()
       </div>
       <div class="text-right">
         <p class="text-title13 font-bold">
-          {{ cardData.volume }}kg
+          {{ cardData.amount }}{{cardData.magnitude}}
         </p>
         <p class="text-title11 font-light">
           Volume
@@ -66,7 +68,7 @@ defineProps<AuctionResultsCardProps>()
       </div>
       <div class="col-span-1">
         <p class="details-title">Location</p>
-        <p>{{ cardData.location }}</p>
+        <p>{{ cardData.country }}</p>
       </div>
       <div class="col-span-1">
         <p class="details-title">Applicant</p>
@@ -74,11 +76,11 @@ defineProps<AuctionResultsCardProps>()
       </div>
       <div class="col-span-1">
         <p class="details-title">Volume</p>
-        <p>{{ cardData.volume }} kg</p>
+        <p>{{ cardData.amount }}{{cardData.magnitude}}</p>
       </div>
       <div class="col-span-1 text-right">
-        <p class="text-title32 font-bold leading-7 mt-6">${{ cardData.price }}</p>
-        <p class="text-title14 font-bold text-textGray leading-6">20MPWR</p>
+        <p class="text-title32 font-bold leading-7 mt-6">{{ cardData?.pricePerCreditAmount/1000000 }}</p>
+        <p class="text-title14 font-bold text-textGray leading-6">MPWR</p>
         <p class="text-title18 leading-3 font-light">Price per credit</p>
 
         <p class="text-title14 font-bold mt-7 leading-[13px]">{{ cardData.availableCredits }}</p>
