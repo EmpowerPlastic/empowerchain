@@ -3,7 +3,9 @@ package genesistools
 import (
 	"encoding/binary"
 	"fmt"
-	"github.com/EmpowerPlastic/empowerchain/app/params"
+	"strconv"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,13 +16,13 @@ import (
 	grouptypes "github.com/cosmos/cosmos-sdk/x/group"
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 	"github.com/cosmos/gogoproto/proto"
-	"strconv"
-	"time"
+
+	"github.com/EmpowerPlastic/empowerchain/app/params"
 )
 
 const (
-	genesisAmount uint64 = 200_000_000 // $MPWR
-	govModuleAccountAddress = "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd" // TODO: Should we not hardcode this, or is it fine?
+	genesisAmount           uint64 = 200_000_000                                      // $MPWR
+	govModuleAccountAddress        = "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd" // TODO: Should we not hardcode this, or is it fine?
 )
 
 type accountType int
@@ -68,85 +70,85 @@ var genesisAccountConfigs = map[string]*genesisAccountConfig{
 	"P-3": {
 		amount:      3,
 		accountType: basicAccount,
-		address: "empower1zarf8u5g7ztkary6hvtrgsvzydme47dldh957r", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower1zarf8u5g7ztkary6hvtrgsvzydme47dldh957r", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
 	},
 	"A-1": {
 		amount:      0,
 		accountType: groupPolicyAccount,
-		metadata: "Tech deployment",
-		groupRef: "G-1",
+		metadata:    "Tech deployment",
+		groupRef:    "G-1",
 	},
 	"A-2": {
 		amount:      0,
 		accountType: groupPolicyAccount,
-		metadata: "Tech funding",
-		groupRef: "G-2",
+		metadata:    "Tech funding",
+		groupRef:    "G-2",
 	},
 	"A-3": {
 		amount:      22_000_000,
 		accountType: groupPolicyAccount,
-		metadata: "Deposit app usage incentives",
-		groupRef: "G-3",
+		metadata:    "Deposit app usage incentives",
+		groupRef:    "G-3",
 	},
 	"A-4": {
 		amount:      6_000_000,
 		accountType: groupPolicyAccount,
-		metadata: "Plastic credit usage incentives",
-		groupRef: "G-3",
+		metadata:    "Plastic credit usage incentives",
+		groupRef:    "G-3",
 	},
 	"A-5": {
 		amount:      20_000_000,
 		accountType: groupPolicyAccount,
-		metadata: "Future airdrops, etc",
-		groupRef: "G-3",
+		metadata:    "Future airdrops, etc",
+		groupRef:    "G-3",
 	},
 	"A-6": {
 		amount:      10_000_000,
 		accountType: permaLockGroupPolicyAccount,
-		metadata: "Permalock impact staking",
-		groupRef: "G-4",
+		metadata:    "Permalock impact staking",
+		groupRef:    "G-4",
 	},
 	"A-7": {
 		amount:      0,
 		accountType: groupPolicyAccount,
-		metadata: "Grants",
-		groupRef: "G-4",
+		metadata:    "Grants",
+		groupRef:    "G-4",
 	},
 	"A-8": {
 		amount:      40_000_000 + 18_004_001, // TODO: The + part is the left-over from pp, update as it changes
 		accountType: groupPolicyAccount,
-		metadata: "Community growth",
-		groupRef: "G-4",
+		metadata:    "Community growth",
+		groupRef:    "G-4",
 	},
 	"A-9": {
 		amount:      50_000_000,
 		accountType: groupPolicyAccount,
-		metadata: "Empower Platform user incentives",
-		groupRef: "G-5",
+		metadata:    "Empower Platform user incentives",
+		groupRef:    "G-5",
 	},
 	"A-10": {
 		amount:      15_000_000,
 		accountType: vestingGroupPolicyAccount5plus5,
-		metadata: "Strategic reserve",
-		groupRef: "G-5",
+		metadata:    "Strategic reserve",
+		groupRef:    "G-5",
 	},
 	"A-11": {
 		amount:      15_000_000,
 		accountType: groupPolicyAccount,
-		metadata: "Empower team vesting",
-		groupRef: "G-5",
+		metadata:    "Empower team vesting",
+		groupRef:    "G-5",
 	},
 	"A-12": {
 		amount:      2_000_000,
 		accountType: groupPolicyAccount,
-		metadata: "Global waste lottery",
-		groupRef: "G-3",
+		metadata:    "Global waste lottery",
+		groupRef:    "G-3",
 	},
 	"A-13": {
 		amount:      0,
 		accountType: groupPolicyAccount,
-		metadata: "Empower admin",
-		groupRef: "G-5",
+		metadata:    "Empower admin",
+		groupRef:    "G-5",
 	},
 	"B-1": {
 		amount:      1_500_000,
@@ -154,74 +156,74 @@ var genesisAccountConfigs = map[string]*genesisAccountConfig{
 		address:     "empower1vznalsh2nksqwf2jcnf53qdn8k5mpqzd008fpq", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
 	},
 	"B-2": {
-		amount: 6250,
+		amount:      6250,
 		accountType: vestingAccount1plus1,
-		address: "empower12qjmcrqvh7cpr2a9fkmxdzpp4hfxjvgpwf46hr", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower12qjmcrqvh7cpr2a9fkmxdzpp4hfxjvgpwf46hr", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
 	},
 	"B-3": {
-		amount: 31_250,
+		amount:      31_250,
 		accountType: vestingAccount1plus1,
-		address: "empower16j4xwle2jq7vsumj6l7qqsmkwkpx3n597gkw2w", // FINAL ADDRESS
+		address:     "empower16j4xwle2jq7vsumj6l7qqsmkwkpx3n597gkw2w", // FINAL ADDRESS
 	},
 	"B-4": {
-		amount: 44_100,
+		amount:      44_100,
 		accountType: vestingAccount1plus1,
-		address: "empower12znl5wmw4246d8k6vxsyel6ujjtmxtmhu2kre7", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower12znl5wmw4246d8k6vxsyel6ujjtmxtmhu2kre7", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
 	},
 	"B-5": {
-		amount: 20_000,
+		amount:      20_000,
 		accountType: vestingAccount2plus1,
-		address: "empower1nz805zqx3zp37psk2slwmzus877vr74qnczlgx", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower1nz805zqx3zp37psk2slwmzus877vr74qnczlgx", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
 	},
 	"B-6": {
-		amount: 20_000,
+		amount:      20_000,
 		accountType: vestingAccount4plus1,
-		address: "empower1vv347qn3tmmjjkqzwpwfmtavz4y0lumtwuckq6", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower1vv347qn3tmmjjkqzwpwfmtavz4y0lumtwuckq6", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
 	},
 	"B-7": {
-		amount: 53_571,
+		amount:      53_571,
 		accountType: vestingAccount4plus1,
-		address: "empower14s52c5g66m0x93veef7x9v5dt0ecyxg8cjh8dc", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower14s52c5g66m0x93veef7x9v5dt0ecyxg8cjh8dc", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
 	},
 	"B-8": {
-		amount: 147_059,
+		amount:      147_059,
 		accountType: vestingAccount2plus1,
-		address: "empower1vtgdhn3n0qc8ht48ztp07c8wjffh4s7rt92xka", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower1vtgdhn3n0qc8ht48ztp07c8wjffh4s7rt92xka", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
 	},
 	"B-9": {
-		amount: 14_706,
+		amount:      14_706,
 		accountType: vestingAccount2plus1,
-		address: "empower1l0za7lzkltjzhlnl9j09z8lacth8dwgknxn9u6", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower1l0za7lzkltjzhlnl9j09z8lacth8dwgknxn9u6", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
 	},
 	"B-10": {
-		amount: 10_000,
+		amount:      10_000,
 		accountType: vestingAccount2plus1,
-		address: "empower1cdqxk90gthpr6fjyv0amxujsg3qwq86lz34vp7", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower1cdqxk90gthpr6fjyv0amxujsg3qwq86lz34vp7", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
 	},
 	"B-11": {
-		amount: 12_500,
+		amount:      12_500,
 		accountType: vestingAccount1plus1,
-		address: "empower19ruusnhhjw8qqt0yuhl9xplfta54e4s8mn9uj2", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower19ruusnhhjw8qqt0yuhl9xplfta54e4s8mn9uj2", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
 	},
 	"B-12": {
-		amount: 29_412,
+		amount:      29_412,
 		accountType: vestingAccount2plus1,
-		address: "empower1ymuw3f9v45lg2dfkspmelal5qeam02a3ct8trh", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower1ymuw3f9v45lg2dfkspmelal5qeam02a3ct8trh", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
 	},
 	"B-13": {
-		amount: 12_500,
+		amount:      12_500,
 		accountType: vestingAccount1plus1,
-		address: "empower183q74xczj0lhdvgukd40fqeanvlykcptfduupt", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower183q74xczj0lhdvgukd40fqeanvlykcptfduupt", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
 	},
 	"B-14": {
-		amount: 53_571,
+		amount:      53_571,
 		accountType: vestingAccount4plus1,
-		address: "empower10phczzl6suv6q02hgsx9jnhy7jjwudgxp6qrd6", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower10phczzl6suv6q02hgsx9jnhy7jjwudgxp6qrd6", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
 	},
 	"B-15": {
-		amount: 41_071,
+		amount:      41_071,
 		accountType: vestingAccount4plus1,
-		address: "empower198r36k3ze8q6nlyn5laudzjtens8xvar76cr28", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower198r36k3ze8q6nlyn5laudzjtens8xvar76cr28", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
 	},
 }
 
@@ -432,7 +434,7 @@ func addMainnetAccounts(genesisState *GenesisState) {
 			panic("unknown account type")
 		}
 
-		if accAddress == nil || len(accAddress) == 0 {
+		if len(accAddress) == 0 {
 			panic(fmt.Sprintf("acc address missing for %v", accountConfig))
 		}
 

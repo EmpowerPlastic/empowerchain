@@ -257,7 +257,7 @@ type GenesisState struct {
 	FeegrantGenesis         feegranttypes.GenesisState
 	GenutilGenesis          genutiltypes.GenesisState
 	GovGenesis              govtypesv1.GenesisState
-	GroupGenesis 			grouptypes.GenesisState
+	GroupGenesis            grouptypes.GenesisState
 	MintGenesis             minttypes.GenesisState
 	SlashingGenesis         slashingtypes.GenesisState
 	StakingGenesis          stakingtypes.GenesisState
