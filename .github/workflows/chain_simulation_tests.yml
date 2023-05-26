@@ -1,0 +1,31 @@
+name: "Simulation tests on EmpowerChain"
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */5 * * *"
+
+jobs:
+  sim-tests:
+    name: Run EmpowerChain simulation tests
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        test:
+          [
+            test-sim-import-export,
+            test-sim-after-import,
+            test-sim-multi-seed-short,
+            test-sim-multi-seed-long,
+            test-sim-nondeterminism,
+          ]
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: earthly/actions-setup@v1
+        with:
+          version: 0.6.30
+
+      - run: earthly --ci -P +${{ matrix.test }}
+        working-directory: ./chain

@@ -1,0 +1,55 @@
+VERSION 0.6
+FROM earthly/dind:ubuntu
+WORKDIR /empowerchain/cosmwasm
+
+docker:
+    RUN apt-get update -yq \
+        && apt-get install --no-install-recommends -yq \
+        curl wget gnupg ca-certificates gcc g++ make
+    RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    ENV PATH="/root/.cargo/bin:${PATH}"
+    RUN rustup target add wasm32-unknown-unknown
+    RUN cargo install cosmwasm-check
+
+build-prep:
+    FROM +docker
+    COPY Cargo.lock .
+    COPY Cargo.toml .
+    COPY .cargo .cargo
+    COPY contracts contracts
+    COPY packages packages
+
+build:
+    FROM +build-prep
+    RUN cargo build
+    RUN cargo wasm
+
+build-optimized:
+    FROM +build-prep
+    WITH DOCKER --pull cosmwasm/workspace-optimizer:0.12.11
+        RUN docker run -v "$(pwd)":/code \
+          --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+          --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+          cosmwasm/workspace-optimizer:0.12.11
+    END
+    SAVE ARTIFACT --keep-own ./artifacts/* AS LOCAL artifacts/
+
+test:
+    FROM +build-prep
+    RUN cargo test
+
+test-with-coverage:
+    FROM +build-prep
+    RUN cargo install grcov
+    RUN rustup component add llvm-tools-preview
+    RUN CARGO_INCREMENTAL=0 RUSTFLAGS='-Cinstrument-coverage' LLVM_PROFILE_FILE='cargo-test-%p-%m.profraw' cargo test
+    RUN mkdir target/coverage
+    RUN grcov . --binary-path ./target/debug/deps/ -s . -t lcov --branch --ignore-not-existing --ignore '../*' --ignore "/*" -o target/coverage/tests.lcov
+    SAVE ARTIFACT target/coverage/tests.lcov AS LOCAL tests.lcov
+
+generate-schema:
+    FROM +build-prep
+    RUN cargo schema
+    SAVE ARTIFACT ./schema/* AS LOCAL schema/
+
+

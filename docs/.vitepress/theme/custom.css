@@ -1,0 +1,16 @@
+:root {
+    --vp-c-brand: #00E33A;
+    --vp-c-brand-light: #00E33A;
+}
+
+figcaption {
+    font-size: 0.8rem;
+    text-align: center;
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+.in-text-img {
+    margin-left: auto;
+    margin-right: auto;
+}

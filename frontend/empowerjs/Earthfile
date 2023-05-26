@@ -1,0 +1,52 @@
+VERSION 0.6
+FROM node:lts-alpine
+WORKDIR /app/empowerjs
+
+project-setup:
+  COPY proto proto
+  COPY scripts scripts
+  COPY src src
+  COPY test test
+  COPY .babelrc.js .babelrc.js
+  COPY package.json package.json
+  COPY package-lock.json package-lock.json
+  COPY tsconfig.json tsconfig.json
+  RUN npm ci
+
+build:
+  FROM +project-setup
+  RUN npm run build
+
+cosmwasm-codegen:
+    FROM +project-setup
+    COPY ../../+get-cw-schema/* .
+    RUN npx @cosmwasm/ts-codegen@0.25.2 generate \
+      --plugin client \
+      --schema ./schema \
+      --out ./src/plastic-credit-marketplace \
+      --name "Plastic Credit Marketplace" \
+      --bundle true \
+      --bundleFile index.ts \
+      --bundleScope contracts
+    SAVE ARTIFACT ./src/plastic-credit-marketplace AS LOCAL ./src/plastic-credit-marketplace
+
+proto-codegen:
+    FROM +project-setup
+    COPY ../../+get-proto/* ./proto
+    RUN npm run codegen
+    SAVE ARTIFACT ./src/codegen AS LOCAL ./src/codegen
+    SAVE ARTIFACT ./proto AS LOCAL ./proto
+
+codegen-all:
+    BUILD +cosmwasm-codegen
+    BUILD +proto-codegen
+
+publish:
+    ARG NPM_TOKEN
+    FROM +build
+    COPY README.md README.md
+    RUN npm config set registry https://registry.npmjs.org/
+    RUN npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
+    RUN npm version patch
+    RUN npm publish
+    SAVE ARTIFACT ./package.json AS LOCAL ./package.json

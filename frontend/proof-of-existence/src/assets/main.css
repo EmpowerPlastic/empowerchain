@@ -1,0 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body{
+     @apply bg-main-image min-h-screen bg-no-repeat font-openSans;
+     background-size: 100% 100vh;
+     background-attachment: fixed;
+}

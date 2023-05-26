@@ -1,0 +1,19 @@
+{
+ "messages": [
+  {
+   "@type": "/empowerchain.plasticcredit.MsgUpdateParams",
+   "authority": "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd",
+   "params": {
+    "issuer_creator": "empower18hl5c9xn5dze2g50uaw0l2mr02ew57zkk9vga7",
+    "credit_type_creation_fee": {
+     "denom": "mpwr",
+     "amount": "42"
+    }
+   }
+  }
+ ],
+ "metadata": "ipfs://CID",
+ "deposit": "10000000umpwr",
+ "title": "Update issuer creator",
+ "summary": "Update issuer creator address"
+}

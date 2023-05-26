@@ -1,0 +1,71 @@
+name: "Test EmpowerChain"
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+    paths:
+      - 'chain/**'
+
+jobs:
+  test:
+    name: Test EmpowerChain
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: earthly/actions-setup@v1
+        with:
+          version: 0.6.30
+
+      - run: earthly --ci --output -P +test-with-coverage
+        working-directory: ./chain
+
+      - uses: codecov/codecov-action@v3
+        if: ${{ github.actor != 'dependabot[bot]' }}
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./chain
+          flags: chain
+          fail_ci_if_error: true
+
+  smoke-test:
+    name: Smoke tests EmpowerChain
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: earthly/actions-setup@v1
+        with:
+          version: 0.6.30
+
+      - run: earthly --ci -P +smoketest
+        working-directory: ./chain
+
+  non-determinism-test:
+    name: Simulation non-determinism tests EmpowerChain
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: earthly/actions-setup@v1
+        with:
+          version: 0.6.30
+
+      - run: earthly --ci -P +test-sim-nondeterminism
+        working-directory: ./chain
+
+  ibc-conformance-test:
+    name: Run interchaintest IBC conformace test suite
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: earthly/actions-setup@v1
+        with:
+          version: 0.6.30
+
+      - run: earthly --ci --output -P +ibc-conformance-test
+        working-directory: ./chain

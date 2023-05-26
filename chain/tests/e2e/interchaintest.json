@@ -1,0 +1,34 @@
+{
+  "Relayers": ["rly"],
+
+  "ChainSets": [
+    [
+      {
+        "Name": "gaia",
+        "Version": "latest"
+      },
+      {
+        "NumValidators": 2,
+        "NumFullNodes": 1,
+
+        "Type": "cosmos",
+        "Name": "empowerchain",
+        "ChainID": "empowerchain-local-1",
+        "Images": [
+          {
+            "Repository": "empowerchain-devnet",
+            "Version": "interchaintest",
+            "UidGid": "1025:1025"
+          }
+        ],
+        "Bin": "empowerd",
+        "Bech32Prefix": "empower",
+        "Denom": "umpwr",
+        "GasPrices": "0.025umpwr",
+        "GasAdjustment": 1.3,
+        "TrustingPeriod": "336h",
+        "UsingNewGenesisCommand": true
+      }
+    ]
+  ]
+}

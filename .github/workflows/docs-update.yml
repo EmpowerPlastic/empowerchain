@@ -1,0 +1,30 @@
+name: "Docs update"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'chain/**' # On updating chain
+
+jobs:
+  build:
+    name: Update EmpowerChain swagger docs
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: earthly/actions-setup@v1
+        with:
+          version: 0.6.30
+
+      - run: earthly --ci --output +docs-gen-all
+        working-directory: ./docs
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: Update Swagger docs
+          title: Update Swagger docs
+          branch: update-docs
+          labels: C:docs

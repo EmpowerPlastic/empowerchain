@@ -1,0 +1,29 @@
+VERSION 0.6
+FROM node:lts-hydrogen
+WORKDIR /empowerchain/docs
+
+build:
+# New section directory should be added here manually
+    COPY api_docs .
+    COPY introduction .
+# ===================================================
+    COPY static .
+    COPY index.md .
+    COPY package.json .
+    RUN npm install
+    RUN npm run build
+    SAVE ARTIFACT .vitepress/dist AS LOCAL public
+
+docgen:
+    COPY ../chain/+docgen/* ./
+    SAVE ARTIFACT .vitepress/* AS LOCAL .vitepress/
+    SAVE ARTIFACT cli_docs AS LOCAL cli_docs
+    SAVE ARTIFACT module_docs AS LOCAL module_docs
+
+swagger-docs:
+    COPY ../chain/+swagger-gen/markdown.md ./swagger_ui/swagger.md
+    SAVE ARTIFACT swagger_ui AS LOCAL api_docs
+
+docs-gen-all:
+    BUILD +swagger-docs
+    BUILD +docgen
