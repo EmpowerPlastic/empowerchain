@@ -70,6 +70,8 @@ export class ListingsQueryBuilder {
         this.organizations = '';
         this.creditTypes = '';
         this.textSearch = '';
+        this.first = 0;
+        this.offset = 0;
     }
 
     public addPricePerCredit(pricePerCreditFrom?: number, pricePerCreditTo?: number) {
