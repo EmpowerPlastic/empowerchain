@@ -68,11 +68,12 @@ message EventIssuedCredits {
   uint64 issuer_id = 1;
   uint64 project_id = 2;
   uint64 applicant_id = 3;
-  string credit_type_abbreviation = 4;
-  string denom = 5;
-  uint64 amount = 6;
-  string issuer_address = 7 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  repeated string metadata_uris = 8;
+  string recipient = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string credit_type_abbreviation = 5;
+  string denom = 6;
+  uint64 amount = 7;
+  string issuer_address = 8 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  repeated string metadata_uris = 9;
 }
 
 // EventTransferCredits is an event emitted when credits are being transfered from one account to another
