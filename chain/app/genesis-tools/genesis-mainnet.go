@@ -271,18 +271,45 @@ func MainnetGenesisState(ctx client.Context, genesisState *GenesisState) {
 	// TODO: COSMWASM PERMISSIONS
 }
 
-func verifyGenesisAmount(genesisState *GenesisState) {
-	genesisTargetAmountInMicro := genesisAmount * 1_000_000
-	actualAmount := uint64(0)
-	for _, balance := range genesisState.BankGenesis.Balances {
-		found, coin := balance.Coins.Find(params.BaseCoinDenom)
-		if !found {
-			panic("empty balance in bank")
-		}
-		actualAmount += coin.Amount.Uint64()
+func addGovModuleAccount(genesisState *GenesisState) {
+	govAccAddress := sdk.MustAccAddressFromBech32(govModuleAccountAddress)
+	govBaseAccount := authtypes.NewBaseAccount(govAccAddress, nil, 0, 0)
+	govModuleAccount := authtypes.NewModuleAccount(govBaseAccount, govtypes.ModuleName, authtypes.Burner)
+	govModuleAccountAny, err := codectypes.NewAnyWithValue(govModuleAccount)
+	if err != nil {
+		panic(err)
 	}
-	if actualAmount != genesisTargetAmountInMicro {
-		panic(fmt.Sprintf("actual amount %d != target amount %d", actualAmount, genesisTargetAmountInMicro))
+	genesisState.AuthGenesis.Accounts = append(genesisState.AuthGenesis.Accounts, govModuleAccountAny)
+}
+
+func addMainnetGroups(genesisState *GenesisState) {
+	for _, groupCfg := range genesisGroupConfigs {
+		genesisState.GroupGenesis.GroupSeq++
+		groupCfg.id = genesisState.GroupGenesis.GroupSeq
+		group := grouptypes.GroupInfo{
+			Id:          groupCfg.id,
+			Admin:       groupCfg.admin,
+			Metadata:    groupCfg.metadata,
+			Version:     1,
+			TotalWeight: strconv.Itoa(len(groupCfg.memberAccountRefs)),
+			CreatedAt:   genesisState.GenesisTime,
+		}
+
+		var groupMembers []*grouptypes.GroupMember
+		for _, memberAccountRef := range groupCfg.memberAccountRefs {
+			groupMembers = append(groupMembers, &grouptypes.GroupMember{
+				GroupId: group.Id,
+				Member: &grouptypes.Member{
+					Address:  genesisAccountConfigs[memberAccountRef].address,
+					Weight:   "1",
+					Metadata: "", // TODO: Maybe add metadata for these members, so it is clear on-chain what is going on?
+					AddedAt:  genesisState.GenesisTime,
+				},
+			})
+		}
+
+		genesisState.GroupGenesis.Groups = append(genesisState.GroupGenesis.Groups, &group)
+		genesisState.GroupGenesis.GroupMembers = append(genesisState.GroupGenesis.GroupMembers, groupMembers...)
 	}
 }
 
@@ -426,44 +453,17 @@ func addMainnetAccounts(genesisState *GenesisState) {
 	}
 }
 
-func addMainnetGroups(genesisState *GenesisState) {
-	for _, groupCfg := range genesisGroupConfigs {
-		genesisState.GroupGenesis.GroupSeq++
-		groupCfg.id = genesisState.GroupGenesis.GroupSeq
-		group := grouptypes.GroupInfo{
-			Id:          groupCfg.id,
-			Admin:       groupCfg.admin,
-			Metadata:    groupCfg.metadata,
-			Version:     1,
-			TotalWeight: strconv.Itoa(len(groupCfg.memberAccountRefs)),
-			CreatedAt:   genesisState.GenesisTime,
+func verifyGenesisAmount(genesisState *GenesisState) {
+	genesisTargetAmountInMicro := genesisAmount * 1_000_000
+	actualAmount := uint64(0)
+	for _, balance := range genesisState.BankGenesis.Balances {
+		found, coin := balance.Coins.Find(params.BaseCoinDenom)
+		if !found {
+			panic("empty balance in bank")
 		}
-
-		var groupMembers []*grouptypes.GroupMember
-		for _, memberAccountRef := range groupCfg.memberAccountRefs {
-			groupMembers = append(groupMembers, &grouptypes.GroupMember{
-				GroupId: group.Id,
-				Member: &grouptypes.Member{
-					Address:  genesisAccountConfigs[memberAccountRef].address,
-					Weight:   "1",
-					Metadata: "", // TODO: Maybe add metadata for these members, so it is clear on-chain what is going on?
-					AddedAt:  genesisState.GenesisTime,
-				},
-			})
-		}
-
-		genesisState.GroupGenesis.Groups = append(genesisState.GroupGenesis.Groups, &group)
-		genesisState.GroupGenesis.GroupMembers = append(genesisState.GroupGenesis.GroupMembers, groupMembers...)
+		actualAmount += coin.Amount.Uint64()
 	}
-}
-
-func addGovModuleAccount(genesisState *GenesisState) {
-	govAccAddress := sdk.MustAccAddressFromBech32(govModuleAccountAddress)
-	govBaseAccount := authtypes.NewBaseAccount(govAccAddress, nil, 0, 0)
-	govModuleAccount := authtypes.NewModuleAccount(govBaseAccount, govtypes.ModuleName, authtypes.Burner)
-	govModuleAccountAny, err := codectypes.NewAnyWithValue(govModuleAccount)
-	if err != nil {
-		panic(err)
+	if actualAmount != genesisTargetAmountInMicro {
+		panic(fmt.Sprintf("actual amount %d != target amount %d", actualAmount, genesisTargetAmountInMicro))
 	}
-	genesisState.AuthGenesis.Accounts = append(genesisState.AuthGenesis.Accounts, govModuleAccountAny)
 }
