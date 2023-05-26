@@ -1273,6 +1273,7 @@ func (s *TestSuite) TestIssueCredits() {
 					IssuerId:               s.sampleIssuerID,
 					ProjectId:              tc.msg.ProjectId,
 					ApplicantId:            s.sampleApplicantID,
+					Recipient:              s.sampleApplicantAdmin,
 					CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
 					Denom:                  denom,
 					Amount:                 tc.msg.CreditAmount,

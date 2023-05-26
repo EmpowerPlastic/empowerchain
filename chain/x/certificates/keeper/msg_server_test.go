@@ -1,6 +1,8 @@
 package keeper_test
 
 import (
+	"encoding/json"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -130,11 +132,14 @@ func (s *TestSuite) TestCreateCertificate() {
 				s.Require().NoError(err)
 				eventCreateCertificate, ok := parsedEvent.(*certificates.EventCreateCertificate)
 				s.Require().True(ok)
+				sampleAdditionalDataJSON, err := json.Marshal(s.sampleAdditionalData)
+				s.Require().NoError(err)
 				s.Require().Equal(&certificates.EventCreateCertificate{
 					CertificateId:   resp.CertificateId,
 					Owner:           tc.msg.Owner,
 					Issuer:          tc.msg.Issuer,
 					CertificateType: "CREDIT_RETIREMENT",
+					AdditionalData:  string(sampleAdditionalDataJSON),
 				}, eventCreateCertificate)
 
 			} else {
