@@ -262,41 +262,31 @@ var genesisGroupConfigs = map[string]*groupConfig{
 // MainnetGenesisState sets the genesis state for the mainnet
 func MainnetGenesisState(ctx client.Context, genesisState *GenesisState) {
 	addGovModuleAccount(genesisState)
+	addMainnetGroups(genesisState)
+	addMainnetAccounts(genesisState)
+	verifyGenesisAmount(genesisState)
 
-	// TODO: ADD TOTAL BANK AMOUNT CHECK!
 	// TODO: DISABLE IBC
 	// TODO: DISABLE REWARDS
 	// TODO: COSMWASM PERMISSIONS
+}
 
-	for _, groupCfg := range genesisGroupConfigs {
-		genesisState.GroupGenesis.GroupSeq++
-		groupCfg.id = genesisState.GroupGenesis.GroupSeq
-		group := grouptypes.GroupInfo{
-			Id:          groupCfg.id,
-			Admin:       groupCfg.admin,
-			Metadata:    groupCfg.metadata,
-			Version:     1,
-			TotalWeight: strconv.Itoa(len(groupCfg.memberAccountRefs)),
-			CreatedAt:   genesisState.GenesisTime,
+func verifyGenesisAmount(genesisState *GenesisState) {
+	genesisTargetAmountInMicro := genesisAmount * 1_000_000
+	actualAmount := uint64(0)
+	for _, balance := range genesisState.BankGenesis.Balances {
+		found, coin := balance.Coins.Find(params.BaseCoinDenom)
+		if !found {
+			panic("empty balance in bank")
 		}
-
-		var groupMembers []*grouptypes.GroupMember
-		for _, memberAccountRef := range groupCfg.memberAccountRefs {
-			groupMembers = append(groupMembers, &grouptypes.GroupMember{
-				GroupId: group.Id,
-				Member: &grouptypes.Member{
-					Address:  genesisAccountConfigs[memberAccountRef].address,
-					Weight:   "1",
-					Metadata: "", // TODO: Maybe add metadata for these members, so it is clear on-chain what is going on?
-					AddedAt:  genesisState.GenesisTime,
-				},
-			})
-		}
-
-		genesisState.GroupGenesis.Groups = append(genesisState.GroupGenesis.Groups, &group)
-		genesisState.GroupGenesis.GroupMembers = append(genesisState.GroupGenesis.GroupMembers, groupMembers...)
+		actualAmount += coin.Amount.Uint64()
 	}
+	if actualAmount != genesisTargetAmountInMicro {
+		panic(fmt.Sprintf("actual amount %d != target amount %d", actualAmount, genesisTargetAmountInMicro))
+	}
+}
 
+func addMainnetAccounts(genesisState *GenesisState) {
 	for _, accountConfig := range genesisAccountConfigs {
 		amountInMicro := accountConfig.amount * 1000000
 		amountInCoins := sdk.NewCoins(sdk.NewCoin(params.BaseCoinDenom, sdk.NewIntFromUint64(amountInMicro)))
@@ -434,18 +424,36 @@ func MainnetGenesisState(ctx client.Context, genesisState *GenesisState) {
 		}
 
 	}
+}
 
-	genesisTargetAmountInMicro := genesisAmount * 1_000_000
-	actualAmount := uint64(0)
-	for _, balance := range genesisState.BankGenesis.Balances {
-		found, coin := balance.Coins.Find(params.BaseCoinDenom)
-		if !found {
-			panic("empty balance in bank")
+func addMainnetGroups(genesisState *GenesisState) {
+	for _, groupCfg := range genesisGroupConfigs {
+		genesisState.GroupGenesis.GroupSeq++
+		groupCfg.id = genesisState.GroupGenesis.GroupSeq
+		group := grouptypes.GroupInfo{
+			Id:          groupCfg.id,
+			Admin:       groupCfg.admin,
+			Metadata:    groupCfg.metadata,
+			Version:     1,
+			TotalWeight: strconv.Itoa(len(groupCfg.memberAccountRefs)),
+			CreatedAt:   genesisState.GenesisTime,
 		}
-		actualAmount += coin.Amount.Uint64()
-	}
-	if actualAmount != genesisTargetAmountInMicro {
-		panic(fmt.Sprintf("actual amount %d != target amount %d", actualAmount, genesisTargetAmountInMicro))
+
+		var groupMembers []*grouptypes.GroupMember
+		for _, memberAccountRef := range groupCfg.memberAccountRefs {
+			groupMembers = append(groupMembers, &grouptypes.GroupMember{
+				GroupId: group.Id,
+				Member: &grouptypes.Member{
+					Address:  genesisAccountConfigs[memberAccountRef].address,
+					Weight:   "1",
+					Metadata: "", // TODO: Maybe add metadata for these members, so it is clear on-chain what is going on?
+					AddedAt:  genesisState.GenesisTime,
+				},
+			})
+		}
+
+		genesisState.GroupGenesis.Groups = append(genesisState.GroupGenesis.Groups, &group)
+		genesisState.GroupGenesis.GroupMembers = append(genesisState.GroupGenesis.GroupMembers, groupMembers...)
 	}
 }
 
