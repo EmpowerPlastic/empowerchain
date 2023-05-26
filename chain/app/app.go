@@ -710,11 +710,11 @@ func New(
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		authz.ModuleName,
+		group.ModuleName,
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
-		group.ModuleName,
 		consensustypes.ModuleName,
 		// Custom modules
 		proofofexistencemoduletypes.ModuleName,
