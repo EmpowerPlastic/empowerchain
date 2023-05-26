@@ -18,7 +18,7 @@ import './css/custom.css'
 const cache = new InMemoryCache()
 const apolloClient = new ApolloClient({
     cache,
-    uri: 'http://51.159.168.89:3002/',
+    uri: 'http://51.159.168.89:3001/',
 })
 
 const app = createApp(App)
