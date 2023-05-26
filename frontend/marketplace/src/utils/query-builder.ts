@@ -1,3 +1,12 @@
+
+
+const queryBuilder = new ListingsQueryBuilder();
+queryBuilder.addCreditTypes(['PCRD']);
+const query = queryBuilder.build();
+
+
+
+
 export class ListingsQueryBuilder {
     private pricePerCredit: string;
     private volume: string;
@@ -6,6 +15,8 @@ export class ListingsQueryBuilder {
     private organizations: string;
     private creditTypes: string;
     private textSearch: string;
+    private first: number;
+    private offset: number;
     
     constructor() {
         this.reset();
@@ -45,7 +56,7 @@ export class ListingsQueryBuilder {
                     }` : ''}
             }`
         return `query {
-                    marketplaceListings(filter: ${query}) {
+                    marketplaceListings(filter: ${query}, ${this.first ? `first: ${this.first},` : ''} ${this.offset ? `offset: ${this.offset},` : ''}) {
                         ${this.resultsQuery()}
                     }
                 }`
@@ -97,6 +108,11 @@ export class ListingsQueryBuilder {
 
     public addTextSearch(textSearch: string) {
         this.textSearch = this.likeInsensitiveFilter('rawJsonData', textSearch);
+    }
+
+    public addPagination(first: number, offset: number) {
+        this.first = first;
+        this.offset = offset;
     }
 
     private inStringFilter(filterName: string, values: string[]): string {
