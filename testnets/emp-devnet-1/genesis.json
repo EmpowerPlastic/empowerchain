@@ -148,6 +148,13 @@
             "sequence": "0"
           },
           {
+            "@type": "/cosmos.auth.v1beta1.BaseAccount",
+            "address": "empower17ejywmeqlae3ncyqs6nlfweeg6gl30qn0zvmje",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          {
             "@type": "/cosmos.auth.v1beta1.ModuleAccount",
             "base_account": {
               "address": "empower1fl48vsnmsdzcv85q5d2q4z5ajdha8yu3fhdyrf",
@@ -377,6 +384,15 @@
             ]
           },
           {
+            "address": "empower17ejywmeqlae3ncyqs6nlfweeg6gl30qn0zvmje",
+            "coins": [
+              {
+                "denom": "umpwr",
+                "amount": "900000000000"
+              }
+            ]
+          },
+          {
             "address": "empower1tygms3xhhs3yv487phx3dw4a95jn7t7lah344a",
             "coins": []
           }
@@ -384,7 +400,7 @@
         "supply": [
           {
             "denom": "umpwr",
-            "amount": "9103000000010"
+            "amount": "10003000000010"
           }
         ],
         "denom_metadata": [],

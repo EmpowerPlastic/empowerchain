@@ -11,7 +11,7 @@ defineProps<ImageCarouselProps>()
 <template>
   <Carousel>
     <Slide v-for="url in imageArray" :key="url">
-      <img src="https://dummyimage.com/16:9x1080/"/>
+      <img class="min-h-48 rounded-lg" :src="url"/>
     </Slide>
     <template #addons>
       <Navigation/>
