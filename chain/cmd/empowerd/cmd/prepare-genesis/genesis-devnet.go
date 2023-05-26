@@ -27,7 +27,7 @@ Params:
 	- 2nd param: Name of the key from keyring to use as validator if preset is devnet
 	- 3rd param: Base64 encoded tendermint pubkey of the validator if preset is devnet (present in the priv_validator_key.json file)
 Example:
-	empowerd prepare-genesis devnet genesis.json validator 1dGwzfPmDwneX2qievD3CMVXzEupNOjEBZkwqpTbXqY=
+	empowerd genesis devnet genesis.json validator 1dGwzfPmDwneX2qievD3CMVXzEupNOjEBZkwqpTbXqY=
 Output:
 	- Creates a new genesis file in the same directory with the suffix .generated
 `,

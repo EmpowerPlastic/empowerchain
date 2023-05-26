@@ -20,6 +20,7 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	grouptypes "github.com/cosmos/cosmos-sdk/x/group"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -143,6 +144,7 @@ func UnmarshalGenesis(clientCtx client.Context, genesisState *GenesisState, appS
 	cdc.MustUnmarshalJSON(appState[feegranttypes.ModuleName], &genesisState.FeegrantGenesis)
 	genesisState.GenutilGenesis = *genutiltypes.GetGenesisStateFromAppState(cdc, appState)
 	cdc.MustUnmarshalJSON(appState[govtypes.ModuleName], &genesisState.GovGenesis)
+	cdc.MustUnmarshalJSON(appState[grouptypes.ModuleName], &genesisState.GroupGenesis)
 	cdc.MustUnmarshalJSON(appState[minttypes.ModuleName], &genesisState.MintGenesis)
 	cdc.MustUnmarshalJSON(appState[slashingtypes.ModuleName], &genesisState.SlashingGenesis)
 	genesisState.StakingGenesis = *stakingtypes.GetGenesisStateFromAppState(cdc, appState)
@@ -208,6 +210,12 @@ func MarshalGenesis(clientCtx client.Context, genesisState *GenesisState, appSta
 	}
 	appState[govtypes.ModuleName] = govGenStateBz
 
+	groupGenStateBz, err := cdc.MarshalJSON(&genesisState.GroupGenesis)
+	if err != nil {
+		log.Panic(fmt.Errorf("failed to marshal group genesis state: %w", err), err)
+	}
+	appState[grouptypes.ModuleName] = groupGenStateBz
+
 	mintGenStateBz, err := cdc.MarshalJSON(&genesisState.MintGenesis)
 	if err != nil {
 		log.Panic(fmt.Errorf("failed to marshal mint genesis state: %w", err), err)
@@ -249,6 +257,7 @@ type GenesisState struct {
 	FeegrantGenesis         feegranttypes.GenesisState
 	GenutilGenesis          genutiltypes.GenesisState
 	GovGenesis              govtypesv1.GenesisState
+	GroupGenesis 			grouptypes.GenesisState
 	MintGenesis             minttypes.GenesisState
 	SlashingGenesis         slashingtypes.GenesisState
 	StakingGenesis          stakingtypes.GenesisState
