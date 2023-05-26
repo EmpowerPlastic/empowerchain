@@ -3,14 +3,9 @@ import {createPinia} from 'pinia'
 import App from './App.vue'
 import router from './router'
 import VueAwesomePaginate from "vue-awesome-paginate";
-import VueDatePicker from '@vuepic/vue-datepicker';
 import {ApolloClient, InMemoryCache} from '@apollo/client/core'
 import {DefaultApolloClient} from '@vue/apollo-composable'
 import VueDatePicker from '@vuepic/vue-datepicker';
-import { ApolloClient, InMemoryCache } from '@apollo/client/core'
-import { createApolloProvider } from '@vue/apollo-option'
-
-
 
 import "vue-awesome-paginate/dist/style.css";
 import '@vuepic/vue-datepicker/dist/main.css'
@@ -31,5 +26,4 @@ app.use(VueAwesomePaginate)
 app.component('VueDatePicker', VueDatePicker);
 app.provide(DefaultApolloClient, apolloClient)
 app.component('VueDatePicker', VueDatePicker);
-app.use(apolloProvider)
 app.mount('#app')
