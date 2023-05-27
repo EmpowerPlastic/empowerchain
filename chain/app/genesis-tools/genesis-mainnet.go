@@ -3,10 +3,19 @@ package genesistools
 import (
 	"encoding/binary"
 	"fmt"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
+	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	"strconv"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/client"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -262,15 +271,22 @@ var genesisGroupConfigs = map[string]*groupConfig{
 }
 
 // MainnetGenesisState sets the genesis state for the mainnet
-func MainnetGenesisState(ctx client.Context, genesisState *GenesisState) {
+func MainnetGenesisState(genesisState *GenesisState) {
 	addGovModuleAccount(genesisState)
 	addMainnetGroups(genesisState)
 	addMainnetAccounts(genesisState)
-	verifyGenesisAmount(genesisState)
+	setMintParams(genesisState)
+	disableIBC(genesisState)
+	setWasmPermissions(genesisState)
+	setDistributionParams(genesisState)
+	setInitialGovParams(genesisState)
+	setCrisisFee(genesisState)
+	setStakingParams(genesisState)
+	setSlashingParams(genesisState)
+	setPlasticCreditParams(genesisState)
 
-	// TODO: DISABLE IBC
-	// TODO: DISABLE REWARDS
-	// TODO: COSMWASM PERMISSIONS
+	SetSupply(genesisState)
+	verifyGenesisAmount(genesisState)
 }
 
 func addGovModuleAccount(genesisState *GenesisState) {
@@ -452,6 +468,103 @@ func addMainnetAccounts(genesisState *GenesisState) {
 			})
 		}
 
+	}
+}
+
+func setMintParams(genesisState *GenesisState) {
+	genesisState.MintGenesis.Minter.Inflation = sdk.ZeroDec() // Turn off rewards at first
+	genesisState.MintGenesis.Params = minttypes.Params{
+		MintDenom:           params.BaseCoinDenom,
+		InflationRateChange: sdk.NewDecWithPrec(13, 2),
+		InflationMax:        sdk.ZeroDec(),
+		InflationMin:        sdk.ZeroDec(),
+		GoalBonded:          sdk.NewDecWithPrec(67, 2),
+		BlocksPerYear:       uint64(60 * 60 * 8766 / 5), // assuming 5-second block times, might need to be corrected in the future
+	}
+}
+
+func disableIBC(genesisState *GenesisState) {
+	// IBC off at first, until we get shit settled
+	genesisState.IBCTransferGenesis.Params = ibctransfertypes.Params{
+		SendEnabled:    false,
+		ReceiveEnabled: false,
+	}
+
+	genesisState.ICAGenesis.HostGenesisState.Params = icahosttypes.Params{
+		HostEnabled:   false,
+		AllowMessages: []string{},
+	}
+
+	genesisState.ICAGenesis.ControllerGenesisState.Params = icacontrollertypes.Params{
+		ControllerEnabled: false,
+	}
+}
+
+func setWasmPermissions(genesisState *GenesisState) {
+	genesisState.WasmGenesis.Params = wasmtypes.Params{
+		InstantiateDefaultPermission: wasmtypes.AccessTypeEverybody,
+		CodeUploadAccess: wasmtypes.AccessConfig{
+			Permission: wasmtypes.AccessTypeAnyOfAddresses,
+			Addresses: []string{
+				genesisAccountConfigs["A-1"].address,
+			},
+		},
+	}
+}
+
+func setDistributionParams(genesisState *GenesisState) {
+	genesisState.DistrGenesis.Params = distrtypes.Params{
+		CommunityTax:        sdk.MustNewDecFromStr("0.2"), // 20% community tax
+		WithdrawAddrEnabled: true,
+	}
+}
+
+func setInitialGovParams(genesisState *GenesisState) {
+	defaultPeriod := time.Hour * 24 * 2 // 2 days
+	genesisState.GovGenesis.Params = &govtypesv1.Params{
+		MinDeposit:                 sdk.NewCoins(sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(2000_000_000))), // 2000 $MPWR
+		MaxDepositPeriod:           &defaultPeriod,
+		VotingPeriod:               &defaultPeriod,                      // 2 days, just to start
+		Quorum:                     sdk.NewDecWithPrec(334, 3).String(), // 33.4%
+		Threshold:                  sdk.NewDecWithPrec(67, 2).String(),  // 67&
+		VetoThreshold:              sdk.NewDecWithPrec(334, 3).String(), // 33.4%
+		MinInitialDepositRatio:     sdk.OneDec().String(),               // All of it!
+		BurnVoteQuorum:             false,
+		BurnProposalDepositPrevote: true,
+		BurnVoteVeto:               true,
+	}
+}
+
+func setCrisisFee(genesisState *GenesisState) {
+	genesisState.CrisisGenesis.ConstantFee = sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(100_000_000)) // 100 $MPWR
+}
+
+func setStakingParams(genesisState *GenesisState) {
+	defaultUnbondingTime := time.Hour * 24 * 7 * 3 // 3 weeks
+	genesisState.StakingGenesis.Params = stakingtypes.Params{
+		UnbondingTime:     defaultUnbondingTime,
+		MaxValidators:     50,
+		MaxEntries:        7,
+		HistoricalEntries: 10_000,
+		BondDenom:         params.BaseCoinDenom,
+		MinCommissionRate: sdk.ZeroDec(),
+	}
+}
+
+func setSlashingParams(genesisState *GenesisState) {
+	genesisState.SlashingGenesis.Params = slashingtypes.Params{
+		SignedBlocksWindow:      10_000,
+		MinSignedPerWindow:      sdk.NewDecWithPrec(5, 2), // 5%
+		DowntimeJailDuration:    time.Minute * 10,
+		SlashFractionDoubleSign: sdk.NewDecWithPrec(5, 2), // 5%
+		SlashFractionDowntime:   sdk.NewDecWithPrec(1, 4), // 0.01%
+	}
+}
+
+func setPlasticCreditParams(genesisState *GenesisState) {
+	genesisState.PlasticcreditGenesis.Params = plasticcredit.Params{
+		IssuerCreator:         genesisAccountConfigs["A-13"].address,
+		CreditTypeCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(2000_000_000)),
 	}
 }
 
