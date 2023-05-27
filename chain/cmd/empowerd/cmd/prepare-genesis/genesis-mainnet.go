@@ -46,8 +46,8 @@ Output:
 			sdk.DefaultBondDenom = params.BaseCoinDenom
 
 			appState := mbm.DefaultGenesis(cdc)
-			genesistools.UnmarshalGenesis(clientCtx, &genesisState, appState)
-			genesistools.MainnetGenesisState(clientCtx, &genesisState)
+			genesistools.UnmarshalGenesis(clientCtx, &genesisState, appState) // This puts default genesis state into genesisState
+			genesistools.MainnetGenesisState(&genesisState)
 			genDoc := &tmtypes.GenesisDoc{}
 			genDoc.ChainID = args[0]
 			genDoc.GenesisTime = genesisTime
@@ -58,7 +58,10 @@ Output:
 				filePath = fmt.Sprintf("%s/%s", defaultNodeHome, "config/genesis.json")
 			}
 
-			return ValidateAndGenerateGenesisFile(clientCtx, &genesisState, appState, genDoc, filePath, mbm)
+			// marshal the genesis state back into the appState
+			appState = genesistools.MarshalGenesis(clientCtx, &genesisState, appState)
+
+			return ValidateAndGenerateGenesisFile(clientCtx, appState, genDoc, filePath, mbm)
 		},
 	}
 

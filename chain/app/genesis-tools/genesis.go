@@ -3,6 +3,9 @@ package genesistools
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/CosmWasm/wasmd/x/wasm"
+	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	"log"
 	"time"
 
@@ -11,6 +14,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/cosmos/cosmos-sdk/x/authz"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
@@ -24,14 +28,15 @@ import (
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	icagenesis "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/genesis/types"
 
 	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
 )
 
-// CalculateSupply calculates the total supply from the balances in the bank genesis state.
-func CalculateSupply(genesisState *GenesisState) {
+// SetSupply calculates and sets the total supply from the balances in the bank genesis state.
+func SetSupply(genesisState *GenesisState) {
 	supply := sdk.NewCoins()
 	for _, account := range genesisState.BankGenesis.Balances {
 		supply = supply.Add(account.Coins...)
@@ -136,6 +141,7 @@ func AddGenesisPlasticCreditBalance(cdc codec.Codec, genesisState *GenesisState,
 func UnmarshalGenesis(clientCtx client.Context, genesisState *GenesisState, appState map[string]json.RawMessage) {
 	cdc := clientCtx.Codec
 	genesisState.AuthGenesis = authtypes.GetGenesisStateFromAppState(cdc, appState)
+	cdc.MustUnmarshalJSON(appState[authz.ModuleName], &genesisState.AuthzGenesis)
 	genesisState.BankGenesis = *banktypes.GetGenesisStateFromAppState(cdc, appState)
 	cdc.MustUnmarshalJSON(appState[capabilitytypes.ModuleName], &genesisState.CapabilityGenesis)
 	cdc.MustUnmarshalJSON(appState[crisistypes.ModuleName], &genesisState.CrisisGenesis)
@@ -145,10 +151,13 @@ func UnmarshalGenesis(clientCtx client.Context, genesisState *GenesisState, appS
 	genesisState.GenutilGenesis = *genutiltypes.GetGenesisStateFromAppState(cdc, appState)
 	cdc.MustUnmarshalJSON(appState[govtypes.ModuleName], &genesisState.GovGenesis)
 	cdc.MustUnmarshalJSON(appState[grouptypes.ModuleName], &genesisState.GroupGenesis)
+	cdc.MustUnmarshalJSON(appState[ibctransfertypes.ModuleName], &genesisState.IBCTransferGenesis)
+	cdc.MustUnmarshalJSON(appState[icatypes.ModuleName], &genesisState.ICAGenesis)
 	cdc.MustUnmarshalJSON(appState[minttypes.ModuleName], &genesisState.MintGenesis)
 	cdc.MustUnmarshalJSON(appState[slashingtypes.ModuleName], &genesisState.SlashingGenesis)
 	genesisState.StakingGenesis = *stakingtypes.GetGenesisStateFromAppState(cdc, appState)
 	cdc.MustUnmarshalJSON(appState[plasticcredit.ModuleName], &genesisState.PlasticcreditGenesis)
+	cdc.MustUnmarshalJSON(appState[wasm.ModuleName], &genesisState.WasmGenesis)
 }
 
 // MarshalGenesis marshals the provided GenesisState into a map of module name to
@@ -161,6 +170,12 @@ func MarshalGenesis(clientCtx client.Context, genesisState *GenesisState, appSta
 		log.Panic(fmt.Errorf("failed to marshal auth genesis state: %w", err), err)
 	}
 	appState[authtypes.ModuleName] = authGenStateBz
+
+	authzGenStateBz, err := cdc.MarshalJSON(&genesisState.AuthzGenesis)
+	if err != nil {
+		log.Panic(fmt.Errorf("failed to marshal authz genesis state: %w", err), err)
+	}
+	appState[authz.ModuleName] = authzGenStateBz
 
 	bankGenStateBz, err := cdc.MarshalJSON(&genesisState.BankGenesis)
 	if err != nil {
@@ -216,6 +231,18 @@ func MarshalGenesis(clientCtx client.Context, genesisState *GenesisState, appSta
 	}
 	appState[grouptypes.ModuleName] = groupGenStateBz
 
+	ibcTransferGenesisBz, err := cdc.MarshalJSON(&genesisState.IBCTransferGenesis)
+	if err != nil {
+		log.Panic(fmt.Errorf("failed to marshal ibc transfer genesis state: %w", err), err)
+	}
+	appState[ibctransfertypes.ModuleName] = ibcTransferGenesisBz
+
+	IcaGenesisBz, err := cdc.MarshalJSON(&genesisState.ICAGenesis)
+	if err != nil {
+		log.Panic(fmt.Errorf("failed to marshal ica genesis state: %w", err), err)
+	}
+	appState[icatypes.ModuleName] = IcaGenesisBz
+
 	mintGenStateBz, err := cdc.MarshalJSON(&genesisState.MintGenesis)
 	if err != nil {
 		log.Panic(fmt.Errorf("failed to marshal mint genesis state: %w", err), err)
@@ -240,6 +267,12 @@ func MarshalGenesis(clientCtx client.Context, genesisState *GenesisState, appSta
 	}
 	appState[plasticcredit.ModuleName] = plasticcreditGenStateBz
 
+	wasmGenStateBz, err := cdc.MarshalJSON(&genesisState.WasmGenesis)
+	if err != nil {
+		log.Panic(fmt.Errorf("failed to marshal wasm genesis state: %w", err), err)
+	}
+	appState[wasm.ModuleName] = wasmGenStateBz
+
 	return appState
 }
 
@@ -249,6 +282,7 @@ type GenesisState struct {
 	ChainID     string
 
 	AuthGenesis             authtypes.GenesisState
+	AuthzGenesis            authz.GenesisState
 	BankGenesis             banktypes.GenesisState
 	CapabilityGenesis       capabilitytypes.GenesisState
 	CrisisGenesis           crisistypes.GenesisState
@@ -258,10 +292,13 @@ type GenesisState struct {
 	GenutilGenesis          genutiltypes.GenesisState
 	GovGenesis              govtypesv1.GenesisState
 	GroupGenesis            grouptypes.GenesisState
+	IBCTransferGenesis      ibctransfertypes.GenesisState
+	ICAGenesis              icagenesis.GenesisState
 	MintGenesis             minttypes.GenesisState
 	SlashingGenesis         slashingtypes.GenesisState
 	StakingGenesis          stakingtypes.GenesisState
 	PlasticcreditGenesis    plasticcredit.GenesisState
 	AccessControlGenesis    accesscontrol.GenesisState
 	ProofofexistenceGenesis proofofexistence.GenesisState
+	WasmGenesis             wasm.GenesisState
 }
