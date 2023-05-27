@@ -1,10 +1,10 @@
 export default [
   {
     "text": "proofofexistence",
-    "link": "/module_docs/proofofexistence.md"
+    "link": "/module-docs/proofofexistence.md"
   },
   {
     "text": "plasticcredit",
-    "link": "/module_docs/plasticcredit.md"
+    "link": "/module-docs/plasticcredit.md"
   }
 ]

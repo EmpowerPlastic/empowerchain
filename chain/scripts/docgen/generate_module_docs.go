@@ -34,7 +34,7 @@ func generateModuleDocs() {
 		// Create sidebar item for this module
 		moduleSidebarItems = append(moduleSidebarItems, VitepressSidebarItem{
 			Text: module,
-			Link: "/module_docs/" + module + ".md",
+			Link: "/module-docs/" + module + ".md",
 		})
 	}
 	fmt.Println("✅ Generated module docs")
@@ -45,7 +45,7 @@ func generateModuleDocs() {
 	}
 
 	jsContent := "export default " + string(jsonSidebar)
-	outputFilePath := filepath.Join(vitepressConfigOutputDir, "sidebar_module_docs.js")
+	outputFilePath := filepath.Join(vitepressConfigOutputDir, "sidebar-module-docs.js")
 
 	err = os.WriteFile(outputFilePath, []byte(jsContent), 0644)
 	if err != nil {

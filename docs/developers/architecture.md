@@ -11,7 +11,7 @@ EmpowerChain roughly has the following tech stack:
 
 The goal is to have the stable core protocol developed as custom Cosmos SDK modules and build applications and tools on top of that in CosmWasm smart contracts.
 
-![EmpowerChain High Level architecture](./empowerchain_high_level_architecture.png 'EmpowerChain high level architecture')
+![EmpowerChain High Level architecture](./empowerchain-high-level-architecture.png 'EmpowerChain high level architecture')
 
 All the code for EmpowerChain is open source and can be found on our GitHub: https://github.com/EmpowerPlastic/empowerchain
 

@@ -15,7 +15,7 @@ With that in mind, the information should be organized in a way that makes sense
 - Validators should be able to find information about how to run a validator node and participate in the network
 
 ## API docs
-The api documentation for the chain is under `api_docs` and is automatically generated.
+The api documentation for the chain is under `api-docs` and is automatically generated.
 
 ### Run doc site locally
 
