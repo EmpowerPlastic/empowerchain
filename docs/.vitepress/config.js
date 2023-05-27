@@ -57,6 +57,20 @@ export default withMermaid(
                     ]
                 },
                 {
+                    text: 'Incentivized Testnet',
+                    collapsed: true,
+                    items: [
+                        {
+                            text: 'Overview',
+                            link: '/testnet/overview'
+                        },
+                        {
+                            text: 'Testnet rules',
+                            link: '/testnet/rules'
+                        }
+                    ],
+                },
+                {
                     text: 'Governance',
                     collapsed: true,
                     items: []

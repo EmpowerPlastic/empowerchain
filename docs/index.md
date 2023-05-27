@@ -2,6 +2,8 @@
 
 Welcome to EmpowerChain's docs!
 
+![EmpowerChain banner](./static/img/empowerchain_banner.png)
+
 Here you will find all the information you need to get started with EmpowerChain if you identify as one of the following:
 - user
 - developer
