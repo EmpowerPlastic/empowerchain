@@ -112,6 +112,10 @@ export default withMermaid(
                     collapsed: true,
                     items: [
                         {
+                            text: 'Validators in the Interchain',
+                            link: '/validators/intro'
+                        },
+                        {
                             text: 'Full Node Setup',
                             link: '/validators/full-node-setup'
                         },
