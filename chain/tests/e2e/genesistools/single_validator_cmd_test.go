@@ -54,14 +54,14 @@ func (s *E2ETestSuite) TestCreateDevnetGenesis() {
 		s.Run(name, func() {
 			if tc.expectedPanic {
 				s.Require().PanicsWithValue("illegal base64 data at input byte 4", func() {
-					cmd := preparegenesis.DevnetCmd(app.DefaultNodeHome, app.ModuleBasics)
+					cmd := preparegenesis.SingleValidatorCmd(app.DefaultNodeHome, app.ModuleBasics)
 					clientCtx := val.ClientCtx
 					_, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, []string{tc.pathToGenesisFile, tc.keyName, tc.publicValKey})
 					s.Require().NoError(err)
 				})
 				return
 			}
-			cmd := preparegenesis.DevnetCmd(app.DefaultNodeHome, app.ModuleBasics)
+			cmd := preparegenesis.SingleValidatorCmd(app.DefaultNodeHome, app.ModuleBasics)
 			clientCtx := val.ClientCtx
 			_, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, []string{tc.pathToGenesisFile, tc.keyName, tc.publicValKey})
 			if tc.expectErr {
