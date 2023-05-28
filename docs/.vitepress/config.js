@@ -192,6 +192,16 @@ export default withMermaid(
             },
           ]))
         },
+        {
+          text: 'Misc',
+          collapsed: true,
+          items: [
+            {
+              text: 'Brand assets',
+              link: '/misc/brand-assets'
+            }
+          ]
+        }
       ]
     },
     mermaid: {
