@@ -57,3 +57,4 @@ $ earthly -P +test
 ```
 
 To see more targets, take a look at the Earthfile in this directory.
+
