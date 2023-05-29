@@ -4,7 +4,7 @@ WORKDIR /empowerchain/docs
 
 build:
 # New section directory should be added here manually
-    COPY api_docs .
+    COPY api-docs .
     COPY introduction .
 # ===================================================
     COPY static .
@@ -17,12 +17,12 @@ build:
 docgen:
     COPY ../chain/+docgen/* ./
     SAVE ARTIFACT .vitepress/* AS LOCAL .vitepress/
-    SAVE ARTIFACT cli_docs AS LOCAL cli_docs
-    SAVE ARTIFACT module_docs AS LOCAL module_docs
+    SAVE ARTIFACT cli-docs AS LOCAL cli-docs
+    SAVE ARTIFACT module-docs AS LOCAL module-docs
 
 swagger-docs:
-    COPY ../chain/+swagger-gen/markdown.md ./swagger_ui/swagger.md
-    SAVE ARTIFACT swagger_ui AS LOCAL api_docs
+    COPY ../chain/+swagger-gen/markdown.md ./api-docs/swagger.md
+    SAVE ARTIFACT api-docs AS LOCAL api-docs
 
 docs-gen-all:
     BUILD +swagger-docs

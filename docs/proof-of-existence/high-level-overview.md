@@ -40,7 +40,7 @@ To do that, we need to add a timestamp and a commitment to the data.
 
 Turns out that blockchain is pretty good at this. By storing the hash on the blockchain, we can prove that the data existed at least at the time it was added to the blockchain.
 
-![Store hash illustration](./store_hash.png 'Store hash on blockchain')
+![Store hash illustration](./store-hash.png 'Store hash on blockchain')
 
 The Proof of Existence module on EmpowerChain is a simple, yet effective protocol for storing and timestamping a hash on the blockchain.
 The protocol does not allow for changing the hash or the timestamp, so you can be sure that the data existed at least at the time it was added to the blockchain.
@@ -50,7 +50,7 @@ The protocol does not allow for changing the hash or the timestamp, so you can b
 To prove that a piece of data existed at a specific point in time, we need to combine the hash and the timestamp.
 You simply follow the same procedure as mentioned already, but you also fetch the hash from the blockchain and compare it to the hash of the data you want to prove.
 
-![Proof of existence illustration](./proof_of_existence.png 'Proof of existence')
+![Proof of existence illustration](./proof-of-existence.png 'Proof of existence')
 
 If the hashes match, you can be sure that the data existed at least at the time it was added to the blockchain. If they don't match, the data has been changed in some way.
 
@@ -67,4 +67,4 @@ permutations under SHA-256 then becomes 32^256. That is such an absurdly large n
 times larger than the number of atoms in the universe) that any practical chances of a collision is just about inconceivable.
 
 ## Read more
-You can find more in-depth technical details on the implementation of proof of existence in the [proof of existence module docs](../module_docs/proofofexistence.md)
+You can find more in-depth technical details on the implementation of proof of existence in the [proof of existence module docs](../module-docs/proofofexistence.md)

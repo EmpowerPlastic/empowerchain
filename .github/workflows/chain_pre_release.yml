@@ -1,0 +1,40 @@
+name: Create EmpowerChain pre-release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+    paths:
+      - 'chain/**'
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: earthly/actions-setup@v1
+        with:
+          version: 0.6.30
+
+      - run: earthly --ci --output +build-all --VERSION=${{ github.ref_name }}
+        working-directory: ./chain
+
+      - run: |
+          zip -q empowerd-${{ github.ref_name }}-linux-amd64.zip empowerd-${{ github.ref_name }}-linux-amd64 && rm empowerd-${{ github.ref_name }}-linux-amd64 && \
+          zip -q empowerd-${{ github.ref_name }}-linux-arm64.zip empowerd-${{ github.ref_name }}-linux-arm64 && rm empowerd-${{ github.ref_name }}-linux-arm64 && \
+          zip -q empowerd-${{ github.ref_name }}-darwin-amd64.zip empowerd-${{ github.ref_name }}-darwin-amd64 && rm empowerd-${{ github.ref_name }}-darwin-amd64 && \
+          zip -q empowerd-${{ github.ref_name }}-darwin-arm64.zip empowerd-${{ github.ref_name }}-darwin-arm64 && rm empowerd-${{ github.ref_name }}-darwin-arm64 && \
+          zip -q empowerd-${{ github.ref_name }}-windows-amd64.zip empowerd-${{ github.ref_name }}.exe && rm empowerd-${{ github.ref_name }}.exe
+
+        working-directory: ./chain/build
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          title: "Development Build"
+          prerelease: true
+          files: ./chain/build/*
