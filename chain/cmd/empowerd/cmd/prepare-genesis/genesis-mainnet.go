@@ -25,7 +25,7 @@ Params:
 	- 2nd param: Genesis time in RFC3339 format
 	- 3rd param: Path to the genesis file (optional). Defaults to the default node home directory.
 Example:
-	empowerd prepare-genesis mainnet empowerchain-1 2021-01-01T00:00:00Z
+	empowerd genesis mainnet empowerchain-1 2021-01-01T00:00:00Z
 Output:
 	- Creates a new genesis file
 `,
@@ -34,21 +34,23 @@ Output:
 			clientCtx := client.GetClientContextFromCmd(cmd)
 			cdc := clientCtx.Codec
 
+			genesisTime, err := time.Parse(time.RFC3339, args[1])
+			if err != nil {
+				return err
+			}
+
 			genesisState := genesistools.GenesisState{}
+			genesisState.GenesisTime = genesisTime
 
 			// Overwrite default denom
 			sdk.DefaultBondDenom = params.BaseCoinDenom
 
 			appState := mbm.DefaultGenesis(cdc)
-			genesistools.UnmarshalGenesis(clientCtx, &genesisState, appState)
+			genesistools.UnmarshalGenesis(clientCtx, &genesisState, appState) // This puts default genesis state into genesisState
 			genesistools.MainnetGenesisState(&genesisState)
 			genDoc := &tmtypes.GenesisDoc{}
 			genDoc.ChainID = args[0]
-			var err error
-			genDoc.GenesisTime, err = time.Parse(time.RFC3339, args[1])
-			if err != nil {
-				return err
-			}
+			genDoc.GenesisTime = genesisTime
 			var filePath string
 			if len(args) == 3 {
 				filePath = args[2]
@@ -56,7 +58,10 @@ Output:
 				filePath = fmt.Sprintf("%s/%s", defaultNodeHome, "config/genesis.json")
 			}
 
-			return ValidateAndGenerateGenesisFile(clientCtx, &genesisState, appState, genDoc, filePath, mbm)
+			// marshal the genesis state back into the appState
+			appState = genesistools.MarshalGenesis(clientCtx, &genesisState, appState)
+
+			return ValidateAndGenerateGenesisFile(clientCtx, appState, genDoc, filePath, mbm)
 		},
 	}
 
