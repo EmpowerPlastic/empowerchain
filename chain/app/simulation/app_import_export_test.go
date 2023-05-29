@@ -33,7 +33,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/EmpowerPlastic/empowerchain/app"
-	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol"
 	plasticcreditmoduletypes "github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	proofofexistencemoduletypes "github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
 )
@@ -172,7 +171,6 @@ func TestAppImportExport(t *testing.T) {
 		{empowerApp.GetStoreKey(authzkeeper.StoreKey), newApp.GetStoreKey(authzkeeper.StoreKey), [][]byte{authzkeeper.GrantKey, authzkeeper.GrantQueuePrefix}},
 		{empowerApp.GetStoreKey(proofofexistencemoduletypes.StoreKey), newApp.GetStoreKey(proofofexistencemoduletypes.StoreKey), [][]byte{}},
 		{empowerApp.GetStoreKey(plasticcreditmoduletypes.StoreKey), newApp.GetStoreKey(plasticcreditmoduletypes.StoreKey), [][]byte{}},
-		{empowerApp.GetStoreKey(accesscontrol.StoreKey), newApp.GetStoreKey(accesscontrol.StoreKey), [][]byte{}},
 	}
 
 	for _, skp := range storeKeysPrefixes {
