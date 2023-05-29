@@ -15,7 +15,7 @@ Some of the initial and planned applications include:
 2. Plastic Credits – Incentives for collection organizations, sorting facilities, and recyclers to efficiently collect and process waste materials.
 3. Collection incentive schemes – Establishing bespoke deposit systems for organizations or individuals to collect and recycle waste materials or products.
 
-![EmpowerChain in a Circular Economy](./empowerchain_circular_economy.png 'EmpowerChain at the center of a circular economy')
+![EmpowerChain in a Circular Economy](./empowerchain-circular-economy.png 'EmpowerChain at the center of a circular economy')
 
 ## The EmpowerChain Ecosystem
 EmpowerChain is an open, decentralized platform designed for the circular economy, with Empower (the company) as one of its initial users. Empower has been working since 2018 to address the plastic waste problem and has created a Web 2.0 SaaS platform to tackle the circular economy issue. The company is committed to developing EmpowerChain as its core infrastructure technology and bringing together a global community of entrepreneurs and developers to use and grow the platform as a core infrastructure for the circular economy.

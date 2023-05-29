@@ -13,7 +13,7 @@ To keep a clean separation of concerns in our modules, we construct our keeper t
 - Business logic layer: Public Keeper methods
 - Storage layer: Private Keeper methods
 
-![](../docs/static/img/keeper_structure.png)
+![](../docs/static/img/keeper-structure.png)
 
 ### API Layer: MsgServer and Querier
 
