@@ -30,8 +30,8 @@ import (
 )
 
 const (
-	genesisAmount           uint64 = 200_000_000                                      // $MPWR
-	govModuleAccountAddress        = "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd" // TODO: Should we not hardcode this, or is it fine?
+	genesisAmount           uint64 = 200_000_000 // $MPWR
+	govModuleAccountAddress        = "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd"
 )
 
 type accountType int
@@ -45,6 +45,12 @@ const (
 	vestingAccount2plus1
 	vestingAccount4plus1
 )
+
+var leftToBeDistributed = []uint64{
+	1_000_000, // TODO: Distribute Testnet rewards
+	50,        // TODO: Distribute gentx / adjust for actual number of gentxs
+	91,        // // TODO: gas for P accounts
+}
 
 type groupConfig struct {
 	id                uint64
@@ -84,80 +90,92 @@ var genesisAccountConfigs = map[string]*genesisAccountConfig{
 	"A-1": {
 		amount:      0,
 		accountType: groupPolicyAccount,
-		metadata:    "Tech deployment",
+		metadata:    `{"name": "Tech deployment"}`,
 		groupRef:    "G-1",
 	},
 	"A-2": {
 		amount:      0,
 		accountType: groupPolicyAccount,
-		metadata:    "Tech funding",
+		metadata:    `{"name": "Tech funding"}`,
 		groupRef:    "G-2",
 	},
 	"A-3": {
 		amount:      22_000_000,
 		accountType: groupPolicyAccount,
-		metadata:    "Deposit app usage incentives",
+		metadata:    `{"name": "Deposit app usage incentives"}`,
 		groupRef:    "G-3",
 	},
 	"A-4": {
 		amount:      6_000_000,
 		accountType: groupPolicyAccount,
-		metadata:    "Plastic credit usage incentives",
+		metadata:    `{"name": "Plastic credit usage incentives"}`,
 		groupRef:    "G-3",
 	},
 	"A-5": {
 		amount:      20_000_000,
 		accountType: groupPolicyAccount,
-		metadata:    "Future airdrops, etc",
+		metadata:    `{"name": "Future airdrops, etc"}`,
 		groupRef:    "G-3",
 	},
 	"A-6": {
 		amount:      10_000_000,
 		accountType: permaLockGroupPolicyAccount,
-		metadata:    "Permalock impact staking",
+		metadata:    `{"name": "Permalock impact staking"}`,
 		groupRef:    "G-4",
 	},
 	"A-7": {
 		amount:      0,
 		accountType: groupPolicyAccount,
-		metadata:    "Grants",
+		metadata:    `{"name": "Grants"}`,
 		groupRef:    "G-4",
 	},
 	"A-8": {
-		amount:      40_000_000 + 18_004_001, // TODO: The + part is the left-over from pp, update as it changes
+		amount:      36_000_000 + 18_003_860, // TODO: The + part is the left-over from pp, update as it changes
 		accountType: groupPolicyAccount,
-		metadata:    "Community growth",
+		metadata:    `{"name": "Community growth"}`,
 		groupRef:    "G-4",
 	},
 	"A-9": {
 		amount:      50_000_000,
 		accountType: groupPolicyAccount,
-		metadata:    "Empower Platform user incentives",
-		groupRef:    "G-5",
+		metadata:    `{"name": "Waste community user incentives"}`,
+		groupRef:    "G-3",
 	},
 	"A-10": {
 		amount:      15_000_000,
 		accountType: vestingGroupPolicyAccount5plus5,
-		metadata:    "Strategic reserve",
+		metadata:    `{"name": "Strategic reserve"}`,
 		groupRef:    "G-5",
 	},
 	"A-11": {
 		amount:      15_000_000,
 		accountType: groupPolicyAccount,
-		metadata:    "Empower team vesting",
+		metadata:    `{"name": "Empower team vesting"}`,
 		groupRef:    "G-5",
 	},
 	"A-12": {
 		amount:      2_000_000,
 		accountType: groupPolicyAccount,
-		metadata:    "Global waste lottery",
+		metadata:    `{"name": "Global waste lottery"}`,
 		groupRef:    "G-3",
 	},
 	"A-13": {
 		amount:      0,
 		accountType: groupPolicyAccount,
-		metadata:    "Empower admin",
+		metadata:    `{"name": "Empower admin"}`,
 		groupRef:    "G-5",
+	},
+	"A-14": {
+		amount:      1_000_000,
+		accountType: groupPolicyAccount,
+		metadata:    `{"name": "Testnet rewards"}`,
+		groupRef:    "G-3",
+	},
+	"A-15": {
+		amount:      2_000_000,
+		accountType: groupPolicyAccount,
+		metadata:    `{"name": "Bug and security bounties"}`,
+		groupRef:    "G-3",
 	},
 	"B-1": {
 		amount:      1_500_000,
@@ -167,7 +185,7 @@ var genesisAccountConfigs = map[string]*genesisAccountConfig{
 	"B-2": {
 		amount:      6250,
 		accountType: vestingAccount1plus1,
-		address:     "empower12qjmcrqvh7cpr2a9fkmxdzpp4hfxjvgpwf46hr", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower18n33ywygvrrzqspewsh7f5c4dkp00le0093j0t", // FINAL ADDRESS
 	},
 	"B-3": {
 		amount:      31_250,
@@ -177,17 +195,17 @@ var genesisAccountConfigs = map[string]*genesisAccountConfig{
 	"B-4": {
 		amount:      44_100,
 		accountType: vestingAccount1plus1,
-		address:     "empower12znl5wmw4246d8k6vxsyel6ujjtmxtmhu2kre7", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower16mda4h20kxxnzfal3av9gmp7memwg62unv5sjt", // FINAL ADDRESS
 	},
 	"B-5": {
 		amount:      20_000,
 		accountType: vestingAccount2plus1,
-		address:     "empower1nz805zqx3zp37psk2slwmzus877vr74qnczlgx", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower15rph43lzyqe2gem93nxxxalxqvqe7gg4dwfhz5", // FINAL ADDRESS
 	},
 	"B-6": {
 		amount:      20_000,
 		accountType: vestingAccount4plus1,
-		address:     "empower1vv347qn3tmmjjkqzwpwfmtavz4y0lumtwuckq6", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower1umjhxpz5m70v04jh7c5swlymvg9qtj3qf7a24f", // FINAL ADDRESS
 	},
 	"B-7": {
 		amount:      53_571,
@@ -227,7 +245,7 @@ var genesisAccountConfigs = map[string]*genesisAccountConfig{
 	"B-14": {
 		amount:      53_571,
 		accountType: vestingAccount4plus1,
-		address:     "empower10phczzl6suv6q02hgsx9jnhy7jjwudgxp6qrd6", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower1xun3qq5veudusxys2rygxkduqld3yq9cyg8ajq", // FINAL ADDRESS
 	},
 	"B-15": {
 		amount:      41_071,
@@ -241,32 +259,32 @@ var genesisGroupConfigs = map[string]*groupConfig{
 	"G-1": {
 		id:                0, // Will be set later
 		admin:             genesisAccountConfigs["P-1"].address,
-		memberAccountRefs: []string{"P-1", "P-2"}, // TODO: Update later with real members
-		metadata:          "EmpowerChain Tech deployment",
+		memberAccountRefs: []string{"P-1", "P-2"}, // FINAL MEMBERS
+		metadata:          `{"name": "EmpowerChain Tech deployment"}`,
 	},
 	"G-2": {
 		id:                0, // Will be set later
 		admin:             govModuleAccountAddress,
-		memberAccountRefs: []string{"P-1", "P-2"}, // TODO: Update later with real members
-		metadata:          "EmpowerChain Tech funding",
+		memberAccountRefs: []string{}, // FINAL MEMBERS
+		metadata:          `{"name": "EmpowerChain Tech funding"}`,
 	},
 	"G-3": {
 		id:                0, // Will be set later
 		admin:             govModuleAccountAddress,
-		memberAccountRefs: []string{"P-1", "P-2"}, // TODO: Update later with real members
-		metadata:          "Usage incentives",
+		memberAccountRefs: []string{"P-1", "P-2", "P-3"}, // FINAL MEMBERS
+		metadata:          `{"name": "Usage incentives"}`,
 	},
 	"G-4": {
 		id:                0, // Will be set later
 		admin:             govModuleAccountAddress,
-		memberAccountRefs: []string{"P-1", "P-2"}, // TODO: Update later with real members
-		metadata:          "EmpowerChain impact and growth",
+		memberAccountRefs: []string{"P-1", "P-2", "P-3"}, // FINAL MEMBERS
+		metadata:          `{"name": "EmpowerChain impact and growth"}`,
 	},
 	"G-5": {
 		id:                0, // Will be set later
 		admin:             genesisAccountConfigs["P-1"].address,
-		memberAccountRefs: []string{"P-1", "P-2"}, // TODO: Update later with real members
-		metadata:          "Empower",
+		memberAccountRefs: []string{"P-1", "P-2", "P-3"}, // FINAL MEMBERS
+		metadata:          `{"name": "Empower"}`,
 	},
 }
 
@@ -386,7 +404,7 @@ func addMainnetAccounts(genesisState *GenesisState) {
 			accountConfig.address = accAddress.String()
 			account = vestingtypes.NewPermanentLockedAccount(baseAccount, amountInCoins)
 
-			decisionPolicy := grouptypes.NewPercentageDecisionPolicy("0.5", defaultGroupVotingTime, 0)
+			decisionPolicy := grouptypes.NewPercentageDecisionPolicy("0.51", defaultGroupVotingTime, 0)
 			groupCfg := genesisGroupConfigs[accountConfig.groupRef]
 			if groupCfg.id == 0 {
 				panic(fmt.Sprintf("Group %s missing id", accountConfig.groupRef))
@@ -415,7 +433,7 @@ func addMainnetAccounts(genesisState *GenesisState) {
 			endTime := startTime.AddDate(5, 0, 0)
 			account = vestingtypes.NewContinuousVestingAccount(baseAccount, amountInCoins, startTime.Unix(), endTime.Unix())
 
-			decisionPolicy := grouptypes.NewPercentageDecisionPolicy("0.5", defaultGroupVotingTime, 0)
+			decisionPolicy := grouptypes.NewPercentageDecisionPolicy("0.51", defaultGroupVotingTime, 0)
 			groupCfg := genesisGroupConfigs[accountConfig.groupRef]
 			if groupCfg.id == 0 {
 				panic(fmt.Sprintf("Group %s missing id", accountConfig.groupRef))
@@ -514,7 +532,7 @@ func setWasmPermissions(genesisState *GenesisState) {
 
 func setDistributionParams(genesisState *GenesisState) {
 	genesisState.DistrGenesis.Params = distrtypes.Params{
-		CommunityTax:        sdk.MustNewDecFromStr("0.2"), // 20% community tax
+		CommunityTax:        sdk.MustNewDecFromStr("0.25"), // 25% community tax, as per constitution and block rewards setup
 		WithdrawAddrEnabled: true,
 	}
 }
@@ -570,6 +588,10 @@ func setPlasticCreditParams(genesisState *GenesisState) {
 
 func verifyGenesisAmount(genesisState *GenesisState) {
 	genesisTargetAmountInMicro := genesisAmount * 1_000_000
+	for _, left := range leftToBeDistributed {
+		genesisTargetAmountInMicro -= left * 1_000_000
+	}
+
 	actualAmount := uint64(0)
 	for _, balance := range genesisState.BankGenesis.Balances {
 		found, coin := balance.Coins.Find(params.BaseCoinDenom)
