@@ -85,6 +85,14 @@ export default withMermaid(
             {
               text: 'Overview',
               link: '/governance/overview'
+            },
+            {
+              text: 'Constitution',
+              link: '/governance/constitution'
+            },
+            {
+              text: 'Structure',
+              link: '/governance/structure'
             }
           ]
         },

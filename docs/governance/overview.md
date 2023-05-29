@@ -10,12 +10,18 @@ This is one of the critical ways EmpowerChain will be a public good, owned and c
 
 ## EmpowerChain governance
 
-EmpowerChain governance is a multi-layered governance system with a constitution at its core.
+EmpowerChain governance is a multi-layered on-chain governance system with a constitution at its core.
 
 The Empowerchain should be a stable and solid public good, infrastructure that is reliable and predictable. 
 To ensure this we will aim to have a governance that is slow, considerate and purposeful. To do this,
 we will propose a constitution that will be the core of the governance. The constitution will be a
 document that can only be changed by a supermajority of the governance.
+
+![EmpowerChain governance overview](governance-overview.png)
+
+As you can see in the image above, the EmpowerChain governance is a multi-layered governance system.
+The constitution is the core of the governance, and execution is done by the different entities we call SubGroups.
+This way we can have a slow and considerate governance, while still being able to execute fast and efficient from SubGroups.
 
 To read the current proposal for the constitution, see the [constitution](constitution.md) page.
 
