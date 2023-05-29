@@ -53,10 +53,6 @@ export default [
             "link": "/cli-docs/empowerd_genesis_collect-gentxs.md"
           },
           {
-            "text": "devnet",
-            "link": "/cli-docs/empowerd_genesis_devnet.md"
-          },
-          {
             "text": "gentx",
             "link": "/cli-docs/empowerd_genesis_gentx.md"
           },
@@ -67,6 +63,10 @@ export default [
           {
             "text": "migrate",
             "link": "/cli-docs/empowerd_genesis_migrate.md"
+          },
+          {
+            "text": "single-validator",
+            "link": "/cli-docs/empowerd_genesis_single-validator.md"
           },
           {
             "text": "validate-genesis",

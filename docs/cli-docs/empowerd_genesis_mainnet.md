@@ -10,7 +10,7 @@ Params:
 	- 2nd param: Genesis time in RFC3339 format
 	- 3rd param: Path to the genesis file (optional). Defaults to the default node home directory.
 Example:
-	empowerd prepare-genesis mainnet empowerchain-1 2021-01-01T00:00:00Z
+	empowerd genesis mainnet empowerchain-1 2021-01-01T00:00:00Z
 Output:
 	- Creates a new genesis file
 
