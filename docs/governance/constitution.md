@@ -1,0 +1,2 @@
+# EmpowerChain constitution
+
