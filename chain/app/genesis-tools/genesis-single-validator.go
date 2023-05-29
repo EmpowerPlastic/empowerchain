@@ -20,22 +20,24 @@ import (
 	"github.com/EmpowerPlastic/empowerchain/app/params"
 )
 
-// DevnetGenesisState sets the genesis state for the devnet
-func DevnetGenesisState(ctx client.Context, genesisState *GenesisState, pubKey cryptotypes.PubKey, consensusPubKey string) {
+// SingleValidatorGenesisState sets the genesis state for the devnet
+func SingleValidatorGenesisState(ctx client.Context, genesisState *GenesisState, pubKey cryptotypes.PubKey, consensusPubKey string) {
 	// set distribution genesis state
-	SetDistributionDevnet(genesisState, pubKey)
+	SetDistributionSingleValidator(genesisState, pubKey)
 
 	// set staking genesis state
-	SetStakingDevnet(genesisState, pubKey, consensusPubKey)
+	SetStakingSingleValidator(genesisState, pubKey, consensusPubKey)
 
 	// set slashing genesis state
-	SetSlashingDevnet(genesisState, consensusPubKey)
+	SetSlashingSingleValidator(genesisState, consensusPubKey)
 
 	// set auth and bank genesis state
-	SetAuthBankDevnet(ctx.Codec, genesisState, pubKey)
+	SetAuthBankSingleValidator(ctx.Codec, genesisState, pubKey)
+
+	SetSupply(genesisState)
 }
 
-func SetAuthBankDevnet(cdc codec.Codec, genesisState *GenesisState, pubKey cryptotypes.PubKey) {
+func SetAuthBankSingleValidator(cdc codec.Codec, genesisState *GenesisState, pubKey cryptotypes.PubKey) {
 	// add validator account in auth and bank genesis state
 	accAddress := sdk.AccAddress(pubKey.Address())
 	AddGenesisBaseAccountAndBalance(cdc, genesisState, accAddress, sdk.NewCoins(sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(1000000000000))))
@@ -107,8 +109,8 @@ func SetAuthBankDevnet(cdc codec.Codec, genesisState *GenesisState, pubKey crypt
 	}
 }
 
-// SetDistributionDevnet sets the distribution genesis state for devnet.
-func SetDistributionDevnet(genesisState *GenesisState, pubKey cryptotypes.PubKey) {
+// SetDistributionSingleValidator sets the distribution genesis state for devnet.
+func SetDistributionSingleValidator(genesisState *GenesisState, pubKey cryptotypes.PubKey) {
 	valAddress := sdk.ValAddress(pubKey.Address()).String()
 	consAddress := sdk.GetConsAddress(pubKey)
 	accAddress := sdk.AccAddress(pubKey.Address()).String()
@@ -129,7 +131,6 @@ func SetDistributionDevnet(genesisState *GenesisState, pubKey cryptotypes.PubKey
 			ValidatorAddress: valAddress,
 		},
 	}
-	genesisState.DistrGenesis.Params = distrtypes.DefaultParams()
 	genesisState.DistrGenesis.PreviousProposer = consAddress.String()
 	genesisState.DistrGenesis.ValidatorAccumulatedCommissions = []distrtypes.ValidatorAccumulatedCommissionRecord{
 		{
@@ -154,8 +155,8 @@ func SetDistributionDevnet(genesisState *GenesisState, pubKey cryptotypes.PubKey
 	}
 }
 
-// SetStakingDevnet sets the staking genesis state for devnet
-func SetStakingDevnet(genesisState *GenesisState, pubKey cryptotypes.PubKey, consensusPubKey string) {
+// SetStakingSingleValidator sets the staking genesis state for devnet
+func SetStakingSingleValidator(genesisState *GenesisState, pubKey cryptotypes.PubKey, consensusPubKey string) {
 	valAddress := sdk.ValAddress(pubKey.Address()).String()
 	accAddress := sdk.AccAddress(pubKey.Address()).String()
 
@@ -173,13 +174,6 @@ func SetStakingDevnet(genesisState *GenesisState, pubKey cryptotypes.PubKey, con
 			Address: valAddress,
 			Power:   900000,
 		},
-	}
-	genesisState.StakingGenesis.Params = stakingtypes.Params{
-		UnbondingTime:     time.Second * 300,
-		MaxValidators:     1,
-		MaxEntries:        7,
-		BondDenom:         params.BaseCoinDenom,
-		HistoricalEntries: 10000,
 	}
 	pubKeyEdBz, err := base64.StdEncoding.DecodeString(consensusPubKey)
 	if err != nil {
@@ -218,8 +212,8 @@ func SetStakingDevnet(genesisState *GenesisState, pubKey cryptotypes.PubKey, con
 	}
 }
 
-// SetSlashingDevnet sets the slashing genesis state for devne
-func SetSlashingDevnet(genesisState *GenesisState, consensusPubKey string) {
+// SetSlashingSingleValidator sets the slashing genesis state for devne
+func SetSlashingSingleValidator(genesisState *GenesisState, consensusPubKey string) {
 	pubKeyConsBz, err := base64.StdEncoding.DecodeString(consensusPubKey)
 	if err != nil {
 		log.Panic(err)

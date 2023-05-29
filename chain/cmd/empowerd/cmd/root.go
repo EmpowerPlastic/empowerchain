@@ -151,7 +151,10 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig app.EncodingConfig) {
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
-		genesisCommand(encodingConfig, preparegenesis.MainnetCmd(app.DefaultNodeHome, app.ModuleBasics), preparegenesis.DevnetCmd(app.DefaultNodeHome, app.ModuleBasics)),
+		genesisCommand(
+			encodingConfig,
+			preparegenesis.MainnetCmd(app.DefaultNodeHome, app.ModuleBasics),
+			preparegenesis.SingleValidatorCmd(app.DefaultNodeHome, app.ModuleBasics)),
 		queryCommand(),
 		txCommand(),
 		keys.Commands(app.DefaultNodeHome),
