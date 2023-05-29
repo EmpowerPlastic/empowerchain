@@ -122,9 +122,6 @@ import (
 	"github.com/spf13/cast"
 
 	"github.com/EmpowerPlastic/empowerchain/app/upgrades"
-	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol"
-	accesscontrolmodulekeeper "github.com/EmpowerPlastic/empowerchain/x/accesscontrol/keeper"
-	accesscontrolmodule "github.com/EmpowerPlastic/empowerchain/x/accesscontrol/module"
 	certificatemoduletypes "github.com/EmpowerPlastic/empowerchain/x/certificates"
 	certificatemodulekeeper "github.com/EmpowerPlastic/empowerchain/x/certificates/keeper"
 	certificatemodule "github.com/EmpowerPlastic/empowerchain/x/certificates/module"
@@ -181,7 +178,6 @@ var (
 		// Custom modules
 		proofofexistencemodule.AppModuleBasic{},
 		plasticcreditmodule.AppModuleBasic{},
-		accesscontrolmodule.AppModuleBasic{},
 		certificatemodule.AppModuleBasic{},
 
 		// IBC modules
@@ -262,7 +258,6 @@ type EmpowerApp struct {
 	// Custom module keepers
 	ProofofexistenceKeeper proofofexistencemodulekeeper.Keeper
 	PlasticcreditKeeper    plasticcreditmodulekeeper.Keeper
-	AccessControlKeeper    accesscontrolmodulekeeper.Keeper
 	CertificateKeeper      certificatemodulekeeper.Keeper
 
 	// IBC keepers
@@ -319,7 +314,7 @@ func New(
 		ibcexported.StoreKey, ibctransfertypes.StoreKey, ibcfeetypes.StoreKey,
 		icahosttypes.StoreKey, icacontrollertypes.StoreKey,
 		// our own custom module store keys
-		proofofexistencemoduletypes.StoreKey, plasticcreditmoduletypes.StoreKey, accesscontrol.StoreKey, certificatemoduletypes.StoreKey,
+		proofofexistencemoduletypes.StoreKey, plasticcreditmoduletypes.StoreKey, certificatemoduletypes.StoreKey,
 	)
 	transientStoreKeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memoryStoreKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -345,8 +340,6 @@ func New(
 	// set the BaseApp's parameter store
 	app.ConsensusParamsKeeper = consensuskeeper.NewKeeper(appCodec, storeKeys[upgradetypes.StoreKey], authtypes.NewModuleAddress(govtypes.ModuleName).String())
 	baseApp.SetParamStore(&app.ConsensusParamsKeeper)
-
-	app.AccessControlKeeper = *accesscontrolmodulekeeper.NewKeeper(appCodec, storeKeys[accesscontrol.StoreKey])
 
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(appCodec, storeKeys[capabilitytypes.StoreKey], memoryStoreKeys[capabilitytypes.MemStoreKey])
 
@@ -495,7 +488,6 @@ func New(
 	app.PlasticcreditKeeper = *plasticcreditmodulekeeper.NewKeeper(appCodec,
 		storeKeys[plasticcreditmoduletypes.StoreKey],
 		storeKeys[plasticcreditmoduletypes.MemStoreKey],
-		accesscontrolmodulekeeper.NewSubKeeper(&app.AccessControlKeeper, plasticcreditmoduletypes.ModuleName),
 		app.DistrKeeper,
 		app.CertificateKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
@@ -612,7 +604,6 @@ func New(
 		// Custom modules
 		proofofexistencemodule.NewAppModule(appCodec, app.ProofofexistenceKeeper, app.AccountKeeper, app.BankKeeper),
 		plasticcreditmodule.NewAppModule(appCodec, app.PlasticcreditKeeper, app.AccountKeeper, app.BankKeeper),
-		accesscontrolmodule.NewAppModule(app.AccessControlKeeper),
 		certificatemodule.NewAppModule(appCodec, app.CertificateKeeper),
 		// IBC modules
 		ibc.NewAppModule(app.IBCKeeper),
@@ -648,7 +639,6 @@ func New(
 		// Custom modules
 		proofofexistencemoduletypes.ModuleName,
 		plasticcreditmoduletypes.ModuleName,
-		accesscontrol.ModuleName,
 		certificatemoduletypes.ModuleName,
 		// IBC modules
 		ibctransfertypes.ModuleName,
@@ -681,7 +671,6 @@ func New(
 		// Custom modules
 		proofofexistencemoduletypes.ModuleName,
 		plasticcreditmoduletypes.ModuleName,
-		accesscontrol.ModuleName,
 		certificatemoduletypes.ModuleName,
 		// IBC modules
 		ibctransfertypes.ModuleName,
@@ -719,7 +708,6 @@ func New(
 		// Custom modules
 		proofofexistencemoduletypes.ModuleName,
 		plasticcreditmoduletypes.ModuleName,
-		accesscontrol.ModuleName,
 		certificatemoduletypes.ModuleName,
 		// IBC modules
 		ibctransfertypes.ModuleName,
