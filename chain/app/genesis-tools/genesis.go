@@ -30,7 +30,6 @@ import (
 	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 
-	"github.com/EmpowerPlastic/empowerchain/x/accesscontrol"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
 )
@@ -298,7 +297,6 @@ type GenesisState struct {
 	SlashingGenesis         slashingtypes.GenesisState
 	StakingGenesis          stakingtypes.GenesisState
 	PlasticcreditGenesis    plasticcredit.GenesisState
-	AccessControlGenesis    accesscontrol.GenesisState
 	ProofofexistenceGenesis proofofexistence.GenesisState
 	WasmGenesis             wasm.GenesisState
 }
