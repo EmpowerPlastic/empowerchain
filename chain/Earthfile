@@ -157,7 +157,7 @@ devnet:
     RUN { echo ${VALPASS}; echo ${VALPASS}; } | empowerd keys add ${VALNAME}
 
     # Set up devnet genesis for new key
-    RUN echo ${VALPASS} | empowerd genesis devnet ~/.empowerchain/config/genesis.json ${VALNAME} $(jq .pub_key.value ~/.empowerchain/config/priv_validator_key.json | sed -r "s/\"//g")
+    RUN echo ${VALPASS} | empowerd genesis devnet ~/.empowerchain/config/genesis.json ${VALNAME} $(jq -r .pub_key.value ~/.empowerchain/config/priv_validator_key.json)
     RUN mv ~/.empowerchain/config/genesis.json.generated ~/.empowerchain/config/genesis.json
 
     SAVE IMAGE --push ${IMAGE_NAME}:${VERSION} ${IMAGE_NAME}:latest
