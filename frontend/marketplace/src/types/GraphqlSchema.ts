@@ -55,7 +55,7 @@ interface MarketplaceListing {
     owner: string;
     denom: string;
     amount: string;
-    pricePerCreditAmount: string;
+    pricePerCreditAmount: number;
     pricePerCreditDenom: string;
     creditCollection: string;
 }
