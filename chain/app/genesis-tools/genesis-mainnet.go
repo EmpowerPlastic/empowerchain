@@ -80,12 +80,12 @@ var genesisAccountConfigs = map[string]*genesisAccountConfig{
 	"P-2": {
 		amount:      3,
 		accountType: basicAccount,
-		address:     "empower1m9l358xunhhwds0568za49mzhvuxx9uxl4sqxn", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower1p7fgpt73de0tvz6xav3sfugj8pjhgdq7utmg6h", // TODO: TMP ACCT - REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
 	},
 	"P-3": {
 		amount:      3,
 		accountType: basicAccount,
-		address:     "empower1zarf8u5g7ztkary6hvtrgsvzydme47dldh957r", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower10meawsx9u3lkl2p6amk87k6tye6qn6dkqx2ksj", // TODO: TMP ACCT - REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
 	},
 	"A-1": {
 		amount:      0,
