@@ -1,18 +1,42 @@
 <script setup lang="ts">
+import type {CreditCollection, MarketplaceListing} from "@/types/GraphqlSchema";
+
 export interface AuctionResultsCardProps {
-  cardData: {
-    price: number
-    availableCredits: string
-    amount: number
-    magnitude:string
-    applicant: string
-    country: string
-    material: string
-    imageURL: string
-    pricePerCreditAmount:number
+  cardData: MarketplaceListing & {
+    creditCollection: CreditCollection & {}
   }
 }
+
 defineProps<AuctionResultsCardProps>()
+
+const getDetailsList = (data: any) => {
+  let applicantArray: string[] = []
+  let locationArray: string[] = []
+  let materialArray: { key: string, value: string }[] = []
+
+  data.map((item:any) => {
+    item.applicantDataByCreditDataId.nodes.map((node:any) => {
+      applicantArray.push(node.name)
+    })
+    item.eventData.nodes.map((node:any) => {
+      locationArray.push(node.country)
+      materialArray.push(...node.material.nodes)
+    })
+  })
+
+  const uniqueMaterialArray = materialArray.filter((obj, index, self) =>
+          index === self.findIndex((o) =>
+              o.key === obj.key && o.value === obj.value
+          )
+  );
+
+  return {
+    applicant: Array.from(new Set(applicantArray)),
+    location: Array.from(new Set(locationArray)),
+    material: uniqueMaterialArray,
+  }
+}
+
 </script>
 <template>
   <div
@@ -23,7 +47,7 @@ defineProps<AuctionResultsCardProps>()
     <div class="grid grid-cols-2 p-5 gap-4 md:hidden">
       <div>
         <p class="text-title24 font-bold">
-          ${{ cardData.price }}
+          ${{ cardData?.pricePerCreditAmount / 1000000 }}
         </p>
         <p class="text-title15 font-light">
           Price per credit
@@ -31,10 +55,10 @@ defineProps<AuctionResultsCardProps>()
       </div>
       <div class="text-right">
         <p class="text-title13 font-bold">
-          {{ cardData.amount }}{{cardData.magnitude}}
+<!--          {{ cardData.amount }}-->
         </p>
         <p class="text-title11 font-light">
-          Volume
+<!--          Volume-->
         </p>
       </div>
       <div>
@@ -53,38 +77,44 @@ defineProps<AuctionResultsCardProps>()
     </div>
 
     <!--      Details for Desktop UI-->
-    <div class="hidden md:grid grid-cols-5 gap-5 w-full col-span-4 py-2 px-6 ml-2">
+    <div class="hidden md:grid grid-cols-4 gap-5 w-full col-span-4 py-2 px-6 ml-2">
       <div class="col-span-1 ...">
         <p class="details-title">Material</p>
-        <p>{{ cardData.material }}</p>
         <ul class="list-disc ml-6">
-          <li>
-            Coloured
-          </li>
-          <li>
-            Plastic Long
+          <li v-for="material in getDetailsList(cardData.creditCollection.creditData.nodes).material" :key="material">
+            {{ material.value }}
           </li>
         </ul>
       </div>
       <div class="col-span-1">
         <p class="details-title">Location</p>
-        <p>{{ cardData.country }}</p>
+        <p>{{ cardData.creditCollection.nodes }}</p>
+        <ul class="list-disc ml-6">
+          <li v-for="location in getDetailsList(cardData.creditCollection.creditData.nodes).location" :key="location">
+            {{ location }}
+          </li>
+        </ul>
       </div>
       <div class="col-span-1">
         <p class="details-title">Applicant</p>
-        <p>{{ cardData.applicant }}</p>
+        <ul class="list-disc ml-6">
+          <li v-for="applicant in getDetailsList(cardData.creditCollection.creditData.nodes).applicant"
+              :key="applicant">
+            {{ applicant }}
+          </li>
+        </ul>
       </div>
-      <div class="col-span-1">
-        <p class="details-title">Volume</p>
-        <p>{{ cardData.amount }}{{cardData.magnitude}}</p>
-      </div>
+      <!--      <div class="col-span-1">-->
+      <!--        <p class="details-title">Volume</p>-->
+      <!--        <p>{{ cardData.amount }}{{ cardData.magnitude }}</p>-->
+      <!--      </div>-->
       <div class="col-span-1 text-right">
-        <p class="text-title32 font-bold leading-7 mt-6">{{ cardData?.pricePerCreditAmount/1000000 }}</p>
+        <p class="text-title32 font-bold leading-7 mt-6">{{ cardData?.pricePerCreditAmount / 1000000 }}</p>
         <p class="text-title14 font-bold text-textGray leading-6">MPWR</p>
         <p class="text-title18 leading-3 font-light">Price per credit</p>
 
-        <p class="text-title14 font-bold mt-7 leading-[13px]">{{ cardData.availableCredits }}</p>
-        <p class="text-title12 font-bold font-light">Available credits</p>
+<!--        <p class="text-title14 font-bold mt-7 leading-[13px]">{{ cardData.availableCredits }}</p>-->
+<!--        <p class="text-title12 font-bold font-light">Available credits</p>-->
       </div>
     </div>
 
