@@ -143,6 +143,7 @@ export class ListingsQueryBuilder {
 
     private resultsQuery(): string {
         return `nodes {
+                    id
                     amount
                     denom
                     pricePerCreditAmount
