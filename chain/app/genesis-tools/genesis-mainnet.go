@@ -75,7 +75,7 @@ var genesisAccountConfigs = map[string]*genesisAccountConfig{
 	"P-1": {
 		amount:      3,
 		accountType: basicAccount,
-		address:     "empower1fqsfh795c3cvvhkd6nd2036mzavrnchny0j3u3", // FINAL ADDRESS
+		address:     "empower175p8jy5fcdkpm3djk40p8ucdn3lyjyd7jtf77w", // TODO: TMP ACCT - REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
 	},
 	"P-2": {
 		amount:      3,
