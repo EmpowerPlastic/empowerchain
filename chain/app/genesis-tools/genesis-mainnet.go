@@ -448,22 +448,22 @@ func addMainnetAccounts(genesisState *GenesisState) {
 			baseAccount := authtypes.NewBaseAccountWithAddress(accAddress)
 			startTime := genesisState.GenesisTime.AddDate(1, 0, 0)
 			endTime := startTime.AddDate(1, 0, 0)
-			vestingtypes.NewContinuousVestingAccount(baseAccount, amountInCoins, startTime.Unix(), endTime.Unix())
-			account = baseAccount
+			vestingAcct := vestingtypes.NewContinuousVestingAccount(baseAccount, amountInCoins, startTime.Unix(), endTime.Unix())
+			account = vestingAcct
 		case vestingAccount2plus1:
 			accAddress = sdk.MustAccAddressFromBech32(accountConfig.address)
 			baseAccount := authtypes.NewBaseAccountWithAddress(accAddress)
 			startTime := genesisState.GenesisTime.AddDate(2, 0, 0)
 			endTime := startTime.AddDate(1, 0, 0)
-			vestingtypes.NewContinuousVestingAccount(baseAccount, amountInCoins, startTime.Unix(), endTime.Unix())
-			account = baseAccount
+			vestingAcct := vestingtypes.NewContinuousVestingAccount(baseAccount, amountInCoins, startTime.Unix(), endTime.Unix())
+			account = vestingAcct
 		case vestingAccount4plus1:
 			accAddress = sdk.MustAccAddressFromBech32(accountConfig.address)
 			baseAccount := authtypes.NewBaseAccountWithAddress(accAddress)
 			startTime := genesisState.GenesisTime.AddDate(4, 0, 0)
 			endTime := startTime.AddDate(1, 0, 0)
-			vestingtypes.NewContinuousVestingAccount(baseAccount, amountInCoins, startTime.Unix(), endTime.Unix())
-			account = baseAccount
+			vestingAcct := vestingtypes.NewContinuousVestingAccount(baseAccount, amountInCoins, startTime.Unix(), endTime.Unix())
+			account = vestingAcct
 		default:
 			panic("unknown account type")
 		}
