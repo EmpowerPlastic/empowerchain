@@ -259,7 +259,7 @@ var genesisGroupConfigs = map[string]*groupConfig{
 	"G-1": {
 		id:                0, // Will be set later
 		admin:             genesisAccountConfigs["P-1"].address,
-		memberAccountRefs: []string{"P-1", "P-2"}, // FINAL MEMBERS
+		memberAccountRefs: []string{"P-1", "P-3"}, // FINAL MEMBERS
 		metadata:          `{"name": "EmpowerChain Tech deployment"}`,
 	},
 	"G-2": {
