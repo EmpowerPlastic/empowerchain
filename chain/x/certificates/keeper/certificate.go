@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"encoding/json"
+
 	"cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -104,11 +106,17 @@ func (k Keeper) CreateCertificateSkipAllowedIssuers(ctx sdk.Context, req *certif
 		return 0, err
 	}
 
+	jsonData, err := json.Marshal(certificate.AdditionalData)
+	if err != nil {
+		return 0, err
+	}
+
 	return nextID, ctx.EventManager().EmitTypedEvent(&certificates.EventCreateCertificate{
 		CertificateId:   certificate.Id,
 		CertificateType: certificate.Type.String(),
 		Owner:           certificate.Owner,
 		Issuer:          certificate.Issuer,
+		AdditionalData:  string(jsonData),
 	})
 }
 
