@@ -3,7 +3,7 @@ import type {CreditCollection, MarketplaceListing} from "@/types/GraphqlSchema";
 
 export interface AuctionResultsCardProps {
   cardData: MarketplaceListing & {
-    creditCollection: CreditCollection & {}
+    creditCollection: any
   }
 }
 
@@ -63,7 +63,7 @@ const getDetailsList = (data: any) => {
       </div>
       <div>
         <p class="text-title14 font-bold">
-          {{ cardData.availableCredits }}
+<!--          {{ cardData.availableCredits }}-->
         </p>
         <p class="text-title12 font-light">
           Available credits
@@ -81,7 +81,7 @@ const getDetailsList = (data: any) => {
       <div class="col-span-1 ...">
         <p class="details-title">Material</p>
         <ul class="list-disc ml-6">
-          <li v-for="material in getDetailsList(cardData.creditCollection.creditData.nodes).material" :key="material">
+          <li v-for="material in getDetailsList(cardData.creditCollection.creditData.nodes).material" :key="material.key">
             {{ material.value }}
           </li>
         </ul>
