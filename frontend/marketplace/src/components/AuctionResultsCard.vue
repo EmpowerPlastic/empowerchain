@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type {CreditCollection, MarketplaceListing} from "@/types/GraphqlSchema";
+import type {MarketplaceListing} from "@/types/GraphqlSchema";
+import router from "@/router";
 
 export interface AuctionResultsCardProps {
   cardData: MarketplaceListing & {
@@ -14,11 +15,11 @@ const getDetailsList = (data: any) => {
   let locationArray: string[] = []
   let materialArray: { key: string, value: string }[] = []
 
-  data.map((item:any) => {
-    item.applicantDataByCreditDataId.nodes.map((node:any) => {
+  data.map((item: any) => {
+    item.applicantDataByCreditDataId.nodes.map((node: any) => {
       applicantArray.push(node.name)
     })
-    item.eventData.nodes.map((node:any) => {
+    item.eventData.nodes.map((node: any) => {
       locationArray.push(node.country)
       materialArray.push(...node.material.nodes)
     })
@@ -55,33 +56,36 @@ const getDetailsList = (data: any) => {
       </div>
       <div class="text-right">
         <p class="text-title13 font-bold">
-<!--          {{ cardData.amount }}-->
+          <!--          {{ cardData.amount }}-->
         </p>
         <p class="text-title11 font-light">
-<!--          Volume-->
+          <!--          Volume-->
         </p>
       </div>
       <div>
         <p class="text-title14 font-bold">
-<!--          {{ cardData.availableCredits }}-->
+          <!--          {{ cardData.availableCredits }}-->
         </p>
         <p class="text-title12 font-light">
           Available credits
         </p>
       </div>
       <div>
-        <button class="btn bg-greenPrimary w-full h-full rounded-sm text-title15 px-2 normal-case font-normal">
+        <button class="btn bg-greenPrimary w-full h-full rounded-sm text-title15 px-2 normal-case font-normal"
+                @click="router.push(`/project/${cardData.id}`)">
           View details
         </button>
       </div>
     </div>
 
     <!--      Details for Desktop UI-->
-    <div class="hidden md:grid grid-cols-4 gap-5 w-full col-span-4 py-2 px-6 ml-2">
+    <div class="hidden md:grid grid-cols-4 gap-5 w-full col-span-4 py-2 px-6 ml-2 cursor-pointer"
+         @click="router.push(`/project/${cardData.id}`)">
       <div class="col-span-1 ...">
         <p class="details-title">Material</p>
         <ul class="list-disc ml-6">
-          <li v-for="material in getDetailsList(cardData.creditCollection.creditData.nodes).material" :key="material.key">
+          <li v-for="material in getDetailsList(cardData.creditCollection.creditData.nodes).material"
+              :key="material.key">
             {{ material.value }}
           </li>
         </ul>
@@ -113,8 +117,8 @@ const getDetailsList = (data: any) => {
         <p class="text-title14 font-bold text-textGray leading-6">MPWR</p>
         <p class="text-title18 leading-3 font-light">Price per credit</p>
 
-<!--        <p class="text-title14 font-bold mt-7 leading-[13px]">{{ cardData.availableCredits }}</p>-->
-<!--        <p class="text-title12 font-bold font-light">Available credits</p>-->
+        <!--        <p class="text-title14 font-bold mt-7 leading-[13px]">{{ cardData.availableCredits }}</p>-->
+        <!--        <p class="text-title12 font-bold font-light">Available credits</p>-->
       </div>
     </div>
 

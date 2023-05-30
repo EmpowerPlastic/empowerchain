@@ -14,7 +14,6 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@vuepic/vue-datepicker": "^5.1.0",
     "@apollo/client": "^3.7.14",
     "@vue/apollo-composable": "^4.0.0-beta.5",
     "@vue/apollo-option": "^4.0.0-beta.5",
@@ -29,6 +28,7 @@
     "pinia": "^2.0.32",
     "vue": "^3.3.2",
     "vue-awesome-paginate": "^1.1.46",
+    "vue-multiselect": "^3.0.0-beta.2",
     "vue-router": "^4.1.6",
     "vue3-google-map": "^0.15.0",
     "vue3-carousel": "^0.3.1"

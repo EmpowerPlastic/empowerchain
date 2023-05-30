@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import router from "@/router";
+export interface AuctionCardProps{
+  auctionData:any
+}
+defineProps<AuctionCardProps>()
 </script>
 <template>
   <div class="bg-lightBlack rounded-lg md:rounded-sm">
@@ -7,7 +12,7 @@
       <div>
         <div>
           <p class="font-Inter text-white text-title24 md:text-title32 font-bold">
-            $100.00
+            ${{ auctionData?.pricePerCreditAmount / 1000000 }}
           </p>
           <p class="font-Inter text-white text-title15 md:text-title18">
             Price per credit
@@ -17,10 +22,10 @@
       <div>
         <div class="text-right">
           <p class="font-Inter text-white text-title13 md:text-title14 font-bold">
-            300kg
+<!--            300kg-->
           </p>
           <p class="font-Inter text-white text-title11 md:text-title12">
-            Volume
+<!--            Volume-->
           </p>
         </div>
       </div>
@@ -35,7 +40,7 @@
         </div>
       </div>
       <div>
-        <button type="button" class="bg-greenPrimary w-full h-full rounded-sm font-Inter text-white md:text-title18 px-2">
+        <button type="button" class="bg-greenPrimary w-full h-full rounded-sm font-Inter text-white md:text-title18 px-2" @click="router.push(`/project/${auctionData.id}`)">
           View details
         </button>
       </div>
