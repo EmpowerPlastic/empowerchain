@@ -29,12 +29,3 @@ find /root/.empowerchain/config/gentx -iname "*.json" -print0 |
         ./empowerd genesis add-genesis-account $(jq -r '.body.messages[0].delegator_address' $line) $VALIDATOR_COINS
     done
 ./empowerd genesis collect-gentxs
-
-./empowerd start &
-sleep 10s
-PID=$(pgrep -x empowerd)
-if [ -z "$PID" ]; then
-    echo "empowerd did not start"
-    exit 1
-fi
-kill -9 $PID
