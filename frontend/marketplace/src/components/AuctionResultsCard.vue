@@ -72,7 +72,7 @@ const getDetailsList = (data: any) => {
       </div>
       <div>
         <button class="btn bg-greenPrimary w-full h-full rounded-sm text-title15 px-2 normal-case font-normal"
-                @click="router.push(`/project/${cardData.id}`)">
+                @click="router.push(`/auction/${encodeURIComponent(cardData.id)}`)">
           View details
         </button>
       </div>
@@ -80,7 +80,7 @@ const getDetailsList = (data: any) => {
 
     <!--      Details for Desktop UI-->
     <div class="hidden md:grid grid-cols-4 gap-5 w-full col-span-4 py-2 px-6 ml-2 cursor-pointer"
-         @click="router.push(`/project/${cardData.id}`)">
+         @click="router.push(`/auction/${encodeURIComponent(cardData.id)}`)">
       <div class="col-span-1 ...">
         <p class="details-title">Material</p>
         <ul class="list-disc ml-6">
