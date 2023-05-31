@@ -106,7 +106,7 @@ export default withMermaid(
               items: [
                 {
                   text: 'High level overview',
-                  link: '/proof-of-existence/high-level-overview'
+                  link: '/core-modules/proof-of-existence/high-level-overview'
                 }
               ]
             },
@@ -116,7 +116,7 @@ export default withMermaid(
               items: [
                 {
                   text: 'High level overview',
-                  link: '/plastic-credits/high-level-overview'
+                  link: '/core-modules/plastic-credits/high-level-overview'
                 }
               ],
             },
@@ -126,7 +126,7 @@ export default withMermaid(
               items: [
                 {
                   text: 'High level overview',
-                  link: '/deposit-schemes/high-level-overview'
+                  link: '/core-modules/deposit-schemes/high-level-overview'
                 }
               ]
             },
@@ -196,7 +196,7 @@ export default withMermaid(
           ].concat(cliDocs.concat([
             {
               text: 'API docs',
-              link: '/api-docs/swagger'
+              link: '/references/api-docs/swagger'
             },
           ]))
         },
