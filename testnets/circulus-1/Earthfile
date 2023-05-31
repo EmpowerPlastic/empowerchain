@@ -7,5 +7,6 @@ test-collect-gentx:
     WORKDIR /empowerchain/chain/build
     RUN ./empowerd init empower
     COPY ./gentx/ /root/.empowerchain/config/gentx/
+    COPY genesis.json /root/.empowerchain/config/genesis.json
     COPY collect-gentxs.sh .
     RUN ./collect-gentxs.sh
