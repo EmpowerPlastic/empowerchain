@@ -1,0 +1,1521 @@
+{
+  "genesis_time": "2023-05-31T15:00:00Z",
+  "chain_id": "circulus-1",
+  "initial_height": "1",
+  "consensus_params": {
+    "block": {
+      "max_bytes": "22020096",
+      "max_gas": "-1"
+    },
+    "evidence": {
+      "max_age_num_blocks": "100000",
+      "max_age_duration": "172800000000000",
+      "max_bytes": "1048576"
+    },
+    "validator": {
+      "pub_key_types": [
+        "ed25519"
+      ]
+    },
+    "version": {
+      "app": "0"
+    }
+  },
+  "app_hash": "",
+  "app_state": {
+    "07-tendermint": null,
+    "auth": {
+      "params": {
+        "max_memo_characters": "256",
+        "tx_sig_limit": "7",
+        "tx_size_cost_per_byte": "10",
+        "sig_verify_cost_ed25519": "590",
+        "sig_verify_cost_secp256k1": "1000"
+      },
+      "accounts": [
+        {
+          "@type": "/cosmos.auth.v1beta1.ModuleAccount",
+          "base_account": {
+            "address": "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd",
+            "pub_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          },
+          "name": "gov",
+          "permissions": [
+            "burner"
+          ]
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1afk9zr2hn2jsac63h4hm60vl9z3e5u69gndzf7c99cqge3vzwjzs43cf9j",
+          "pub_key": {
+            "@type": "/cosmos.auth.v1beta1.ModuleCredential",
+            "module_name": "group",
+            "derivation_keys": [
+              "IA==",
+              "AAAAAAAAAAE="
+            ]
+          },
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1dlszg2sst9r69my4f84l3mj66zxcf3umcgujys30t84srg95dgvs8vlnar",
+          "pub_key": {
+            "@type": "/cosmos.auth.v1beta1.ModuleCredential",
+            "module_name": "group",
+            "derivation_keys": [
+              "IA==",
+              "AAAAAAAAAAI="
+            ]
+          },
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1c799jddmlz7segvg6jrw6w2k6svwafganjdznard3tc74n7td7rq329kns",
+          "pub_key": {
+            "@type": "/cosmos.auth.v1beta1.ModuleCredential",
+            "module_name": "group",
+            "derivation_keys": [
+              "IA==",
+              "AAAAAAAAAAM="
+            ]
+          },
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "empower16j4xwle2jq7vsumj6l7qqsmkwkpx3n597gkw2w",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "umpwr",
+                "amount": "31250000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1748703600"
+          },
+          "start_time": "1717167600"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower17pmq7hp4upvmmveqexzuhzu64v36re3w3447n7dt46uwp594wtpsunmght",
+          "pub_key": {
+            "@type": "/cosmos.auth.v1beta1.ModuleCredential",
+            "module_name": "group",
+            "derivation_keys": [
+              "IA==",
+              "AAAAAAAAAAQ="
+            ]
+          },
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1f6fyc0ptxh7padqr3hnrw6sm8wjfr93w6cgv39jwm00nd6kh08es0avyxp",
+          "pub_key": {
+            "@type": "/cosmos.auth.v1beta1.ModuleCredential",
+            "module_name": "group",
+            "derivation_keys": [
+              "IA==",
+              "AAAAAAAAAAU="
+            ]
+          },
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "empower1umjhxpz5m70v04jh7c5swlymvg9qtj3qf7a24f",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "umpwr",
+                "amount": "20000000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1843398000"
+          },
+          "start_time": "1811775600"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "empower1ymuw3f9v45lg2dfkspmelal5qeam02a3ct8trh",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "umpwr",
+                "amount": "29412000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1780239600"
+          },
+          "start_time": "1748703600"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.PermanentLockedAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "empower1n64en27u7qckklkk4twkkun5h6v5dsur7g6l4pfmfhydvfru9upqkw0anz",
+              "pub_key": {
+                "@type": "/cosmos.auth.v1beta1.ModuleCredential",
+                "module_name": "group",
+                "derivation_keys": [
+                  "IA==",
+                  "AAAAAAAAAAY="
+                ]
+              },
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "umpwr",
+                "amount": "10000000000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "0"
+          }
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "empower142498n8sya3k3s5jftp7dujuqfw3ag4tpzc2ve45ykpwx6zmng8s044rl3",
+              "pub_key": {
+                "@type": "/cosmos.auth.v1beta1.ModuleCredential",
+                "module_name": "group",
+                "derivation_keys": [
+                  "IA==",
+                  "AAAAAAAAAAc="
+                ]
+              },
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "umpwr",
+                "amount": "15000000000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "2001164400"
+          },
+          "start_time": "1843398000"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "empower14s52c5g66m0x93veef7x9v5dt0ecyxg8cjh8dc",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "umpwr",
+                "amount": "53571000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1843398000"
+          },
+          "start_time": "1811775600"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "empower1cdqxk90gthpr6fjyv0amxujsg3qwq86lz34vp7",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "umpwr",
+                "amount": "10000000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1780239600"
+          },
+          "start_time": "1748703600"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1ys0dhh6x5s55h2g37zrnc7kh630jfq5p77as8pwyn60ax9zzqh9q4v40rx",
+          "pub_key": {
+            "@type": "/cosmos.auth.v1beta1.ModuleCredential",
+            "module_name": "group",
+            "derivation_keys": [
+              "IA==",
+              "AAAAAAAAAAg="
+            ]
+          },
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "empower16mda4h20kxxnzfal3av9gmp7memwg62unv5sjt",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "umpwr",
+                "amount": "44100000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1748703600"
+          },
+          "start_time": "1717167600"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "empower15rph43lzyqe2gem93nxxxalxqvqe7gg4dwfhz5",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "umpwr",
+                "amount": "20000000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1780239600"
+          },
+          "start_time": "1748703600"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "empower1vtgdhn3n0qc8ht48ztp07c8wjffh4s7rt92xka",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "umpwr",
+                "amount": "147059000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1780239600"
+          },
+          "start_time": "1748703600"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "empower19ruusnhhjw8qqt0yuhl9xplfta54e4s8mn9uj2",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "umpwr",
+                "amount": "12500000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1748703600"
+          },
+          "start_time": "1717167600"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "empower1xun3qq5veudusxys2rygxkduqld3yq9cyg8ajq",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "umpwr",
+                "amount": "53571000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1843398000"
+          },
+          "start_time": "1811775600"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower10meawsx9u3lkl2p6amk87k6tye6qn6dkqx2ksj",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1wgjpjh42cr7t5sp5hgty4yrzww496a6yaznc9u4wsv9ac3xccu8szdx2lv",
+          "pub_key": {
+            "@type": "/cosmos.auth.v1beta1.ModuleCredential",
+            "module_name": "group",
+            "derivation_keys": [
+              "IA==",
+              "AAAAAAAAAAk="
+            ]
+          },
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "empower198r36k3ze8q6nlyn5laudzjtens8xvar76cr28",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "umpwr",
+                "amount": "41071000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1843398000"
+          },
+          "start_time": "1811775600"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1rkml5878l2daw3a7xvg48wqecnh9u9dn2dtl8g57rsctq5pnc00sxzge3f",
+          "pub_key": {
+            "@type": "/cosmos.auth.v1beta1.ModuleCredential",
+            "module_name": "group",
+            "derivation_keys": [
+              "IA==",
+              "AAAAAAAAAAo="
+            ]
+          },
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "empower1vznalsh2nksqwf2jcnf53qdn8k5mpqzd008fpq",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "umpwr",
+                "amount": "1500000000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1748703600"
+          },
+          "start_time": "1717167600"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower17l6djqrztw0ux668vkw7ff7d2602jvml52w9fyrvryusp7djnhfq8anafu",
+          "pub_key": {
+            "@type": "/cosmos.auth.v1beta1.ModuleCredential",
+            "module_name": "group",
+            "derivation_keys": [
+              "IA==",
+              "AAAAAAAAAAs="
+            ]
+          },
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "empower1l0za7lzkltjzhlnl9j09z8lacth8dwgknxn9u6",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "umpwr",
+                "amount": "14706000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1780239600"
+          },
+          "start_time": "1748703600"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower175p8jy5fcdkpm3djk40p8ucdn3lyjyd7jtf77w",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower10ezj2lmcj3flaacqwrzv278aled0pen8cnx257sggeng2fdel53qd9stpv",
+          "pub_key": {
+            "@type": "/cosmos.auth.v1beta1.ModuleCredential",
+            "module_name": "group",
+            "derivation_keys": [
+              "IA==",
+              "AAAAAAAAAAw="
+            ]
+          },
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1wfse3z8akyw3pmn8x0htzq6l5wwfgqmc2jgnhxtzm96h4ywhhr0qru8mzq",
+          "pub_key": {
+            "@type": "/cosmos.auth.v1beta1.ModuleCredential",
+            "module_name": "group",
+            "derivation_keys": [
+              "IA==",
+              "AAAAAAAAAA0="
+            ]
+          },
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower10w37pqels7ya404xdlfkc9vdfemejmc0e6hjlerknys3xjj9xnas9m7tg4",
+          "pub_key": {
+            "@type": "/cosmos.auth.v1beta1.ModuleCredential",
+            "module_name": "group",
+            "derivation_keys": [
+              "IA==",
+              "AAAAAAAAAA4="
+            ]
+          },
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "empower18n33ywygvrrzqspewsh7f5c4dkp00le0093j0t",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "umpwr",
+                "amount": "6250000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1748703600"
+          },
+          "start_time": "1717167600"
+        },
+        {
+          "@type": "/cosmos.vesting.v1beta1.ContinuousVestingAccount",
+          "base_vesting_account": {
+            "base_account": {
+              "address": "empower183q74xczj0lhdvgukd40fqeanvlykcptfduupt",
+              "pub_key": null,
+              "account_number": "0",
+              "sequence": "0"
+            },
+            "original_vesting": [
+              {
+                "denom": "umpwr",
+                "amount": "12500000000"
+              }
+            ],
+            "delegated_free": [],
+            "delegated_vesting": [],
+            "end_time": "1748703600"
+          },
+          "start_time": "1717167600"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower1p7fgpt73de0tvz6xav3sfugj8pjhgdq7utmg6h",
+          "pub_key": null,
+          "account_number": "0",
+          "sequence": "0"
+        },
+        {
+          "@type": "/cosmos.auth.v1beta1.BaseAccount",
+          "address": "empower13cwsdsetcrhcyd3jeed0mgteg35qaju0q5s0u0drfylagahygwwst8z2la",
+          "pub_key": {
+            "@type": "/cosmos.auth.v1beta1.ModuleCredential",
+            "module_name": "group",
+            "derivation_keys": [
+              "IA==",
+              "AAAAAAAAAA8="
+            ]
+          },
+          "account_number": "0",
+          "sequence": "0"
+        }
+      ]
+    },
+    "authz": {
+      "authorization": []
+    },
+    "bank": {
+      "params": {
+        "send_enabled": [],
+        "default_send_enabled": true
+      },
+      "balances": [
+        {
+          "address": "empower1afk9zr2hn2jsac63h4hm60vl9z3e5u69gndzf7c99cqge3vzwjzs43cf9j",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "2000000000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1dlszg2sst9r69my4f84l3mj66zxcf3umcgujys30t84srg95dgvs8vlnar",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "15000000000000"
+            }
+          ]
+        },
+        {
+          "address": "empower16j4xwle2jq7vsumj6l7qqsmkwkpx3n597gkw2w",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "31250000000"
+            }
+          ]
+        },
+        {
+          "address": "empower17pmq7hp4upvmmveqexzuhzu64v36re3w3447n7dt46uwp594wtpsunmght",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "22000000000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1f6fyc0ptxh7padqr3hnrw6sm8wjfr93w6cgv39jwm00nd6kh08es0avyxp",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "50000000000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1umjhxpz5m70v04jh7c5swlymvg9qtj3qf7a24f",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "20000000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1ymuw3f9v45lg2dfkspmelal5qeam02a3ct8trh",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "29412000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1n64en27u7qckklkk4twkkun5h6v5dsur7g6l4pfmfhydvfru9upqkw0anz",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "10000000000000"
+            }
+          ]
+        },
+        {
+          "address": "empower142498n8sya3k3s5jftp7dujuqfw3ag4tpzc2ve45ykpwx6zmng8s044rl3",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "15000000000000"
+            }
+          ]
+        },
+        {
+          "address": "empower14s52c5g66m0x93veef7x9v5dt0ecyxg8cjh8dc",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "53571000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1cdqxk90gthpr6fjyv0amxujsg3qwq86lz34vp7",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "10000000000"
+            }
+          ]
+        },
+        {
+          "address": "empower16mda4h20kxxnzfal3av9gmp7memwg62unv5sjt",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "44100000000"
+            }
+          ]
+        },
+        {
+          "address": "empower15rph43lzyqe2gem93nxxxalxqvqe7gg4dwfhz5",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "20000000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1vtgdhn3n0qc8ht48ztp07c8wjffh4s7rt92xka",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "147059000000"
+            }
+          ]
+        },
+        {
+          "address": "empower19ruusnhhjw8qqt0yuhl9xplfta54e4s8mn9uj2",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "12500000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1xun3qq5veudusxys2rygxkduqld3yq9cyg8ajq",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "53571000000"
+            }
+          ]
+        },
+        {
+          "address": "empower10meawsx9u3lkl2p6amk87k6tye6qn6dkqx2ksj",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "3000000"
+            }
+          ]
+        },
+        {
+          "address": "empower198r36k3ze8q6nlyn5laudzjtens8xvar76cr28",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "41071000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1rkml5878l2daw3a7xvg48wqecnh9u9dn2dtl8g57rsctq5pnc00sxzge3f",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "20000000000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1vznalsh2nksqwf2jcnf53qdn8k5mpqzd008fpq",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1500000000000"
+            }
+          ]
+        },
+        {
+          "address": "empower17l6djqrztw0ux668vkw7ff7d2602jvml52w9fyrvryusp7djnhfq8anafu",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "1000000000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1l0za7lzkltjzhlnl9j09z8lacth8dwgknxn9u6",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "14706000000"
+            }
+          ]
+        },
+        {
+          "address": "empower175p8jy5fcdkpm3djk40p8ucdn3lyjyd7jtf77w",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "3000000"
+            }
+          ]
+        },
+        {
+          "address": "empower10ezj2lmcj3flaacqwrzv278aled0pen8cnx257sggeng2fdel53qd9stpv",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "6000000000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1wfse3z8akyw3pmn8x0htzq6l5wwfgqmc2jgnhxtzm96h4ywhhr0qru8mzq",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "54003860000000"
+            }
+          ]
+        },
+        {
+          "address": "empower10w37pqels7ya404xdlfkc9vdfemejmc0e6hjlerknys3xjj9xnas9m7tg4",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "2000000000000"
+            }
+          ]
+        },
+        {
+          "address": "empower18n33ywygvrrzqspewsh7f5c4dkp00le0093j0t",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "6250000000"
+            }
+          ]
+        },
+        {
+          "address": "empower183q74xczj0lhdvgukd40fqeanvlykcptfduupt",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "12500000000"
+            }
+          ]
+        },
+        {
+          "address": "empower1p7fgpt73de0tvz6xav3sfugj8pjhgdq7utmg6h",
+          "coins": [
+            {
+              "denom": "umpwr",
+              "amount": "3000000"
+            }
+          ]
+        }
+      ],
+      "supply": [
+        {
+          "denom": "umpwr",
+          "amount": "198999859000000"
+        }
+      ],
+      "denom_metadata": [],
+      "send_enabled": []
+    },
+    "capability": {
+      "index": "1",
+      "owners": []
+    },
+    "certificates": {
+      "params": {
+        "allowed_issuers": []
+      },
+      "certificates": [],
+      "id_counters": {
+        "next_certificate_id": "1"
+      }
+    },
+    "consensus": null,
+    "crisis": {
+      "constant_fee": {
+        "denom": "umpwr",
+        "amount": "100000000"
+      }
+    },
+    "distribution": {
+      "params": {
+        "community_tax": "0.250000000000000000",
+        "base_proposer_reward": "0",
+        "bonus_proposer_reward": "0",
+        "withdraw_addr_enabled": true
+      },
+      "fee_pool": {
+        "community_pool": []
+      },
+      "delegator_withdraw_infos": [],
+      "previous_proposer": "",
+      "outstanding_rewards": [],
+      "validator_accumulated_commissions": [],
+      "validator_historical_rewards": [],
+      "validator_current_rewards": [],
+      "delegator_starting_infos": [],
+      "validator_slash_events": []
+    },
+    "evidence": {
+      "evidence": []
+    },
+    "feegrant": {
+      "allowances": []
+    },
+    "feeibc": {
+      "identified_fees": [],
+      "fee_enabled_channels": [],
+      "registered_payees": [],
+      "registered_counterparty_payees": [],
+      "forward_relayers": []
+    },
+    "genutil": {
+      "gen_txs": []
+    },
+    "gov": {
+      "starting_proposal_id": "1",
+      "deposits": [],
+      "votes": [],
+      "proposals": [],
+      "deposit_params": null,
+      "voting_params": null,
+      "tally_params": null,
+      "params": {
+        "min_deposit": [
+          {
+            "denom": "umpwr",
+            "amount": "2000000000"
+          }
+        ],
+        "max_deposit_period": "172800s",
+        "voting_period": "172800s",
+        "quorum": "0.334000000000000000",
+        "threshold": "0.670000000000000000",
+        "veto_threshold": "0.334000000000000000",
+        "min_initial_deposit_ratio": "1.000000000000000000",
+        "burn_vote_quorum": false,
+        "burn_proposal_deposit_prevote": true,
+        "burn_vote_veto": true
+      }
+    },
+    "group": {
+      "group_seq": "5",
+      "groups": [
+        {
+          "id": "1",
+          "admin": "empower175p8jy5fcdkpm3djk40p8ucdn3lyjyd7jtf77w",
+          "metadata": "{\"name\": \"EmpowerChain Tech deployment\"}",
+          "version": "1",
+          "total_weight": "2",
+          "created_at": "2023-05-31T15:00:00Z"
+        },
+        {
+          "id": "2",
+          "admin": "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd",
+          "metadata": "{\"name\": \"EmpowerChain Tech funding\"}",
+          "version": "1",
+          "total_weight": "0",
+          "created_at": "2023-05-31T15:00:00Z"
+        },
+        {
+          "id": "3",
+          "admin": "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd",
+          "metadata": "{\"name\": \"Usage incentives\"}",
+          "version": "1",
+          "total_weight": "3",
+          "created_at": "2023-05-31T15:00:00Z"
+        },
+        {
+          "id": "4",
+          "admin": "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd",
+          "metadata": "{\"name\": \"EmpowerChain impact and growth\"}",
+          "version": "1",
+          "total_weight": "3",
+          "created_at": "2023-05-31T15:00:00Z"
+        },
+        {
+          "id": "5",
+          "admin": "empower175p8jy5fcdkpm3djk40p8ucdn3lyjyd7jtf77w",
+          "metadata": "{\"name\": \"Empower\"}",
+          "version": "1",
+          "total_weight": "3",
+          "created_at": "2023-05-31T15:00:00Z"
+        }
+      ],
+      "group_members": [
+        {
+          "group_id": "1",
+          "member": {
+            "address": "empower175p8jy5fcdkpm3djk40p8ucdn3lyjyd7jtf77w",
+            "weight": "1",
+            "metadata": "",
+            "added_at": "2023-05-31T15:00:00Z"
+          }
+        },
+        {
+          "group_id": "1",
+          "member": {
+            "address": "empower10meawsx9u3lkl2p6amk87k6tye6qn6dkqx2ksj",
+            "weight": "1",
+            "metadata": "",
+            "added_at": "2023-05-31T15:00:00Z"
+          }
+        },
+        {
+          "group_id": "3",
+          "member": {
+            "address": "empower175p8jy5fcdkpm3djk40p8ucdn3lyjyd7jtf77w",
+            "weight": "1",
+            "metadata": "",
+            "added_at": "2023-05-31T15:00:00Z"
+          }
+        },
+        {
+          "group_id": "3",
+          "member": {
+            "address": "empower1p7fgpt73de0tvz6xav3sfugj8pjhgdq7utmg6h",
+            "weight": "1",
+            "metadata": "",
+            "added_at": "2023-05-31T15:00:00Z"
+          }
+        },
+        {
+          "group_id": "3",
+          "member": {
+            "address": "empower10meawsx9u3lkl2p6amk87k6tye6qn6dkqx2ksj",
+            "weight": "1",
+            "metadata": "",
+            "added_at": "2023-05-31T15:00:00Z"
+          }
+        },
+        {
+          "group_id": "4",
+          "member": {
+            "address": "empower175p8jy5fcdkpm3djk40p8ucdn3lyjyd7jtf77w",
+            "weight": "1",
+            "metadata": "",
+            "added_at": "2023-05-31T15:00:00Z"
+          }
+        },
+        {
+          "group_id": "4",
+          "member": {
+            "address": "empower1p7fgpt73de0tvz6xav3sfugj8pjhgdq7utmg6h",
+            "weight": "1",
+            "metadata": "",
+            "added_at": "2023-05-31T15:00:00Z"
+          }
+        },
+        {
+          "group_id": "4",
+          "member": {
+            "address": "empower10meawsx9u3lkl2p6amk87k6tye6qn6dkqx2ksj",
+            "weight": "1",
+            "metadata": "",
+            "added_at": "2023-05-31T15:00:00Z"
+          }
+        },
+        {
+          "group_id": "5",
+          "member": {
+            "address": "empower175p8jy5fcdkpm3djk40p8ucdn3lyjyd7jtf77w",
+            "weight": "1",
+            "metadata": "",
+            "added_at": "2023-05-31T15:00:00Z"
+          }
+        },
+        {
+          "group_id": "5",
+          "member": {
+            "address": "empower1p7fgpt73de0tvz6xav3sfugj8pjhgdq7utmg6h",
+            "weight": "1",
+            "metadata": "",
+            "added_at": "2023-05-31T15:00:00Z"
+          }
+        },
+        {
+          "group_id": "5",
+          "member": {
+            "address": "empower10meawsx9u3lkl2p6amk87k6tye6qn6dkqx2ksj",
+            "weight": "1",
+            "metadata": "",
+            "added_at": "2023-05-31T15:00:00Z"
+          }
+        }
+      ],
+      "group_policy_seq": "15",
+      "group_policies": [
+        {
+          "address": "empower1afk9zr2hn2jsac63h4hm60vl9z3e5u69gndzf7c99cqge3vzwjzs43cf9j",
+          "group_id": "3",
+          "admin": "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd",
+          "metadata": "{\"name\": \"Bug and security bounties\"}",
+          "version": "1",
+          "decision_policy": {
+            "@type": "/cosmos.group.v1.PercentageDecisionPolicy",
+            "percentage": "0.51",
+            "windows": {
+              "voting_period": "1209600s",
+              "min_execution_period": "0s"
+            }
+          },
+          "created_at": "2023-05-31T15:00:00Z"
+        },
+        {
+          "address": "empower1dlszg2sst9r69my4f84l3mj66zxcf3umcgujys30t84srg95dgvs8vlnar",
+          "group_id": "5",
+          "admin": "empower175p8jy5fcdkpm3djk40p8ucdn3lyjyd7jtf77w",
+          "metadata": "{\"name\": \"Empower team vesting\"}",
+          "version": "1",
+          "decision_policy": {
+            "@type": "/cosmos.group.v1.PercentageDecisionPolicy",
+            "percentage": "0.51",
+            "windows": {
+              "voting_period": "1209600s",
+              "min_execution_period": "0s"
+            }
+          },
+          "created_at": "2023-05-31T15:00:00Z"
+        },
+        {
+          "address": "empower1c799jddmlz7segvg6jrw6w2k6svwafganjdznard3tc74n7td7rq329kns",
+          "group_id": "5",
+          "admin": "empower175p8jy5fcdkpm3djk40p8ucdn3lyjyd7jtf77w",
+          "metadata": "{\"name\": \"Empower admin\"}",
+          "version": "1",
+          "decision_policy": {
+            "@type": "/cosmos.group.v1.PercentageDecisionPolicy",
+            "percentage": "0.51",
+            "windows": {
+              "voting_period": "1209600s",
+              "min_execution_period": "0s"
+            }
+          },
+          "created_at": "2023-05-31T15:00:00Z"
+        },
+        {
+          "address": "empower17pmq7hp4upvmmveqexzuhzu64v36re3w3447n7dt46uwp594wtpsunmght",
+          "group_id": "3",
+          "admin": "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd",
+          "metadata": "{\"name\": \"Deposit app usage incentives\"}",
+          "version": "1",
+          "decision_policy": {
+            "@type": "/cosmos.group.v1.PercentageDecisionPolicy",
+            "percentage": "0.51",
+            "windows": {
+              "voting_period": "1209600s",
+              "min_execution_period": "0s"
+            }
+          },
+          "created_at": "2023-05-31T15:00:00Z"
+        },
+        {
+          "address": "empower1f6fyc0ptxh7padqr3hnrw6sm8wjfr93w6cgv39jwm00nd6kh08es0avyxp",
+          "group_id": "3",
+          "admin": "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd",
+          "metadata": "{\"name\": \"Waste community user incentives\"}",
+          "version": "1",
+          "decision_policy": {
+            "@type": "/cosmos.group.v1.PercentageDecisionPolicy",
+            "percentage": "0.51",
+            "windows": {
+              "voting_period": "1209600s",
+              "min_execution_period": "0s"
+            }
+          },
+          "created_at": "2023-05-31T15:00:00Z"
+        },
+        {
+          "address": "empower1n64en27u7qckklkk4twkkun5h6v5dsur7g6l4pfmfhydvfru9upqkw0anz",
+          "group_id": "4",
+          "admin": "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd",
+          "metadata": "{\"name\": \"Permalock impact staking\"}",
+          "version": "1",
+          "decision_policy": {
+            "@type": "/cosmos.group.v1.PercentageDecisionPolicy",
+            "percentage": "0.51",
+            "windows": {
+              "voting_period": "1209600s",
+              "min_execution_period": "0s"
+            }
+          },
+          "created_at": "2023-05-31T15:00:00Z"
+        },
+        {
+          "address": "empower142498n8sya3k3s5jftp7dujuqfw3ag4tpzc2ve45ykpwx6zmng8s044rl3",
+          "group_id": "5",
+          "admin": "empower175p8jy5fcdkpm3djk40p8ucdn3lyjyd7jtf77w",
+          "metadata": "{\"name\": \"Strategic reserve\"}",
+          "version": "1",
+          "decision_policy": {
+            "@type": "/cosmos.group.v1.PercentageDecisionPolicy",
+            "percentage": "0.51",
+            "windows": {
+              "voting_period": "1209600s",
+              "min_execution_period": "0s"
+            }
+          },
+          "created_at": "2023-05-31T15:00:00Z"
+        },
+        {
+          "address": "empower1ys0dhh6x5s55h2g37zrnc7kh630jfq5p77as8pwyn60ax9zzqh9q4v40rx",
+          "group_id": "4",
+          "admin": "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd",
+          "metadata": "{\"name\": \"Grants\"}",
+          "version": "1",
+          "decision_policy": {
+            "@type": "/cosmos.group.v1.PercentageDecisionPolicy",
+            "percentage": "0.51",
+            "windows": {
+              "voting_period": "1209600s",
+              "min_execution_period": "0s"
+            }
+          },
+          "created_at": "2023-05-31T15:00:00Z"
+        },
+        {
+          "address": "empower1wgjpjh42cr7t5sp5hgty4yrzww496a6yaznc9u4wsv9ac3xccu8szdx2lv",
+          "group_id": "2",
+          "admin": "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd",
+          "metadata": "{\"name\": \"Tech funding\"}",
+          "version": "1",
+          "decision_policy": {
+            "@type": "/cosmos.group.v1.PercentageDecisionPolicy",
+            "percentage": "0.51",
+            "windows": {
+              "voting_period": "1209600s",
+              "min_execution_period": "0s"
+            }
+          },
+          "created_at": "2023-05-31T15:00:00Z"
+        },
+        {
+          "address": "empower1rkml5878l2daw3a7xvg48wqecnh9u9dn2dtl8g57rsctq5pnc00sxzge3f",
+          "group_id": "3",
+          "admin": "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd",
+          "metadata": "{\"name\": \"Future airdrops, etc\"}",
+          "version": "1",
+          "decision_policy": {
+            "@type": "/cosmos.group.v1.PercentageDecisionPolicy",
+            "percentage": "0.51",
+            "windows": {
+              "voting_period": "1209600s",
+              "min_execution_period": "0s"
+            }
+          },
+          "created_at": "2023-05-31T15:00:00Z"
+        },
+        {
+          "address": "empower17l6djqrztw0ux668vkw7ff7d2602jvml52w9fyrvryusp7djnhfq8anafu",
+          "group_id": "3",
+          "admin": "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd",
+          "metadata": "{\"name\": \"Testnet rewards\"}",
+          "version": "1",
+          "decision_policy": {
+            "@type": "/cosmos.group.v1.PercentageDecisionPolicy",
+            "percentage": "0.51",
+            "windows": {
+              "voting_period": "1209600s",
+              "min_execution_period": "0s"
+            }
+          },
+          "created_at": "2023-05-31T15:00:00Z"
+        },
+        {
+          "address": "empower10ezj2lmcj3flaacqwrzv278aled0pen8cnx257sggeng2fdel53qd9stpv",
+          "group_id": "3",
+          "admin": "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd",
+          "metadata": "{\"name\": \"Plastic credit usage incentives\"}",
+          "version": "1",
+          "decision_policy": {
+            "@type": "/cosmos.group.v1.PercentageDecisionPolicy",
+            "percentage": "0.51",
+            "windows": {
+              "voting_period": "1209600s",
+              "min_execution_period": "0s"
+            }
+          },
+          "created_at": "2023-05-31T15:00:00Z"
+        },
+        {
+          "address": "empower1wfse3z8akyw3pmn8x0htzq6l5wwfgqmc2jgnhxtzm96h4ywhhr0qru8mzq",
+          "group_id": "4",
+          "admin": "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd",
+          "metadata": "{\"name\": \"Community growth\"}",
+          "version": "1",
+          "decision_policy": {
+            "@type": "/cosmos.group.v1.PercentageDecisionPolicy",
+            "percentage": "0.51",
+            "windows": {
+              "voting_period": "1209600s",
+              "min_execution_period": "0s"
+            }
+          },
+          "created_at": "2023-05-31T15:00:00Z"
+        },
+        {
+          "address": "empower10w37pqels7ya404xdlfkc9vdfemejmc0e6hjlerknys3xjj9xnas9m7tg4",
+          "group_id": "3",
+          "admin": "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd",
+          "metadata": "{\"name\": \"Global waste lottery\"}",
+          "version": "1",
+          "decision_policy": {
+            "@type": "/cosmos.group.v1.PercentageDecisionPolicy",
+            "percentage": "0.51",
+            "windows": {
+              "voting_period": "1209600s",
+              "min_execution_period": "0s"
+            }
+          },
+          "created_at": "2023-05-31T15:00:00Z"
+        },
+        {
+          "address": "empower13cwsdsetcrhcyd3jeed0mgteg35qaju0q5s0u0drfylagahygwwst8z2la",
+          "group_id": "1",
+          "admin": "empower175p8jy5fcdkpm3djk40p8ucdn3lyjyd7jtf77w",
+          "metadata": "{\"name\": \"Tech deployment\"}",
+          "version": "1",
+          "decision_policy": {
+            "@type": "/cosmos.group.v1.PercentageDecisionPolicy",
+            "percentage": "0.51",
+            "windows": {
+              "voting_period": "1209600s",
+              "min_execution_period": "0s"
+            }
+          },
+          "created_at": "2023-05-31T15:00:00Z"
+        }
+      ],
+      "proposal_seq": "0",
+      "proposals": [],
+      "votes": []
+    },
+    "ibc": {
+      "client_genesis": {
+        "clients": [],
+        "clients_consensus": [],
+        "clients_metadata": [],
+        "params": {
+          "allowed_clients": [
+            "06-solomachine",
+            "07-tendermint"
+          ]
+        },
+        "create_localhost": false,
+        "next_client_sequence": "0"
+      },
+      "connection_genesis": {
+        "connections": [],
+        "client_connection_paths": [],
+        "next_connection_sequence": "0",
+        "params": {
+          "max_expected_time_per_block": "30000000000"
+        }
+      },
+      "channel_genesis": {
+        "channels": [],
+        "acknowledgements": [],
+        "commitments": [],
+        "receipts": [],
+        "send_sequences": [],
+        "recv_sequences": [],
+        "ack_sequences": [],
+        "next_channel_sequence": "0"
+      }
+    },
+    "interchainaccounts": {
+      "controller_genesis_state": {
+        "active_channels": [],
+        "interchain_accounts": [],
+        "ports": [],
+        "params": {
+          "controller_enabled": false
+        }
+      },
+      "host_genesis_state": {
+        "active_channels": [],
+        "interchain_accounts": [],
+        "port": "icahost",
+        "params": {
+          "host_enabled": false,
+          "allow_messages": []
+        }
+      }
+    },
+    "mint": {
+      "minter": {
+        "inflation": "0.000000000000000000",
+        "annual_provisions": "0.000000000000000000"
+      },
+      "params": {
+        "mint_denom": "umpwr",
+        "inflation_rate_change": "0.130000000000000000",
+        "inflation_max": "0.000000000000000000",
+        "inflation_min": "0.000000000000000000",
+        "goal_bonded": "0.670000000000000000",
+        "blocks_per_year": "6311520"
+      }
+    },
+    "params": null,
+    "plasticcredit": {
+      "params": {
+        "issuer_creator": "empower1c799jddmlz7segvg6jrw6w2k6svwafganjdznard3tc74n7td7rq329kns",
+        "credit_type_creation_fee": {
+          "denom": "umpwr",
+          "amount": "2000000000"
+        }
+      },
+      "id_counters": {
+        "next_issuer_id": "1",
+        "next_applicant_id": "1",
+        "next_project_id": "1"
+      },
+      "issuers": [],
+      "applicants": [],
+      "credit_types": [],
+      "projects": [],
+      "credit_collections": [],
+      "credit_balances": []
+    },
+    "proofofexistence": {
+      "proof_list": []
+    },
+    "slashing": {
+      "params": {
+        "signed_blocks_window": "10000",
+        "min_signed_per_window": "0.050000000000000000",
+        "downtime_jail_duration": "600s",
+        "slash_fraction_double_sign": "0.050000000000000000",
+        "slash_fraction_downtime": "0.000100000000000000"
+      },
+      "signing_infos": [],
+      "missed_blocks": []
+    },
+    "staking": {
+      "params": {
+        "unbonding_time": "1814400s",
+        "max_validators": 50,
+        "max_entries": 7,
+        "historical_entries": 10000,
+        "bond_denom": "umpwr",
+        "min_commission_rate": "0.000000000000000000"
+      },
+      "last_total_power": "0",
+      "last_validator_powers": [],
+      "validators": [],
+      "delegations": [],
+      "unbonding_delegations": [],
+      "redelegations": [],
+      "exported": false
+    },
+    "transfer": {
+      "port_id": "transfer",
+      "denom_traces": [],
+      "params": {
+        "send_enabled": false,
+        "receive_enabled": false
+      }
+    },
+    "upgrade": {},
+    "vesting": {},
+    "wasm": {
+      "params": {
+        "code_upload_access": {
+          "permission": "AnyOfAddresses",
+          "address": "",
+          "addresses": [
+            "empower13cwsdsetcrhcyd3jeed0mgteg35qaju0q5s0u0drfylagahygwwst8z2la"
+          ]
+        },
+        "instantiate_default_permission": "Everybody"
+      },
+      "codes": [],
+      "contracts": [],
+      "sequences": []
+    }
+  }
+}
