@@ -74,11 +74,11 @@ export class ListingsQueryBuilder {
         this.offset = 0;
     }
 
-    public addPricePerCredit(pricePerCreditFrom?: number, pricePerCreditTo?: number) {
+    public addPricePerCredit(pricePerCreditFrom?: string, pricePerCreditTo?: string) {
         if (!pricePerCreditFrom && !pricePerCreditTo) {
             throw new Error('Price per credit filter requires at least one of pricePerCreditFrom or pricePerCreditTo');
         }
-        this.pricePerCredit = this.numberRangeFilter('pricePerCreditAmount', pricePerCreditFrom, pricePerCreditTo);
+        this.pricePerCredit = this.bigIntRangeFilter('pricePerCreditAmount', pricePerCreditFrom, pricePerCreditTo);
     }
 
     public addVolume(volumeFrom?: number, volumeTo?: number) {
@@ -128,6 +128,10 @@ export class ListingsQueryBuilder {
 
     private numberRangeFilter(filterName: string, from?: number, to?: number): string {
         return this.rangeFilter(filterName, from?.toString(), to?.toString());
+    }
+
+    private bigIntRangeFilter(filterName: string, from?: string, to?: string): string {
+        return this.rangeFilter(filterName, `"${from}"`, `"${to}"`);
     }
 
     private dateRangeFilter(filterName: string, from?: Date, to?: Date): string {
