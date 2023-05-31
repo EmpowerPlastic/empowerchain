@@ -40,7 +40,7 @@ defineProps<AuctionCardProps>()
         </div>
       </div>
       <div>
-        <button type="button" class="bg-greenPrimary w-full h-full rounded-sm font-Inter text-white md:text-title18 px-2" @click="router.push(`/project/${auctionData.id}`)">
+        <button type="button" class="bg-greenPrimary w-full h-full rounded-sm font-Inter text-white md:text-title18 px-2" @click="router.push(`/auction/${encodeURIComponent(auctionData.id)}`)">
           View details
         </button>
       </div>

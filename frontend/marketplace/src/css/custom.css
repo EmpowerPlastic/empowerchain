@@ -55,6 +55,6 @@
 }
 
 /*Image Gallery*/
-.scroll-button{
-    @apply absolute ml-[130px] btn-ghost bg-scrollButtonBackground
-}
+/*.scroll-button{*/
+/*    @apply absolute ml-[130px] btn-ghost bg-scrollButtonBackground*/
+/*}*/
