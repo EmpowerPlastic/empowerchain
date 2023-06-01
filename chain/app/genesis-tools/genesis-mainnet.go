@@ -203,7 +203,7 @@ var genesisAccountConfigs = map[string]*genesisAccountConfig{
 		address:     "empower15rph43lzyqe2gem93nxxxalxqvqe7gg4dwfhz5", // FINAL ADDRESS
 	},
 	"B-6": {
-		amount:      20_000,
+		amount:      12_000,
 		accountType: vestingAccount4plus1,
 		address:     "empower1umjhxpz5m70v04jh7c5swlymvg9qtj3qf7a24f", // FINAL ADDRESS
 	},
@@ -251,6 +251,11 @@ var genesisAccountConfigs = map[string]*genesisAccountConfig{
 		amount:      41_071,
 		accountType: vestingAccount4plus1,
 		address:     "empower198r36k3ze8q6nlyn5laudzjtens8xvar76cr28", // TODO: REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+	},
+	"B-16": {
+		amount:      8_000,
+		accountType: vestingAccount4plus1,
+		address: "empower1rahlzcsjurllg6dcd73shmsvj2elx604d88ksp", // FINAL ADDRESS
 	},
 }
 
