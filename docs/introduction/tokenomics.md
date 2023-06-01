@@ -1,6 +1,6 @@
 # Tokenomics
 
-This page will go through the two key parts of the EmpowerChain tokenomics: the token distribution and the token economics (how the chain will make money).
+This page will go through the two key parts of the EmpowerChain tokenomics: the token distribution, token emission and the token economics (how the chain will make money).
 
 ## Initial Token Distribution
 At launch, the EmpowerChain will have a total supply of 200,000,000 $MPWR tokens, 
@@ -94,6 +94,21 @@ Especially, we don't end up in a situation where team members are paid too much 
 Meaning that these tokens will only be fully vested after 10 years.
 
 The goal of these tokens is long-term alignment for Empower to keep building and supporting the chain and its ecosystem.
+
+## Token emission
+As mentioned already, the token supply starts at 200,000,000 $MPWR tokens and is capped at 1,000,000,000 $MPWR tokens.
+The emission schedule is simply: linear emission over 12 years, starting at 200,000,000 $MPWR tokens and ending at 1,000,000,000 $MPWR tokens.
+Which means that the number of token emitted per year is 66,666,666.
+
+The supply curve looks like this:
+
+![Total supply over 12 years](total-supply.png)
+
+The emission curve, or supply increase percentage, looks like this:
+
+![Supply increase per year](emission.png)
+
+The emission of new tokens happens every block and is part of the block rewards (next to the transaction fees).
 
 ## Block rewards
 
