@@ -46,10 +46,10 @@ export default withMermaid(
               text: 'Applications',
               link: '/introduction/applications'
             },
-            {
+            /*{
               text: 'Tokenomics',
               link: '/introduction/tokenomics'
-            },
+            },*/
             {
               text: 'Roadmap',
               link: '/introduction/roadmap'
