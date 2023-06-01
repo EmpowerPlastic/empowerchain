@@ -37,7 +37,7 @@ empowerd gentx <key-name> 100000000umpwr \
     --commission-max-change-rate 0.1  \
     --commission-max-rate 0.2   \
     --commission-rate 0.05   \
-    --min-self-delegation "1umpwr"   \
+    --min-self-delegation "1"   \
     --moniker "<moniker>"   \
     --details= "" \
     --website "" \
@@ -63,17 +63,17 @@ Once the node is synced and the wallet has funds in it, the node can be upgraded
 
 ```bash
 empowerd tx staking create-validator \
-    --amount 1umpwr \
+    --amount 1000000umpwr \
     --chain-id circulus-1 \
     --commission-max-change-rate 0.1 \
     --commission-max-rate 0.2 \
     --commission-rate 0.05 \
-    --min-self-delegation "1umpwr" \
+    --min-self-delegation "1" \
     --moniker "<moniker>" \
     --details="<validator-description" \
     --website "<validator-website>" \
     --security-contact="<validator-security-contact>" \
     --identity="<keybase-id>" \
     --pubkey=$(empowerd tendermint show-validator) \
-    --gas-prices 0.025umpwr
+    --gas-prices 0.025umpwr \
     --from <key-name>
