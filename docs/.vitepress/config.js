@@ -93,6 +93,16 @@ export default withMermaid(
           ]
         },
         {
+          text: 'Tokenomics',
+          collapsed: true,
+          items: [
+            {
+              text: 'Overview',
+              link: '/tokenomics/overview'
+            }
+          ],
+        },
+        {
           text: 'Core modules',
           collapsed: true,
           items: [
