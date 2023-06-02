@@ -181,6 +181,7 @@ var genesisAccountConfigs = map[string]*genesisAccountConfig{
 		amount:      0,
 		accountType: groupPolicyAccount,
 		metadata:    `{"name": "Infrastructure & Interchain funding"}`,
+		groupRef:    "G-2",
 	},
 	"B-1": {
 		amount:      1_500_000,
