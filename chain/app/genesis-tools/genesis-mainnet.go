@@ -90,13 +90,13 @@ var genesisAccountConfigs = map[string]*genesisAccountConfig{
 	"A-1": {
 		amount:      0,
 		accountType: groupPolicyAccount,
-		metadata:    `{"name": "Tech deployment"}`,
+		metadata:    `{"name": "Empower tech deployment"}`,
 		groupRef:    "G-1",
 	},
 	"A-2": {
 		amount:      0,
 		accountType: groupPolicyAccount,
-		metadata:    `{"name": "Tech funding"}`,
+		metadata:    `{"name": "EmpowerChain tech funding"}`,
 		groupRef:    "G-2",
 	},
 	"A-3": {
@@ -176,6 +176,11 @@ var genesisAccountConfigs = map[string]*genesisAccountConfig{
 		accountType: groupPolicyAccount,
 		metadata:    `{"name": "Bug and security bounties"}`,
 		groupRef:    "G-3",
+	},
+	"A-16": {
+		amount:      0,
+		accountType: groupPolicyAccount,
+		metadata:    `{"name": "Infrastructure & Interchain funding"}`,
 	},
 	"B-1": {
 		amount:      1_500_000,
