@@ -1,10 +1,10 @@
 # Tokenomics Overview
 
-The EmpowerChain tokenomics are designed to make the native network utility token, $MPWR, a useful and valuable asset 
+The EmpowerChain tokenomics are designed to make the native network utility token, $MPWR, a useful and valuable asset
 for all participants in the EmpowerChain ecosystem. This is important for long-term development and maintenance, but
-more importantly to ensure that the token is a viable incentive for actors in the waste sector to participate.
+more importantly, to ensure that the token is a viable incentive for actors in the waste sector to participate.
 
-Disclaimer: The tokenomics are subject to change, and might get updated before launch. The tokenomics are also subject
+**Disclaimer**: The tokenomics are subject to change and might get updated before launch. The tokenomics are also subject
 to governance, and can be changed by governance at any time after launch.
 
 ## Token overview
@@ -33,7 +33,7 @@ More details on the initial distribution will be published before launch.
 ## Emission schedule
 
 The emission schedule is simply: linear emission over 12 years, starting at 200,000,000 $MPWR tokens and ending at 1,000,000,000 $MPWR tokens.
-Which means that the number of token emitted per year is 66,666,666.
+This means that the number of tokens emitted per year is 66,666,666.
 
 ![Total supply over 12 years](./total-supply.png)
 
@@ -43,13 +43,13 @@ The emission curve, or supply increase percentage, looks like this:
 
 ## Emission distribution (or: block rewards)
 
-At launch the block rewards will simply be 75% to stakers and 25% to the community pool - with the community pool being
+At launch, the block rewards will simply be 75% to stakers and 25% to the community pool - with the community pool being
 a placeholder for the tokens to be distributed (if governance decides to do so) to the different purposes outlaid in the
 final block reward plan:
 
 ![final-block-rewards.png](./final-block-rewards.png)
 
-Once we have implemented the final block rewards they will focus on the following areas:
+Once we have implemented the final block rewards, they will focus on the following areas:
 - Incentivizing stakers
 - Incentivizing usage of the network
 - Incentivizing development of the network
@@ -63,13 +63,13 @@ More details on the final block rewards will be published before launch.
 
 ## Sustainable economics
 The big question for any blockchain is how it will operate sustainably in the long term. The EmpowerChain network token
-is a utility token, and is needed to use the network. It is needed not only for gas fees, but also for:
+is a utility token and is needed to use the network. It is needed not only for gas fees, but also for:
 - Usage fees for dApps
 - Plastic Credit issuance fees
 - Marketplace fees
-- And other fees from using the network in different way
+- And other fees from using the network in different ways
 - Staking
 - Participating/voting in governance
 
-The utility of the MPWR token, and the demand for it, will be driven by the usage of the network.
-WIth the network owning and using the tokens for various purposes, there will be a constant demand for the token.
+The utility of the MPWR token, and its demand, will be driven by the usage of the network.
+With the network owning and using the tokens for various purposes, there will be a constant demand for the token.

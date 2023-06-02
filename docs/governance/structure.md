@@ -1,26 +1,26 @@
 # EmpowerChain governance structure
 
 The EmpowerChain governance is a multi-layered governance system with a constitution at its core.
-As can be seen in the picture below, on-chain governance owns the constitution and the ownership of the SubGroups.
+As seen in the picture below, on-chain governance owns the constitution and the ownership of SubGroups.
 The SubGroups are the entities that will hold and execute on funds and proposals coming from governance.
 
 ![EmpowerChain governance overview](governance-overview.png 'EmpowerChain governance structure')
 
 ## SubGroups
 
-A SubGroup is an on-chain group that consists of a set of members and a set of decision policies.
-Each decision policy is an address that can hold its own funds and have separate rules on how voting is done.
+A SubGroup is an on-chain group consisting of a set of members and decision policies.
+Each decision policy is an address that can hold its own funds and have separate rules on voting.
 
 ![Group structure details](group-detail.png 'Group structure')
 
-In addition, a SubGroup can have its own SubGroup(s) and can be part of another SubGroup.
-Initially we will only use one layer of SubGroups, until we see the needs for more layers.
+In addition, a SubGroup can have its own SubGroup(s) and be part of another SubGroup.
+Initially, we will only use one layer of SubGroups until we see the need for more layers.
 
 For more technical details on how SubGroups work, see the [Group documentation in the Cosmos SDK docs](https://docs.cosmos.network/main/modules/group/).
 
 ## Initial structure
 
-At genesis, EmpowerChain Governance will have the following structure:
+At Genesis, EmpowerChain Governance will have the following structure:
 
 ![governance-initial-structure.png](governance-initial-structure.png)
 
