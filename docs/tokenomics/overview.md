@@ -4,6 +4,9 @@ The EmpowerChain tokenomics are designed to make the native network utility toke
 for all participants in the EmpowerChain ecosystem. This is important for long-term development and maintenance, but
 more importantly to ensure that the token is a viable incentive for actors in the waste sector to participate.
 
+Disclaimer: The tokenomics are subject to change, and might get updated before launch. The tokenomics are also subject
+to governance, and can be changed by governance at any time after launch.
+
 ## Token overview
 
 EmpowerChain uses a native network utility token called $MPWR (pronounced "empower").
@@ -23,7 +26,9 @@ firepower to incentivize users and actors in both the web3 and waste sector worl
 
 ![token-distribution.png](./token-distribution.png)
 
-To read more details about the initial distribution, see [Initial token distribution](./initial-token-distribution.md).
+More details on the initial distribution will be published before launch.
+
+<!-- To read more details about the initial distribution, see [Initial token distribution](./initial-token-distribution.md). -->
 
 ## Emission schedule
 
@@ -52,7 +57,9 @@ Once we have implemented the final block rewards they will focus on the followin
 
 Together, they are designed to ensure that the network has long-term sustainability and incentives for all stakeholders in the network.
 
-To read more details about the final block rewards, see [Block rewards](./block-rewards.md).
+More details on the final block rewards will be published before launch.
+
+<!-- To read more details about the final block rewards, see [Block rewards](./block-rewards.md). -->
 
 ## Sustainable economics
 The big question for any blockchain is how it will operate sustainably in the long term. The EmpowerChain network token
