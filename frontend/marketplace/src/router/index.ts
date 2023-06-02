@@ -5,7 +5,6 @@ import CertificatesAndCreditsPage from "@/pages/CertificatesAndCreditsPage.vue";
 import AuctionPage from "@/pages/AuctionPage.vue";
 import AuctionDetails from "@/pages/AuctionDetails.vue";
 
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [

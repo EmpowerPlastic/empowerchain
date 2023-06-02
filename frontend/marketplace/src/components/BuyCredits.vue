@@ -17,13 +17,13 @@ const updateAmount = (e: Event) => {
   emitModalValue('update:amount', (e.target as HTMLInputElement).value)
 }
 
-const coinsArray = ['MPWR', 'COIN1', 'COIN2']
+const coinsArray = ['Pay by invoice coming soon']
 </script>
 <template>
   <div class="bg-darkGray md:grid md:grid-cols-4 flex flex-col gap-1 p-6 rounded-sm">
     <div>
       <p class="text-title18">Available credits</p>
-      <p class="text-title38">750/1500</p>
+      <p class="text-title38">{{availableCredits}}</p>
     </div>
     <div>
       <p class="text-title18">Price per credit</p>
@@ -31,14 +31,14 @@ const coinsArray = ['MPWR', 'COIN1', 'COIN2']
     </div>
     <div>
       <div class="flex md:ml-[-60px]">
-        <p class="text-title18 text-subLabel  text-right hidden md:block mr-3 mt-8">Cost 00000</p>
+        <p class="text-title18 text-subLabel  text-right hidden md:block mr-3 mt-8">Cost {{pricePerCredit*amount}}</p>
         <div>
           <p class="text-title18">How many you want to buy?</p>
-          <input type="text" class="input bg-darkGray mt-1 text-white text-title38 font-bold w-full" :value="amount"
+          <input type="number" class="input bg-darkGray mt-1 text-white text-title38 font-bold w-full" :value="amount"
                  @input="updateAmount"/>
         </div>
       </div>
-      <p class="text-title18 text-subLabel mt-1 md:hidden">Cost 00000</p>
+      <p class="text-title18 text-subLabel mt-1 md:hidden">Cost {{pricePerCredit*amount}}</p>
     </div>
     <div class="flex flex-row mt-8">
       <button
@@ -50,8 +50,9 @@ const coinsArray = ['MPWR', 'COIN1', 'COIN2']
           <img class="w-4" src="../assets/dropdownIconButton.svg"/>
         </label>
         <div tabindex="0" class="dropdown-content menu p-4 shadow bg-dropdownGray rounded-box w-52 !list-none">
-          <li class="text-title18 font-semibold my-1 cursor-pointer" v-for="coin in coinsArray" :key="coin"
-              @click="updateSelectedCoinValue(coin)">{{coin}}
+          <li disabled class="text-title12 font-semibold my-1 cursor-pointer" v-for="coin in coinsArray" :key="coin"
+
+          >{{coin}}
           </li>
         </div>
       </div>

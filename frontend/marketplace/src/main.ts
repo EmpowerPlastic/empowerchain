@@ -4,18 +4,19 @@ import App from './App.vue'
 import router from './router'
 import VueAwesomePaginate from "vue-awesome-paginate";
 import {ApolloClient, InMemoryCache} from '@apollo/client/core'
-import {DefaultApolloClient} from '@vue/apollo-composable'
+import {DefaultApolloClient, provideApolloClient} from '@vue/apollo-composable'
 import VueDatePicker from '@vuepic/vue-datepicker';
 
 import "vue-awesome-paginate/dist/style.css";
 import '@vuepic/vue-datepicker/dist/main.css'
 import './index.css'
 import './css/custom.css'
+import {API_ENDPOINT} from "@/config/config";
 
 const cache = new InMemoryCache()
 const apolloClient = new ApolloClient({
     cache,
-    uri: 'http://51.159.168.89:3001/',
+    uri: API_ENDPOINT,
 })
 
 const app = createApp(App)
@@ -25,5 +26,5 @@ app.use(router as any)
 app.use(VueAwesomePaginate)
 app.component('VueDatePicker', VueDatePicker);
 app.provide(DefaultApolloClient, apolloClient)
-app.component('VueDatePicker', VueDatePicker);
 app.mount('#app')
+provideApolloClient(apolloClient)

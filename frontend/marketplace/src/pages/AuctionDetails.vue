@@ -3,55 +3,225 @@ import ImageCarousel from "@/components/ImageCarousel.vue";
 import ImageGallery from "@/components/ImageGallery.vue";
 import CustomGoogleMap from "@/components/CustomGoogleMap.vue";
 import BuyCredits from "@/components/BuyCredits.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import ProjectDetailContent from "@/components/ProjectDetailContent.vue";
+import {useRoute} from "vue-router";
+import {useQuery} from "@vue/apollo-composable";
+import gql from "graphql-tag";
+import CustomSpinner from "@/components/CustomSpinner.vue";
+import {ListingsQueryBuilder} from "@/utils/query-builder";
+import {HTTPS_FILE_URL} from "@/config/config";
 
+const queryBuilder = new ListingsQueryBuilder();
+const router = useRoute()
 const position = {lat: 40.689247, lng: -74.044502}
+
 const copyToken = async (text: string) => {
   await navigator.clipboard.writeText(text);
 }
 const selectedCoin = ref('MPWR')
+const data = ref()
+const orderHistory = ref()
+const auctionData = ref()
+const showSpinner = ref(true)
 const amount = ref(0)
-const dummyArray = [
-  "https://dummyimage.com/16:9x1080/",
-  "https://dummyimage.com/16:9x1080/",
-  "https://entiretools.com/placeholder/600x300/D5D5D5/584959",
-  "https://dummyimage.com/16:9x1080/",
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2MFL-2acE0aF3uUpVR00OnTGSIQtQMkTO8HEm375XIQ8ak9fiGq9qgNZRvRTb2tUORyc&usqp=CAU",
-  "https://dummyimage.com/16:9x1080/"
-]
+
+const getAuctionDetails = (id: string | string[]) => {
+  let query = `query {
+  marketplaceListings(
+    filter: { id:{equalTo:"${id}"} }
+  ) {
+    totalCount
+    nodes {
+      id
+      amount
+      initialAmount
+      denom
+      pricePerCreditAmount
+      pricePerCreditDenom
+      creditCollection {
+        creditType
+        creditData {
+          nodes {
+            mediaFiles{
+              nodes{
+                name
+                url
+              }
+            }
+            binaryFiles{
+              nodes{
+                name
+                url
+              }
+            }
+            eventData {
+              nodes {
+                magnitude
+                registrationDate
+                amount
+                country
+                latitude
+                longitude
+                material {
+                  nodes {
+                    key
+                    value
+                  }
+                }
+              }
+            }
+            applicantDataByCreditDataId {
+              nodes {
+                name
+                description
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+`
+
+  const {result, loading, error} = useQuery(gql`${query}`);
+  data.value = {result, loading, error}
+  //auctionData.value = result?.value?.marketplaceListings?.nodes[0]
+  showSpinner.value = false
+  auctionData.value = result.value?.marketplaceListings?.nodes[0]
+  console.log(result, result.value?.marketplaceListings?.nodes[0], 'ppcsddsp')
+}
+
+const getOrderHistory = (id: string | string[]) => {
+  let owner = id.toString().split('-')[0]
+  let denom = id.toString().split('-')[1]
+
+  let query = `query {
+  buyCreditsWasmEvents(filter:{
+    denom:{equalTo:"${denom}"},
+    listingOwner:{equalTo:"${owner}"}
+  }){
+    nodes{
+      totalPriceAmount
+      totalPriceDenom
+      listingOwner
+      denom
+      buyer
+      numberOfCreditsBought
+    }
+  }
+}`
+
+  const {result, loading, error} = useQuery(gql`${query}`);
+  orderHistory.value = {result, loading, error}
+}
+onMounted(() => {
+  getAuctionDetails(router.params.id)
+  getOrderHistory(router.params.id)
+})
+
+const convertIPFStoHTTPS = (url: string) => {
+  let IPFS_URL = url.split('//')[1]
+  let HTTPS_URL = `${HTTPS_FILE_URL}${IPFS_URL}`
+  return HTTPS_URL;
+}
+
+const getDetailsList = (data: any) => {
+  let applicantArray: string[] = []
+  let locationArray: string[] = []
+  let locationPointersArray: {
+    lat: number;
+    lng: number
+  }[] = []
+  let imageArray: string[] = []
+  let fileArray: { url: string, name: string }[] = []
+  let materialArray: { key: string, value: string }[] = []
+  let volume: number = 0
+
+  data?.map((item: any) => {
+    item.applicantDataByCreditDataId.nodes.map((node: any) => {
+      applicantArray.push(node.name)
+    })
+
+    item.eventData.nodes.map((node: any) => {
+      volume = volume + node.amount
+      locationArray.push(node.country)
+      locationPointersArray.push({lat: node.latitude, lng: node.longitude})
+      materialArray.push(...node.material.nodes)
+    })
+
+    item.mediaFiles.nodes.map((node: any) => {
+      imageArray.push(convertIPFStoHTTPS(node.url))
+    })
+    item.binaryFiles.nodes.map((node: any) => {
+      fileArray.push({
+        url: convertIPFStoHTTPS(node.url), name: node.name
+      })
+    })
+  })
+
+  const uniqueMaterialArray = materialArray.filter((obj, index, self) =>
+          index === self.findIndex((o) =>
+              o.key === obj.key && o.value === obj.value
+          )
+  );
+  return {
+    applicant: Array.from(new Set(applicantArray)),
+    location: Array.from(new Set(locationArray)),
+    material: uniqueMaterialArray.map(item => item.value),
+    volume: volume,
+    image: imageArray,
+    file: fileArray,
+    locationPointers: locationPointersArray
+  }
+}
 
 </script>
 <template>
-  <div class="p-5 md:px-[10%] min-h-[60vh] text-white font-Inter">
+  <CustomSpinner :visible="showSpinner"/>
+  <div v-if="!showSpinner" class="p-5 md:px-[10%] min-h-[60vh] text-white font-Inter">
     <!--  Title Section-->
-    <p class="text-title18 mb-5">Project <span class="text-subTextGray">/ Project Details</span></p>
-    <h1 class="text-title38">COMMUNITY COLLECTION AND CO-PROCESSING 2022</h1>
-    <p class="text-title18 text-subTextGray">Sri Lanka</p>
+    <p class="text-title18 mb-5"><a href="/auction">Auctions</a><span class="text-subTextGray">/ Auction Details</span>
+    </p>
+    <h1 class="text-title38">{{ data?.result?.marketplaceListings?.nodes[0].denom }}</h1>
+    <!--    <p class="text-title18 text-subTextGray">Sri Lanka</p>-->
 
     <!--    Gallery-->
-    <ImageCarousel class="md:hidden my-5" :image-array="dummyArray"/>
-    <ImageGallery class="hidden md:flex" :image-array="dummyArray"/>
+    <ImageCarousel class="md:hidden my-5"
+                   :image-array="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).image"/>
+    <ImageGallery class="hidden md:flex"
+                  :image-array="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).image"/>
 
     <!--    Buy Credits-->
-    <BuyCredits available-credits="750/1500" v-model:selected-coin="selectedCoin" :price-per-credit="100.00"
-                v-model:amount="amount"/>
+    <BuyCredits
+        :available-credits="`${data?.result?.marketplaceListings?.nodes[0].amount}/${data?.result?.marketplaceListings?.nodes[0].initialAmount}`"
+        v-model:selected-coin="selectedCoin"
+        :price-per-credit="data?.result?.marketplaceListings?.nodes[0].pricePerCreditAmount/1000000"
+        v-model:amount="amount"/>
 
     <!--    Project Details-->
-    <div class="flex flex-col md:flex-row w-full mt-5 justify-between">
-      <div class="grid md:grid-cols-2 md:gap-x-[180px] gap-y-5 bg-lightBlack rounded-sm p-6">
-        <ProjectDetailContent label="CREDIT type" value="PCRD"/>
-        <ProjectDetailContent label="Material" value="PP,PET"/>
+    <div class="flex flex-col md:flex-row w-full mt-5 justify-between ">
+      <div class="grid md:grid-cols-2 md:gap-x-[10px] md:w-[50%] gap-y-5 bg-lightBlack rounded-sm p-6">
+        <ProjectDetailContent label="CREDIT type"
+                              :value="data?.result?.marketplaceListings?.nodes[0].creditCollection.creditType"/>
+        <ProjectDetailContent label="Material"
+                              :value="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).material"
+                              list/>
         <ProjectDetailContent label="Credits per kg" value="1"/>
         <ProjectDetailContent label="Registration date" value="May 16, 2022"/>
-        <ProjectDetailContent label="Location" value="Sri Lanka"/>
+        <ProjectDetailContent label="Location"
+                              :value="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).location"
+                              list/>
         <ProjectDetailContent label="Collection organization" value="ABCD org plc"/>
-        <ProjectDetailContent label="Volume" value="100kg"/>
+        <ProjectDetailContent label="Volume"
+                              :value="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).volume+'kg'"/>
       </div>
 
       <!--      Map Section-->
       <div class="mt-5 md:mt-0 md:w-[60%] md:ml-5 h-[330px] md:h-auto rounded-lg relative">
-        <CustomGoogleMap :position="position"/>
+        <CustomGoogleMap
+            :locations="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).locationPointers"/>
       </div>
     </div>
 
@@ -59,9 +229,9 @@ const dummyArray = [
     <div class="bg-lightBlack p-6 mt-5 rounded-sm">
       <p class="text-title18  font-semibold mb-3">Project information</p>
       <p class="text-title14 text-textInfoGray">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-        consequat.
+        {{
+          data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes[0].applicantDataByCreditDataId.nodes[0].description
+        }}
       </p>
     </div>
 
@@ -69,8 +239,10 @@ const dummyArray = [
     <div class="bg-lightBlack p-6 mt-5 rounded-sm">
       <p class="text-title18  font-semibold mb-3">Public files available for download</p>
       <ul class="pl-5">
-        <li class="text-title14 text-greenPrimary underline" v-for="data in 4" :key="data">
-          <a href="#">Lorem ipsum dolor sit amet, consectet</a>
+        <li class="text-title14 text-greenPrimary underline"
+            v-for="file in getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).file"
+            :key="file">
+          <a target="_blank" :href="file.url">{{ file.name }}</a>
         </li>
       </ul>
     </div>
@@ -81,11 +253,11 @@ const dummyArray = [
 
       <div class="divide-y md:divide-none divide-dividerGray">
         <div class="md:p-2 py-2 md:flex md:justify-between" :class="index%2===0 ? 'md:bg-lightBlack':null"
-             v-for="(data,index) in 5" :key="data">
+             v-for="(data,index) in orderHistory?.result?.buyCreditsWasmEvents?.nodes" :key="data">
           <div class="flex justify-between">
             <div class="md:flex x md:flex-row text-title12 md:text-title14 break-words">
               <p class="text-textInfoGray">07:00AM 10/Jan/2023</p>
-              <p class="text-greenPrimary md:ml-16">1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa</p>
+              <p class="text-greenPrimary md:ml-16">{{data.buyer}}</p>
             </div>
             <div>
               <button class="btn btn-ghost bg-transparent p-0 md:hidden" @click="copyToken('test')">
@@ -94,8 +266,8 @@ const dummyArray = [
             </div>
           </div>
           <div class="flex justify-between text-title14 text-textInfoGray">
-            <p>150 Token code</p>
-            <p class="md:ml-16"> 750 MPWR</p>
+            <p>{{data.numberOfCreditsBought}} {{data.denom}}</p>
+            <p class="md:ml-16"> {{data.totalPriceAmount}} {{data.totalPriceDenom}}</p>
           </div>
         </div>
       </div>

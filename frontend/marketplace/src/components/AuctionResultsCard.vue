@@ -14,12 +14,14 @@ const getDetailsList = (data: any) => {
   let applicantArray: string[] = []
   let locationArray: string[] = []
   let materialArray: { key: string, value: string }[] = []
+  let volume: number = 0
 
   data.map((item: any) => {
     item.applicantDataByCreditDataId.nodes.map((node: any) => {
       applicantArray.push(node.name)
     })
     item.eventData.nodes.map((node: any) => {
+      volume = volume + node.amount
       locationArray.push(node.country)
       materialArray.push(...node.material.nodes)
     })
@@ -56,15 +58,15 @@ const getDetailsList = (data: any) => {
       </div>
       <div class="text-right">
         <p class="text-title13 font-bold">
-          <!--          {{ cardData.amount }}-->
+          {{ getDetailsList(cardData.creditCollection.creditData.nodes).volume }}kg
         </p>
         <p class="text-title11 font-light">
-          <!--          Volume-->
+          Volume
         </p>
       </div>
       <div>
         <p class="text-title14 font-bold">
-          <!--          {{ cardData.availableCredits }}-->
+          {{ cardData?.amount }}/{{ cardData?.initialAmount }}
         </p>
         <p class="text-title12 font-light">
           Available credits
@@ -79,13 +81,13 @@ const getDetailsList = (data: any) => {
     </div>
 
     <!--      Details for Desktop UI-->
-    <div class="hidden md:grid grid-cols-4 gap-5 w-full col-span-4 py-2 px-6 ml-2 cursor-pointer"
+    <div class="hidden md:grid grid-cols-5 gap-5 w-full col-span-4 py-2 px-6 ml-2 cursor-pointer"
          @click="router.push(`/auction/${encodeURIComponent(cardData.id)}`)">
       <div class="col-span-1 ...">
         <p class="details-title">Material</p>
         <ul class="list-disc ml-6">
           <li v-for="material in getDetailsList(cardData.creditCollection.creditData.nodes).material"
-              :key="material.key">
+              :key="material">
             {{ material.value }}
           </li>
         </ul>
@@ -108,17 +110,17 @@ const getDetailsList = (data: any) => {
           </li>
         </ul>
       </div>
-      <!--      <div class="col-span-1">-->
-      <!--        <p class="details-title">Volume</p>-->
-      <!--        <p>{{ cardData.amount }}{{ cardData.magnitude }}</p>-->
-      <!--      </div>-->
+      <div class="col-span-1">
+        <p class="details-title">Volume</p>
+        <p>{{ getDetailsList(cardData.creditCollection.creditData.nodes).volume }}kg</p>
+      </div>
       <div class="col-span-1 text-right">
         <p class="text-title32 font-bold leading-7 mt-6">{{ cardData?.pricePerCreditAmount / 1000000 }}</p>
         <p class="text-title14 font-bold text-textGray leading-6">MPWR</p>
         <p class="text-title18 leading-3 font-light">Price per credit</p>
 
-        <!--        <p class="text-title14 font-bold mt-7 leading-[13px]">{{ cardData.availableCredits }}</p>-->
-        <!--        <p class="text-title12 font-bold font-light">Available credits</p>-->
+        <p class="text-title14 font-bold mt-7 leading-[13px]">{{ cardData?.amount }}/{{ cardData?.initialAmount }}</p>
+        <p class="text-title12 font-bold font-light">Available credits</p>
       </div>
     </div>
 

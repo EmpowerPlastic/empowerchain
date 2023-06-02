@@ -11,7 +11,8 @@ const filterValues = ref({
   registrationDate: ['', ''],
   organization: [],
   creditType: '',
-  price: {from: '', to: ''}
+  price: {from: '', to: ''},
+  searchTerm:''
 })
 
 const creditOptions = ref(['ETEST'])
@@ -44,7 +45,7 @@ const applicantData: any = useQuery(gql`query{
   <!--    Search Auction Mobile-->
   <div class="md:hidden input-group w-full mb-5  bg-white rounded-full !rounded-lg px-1 border-none font-Inter">
     <img class="ml-3" src="../assets/searchIcon.svg">
-    <input type="text" placeholder="Search…" class="input w-full bg-white border-none"/>
+    <input type="text" placeholder="Search…" class="input w-full bg-white border-none" v-model="filterValues.searchTerm"/>
     <div class="dropdown dropdown-end">
       <button class="btn btn-ghost bg-white !rounded-lg border-none p-0">
         <img class="mr-4" src="../assets/filterIcon.svg">
@@ -97,7 +98,7 @@ const applicantData: any = useQuery(gql`query{
   <div class="hidden md:grid grid-flow-row auto-rows-max  mb-10 font-Inter h-full">
     <div class="flex flex-row bg-darkGray w-full p-4 rounded-t-sm">
       <input class="w-full rounded-sm bg-darkGray px-3 h-12 text-lightGray text-title24"
-             placeholder="Search auctions"/>
+             placeholder="Search auctions" v-model="filterValues.searchTerm"/>
       <button class="btn bg-greenPrimary w-[60px] ml-4 rounded-sm" @click="handleSearchButtonClick">
         <img class="h-5" src="../assets/searchIconWhite.svg">
       </button>
@@ -118,6 +119,7 @@ const applicantData: any = useQuery(gql`query{
       <div class="filter-box">
         <p class="filter-subtitle  mb-1">REGISTRATION DATE</p>
         <VueDatePicker :enable-time-picker="false" placeholder="Select date"
+                       format="MM/dd/yyyy"
                        v-model="filterValues.registrationDate" range
                        multi-calendars dark hide-input-icon/>
       </div>
