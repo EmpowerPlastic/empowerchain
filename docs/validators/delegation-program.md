@@ -6,9 +6,11 @@ Empower will be delegating tokens from different parts of the genesis distributi
 
 The exact amount of tokens to be delegated is still being discussed, but it will be a significant amount.
 
-The program in its entirety can be changed at any time by the Empower team, including the amount of tokens to be delegated, the validators to be delegated to, and the criteria for delegation.
+**Disclaimer:** The program in its entirety can be changed at any time by the Empower team, including the amount of tokens to be delegated, the validators to be delegated to, and the criteria for delegation.
 This is simply so that we can quickly adapt to the needs of the network. We don't expect our initial criteria to be perfect, 
 and we need to be able to adapt quickly so the network is benefiting from the delegation program as much as possible.
+
+Empower might also delegate separately from the delegation program to strategic partners, but this will be done on a case-by-case basis.
 
 ## Eligibility
 Any validator that might want to apply for the delegation program need to meet the following criteria:
@@ -26,7 +28,7 @@ The weight are very preliminary, and will be adjusted before mainnet launch.
 | Activity                                | Notes                                                                                                             | Weight |
 |-----------------------------------------|-------------------------------------------------------------------------------------------------------------------|--------|
 | Deploying someone else's block explorer | E.g. Ping                                                                                                         | 0.5    |
-| Deploying your own block explorer       | This will weigh heavier than an off-the-shelf explorer (because diversity                                         | 2      |
+| Deploying your own block explorer       | This will weigh heavier than an off-the-shelf explorer (because diversity)                                        | 2      |
 | Provide node RCP                        |                                                                                                                   | 0.5    |
 | Provide node API                        |                                                                                                                   | 0.5    |
 | Provide relaying service                |                                                                                                                   | 2      |
@@ -48,3 +50,5 @@ The exact weights will be decided by the Empower team, and will be announced at 
 ## How to apply
 
 A form will be provided to validators later in the testnet phase.
+
+**Being in the active set during the testnet is not really relevant to the delegation program.**
