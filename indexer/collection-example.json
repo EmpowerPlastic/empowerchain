@@ -1,0 +1,98 @@
+{
+    "version": "v1",
+    "credit_props": [
+        {
+            "id": "event_data",
+            "type": "empower_event_data",
+            "content": [
+                {
+                    "id": "location",
+                    "type": "coordinates",
+                    "content": {
+                        "latitude": "41.40338",
+                        "longitude": "2.17403"
+                    }
+                },
+                {
+                    "id": "amount",
+                    "type": "text",
+                    "content": "100"
+                },
+                {
+                    "id": "magnitude",
+                    "type": "text",
+                    "content": "kg"
+                },
+                {
+                    "id": "material",
+                    "type": "propertyMap",
+                    "content": [
+                        {
+                            "key": "type",
+                            "value": "Recycled plastic"
+                        },
+                        {
+                            "key": "origin",
+                            "value": "ocean"
+                        }
+                    ]
+                },
+                {
+                    "id": "registration_date",
+                    "type": "text",
+                    "content": "1679483087"
+                }
+            ]
+        },
+        {
+            "id": "event_media",
+            "type": "file_list",
+            "content": [
+                {
+                    "name": "empower_cleanup.png",
+                    "url": "ipfs://bafkreiguekxhlmgx5oe2n7a327ftgqwpzwspmblvx2pq7x5dxz5c2swfwi"
+                }
+            ]
+        },
+        {
+            "id": "event_files",
+            "type": "file_list",
+            "content": [
+                {
+                    "name": "Whitepaper.pdf",
+                    "url": "https://github.com/EmpowerPlastic/empowerchain/blob/main/Whitepaper.pdf"
+                }
+            ]
+        },
+        {
+            "id": "issuance_date",
+            "type": "text",
+            "content": "1679483087"
+        },
+        {
+            "id": "aggregation_location",
+            "type": "coordinates",
+            "content": {
+                "latitude": "59.912140226910445",
+                "longitude": "10.757067760227915"
+            }
+        },
+        {
+            "id": "credit_type",
+            "type": "text",
+            "content": "PTEST"
+        },
+        {
+            "id": "applicant_data",
+            "type": "empower_applicant_data",
+            "content": {
+                "name": "Empower Plastic",
+                "description": "Empower Plastic is a blockchain-based platform that incentivizes the collection of plastic waste from the ocean and the recycling of plastic waste into new products.",
+                "web_refs": [
+                    "https://empower.eco",
+                    "https://empowerchain.io"
+                ]
+            }
+        }
+    ]
+}
