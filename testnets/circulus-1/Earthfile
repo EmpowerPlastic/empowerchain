@@ -6,6 +6,8 @@ test-collect-gentx:
     FROM ../../chain/+build
     WORKDIR /empowerchain/chain/build
     RUN ./empowerd init empower
-    COPY ./genesis.json /root/.empowerchain/config/genesis.json
     COPY ./gentx/ /root/.empowerchain/config/gentx/
-    RUN ./empowerd genesis collect-gentxs
+    COPY base-genesis.json /root/.empowerchain/config/genesis.json
+    COPY collect-gentxs.sh .
+    RUN ./collect-gentxs.sh
+    SAVE ARTIFACT /root/.empowerchain/config/genesis.json AS LOCAL genesis.json
