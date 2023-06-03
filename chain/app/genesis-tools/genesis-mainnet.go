@@ -261,7 +261,7 @@ var genesisAccountConfigs = map[string]*genesisAccountConfig{
 	"B-16": {
 		amount:      8_000,
 		accountType: vestingAccount4plus1,
-		address: "empower1rahlzcsjurllg6dcd73shmsvj2elx604d88ksp", // FINAL ADDRESS
+		address:     "empower1rahlzcsjurllg6dcd73shmsvj2elx604d88ksp", // FINAL ADDRESS
 	},
 }
 
