@@ -1,13 +1,4 @@
-# SubQuery - Starter Package for Cosmos/Stargaze
-
-A basic Cosmos (based on Stargaze) example project with an event and message handler. Read more about SubQuery support for Cosmos at https://academy.subquery.network/quickstart/quickstart_chains/cosmos.html.
-
-The Starter Package is an example that you can use as a starting point for developing your SubQuery project.
-
-A SubQuery package defines which data SubQuery will index from the blockchain, and how it will store it.
-
-This Starter Package by default allows **indexing events and messages from Stargaze**.
-
+# SubQuery Indexer for EmpowerChain
 ## Preparation
 
 #### Environment and dependencies
@@ -87,21 +78,9 @@ With this project can try to query with the following code to get a taste of how
 ```graphql
 {
   query {
-    executeEvents(first: 5) {
-      nodes {
-        id
-        blockHeight
-        txHash
-        contractAddress
-      }
-    }
-    messages(first: 5) {
-      nodes {
-        id
-        blockHeight
-        txHash
-        sender
-        contract
+		creditCollections(first: 0) {
+      nodes{
+				denom
       }
     }
   }
