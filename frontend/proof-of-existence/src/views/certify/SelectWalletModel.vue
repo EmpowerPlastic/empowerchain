@@ -44,7 +44,7 @@ const handleWallet = async (wallet: Wallet, provider: any) => {
 const addExperimentalChain = async () => {
   const chainConfig = {
     chainId: CHAIN_ID,
-    chainName: "EmpowerChain Devnet",
+    chainName: "EmpowerChain Testnet",
     rpc: RPC_URL,
     rest: REST_URL,
     bip44: {
