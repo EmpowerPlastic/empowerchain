@@ -14,7 +14,7 @@ Later, there are planned comprehensive tracking solutions that build on proof of
 ## Plastic Credits
 The Plastic Credits module enables the creation, issuance, transfer, and retirement of plastic credits, representing the collection and proper management of plastic waste. Empower Platform will integrate with the plastic credits module to issue plastic credits, which can then be sold by collection organizations to individuals or businesses interested in offsetting their plastic footprint.
 
-To read more in-depth about plastic credits on EmpowerChain, please refer to the [Plastic Credits](../plastic-credits/high-level-overview.md) section.
+To read more in-depth about plastic credits on EmpowerChain, please refer to the [Plastic Credits](../core-modules/plastic-credits/high-level-overview.md) section.
 
 ## Plastic Credit Marketplace
 In addition to the Plastic Credits module, there will, at launch, be a standalone marketplace where anyone can buy Plastic credits permissionless directly on-chain. In addition, the Empower Platform will integrate with the smart contract used to facilitate listings for collectors on the platform to list and manage their plastic credits on the marketplace easily.

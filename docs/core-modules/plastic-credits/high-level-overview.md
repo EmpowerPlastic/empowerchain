@@ -50,7 +50,7 @@ This means that there can be multiple types of plastic credits on the market, ea
 
 Applicants apply to an issuer and a credit type with a specific project. The issuer can then approve the project and later issue plastic credits to the applicant.
 
-![Plastic credit type illustration](./plastic-credit-type.png 'Plastic credit type, issuer, applicant and project')
+![Plastic credit type illustration](plastic-credit-type.png 'Plastic credit type, issuer, applicant and project')
 
 ## Issuers
 An issuer is an entity that owns and creates plastic credit types, as well as issues plastic credits to applicants.
@@ -80,7 +80,7 @@ It is up to the issuer and the standard of the credit type to decide what consti
 It could for instance be a time-bound serial number (e.g. a new serial number every month), 
 a serial number that is incremented for every x credits issued, or something else entirely.
 
-![Plastic credit collection illustration](./plastic-credit-collection.png 'Plastic credit collection and its unique combinations of credit type, project and serial number')
+![Plastic credit collection illustration](plastic-credit-collection.png 'Plastic credit collection and its unique combinations of credit type, project and serial number')
 
 ## Plastic Credits
 A plastic credit is a digital unit that represents an activity related to removing plastic from the environment. A single credit can represent a kg or ton of plastic removed/recycled/handled, or some other unit of measurement.
@@ -90,4 +90,4 @@ Each credit collection (which is unique per credit type, project and serial numb
 Another way to think of each collection is as it having its own type of token (ERC20 or similar) that can only be traded within that collection.
 
 ## Read more
-You can find more in-depth technical details on the implementation of the plastic credits in the [plastic credits module docs](../module-docs/plasticcredit.md)
+You can find more in-depth technical details on the implementation of the plastic credits in the [plastic credits module docs](../../references/module-docs/plasticcredit.md)

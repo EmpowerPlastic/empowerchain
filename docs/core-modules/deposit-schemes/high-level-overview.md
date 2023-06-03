@@ -7,7 +7,7 @@ The general concept is fairly simple: someone who wants to incentivize collectio
 They provide some form of incentive, or reward, which is deployed to a smart contract on EmpowerChain.
 The smart contract contains the rules for the deposit scheme, and the reward is distributed according to these rules.
 
-![Deposit scheme](./deposit-scheme.png 'Deposit scheme')
+![Deposit scheme](deposit-scheme.png 'Deposit scheme')
 
 More concrete information and examples will be added to this section as the module is developed.
 

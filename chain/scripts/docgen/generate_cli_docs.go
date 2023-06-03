@@ -56,7 +56,7 @@ func generateCLIDocs() {
 
 		filename := d.Name()
 		commandSplit := strings.Split(strings.TrimSuffix(filename, filepath.Ext(filename)), "_")
-		sidebarItems = buildCLIDocsSidebarTree(sidebarItems, commandSplit, "/cli-docs/"+filename)
+		sidebarItems = buildCLIDocsSidebarTree(sidebarItems, commandSplit, "/references/cli-docs/"+filename)
 
 		return nil
 	}); err != nil {
