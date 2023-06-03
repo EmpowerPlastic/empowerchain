@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 <template>
   <div
-    class="flex flex-col items-center w-full px-14 text-left bg-lightBlack rounded-lg sm:p-8"
+    class="flex flex-col items-center w-full px-14 text-left bg-lightBlack rounded-lg sm:p-8 md:-mt-[120px]"
   >
     <h5 class="mb-2 mt-3 mb-4 font-bold text-white text-title28">
       Congratulations!

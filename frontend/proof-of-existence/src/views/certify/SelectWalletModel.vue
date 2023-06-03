@@ -2,6 +2,7 @@
 import { onMounted, ref } from "vue";
 import { Wallet } from "@/types/enums";
 import { CHAIN_ID, REST_URL, RPC_URL } from "@/config/config";
+import { toast } from "vue3-toastify";
 
 //Modal props
 export interface ModalProps {
@@ -37,6 +38,9 @@ const handleWallet = async (wallet: Wallet, provider: any) => {
     }
     passWalletToParent(wallet);
   } catch (error) {
+    toast.error(`Failed to enable wallet: ${error}`, {
+      position: toast.POSITION.TOP_RIGHT,
+    });
     console.error(`Failed to enable wallet: ${error}`);
   }
 };
