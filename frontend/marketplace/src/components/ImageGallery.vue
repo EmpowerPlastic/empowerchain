@@ -11,9 +11,6 @@ const activeImageURL = ref(props.imageArray[0])
 
 // TODO probably not the best way to do it
 watch(() => props.imageArray, (newValue) => {
-      console.log('Prop value changed:', newValue);
-
-      // Update the reactive value
       activeImageURL.value = newValue[0];
     });
 

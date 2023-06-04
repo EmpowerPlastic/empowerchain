@@ -38,6 +38,7 @@ const getAuctionDetails = (id: string | string[]) => {
       amount
       initialAmount
       denom
+      owner
       pricePerCreditAmount
       pricePerCreditDenom
       creditCollection {
@@ -193,7 +194,9 @@ const getDetailsList = (data: any) => {
         :available-credits="`${data?.result?.marketplaceListings?.nodes[0].amount}/${data?.result?.marketplaceListings?.nodes[0].initialAmount}`"
         v-model:selected-coin="selectedCoin"
         :price-per-credit="data?.result?.marketplaceListings?.nodes[0].pricePerCreditAmount/1000000"
-        v-model:amount="amount"/>
+        v-model:amount="amount"
+        v-model:denom="data.result.marketplaceListings.nodes[0].denom"
+        v-model:owner="data.result.marketplaceListings.nodes[0].owner"/>
 
     <!--    Project Details-->
     <div class="flex flex-col md:flex-row w-full mt-5 justify-between ">

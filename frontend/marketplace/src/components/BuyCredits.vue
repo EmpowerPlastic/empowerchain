@@ -1,12 +1,18 @@
 <script setup lang="ts">
+import {contracts, cosmos, empowerchain, getSigningTM37EmpowerchainClient} from "@empower-plastic/empowerjs";
+import {CosmWasmClient, SigningCosmWasmClient} from "@cosmjs/cosmwasm-stargate";
+import {Decimal} from "@cosmjs/math";
 export interface BuyCreditsProps {
   availableCredits: string
   pricePerCredit: number
   selectedCoin: string
-  amount: number
+  amount: number,
+  denom: string,
+  owner: string
 }
 
-defineProps<BuyCreditsProps>()
+
+const props = defineProps<BuyCreditsProps>();
 const emitModalValue = defineEmits(['update:selectedCoin', 'update:amount'])
 
 const updateSelectedCoinValue = (val: string) => {
@@ -18,6 +24,29 @@ const updateAmount = (e: Event) => {
 }
 
 const coinsArray = ['Pay by invoice coming soon']
+
+
+const buyCredits = async () => {
+
+const offlineSigner = window.keplr.getOfflineSigner("circulus-1");
+    const client = await getSigningTM37EmpowerchainClient({
+        rpcEndpoint: "51.159.141.221:26657",
+        signer: offlineSigner,
+    });
+    const cosmWasmClient = await SigningCosmWasmClient.connectWithSigner("51.159.141.221:26657", offlineSigner, {
+        gasPrice: {
+            denom: "umpwr",
+            amount: Decimal.fromAtomics("25", 6),
+        }
+    });
+    const contract = new contracts.PlasticCreditMarketplace.PlasticCreditMarketplaceClient(cosmWasmClient, "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m", "empower14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9sfg4umu");
+    const res = await contract.buyCredits({
+        denom: props.denom,
+        owner: props.owner,
+        numberOfCreditsToBuy: props.amount,
+    });
+}
+
 </script>
 <template>
   <div class="bg-darkGray md:grid md:grid-cols-4 flex flex-col gap-1 p-6 rounded-sm">
@@ -42,7 +71,7 @@ const coinsArray = ['Pay by invoice coming soon']
     </div>
     <div class="flex flex-row mt-8">
       <button
-          class="btn btn-ghost w-full rounded-r-none md:max-w-[80%] max-w-[85%] normal-case bg-greenPrimary text-title24 p-0 font-normal md:ml-4">
+          class="btn btn-ghost w-full rounded-r-none md:max-w-[80%] max-w-[85%] normal-case bg-greenPrimary text-title24 p-0 font-normal md:ml-4" @click="buyCredits">
         Buy with ${{ selectedCoin }}
       </button>
       <div class="dropdown dropdown-end">
