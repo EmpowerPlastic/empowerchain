@@ -11,6 +11,7 @@ import gql from "graphql-tag";
 import CustomSpinner from "@/components/CustomSpinner.vue";
 import {ListingsQueryBuilder} from "@/utils/query-builder";
 import {HTTPS_FILE_URL} from "@/config/config";
+import { convertIPFStoHTTPS } from "@/utils/utils";
 
 const queryBuilder = new ListingsQueryBuilder();
 const router = useRoute()
@@ -120,12 +121,6 @@ onMounted(() => {
   getAuctionDetails(router.params.id)
   getOrderHistory(router.params.id)
 })
-
-const convertIPFStoHTTPS = (url: string) => {
-  let IPFS_URL = url.split('//')[1]
-  let HTTPS_URL = `${HTTPS_FILE_URL}${IPFS_URL}`
-  return HTTPS_URL;
-}
 
 const getDetailsList = (data: any) => {
   let applicantArray: string[] = []

@@ -11,7 +11,7 @@ import {ListingsQueryBuilder} from "@/utils/query-builder";
 
 
 const pageNumber = ref(1)
-const itemsPerPage = ref(2)
+const itemsPerPage = ref(5)
 const total = ref(20)
 const data = ref()
 const showSpinner = ref(true)
@@ -25,7 +25,7 @@ const handlePageChange = (currentPage: number) => {
 }
 
 onMounted(() => {
-  queryBuilder.addCreditTypes(['ETEST']);
+  queryBuilder.addCreditTypes(['PCRD']);
   queryBuilder.addPagination(itemsPerPage.value, (pageNumber.value - 1) * itemsPerPage.value)
   let query = queryBuilder.build();
   loadQueryData(query)
@@ -41,12 +41,22 @@ const loadQueryData = (query: string) => {
 const handleSearch = (filterValues: any) => {
   pageNumber.value = 1
   queryBuilder.reset();
+  if (filterValues.location.length > 0) {
   queryBuilder.addLocations(filterValues.location);
-  queryBuilder.addVolume(filterValues.volume.from, filterValues.volume.to);
-  queryBuilder.addRegistrationDate(filterValues.registrationDate[0], filterValues.registrationDate[1]);
-  queryBuilder.addOrganizations(filterValues.organization);
-  queryBuilder.addCreditTypes(['ETEST']);
-  queryBuilder.addPricePerCredit(filterValues.price.from, filterValues.price.to);
+  }
+  if (filterValues.volume.from || filterValues.volume.to) {
+    queryBuilder.addVolume(filterValues.volume.from, filterValues.volume.to);
+  }
+  if (filterValues.registrationDate[0] || filterValues.registrationDate[1]) {
+    queryBuilder.addRegistrationDate(filterValues.registrationDate[0], filterValues.registrationDate[1]);
+  }
+  if (filterValues.organization.length > 0) {
+    queryBuilder.addOrganizations(filterValues.organization);
+  }
+  queryBuilder.addCreditTypes(['PCRD']);
+  if (filterValues.price.from || filterValues.price.to) {
+    queryBuilder.addPricePerCredit(filterValues.price.from, filterValues.price.to);
+  }
   queryBuilder.addPagination(itemsPerPage.value, (pageNumber.value - 1) * itemsPerPage.value)
   queryBuilder.addTextSearch(filterValues.searchTerm)
 

@@ -27,7 +27,7 @@ const coinsArray = ['Pay by invoice coming soon']
     </div>
     <div>
       <p class="text-title18">Price per credit</p>
-      <p class="text-title38 font-bold">$100.00 </p>
+      <p class="text-title38 font-bold">{{ pricePerCredit }} $MPWR</p>
     </div>
     <div>
       <div class="flex md:ml-[-60px]">
@@ -38,7 +38,7 @@ const coinsArray = ['Pay by invoice coming soon']
                  @input="updateAmount"/>
         </div>
       </div>
-      <p class="text-title18 text-subLabel mt-1 md:hidden">Cost {{pricePerCredit*amount}}</p>
+      <p class="text-title18 text-subLabel mt-1 md:hidden">Cost {{pricePerCredit*amount}} $MPWR</p>
     </div>
     <div class="flex flex-row mt-8">
       <button

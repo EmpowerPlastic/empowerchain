@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import type {MarketplaceListing} from "@/types/GraphqlSchema";
+import type { MarketplaceListing } from "@/types/GraphqlSchema";
 import router from "@/router";
+import auctionCard from "@/assets/auctionCard.png";
+import { getDetailsList } from "@/utils/utils";
 
 export interface AuctionResultsCardProps {
   cardData: MarketplaceListing & {
@@ -10,41 +12,11 @@ export interface AuctionResultsCardProps {
 
 defineProps<AuctionResultsCardProps>()
 
-const getDetailsList = (data: any) => {
-  let applicantArray: string[] = []
-  let locationArray: string[] = []
-  let materialArray: { key: string, value: string }[] = []
-  let volume: number = 0
-
-  data.map((item: any) => {
-    item.applicantDataByCreditDataId.nodes.map((node: any) => {
-      applicantArray.push(node.name)
-    })
-    item.eventData.nodes.map((node: any) => {
-      volume = volume + node.amount
-      locationArray.push(node.country)
-      materialArray.push(...node.material.nodes)
-    })
-  })
-
-  const uniqueMaterialArray = materialArray.filter((obj, index, self) =>
-          index === self.findIndex((o) =>
-              o.key === obj.key && o.value === obj.value
-          )
-  );
-
-  return {
-    applicant: Array.from(new Set(applicantArray)),
-    location: Array.from(new Set(locationArray)),
-    material: uniqueMaterialArray,
-  }
-}
-
 </script>
 <template>
   <div
-      class="bg-auctionBackground md:bg-lightBlack rounded-lg font-Inter text-white my-5 md:p-3 md:grid md:grid-cols-5 min-h-[180px]">
-    <img class="h-full col-span-1" src="../assets/auctionCard.png">
+    class="bg-auctionBackground md:bg-lightBlack rounded-lg font-Inter text-white my-5 md:p-3 md:grid md:grid-cols-5 min-h-[180px]">
+    <img class="h-full col-span-1" :src="getDetailsList(cardData.creditCollection.creditData.nodes).thumbnailUrl || auctionCard">
 
     <!--      Details for Mobile UI-->
     <div class="grid grid-cols-2 p-5 gap-4 md:hidden">
@@ -74,7 +46,7 @@ const getDetailsList = (data: any) => {
       </div>
       <div>
         <button class="btn bg-greenPrimary w-full h-full rounded-sm text-title15 px-2 normal-case font-normal"
-                @click="router.push(`/auction/${encodeURIComponent(cardData.id)}`)">
+          @click="router.push(`/auction/${encodeURIComponent(cardData.id)}`)">
           View details
         </button>
       </div>
@@ -82,12 +54,11 @@ const getDetailsList = (data: any) => {
 
     <!--      Details for Desktop UI-->
     <div class="hidden md:grid grid-cols-5 gap-5 w-full col-span-4 py-2 px-6 ml-2 cursor-pointer"
-         @click="router.push(`/auction/${encodeURIComponent(cardData.id)}`)">
+      @click="router.push(`/auction/${encodeURIComponent(cardData.id)}`)">
       <div class="col-span-1 ...">
         <p class="details-title">Material</p>
         <ul class="list-disc ml-6">
-          <li v-for="material in getDetailsList(cardData.creditCollection.creditData.nodes).material"
-              :key="material">
+          <li v-for="material in getDetailsList(cardData.creditCollection.creditData.nodes).material" :key="material">
             {{ material.value }}
           </li>
         </ul>
@@ -104,8 +75,7 @@ const getDetailsList = (data: any) => {
       <div class="col-span-1">
         <p class="details-title">Applicant</p>
         <ul class="list-disc ml-6">
-          <li v-for="applicant in getDetailsList(cardData.creditCollection.creditData.nodes).applicant"
-              :key="applicant">
+          <li v-for="applicant in getDetailsList(cardData.creditCollection.creditData.nodes).applicant" :key="applicant">
             {{ applicant }}
           </li>
         </ul>

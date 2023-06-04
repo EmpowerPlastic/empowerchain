@@ -166,6 +166,11 @@ export class ListingsQueryBuilder {
                                         }
                                     }
                                 }
+                                mediaFiles{
+                                    nodes{
+                                        url
+                                    }
+                                }
                                 applicantDataByCreditDataId{
                                     nodes{
                                         name

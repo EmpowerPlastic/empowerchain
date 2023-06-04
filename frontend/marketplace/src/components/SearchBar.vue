@@ -15,7 +15,7 @@ const filterValues = ref({
   searchTerm:''
 })
 
-const creditOptions = ref(['ETEST'])
+const creditOptions = ref(['PCRD'])
 
 const emitSearch = defineEmits(['searchClick'])
 

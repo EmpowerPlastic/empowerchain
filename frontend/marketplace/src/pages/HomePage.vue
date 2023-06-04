@@ -11,7 +11,7 @@ const queryBuilder = new ListingsQueryBuilder();
 const data = ref()
 
 onMounted(() => {
-  queryBuilder.addCreditTypes(['ETEST']);
+  queryBuilder.addCreditTypes(['PCRD']);
   queryBuilder.addPagination(5,0)
   let query = queryBuilder.build();
   loadQueryData(query)
