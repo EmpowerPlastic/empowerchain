@@ -1,4 +1,59 @@
 <script setup lang="ts">
+
+const offlineSigner = window.keplr.getOfflineSigner("circulus-1");
+
+
+const connect = async () => {
+    const chainConfig = {
+        chainId: "circulus-1",
+        chainName: "EmpowerChain Testnet",
+        rpc: "tpc://51.159.141.221:26657",
+        rest: "http://51.159.141.221:1317",
+        bip44: {
+            coinType: 118,
+        },
+        bech32Config: {
+            bech32PrefixAccAddr: "empower",
+            bech32PrefixAccPub: "empower" + "pub",
+            bech32PrefixValAddr: "empower" + "valoper",
+            bech32PrefixValPub: "empower" + "valoperpub",
+            bech32PrefixConsAddr: "empower" + "valcons",
+            bech32PrefixConsPub: "empower" + "valconspub",
+        },
+        currencies: [
+            {
+                coinDenom: "MPWR",
+                coinMinimalDenom: "umpwr",
+                coinDecimals: 6,
+                coinGeckoId: "mpwr",
+            },
+        ],
+        feeCurrencies: [
+            {
+                coinDenom: "MPWR",
+                coinMinimalDenom: "umpwr",
+                coinDecimals: 6,
+                gasPriceStep: {
+                    low: 0.01,
+                    average: 0.025,
+                    high: 0.04,
+                },
+            },
+        ],
+        stakeCurrency: {
+            coinDenom: "MPWR",
+            coinMinimalDenom: "umpwr",
+            coinDecimals: 6,
+        },
+    };
+    await window.keplr.experimentalSuggestChain(chainConfig);
+    /*await window.leap.experimentalSuggestChain(chainConfig);
+    await window.cosmostation.providers.keplr.experimentalSuggestChain(
+        chainConfig
+    );*/
+}
+
+
 import {CHAIN_ID} from '@/config/config';
 import {onMounted, ref} from 'vue';
 import {toast} from 'vue3-toastify';

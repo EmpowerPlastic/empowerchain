@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import {contracts} from "@empower-plastic/empowerjs";
-import { GasPrice } from '@cosmjs/stargate';
+import {contracts, cosmos, empowerchain, getSigningTM37EmpowerchainClient} from "@empower-plastic/empowerjs";
+import {Decimal} from "@cosmjs/math";
+import type { GeneratedType, OfflineSigner } from '@cosmjs/proto-signing';
+import { GasPrice, SigningStargateClient, defaultRegistryTypes } from '@cosmjs/stargate';
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { Tendermint37Client } from '@cosmjs/tendermint-rpc';
-import { CHAIN_ID, MARKETPLACE_CONTRACT, RPC_ENDPOINT } from "@/config/config";
+import type { HttpEndpoint } from '@cosmjs/tendermint-rpc';
 export interface BuyCreditsProps {
   availableCredits: string
   pricePerCredit: number
@@ -16,6 +18,10 @@ export interface BuyCreditsProps {
 const props = defineProps<BuyCreditsProps>();
 const emitModalValue = defineEmits(['update:selectedCoin', 'update:amount'])
 
+const updateSelectedCoinValue = (val: string) => {
+  emitModalValue('update:selectedCoin', val)
+}
+
 const updateAmount = (e: Event) => {
   emitModalValue('update:amount', parseInt((e.target as HTMLInputElement).value))
 }
@@ -25,22 +31,27 @@ const coinsArray = ['Pay by invoice coming soon']
 
 const buyCredits = async () => {
 
-    const offlineSigner = window.keplr.getOfflineSigner(CHAIN_ID);
+    await window.keplr.enable("circulus-1");
+    const offlineSigner = window.keplr.getOfflineSigner("circulus-1");
     const accounts = await offlineSigner.getAccounts();
+    const client = await getSigningTM37EmpowerchainClient({
+        rpcEndpoint: "51.159.141.221:26657",
+        signer: offlineSigner,
+    });
     const tmClient = await Tendermint37Client.connect(
-        RPC_ENDPOINT);
+        "51.159.141.221:26657");
     // TODO replace with empowerjs getter when path registry issue is solved
     const cosmWasmClient = await SigningCosmWasmClient.createWithSigner(tmClient,
         offlineSigner, {
           gasPrice: GasPrice.fromString("0.025umpwr"),
         }
     );
-    const contract = new contracts.PlasticCreditMarketplace.PlasticCreditMarketplaceClient(cosmWasmClient, accounts[0].address, MARKETPLACE_CONTRACT);
+    const contract = new contracts.PlasticCreditMarketplace.PlasticCreditMarketplaceClient(cosmWasmClient, accounts[0].address, "empower14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9sfg4umu");
     const res = await contract.buyCredits({
         denom: props.denom,
         owner: props.owner,
         numberOfCreditsToBuy: props.amount,
-    }, "auto", "", [{
+    }, 25000, "", [{
             denom: "umpwr",
             amount: (props.pricePerCredit * 1000000 * props.amount).toString(),
     }]);
