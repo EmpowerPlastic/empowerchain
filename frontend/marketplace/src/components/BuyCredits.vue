@@ -51,7 +51,7 @@ const buyCredits = async () => {
         denom: props.denom,
         owner: props.owner,
         numberOfCreditsToBuy: props.amount,
-    }, 25000, "", [{
+    }, "auto", "", [{
             denom: "umpwr",
             amount: (props.pricePerCredit * 1000000 * props.amount).toString(),
     }]);
