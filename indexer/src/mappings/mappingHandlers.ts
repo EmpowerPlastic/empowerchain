@@ -149,10 +149,10 @@ export async function handleBuyCredits(event: CosmosEvent): Promise<void> {
   });
   await buyCreditsWasmEvent.save();
 
-  const marketplaceListing = await MarketplaceListing.get(`${buyer}-${denom}`);
+  const marketplaceListing = await MarketplaceListing.get(`${listingOwner}-${denom}`);
   marketplaceListing.amount = marketplaceListing.amount - numberOfCreditsBought;
   if (marketplaceListing.amount === BigInt(0)) {
-    await MarketplaceListing.remove(`${buyer}-${denom}`);
+    await MarketplaceListing.remove(`${listingOwner}-${denom}`);
   } else {
     await marketplaceListing.save();
   }
