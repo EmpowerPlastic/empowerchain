@@ -1,7 +1,15 @@
 <script setup lang="ts">
+import { toast } from "vue3-toastify";
+
 const copyLink = () => {
-  const url = window.location.href;
-  navigator.clipboard.writeText(url);
+  const url = new URL(window.location.href);
+  url.searchParams.delete("fileName");
+  url.searchParams.delete("time");
+
+  url.pathname = "/verify/success";
+
+  navigator.clipboard.writeText(url.toString());
+  toast.info("Link copied to clipboard");
 };
 </script>
 

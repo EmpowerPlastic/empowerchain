@@ -54,7 +54,7 @@ const hashAndSetResult = async (byteArray: Uint8Array) => {
   try {
     const result = window.empSha256(byteArray);
     const verifyResult = await verifyHash(result?.value);
-    pushToSuccessPage(result?.value, verifyResult?.metadata?.timestamp);
+    pushToSuccessPage(result?.value);
   } catch (error) {
     modalType.value = ErrorModalType.FILE;
     openModal();
@@ -69,13 +69,12 @@ const verifyHash = async (hash: string) => {
   return proof;
 };
 
-const pushToSuccessPage = (hash: string, timeStamp: Date | undefined) => {
+const pushToSuccessPage = (hash: string) => {
   router.push({
-    path: `/certify/success`,
+    path: `/verify/success`,
     query: {
       hash: hash,
       fileName: undefined,
-      time: timeStamp?.getTime(),
     },
   });
 };
@@ -109,9 +108,9 @@ const handleInputString = async () => {
     })
   );
 
-  const finalResult = verifyResults.find((result) => result.success === true);
+  const finalResult = verifyResults.find((result) => result.success);
   if (finalResult?.hash) {
-    pushToSuccessPage(finalResult?.hash, finalResult.timestamp);
+    pushToSuccessPage(finalResult?.hash);
   } else {
     modalType.value = ErrorModalType.STRING;
     openModal();
