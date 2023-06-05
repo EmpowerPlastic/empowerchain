@@ -20,7 +20,7 @@ const updateSelectedCoinValue = (val: string) => {
 }
 
 const updateAmount = (e: Event) => {
-  emitModalValue('update:amount', (e.target as HTMLInputElement).value)
+  emitModalValue('update:amount', parseInt((e.target as HTMLInputElement).value))
 }
 
 const coinsArray = ['Pay by invoice coming soon']
@@ -46,7 +46,10 @@ const buyCredits = async () => {
         denom: props.denom,
         owner: props.owner,
         numberOfCreditsToBuy: props.amount,
-    });
+    }, "auto", "", [{
+            denom: "umpwr",
+            amount: (props.pricePerCredit * 1000000 * props.amount).toString(),
+    }]);
 }
 
 </script>
