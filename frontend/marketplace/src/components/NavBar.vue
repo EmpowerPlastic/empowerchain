@@ -1,9 +1,9 @@
 <script setup lang="ts">
-
-const offlineSigner = window.keplr.getOfflineSigner("circulus-1");
+import { CHAIN_ID } from '@/config/config';
 
 
 const connect = async () => {
+    await window.keplr.enable(CHAIN_ID);
     const chainConfig = {
         chainId: "circulus-1",
         chainName: "EmpowerChain Testnet",
