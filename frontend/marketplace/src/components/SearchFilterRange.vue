@@ -18,7 +18,7 @@ const updateToValue = (e: Event) => {
 <template>
   <div class="dropdown min-w-[160px] break-words">
     <label tabindex="0">
-      <div class="filter-title ">
+      <div class="filter-title">
         {{from || to ?`${from} - ${to}`: placeholder}}
         <img class="ml-3" src="../assets/dropdown-icon.svg">
       </div>

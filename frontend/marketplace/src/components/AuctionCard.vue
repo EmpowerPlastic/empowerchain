@@ -1,13 +1,20 @@
 <script setup lang="ts">
+import router from "@/router";
+import { convertIPFStoHTTPS } from "@/utils/utils";
+import auctionCard from "@/assets/auctionCard.png";
+export interface AuctionCardProps{
+  auctionData:any
+}
+defineProps<AuctionCardProps>()
 </script>
 <template>
   <div class="bg-lightBlack rounded-lg md:rounded-sm">
-    <img src="../assets/auctionCard.png">
+    <img :src="convertIPFStoHTTPS(auctionData?.creditCollection?.creditData?.nodes[0].mediaFiles?.nodes[0].url) || auctionCard">
     <div class="grid grid-cols-2 p-3 gap-4">
       <div>
         <div>
           <p class="font-Inter text-white text-title24 md:text-title32 font-bold">
-            $100.00
+            {{ auctionData?.pricePerCreditAmount / 1000000 }} $MPWR
           </p>
           <p class="font-Inter text-white text-title15 md:text-title18">
             Price per credit
@@ -17,17 +24,17 @@
       <div>
         <div class="text-right">
           <p class="font-Inter text-white text-title13 md:text-title14 font-bold">
-            300kg
+<!--            300kg-->
           </p>
           <p class="font-Inter text-white text-title11 md:text-title12">
-            Volume
+<!--            Volume-->
           </p>
         </div>
       </div>
       <div>
         <div>
           <p class="font-Inter text-white text-title14 font-bold">
-            750/1500
+            {{ auctionData?.amount }}/{{ auctionData?.initialAmount }}
           </p>
           <p class="font-Inter text-white text-title12">
             Available credits
@@ -35,7 +42,7 @@
         </div>
       </div>
       <div>
-        <button type="button" class="bg-greenPrimary w-full h-full rounded-sm font-Inter text-white md:text-title18 px-2">
+        <button type="button" class="bg-greenPrimary w-full h-full rounded-sm font-Inter text-white md:text-title18 px-2" @click="router.push(`/auction/${encodeURIComponent(auctionData.id)}`)">
           View details
         </button>
       </div>
