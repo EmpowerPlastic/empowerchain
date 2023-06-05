@@ -28,7 +28,9 @@ const coinsArray = ['Pay by invoice coming soon']
 
 const buyCredits = async () => {
 
-const offlineSigner = window.keplr.getOfflineSigner("circulus-1");
+    await window.keplr.enable("circulus-1");
+    const offlineSigner = window.keplr.getOfflineSigner("circulus-1");
+    const accounts = await offlineSigner.getAccounts();
     const client = await getSigningTM37EmpowerchainClient({
         rpcEndpoint: "51.159.141.221:26657",
         signer: offlineSigner,
@@ -39,7 +41,7 @@ const offlineSigner = window.keplr.getOfflineSigner("circulus-1");
             amount: Decimal.fromAtomics("25", 6),
         }
     });
-    const contract = new contracts.PlasticCreditMarketplace.PlasticCreditMarketplaceClient(cosmWasmClient, "empower1qnk2n4nlkpw9xfqntladh74w6ujtulwnz7rf8m", "empower14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9sfg4umu");
+    const contract = new contracts.PlasticCreditMarketplace.PlasticCreditMarketplaceClient(cosmWasmClient, accounts[0].address, "empower14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9sfg4umu");
     const res = await contract.buyCredits({
         denom: props.denom,
         owner: props.owner,
