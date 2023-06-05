@@ -1,9 +1,19 @@
 <script setup lang="ts">
 import { CHAIN_ID } from '@/config/config';
+import { onMounted, ref } from 'vue';
 
+const address = ref('Connect wallet');
+
+onMounted(() => {
+  connect();
+});
 
 const connect = async () => {
+
     await window.keplr.enable(CHAIN_ID);
+    const account = await window.keplr.getKey(CHAIN_ID);
+    address.value = account.bech32Address.substring(0, 10) + '...' ;
+
     const chainConfig = {
         chainId: "circulus-1",
         chainName: "EmpowerChain Testnet",
@@ -53,80 +63,6 @@ const connect = async () => {
     );*/
 }
 
-
-import {CHAIN_ID} from '@/config/config';
-import {onMounted, ref} from 'vue';
-import {toast} from 'vue3-toastify';
-
-const address = ref();
-const showNav = ref(false)
-
-onMounted(() => {
- let addressLocal= localStorage.getItem('address')
-  if(addressLocal){
-    connect()
-  }
-});
-
-const connect = async () => {
-  if (!window.keplr) {
-    toast.error("No wallet found");
-    localStorage.removeItem('address')
-  } else {
-    const chainConfig = {
-      chainId: "circulus-1",
-      chainName: "EmpowerChain Testnet",
-      rpc: "tpc://51.159.141.221:26657",
-      rest: "http://51.159.141.221:1317",
-      bip44: {
-        coinType: 118,
-      },
-      bech32Config: {
-        bech32PrefixAccAddr: "empower",
-        bech32PrefixAccPub: "empower" + "pub",
-        bech32PrefixValAddr: "empower" + "valoper",
-        bech32PrefixValPub: "empower" + "valoperpub",
-        bech32PrefixConsAddr: "empower" + "valcons",
-        bech32PrefixConsPub: "empower" + "valconspub",
-      },
-      currencies: [
-        {
-          coinDenom: "MPWR",
-          coinMinimalDenom: "umpwr",
-          coinDecimals: 6,
-          coinGeckoId: "mpwr",
-        },
-      ],
-      feeCurrencies: [
-        {
-          coinDenom: "MPWR",
-          coinMinimalDenom: "umpwr",
-          coinDecimals: 6,
-          gasPriceStep: {
-            low: 0.01,
-            average: 0.025,
-            high: 0.04,
-          },
-        },
-      ],
-      stakeCurrency: {
-        coinDenom: "MPWR",
-        coinMinimalDenom: "umpwr",
-        coinDecimals: 6,
-      },
-    };
-    await window.keplr.experimentalSuggestChain(chainConfig);
-    await window.keplr.enable(CHAIN_ID);
-    const account = await window.keplr.getKey(CHAIN_ID);
-    address.value = account.bech32Address.substring(0, 10) + '...';
-    localStorage.setItem('address', account.bech32Address)
-    /*await window.leap.experimentalSuggestChain(chainConfig);
-    await window.cosmostation.providers.keplr.experimentalSuggestChain(
-        chainConfig
-    );*/
-  }
-
-}
 
 </script>
 
