@@ -2,10 +2,10 @@
 import {GoogleMap, Marker} from "vue3-google-map"
 
 export interface CustomGoogleMapProps {
-  position: {
+  locations: {
     lat: number;
     lng: number
-  }
+  }[]
 }
 defineProps<CustomGoogleMapProps>()
 
@@ -15,9 +15,11 @@ defineProps<CustomGoogleMapProps>()
       class="google-map"
       api-key="AIzaSyBezM4SJJO5t2bS5j2CPOdWJm_kHsdN4n0"
       style="width: 100%; height:100%;overflow: hidden"
-      :center="position"
+      :center="locations[0]"
       :zoom="15"
   >
-    <Marker :options="{ position: position }"/>
+    <MarkerCluster>
+      <Marker v-for="(location, i) in locations" :options="{ position: location }" :key="i" />
+    </MarkerCluster>
   </GoogleMap>
 </template>

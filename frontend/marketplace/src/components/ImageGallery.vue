@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import 'vue3-carousel/dist/carousel.css';
-import {ref} from "vue";
+import {ref, watch} from "vue";
 
 export interface ImageGalleryProps {
   imageArray: string[]
@@ -9,6 +9,11 @@ export interface ImageGalleryProps {
 const props = defineProps<ImageGalleryProps>()
 const activeImageURL = ref(props.imageArray[0])
 
+// TODO probably not the best way to do it
+watch(() => props.imageArray, (newValue) => {
+      activeImageURL.value = newValue[0];
+    });
+
 const handleActiveImage = (url: string) => {
   activeImageURL.value = url
 }
@@ -16,7 +21,7 @@ const handleActiveImage = (url: string) => {
 <template>
   <div class="grid grid-cols-6 gap-5 max-h-[500px] my-5 w-full">
     <div class="col-span-4 w-full">
-      <img class="rounded-sm h-[500px] w-full" :src="activeImageURL"/>
+      <img class="rounded-sm h-[500px] w-full object-none" :src="activeImageURL"/>
     </div>
     <div class="max-h-[500px] px-3 col-span-2 overflow-auto">
       <button class="btn btn-circle scroll-button">
