@@ -10,7 +10,6 @@ import {useQuery} from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import CustomSpinner from "@/components/CustomSpinner.vue";
 import {ListingsQueryBuilder} from "@/utils/query-builder";
-import {HTTPS_FILE_URL} from "@/config/config";
 import { convertIPFStoHTTPS } from "@/utils/utils";
 
 const queryBuilder = new ListingsQueryBuilder();
