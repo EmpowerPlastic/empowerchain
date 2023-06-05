@@ -87,6 +87,15 @@ Figure out a way to build this UI into our existing Proof of Existence UI, or bu
 
 A high level description of how Proof of Existence works can be found here: [Proof of Existence: High level overview](../core-modules/proof-of-existence/high-level-overview.md)
 
+## Automate reference docs for Marketplace contract
+Get full reference documentation for the marketplace into the docs using some kind of automation that will generate the docs from the contract code.
+
+It should be possible to do this for all contracts, but we start with the marketplace contract.
+
+It should show all messages, variables, etc. and extract comments from the code to show as documentation.
+
+If brand-new developer tooling needs to be built for the extraction/generation, we might be inclined to give a separate grant as well.
+
 ## EmpowerChain-specific Governance UI
 Create an EmpowerChain branded governance UI/app that shows EmpowerChain's group-based governance structure in an easy-to-understand and transparent way.
 
@@ -94,6 +103,17 @@ Coming soon:
 TODO: Explain a bit about the governance structure
 TODO: List capabilities
 TODO: EmpowerChain docs on governance
+
+## Add full support for EmpowerChain to Groups UI
+
+There isn't a _ton_ of work to make this happen and would require only frontend work in the [Groups UI repo](https://github.com/regen-network/groups-ui). 
+
+The current issues are the main hurdles to get this done:
+- https://github.com/regen-network/groups-ui/issues/72
+- https://github.com/regen-network/groups-ui/issues/73 (some work exists here already, not a big deal to implement)
+- https://github.com/regen-network/groups-ui/issues/74 (also not a big deal to implement)
+
+Reach out to discuss details if you're interested in this one. Can also connect with the Regen team to coordinate further.
 
 ## Wildcard challenge
 To signal that we don't think we have all the answers: a wildcard challenge! 
