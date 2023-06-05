@@ -1,9 +1,19 @@
 <script setup lang="ts">
 import { CHAIN_ID } from '@/config/config';
+import { onMounted, ref } from 'vue';
 
+const address = ref('Connect wallet');
+
+onMounted(() => {
+  connect();
+});
 
 const connect = async () => {
+
     await window.keplr.enable(CHAIN_ID);
+    const account = await window.keplr.getKey(CHAIN_ID);
+    address.value = account.bech32Address.substring(0, 10) + '...' ;
+  
     const chainConfig = {
         chainId: "circulus-1",
         chainName: "EmpowerChain Testnet",
@@ -86,7 +96,7 @@ const connect = async () => {
         <div>
 
           <div class="flex flex-row items-center">
-            <button class="bg-lightBlack border border-borderBlack  w-full rounded-xl h-full" @click="createListing">Connect wallet</button>
+            <button class="bg-lightBlack border border-borderBlack  w-full rounded-xl h-full" @click="connect">{{ address }}</button>
             <!--          User Profile Dropdown-->
             <div class="dropdown dropdown-end">
               <label tabindex="0" class="btn btn-circle m-1">
@@ -137,7 +147,7 @@ const connect = async () => {
     </button>
     <div class="grid grid-cols-1 gap-8 p-5 w-full font-Inter text-title24 text-white">
       <div>
-        <button class="bg-buttonGray border border-greenPrimary w-full h-11 rounded-xl" @click="connect">Connect wallet</button>
+        <button class="bg-buttonGray border border-greenPrimary w-full h-11 rounded-xl" @click="connect">{{ address }}</button>
       </div>
       <ul class="flex flex-col items-center gap-4">
         <li>
