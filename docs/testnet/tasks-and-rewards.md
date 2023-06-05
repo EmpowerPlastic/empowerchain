@@ -4,12 +4,25 @@ To make sure you are eligible for the rewards, please read the [rules](./rules) 
 
 **Disclaimer:** The tasks and rewards might be adjusted at any time, but will be announced in Discord if so.
 
+Before you start on a task, please open the submission form to make sure that:
+1. The task has opened (if the form is not accepting submissions, the task is not open)
+2. You understand the task and the instructions which you will find in the submission form itself
+
 ## A note on wallets:
 Make sure you use the same wallet address for all tasks. We will collect and link all addresses to 
 the information you signed up with. Make sure you use a new wallet, so we can't connect it to any
 mainnet addresses.
 
 Take a look at this video to learn how to set up a Keplr wallet: https://www.youtube.com/watch?v=cmxx_hIulz8
+
+## Tokens for gas and stuff
+
+For most of the tasks you will need some tokens to pay for gas and other stuff.
+
+You can request tokens in the `# 🔧︱faucet` channel in Discord.
+
+Please do not abuse the faucet. It will only give a small amount of tokens and there will be 
+a cool-down before you can request more tokens. If we detect abuse you will be disqualified.
 
 ## Rewards
 
