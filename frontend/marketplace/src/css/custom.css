@@ -58,3 +58,8 @@
 .scroll-button{
     @apply absolute ml-[130px] btn-ghost bg-scrollButtonBackground
 }
+
+/*Toast*/
+.Toastify__toast{
+    @apply bg-tabGray text-white
+}

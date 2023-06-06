@@ -47,7 +47,7 @@ const handleSearch = (filterValues: any) => {
   if (filterValues.volume.from || filterValues.volume.to) {
     queryBuilder.addVolume(filterValues.volume.from, filterValues.volume.to);
   }
-  if (filterValues.registrationDate[0] || filterValues.registrationDate[1]) {
+  if (filterValues.registrationDate && (filterValues.registrationDate[0] || filterValues.registrationDate[1])) {
     queryBuilder.addRegistrationDate(filterValues.registrationDate[0], filterValues.registrationDate[1]);
   }
   if (filterValues.organization.length > 0) {

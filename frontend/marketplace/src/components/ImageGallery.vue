@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import 'vue3-carousel/dist/carousel.css';
-import {ref, watch} from "vue";
+import {onMounted, ref, watch} from "vue";
 
 export interface ImageGalleryProps {
   imageArray: string[]
@@ -9,11 +9,9 @@ export interface ImageGalleryProps {
 const props = defineProps<ImageGalleryProps>()
 const activeImageURL = ref(props.imageArray[0])
 
-// TODO probably not the best way to do it
-watch(() => props.imageArray, (newValue) => {
-      activeImageURL.value = newValue[0];
-    });
-
+onMounted(()=>{
+  activeImageURL.value = props.imageArray[0];
+})
 const handleActiveImage = (url: string) => {
   activeImageURL.value = url
 }

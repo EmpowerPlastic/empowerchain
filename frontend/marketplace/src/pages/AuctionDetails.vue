@@ -88,10 +88,8 @@ const getAuctionDetails = (id: string | string[]) => {
 
   const {result, loading, error} = useQuery(gql`${query}`);
   data.value = {result, loading, error}
-  //auctionData.value = result?.value?.marketplaceListings?.nodes[0]
   showSpinner.value = false
   auctionData.value = result.value?.marketplaceListings?.nodes[0]
-  console.log(result, result.value?.marketplaceListings?.nodes[0], 'ppcsddsp')
 }
 
 const getOrderHistory = (id: string | string[]) => {

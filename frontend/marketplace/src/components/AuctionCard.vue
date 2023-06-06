@@ -9,7 +9,7 @@ defineProps<AuctionCardProps>()
 </script>
 <template>
   <div class="bg-lightBlack rounded-lg md:rounded-sm">
-    <img :src="convertIPFStoHTTPS(auctionData?.creditCollection?.creditData?.nodes[0].mediaFiles?.nodes[0].url) || auctionCard">
+    <img class="max-h-[250px] w-full rounded-lg" :src="convertIPFStoHTTPS(auctionData?.creditCollection?.creditData?.nodes[0].mediaFiles?.nodes[0].url) || auctionCard">
     <div class="grid grid-cols-2 p-3 gap-4">
       <div>
         <div>

@@ -16,7 +16,7 @@ defineProps<AuctionResultsCardProps>()
 <template>
   <div
     class="bg-auctionBackground md:bg-lightBlack rounded-lg font-Inter text-white my-5 md:p-3 md:grid md:grid-cols-5 min-h-[180px]">
-    <img class="h-full col-span-1" :src="getDetailsList(cardData.creditCollection.creditData.nodes).thumbnailUrl || auctionCard">
+    <img class="h-full col-span-1 rounded-sm" :src="getDetailsList(cardData.creditCollection.creditData.nodes).thumbnailUrl || auctionCard">
 
     <!--      Details for Mobile UI-->
     <div class="grid grid-cols-2 p-5 gap-4 md:hidden">
