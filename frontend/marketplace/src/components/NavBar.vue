@@ -1,68 +1,73 @@
 <script setup lang="ts">
-import { CHAIN_ID } from '@/config/config';
-import { onMounted, ref } from 'vue';
+import {CHAIN_ID} from '@/config/config';
+import {onMounted, ref} from 'vue';
+import { toast } from 'vue3-toastify';
 
-const address = ref('Connect wallet');
+const address = ref();
+const showNav = ref(false)
 
 onMounted(() => {
   connect();
 });
 
 const connect = async () => {
-
-    await window.keplr.enable(CHAIN_ID);
-    const account = await window.keplr.getKey(CHAIN_ID);
-    address.value = account.bech32Address.substring(0, 10) + '...' ;
-
+  if (!window.keplr) {
+    toast.error("No wallet found");
+  } else {
     const chainConfig = {
-        chainId: "circulus-1",
-        chainName: "EmpowerChain Testnet",
-        rpc: "tpc://51.159.141.221:26657",
-        rest: "http://51.159.141.221:1317",
-        bip44: {
-            coinType: 118,
+      chainId: "circulus-1",
+      chainName: "EmpowerChain Testnet",
+      rpc: "tpc://51.159.141.221:26657",
+      rest: "http://51.159.141.221:1317",
+      bip44: {
+        coinType: 118,
+      },
+      bech32Config: {
+        bech32PrefixAccAddr: "empower",
+        bech32PrefixAccPub: "empower" + "pub",
+        bech32PrefixValAddr: "empower" + "valoper",
+        bech32PrefixValPub: "empower" + "valoperpub",
+        bech32PrefixConsAddr: "empower" + "valcons",
+        bech32PrefixConsPub: "empower" + "valconspub",
+      },
+      currencies: [
+        {
+          coinDenom: "MPWR",
+          coinMinimalDenom: "umpwr",
+          coinDecimals: 6,
+          coinGeckoId: "mpwr",
         },
-        bech32Config: {
-            bech32PrefixAccAddr: "empower",
-            bech32PrefixAccPub: "empower" + "pub",
-            bech32PrefixValAddr: "empower" + "valoper",
-            bech32PrefixValPub: "empower" + "valoperpub",
-            bech32PrefixConsAddr: "empower" + "valcons",
-            bech32PrefixConsPub: "empower" + "valconspub",
+      ],
+      feeCurrencies: [
+        {
+          coinDenom: "MPWR",
+          coinMinimalDenom: "umpwr",
+          coinDecimals: 6,
+          gasPriceStep: {
+            low: 0.01,
+            average: 0.025,
+            high: 0.04,
+          },
         },
-        currencies: [
-            {
-                coinDenom: "MPWR",
-                coinMinimalDenom: "umpwr",
-                coinDecimals: 6,
-                coinGeckoId: "mpwr",
-            },
-        ],
-        feeCurrencies: [
-            {
-                coinDenom: "MPWR",
-                coinMinimalDenom: "umpwr",
-                coinDecimals: 6,
-                gasPriceStep: {
-                    low: 0.01,
-                    average: 0.025,
-                    high: 0.04,
-                },
-            },
-        ],
-        stakeCurrency: {
-            coinDenom: "MPWR",
-            coinMinimalDenom: "umpwr",
-            coinDecimals: 6,
-        },
+      ],
+      stakeCurrency: {
+        coinDenom: "MPWR",
+        coinMinimalDenom: "umpwr",
+        coinDecimals: 6,
+      },
     };
     await window.keplr.experimentalSuggestChain(chainConfig);
+    await window.keplr.enable(CHAIN_ID);
+    const account = await window.keplr.getKey(CHAIN_ID);
+    address.value = account.bech32Address.substring(0, 10) + '...';
+
     /*await window.leap.experimentalSuggestChain(chainConfig);
     await window.cosmostation.providers.keplr.experimentalSuggestChain(
         chainConfig
     );*/
-}
+  }
 
+}
 
 </script>
 
@@ -107,7 +112,7 @@ const connect = async () => {
               <template v-if="address">
                 <label tabindex="0" class="btn btn-circle m-1">
                   <div class="avatar">
-                    <div class="w-[48px] rounded-full border-borderBlack bg-darkBlack border-[1.5px] p-2">
+                    <div class="w-[48px] rounded-full border-borderBlack bg-lightBlack border-[1.5px] p-2">
                       <img src="../assets/walletAvatar.png"/>
                     </div>
                   </div>
@@ -115,7 +120,7 @@ const connect = async () => {
               </template>
               <div tabindex="0"
                    class="dropdown-content menu font-Inter divide-y divide-lightGray  bg-avatarBlack  rounded-sm items-center border-avatarBorder border-[1.5px]">
-                <div class="menu py-5 items-center mx-16 min-w-[120px]">
+                <div class="menu py-5 items-center mx-16 min-w-[140px]">
                   <div class="avatar mb-3">
                     <div class="w-[82px] rounded-full bg-lightBlack">
                       <img class="p-4" src="../assets/walletAvatar.png"/>
@@ -125,17 +130,17 @@ const connect = async () => {
                   <!--                  <p class="text-title14 text-textGray">natasha@empower.eco</p>-->
                 </div>
 
-                <!--                <div class="menu py-2 items-center w-full">-->
-                <!--                  <a-->
-                <!--                      href="/certificate"-->
-                <!--                      class="btn nav-dropdown-button">-->
-                <!--                    My Credits-->
-                <!--                  </a>-->
-                <!--                  &lt;!&ndash;                  <button&ndash;&gt;-->
-                <!--                  &lt;!&ndash;                      class="btn nav-dropdown-button">&ndash;&gt;-->
-                <!--                  &lt;!&ndash;                    Sign out&ndash;&gt;-->
-                <!--                  &lt;!&ndash;                  </button>&ndash;&gt;-->
-                <!--                </div>-->
+                <div class="menu py-2 items-center w-full">
+                  <a
+                      href="/certificate"
+                      class="btn nav-dropdown-button">
+                    My Credits
+                  </a>
+                  <!--                  <button-->
+                  <!--                      class="btn nav-dropdown-button">-->
+                  <!--                    Sign out-->
+                  <!--                  </button>-->
+                </div>
               </div>
             </div>
           </div>
@@ -157,8 +162,7 @@ const connect = async () => {
     </button>
     <div class="grid grid-cols-1 gap-8 p-5 w-full font-Inter text-title24 text-white">
       <div>
-        <button class="bg-buttonGray border border-greenPrimary w-full h-11 rounded-xl" @click="connect">
-          {{ address || 'Connect wallet' }}
+        <button class="bg-buttonGray border border-greenPrimary w-full h-11 rounded-xl" @click="connect">  {{ address || 'Connect wallet' }}
         </button>
       </div>
       <ul class="flex flex-col items-center gap-4">
