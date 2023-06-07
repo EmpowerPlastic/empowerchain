@@ -54,7 +54,7 @@ const buyCredits = async () => {
     }
   } catch (error) {
     showButtonSpinner.value = false
-    toast.error(`${error}`)
+    toast.error('Purchase failed')
   }
 }
 
@@ -87,7 +87,7 @@ const buyCredits = async () => {
           class="btn btn-ghost w-full rounded-r-none md:max-w-[80%] max-w-[85%] normal-case bg-greenPrimary text-title24 p-0 font-normal md:ml-4 disabled:bg-lightGray disabled:text-white"
           @click="buyCredits">
         <span class="loading loading-spinner"></span>
-        {{ showButtonSpinner ? 'Loading' : `Buy with ${selectedCoin}` }}
+        {{ showButtonSpinner ? 'Processing transaction' : `Buy with ${selectedCoin}` }}
       </button>
       <div class="dropdown dropdown-end">
         <label tabindex="0" class="btn btn-ghost rounded-l-none bg-dropdownGreen">
@@ -95,7 +95,6 @@ const buyCredits = async () => {
         </label>
         <div tabindex="0" class="dropdown-content menu p-4 shadow bg-dropdownGray rounded-box w-52 !list-none">
           <li disabled class="text-title12 font-semibold my-1 cursor-pointer" v-for="coin in coinsArray" :key="coin"
-
           >{{ coin }}
           </li>
         </div>
