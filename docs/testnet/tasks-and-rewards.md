@@ -120,6 +120,8 @@ Create proof of existence: https://forms.gle/i2TSGvN2AL983WS16
 
 Buy plastic credits: https://forms.gle/MDfBbZZSv3rDh11W7
 
+_(Right now, the credits you buy will not show up anywhere (except if you know how to query the marketplace contract manually). This will be added shortly.)_
+
 Retire plastic credits: Will be provided later when this functionality is turned on.
 
 ## CLI Testing
@@ -240,6 +242,8 @@ All bugs are rewarded only if you are the first to report them.
 If they are reported elsewhere, or by someone else first, you will not be rewarded
 (depending on the situation, we'll look at this on a case-by-case basis).
 
+Make sure to check and report first at: https://github.com/EmpowerPlastic/empowerchain/issues
+
 ### Instructions
 
 Submit bugs in our GitHub repo: https://github.com/EmpowerPlastic/empowerchain
@@ -280,6 +284,8 @@ And submit it in this Google form as well: https://forms.gle/FXopNQoFeoZjZqPs6
 All security issues are rewarded only if you are the first to report them.
 If they are reported elsewhere, or by someone else first, you will not be rewarded
 (depending on the situation, we'll look at this on a case-by-case basis).
+
+Make sure to check and report first (unless critical, see note below) at: https://github.com/EmpowerPlastic/empowerchain/issues
 
 **IMPORTANT!** If you discover a security issue in an upstream library that is used by EmpowerChain, please report it in
 private.
