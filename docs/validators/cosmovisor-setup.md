@@ -39,6 +39,8 @@ ln -s $HOME/.empowerd/cosmovisor/genesis/bin/empowerd $HOME/.empowerd/cosmovisor
 
 It is recommended to setup a systemd service to manage Cosmovisor. A full list of environment variables that may be used can be found in the [Cosmovisor docs](https://docs.cosmos.network/main/tooling/cosmovisor).
 
+> Note: If using `gvm` instead of a standard go installation, the path in the following ExecStart line may be different. To get cosmovisor's path while using `gvm`, ensure the `gvm` go profile that was used to build cosmovsior is active and run `$(which cosmovisor)`. This path should be using in place of `/home/<username>/go/bin/cosmovisor`.
+
 ```bash
 sudo tee /etc/systemd/system/empowerd.service > /dev/null <<EOF
 [Unit]
@@ -47,7 +49,7 @@ After=network-online.target
 
 [Service]
 User=<username>
-ExecStart=/home/<your-user>/go/bin/cosmovisor run start
+ExecStart=/home/<username>/go/bin/cosmovisor run start
 Restart=always
 RestartSec=3
 LimitNOFILE=4096
