@@ -21,29 +21,29 @@
     <div class="flex flex-col justify-end gap-8 md:gap-28 w-full md:flex-row text-center font-Inter mb-10">
       <ul>
         <p class="font-bold text-title18 mb-4">Quick Links</p>
+<!--        <li class="text-title14 text-textLightGray mb-2">-->
+<!--          Get MPWR-->
+<!--        </li>-->
         <li class="text-title14 text-textLightGray mb-2">
-          Get MPWR
-        </li>
-        <li class="text-title14 text-textLightGray mb-2">
-          FAQ
+          <a href="/faq">FAQ</a>
         </li>
       </ul>
       <ul>
         <p class="font-bold text-title18 mb-4">Social</p>
         <li class="text-title14 text-textLightGray mb-2">
-          Twitter
+          <a target="_blank" href="https://twitter.com/empowerchain_io">Twitter</a>
         </li>
         <li class="text-title14 text-textLightGray mb-2">
-          Discord
+          <a target="_blank" href="https://discord.gg/UTxEzFzHVX">Discord</a>
         </li>
         <li class="text-title14 text-textLightGray mb-2">
-          Telegram
+          <a target="_blank" href="https://t.me/empowerchain">Telegram</a>
         </li>
       </ul>
       <ul>
         <p class="font-bold text-title18 mb-4">Company</p>
         <li class="text-title14 text-textLightGray mb-2">
-          Empower.eco
+          <a target="_blank" href="https://www.empower.eco/">Empower.eco</a>
         </li>
       </ul>
     </div>
