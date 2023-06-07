@@ -154,10 +154,10 @@ Replace the `<chain-id>` field with the chain-id of the desired network.
 empowerd init "custom_moniker" --chain-id <chain-id>
 ```
 
-Example for the `altruistic-1` testnet:
+Example for the `circulus-1` testnet:
 
 ```bash
-empowerd init "custom_moniker" --chain-id altruistic-1
+empowerd init "custom_moniker" --chain-id circulus-1
 ```
 
 ### Retrieve the Genesis File
@@ -168,9 +168,9 @@ Retrieve a copy of the genesis file for the desired chain. The genesis file defi
 wget -O $HOME/empowerchain/config/genesis.json <genesis-url>
 ```
 
-Example for the `altruistic-1` testnet:
+Example for the `circulus-1` testnet:
 ```bash
-wget -O $HOME/empowerchain/config/genesis.json https://github.com/EmpowerPlastic/empowerchain/blob/main/testnets/altruistic-1/genesis.json
+wget -O $HOME/empowerchain/config/genesis.json https://github.com/EmpowerPlastic/empowerchain/blob/main/testnets/circulus-1/genesis.json
 ```
 
 ### Set Persistent Peers and Seeds
