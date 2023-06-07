@@ -98,12 +98,9 @@ const handleWalletTransaction = async (offlineSigner: OfflineSigner) => {
     handleResponse(response);
   } catch (error) {
     console.log(error);
-    toast.error(
-      "This account does not exist on chain. Send some tokens there before trying to query sequence",
-      {
-        position: toast.POSITION.TOP_RIGHT,
-      }
-    );
+    toast.error(`${error}`, {
+      position: toast.POSITION.TOP_RIGHT,
+    });
     loading.value = false;
   }
 };
