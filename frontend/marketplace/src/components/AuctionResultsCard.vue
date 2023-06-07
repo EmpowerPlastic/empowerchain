@@ -58,7 +58,7 @@ defineProps<AuctionResultsCardProps>()
       <div class="col-span-1 ...">
         <p class="details-title">Material</p>
         <ul class="list-disc ml-6">
-          <li v-for="material in getDetailsList(cardData.creditCollection.creditData.nodes).material" :key="material">
+          <li v-for="material in getDetailsList(cardData.creditCollection.creditData.nodes).material" :key="material.key">
             {{ material.value }}
           </li>
         </ul>

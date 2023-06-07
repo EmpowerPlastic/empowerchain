@@ -236,7 +236,7 @@ const getDetailsList = (data: any) => {
       <ul class="pl-5">
         <li class="text-title14 text-greenPrimary underline"
             v-for="file in getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).file"
-            :key="file">
+            :key="file.name">
           <a target="_blank" :href="file.url">{{ file.name }}</a>
         </li>
       </ul>
