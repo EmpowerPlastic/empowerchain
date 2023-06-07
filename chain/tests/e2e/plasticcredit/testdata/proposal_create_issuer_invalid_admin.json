@@ -1,0 +1,15 @@
+{
+  "messages": [
+    {
+      "@type": "/empowerchain.plasticcredit.MsgCreateIssuer",
+      "creator": "empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd",
+      "name": "Created Issuer",
+      "description": "Fresh Issuer",
+      "admin": "invalid"
+    }
+  ],
+  "metadata": "ipfs://CID",
+  "deposit": "10000000stake",
+  "title": "Create issuer",
+  "summary": "Creates a new issuer"
+}

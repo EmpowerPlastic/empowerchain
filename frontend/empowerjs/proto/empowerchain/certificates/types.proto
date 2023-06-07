@@ -1,0 +1,37 @@
+syntax = "proto3";
+package empowerchain.certificates;
+
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "google/protobuf/timestamp.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/certificates";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+
+  repeated string allowed_issuers = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message Certificate {
+  uint64 id = 1;
+  CertificateType type = 2;
+  string owner = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string issuer = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  repeated AdditionalData additional_data = 5;
+}
+
+message AdditionalData {
+  string key = 1;
+  string value = 2;
+}
+
+enum CertificateType {
+  CREDIT_RETIREMENT = 0;
+}
+
+message IDCounters {
+  uint64 next_certificate_id = 1;
+}

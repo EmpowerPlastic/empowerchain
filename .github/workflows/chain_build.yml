@@ -1,0 +1,37 @@
+name: "Build EmpowerChain"
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+    paths:
+      - 'chain/**'
+
+jobs:
+  build:
+    name: Build EmpowerChain
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        arch: [amd64]
+        targetos: [darwin, linux]
+        include:
+          - targetos: darwin
+            arch: arm64
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: earthly/actions-setup@v1
+        with:
+          version: 0.6.30
+
+      - run: earthly --ci --output +build-local
+        working-directory: ./chain
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: empowerd ${{ matrix.targetos }} ${{ matrix.arch }}
+          path: chain/build/empowerd
+          if-no-files-found: error

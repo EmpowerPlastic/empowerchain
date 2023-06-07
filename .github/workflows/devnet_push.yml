@@ -1,0 +1,33 @@
+name: "Build and push devnet to ghcr.io"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'chain/**'
+
+env:
+  IMAGE_NAME: empowerchain-devnet
+
+jobs:
+  build:
+    name: Build and push devnet to ghcr.io
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: earthly/actions-setup@v1
+        with:
+          version: 0.6.30
+
+      - name: Log in to registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+
+      - name: build image
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME 
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          earthly --ci --push +devnet --IMAGE_NAME=$IMAGE_ID
+        working-directory: ./chain

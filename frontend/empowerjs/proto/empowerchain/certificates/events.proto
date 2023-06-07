@@ -1,0 +1,15 @@
+syntax = "proto3";
+package empowerchain.certificates;
+
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/certificates";
+
+// EventCreateCertificate is an event emitted when a new certificate is created
+message EventCreateCertificate {
+  uint64 certificate_id = 1;
+  string issuer = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string owner = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string certificate_type = 4;
+  string additional_data = 5;
+}

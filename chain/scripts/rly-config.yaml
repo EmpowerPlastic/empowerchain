@@ -1,0 +1,43 @@
+global:
+  api-listen-addr: :5183
+  timeout: 10s
+  memo: ""
+  light-cache-size: 20
+chains:
+  gaia:
+    type: cosmos
+    value:
+      key: gaia-relay-account
+      chain-id: gaia-local-1
+      rpc-addr: tcp://0.0.0.0:36657/
+      account-prefix: cosmos
+      keyring-backend: test
+      gas-adjustment: 1.3
+      gas-prices: 0.025uatom
+      debug: false
+      timeout: 20s
+      output-format: json
+      sign-mode: direct
+  empowerchain:
+    type: cosmos
+    value:
+      key: empowerchain-relay-account
+      chain-id: empowerchain-local-1
+      rpc-addr: tcp://0.0.0.0:26657/
+      account-prefix: empower
+      keyring-backend: test
+      gas-adjustment: 1.3
+      gas-prices: 0.025umpwr
+      debug: false
+      timeout: 20s
+      output-format: json
+      sign-mode: direct
+paths:
+  empowerchain-gaia:
+    src:
+      chain-id: empowerchain-local-1
+    dst:
+      chain-id: gaia-local-1
+    src-channel-filter:
+      rule: ""
+      channel-list: []

@@ -1,5 +1,11 @@
 ![empower](https://user-images.githubusercontent.com/104348282/192093493-67779857-653e-4018-8c78-49530690f7a0.png)
 
+# IMPORTANT!
+
+We are not accepting gentx PRs at the moment, so there is no need to submit those.
+
+You can come and visit us on our Discord to discuss more and keep up to date on the next phase of the validator selection process.
+
 # Prepare testnet altruistic-1
 **Update packages and install required packages**
 ```bash
@@ -21,8 +27,10 @@ go version
 
 **Install binary empowerd**
 ```bash
-cd $HOME && git clone https://github.com/empowerchain/empowerchain && \
-cd empowerchain/chain && \
+cd $HOME && git clone https://github.com/EmpowerPlastic/empowerchain && \
+cd empowerchain && \
+git checkout v0.0.1 && \
+cd chain && \
 make install && \
 empowerd version --long | head
 ```
@@ -56,7 +64,9 @@ empowerd gentx <WALLET_NAME> 1000000umpwr \
 --website="" \
 --security-contact="" \
 --identity="" \
---details=""
+--details="" \
+--gas=auto \
+--gas-prices=0.025umpwr
 ```
 
 After executing this command, you have a gentx. Submit a pull request (gentx folder) with the given gentx
@@ -82,6 +92,12 @@ empowerd tendermint unsafe-reset-all --home $HOME/.empowerchain
 sha256sum $HOME/.empowerchain/config/genesis.json
 ```
 Result: fcae4a283488be14181fdc55f46705d9e11a32f8e3e8e25da5374914915d5ca8
+
+
+**Set minimum gas price**
+```bash
+sed -i.bak -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.025umpwr\"/" $HOME/.empowerchain/config/app.toml
+```
 
 **Create a service file**
 ```bash

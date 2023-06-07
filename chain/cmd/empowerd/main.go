@@ -4,15 +4,16 @@ import (
 	"os"
 
 	"github.com/cosmos/cosmos-sdk/server"
-	"github.com/empowerchain/empowerchain/app"
-	"github.com/empowerchain/empowerchain/app/params"
-	"github.com/empowerchain/empowerchain/cmd/empowerd/cmd"
-
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
+
+	"github.com/EmpowerPlastic/empowerchain/app"
+	"github.com/EmpowerPlastic/empowerchain/app/params"
+	"github.com/EmpowerPlastic/empowerchain/cmd/empowerd/cmd"
 )
 
 func main() {
 	params.SetAddressPrefixes()
+	params.RegisterDenoms()
 
 	rootCmd, _ := cmd.NewRootCmd()
 

@@ -1,0 +1,62 @@
+syntax = "proto3";
+package empowerchain.certificates;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos_proto/cosmos.proto";
+import "empowerchain/certificates/types.proto";
+
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/certificates";
+
+service Query {
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/EmpowerPlastic/empowerchain/certificates/params";
+  }
+
+  rpc Certificate(QueryCertificateRequest) returns (QueryCertificateResponse) {
+    option (google.api.http).get = "/EmpowerPlastic/empowerchain/certificates/{owner}/{id}";
+  }
+
+  rpc Certificates(QueryCertificatesRequest) returns (QueryCertificatesResponse) {
+    option (google.api.http).get = "/EmpowerPlastic/empowerchain/certificates";
+  }
+
+  rpc AllCertificatesByUser(QueryAllCertificatesByUserRequest) returns (QueryAllCertificatesByUserResponse) {
+    option (google.api.http).get = "/EmpowerPlastic/empowerchain/certificates/{owner}";
+  }
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryCertificateRequest {
+  uint64 id = 1;
+  string owner = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message QueryCertificateResponse {
+  Certificate certificate = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryCertificatesRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryCertificatesResponse {
+  repeated Certificate certificates = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = false];
+}
+
+message QueryAllCertificatesByUserRequest {
+  string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2 [(gogoproto.nullable) = false];
+}
+
+message QueryAllCertificatesByUserResponse {
+  repeated Certificate certificates = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2 [(gogoproto.nullable) = false];
+}

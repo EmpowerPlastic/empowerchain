@@ -1,27 +1,45 @@
 package proofofexistence
 
-import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/empowerchain/empowerchain/x/proofofexistence/keeper"
-	"github.com/empowerchain/empowerchain/x/proofofexistence/types"
-)
+import fmt "fmt"
 
-// InitGenesis initializes the capability module's state from a provided genesis
-// state.
-func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
-	// Set all the proof
-	for _, elem := range genState.ProofList {
-		if err := k.SetProof(ctx, elem); err != nil {
-			panic(err)
-		}
+// DefaultGenesisState - Return a default genesis state
+func DefaultGenesisState() *GenesisState {
+	return &GenesisState{
+		ProofList: []Proof{},
 	}
 }
 
-// ExportGenesis returns the capability module's exported genesis.
-func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
-	genesis := types.DefaultGenesis()
+// Validate performs basic genesis state validation returning an error upon failure
+func (gs GenesisState) Validate() error {
+	// Check for duplicated index in proof
+	hashMap := make(map[string]struct{})
 
-	genesis.ProofList = k.GetAllProof(ctx)
+	for _, proof := range gs.ProofList {
+		if _, exists := hashMap[proof.Hash]; exists {
+			return fmt.Errorf("duplicated hash found")
+		}
+		hashMap[proof.Hash] = struct{}{}
 
-	return genesis
+		if err := validateGenesisProof(proof); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func validateGenesisProof(proof Proof) error {
+	if proof.Hash == "" {
+		return fmt.Errorf("hash cannot be empty")
+	}
+
+	if proof.Metadata == nil {
+		return fmt.Errorf("metadata cannot be empty")
+	}
+
+	if proof.Metadata.Creator == "" {
+		return fmt.Errorf("metadata.creator cannot be empty")
+	}
+
+	return nil
 }

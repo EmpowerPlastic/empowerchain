@@ -1,0 +1,23 @@
+syntax = "proto3";
+package empowerchain.proofofexistence;
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/proofofexistence";
+
+// ProofMetadata is the metadata attached to a specific data proof
+// Because the proof itself is also the key, the data structure is hash -> ProofMetadata
+// The hash is the SHA-256 hash of the data of which is being made a proof for.
+message ProofMetadata {
+  // timestamp is the time the proof was added on-chain (block time)
+  google.protobuf.Timestamp timestamp = 1 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"timestamp\""
+  ];
+
+  // creator is the account address that created the proof
+  string creator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
