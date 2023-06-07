@@ -53,7 +53,7 @@ const handleSearch = (filterValues: any) => {
 </script>
 <template>
   <div class="p-5 md:px-[10%]">
-    <SearchBar @search-click="handleSearch"/>
+    <!-- <SearchBar @search-click="handleSearch"/> -->
     <HomePageHeroBanner/>
     <CustomSpinner :visible="showSpinner"/>
     <template v-if="!showSpinner">

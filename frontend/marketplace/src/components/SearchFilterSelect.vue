@@ -26,6 +26,7 @@ const updateValue = (val: string[]) => {
       :multiple="true"
       :close-on-select="false"
       :placeholder="placeholder"
+      :select-label="''"
 
   />
 </template>
