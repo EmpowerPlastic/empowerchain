@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import {toast} from 'vue3-toastify';
 </script>
 <template>
   <footer class="font-Inter text-white p-5 md:px-[10%] md:grid md:grid-cols-2 md:gap-16 w-full md:mt-10">
@@ -25,7 +26,10 @@
 <!--          Get MPWR-->
 <!--        </li>-->
         <li class="text-title14 text-textLightGray mb-2">
-          <a href="/faq">FAQ</a>
+          <!-- <a href="/faq">FAQ</a> -->
+          <button type="button"
+                      @click="toast.info('Coming soon!')"
+                      >FAQ</button>
         </li>
       </ul>
       <ul>
