@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import {contracts} from "@empower-plastic/empowerjs";
-import { GasPrice } from '@cosmjs/stargate';
-import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { Tendermint37Client } from '@cosmjs/tendermint-rpc';
-import { CHAIN_ID, MARKETPLACE_CONTRACT, RPC_ENDPOINT } from "@/config/config";
+import {GasPrice} from '@cosmjs/stargate';
+import {SigningCosmWasmClient} from "@cosmjs/cosmwasm-stargate";
+import {Tendermint37Client} from '@cosmjs/tendermint-rpc';
+import {CHAIN_ID, MARKETPLACE_CONTRACT, RPC_ENDPOINT} from "@/config/config";
+import {ref} from "vue";
+import {toast} from "vue3-toastify";
+
 export interface BuyCreditsProps {
   availableCredits: string
   pricePerCredit: number
@@ -15,7 +18,7 @@ export interface BuyCreditsProps {
 
 const props = defineProps<BuyCreditsProps>();
 const emitModalValue = defineEmits(['update:selectedCoin', 'update:amount'])
-
+const showButtonSpinner = ref(false)
 const updateAmount = (e: Event) => {
   emitModalValue('update:amount', parseInt((e.target as HTMLInputElement).value))
 }
@@ -24,7 +27,8 @@ const coinsArray = ['Pay by invoice coming soon']
 
 
 const buyCredits = async () => {
-
+  showButtonSpinner.value = true
+  try {
     const offlineSigner = window.keplr.getOfflineSigner(CHAIN_ID);
     const accounts = await offlineSigner.getAccounts();
     const tmClient = await Tendermint37Client.connect(
@@ -37,13 +41,21 @@ const buyCredits = async () => {
     );
     const contract = new contracts.PlasticCreditMarketplace.PlasticCreditMarketplaceClient(cosmWasmClient, accounts[0].address, MARKETPLACE_CONTRACT);
     const res = await contract.buyCredits({
-        denom: props.denom,
-        owner: props.owner,
-        numberOfCreditsToBuy: props.amount,
+      denom: props.denom,
+      owner: props.owner,
+      numberOfCreditsToBuy: props.amount,
     }, "auto", "", [{
-            denom: "umpwr",
-            amount: (props.pricePerCredit * 1000000 * props.amount).toString(),
+      denom: "umpwr",
+      amount: (props.pricePerCredit * 1000000 * props.amount).toString(),
     }]);
+    if(res){
+      toast.success('Purchase was successful')
+      showButtonSpinner.value = false
+    }
+  } catch (error) {
+    showButtonSpinner.value = false
+    toast.error(`${error}`)
+  }
 }
 
 </script>
@@ -51,7 +63,7 @@ const buyCredits = async () => {
   <div class="bg-darkGray md:grid md:grid-cols-4 flex flex-col gap-1 p-6 rounded-sm">
     <div>
       <p class="text-title18">Available credits</p>
-      <p class="text-title38">{{availableCredits}}</p>
+      <p class="text-title38">{{ availableCredits }}</p>
     </div>
     <div>
       <p class="text-title18">Price per credit</p>
@@ -59,19 +71,23 @@ const buyCredits = async () => {
     </div>
     <div>
       <div class="flex md:ml-[-60px]">
-        <p class="text-title18 text-subLabel  text-right hidden md:block mr-3 mt-8">Cost {{pricePerCredit*amount}}</p>
+        <p class="text-title18 text-subLabel  text-right hidden md:block mr-3 mt-8">Cost
+          {{ pricePerCredit * amount }}</p>
         <div>
           <p class="text-title18">How many you want to buy?</p>
           <input type="number" class="input bg-darkGray mt-1 text-white text-title38 font-bold w-full" :value="amount"
                  @input="updateAmount"/>
         </div>
       </div>
-      <p class="text-title18 text-subLabel mt-1 md:hidden">Cost {{pricePerCredit*amount}} $MPWR</p>
+      <p class="text-title18 text-subLabel mt-1 md:hidden">Cost {{ pricePerCredit * amount }} $MPWR</p>
     </div>
     <div class="flex flex-row mt-8">
       <button
-          class="btn btn-ghost w-full rounded-r-none md:max-w-[80%] max-w-[85%] normal-case bg-greenPrimary text-title24 p-0 font-normal md:ml-4" @click="buyCredits">
-        Buy with ${{ selectedCoin }}
+          :disabled="showButtonSpinner"
+          class="btn btn-ghost w-full rounded-r-none md:max-w-[80%] max-w-[85%] normal-case bg-greenPrimary text-title24 p-0 font-normal md:ml-4 disabled:bg-lightGray disabled:text-white"
+          @click="buyCredits">
+        <span class="loading loading-spinner"></span>
+        {{ showButtonSpinner ? 'Loading' : `Buy with ${selectedCoin}` }}
       </button>
       <div class="dropdown dropdown-end">
         <label tabindex="0" class="btn btn-ghost rounded-l-none bg-dropdownGreen">
@@ -80,7 +96,7 @@ const buyCredits = async () => {
         <div tabindex="0" class="dropdown-content menu p-4 shadow bg-dropdownGray rounded-box w-52 !list-none">
           <li disabled class="text-title12 font-semibold my-1 cursor-pointer" v-for="coin in coinsArray" :key="coin"
 
-          >{{coin}}
+          >{{ coin }}
           </li>
         </div>
       </div>
