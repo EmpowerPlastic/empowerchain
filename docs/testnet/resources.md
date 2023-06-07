@@ -14,7 +14,8 @@ If you want to add your resource to this page, please create a PR with the chang
 | ITRocket   | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://itrocket.net/services/testnet/empower                                        |
 | NODEJUMPER | Node resources + decentralization map (instructions, state sync, peers, seeds, genesis, etc) | https://app.nodejumper.io/empower-testnet                                            |
 | Nodeist    | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://nodeist.net/Empower/                                                         |
-| NodeStake  | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://nodestake.top/empower                                                        |
+| NodeStake  | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://nodestake.top/empower
+| Indonode   | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://indonode.net/testnet/empower |
 
 ## Explorers
 
@@ -25,6 +26,7 @@ If you want to add your resource to this page, please create a PR with the chang
 | NodeStake | Ping      | https://explorer.nodestake.top/empower-testnet |
 | ITRocket  | Ping      | https://testnet.itrocket.net/empower/staking   |
 | STAVR     | Ping      | https://explorer.stavr.tech/empower            |
+| Indonode  | Ping      | https://explorer.indonode.net/empower-testnet  |
 
 ## Endpoints
 
@@ -37,4 +39,5 @@ If you want to add your resource to this page, please create a PR with the chang
 | NODEJUMPER | https://empower-testnet.nodejumper.io:443      | https://empower-testnet.nodejumper.io:1317   | empower-testnet.nodejumper.io:9090      |
 | ITRocket   | https://empower-testnet-rpc.itrocket.net:443   | https://empower-testnet-api.itrocket.net:443 | empower-testnet-grpc.itrocket.net:16090 |
 | AviaOne    | https://rpc.circulus-1.empower.aviaone.com:443 | https://api.circulus-1.empower.aviaone.com   | grpc.circulus-1.empower.aviaone.com:443 |
+| Indonode   | https://rpc.empower-t.indonode.net:443         | https://api.empower-t.indonode.net           | rpc.empower-t.indonode.net:52090        |
 
