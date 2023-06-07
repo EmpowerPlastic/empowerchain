@@ -71,6 +71,10 @@ export default withMermaid(
             {
               text: 'Build challenges',
               link: '/testnet/build-challenges'
+            },
+            {
+              text: 'Resources',
+              link: '/testnet/resources'
             }
           ],
         },
