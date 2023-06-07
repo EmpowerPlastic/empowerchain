@@ -8,6 +8,17 @@ Before you start on a task, please open the submission form to make sure that:
 1. The task has opened (if the form is not accepting submissions, the task is not open)
 2. You understand the task and the instructions which you will find in the submission form itself
 
+To find resources such as RPC, API, block explorers and validation guides, please visit the [resources](./resources) page.
+
+## For validators
+As you will see below, most of the tasks are not particularly geared towards validators. This is because we want to
+make sure that everyone can participate, not just validators.
+
+More importantly, we want to align and incentivize validators long-term, which is why the delegation program 
+will be the most important way for validators to earn rewards. Please see the [delegation program](../validators/delegation-program.md) for more information.
+
+**Being in the active set during the testnet is not really relevant to the delegation program (so please don't worry about that)**
+
 ## How to participate
 To participate, you first need to do three things:
 1. Join our Discord
