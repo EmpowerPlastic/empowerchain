@@ -1,18 +1,22 @@
 <script setup lang="ts">
 import {CHAIN_ID} from '@/config/config';
 import {onMounted, ref} from 'vue';
-import { toast } from 'vue3-toastify';
+import {toast} from 'vue3-toastify';
 
 const address = ref();
 const showNav = ref(false)
 
 onMounted(() => {
-  connect();
+ let addressLocal= localStorage.getItem('address')
+  if(addressLocal){
+    connect()
+  }
 });
 
 const connect = async () => {
   if (!window.keplr) {
     toast.error("No wallet found");
+    localStorage.removeItem('address')
   } else {
     const chainConfig = {
       chainId: "circulus-1",
@@ -60,7 +64,7 @@ const connect = async () => {
     await window.keplr.enable(CHAIN_ID);
     const account = await window.keplr.getKey(CHAIN_ID);
     address.value = account.bech32Address.substring(0, 10) + '...';
-
+    localStorage.setItem('address', account.bech32Address)
     /*await window.leap.experimentalSuggestChain(chainConfig);
     await window.cosmostation.providers.keplr.experimentalSuggestChain(
         chainConfig
@@ -130,17 +134,17 @@ const connect = async () => {
                   <!--                  <p class="text-title14 text-textGray">natasha@empower.eco</p>-->
                 </div>
 
-                <div class="menu py-2 items-center w-full">
-                  <a
-                      href="/certificate"
-                      class="btn nav-dropdown-button">
-                    My Credits
-                  </a>
-                  <!--                  <button-->
-                  <!--                      class="btn nav-dropdown-button">-->
-                  <!--                    Sign out-->
-                  <!--                  </button>-->
-                </div>
+                <!--                <div class="menu py-2 items-center w-full">-->
+                <!--                  <a-->
+                <!--                      href="/certificate"-->
+                <!--                      class="btn nav-dropdown-button">-->
+                <!--                    My Credits-->
+                <!--                  </a>-->
+                <!--                  &lt;!&ndash;                  <button&ndash;&gt;-->
+                <!--                  &lt;!&ndash;                      class="btn nav-dropdown-button">&ndash;&gt;-->
+                <!--                  &lt;!&ndash;                    Sign out&ndash;&gt;-->
+                <!--                  &lt;!&ndash;                  </button>&ndash;&gt;-->
+                <!--                </div>-->
               </div>
             </div>
           </div>
@@ -162,7 +166,8 @@ const connect = async () => {
     </button>
     <div class="grid grid-cols-1 gap-8 p-5 w-full font-Inter text-title24 text-white">
       <div>
-        <button class="bg-buttonGray border border-greenPrimary w-full h-11 rounded-xl" @click="connect">  {{ address || 'Connect wallet' }}
+        <button class="bg-buttonGray border border-greenPrimary w-full h-11 rounded-xl" @click="connect">
+          {{ address || 'Connect wallet' }}
         </button>
       </div>
       <ul class="flex flex-col items-center gap-4">
