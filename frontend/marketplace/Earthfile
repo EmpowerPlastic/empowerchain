@@ -1,0 +1,15 @@
+VERSION 0.6
+FROM node:hydrogen-alpine
+WORKDIR /app
+
+build:
+    COPY package.json ./
+    COPY package-lock.json ./
+    RUN npm i
+    COPY . .
+    RUN npm run build
+    SAVE ARTIFACT ./dist
+
+build-local:
+    FROM +build
+    SAVE ARTIFACT ./dist AS LOCAL ./dist

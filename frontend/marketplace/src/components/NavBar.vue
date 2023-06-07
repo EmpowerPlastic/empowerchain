@@ -97,11 +97,17 @@ const connect = async () => {
             <li>
               <a href="/">Home</a>
             </li>
-            <!--            <li>-->
+                       <!-- <li>-->
             <!--              <a>Get MPWR</a>-->
-            <!--            </li>-->
+            <!--            </li> -->
+            <button type="button"
+                      @click="toast.info('Coming soon!')"
+                      >Get <b>$MPWR</b></button>
             <li>
-              <a href="/faq">FAQ</a>
+              <!-- <a href="/faq">FAQ</a> -->
+              <button type="button"
+                      @click="toast.info('Coming soon!')"
+                      >FAQ</button>
             </li>
           </ul>
         </div>
@@ -175,12 +181,18 @@ const connect = async () => {
         <li>
           <a href="/">Home</a>
         </li>
-        <!--        <li>-->
+               <li>
         <!--          <a>Get MPWR</a>-->
-        <!--        </li>-->
+        <button type="button"
+                      @click="toast.info('Coming soon!')"
+                      >Get <b>$MPWR</b></button>
+               </li>
         <li>
-          <a href="/faq">FAQ</a>
-        </li>
+              <!-- <a href="/faq">FAQ</a> -->
+              <button type="button"
+                      @click="toast.info('Coming soon!')"
+                      >FAQ</button>
+            </li>
       </ul>
     </div>
 
