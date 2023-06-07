@@ -112,7 +112,7 @@ const connect = async () => {
               <template v-if="address">
                 <label tabindex="0" class="btn btn-circle m-1">
                   <div class="avatar">
-                    <div class="w-[48px] rounded-full border-borderBlack bg-lightBlack border-[1.5px] p-2">
+                    <div class="w-[48px] rounded-full border-borderBlack bg-darkBlack border-[1.5px] p-2">
                       <img src="../assets/walletAvatar.png"/>
                     </div>
                   </div>
@@ -120,7 +120,7 @@ const connect = async () => {
               </template>
               <div tabindex="0"
                    class="dropdown-content menu font-Inter divide-y divide-lightGray  bg-avatarBlack  rounded-sm items-center border-avatarBorder border-[1.5px]">
-                <div class="menu py-5 items-center mx-16 min-w-[140px]">
+                <div class="menu py-5 items-center mx-16 min-w-[120px]">
                   <div class="avatar mb-3">
                     <div class="w-[82px] rounded-full bg-lightBlack">
                       <img class="p-4" src="../assets/walletAvatar.png"/>

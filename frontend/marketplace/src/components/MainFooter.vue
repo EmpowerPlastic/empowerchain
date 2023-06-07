@@ -21,11 +21,11 @@
     <div class="flex flex-col justify-end gap-8 md:gap-28 w-full md:flex-row text-center font-Inter mb-10">
       <ul>
         <p class="font-bold text-title18 mb-4">Quick Links</p>
+<!--        <li class="text-title14 text-textLightGray mb-2">-->
+<!--          Get MPWR-->
+<!--        </li>-->
         <li class="text-title14 text-textLightGray mb-2">
-          Get MPWR
-        </li>
-        <li class="text-title14 text-textLightGray mb-2">
-          FAQ
+          <a href="/faq">FAQ</a>
         </li>
       </ul>
       <ul>
