@@ -128,6 +128,7 @@ const getDetailsList = (data: any) => {
   let fileArray: { url: string, name: string }[] = []
   let materialArray: { key: string, value: string }[] = []
   let volume: number = 0
+  let registrationDateArray: Date[] = []
 
   data?.map((item: any) => {
     item.applicantDataByCreditDataId.nodes.map((node: any) => {
@@ -139,6 +140,7 @@ const getDetailsList = (data: any) => {
       locationArray.push(node.country)
       locationPointersArray.push({lat: node.latitude, lng: node.longitude})
       materialArray.push(...node.material.nodes)
+      registrationDateArray.push(new Date(node.registrationDate))
     })
 
     item.mediaFiles.nodes.map((node: any) => {
@@ -157,13 +159,14 @@ const getDetailsList = (data: any) => {
           )
   );
   return {
-    applicant: Array.from(new Set(applicantArray)),
+    applicant: applicantArray[0],
     location: Array.from(new Set(locationArray)),
     material: uniqueMaterialArray.map(item => item.value),
     volume: volume,
     image: imageArray,
     file: fileArray,
-    locationPointers: locationPointersArray
+    locationPointers: locationPointersArray,
+    registrationDate: registrationDateArray[0]
   }
 }
 
@@ -201,11 +204,13 @@ const getDetailsList = (data: any) => {
                               :value="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).material"
                               list/>
         <ProjectDetailContent label="Credits per kg" value="1"/>
-        <ProjectDetailContent label="Registration date" value="May 16, 2022"/>
+        <ProjectDetailContent label="Registration date"
+                              :value="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).registrationDate.toLocaleDateString()"/>
         <ProjectDetailContent label="Location"
                               :value="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).location"
                               list/>
-        <ProjectDetailContent label="Collection organization" value="ABCD org plc"/>
+        <ProjectDetailContent label="Collection organization" 
+                              :value="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).applicant"/>
         <ProjectDetailContent label="Volume"
                               :value="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).volume+'kg'"/>
       </div>
