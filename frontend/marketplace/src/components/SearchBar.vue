@@ -21,7 +21,7 @@ const creditOptions = ref([DEFAULT_CREDIT_TYPE])
 const emitSearch = defineEmits(['searchClick'])
 
 const handleSearchButtonClick = () => {
-  emitSearch('searchClick',filterValues.value)
+  emitSearch('searchClick', filterValues.value)
 }
 
 const locationData: any = useQuery(gql`query{
@@ -46,7 +46,8 @@ const applicantData: any = useQuery(gql`query{
   <!--    Search Auction Mobile-->
   <div class="md:hidden input-group w-full mb-5  bg-white rounded-full !rounded-lg px-1 border-none font-Inter">
     <img class="ml-3" src="../assets/searchIcon.svg">
-    <input type="text" placeholder="Search…" class="input w-full bg-white border-none" v-model="filterValues.searchTerm"/>
+    <input type="text" placeholder="Search…" class="input w-full bg-white border-none"
+           v-model="filterValues.searchTerm"/>
     <div class="dropdown dropdown-end">
       <button class="btn btn-ghost bg-white !rounded-lg border-none p-0">
         <img class="mr-4" src="../assets/filterIcon.svg">
@@ -56,7 +57,7 @@ const applicantData: any = useQuery(gql`query{
         <div>
           <p class="text-title14 text-dropDownText">Location</p>
           <SearchFilterSelect
-              :options="Array.from(new Set(locationData?.result.value?.countries?.nodes.map((item: any)=>item.id)))"
+              :options="Array.from(new Set(locationData?.result.value?.countries?.nodes.map((item: any) => item.id)))"
               v-model="filterValues.location"
               placeholder="Select Location"/>
         </div>
@@ -87,7 +88,8 @@ const applicantData: any = useQuery(gql`query{
                              placeholder="Select Price" unit="$" class="ml-1"/>
         </div>
         <div>
-          <button  class="btn btn-ghost bg-greenPrimary w-full  rounded-sm text-white text-title15 px-2" @click="handleSearchButtonClick">
+          <button class="btn btn-ghost bg-greenPrimary w-full  rounded-sm text-white text-title15 px-2"
+                  @click="handleSearchButtonClick">
             Search
           </button>
         </div>

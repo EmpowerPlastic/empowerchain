@@ -23,7 +23,7 @@
     @apply text-title14 text-dropDownText
 }
 .filter-title {
-    @apply flex flex-row justify-between text-title16 text-white cursor-pointer
+    @apply flex justify-between text-title16 text-white cursor-pointer
 }
 .filter-box{
     @apply w-full p-3 px-4
@@ -57,4 +57,9 @@
 /*Image Gallery*/
 .scroll-button{
     @apply absolute ml-[130px] btn-ghost bg-scrollButtonBackground
+}
+
+/*Toast*/
+.Toastify__toast{
+    @apply bg-tabGray text-white
 }

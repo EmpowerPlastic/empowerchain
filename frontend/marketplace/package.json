@@ -29,7 +29,8 @@
     "vue-multiselect": "^3.0.0-beta.2",
     "vue-router": "^4.1.6",
     "vue3-carousel": "^0.3.1",
-    "vue3-google-map": "^0.15.0"
+    "vue3-google-map": "^0.15.0",
+    "vue3-toastify": "^0.1.11"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.2.0",

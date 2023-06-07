@@ -16,14 +16,16 @@ const updateToValue = (e: Event) => {
 }
 </script>
 <template>
-  <div class="dropdown min-w-[160px] break-words">
+  <div class="dropdown break-words">
     <label tabindex="0">
       <div class="filter-title">
-        {{from || to ?`${from} - ${to}`: placeholder}}
+        <p class="text-ellipsis w-[110px]">
+          {{from || to ?`${from} - ${to}`: placeholder}}
+        </p>
         <img class="ml-3" src="../assets/dropdown-icon.svg">
       </div>
     </label>
-    <div tabindex="0" class="md:dropdown-content shadow bg-dropdownBlack rounded-sm w-fit text-white p-3">
+    <div tabindex="0" class="md:dropdown-content min-w-[160px] shadow bg-dropdownBlack rounded-sm w-fit text-white p-3">
       <label class="input-group">
         <input type="number" placeholder="From" class="input w-full bg-dropdownBlack mb-2" :value="from" @input="updateFromValue"/>
         <span class="input  bg-lightBlack">{{ unit }}</span>
