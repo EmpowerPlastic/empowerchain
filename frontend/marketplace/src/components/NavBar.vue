@@ -57,6 +57,7 @@ const connect = async () => {
         },
     };
     await window.keplr.experimentalSuggestChain(chainConfig);
+    // TODO add other wallets
     /*await window.leap.experimentalSuggestChain(chainConfig);
     await window.cosmostation.providers.keplr.experimentalSuggestChain(
         chainConfig

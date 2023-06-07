@@ -1,13 +1,13 @@
 export class ListingsQueryBuilder {
-    private pricePerCredit: string;
-    private volume: string;
-    private locations: string;
-    private registrationDate: string;
-    private organizations: string;
-    private creditTypes: string;
-    private textSearch: string;
-    private first: number;
-    private offset: number;
+    private pricePerCredit: string = '';
+    private volume: string = '';
+    private locations: string = '';
+    private registrationDate: string = '';
+    private organizations: string = '';
+    private creditTypes: string = '';
+    private textSearch: string = '';
+    private first: number = 0;
+    private offset: number = 0;
     
     constructor() {
         this.reset();

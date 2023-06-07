@@ -9,12 +9,9 @@ import {useRoute} from "vue-router";
 import {useQuery} from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import CustomSpinner from "@/components/CustomSpinner.vue";
-import {ListingsQueryBuilder} from "@/utils/query-builder";
 import { convertIPFStoHTTPS } from "@/utils/utils";
 
-const queryBuilder = new ListingsQueryBuilder();
 const router = useRoute()
-const position = {lat: 40.689247, lng: -74.044502}
 
 const copyToken = async (text: string) => {
   await navigator.clipboard.writeText(text);
@@ -88,10 +85,8 @@ const getAuctionDetails = (id: string | string[]) => {
 
   const {result, loading, error} = useQuery(gql`${query}`);
   data.value = {result, loading, error}
-  //auctionData.value = result?.value?.marketplaceListings?.nodes[0]
   showSpinner.value = false
   auctionData.value = result.value?.marketplaceListings?.nodes[0]
-  console.log(result, result.value?.marketplaceListings?.nodes[0], 'ppcsddsp')
 }
 
 const getOrderHistory = (id: string | string[]) => {
@@ -180,7 +175,6 @@ const getDetailsList = (data: any) => {
     <p class="text-title18 mb-5"><a href="/auction">Auctions</a><span class="text-subTextGray">/ Auction Details</span>
     </p>
     <h1 class="text-title38">{{ data?.result?.marketplaceListings?.nodes[0].denom }}</h1>
-    <!--    <p class="text-title18 text-subTextGray">Sri Lanka</p>-->
 
     <!--    Gallery-->
     <ImageCarousel class="md:hidden my-5"
@@ -238,7 +232,7 @@ const getDetailsList = (data: any) => {
       <ul class="pl-5">
         <li class="text-title14 text-greenPrimary underline"
             v-for="file in getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).file"
-            :key="file">
+            :key="file.url">
           <a target="_blank" :href="file.url">{{ file.name }}</a>
         </li>
       </ul>

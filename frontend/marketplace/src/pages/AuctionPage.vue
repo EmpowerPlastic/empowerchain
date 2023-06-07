@@ -8,11 +8,11 @@ import CustomSpinner from "@/components/CustomSpinner.vue";
 import {useQuery} from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import {ListingsQueryBuilder} from "@/utils/query-builder";
+import { DEFAULT_CREDIT_TYPE } from "@/config/config";
 
 
 const pageNumber = ref(1)
 const itemsPerPage = ref(5)
-const total = ref(20)
 const data = ref()
 const showSpinner = ref(true)
 const queryBuilder = new ListingsQueryBuilder();
@@ -25,7 +25,7 @@ const handlePageChange = (currentPage: number) => {
 }
 
 onMounted(() => {
-  queryBuilder.addCreditTypes(['PCRD']);
+  queryBuilder.addCreditTypes([DEFAULT_CREDIT_TYPE]);
   queryBuilder.addPagination(itemsPerPage.value, (pageNumber.value - 1) * itemsPerPage.value)
   let query = queryBuilder.build();
   loadQueryData(query)
@@ -53,7 +53,7 @@ const handleSearch = (filterValues: any) => {
   if (filterValues.organization.length > 0) {
     queryBuilder.addOrganizations(filterValues.organization);
   }
-  queryBuilder.addCreditTypes(['PCRD']);
+  // queryBuilder.addCreditTypes(['PCRD']);
   if (filterValues.price.from || filterValues.price.to) {
     queryBuilder.addPricePerCredit(filterValues.price.from, filterValues.price.to);
   }
