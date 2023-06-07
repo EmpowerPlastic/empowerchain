@@ -53,7 +53,6 @@ const handleSearch = (filterValues: any) => {
   if (filterValues.organization.length > 0) {
     queryBuilder.addOrganizations(filterValues.organization);
   }
-  // queryBuilder.addCreditTypes(['PCRD']);
   if (filterValues.price.from || filterValues.price.to) {
     queryBuilder.addPricePerCredit(filterValues.price.from, filterValues.price.to);
   }
