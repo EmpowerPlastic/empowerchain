@@ -54,7 +54,7 @@ const hashAndSetResult = async (byteArray: Uint8Array) => {
   try {
     const result = window.empSha256(byteArray);
     const verifyResult = await verifyHash(result?.value);
-    pushToSuccessPage(result?.value, verifyResult?.metadata?.timestamp);
+    pushToSuccessPage(result?.value);
   } catch (error) {
     modalType.value = ErrorModalType.FILE;
     openModal();
@@ -69,13 +69,12 @@ const verifyHash = async (hash: string) => {
   return proof;
 };
 
-const pushToSuccessPage = (hash: string, timeStamp: Date | undefined) => {
+const pushToSuccessPage = (hash: string) => {
   router.push({
-    path: `/certify/success`,
+    path: `/verify/success`,
     query: {
       hash: hash,
       fileName: undefined,
-      time: timeStamp?.getTime(),
     },
   });
 };
@@ -109,9 +108,9 @@ const handleInputString = async () => {
     })
   );
 
-  const finalResult = verifyResults.find((result) => result.success === true);
+  const finalResult = verifyResults.find((result) => result.success);
   if (finalResult?.hash) {
-    pushToSuccessPage(finalResult?.hash, finalResult.timestamp);
+    pushToSuccessPage(finalResult?.hash);
   } else {
     modalType.value = ErrorModalType.STRING;
     openModal();
@@ -163,15 +162,15 @@ const closeModal = () => {
         </li>
         <li>
           <button
-            id="hash-tab"
-            data-tabs-target="#hash"
+            id="text-tab"
+            data-tabs-target="#text"
             type="button"
             role="tab"
-            aria-controls="hash"
+            aria-controls="text"
             aria-selected="false"
             class="flex flex-col justify-center text-center px-6 text-title16 aria-selected:bg-lightWhite aria-selected:text-white rounded-t-lg h-9"
           >
-            Hash
+            Text
           </button>
         </li>
       </ul>
@@ -223,12 +222,13 @@ const closeModal = () => {
         </div>
         <div
           class="hidden md:p-1 border-t border-lightGray"
-          id="hash"
+          id="text"
           role="tabpanel"
-          aria-labelledby="hash-tab"
+          aria-labelledby="text-tab"
         >
           <p class="mb-3 text-white text-title14 mt-2">
-            You can input arbitrary plain text below to verify a proof of it's
+            You can input arbitrary plain text below to verify a proof of its
+            existence.
           </p>
           <div class="w-full p-3 mt-7 rounded bg-lightGray">
             <label class="cursor-pointer" for="file_input">

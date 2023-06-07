@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "subql build",
+    "build-with-env": "./scripts/build-with-env.sh",
     "codegen": "subql codegen",
     "start:docker": "docker-compose pull && docker-compose up --remove-orphans",
     "dev": "subql codegen && subql build && docker-compose pull && docker-compose up --remove-orphans",

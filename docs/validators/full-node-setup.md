@@ -51,19 +51,19 @@ chmod +x gvm-installer
 ./gvm-installer
 ```
 
-Since Empowerchain requires a modern version of `go`, version 1.4 is needed to compile later versions of `go` through `gvm`. Install `go1.4` and set the `GOROOT_BOOTSTRAP` value to the `$GOROOT` to configure this.
+Since Empowerchain requires a modern version of `go`, version 1.4 is needed to compile later versions of `go` through `gvm`. Starting at `go1.20` and above, `gvm` has issues compiling when using `go1.4`, so it is recommended to use the binary download of `go1.19` and compile `go1.20`+ with that. Install `go1.19` and set the `GOROOT_BOOTSTRAP` value to the `$GOROOT` to configure this.
 
 ```bash
-gvm install go1.4 -B
-gvm use go1.4
+gvm install go1.19 -B
+gvm use go1.19
 export GOROOT_BOOTSTRAP=$GOROOT
 ```
 
-Once `go1.4` is installed, `go1.20.3` can be installed through `gvm`.
+Once `go1.19` is installed, other version of go can be compiled. `go1.20.3` can be installed through `gvm`.
 
 ```bash
 gvm install go1.20.3
-gvm use go1.20.3
+gvm use go1.20.3 --default
 ```
 
 Check to ensure that version `1.20.3` is being used as the system's default `go` version.
@@ -154,10 +154,10 @@ Replace the `<chain-id>` field with the chain-id of the desired network.
 empowerd init "custom_moniker" --chain-id <chain-id>
 ```
 
-Example for the `altruistic-1` testnet:
+Example for the `circulus-1` testnet:
 
 ```bash
-empowerd init "custom_moniker" --chain-id altruistic-1
+empowerd init "custom_moniker" --chain-id circulus-1
 ```
 
 ### Retrieve the Genesis File
@@ -168,9 +168,9 @@ Retrieve a copy of the genesis file for the desired chain. The genesis file defi
 wget -O $HOME/empowerchain/config/genesis.json <genesis-url>
 ```
 
-Example for the `altruistic-1` testnet:
+Example for the `circulus-1` testnet:
 ```bash
-wget -O $HOME/empowerchain/config/genesis.json https://github.com/EmpowerPlastic/empowerchain/blob/main/testnets/altruistic-1/genesis.json
+wget -O $HOME/empowerchain/config/genesis.json https://github.com/EmpowerPlastic/empowerchain/blob/main/testnets/circulus-1/genesis.json
 ```
 
 ### Set Persistent Peers and Seeds

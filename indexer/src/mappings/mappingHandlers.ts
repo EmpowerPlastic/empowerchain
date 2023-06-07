@@ -7,47 +7,6 @@ import {
 } from "@subql/types-cosmos";
 import fetch from "node-fetch";
 
-
-export async function handleBlock(block: CosmosBlock): Promise<void> {
-  const blockRecord = Block.create({
-    id: block.block.id,
-    height: BigInt(block.block.header.height),
-  });
-  await blockRecord.save();
-}
-
-
-
-export async function handleTransaction(tx: CosmosTransaction): Promise<void> {
-  // If you want to index each transaction in Cosmos (Stargaze), you could do that here
-  const transactionRecord = Transaction.create({
-    id: tx.hash,
-    blockHeight: BigInt(tx.block.block.header.height),
-    timestamp: tx.block.block.header.time,
-  });
-  await transactionRecord.save();
-}
-
-
-export async function handleMessage(msg: CosmosMessage): Promise<void> {
-  const messageRecord = Message.create({
-    id: `${msg.tx.hash}-${msg.idx}`,
-    blockHeight: BigInt(msg.block.block.header.height),
-    txHash: msg.tx.hash,
-  });
-  await messageRecord.save();
-}
-
-export async function handleEvent(event: CosmosEvent): Promise<void> {
-  const eventRecord = ExecuteEvent.create({
-    id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
-    blockHeight: BigInt(event.block.block.header.height),
-    txHash: event.tx.hash,
-  });
-
-  await eventRecord.save();
-}
-
 async function createNewWallet(address: string): Promise<Wallet> {
   const wallet = Wallet.create({
     id: address,
@@ -149,10 +108,10 @@ export async function handleBuyCredits(event: CosmosEvent): Promise<void> {
   });
   await buyCreditsWasmEvent.save();
 
-  const marketplaceListing = await MarketplaceListing.get(`${buyer}-${denom}`);
+  const marketplaceListing = await MarketplaceListing.get(`${listingOwner}-${denom}`);
   marketplaceListing.amount = marketplaceListing.amount - numberOfCreditsBought;
   if (marketplaceListing.amount === BigInt(0)) {
-    await MarketplaceListing.remove(`${buyer}-${denom}`);
+    await MarketplaceListing.remove(`${listingOwner}-${denom}`);
   } else {
     await marketplaceListing.save();
   }
@@ -398,7 +357,7 @@ async function handleEventData(eventDataJson: any, creditDataId: string, eventIn
   let country = "";
 
   try {
-    const reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latitude + "," + longitude + "&key=KEY";
+    const reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latitude + "," + longitude + "&key=$KEY";
     const response = await fetch(reqUri);
     const result = await response.json();
 

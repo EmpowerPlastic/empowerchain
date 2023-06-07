@@ -1,4 +1,18 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { toast } from "vue3-toastify";
+
+const copyLink = () => {
+  const url = new URL(window.location.href);
+  url.searchParams.delete("fileName");
+  url.searchParams.delete("time");
+
+  url.pathname = "/verify/success";
+
+  navigator.clipboard.writeText(url.toString());
+  toast.info("Link copied to clipboard");
+};
+</script>
+
 <template>
   <div
     class="flex flex-col items-center w-full px-14 text-left bg-lightBlack rounded-lg sm:p-8 md:-mt-[120px]"
@@ -21,15 +35,21 @@
           {{ $route.query.fileName }}
         </p>
       </div>
-      <p class="text-lightGreen text-title14" break-all>Received Time</p>
+      <p class="text-lightGreen text-title14" break-all>Certification Time</p>
       <p class="text-white text-title18 mb-3 break-all">
         {{ new Date(Number($route.query.time)).toLocaleString() }}
       </p>
-      <p class="text-lightGreen text-title14 break-all">Transaction Hash</p>
+      <p class="text-lightGreen text-title14 break-all">Data Hash</p>
       <p class="text-white text-title18 mb-6 break-all">
         {{ $route.query.hash }}
       </p>
     </div>
+    <button
+      @click="copyLink"
+      class="bg-lightGreen mt-7 content-center p-1 px-7 rounded text-white"
+    >
+      Copy verification link
+    </button>
   </div>
 </template>
 
