@@ -8,6 +8,15 @@ Before you start on a task, please open the submission form to make sure that:
 1. The task has opened (if the form is not accepting submissions, the task is not open)
 2. You understand the task and the instructions which you will find in the submission form itself
 
+## How to participate
+To participate, you first need to do three things:
+1. Join our Discord
+2. Sign up on our Google Form
+3. Grab the Circulus-1 Tester role in the # 🤝︱tester-role channel in Discord
+
+Ensure you create a new wallet (instructions below) and **use the same address for all tasks during the testnet**. 
+We will ask everyone to provide the address at the end of the testnet to match it against the Discord username you provided in the signup form.
+
 ## A note on wallets:
 Make sure you use the same wallet address for all tasks. We will collect and link all addresses to 
 the information you signed up with. Make sure you use a new wallet, so we can't connect it to any
@@ -76,8 +85,9 @@ Examples of tasks might be:
 - Making content
 - Participating in community events
 - Doing plastic waste cleanup
+- More tasks likely to be added, so keep an eye out!
 
-The exact tasks will be available on Zealy. (LINK TO BE ADDED HERE)
+The exact tasks are available on Zealy: https://zealy.io/c/circulus1-empowerchain/questboard
 
 120,000 $MPWR are set aside for Zealy tasks and will be awarded relative to the number of points/xp earned by
 the top 500 (subject to change!) participants.
