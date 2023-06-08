@@ -15,6 +15,7 @@ If you want to add your resource to this page, please create a PR with the chang
 | NODEJUMPER | Node resources + decentralization map (instructions, state sync, peers, seeds, genesis, etc) | https://app.nodejumper.io/empower-testnet                                            |
 | Nodeist    | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://nodeist.net/Empower/                                                         |
 | NodeStake  | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://nodestake.top/empower                                                        |
+| KonsorTech | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://konsortech.xyz/testnet/empower                                              |
 
 ## Explorers
 
@@ -25,6 +26,7 @@ If you want to add your resource to this page, please create a PR with the chang
 | NodeStake | Ping      | https://explorer.nodestake.top/empower-testnet |
 | ITRocket  | Ping      | https://testnet.itrocket.net/empower/staking   |
 | STAVR     | Ping      | https://explorer.stavr.tech/empower            |
+| KonsorTech | Ping     | https://testnet-explorer.konsortech.xyz/empower |
 
 ## Endpoints
 
@@ -37,4 +39,5 @@ If you want to add your resource to this page, please create a PR with the chang
 | NODEJUMPER | https://empower-testnet.nodejumper.io:443      | https://empower-testnet.nodejumper.io:1317   | empower-testnet.nodejumper.io:9090      |
 | ITRocket   | https://empower-testnet-rpc.itrocket.net:443   | https://empower-testnet-api.itrocket.net:443 | empower-testnet-grpc.itrocket.net:16090 |
 | AviaOne    | https://rpc.circulus-1.empower.aviaone.com:443 | https://api.circulus-1.empower.aviaone.com   | grpc.circulus-1.empower.aviaone.com:443 |
+| KonsorTech | https://testnet-empower-rpc.konsortech.xyz:443 | https://testnet-empower-api.konsortech.xyz   | testnet-empower.konsortech.xyz:25090    |
 
