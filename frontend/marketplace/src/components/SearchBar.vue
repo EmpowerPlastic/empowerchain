@@ -1,20 +1,39 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {onMounted, ref, watch, watchEffect} from "vue";
 import SearchFilterSelect from "@/components/SearchFilterSelect.vue";
 import SearchFilterRange from "@/components/SearchFilterRange.vue";
 import {useQuery} from "@vue/apollo-composable";
 import gql from "graphql-tag";
-import { DEFAULT_CREDIT_TYPE } from "@/config/config";
+import {DEFAULT_CREDIT_TYPE} from "@/config/config";
 
+export interface SearchBarProps {
+  filterValues?: {
+    volume:any []
+    location: string [],
+    registrationDate: any[]
+    organization: string[],
+    creditType: string[],
+    price: any[],
+    searchTerm: string
+  }
+}
+
+const props = defineProps<SearchBarProps>()
 const filterValues = ref({
-  volume: {from: '', to: ''},
+  volume: ['', ''],
   location: [],
   registrationDate: ['', ''],
   organization: [],
-  creditType: [''],
-  price: {from: '', to: ''},
-  searchTerm:''
+  creditType: [],
+  price: ['', ''],
+  searchTerm: ''
 })
+
+watch(props, () => {
+  if (props?.filterValues) {
+    filterValues.value = props.filterValues as any;
+  }
+});
 
 const creditOptions = ref([DEFAULT_CREDIT_TYPE])
 
@@ -57,13 +76,14 @@ const applicantData: any = useQuery(gql`query{
         <div>
           <p class="text-title14 text-dropDownText">Location</p>
           <SearchFilterSelect
+              select
               :options="Array.from(new Set(locationData?.result.value?.countries?.nodes.map((item: any) => item.id)))"
               v-model="filterValues.location"
               placeholder="Select Location"/>
         </div>
         <div>
           <p class="filter-subtitle">VOLUME</p>
-          <SearchFilterRange v-model:from="filterValues.volume.from" v-model:to="filterValues.volume.to"
+          <SearchFilterRange v-model:from="filterValues.volume[0]" v-model:to="filterValues.volume[1]"
                              placeholder="Select Volume" unit="Kg" class="ml-1"/>
         </div>
         <div>
@@ -84,7 +104,7 @@ const applicantData: any = useQuery(gql`query{
         </div>
         <div>
           <p class="filter-subtitle">PRICE PER CREDIT</p>
-          <SearchFilterRange v-model:from="filterValues.price.from" v-model:to="filterValues.price.to"
+          <SearchFilterRange v-model:from="filterValues.price[0]" v-model:to="filterValues.price[1]"
                              placeholder="Select Price" unit="$" class="ml-1"/>
         </div>
         <div>
@@ -116,7 +136,7 @@ const applicantData: any = useQuery(gql`query{
       </div>
       <div class="filter-box">
         <p class="filter-subtitle mb-2">VOLUME</p>
-        <SearchFilterRange v-model:from="filterValues.volume.from" v-model:to="filterValues.volume.to"
+        <SearchFilterRange v-model:from="filterValues.volume[0]" v-model:to="filterValues.volume[1]"
                            placeholder="Select Volume" unit="Kg"/>
       </div>
       <div class="filter-box">
@@ -138,7 +158,7 @@ const applicantData: any = useQuery(gql`query{
       </div>
       <div class="filter-box">
         <p class="filter-subtitle  mb-2">PRICE PER CREDIT</p>
-        <SearchFilterRange v-model:from="filterValues.price.from" v-model:to="filterValues.price.to"
+        <SearchFilterRange v-model:from="filterValues.price[0]" v-model:to="filterValues.price[1]"
                            placeholder="Select Price" unit="$"/>
       </div>
 
