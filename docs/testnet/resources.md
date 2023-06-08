@@ -15,7 +15,8 @@ If you want to add your resource to this page, please create a PR with the chang
 | NODEJUMPER | Node resources + decentralization map (instructions, state sync, peers, seeds, genesis, etc) | https://app.nodejumper.io/empower-testnet                                            |
 | Nodeist    | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://nodeist.net/Empower/                                                         |
 | NodeStake  | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://nodestake.top/empower                                                        |
-| KonsorTech | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://konsortech.xyz/testnet/empower                                              |
+| KonsorTech | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://konsortech.xyz/testnet/empower                                               |
+| AutoStake  | Node resources ( snapshots, state sync, peers, seeds, etc)                                   | https://autostake.com/networks/testnets/empower/#services                            |
 
 ## Explorers
 
