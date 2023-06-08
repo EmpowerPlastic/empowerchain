@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import VueMultiselect from 'vue-multiselect'
-import {ref} from "vue";
+import {ref, watch} from "vue";
 
 export interface SearchFilterSelectProps {
   placeholder: string;
@@ -16,6 +16,12 @@ const selected = ref([])
 const updateValue = (val: string[]) => {
   emitModalValue('update:modelValue', val)
 }
+
+watch(props, () => {
+  if (props.modelValue.length>0) {
+    selected.value = props.modelValue as any
+  }
+});
 </script>
 <template>
   <VueMultiselect
@@ -31,29 +37,36 @@ const updateValue = (val: string[]) => {
   />
 </template>
 <style src="vue-multiselect/dist/vue-multiselect.css"></style>
-<style >
+<style>
 .multiselect__tags {
   @apply bg-dropdownBlack border-none
 }
-.multiselect__select{
+
+.multiselect__select {
   @apply md:bg-dropdownBlack
 }
-.multiselect__placeholder{
+
+.multiselect__placeholder {
   @apply bg-dropdownBlack text-white text-title16
 }
-.multiselect__content-wrapper{
+
+.multiselect__content-wrapper {
   @apply bg-dropdownBlack border-none text-white
 }
-.multiselect__input{
+
+.multiselect__input {
   @apply bg-dropdownBlack border-none text-white
 }
-.multiselect__spinner{
+
+.multiselect__spinner {
   @apply bg-dropdownBlack text-white
 }
-.multiselect__tag{
+
+.multiselect__tag {
   @apply bg-greenPrimary
 }
-.multiselect__content{
+
+.multiselect__content {
   @apply bg-dropdownBlack
 }
 
