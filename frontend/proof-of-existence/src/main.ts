@@ -31,6 +31,5 @@ app.config.errorHandler = (err, vm, info) => {
   throw err;
 };
 app.config.globalProperties.$rollbar = rollbar;
-rollbar.log("Hello world!");
 
 app.mount("#app");
