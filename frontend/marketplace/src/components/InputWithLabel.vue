@@ -5,6 +5,9 @@ export interface InputWithLabelProps {
   placeholder: string
   id: string
   dashed?: boolean
+  denom?:string
+  disabled?:boolean
+  longWidth?:boolean
 }
 defineProps<InputWithLabelProps>()
 
@@ -28,11 +31,13 @@ const updateValue = (e: Event) => {
         :id="id"
         type="text"
         :placeholder="placeholder"
-        class="input input-text"
+        class="input input-text disabled:bg-lightBlack disabled:border-none disabled:text-white"
+        :class="longWidth && '!w-[100%]'"
         :value="modelValue"
         @input="updateValue"
+        :disabled="disabled"
       />
-      <span class="input-sub-text">$MPWR</span>
+      <span class="input-sub-text" :class="disabled && '!bg-lightBlack'">{{denom}}</span>
     </label>
   </div>
 </template>

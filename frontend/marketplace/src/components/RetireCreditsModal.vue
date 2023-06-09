@@ -5,18 +5,23 @@ import InputWithLabel from '@/components/InputWithLabel.vue'
 
 export interface ModalProps {
   showModal: boolean
+  denom:string
+  availableCredits:number
 }
 
 defineProps<ModalProps>()
 const emitShowModal = defineEmits(['update:showModal'])
 
-const messageOne = ref('')
-const messageTwo = ref('')
-const inputOne = ref('')
-const inputTwo = ref('')
+const name = ref('')
+const additionalInfo = ref('')
+const retireCredits = ref('')
 
 const closeModal = () => {
   emitShowModal("update:showModal", false)
+}
+
+const handleRetireCredits = () => {
+console.log(name.value,additionalInfo.value,retireCredits.value,availableCredits.value)
 }
 </script>
 <template>
@@ -38,17 +43,20 @@ const closeModal = () => {
 
       <div class="grid md:grid-cols-2 gap-5 mb-6 mt-2">
         <InputWithLabel
-            v-model="inputOne"
+            v-model="retireCredits"
             label="How many Plastic credits do you want to retire?"
             placeholder="0.01"
             id="input-1"
+            :denom="denom"
         />
         <InputWithLabel
-            v-model="inputTwo"
+            :model-value="availableCredits"
             label="Available credits in your account"
             placeholder="0.01"
             id="input-2"
             dashed
+            :disabled="true"
+            :denom="denom"
         />
       </div>
 
@@ -56,13 +64,13 @@ const closeModal = () => {
           label="Provide a name of the entity that should be visible as a retriever"
           sub-text="(will be visible on generated Plastic Credit certificate)"
           id="message-1"
-          v-model="messageOne"
+          v-model="name"
       />
       <RetireCreditTextArea
           label="Provide additional data about the retriever"
           sub-text="(will be visible on generated Plastic Credit certificate)"
           id="message-2"
-          v-model="messageTwo"
+          v-model="additionalInfo"
       />
 
       <div class="flex flex-col md:flex-row justify-between modal-action">
@@ -71,7 +79,7 @@ const closeModal = () => {
             @click="closeModal"
         >Cancel!</label
         >
-        <button class="btn modal-button !ml-0 bg-greenPrimary">Retire credits</button>
+        <button class="btn modal-button !ml-0 bg-greenPrimary" @click="handleRetireCredits">Retire credits</button>
       </div>
     </div>
   </div>
