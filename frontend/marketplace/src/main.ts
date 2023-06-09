@@ -7,12 +7,13 @@ import {ApolloClient, InMemoryCache} from '@apollo/client/core'
 import {DefaultApolloClient, provideApolloClient} from '@vue/apollo-composable'
 import VueDatePicker from '@vuepic/vue-datepicker';
 import Vue3Toastify, { type ToastContainerOptions } from 'vue3-toastify';
+import Rollbar from 'rollbar';
 import "vue-awesome-paginate/dist/style.css";
 import '@vuepic/vue-datepicker/dist/main.css'
 import "vue3-toastify/dist/index.css";
 import './index.css'
 import './css/custom.css'
-import {API_ENDPOINT} from "@/config/config";
+import {API_ENDPOINT, ENVIRONMENT, REVISION_ID, ROLLBAR_ACCESS_TOKEN} from "@/config/config";
 
 const cache = new InMemoryCache()
 const apolloClient = new ApolloClient({
@@ -22,6 +23,17 @@ const apolloClient = new ApolloClient({
 
 const app = createApp(App)
 
+const rollbar = new Rollbar({
+    accessToken: ROLLBAR_ACCESS_TOKEN,
+    captureUncaught: true,
+    captureUnhandledRejections: true,
+    environment: ENVIRONMENT,
+    payload: {
+      code_version: REVISION_ID,
+    }
+  });
+
+
 app.use(createPinia())
 app.use(router as any)
 app.use(VueAwesomePaginate)
@@ -30,5 +42,11 @@ app.provide(DefaultApolloClient, apolloClient)
 app.use(Vue3Toastify, {
     autoClose: 3000,
 } as ToastContainerOptions);
+app.config.errorHandler = (err, vm, info) => {
+    rollbar.error(err);
+    throw err; // rethrow
+  };
+  rollbar.log('Hello world!')
+app.config.globalProperties.$rollbar = rollbar;
 app.mount('#app')
 provideApolloClient(apolloClient)
