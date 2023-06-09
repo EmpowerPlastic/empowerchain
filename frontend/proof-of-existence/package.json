@@ -15,6 +15,7 @@
     "@empower-plastic/empowerjs": "^0.0.8",
     "flowbite": "^1.6.3",
     "flowbite-vue": "^0.0.10",
+    "rollbar": "^2.26.1",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6",
     "vue3-toastify": "^0.1.11"

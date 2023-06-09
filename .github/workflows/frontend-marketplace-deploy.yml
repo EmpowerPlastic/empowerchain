@@ -27,6 +27,10 @@ jobs:
           VITE_REST_ENDPOINT: "https://testnet.empowerchain.io:1319"
           VITE_DEFAULT_CREDIT_TYPE: "PCRD"
           VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          VITE_REVISION_ID: ${{ github.sha }}
+          VITE_ENVIRONMENT: testnet
+          VITE_ROLLBAR_ACCESS_TOKEN: ${{ secrets.MARKETPLACE_ROLLBAR_ACCESS_TOKEN }}
+
 
       - uses: amondnet/vercel-action@v25
         with:

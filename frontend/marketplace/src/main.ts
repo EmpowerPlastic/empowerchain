@@ -44,9 +44,8 @@ app.use(Vue3Toastify, {
 } as ToastContainerOptions);
 app.config.errorHandler = (err, vm, info) => {
     rollbar.error(err);
-    throw err; // rethrow
+    throw err;
   };
-  rollbar.log('Hello world!')
 app.config.globalProperties.$rollbar = rollbar;
 app.mount('#app')
 provideApolloClient(apolloClient)
