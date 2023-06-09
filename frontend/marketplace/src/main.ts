@@ -43,7 +43,7 @@ app.use(Vue3Toastify, {
     autoClose: 3000,
 } as ToastContainerOptions);
 app.config.errorHandler = (err, vm, info) => {
-    rollbar.error(err);
+    rollbar.error(err as any);
     throw err;
   };
 app.config.globalProperties.$rollbar = rollbar;

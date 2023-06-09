@@ -27,7 +27,7 @@ const rollbar = new Rollbar({
   },
 });
 app.config.errorHandler = (err, vm, info) => {
-  rollbar.error(err);
+  rollbar.error(err as any);
   throw err;
 };
 app.config.globalProperties.$rollbar = rollbar;
