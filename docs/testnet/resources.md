@@ -29,6 +29,7 @@ If you want to add your resource to this page, please create a PR with the chang
 | ITRocket  | Ping      | https://testnet.itrocket.net/empower/staking   |
 | STAVR     | Ping      | https://explorer.stavr.tech/empower            |
 | KonsorTech | Ping     | https://testnet-explorer.konsortech.xyz/empower |
+| AM Solutions | Ping     | https://explorer.theamsolutions.info/empower-test |
 
 ## Endpoints
 
@@ -42,4 +43,5 @@ If you want to add your resource to this page, please create a PR with the chang
 | ITRocket   | https://empower-testnet-rpc.itrocket.net:443   | https://empower-testnet-api.itrocket.net:443 | empower-testnet-grpc.itrocket.net:16090 |
 | AviaOne    | https://rpc.circulus-1.empower.aviaone.com:443 | https://api.circulus-1.empower.aviaone.com   | grpc.circulus-1.empower.aviaone.com:443 |
 | KonsorTech | https://testnet-empower-rpc.konsortech.xyz:443 | https://testnet-empower-api.konsortech.xyz   | testnet-empower.konsortech.xyz:25090    |
+| AM Solutions | https://rpc-empower.test.theamsolutions.info:443 | https://rest-empower.test.theamsolutions.info:443 | grpc-empower.test.theamsolutions.info:443 |
 
