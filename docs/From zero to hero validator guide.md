@@ -2,22 +2,27 @@
 
 <h1 align="center"> Empower Chain </h1>
 
-> Topluluk kanalları: - [Sohbet](https://t.me/corenodechat) - [Empower Discord](https://discord.gg/Zs3GMUhg)
+ * [Topluluk kanalımız](https://t.me/corenodechat)<br>
+ * [Empower Website](https://empower.eco)<br>
+ * [EmpowerChain Website](https://empowerchain.io)<br>
+ * [Blockchain Explorer](https://empower.explorers.guru/)<br>
+ * [Doküman](https://docs.empowerchain.io)<br>
+ * [Discord](https://discord.gg/Zs3GMUhg)<br> 
+ * [Görevler ve Ödüller](https://docs.empowerchain.io/testnet/tasks-and-rewards)
 
-<h1 align="center"> Donanım </h1>
-
-
-# Sistem
-4 CPU
-8 RAM
-200 SSD
+## Sistem Gereksinimleri
+| Bileşenler | Minimum Gereksinimler | 
+| ------------ | ------------ |
+| CPU |	4 |
+| RAM	| 8 GB |
+| Storage	| 250 GB SSD |
 ```
 # kütüphane kurulumu
 sudo apt update && sudo apt upgrade -y
 sudo apt install curl git wget htop tmux build-essential jq make lz4 gcc unzip -y
 ```
 
-
+### Moniker ve Cüzdan adınızı giriniz. (sonra tek kod olarak yapıstırınız)
 ```
 # install go, if needed
 cd $HOME
@@ -120,15 +125,15 @@ sudo systemctl enable empowerd
 sudo systemctl restart empowerd && sudo journalctl -u empowerd -f -o cat
 ```
 
-# cüzdan olusturma yada import etme
+### Cüzdan olusturma yada import etme
 ```
 empowerd keys add cüzdan-adı
 ```
-# import
+### import
 ```
 empowerd keys add cüzdan-adı --recover
 ```
-# cüzdan sorgulama
+### Cüzdan sorgulama
 ```
 empowerd keys list
 ```
@@ -151,15 +156,15 @@ empowerd tx staking create-validator \
   --chain-id circulus-1
   --y
 ```
-## Restart node
+### Restart node
 ```
 sudo systemctl restart empowerd
 ```
-## Log Kontrol
+### Log Kontrol
 ```
 journalctl -u empowerd -f -o cat
 ```
-# edit validator 
+### Edit validator 
 ```
 empowerd tx staking edit-validator \
 --commission-rate 0.1 \
@@ -171,7 +176,7 @@ empowerd tx staking edit-validator \
 --gas auto --gas-adjustment 1.5 \
 -y
 ```
-# silme komutları
+### Silme komutları
 ```
 sudo systemctl stop empowerd
 sudo systemctl disable empowerd
@@ -181,27 +186,27 @@ sudo rm -rf $HOME/.empowerchain
 sed -i "/EMPOWER_/d" $HOME/.bash_profile
 ```
 
-# ödülleri talep et
+### Odülleri talep et
 ```
 empowerd tx distribution withdraw-all-rewards --from $WALLET --chain-id circulus-1 --gas auto --gas-adjustment 1.5
 ```
-# ödülleri ve komisyonları talep et validator
+### Odülleri ve komisyonları talep et validator
 ```
 empowerd tx distribution withdraw-rewards $VALOPER_ADDRESS --from $WALLET --commission --chain-id circulus-1 --gas auto --gas-adjustment 1.5 -y
 ```
-# ne kadar mangır var
+### Ne kadar mangır var
 ```
 empowerd query bank balances $WALLET_ADDRESS
 ```
-# kendine delege et ( $(empowerd keys show $WALLET --bech val -a) kendi valoperınızı kod çağırır valoper yazmıcaz  cüzdna yazıcaz sadece )
+### Kendine delege et ( $(empowerd keys show $WALLET --bech val -a) kendi valoperınızı kod çağırır valoper yazmıcaz  cüzdna yazıcaz sadece )
 ```
 empowerd tx staking delegate $(empowerd keys show $WALLET --bech val -a) 1000000umpwr --from $WALLET --chain-id circulus-1 --gas auto --gas-adjustment 1.5 -y
 ```
-# düz Delegate ( kendinize edicekseniz valoper yazıcanız yada baskasına edicekseniz onu  tabi cüzdanda yazılcak )
+### Düz Delegate ( kendinize edicekseniz valoper yazıcanız yada baskasına edicekseniz onu  tabi cüzdanda yazılcak )
 ```
 empowerd tx staking delegate <TO_VALOPER_ADDRESS> 1000000umpwr --from $WALLET --chain-id circulus-1 --gas auto --gas-adjustment 1.5 -y
 ```
-# bi fakirden baska fakire redelege
+### Bi fakirden baska fakire redelege
 ```
 empowerd tx staking redelegate $VALOPER_ADDRESS <TO_VALOPER_ADDRESS> 1000000umpwr --from $WALLET --chain-id circulus-1 --gas auto --gas-adjustment 1.5 -y
 ```
@@ -209,13 +214,13 @@ $ Unbond tüm malları geri çek
 ```
 empowerd tx staking unbond $(empowerd keys show $WALLET --bech val -a) 1000000umpwr --from $WALLET --chain-id circulus-1 --gas auto --gas-adjustment 1.5 -y
 ```
-# baskasına coin yollama 
+### Baskasına coin yollama 
 ```
 empowerd tx bank send $WALLET_ADDRESS <TO_WALLET_ADDRESS> 1000000umpwr --gas auto --gas-adjustment 1.5 -y
 ```
-# Sadece port değiştirmek isteyenler
+## Sadece port değiştirmek isteyenler
 
-# Port Atama (izmir ayarladım isteyen 35 değiştirsin)
+### Port Atama (izmir ayarladım isteyen 35 değiştirsin)
 ```
 echo "export EMPOWERCHAİN_PORT="35"" >> $HOME/.bash_profile
 source $HOME/.bash_profile
