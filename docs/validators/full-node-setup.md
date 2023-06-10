@@ -129,7 +129,7 @@ cd empowerchain
 Checkout the desired version to build. The latest release tag can be found on the [EmpowerChain Release Page](https://github.com/EmpowerPlastic/empowerchain/releases/)
 
 ```bash
-git checkout v0.0.3
+git checkout v1.0.0-rc2
 ```
 
 Compile the empowerd binary
@@ -170,7 +170,7 @@ wget -O $HOME/empowerchain/config/genesis.json <genesis-url>
 
 Example for the `circulus-1` testnet:
 ```bash
-wget -O $HOME/empowerchain/config/genesis.json https://github.com/EmpowerPlastic/empowerchain/blob/main/testnets/circulus-1/genesis.json
+wget -O $HOME/.empowerchain/config/genesis.json https://raw.githubusercontent.com/EmpowerPlastic/empowerchain/main/testnets/circulus-1/genesis.json
 ```
 
 ### Set Persistent Peers and Seeds
@@ -179,12 +179,11 @@ Retrieve the persistent peers and seeds from the Empowerchain official repo. All
 
 ```bash
 # Obtain the peers and seeds from the Empowerchain repository
-PEERS="$(curl -s https://raw.githubusercontent.com/EmpowerPlastic/empowerchain/main/testnets/circulus-1/persistent_peers.txt)"
-SEEDS="$(curl -s https://raw.githubusercontent.com/EmpowerPlastic/empowerchain/main/testnets/circulus-1/seeds.txt)"
+seeds="d6a7cd9fa2bafc0087cb606de1d6d71216695c25@51.159.161.174:26656"
+peers="e8b3fa38a15c426e046dd42a41b8df65047e03d5@95.217.144.107:26656,89ea54a37cd5a641e44e0cee8426b8cc2c8e5dfb@51.159.141.221:26656,0747860035271d8f088106814a4d0781eb7b2bc7@142.132.203.60:27656,3c758d8e37748dc692621a0d59b454bacb69b501@65.108.224.156:26656,41b97fced48681273001692d3601cd4024ceba59@5.9.147.185:26656"
 
 # Set the peers and seeds in the empowerd configuration file
-sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" ~/.empowerchain/config/config.toml
-sed -i.bak -e "s/^seeds *=.*/seeds = \"$SEEDS\"/" ~/.empowerchain/config/config.toml
+sed -i -e 's|^seeds *=.*|seeds = "'$seeds'"|; s|^persistent_peers *=.*|persistent_peers = "'$peers'"|' $HOME/.empowerchain/config/config.toml
 ```
 
 ### Set the minimum gas price
