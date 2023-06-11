@@ -2,27 +2,27 @@
 
 <h1 align="center"> Empower Chain </h1>
 
- * [Topluluk kanalımız](https://t.me/corenodechat)<br>
+ * [Our community channel](https://t.me/corenodechat)<br>
  * [Empower Website](https://empower.eco)<br>
  * [EmpowerChain Website](https://empowerchain.io)<br>
  * [Blockchain Explorer](https://empower.explorers.guru/)<br>
- * [Doküman](https://docs.empowerchain.io)<br>
+ * [Document](https://docs.empowerchain.io)<br>
  * [Discord](https://discord.gg/Zs3GMUhg)<br> 
- * [Görevler ve Ödüller](https://docs.empowerchain.io/testnet/tasks-and-rewards)
+ * [Quest and Reward](https://docs.empowerchain.io/testnet/tasks-and-rewards)
 
-## Sistem Gereksinimleri
-| Bileşenler | Minimum Gereksinimler | 
+## System requirements
+| Components | Minimum requirements | 
 | ------------ | ------------ |
 | CPU |	4 |
 | RAM	| 8 GB |
 | Storage	| 250 GB SSD |
 ```
-# kütüphane kurulumu
+# library setup
 sudo apt update && sudo apt upgrade -y
 sudo apt install curl git wget htop tmux build-essential jq make lz4 gcc unzip -y
 ```
 
-### Moniker ve Cüzdan adınızı giriniz. (sonra tek kod olarak yapıstırınız)
+### Moniker and wallet write.
 ```
 # install go, if needed
 cd $HOME
@@ -38,7 +38,7 @@ source $HOME/.bash_profile
 }
 [ ! -d ~/go/bin ] && mkdir -p ~/go/bin
 
-# set vars ( WALLET VE MONİKER KISMINI DEĞİŞTİRİNİZ )
+# set vars ( Moniker and wallet write )
 echo "export WALLET="wallet"" >> $HOME/.bash_profile
 echo "export MONIKER="test"" >> $HOME/.bash_profile
 echo "export EMPOWER_CHAIN_ID="circulus-1"" >> $HOME/.bash_profile
@@ -125,7 +125,7 @@ sudo systemctl enable empowerd
 sudo systemctl restart empowerd && sudo journalctl -u empowerd -f -o cat
 ```
 
-### Cüzdan olusturma yada import etme
+### wallet build
 ```
 empowerd keys add cüzdan-adı
 ```
@@ -133,13 +133,13 @@ empowerd keys add cüzdan-adı
 ```
 empowerd keys add cüzdan-adı --recover
 ```
-### Cüzdan sorgulama
+### wallet list
 ```
 empowerd keys list
 ```
 
 
-### Senkronize olmayı bekleyin ardından validatör oluşturun (not: faucetin bir kaç gün içinde açılacağı söylendi)
+### Wait to sync then create validator
 ```
 empowerd tx staking create-validator \
   --amount 1000000umpwr \
@@ -160,9 +160,29 @@ empowerd tx staking create-validator \
 ```
 sudo systemctl restart empowerd
 ```
-### Log Kontrol
+### Log control
 ```
 journalctl -u empowerd -f -o cat
+```
+## Check service status
+```
+sudo systemctl status empowerd
+```
+## Sync info
+```
+empowerd status 2>&1 | jq .SyncInfo
+```
+## Node info
+```
+empowerd status 2>&1 | jq .NodeInfo
+```
+## Reload services
+```
+sudo systemctl daemon-reload
+```
+## Your node peer
+```
+echo $(empowerd tendermint show-node-id)'@'$(curl -s ifconfig.me)':'$(cat $HOME/.empowerchain/config/config.toml | sed -n '/Address to listen for incoming connection/{n;p;}' | sed 's/.*://; s/".*//')
 ```
 ### Edit validator 
 ```
@@ -176,7 +196,7 @@ empowerd tx staking edit-validator \
 --gas auto --gas-adjustment 1.5 \
 -y
 ```
-### Silme komutları
+### Delete node
 ```
 sudo systemctl stop empowerd
 sudo systemctl disable empowerd
@@ -186,41 +206,105 @@ sudo rm -rf $HOME/.empowerchain
 sed -i "/EMPOWER_/d" $HOME/.bash_profile
 ```
 
-### Odülleri talep et
+### reward witdraw
 ```
 empowerd tx distribution withdraw-all-rewards --from $WALLET --chain-id circulus-1 --gas auto --gas-adjustment 1.5
 ```
-### Odülleri ve komisyonları talep et validator
+### Claim rewards and commissions validator
 ```
 empowerd tx distribution withdraw-rewards $VALOPER_ADDRESS --from $WALLET --commission --chain-id circulus-1 --gas auto --gas-adjustment 1.5 -y
 ```
-### Ne kadar mangır var
+### wallet balance
 ```
 empowerd query bank balances $WALLET_ADDRESS
 ```
-### Kendine delege et ( $(empowerd keys show $WALLET --bech val -a) kendi valoperınızı kod çağırır valoper yazmıcaz  cüzdna yazıcaz sadece )
+### Delege my self
 ```
 empowerd tx staking delegate $(empowerd keys show $WALLET --bech val -a) 1000000umpwr --from $WALLET --chain-id circulus-1 --gas auto --gas-adjustment 1.5 -y
 ```
-### Düz Delegate ( kendinize edicekseniz valoper yazıcanız yada baskasına edicekseniz onu  tabi cüzdanda yazılcak )
+### Delege
 ```
 empowerd tx staking delegate <TO_VALOPER_ADDRESS> 1000000umpwr --from $WALLET --chain-id circulus-1 --gas auto --gas-adjustment 1.5 -y
 ```
-### Bi fakirden baska fakire redelege
+### Send other redelege
 ```
 empowerd tx staking redelegate $VALOPER_ADDRESS <TO_VALOPER_ADDRESS> 1000000umpwr --from $WALLET --chain-id circulus-1 --gas auto --gas-adjustment 1.5 -y
 ```
-$ Unbond tüm malları geri çek
+## Unbond
 ```
 empowerd tx staking unbond $(empowerd keys show $WALLET --bech val -a) 1000000umpwr --from $WALLET --chain-id circulus-1 --gas auto --gas-adjustment 1.5 -y
 ```
-### Baskasına coin yollama 
+### send other wallet 
 ```
 empowerd tx bank send $WALLET_ADDRESS <TO_WALLET_ADDRESS> 1000000umpwr --gas auto --gas-adjustment 1.5 -y
 ```
-## Sadece port değiştirmek isteyenler
+## View proposal
+```
+empowerd query gov proposal 1
+```
+## Vote
+```
+empowerd tx gov vote 1 yes --from $WALLET --chain-id circulus-1  --gas auto --gas-adjustment 1.5 -y
+```
+## Create New Text Proposal
+```
+empowerd  tx gov submit-proposal \
+--title "" \
+--description "" \
+--deposit 1000000umpwr \
+--type Text \
+--from $WALLET \
+--gas auto --gas-adjustment 1.5 \
+-y 
+```
+## Proposals List
+```
+empowerd query gov proposals
+```
 
-### Port Atama (izmir ayarladım isteyen 35 değiştirsin)
+## Edit Existing Validator
+```
+empowerd tx staking edit-validator \
+--commission-rate 0.1 \
+--new-moniker "$MONIKER" \
+--identity "" \
+--details "I love blockchain ❤️" \
+--from $WALLET \
+--chain-id circulus-1 \
+--gas auto --gas-adjustment 1.5 \
+-y
+```
+## Validator info
+```
+empowerd status 2>&1 | jq .ValidatorInfo
+```
+## Validator Details
+```
+empowerd q staking validator $(empowerd keys show $WALLET --bech val -a)
+```
+## Jailing info
+```
+empowerd q slashing signing-info $(empowerd tendermint show-validator)
+```
+## Unjail validator
+```
+empowerd tx slashing unjail --broadcast-mode block --from $WALLET --chain-id circulus-1 --gas auto --gas-adjustment 1.5 -y
+```
+## Active Validators List
+```
+empowerd q staking validators -oj --limit=2000 | jq '.validators[] | select(.status=="BOND_STATUS_BONDED")' | jq -r '(.tokens|tonumber/pow(10; 6)|floor|tostring) + " 	 " + .description.moniker' | sort -gr | nl
+```
+## Check Validator key
+```
+[[ $(empowerd q staking validator $VALOPER_ADDRESS -oj | jq -r .consensus_pubkey.key) = $(empowerd status | jq -r .ValidatorInfo.PubKey.value) ]] && echo -e "Your key status is ok" || echo -e "Your key status is error"
+```
+## Signing info
+```
+empowerd q slashing signing-info $(empowerd tendermint show-validator)
+```
+## Only port change
+
+### Port Vars.
 ```
 echo "export EMPOWERCHAİN_PORT="35"" >> $HOME/.bash_profile
 source $HOME/.bash_profile
