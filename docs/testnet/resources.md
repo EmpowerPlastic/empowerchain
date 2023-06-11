@@ -17,7 +17,7 @@ If you want to add your resource to this page, please create a PR with the chang
 | NodeStake  | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://nodestake.top/empower                                                        |
 | KonsorTech | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://konsortech.xyz/testnet/empower                                               |
 | AutoStake  | Node resources ( snapshots, state sync, peers, seeds, etc)                                   | https://autostake.com/networks/testnets/empower/#services                            |
-| AM Solutions | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://www.theamsolutions.info/empowerchain  
+| AM Solutions | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://www.theamsolutions.info/empowerchain                                         |
 
 ## Explorers
 
