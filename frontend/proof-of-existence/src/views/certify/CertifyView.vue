@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import router from "@/router";
-import SupportedFilesModal from "@/views/certify/SupportedFilesModal.vue";
+import SupportedFilesModal from "@/views/certify/AboutModal.vue";
 
 const file = ref<File | undefined>(undefined);
 const inputString = ref<string>();
@@ -131,14 +131,16 @@ const closeModal = () => {
     <template v-if="activeTab === 'File'">
       <div class="md:p-1 border-t border-lightGray w-full">
         <p class="mb-3 text-white text-title14 mt-2">
-          Drag and drop your document here, or choose a file. Your file will
-          <b>not</b> be uploaded.
+          Create an immutable proof of existence for your document.
           <a
             href="#"
             @click="openModal"
             class="inline-flex items-center font-medium text-lightGreen"
             >Learn more.</a
           >
+          <br />
+          Drag and drop your document here, or choose a file. Your file will
+          <b>not</b> be uploaded.
         </p>
         <div class="w-full p-3 mt-7 rounded bg-lightGray">
           <label class="cursor-pointer" for="file_input">
@@ -174,6 +176,14 @@ const closeModal = () => {
     <template v-if="activeTab === 'Text'">
       <div class="md:p-1 border-t border-lightGray">
         <p class="mb-3 text-white text-title14 mt-2">
+          Create an immutable proof of existence for your document.
+          <a
+            href="#"
+            @click="openModal"
+            class="inline-flex items-center font-medium text-lightGreen"
+            >Learn more.</a
+          >
+          <br />
           You can input arbitrary plain text below to create a proof of its
           existence.
         </p>
