@@ -12,7 +12,7 @@ empowerd tx authz revoke new_wallet /cosmos.bank.v1beta1.MsgSend --from wallet -
 
 ## Auth exect
 ```
-empowerd tx bank send wallet_address_pertama wallet_address_kedua 1000umpwr --generate-only > tx.json
+empowerd tx bank send wallet_address_1 wallet_address_2 1000umpwr --generate-only > tx.json
 empowerd tx authz exec tx.json --from wallet --fees 200umpwr
 ```
 
@@ -43,7 +43,7 @@ empowerd tx staking unbond $(empowerd keys show wallet --bech val -a) 1000000ump
 
 ## Cancel-unbound
 ```
-empowerd tx staking cancel-unbond valoperaddress 100umpwr blockpasundelegate --from wallet -y
+empowerd tx staking cancel-unbond valoperaddress 100umpwr WRITE_UNBOND_HIGHT --from wallet -y
 ```
 
 ## Withdraw-rewards
