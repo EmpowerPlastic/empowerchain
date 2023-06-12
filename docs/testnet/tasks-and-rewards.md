@@ -5,31 +5,40 @@ To make sure you are eligible for the rewards, please read the [rules](./rules) 
 **Disclaimer:** The tasks and rewards might be adjusted at any time, but will be announced in Discord if so.
 
 Before you start on a task, please open the submission form to make sure that:
+
 1. The task has opened (if the form is not accepting submissions, the task is not open)
 2. You understand the task and the instructions which you will find in the submission form itself
 
-To find resources such as RPC, API, block explorers and validation guides, please visit the [resources](./resources) page.
+To find resources such as RPC, API, block explorers and validation guides, please visit the [resources](./resources)
+page.
 
 ## For validators
+
 As you will see below, most of the tasks are not particularly geared towards validators. This is because we want to
 make sure that everyone can participate, not just validators.
 
-More importantly, we want to align and incentivize validators long-term, which is why the delegation program 
-will be the most important way for validators to earn rewards. Please see the [delegation program](../validators/delegation-program.md) for more information.
+More importantly, we want to align and incentivize validators long-term, which is why the delegation program
+will be the most important way for validators to earn rewards. Please see
+the [delegation program](../validators/delegation-program.md) for more information.
 
-**Being in the active set during the testnet is not really relevant to the delegation program (so please don't worry about that)**
+**Being in the active set during the testnet is not really relevant to the delegation program (so please don't worry
+about that)**
 
 ## How to participate
+
 To participate, you first need to do three things:
+
 1. Join our Discord
 2. Sign up on our Google Form
 3. Grab the Circulus-1 Tester role in the # 🤝︱tester-role channel in Discord
 
-Ensure you create a new wallet (instructions below) and **use the same address for all tasks during the testnet**. 
-We will ask everyone to provide the address at the end of the testnet to match it against the Discord username you provided in the signup form.
+Ensure you create a new wallet (instructions below) and **use the same address for all tasks during the testnet**.
+We will ask everyone to provide the address at the end of the testnet to match it against the Discord username you
+provided in the signup form.
 
 ## A note on wallets:
-Make sure you use the same wallet address for all tasks. We will collect and link all addresses to 
+
+Make sure you use the same wallet address for all tasks. We will collect and link all addresses to
 the information you signed up with. Make sure you use a new wallet, so we can't connect it to any
 mainnet addresses.
 
@@ -41,7 +50,7 @@ For most of the tasks you will need some tokens to pay for gas and other stuff.
 
 You can request tokens in the `# 🔧︱faucet` channel in Discord.
 
-Please do not abuse the faucet. It will only give a small amount of tokens and there will be 
+Please do not abuse the faucet. It will only give a small amount of tokens and there will be
 a cool-down before you can request more tokens. If we detect abuse you will be disqualified.
 
 ## Rewards
@@ -114,13 +123,15 @@ See [First and last serve submissions](#first-and-last-serve-submissions) for de
 | Retire plastic credits    | 30 $MPWR for the first 200 | 12 $MPWR for the last 500 |
 
 ### Instructions
+
 Instruction for each task can be found in the Google submission form for each task.
 
 Create proof of existence: https://forms.gle/i2TSGvN2AL983WS16
 
 Buy plastic credits: https://forms.gle/MDfBbZZSv3rDh11W7
 
-_(Right now, the credits you buy will not show up anywhere (except if you know how to query the marketplace contract manually). This will be added shortly.)_
+_(Right now, the credits you buy will not show up anywhere (except if you know how to query the marketplace contract
+manually). This will be added shortly.)_
 
 Retire plastic credits: Will be provided later when this functionality is turned on.
 
@@ -142,14 +153,17 @@ See [First and last serve submissions](#first-and-last-serve-submissions) for de
 > about [Plastic Credits](../core-modules/plastic-credits/high-level-overview.md)
 
 ### Instructions
+
 Instruction for each task can be found in the Google submission form for each task.
 
 SDK transactions: https://forms.gle/mfuLHV9vBshJY2by6
 
 Proof of existence transaction: https://forms.gle/QajitMU2D1Mo7cRU7
 
-Plastic credit issuance CLI tasks: Will be provided later to the participants who pass the quiz (which will also be provided later).
-In the meantime, you can read up on the [Plastic Credits](../core-modules/plastic-credits/high-level-overview.md) module.
+Plastic credit issuance CLI tasks: Will be provided later to the participants who pass the quiz (which will also be
+provided later).
+In the meantime, you can read up on the [Plastic Credits](../core-modules/plastic-credits/high-level-overview.md)
+module.
 
 ## IBC Testing
 
@@ -166,6 +180,7 @@ See [First and last serve submissions](#first-and-last-serve-submissions) for de
 | Send $OSMO to EmpowerChain                             | 7.14 $MPWR for first 100 | 1.42 $MPWR for last 500 |
 
 ### Instructions
+
 Instruction for each task can be found in the Google submission form.
 
 All the tasks are in the following Google Form: https://forms.gle/JJDeX5AVaZnznvqv8
@@ -175,19 +190,54 @@ All the tasks are in the following Google Form: https://forms.gle/JJDeX5AVaZnznv
 For docs and guide related tasks there are is a different reward mechanism. For each task there will be
 maximum 1 winner and 3 runner-ups. So even if you don't win, you might still get rewarded well.
 
-| Task                                                     | Winner       | Runner-ups   |
-|----------------------------------------------------------|--------------|--------------|
-| Proof of existence user guide                            | 4687.5 $MPWR | 1562.5 $MPWR |
-| Marketplace user guide                                   | 4687.5 $MPWR | 1562.5 $MPWR |
-| Plastic credit CLI guide (from both sides)               | 4687.5 $MPWR | 1562.5 $MPWR |
-| Automate CODING_GUIDELINES and other .md files into docs | 4687.5 $MPWR | 1562.5 $MPWR |
-| Make our automated API docs look better                  | 4687.5 $MPWR | 1562.5 $MPWR |
-| From zero to hero validator guide                        | 9375 $MPWR   | 3125 $MPWR   |
-| Wildcard / TBA                                           | 4687.5 $MPWR | 1562.5 $MPWR |
+| Task                                                     | Winner                                         | Runner-ups    |
+|----------------------------------------------------------|------------------------------------------------|---------------|
+| Proof of existence user guide                            | 4687.5 $MPWR                                   | 1562.5 $MPWR  |
+| Marketplace user guide                                   | 4687.5 $MPWR                                   | 1562.5 $MPWR  |
+| Plastic credit CLI guide (from both sides)               | 4687.5 $MPWR                                   | 1562.5 $MPWR  |
+| Automate CODING_GUIDELINES and other .md files into docs | 4687.5 $MPWR                                   | 1562.5 $MPWR  |
+| Make our automated API docs look better                  | 4687.5 $MPWR                                   | 1562.5 $MPWR  |
+| From zero to hero validator guide                        | 9375 $MPWR                                     | 3125 $MPWR    |
+| Wildcard / TBA                                           | 4687.5 $MPWR                                   | 1562.5 $MPWR  |
+| Testnet task instructions                                | 500-1000 $MPWR per accepted (multiple winners) | 100-500 $MPWR |
 
-All of the above tasks needs to be submitted as Pull Requests to EmpowerChain's GitHub repo: https://github.com/EmpowerPlastic/empowerchain
+All of the above tasks needs to be submitted as Pull Requests to EmpowerChain's GitHub
+repo: https://github.com/EmpowerPlastic/empowerchain and to a Google Form (see below)
 
 The docs are written in Markdown under the `docs` folder: https://github.com/EmpowerPlastic/empowerchain/tree/main/docs
+
+It is recommended to reach out to someone from the team to figure out what is expected for each task, but we've added
+some clarifications in the instructions below.
+
+### Instructions
+
+General guidelines:
+
+- All written material needs to be in English
+- All written material needs to be in Markdown
+- All written material needs to be fairly grammatically correct
+
+Some more specifics on each task:
+
+| Task                                                     | Description                                                                                                                                                                                                                                                               |
+|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Proof of existence user guide                            | An end-user guide on how to create on our [PoE web app](https://testnet.proof-of-existence.com/)                                                                                                                                                                          |
+| Marketplace user guide                                   | An end-user guide on how to use the [Plastic Credit Marketplace web app](https://testnet.empower.market//)                                                                                                                                                                |
+| Plastic credit CLI guide (from both sides)               | A guide on how to use the Plastic Credit CLI for both issuers and applicants (mostly issuers)                                                                                                                                                                             |
+| Automate CODING_GUIDELINES and other .md files into docs | We have a bunch of .md files that are not included in the docs, but should be. This task is to automate that process. Talk to us!                                                                                                                                         |
+| Make our automated API docs look better                  | We have automated API docs, but they don't look that good. This task is to make them look better. Talk to us!                                                                                                                                                             |
+| From zero to hero validator guide                        | A guide on how to become a validator. What it is, how to set it up, how to secure it. _Everything_ you need to know from zero (knowing nothing) to actually running a good validator setup that is secure and performant. Please reach out to talk if you have questions. |
+| Wildcard / TBA                                           | If you have an idea for a task that you think would be valuable, please reach out to us and we can discuss it.                                                                                                                                                            |
+| Testnet task instructions                                | Many of the testnet tasks have unclear/incomplete instructions. IBC is a good example. If you think a task might need a guide, it probably does. Talk to us!                                                                                                              |
+
+To submit a task, you will need to do two things:
+
+1. Create a Pull Request to the EmpowerChain repo with your changes: https://github.com/EmpowerPlastic/empowerchain
+2. Submit a Google Form with a link to your Pull
+   Request: https://docs.google.com/forms/d/e/1FAIpQLScd5GEfcry1Mu5NMTD4B5W21kZW97tzg-xtsWxhMoDge6uViQ/viewform?usp=sf_link
+
+And again, it is recommended to reach out to someone from the team to figure out what and how to write if you are
+unsure.
 
 ## Build challenges
 
@@ -285,7 +335,8 @@ All security issues are rewarded only if you are the first to report them.
 If they are reported elsewhere, or by someone else first, you will not be rewarded
 (depending on the situation, we'll look at this on a case-by-case basis).
 
-Make sure to check and report first (unless critical, see note below) at: https://github.com/EmpowerPlastic/empowerchain/issues
+Make sure to check and report first (unless critical, see note below)
+at: https://github.com/EmpowerPlastic/empowerchain/issues
 
 **IMPORTANT!** If you discover a security issue in an upstream library that is used by EmpowerChain, please report it in
 private.

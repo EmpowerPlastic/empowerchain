@@ -17,7 +17,8 @@ If you want to add your resource to this page, please create a PR with the chang
 | NodeStake  | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://nodestake.top/empower                                                        |
 | KonsorTech | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://konsortech.xyz/testnet/empower                                               |
 | AutoStake  | Node resources ( snapshots, state sync, peers, seeds, etc)                                   | https://autostake.com/networks/testnets/empower/#services                            |
-| AM Solutions | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://www.theamsolutions.info/empowerchain                                         |
+| AM Solutions | Node resources (instructions, state sync, peers, seeds, genesis, etc)                      | https://www.theamsolutions.info/empowerchain                                         |
+| 🔥STAVR🔥  | Node resources ( manuals, snapshots, statesync, peers, seeds, genesis, etc)                  | https://github.com/obajay/StateSync-snapshots/tree/main/Projects/Empower             |
 
 ## Explorers
 
@@ -27,7 +28,7 @@ If you want to add your resource to this page, please create a PR with the chang
 | Nodeist   | Ping      | https://exp.nodeist.net/Empower                |
 | NodeStake | Ping      | https://explorer.nodestake.top/empower-testnet |
 | ITRocket  | Ping      | https://testnet.itrocket.net/empower/staking   |
-| STAVR     | Ping      | https://explorer.stavr.tech/empower            |
+| 🔥STAVR🔥 | Ping      | https://explorer.stavr.tech/empower            |
 | KonsorTech | Ping     | https://testnet-explorer.konsortech.xyz/empower |
 | AM Solutions | Ping     | https://explorer.theamsolutions.info/empower-test |
 
@@ -44,4 +45,5 @@ If you want to add your resource to this page, please create a PR with the chang
 | AviaOne    | https://rpc.circulus-1.empower.aviaone.com:443 | https://api.circulus-1.empower.aviaone.com   | grpc.circulus-1.empower.aviaone.com:443 |
 | KonsorTech | https://testnet-empower-rpc.konsortech.xyz:443 | https://testnet-empower-api.konsortech.xyz   | testnet-empower.konsortech.xyz:25090    |
 | AM Solutions | https://rpc-empower.test.theamsolutions.info:443 | https://rest-empower.test.theamsolutions.info:443 | grpc-empower.test.theamsolutions.info:443 |
+| 🔥STAVR🔥  | http://empw.rpc.t.stavr.tech:22057             | https://empw.api.t.stavr.tech                | empw.grpc.t.stavr.tech:9141             |
 
