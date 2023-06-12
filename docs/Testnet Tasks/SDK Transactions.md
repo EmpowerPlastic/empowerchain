@@ -56,3 +56,4 @@ empowerd tx distribution withdraw-all-rewards --from wallet --chain-id circulus-
 empowerd tx distribution withdraw-rewards $(empowerd keys show wallet --bech val -a) --commission --from wallet --chain-id circulus-1 --gas-prices 0.1umpwr --gas-adjustment 1.5 --gas auto -y
 ```
 
+Do not forget to fill out the form: https://docs.google.com/forms/d/e/1FAIpQLScmjUZ_VfJ0AgwdI6hl7gp1Ce8UPGe8t28YoMjgN-6FpISvTw/viewform
