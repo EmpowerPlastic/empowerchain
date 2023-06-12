@@ -2,26 +2,47 @@
 import {ref} from 'vue'
 import RetireCreditTextArea from '@/components/RetireCreditTextArea.vue'
 import InputWithLabel from '@/components/InputWithLabel.vue'
+import {empowerchain} from "@empower-plastic/empowerjs";
+import {toast} from "vue3-toastify";
+
+const {retireCredits, transferCredits} = empowerchain.plasticcredit.MessageComposer.withTypeUrl;
 
 export interface ModalProps {
   showModal: boolean
-  denom:string
-  availableCredits:number
+  denom: string
+  availableCredits: string
+  owner: string
 }
 
-defineProps<ModalProps>()
+const props = defineProps<ModalProps>()
 const emitShowModal = defineEmits(['update:showModal'])
 
-const name = ref('')
-const additionalInfo = ref('')
-const retireCredits = ref('')
+const name = ref()
+const additionalInfo = ref()
+const retireCreditsAmount = ref()
 
 const closeModal = () => {
   emitShowModal("update:showModal", false)
 }
 
 const handleRetireCredits = () => {
-console.log(name.value,additionalInfo.value,retireCredits.value,availableCredits.value)
+  try {
+    const results = retireCredits({
+      owner: props.owner,
+      denom: props.denom,
+      amount: retireCreditsAmount.value as string,
+      retiringEntityName: name.value,
+      retiringEntityAdditionalData: additionalInfo.value,
+    })
+    console.log(results, 'res')
+    if (results) {
+      toast.success("Retire credits successfully")
+    }
+  } catch (error) {
+    toast.success("Retire credits failed")
+    console.log(error)
+  }
+  console.log(name.value, additionalInfo.value, retireCreditsAmount.value)
 }
 </script>
 <template>
@@ -43,11 +64,12 @@ console.log(name.value,additionalInfo.value,retireCredits.value,availableCredits
 
       <div class="grid md:grid-cols-2 gap-5 mb-6 mt-2">
         <InputWithLabel
-            v-model="retireCredits"
+            v-model="retireCreditsAmount"
             label="How many Plastic credits do you want to retire?"
             placeholder="0.01"
             id="input-1"
             :denom="denom"
+            type="number"
         />
         <InputWithLabel
             :model-value="availableCredits"
@@ -57,6 +79,7 @@ console.log(name.value,additionalInfo.value,retireCredits.value,availableCredits
             dashed
             :disabled="true"
             :denom="denom"
+            type="number"
         />
       </div>
 
@@ -79,7 +102,9 @@ console.log(name.value,additionalInfo.value,retireCredits.value,availableCredits
             @click="closeModal"
         >Cancel!</label
         >
-        <button class="btn modal-button !ml-0 bg-greenPrimary" @click="handleRetireCredits">Retire credits</button>
+        <button :disabled="!(retireCreditsAmount && name && additionalInfo)"
+                class="btn modal-button !ml-0 bg-greenPrimary disabled:text-white" @click="handleRetireCredits">Retire credits
+        </button>
       </div>
     </div>
   </div>

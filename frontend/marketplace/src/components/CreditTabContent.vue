@@ -40,6 +40,9 @@ const getCreditsData = async () => {
     }){
       totalCount
       nodes{
+      wallet{
+          address
+        }
         creditCollection{
           denom
           creditType

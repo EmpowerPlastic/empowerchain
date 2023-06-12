@@ -8,6 +8,7 @@ export interface InputWithLabelProps {
   denom?:string
   disabled?:boolean
   longWidth?:boolean
+  type?:string
 }
 defineProps<InputWithLabelProps>()
 
@@ -29,7 +30,7 @@ const updateValue = (e: Event) => {
     >
       <input
         :id="id"
-        type="text"
+        :type="type"
         :placeholder="placeholder"
         class="input input-text disabled:bg-lightBlack disabled:border-none disabled:text-white"
         :class="longWidth && '!w-[100%]'"

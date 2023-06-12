@@ -9,15 +9,15 @@ export interface CreditCardProps {
   cardData: any
 }
 
-defineProps<CreditCardProps>();
+const props=defineProps<CreditCardProps>();
 
 const showRetireCreditsModal = ref(false)
 const showTransferCreditsModal = ref(false)
 </script>
 <template>
   <RetireCreditsModal v-model:show-modal="showRetireCreditsModal" :denom="cardData?.creditCollection?.denom"
-                      :available-credits="cardData.amountActive"/>
-  <TransferCreditsModal  v-model:show-modal="showTransferCreditsModal" :denom="cardData?.creditCollection?.denom"/>
+                      :available-credits="cardData.amountActive" :owner="cardData?.wallet?.address"/>
+  <TransferCreditsModal v-model:show-modal="showTransferCreditsModal" :denom="cardData?.creditCollection?.denom"/>
   <div class="w-full rounded-lg bg-borderGray md:grid md:grid-cols-3 md:p-2 md:bg-lightBlack my-3">
     <div class="max-h-[200px]">
       <ImageCarousel :image-array="getDetailsList(cardData.creditCollection.creditData.nodes).image"/>
