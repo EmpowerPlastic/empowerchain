@@ -1,47 +1,47 @@
-<h3 id="instalation">🛠 Manual installation</h3>
-  <h4>Updating packages & installing dependencies</h4>
-  <pre>sudo apt update && sudo apt upgrade -y<br>
-  sudo apt install curl tar wget clang pkg-config libssl-dev jq build-essential git make ncdu -y</pre>
+## 🛠 Manual installation
+  ### Updating packages & installing dependencies
+  `sudo apt update && sudo apt upgrade -y`
+  `sudo apt install curl tar wget clang pkg-config libssl-dev jq build-essential git make ncdu -y`
   
-  <h4>Install go</h4>
-  <pre><span class="color">cd $HOME</span>
+  ### Install go
+  'cd $HOME</span>
   VER="1.20.4"
-  <span class="color">wget</span> "https://golang.org/dl/go$VER.linux-amd64.tar.gz"
-  <span class="color">sudo tar</span> -C /usr/local -xzf "go$VER.linux-amd64.tar.gz"
-  <span class="color">sudo rm </span>-rf  "go$VER.linux-amd64.tar.gz"
-  <span class="color">echo</span> "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> $HOME/.bash_profile
-  <span class="color">source</span> $HOME/.bash_profile
+  wget "https://golang.org/dl/go$VER.linux-amd64.tar.gz"
+  sudo tar -C /usr/local -xzf "go$VER.linux-amd64.tar.gz"
+  sudo rm -rf  "go$VER.linux-amd64.tar.gz"
+  echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> $HOME/.bash_profile
+  source $HOME/.bash_profile
   #Check GO version
-  <span class="color">go version</span></pre>
+  go version'
    
-  <h3 id="binaries">Download and compile binaries</h4>
-  <pre><span class="color">cd $HOME</span>
-  <span class="color">sudo rm</span> -rf empowerchain
-  <span class="color">git</span> clone https://github.com/EmpowerPlastic/empowerchain
-  <span class="color">cd</span> empowerchain/chain
-  <span class="color">git</span> checkout v1.0.0-rc2
-  <span class="color">make install</span>
+  ### Download and compile binaries
+  'cd $HOME
+  sudo rm -rf empowerchain
+  git clone https://github.com/EmpowerPlastic/empowerchain
+  cd empowerchain/chain
+  git checkout v1.0.0-rc2
+  make install
   #Check empowerd version
-  empowerd version # v1.0.0-rc2</pre>
+  empowerd version # v1.0.0-rc2'
    
-  <h3 id="configure">Configure and start the application</h3>
-  <pre>empowerd config chain-id circulus-1
-  empowerd init [MONIKER] --chain-id circulus-1</pre> 
+  ## Configure and start the application
+  'empowerd config chain-id circulus-1
+  empowerd init [MONIKER] --chain-id circulus-1' 
    
-  <h3>Download genesis</h3>
-  <pre>
+  ## Download genesis
+  '
   curl -s https://raw.githubusercontent.com/EmpowerPlastic/empowerchain/main/testnets/circulus-1/genesis.json > $HOME/.empowerchain/config/genesis.json
   
-  </pre>
+  '
    
-  <h3>Set seeds</h3>
-  <pre>
+  ## Set seeds
+  '
   SEEDS="258f523c96efde50d5fe0a9faeea8a3e83be22ca@seed.circulus-1.empower.aviaone.com:20272,<br>d6a7cd9fa2bafc0087cb606de1d6d71216695c25@51.159.161.174:26656,<br>babc3f3f7804933265ec9c40ad94f4da8e9e0017@testnet-seed.rhinostake.com:17456"
   sed -i -e "s\|^seeds *=.*\|seeds = \"$SEEDS\"\|" $HOME/.empowerchain/config/config.toml
-  </pre>
+  '
     
-  <h3>Configure pruning</h3>
-  <pre>
+  ## Configure pruning
+  '
   PRUNING="custom"
   PRUNING_KEEP_RECENT="100"
   PRUNING_INTERVAL="10"
@@ -50,14 +50,14 @@
   sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \
   \"$PRUNING_KEEP_RECENT\"/" $HOME/.empowerchain/config/app.toml
   sed -i -e "s/^pruning-interval *=.*/pruning-interval = \
-  \"$PRUNING_INTERVAL\"/" $HOME/.empowerchain/config/app.toml</pre>
+  \"$PRUNING_INTERVAL\"/" $HOME/.empowerchain/config/app.toml'
    
-  <h3>Clean up old data</h3>
-  <pre>empowerd tendermint unsafe-reset-all --home $HOME/.empowerchain --keep-addr-book</pre>
+  ## Clean up old data
+  'empowerd tendermint unsafe-reset-all --home $HOME/.empowerchain --keep-addr-book'
    
-  <h3>🛎 Service with SystemD</h3>
-  <p>Create the service file</p>
-  <pre>
+  ## 🛎 Service with SystemD
+  Create the service file
+  '
   sudo tee <<EOF >/dev/null /etc/systemd/system/empowerd.service
   [Unit]
   Description=empowerd Empower daemon
@@ -71,45 +71,45 @@
   [Install]
   WantedBy=multi-user.target
   EOF
-  </pre>
+  '
     
-  <h4>Enable, start service and check logs</h4>
-  <pre>
+  ### Enable, start service and check logs
+  '
   sudo systemctl daemon-reload
   sudo systemctl enable empowerd
   sudo systemctl restart empowerd
-  sudo journalctl -u empowerd -f</pre>
+  sudo journalctl -u empowerd -f'
    
-  <h3>🗝Wallet</h3>
+  ## 🗝Wallet
     
-  <h4>Create wallet</h4>
-  <p>Don’t forget to save the mnemonic.</p>
+  ### Create wallet
+  Don’t forget to save the mnemonic.
    
-  <pre>empowerd keys add wallet</pre>
+  'empowerd keys add wallet'
   
-  <h4>Restore wallet</h4>
-  <pre>empowerd keys add wallet --recover</pre>
+  ### Restore wallet
+  'empowerd keys add wallet --recover'
    
-  <h4>Deposit funds into your wallet</h4>
-  <p>Before creating a validator, you have to deposit funds in your wallet, go to the Empower  discord server and request them in the faucet channel.</p>
+  ### Deposit funds into your wallet
+  Before creating a validator, you have to deposit funds in your wallet, go to the Empower  discord server and request them in the faucet channel.
    
-  <pre>$request [address wallet]</pre>
+  $request [address wallet]
    
-  <h3>📝Validator</h3>
+  ## 📝Validator
    
-  <h4>Create Empower validator</h4>
-  <p>Before creating a validator, you should make sure that the node is synchronised and check the balance of your wallet.</p>
+  ### Create Empower validator
+  Before creating a validator, you should make sure that the node is synchronised and check the balance of your wallet.
    
-  <h5>Check synchronisation status</h5>
-  <p>Once your node is fully synchronised, the output will read false.</p>
+  #### Check synchronisation status
+  Once your node is fully synchronised, the output will read false.
    
-  <pre>empowerd status 2>&1 \| jq .SyncInfo</pre>
+  'empowerd status 2>&1 \| jq .SyncInfo'
    
-  <h5>Check your balance</h5>
-  <pre>empowerd query bank balances $wallet_ADDRESS</pre>
+  #### Check your balance
+  'empowerd query bank balances $wallet_ADDRESS'
     
-  <h5>Create validator</h5>
-  <pre>empowerd tx staking create-validator \
+  #### Create validator
+  'empowerd tx staking create-validator \
   --amount 1000000umpwr \
   --from $wallet \
   --commission-max-change-rate "0.01" \
@@ -121,92 +121,92 @@
   --chain-id $empowerd \
   --gas auto \
   --gas-adjustment 1.3 \
-  --fees 10000umpwr </pre>
+  --fees 10000umpwr '
    
-  <p>You can add the flags — website — security-contact — identity — details (optional)</p>
+  You can add the flags — website — security-contact — identity — details (optional)
    
-  <pre>--website <WEB_SITE_URL> \
+  '--website <WEB_SITE_URL> \
   --security-contact <YOUR_CONTACT> \
   --identity <KEYBASE_IDENTITY> \
-  --details <YOUR_VALIDATOR_DETAILS></pre>
+  --details <YOUR_VALIDATOR_DETAILS>'
    
-  <h3>🎛 Monitoring</h3>
+  ## 🎛 Monitoring
   <p>If you want to set up a monitoring and alerting system use our guide to monitoring Cosmos nodes with tenderduty.</p>
     
-  <h3>🛎 SystemD commands</h3>
-  <h4>Stop the service</h4>
-  <pre>sudo systemctl stop empowerd</pre>
-  <h4>Start service</h4>
-  <pre>sudo systemctl start empowerd</pre>
-  <h4>Restart service</h4>
-  <pre>sudo systemctl restart empowerd</pre>
-  <h4>Check logs</h4>
-  <pre>sudo journalctl -u empowerd -f</pre>
-  <h4>Check status</h4>
-  <pre>sudo systemctl status empowerd</pre>
+  ## 🛎 SystemD commands
+  #### Stop the service
+  'sudo systemctl stop empowerd'
+  #### Start service
+  'sudo systemctl start empowerd'
+  #### Restart service
+  'sudo systemctl restart empowerd'
+  #### Check logs
+  'sudo journalctl -u empowerd -f'
+  #### Check status
+  'sudo systemctl status empowerd'
    
-  <h3>📈 Node information</h3>
-  <h4>Synchronization information</h4>
-  <pre>empowerd status 2>&1 \| jq .SyncInfo</pre>
-  <h4>Node information</h4>
-  <pre>empowerd status 2>&1 \| jq .NodeInfo</pre>
-  <h4>Validator information</h4>
-  <pre>empowerd status 2>&1 \| jq .ValidatorInfo</pre>
-  <h4>Get peers</h4>
-  <pre>echo $(empowerd tendermint show-node-id)'@'$(curl -s ifconfig.me)':'$(cat $HOME/.empowerd/config/config.toml \| sed -n '/Address to listen for incoming connection/{n;p;}' \| sed 's/.*://; s/".*//')</pre>
+  ## 📈 Node information
+  ### Synchronization information
+  'empowerd status 2>&1 \| jq .SyncInfo'
+  ### Node information
+  'empowerd status 2>&1 \| jq .NodeInfo'
+  ### Validator information
+  'empowerd status 2>&1 \| jq .ValidatorInfo'
+  ### Get peers
+  'echo $(empowerd tendermint show-node-id)'@'$(curl -s ifconfig.me)':'$(cat $HOME/.empowerd/config/config.toml \| sed -n '/Address to listen for incoming connection/{n;p;}' \| sed 's/.*://; s/".*//')'
    
-  <h3>🔏 Wallet operation</h3>
-  <h4>Check balance</h4>
-  <pre>empowerd query bank balances $wallet_ADDRESS</pre>
-  <h4>Wallet Key List</h4>
-  <pre>empowerd keys list</pre>
-  <h4>Create a new wallet</h4>
-  <pre>empowerd keys add $wallet</pre>
-  <h4>Wallet recovering</h4>
-  <pre>empowerd keys add $wallet --recover</pre>
-  <h4>Delete wallet</h4>
-  <pre>empowerd keys delete $wallet</pre>
-  <h4>Transfer funds</h4>
-  <pre>empowerd tx bank send $wallet_ADDRESS <ANOTHER_wallet_ADDRESS> 800000000umpwr --gas auto --gas-adjustment 1.3</pre>
+  ## 🔏 Wallet operation
+  ### Check balance
+  'empowerd query bank balances $wallet_ADDRESS'
+  #### Wallet Key List
+  'empowerd keys list'
+  #### Create a new wallet
+  'empowerd keys add $wallet'
+  #### Wallet recovering
+  'empowerd keys add $wallet --recover'
+  #### Delete wallet
+  'empowerd keys delete $wallet'
+  #### Transfer funds
+  'empowerd tx bank send $wallet_ADDRESS <ANOTHER_wallet_ADDRESS> 800000000umpwr --gas auto --gas-adjustment 1.3'
   
-  <h3>💬 Governance</h3>
-  <h4>List all proposals</h4>
-  <pre>empowerd query gov proposals</pre>
-  <h4>Vote YES</h4>
-  <pre>empowerd tx gov vote 1 yes --from $wallet --chain-id $EMPOWER_CHAIN_ID --gas-adjustment 1.4 --gas auto -y</pre>
-  <h4>Vote NO</h4>
-  <pre>empowerd tx gov vote 1 no --from $wallet --chain-id $EMPOWER_CHAIN_ID --gas-adjustment 1.4 --gas auto -y</pre>
-  <h4>Refrain</h4>
-  <pre>empowerd tx gov vote 1 abstain --from $wallet --chain-id $EMPOWER_CHAIN_ID --gas-adjustment 1.4 --gas auto -y</pre>
+  ## 💬 Governance
+  ### List all proposals
+  'empowerd query gov proposals'
+  ### Vote YES
+  'empowerd tx gov vote 1 yes --from $wallet --chain-id $EMPOWER_CHAIN_ID --gas-adjustment 1.4 --gas auto -y'
+  ### Vote NO
+  'empowerd tx gov vote 1 no --from $wallet --chain-id $EMPOWER_CHAIN_ID --gas-adjustment 1.4 --gas auto -y'
+  ### Refrain
+  'empowerd tx gov vote 1 abstain --from $wallet --chain-id $EMPOWER_CHAIN_ID --gas-adjustment 1.4 --gas auto -y'
     
-  <h3>🚰 Staking, delegation and rewards</h3>
-  <h4>Withdraw all rewards</h4>
-  <pre>empowerd tx distribution withdraw-all-rewards --from $wallet --chain-id circulus-1 --gas auto --gas-adjustment 1.3</pre>
-  <h4>Withdraw commission</h4>
-  <pre>empowerd tx distribution withdraw-rewards $EMPOWER_VALOPER_ADDRESS --from $wallet --commission --fees 200umpwr</pre>
-  <h4>Delegate Stake</h4>
-  <pre>empowerd tx staking delegate $EMPOWER_VALOPER_ADDRESS 10000000utia --from $wallet --chain-id circulus-1 --gas=auto --gas-adjustment 1.3</pre>
+  ## 🚰 Staking, delegation and rewards
+  ### Withdraw all rewards
+  'empowerd tx distribution withdraw-all-rewards --from $wallet --chain-id circulus-1 --gas auto --gas-adjustment 1.3'
+  ### Withdraw commission
+  'empowerd tx distribution withdraw-rewards $EMPOWER_VALOPER_ADDRESS --from $wallet --commission --fees 200umpwr'
+  ### Delegate Stake
+  'empowerd tx staking delegate $EMPOWER_VALOPER_ADDRESS 10000000utia --from $wallet --chain-id circulus-1 --gas=auto --gas-adjustment 1.3'
    
-  <h3>✔️ Validator operation</h3>
-  <h4>Edit validator</h4>
-  <pre>empowerd tx staking edit-validator \
+  ## ✔️ Validator operation
+  ### Edit validator
+  'empowerd tx staking edit-validator \
   --moniker=$NODENAME \
   --identity=<keybase_id> \
   --website="<website>" \
   --details="<validator_description>" \
   --chain-id=$EMPOWER_CHAIN_ID \
-  --from=$wallet  --fees=200utia</pre>
+  --from=$wallet  --fees=200utia'
     
-  <h3>Validator information</h3>
-  <pre>empowerd status 2>&1 \| jq .ValidatorInfo</pre>
-  <h4>Jailing information</h4>
-  <pre>empowerd q slashing signing-info $(empowerd tendermint show-validator)</pre>
-  <h4>Validator unjailing</h4>
-  <pre>empowerd tx slashing unjail --broadcast-mode=block --from $wallet --chain-id $EMPOWER_CHAIN_ID --gas auto --gas-adjustment 1.5</pre>
+  ## Validator information
+  'empowerd status 2>&1 \| jq .ValidatorInfo'
+  ### Jailing information
+  'empowerd q slashing signing-info $(empowerd tendermint show-validator)'
+  ### Validator unjailing
+  'empowerd tx slashing unjail --broadcast-mode=block --from $wallet --chain-id $EMPOWER_CHAIN_ID --gas auto --gas-adjustment 1.5'
    
-  <h3>🗑 Delete node</h3>
-  <pre>sudo systemctl stop empowerdsudo systemctl disable empowerdsudo rm -rf /etc/systemd/system/empowerd*
+  ## 🗑 Delete node
+  'sudo systemctl stop empowerdsudo systemctl disable empowerdsudo rm -rf /etc/systemd/system/empowerd*
   sudo systemctl daemon-reload
   sudo rm $(which empowerd)
-  sudo rm -rf $HOME/.empowerd</pre>
+  sudo rm -rf $HOME/.empowerd'
 
