@@ -43,6 +43,7 @@ export async function handleCreateListing(event: CosmosEvent): Promise<void> {
     initialAmount: numberOfCredits,
     pricePerCreditAmount: pricePerCreditAmount,
     pricePerCreditDenom: pricePerCreditDenom,
+    createdDate: new Date(event.block.header.time.toISOString()),
     creditCollectionId: denom,
   });
   await marketplaceListing.save();
@@ -292,6 +293,7 @@ export async function handleIssueCredits(event: CosmosEvent): Promise<void> {
     denom: denom,
     projectId: parseInt(projectId),
     applicantId: parseInt(applicantId),
+    issuanceDate: new Date(event.block.header.time.toISOString()),
     activeAmount: BigInt(amount),
     retiredAmount: BigInt(0),
     creditType: creditTypeAbbreviation,

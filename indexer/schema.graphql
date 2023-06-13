@@ -71,6 +71,7 @@ type MarketplaceListing @entity {
   initialAmount: BigInt!
   pricePerCreditAmount: BigInt!
   pricePerCreditDenom: String!
+  createdDate: Date!
   creditCollection: CreditCollection!
 }
 
@@ -136,6 +137,7 @@ type CreditCollection @entity {
   denom: String! @index(unique: true)
   projectId: Int!
   applicantId: Int! @index
+  issuanceDate: Date!
   activeAmount: BigInt!
   retiredAmount: BigInt!
   creditType: String!
