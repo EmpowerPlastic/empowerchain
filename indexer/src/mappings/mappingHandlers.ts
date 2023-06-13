@@ -115,6 +115,7 @@ export async function handleBuyCredits(event: CosmosEvent): Promise<void> {
     numberOfCreditsBought: numberOfCreditsBought,
     totalPriceAmount: totalPriceAmount,
     totalPriceDenom: totalPriceDenom,
+    saleDate: new Date(event.block.header.time.toISOString())
   });
   await buyCreditsWasmEvent.save();
 

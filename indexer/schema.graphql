@@ -122,6 +122,7 @@ type BuyCreditsWasmEvent @entity {
   numberOfCreditsBought: BigInt!
   totalPriceAmount: BigInt!
   totalPriceDenom: String!
+  saleDate: Date!
 }
 
 type CreateListing @entity {
