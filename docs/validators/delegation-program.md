@@ -36,7 +36,7 @@ The weight are very preliminary, and will be adjusted before mainnet launch.
 |--------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|--------|
 | Deploying someone else's block explorer                            | E.g. Ping                                                                                                         | 0.5    |
 | Deploying your own block explorer                                  | This will weigh heavier than an off-the-shelf explorer (because diversity)                                        | 2      |
-| Provide node RCP                                                   |                                                                                                                   | 0.5    |
+| Provide node RPC                                                   |                                                                                                                   | 0.5    |
 | Provide node API                                                   |                                                                                                                   | 0.5    |
 | Provide relaying service                                           |                                                                                                                   | 2      |
 | Provide snapshots                                                  |                                                                                                                   | 2      |
