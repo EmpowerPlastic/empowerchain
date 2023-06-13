@@ -81,7 +81,7 @@ const connect = async () => {
        style="background-image: radial-gradient(50% 50% at 50% 50%, rgba(0, 227, 58, 0.4) 0%, rgba(0, 0, 0, 0.4) 88.02%);">
 
     <!-- Desktop Navbar-->
-    <div class="grid grid-cols-3 md:px-[10%] items-center">
+    <div class="hidden md:grid grid-cols-3 md:px-[10%] items-center">
       <div>
         <a href="/">
           <img src="../assets/logo.png" class="h-8" alt="Logo"/>
