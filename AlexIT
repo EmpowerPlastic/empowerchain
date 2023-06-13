@@ -1,0 +1,26 @@
+alex@server:~$ empowerd keys list
+- address: empower18ztk0s0dfxd664spnnya0wgd2v7846tkeh9rvr
+  name: AlexIT
+  pubkey: '{"@type":"/cosmos.crypto.secp256k1.PubKey","key":"AmZM5jfsA03wMDKPyojIl2QDcKnr1d3YCGEYh9AX4lNj"}'
+  type: local
+- address: empower1ayze7z7sn2sv8ql3aqwdl9r2aht23dqnw6n4j8
+  name: wallet
+  pubkey: '{"@type":"/cosmos.crypto.secp256k1.PubKey","key":"Ar5v0AuAu4W8AcJ07UFePyd8lEJDHxIGwJTyUeXDWRG1"}'
+  type: local
+
+alex@server:~$ empowerd q bank balances empower18ztk0s0dfxd664spnnya0wgd2v7846tkeh9rvr
+balances:
+- amount: "23750"
+  denom: umpwr
+pagination:
+  next_key: null
+  total: "0"
+alex@server:~$ empowerd q bank balances empower1ayze7z7sn2sv8ql3aqwdl9r2aht23dqnw6n4j8
+balances:
+- amount: "20100"
+  denom: umpwr
+pagination:
+  next_key: null
+  total: "0"
+alex@server:~$ empowerd tx authz grant empower1ayze7z7sn2sv8ql3aqwdl9r2aht23dqnw6n4j8 send --from AlexIT --fees 200umpwr
+Error: spend-limit should be greater than zero
