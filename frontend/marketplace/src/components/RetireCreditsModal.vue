@@ -2,8 +2,9 @@
 import {ref} from 'vue'
 import RetireCreditTextArea from '@/components/RetireCreditTextArea.vue'
 import InputWithLabel from '@/components/InputWithLabel.vue'
-import {empowerchain} from "@empower-plastic/empowerjs";
+import {empowerchain, getSigningTM37EmpowerchainClient} from "@empower-plastic/empowerjs";
 import {toast} from "vue3-toastify";
+import {CHAIN_ID, RPC_ENDPOINT} from "@/config/config";
 
 const {retireCredits, transferCredits} = empowerchain.plasticcredit.MessageComposer.withTypeUrl;
 
@@ -11,7 +12,7 @@ export interface ModalProps {
   showModal: boolean
   denom: string
   availableCredits: string
-  owner: string
+  address: string
 }
 
 const props = defineProps<ModalProps>()
@@ -20,29 +21,42 @@ const emitShowModal = defineEmits(['update:showModal'])
 const name = ref()
 const additionalInfo = ref()
 const retireCreditsAmount = ref()
+const loading = ref(false)
 
 const closeModal = () => {
   emitShowModal("update:showModal", false)
 }
 
-const handleRetireCredits = () => {
+const handleRetireCredits = async () => {
   try {
-    const results = retireCredits({
-      owner: props.owner,
+    loading.value = true
+    const retireCreditsMsg = retireCredits({
+      owner: props.address,
       denom: props.denom,
       amount: retireCreditsAmount.value as string,
       retiringEntityName: name.value,
       retiringEntityAdditionalData: additionalInfo.value,
     })
-    console.log(results, 'res')
-    if (results) {
+
+    const offlineSigner = window.keplr.getOfflineSigner(CHAIN_ID);
+    const chainClient = await getSigningTM37EmpowerchainClient({
+      rpcEndpoint: RPC_ENDPOINT,
+      signer: offlineSigner,
+    });
+    const response = await chainClient.signAndBroadcast(
+        props.address,
+        [retireCreditsMsg],
+        "auto"
+    );
+    if (response) {
+      loading.value = false
       toast.success("Retire credits successfully")
+      closeModal()
     }
   } catch (error) {
-    toast.success("Retire credits failed")
-    console.log(error)
+    loading.value = false
+    toast.error("Retire credits failed")
   }
-  console.log(name.value, additionalInfo.value, retireCreditsAmount.value)
 }
 </script>
 <template>
@@ -102,8 +116,9 @@ const handleRetireCredits = () => {
             @click="closeModal"
         >Cancel!</label
         >
-        <button :disabled="!(retireCreditsAmount && name && additionalInfo)"
-                class="btn modal-button !ml-0 bg-greenPrimary disabled:text-white" @click="handleRetireCredits">Retire credits
+        <button :disabled="!(retireCreditsAmount && name && additionalInfo) || loading"
+                class="btn modal-button !ml-0 bg-greenPrimary disabled:text-white" @click="handleRetireCredits">
+          {{ loading ? "Processing..." : "Retire credits" }}
         </button>
       </div>
     </div>

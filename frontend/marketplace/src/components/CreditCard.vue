@@ -16,8 +16,8 @@ const showTransferCreditsModal = ref(false)
 </script>
 <template>
   <RetireCreditsModal v-model:show-modal="showRetireCreditsModal" :denom="cardData?.creditCollection?.denom"
-                      :available-credits="cardData.amountActive" :owner="cardData?.wallet?.address"/>
-  <TransferCreditsModal v-model:show-modal="showTransferCreditsModal" :denom="cardData?.creditCollection?.denom"/>
+                      :available-credits="cardData.amountActive" :address="cardData?.wallet?.address"/>
+  <TransferCreditsModal v-model:show-modal="showTransferCreditsModal" :denom="cardData?.creditCollection?.denom" :address="cardData?.wallet?.address"/>
   <div class="w-full rounded-lg bg-borderGray md:grid md:grid-cols-3 md:p-2 md:bg-lightBlack my-3">
     <div class="max-h-[200px]">
       <ImageCarousel :image-array="getDetailsList(cardData.creditCollection.creditData.nodes).image"/>

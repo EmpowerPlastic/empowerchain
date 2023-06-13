@@ -8,6 +8,7 @@ import gql from "graphql-tag";
 import {CHAIN_ID} from "@/config/config";
 import CustomSpinner from "@/components/CustomSpinner.vue";
 import CustomAlert from "@/components/CustomAlert.vue";
+import {toast} from "vue3-toastify";
 
 const pageNumber = ref(1)
 const itemsPerPage = ref(5)
@@ -24,9 +25,11 @@ const handleSearch = () => {
 }
 
 const getCreditsData = async () => {
-  const account = await window.keplr.getKey(CHAIN_ID);
-  const walletAddress = account.bech32Address
-  const query = `{
+  try {
+    const account = await window.keplr.getKey(CHAIN_ID);
+    const walletAddress = account.bech32Address
+    if (walletAddress) {
+      const query = `{
     query {
     creditBalances(
     first:${itemsPerPage.value},offset:${(pageNumber.value - 1) * itemsPerPage.value}
@@ -74,7 +77,12 @@ const getCreditsData = async () => {
     }
   }
 }`
-  loadQueryData(query)
+      loadQueryData(query)
+    }
+
+  } catch (error) {
+    toast.error("Please connect to wallet")
+  }
 }
 
 const loadQueryData = (query: string) => {

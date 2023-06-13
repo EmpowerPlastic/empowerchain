@@ -1,26 +1,64 @@
 <script setup lang="ts">
 import {ref} from 'vue'
 import InputWithLabel from '@/components/InputWithLabel.vue'
+import {empowerchain, getSigningTM37EmpowerchainClient} from "@empower-plastic/empowerjs";
+import {CHAIN_ID, RPC_ENDPOINT} from "@/config/config";
+import {toast} from "vue3-toastify";
+
+const {transferCredits} = empowerchain.plasticcredit.MessageComposer.withTypeUrl;
 
 export interface ModalProps {
   showModal: boolean
-  denom:string
-  availableCredits:number
+  denom: string
+  availableCredits: number
+  address: string
 }
 
-defineProps<ModalProps>()
+const props = defineProps<ModalProps>()
 const emitShowModal = defineEmits(['update:showModal'])
 
-const creditsAmount = ref('')
-const recAddress = ref('')
+const creditsAmount = ref()
+const recAddress = ref()
+const loading = ref(false)
 
 const closeModal = () => {
   emitShowModal("update:showModal", false)
 }
 
-const handleRetireCredits = () => {
-  console.log(creditsAmount.value,recAddress.value)
+const handleTransferCredits = async () => {
+  try {
+    loading.value = true
+    const retireCreditsMsg = transferCredits({
+      from: props.address,
+      to: recAddress.value,
+      denom: props.denom,
+      amount: creditsAmount.value as string,
+      retire: false,
+      retiringEntityName: "",
+      retiringEntityAdditionalData: "",
+    })
+
+    const offlineSigner = window.keplr.getOfflineSigner(CHAIN_ID);
+    const chainClient = await getSigningTM37EmpowerchainClient({
+      rpcEndpoint: RPC_ENDPOINT,
+      signer: offlineSigner,
+    });
+    const response = await chainClient.signAndBroadcast(
+        props.address,
+        [retireCreditsMsg],
+        "auto"
+    );
+    if (response) {
+      loading.value = false
+      toast.success("Credits transferred successfully")
+      closeModal()
+    }
+  } catch (error) {
+    loading.value = false
+    toast.error("Credits transfer failed")
+  }
 }
+
 </script>
 <template>
   <input type="checkbox" id="retire-credits-modal" class="modal-toggle" :checked="showModal"/>
@@ -46,6 +84,8 @@ const handleRetireCredits = () => {
             placeholder="10"
             id="input-1"
             :denom="denom"
+            long-width
+            type="number"
         />
         <InputWithLabel
             v-model="recAddress"
@@ -61,7 +101,9 @@ const handleRetireCredits = () => {
             @click="closeModal"
         >Cancel!</label
         >
-        <button class="btn modal-button !ml-0 bg-greenPrimary" @click="handleRetireCredits">Transfer credits</button>
+        <button class="btn modal-button !ml-0 bg-greenPrimary disabled:text-white" :disabled="!(creditsAmount && recAddress) || loading" @click="handleTransferCredits">
+          {{ loading ? "Processing..." : "Transfer credits" }}
+        </button>
       </div>
     </div>
   </div>

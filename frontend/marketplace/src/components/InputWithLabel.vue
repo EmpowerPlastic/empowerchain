@@ -24,7 +24,7 @@ const updateValue = (e: Event) => {
       <span class="input-label">{{ label }}</span>
     </label>
     <label
-      :class="`input-group rounded-sm w-fit ${
+      :class="`input-group rounded-sm w-full ${
         dashed ? 'border-dashed border-[1px] border-dashedBorderBlack' : ''
       }`"
     >
