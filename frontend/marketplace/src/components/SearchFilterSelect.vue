@@ -33,7 +33,9 @@ watch(props, () => {
       :close-on-select="false"
       :placeholder="placeholder"
       :select-label="''"
-
+      :searchable="false"
+      hideSelected
+      :showLabels="false"
   />
 </template>
 <style src="vue-multiselect/dist/vue-multiselect.css"></style>
