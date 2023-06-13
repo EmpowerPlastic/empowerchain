@@ -30,6 +30,7 @@ type Organization @entity {
 type Wallet @entity {
   id: ID!
   address: String! @index(unique: true)
+  applicantId: Int
   creditBalances: [CreditBalance!] @derivedFrom(field: "wallet")
   certificates: [Certificate!] @derivedFrom(field: "wallet")
   creditOffsetCertificates: [CreditOffsetCertificate!] @derivedFrom(field: "wallet")
@@ -70,6 +71,7 @@ type MarketplaceListing @entity {
   initialAmount: BigInt!
   pricePerCreditAmount: BigInt!
   pricePerCreditDenom: String!
+  createdDate: Date!
   creditCollection: CreditCollection!
 }
 
@@ -120,6 +122,7 @@ type BuyCreditsWasmEvent @entity {
   numberOfCreditsBought: BigInt!
   totalPriceAmount: BigInt!
   totalPriceDenom: String!
+  saleDate: Date!
 }
 
 type CreateListing @entity {
@@ -133,8 +136,9 @@ type CreateListing @entity {
 type CreditCollection @entity {
   id: ID!
   denom: String! @index(unique: true)
-  projectId: Int! @index(unique: true)
-  applicantId: Int! @index(unique: true)
+  projectId: Int!
+  applicantId: Int! @index
+  issuanceDate: Date!
   activeAmount: BigInt!
   retiredAmount: BigInt!
   creditType: String!
@@ -207,7 +211,7 @@ type MaterialData @entity {
 type MetadataUri @entity {
   id: ID!
   creditCollection: CreditCollection!
-  url: String! @index(unique: true)
+  url: String! @index
 }
 
 type Message @entity {
