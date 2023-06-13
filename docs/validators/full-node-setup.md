@@ -51,19 +51,19 @@ chmod +x gvm-installer
 ./gvm-installer
 ```
 
-Since Empowerchain requires a modern version of `go`, version 1.4 is needed to compile later versions of `go` through `gvm`. Install `go1.4` and set the `GOROOT_BOOTSTRAP` value to the `$GOROOT` to configure this.
+Since Empowerchain requires a modern version of `go`, version 1.4 is needed to compile later versions of `go` through `gvm`. Starting at `go1.20` and above, `gvm` has issues compiling when using `go1.4`, so it is recommended to use the binary download of `go1.19` and compile `go1.20`+ with that. Install `go1.19` and set the `GOROOT_BOOTSTRAP` value to the `$GOROOT` to configure this.
 
 ```bash
-gvm install go1.4 -B
-gvm use go1.4
+gvm install go1.19 -B
+gvm use go1.19
 export GOROOT_BOOTSTRAP=$GOROOT
 ```
 
-Once `go1.4` is installed, `go1.20.3` can be installed through `gvm`.
+Once `go1.19` is installed, other version of go can be compiled. `go1.20.3` can be installed through `gvm`.
 
 ```bash
 gvm install go1.20.3
-gvm use go1.20.3
+gvm use go1.20.3 --default
 ```
 
 Check to ensure that version `1.20.3` is being used as the system's default `go` version.
@@ -129,7 +129,7 @@ cd empowerchain
 Checkout the desired version to build. The latest release tag can be found on the [EmpowerChain Release Page](https://github.com/EmpowerPlastic/empowerchain/releases/)
 
 ```bash
-git checkout v0.0.3
+git checkout v1.0.0-rc2
 ```
 
 Compile the empowerd binary
@@ -154,10 +154,10 @@ Replace the `<chain-id>` field with the chain-id of the desired network.
 empowerd init "custom_moniker" --chain-id <chain-id>
 ```
 
-Example for the `altruistic-1` testnet:
+Example for the `circulus-1` testnet:
 
 ```bash
-empowerd init "custom_moniker" --chain-id altruistic-1
+empowerd init "custom_moniker" --chain-id circulus-1
 ```
 
 ### Retrieve the Genesis File
@@ -168,9 +168,9 @@ Retrieve a copy of the genesis file for the desired chain. The genesis file defi
 wget -O $HOME/empowerchain/config/genesis.json <genesis-url>
 ```
 
-Example for the `altruistic-1` testnet:
+Example for the `circulus-1` testnet:
 ```bash
-wget -O $HOME/empowerchain/config/genesis.json https://github.com/EmpowerPlastic/empowerchain/blob/main/testnets/altruistic-1/genesis.json
+wget -O $HOME/.empowerchain/config/genesis.json https://raw.githubusercontent.com/EmpowerPlastic/empowerchain/main/testnets/circulus-1/genesis.json
 ```
 
 ### Set Persistent Peers and Seeds
@@ -179,12 +179,11 @@ Retrieve the persistent peers and seeds from the Empowerchain official repo. All
 
 ```bash
 # Obtain the peers and seeds from the Empowerchain repository
-PEERS="$(curl -s https://raw.githubusercontent.com/EmpowerPlastic/empowerchain/main/testnets/circulus-1/persistent_peers.txt)"
-SEEDS="$(curl -s https://raw.githubusercontent.com/EmpowerPlastic/empowerchain/main/testnets/circulus-1/seeds.txt)"
+seeds="d6a7cd9fa2bafc0087cb606de1d6d71216695c25@51.159.161.174:26656"
+peers="e8b3fa38a15c426e046dd42a41b8df65047e03d5@95.217.144.107:26656,89ea54a37cd5a641e44e0cee8426b8cc2c8e5dfb@51.159.141.221:26656,0747860035271d8f088106814a4d0781eb7b2bc7@142.132.203.60:27656,3c758d8e37748dc692621a0d59b454bacb69b501@65.108.224.156:26656,41b97fced48681273001692d3601cd4024ceba59@5.9.147.185:26656"
 
 # Set the peers and seeds in the empowerd configuration file
-sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$PEERS\"/" ~/.empowerchain/config/config.toml
-sed -i.bak -e "s/^seeds *=.*/seeds = \"$SEEDS\"/" ~/.empowerchain/config/config.toml
+sed -i -e 's|^seeds *=.*|seeds = "'$seeds'"|; s|^persistent_peers *=.*|persistent_peers = "'$peers'"|' $HOME/.empowerchain/config/config.toml
 ```
 
 ### Set the minimum gas price

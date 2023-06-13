@@ -3,11 +3,15 @@ import { useRoute } from "vue-router";
 import router from "@/router";
 import SelectWalletModel from "@/views/certify/SelectWalletModel.vue";
 import { ref } from "vue";
-import { empowerchain, getSigningTM37EmpowerchainClient } from "@empower-plastic/empowerjs";
+import {
+  empowerchain,
+  getSigningTM37EmpowerchainClient,
+} from "@empower-plastic/empowerjs";
 import { Wallet } from "@/types/enums";
 import { CHAIN_ID, RPC_URL } from "@/config/config";
 import type { OfflineSigner } from "@cosmjs/proto-signing";
 import type { DeliverTxResponse } from "@cosmjs/stargate/build/stargateclient";
+import { toast } from "vue3-toastify";
 
 const fee = {
   amount: [{ amount: "100000", denom: "umpwr" }],
@@ -74,23 +78,31 @@ const handleTransaction = async () => {
 };
 
 const handleWalletTransaction = async (offlineSigner: OfflineSigner) => {
-  const accounts = await offlineSigner.getAccounts();
-  const wasmChainClient = await getSigningTM37EmpowerchainClient({
-    rpcEndpoint: RPC_URL,
-    signer: offlineSigner,
-  });
+  try {
+    const accounts = await offlineSigner.getAccounts();
+    const wasmChainClient = await getSigningTM37EmpowerchainClient({
+      rpcEndpoint: RPC_URL,
+      signer: offlineSigner,
+    });
 
-  const createProofMsg = createProof({
-    creator: accounts[0].address,
-    hash: hash?.toString(),
-  });
+    const createProofMsg = createProof({
+      creator: accounts[0].address,
+      hash: hash?.toString(),
+    });
 
-  const response = await wasmChainClient.signAndBroadcast(
-    accounts[0].address,
-    [createProofMsg],
-    fee
-  );
-  handleResponse(response);
+    const response = await wasmChainClient.signAndBroadcast(
+      accounts[0].address,
+      [createProofMsg],
+      fee
+    );
+    handleResponse(response);
+  } catch (error) {
+    console.log(error);
+    toast.error(`${error}`, {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+    loading.value = false;
+  }
 };
 
 const handleResponse = (response: DeliverTxResponse) => {

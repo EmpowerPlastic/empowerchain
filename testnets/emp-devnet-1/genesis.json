@@ -23,9 +23,6 @@
     },
     "app_hash": "",
     "app_state": {
-      "accesscontrol": {
-        "perm_stores": []
-      },
       "auth": {
         "params": {
           "max_memo_characters": "256",

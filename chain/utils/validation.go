@@ -2,7 +2,10 @@ package utils
 
 import (
 	"regexp"
+	"strings"
 	"unicode/utf8"
+
+	"cosmossdk.io/errors"
 )
 
 var (
@@ -16,15 +19,35 @@ var (
 	descriptionValidation = regexp.MustCompile(`^.{1,256}$`)
 )
 
-// IsBasicValidName checks the basicNameValidation
-func IsBasicValidName(name string) bool {
-	return basicNameValidation.MatchString(name) && utf8.ValidString(name)
+// ValidBasicName checks the basicNameValidation
+func ValidBasicName(name string) error {
+	var messages []string
+	if !utf8.ValidString(name) {
+		messages = append(messages, "name is not valid utf-8")
+	}
+	if !basicNameValidation.MatchString(name) {
+		messages = append(messages, "name cannot start or end with a space and must be between 2 and 64 characters")
+	}
+	if len(messages) > 0 {
+		return errors.Wrapf(ErrInvalidValue, "invalid name: %s", strings.Join(messages, "\n"))
+	}
+	return nil
 }
 
-// IsValidDescription checks descriptionValidation.
-func IsValidDescription(description string) bool {
+// ValidDescription checks descriptionValidation.
+func ValidDescription(description string) error {
 	if description == "" {
-		return true // empty desc is valid
+		return nil
 	}
-	return descriptionValidation.MatchString(description) && utf8.ValidString(description)
+	var messages []string
+	if !utf8.ValidString(description) {
+		messages = append(messages, "description is not valid utf-8")
+	}
+	if !descriptionValidation.MatchString(description) {
+		messages = append(messages, "description must be between 1 and 256 characters")
+	}
+	if len(messages) > 0 {
+		return errors.Wrapf(ErrInvalidValue, "invalid description: %s", strings.Join(messages, "\n"))
+	}
+	return nil
 }

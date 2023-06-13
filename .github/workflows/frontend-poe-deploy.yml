@@ -17,6 +17,13 @@ jobs:
 
       - run: npm ci && npm run build
         working-directory: ./frontend/proof-of-existence/
+        env:
+          VITE_CHAIN_ID: circulus-1
+          VITE_RPC_URL: https://empower-testnet-rpc.polkachu.com/
+          VITE_REST_URL: https://empower-testnet-api.polkachu.com/
+          VITE_REVISION_ID: ${{ github.sha }}
+          VITE_ENVIRONMENT: testnet
+          VITE_ROLLBAR_ACCESS_TOKEN: ${{ secrets.POE_ROLLBAR_ACCESS_TOKEN }}
 
       - uses: amondnet/vercel-action@v25
         with:

@@ -3,8 +3,7 @@ import HomePage from "@/pages/HomePage.vue";
 import FAQPage from "@/pages/FAQPage.vue";
 import CertificatesAndCreditsPage from "@/pages/CertificatesAndCreditsPage.vue";
 import AuctionPage from "@/pages/AuctionPage.vue";
-import ProjectDetails from "@/pages/ProjectDetails.vue";
-
+import AuctionDetails from "@/pages/AuctionDetails.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,9 +29,9 @@ const router = createRouter({
       component: AuctionPage
     },
     {
-      path: '/project/:id',
-      name: 'ProjectDetails',
-      component: ProjectDetails
+      path: '/auction/:id',
+      name: 'AuctionDetails',
+      component: AuctionDetails
     },
   ]
 })
