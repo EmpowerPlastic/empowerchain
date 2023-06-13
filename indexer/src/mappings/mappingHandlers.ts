@@ -1,16 +1,14 @@
-import { ExecuteEvent, Message, Transaction, Block, CreditCollection, EventData, MaterialData, MetadataUri, MediaFile, BinaryFile, ApplicantData, WebReference, CreditData, CreateListingWasmEvent, MarketplaceListing, BuyCreditsWasmEvent, UpdateListingWasmEvent, CancelListingWasmEvent, Country, Organization, Wallet, CreditBalance, TransferedCreditsEvent, RetiredCreditsEvent, Certificate, CreditOffsetCertificate } from "../types";
+import { CreditCollection, EventData, MaterialData, MetadataUri, MediaFile, BinaryFile, ApplicantData, WebReference, CreditData, CreateListingWasmEvent, MarketplaceListing, BuyCreditsWasmEvent, UpdateListingWasmEvent, CancelListingWasmEvent, Country, Organization, Wallet, CreditBalance, TransferedCreditsEvent, RetiredCreditsEvent, Certificate, CreditOffsetCertificate } from "../types";
 import {
   CosmosEvent,
-  CosmosBlock,
-  CosmosMessage,
-  CosmosTransaction,
 } from "@subql/types-cosmos";
 import fetch from "node-fetch";
 
-async function createNewWallet(address: string): Promise<Wallet> {
+async function createNewWallet(address: string, applicantId: number): Promise<Wallet> {
   const wallet = Wallet.create({
     id: address,
     address: address,
+    applicantId: applicantId
   });
   await wallet.save();
   return wallet;
@@ -275,7 +273,12 @@ export async function handleIssueCredits(event: CosmosEvent): Promise<void> {
 
   let wallet = await Wallet.get(recipient);
   if (!wallet) {
-    wallet = await createNewWallet(recipient);
+    wallet = await createNewWallet(recipient, parseInt(applicantId));
+  } else {
+    if (!wallet.applicantId) {
+      wallet.applicantId = parseInt(applicantId);
+      await wallet.save();
+    }
   }
   const creditBalance = CreditBalance.create({
     id: `${recipient}-${denom}`,
@@ -292,6 +295,10 @@ export async function handleIssueCredits(event: CosmosEvent): Promise<void> {
     const metadata = await fetchMetadataFromIpfs(metadataUri);
     await handleCreditData(metadata, creditCollection.id, i.toString());
   }
+
+  // ===== Applicant Panel cache =====
+
+  // =================================
 
 }
 
