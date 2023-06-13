@@ -1,14 +1,17 @@
-import { CreditCollection, EventData, MaterialData, MetadataUri, MediaFile, BinaryFile, ApplicantData, WebReference, CreditData, CreateListingWasmEvent, MarketplaceListing, BuyCreditsWasmEvent, UpdateListingWasmEvent, CancelListingWasmEvent, Country, Organization, Wallet, CreditBalance, TransferedCreditsEvent, RetiredCreditsEvent, Certificate, CreditOffsetCertificate } from "../types";
+import { ExecuteEvent, Message, Transaction, Block, CreditCollection, EventData, MaterialData, MetadataUri, MediaFile, BinaryFile, ApplicantData, WebReference, CreditData, CreateListingWasmEvent, MarketplaceListing, BuyCreditsWasmEvent, UpdateListingWasmEvent, CancelListingWasmEvent, Country, Organization, Wallet, CreditBalance, TransferedCreditsEvent, RetiredCreditsEvent, Certificate, CreditOffsetCertificate } from "../types";
 import {
   CosmosEvent,
+  CosmosBlock,
+  CosmosMessage,
+  CosmosTransaction,
 } from "@subql/types-cosmos";
 import fetch from "node-fetch";
 
-async function createNewWallet(address: string, applicantId: number): Promise<Wallet> {
+async function createNewWallet(address: string, applicantId?: number): Promise<Wallet> {
   const wallet = Wallet.create({
     id: address,
     address: address,
-    applicantId: applicantId
+    applicantId: applicantId,
   });
   await wallet.save();
   return wallet;
@@ -95,6 +98,14 @@ export async function handleBuyCredits(event: CosmosEvent): Promise<void> {
   const totalPriceAmount = BigInt(fetchPropertyFromEvent(event, "total_price_amount"));
   const totalPriceDenom = fetchPropertyFromEvent(event, "total_price_denom");
 
+  // this is because there is a bug in SubQuery, which causes event to be processed multiple times
+  // for every transaction in the same block, therefore we're skipping processing
+  // of events that are already present in the database
+  const eventAlreadyProcessed = await BuyCreditsWasmEvent.get(`${event.tx.hash}-${event.msg.idx}-${event.idx}`);
+  if (eventAlreadyProcessed) {
+    return;
+  }
+
   const buyCreditsWasmEvent = BuyCreditsWasmEvent.create({
     id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
     listingOwner: listingOwner,
@@ -141,6 +152,14 @@ export async function handleTransferCredits(event: CosmosEvent): Promise<void> {
   const denom = fetchPropertyFromEvent(event, "denom");
   const amount = BigInt(fetchPropertyFromEvent(event, "amount"));
 
+  // this is because there is a bug in SubQuery, which causes event to be processed multiple times
+  // for every transaction in the same block, therefore we're skipping processing
+  // of events that are already present in the database
+  const eventAlreadyProcessed = await TransferedCreditsEvent.get(`${event.tx.hash}-${event.msg.idx}-${event.idx}`);
+  if (eventAlreadyProcessed) {
+    return;
+  }
+
   const transferedCreditsEvent = TransferedCreditsEvent.create({
     id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
     sender: sender,
@@ -182,6 +201,14 @@ export async function handleRetiredCredits(event: CosmosEvent): Promise<void> {
   const owner = fetchPropertyFromEvent(event, "owner");
   const denom = fetchPropertyFromEvent(event, "denom");
   const amount = BigInt(fetchPropertyFromEvent(event, "amount"));
+
+  // this is because there is a bug in SubQuery, which causes event to be processed multiple times
+  // for every transaction in the same block, therefore we're skipping processing
+  // of events that are already present in the database
+  const eventAlreadyProcessed = await RetiredCreditsEvent.get(`${event.tx.hash}-${event.msg.idx}-${event.idx}`);
+  if (eventAlreadyProcessed) {
+    return;
+  }
 
   const retiredCreditsEvent = RetiredCreditsEvent.create({
     id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
@@ -295,10 +322,6 @@ export async function handleIssueCredits(event: CosmosEvent): Promise<void> {
     const metadata = await fetchMetadataFromIpfs(metadataUri);
     await handleCreditData(metadata, creditCollection.id, i.toString());
   }
-
-  // ===== Applicant Panel cache =====
-
-  // =================================
 
 }
 
