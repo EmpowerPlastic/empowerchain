@@ -4,5 +4,5 @@
 @tailwind utilities;
 
 body{
-    @apply bg-black;
+    @apply flex flex-col justify-center  max-w-[1440px] bg-black mx-auto;
 }
