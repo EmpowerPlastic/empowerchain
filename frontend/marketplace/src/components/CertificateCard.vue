@@ -1,12 +1,13 @@
 <script setup lang="ts">
+import {toast} from "vue3-toastify";
+
 export interface CreditCardProps {
-  cardData:{
-    creditType:string;
-    material:string;
-    price:string;
-  }
+  cardData:any
 }
 defineProps<CreditCardProps>();
+const showInfoToast=()=>{
+  toast.info('Coming soon!')
+}
 </script>
 <template>
   <div class="w-full rounded-lg bg-borderGray md:grid md:grid-cols-3 md:p-2 md:bg-lightBlack my-3">
@@ -16,17 +17,18 @@ defineProps<CreditCardProps>();
       <div class="grid-cols-4 grid gap-3 p-5">
         <div class="col-span-1">
           <p class="text-title14 font-light text-textGray">CREDIT type</p>
-          <p class="text-title18 font-bold">{{cardData.creditType}}</p>
+          <p class="text-title18 font-bold">{{cardData?.creditType}}</p>
         </div>
         <div class="col-span-1">
           <p class="text-title14 font-light text-textGray">Material</p>
-          <p class="text-title18 font-bold">{{cardData.material}}</p>
+          <p class="text-title18 font-bold">{{cardData?.material}}</p>
         </div>
         <div class="col-span-2 flex flex-col justify-between text-right">
-          <p class="text-title32 font-bold">{{cardData.price}}ABCD</p>
+          <p class="text-title32 font-bold">{{cardData?.amount}}</p>
+          <p class="text-title24 text-subTextGray mb-1">{{ cardData?.denom }}</p>
           <div>
             <button
-                class="btn certificate-button">
+                class="btn certificate-button" @click="showInfoToast">
               View certificate
             </button>
           </div>
@@ -41,8 +43,8 @@ defineProps<CreditCardProps>();
           <p class="text-title14 font-bold">{{cardData.creditType}}</p>
         </div>
         <div class="text-right">
-          <p class="text-title24 font-bold">{{cardData.price}}</p>
-          <p class="text-title14 font-light">ABCD</p>
+          <p class="text-title24 font-bold">{{cardData?.amount}}</p>
+          <p class="text-title14 font-light">{{ cardData?.denom }}</p>
         </div>
         <div>
           <p class="text-title14 font-light">Material</p>
@@ -52,7 +54,7 @@ defineProps<CreditCardProps>();
 
       <div class="grid grid-col-1 gap-6 p-5">
         <button
-            class="btn certificate-button">
+            class="btn certificate-button"  @click="showInfoToast">
           View certificate
         </button>
       </div>
