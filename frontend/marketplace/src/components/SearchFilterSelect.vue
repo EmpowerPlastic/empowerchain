@@ -41,35 +41,54 @@ watch(props, () => {
 <style src="vue-multiselect/dist/vue-multiselect.css"></style>
 <style>
 .multiselect__tags {
-  @apply bg-dropdownBlack border-none
+  background: rgba(33, 33, 33, 1) !important;
+  border: none !important;
 }
 
 .multiselect__select {
-  @apply md:bg-dropdownBlack
+  background: rgba(33, 33, 33, 1) !important;
 }
 
 .multiselect__placeholder {
-  @apply bg-dropdownBlack text-white text-title16
+  background: rgba(33, 33, 33, 1) !important;
+  color: #FFFFFF !important;
+  font-size: 16px !important;
 }
 
 .multiselect__content-wrapper {
-  @apply bg-dropdownBlack border-none text-white
+  background: rgba(33, 33, 33, 1) !important;
+  border: none !important;
+  color: #FFFFFF !important;
 }
 
 .multiselect__input {
-  @apply bg-dropdownBlack border-none text-white
+  background: rgba(33, 33, 33, 1) !important;
+  border: none !important;
+  color: #FFFFFF !important;
 }
 
 .multiselect__spinner {
-  @apply bg-dropdownBlack text-white
+  background: rgba(33, 33, 33, 1) !important;
+  color: #FFFFFF !important;
 }
 
 .multiselect__tag {
-  @apply bg-greenPrimary
+  background: #00C131 !important;
+}
+
+.multiselect__tag > span {
+  background: #00C131 !important;
 }
 
 .multiselect__content {
-  @apply bg-dropdownBlack
+  background: rgba(33, 33, 33, 1) !important;
 }
 
+.multiselect__option {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.multiselect__option > span {
+  background: transparent !important;
+}
 </style>
