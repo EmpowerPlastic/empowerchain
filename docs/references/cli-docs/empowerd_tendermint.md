@@ -11,6 +11,7 @@ Tendermint subcommands
 ### SEE ALSO
 
 * [empowerd](empowerd.md)	 - EmpowerChain CLI
+* [empowerd tendermint bootstrap-state](empowerd_tendermint_bootstrap-state.md)	 - Bootstrap CometBFT state at an arbitrary block height using a light client
 * [empowerd tendermint reset-state](empowerd_tendermint_reset-state.md)	 - Remove all the data and WAL
 * [empowerd tendermint show-address](empowerd_tendermint_show-address.md)	 - Shows this node's tendermint validator consensus address
 * [empowerd tendermint show-node-id](empowerd_tendermint_show-node-id.md)	 - Show this node's ID

@@ -946,6 +946,10 @@ export default [
         "collapsed": true,
         "items": [
           {
+            "text": "bootstrap-state",
+            "link": "/references/cli-docs/empowerd_tendermint_bootstrap-state.md"
+          },
+          {
             "text": "reset-state",
             "link": "/references/cli-docs/empowerd_tendermint_reset-state.md"
           },
