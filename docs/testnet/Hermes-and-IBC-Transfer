@@ -308,7 +308,7 @@ make install
 ## Import osmosis wallet or remove --recover flag to create new one. Do not forget to save mnemonics.
 
 ```
-osmosisd keys add osmo-wallet --recover
+osmosisd keys add osmowallet --keyring-backend test --recover
 ```
 
 ## You need osmosis test token, you can use faucet
