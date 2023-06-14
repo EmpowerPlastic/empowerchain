@@ -42,8 +42,10 @@ func CmdQueryParams() *cobra.Command {
 		Short: "shows the parameters of the module",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
-
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 			queryClient := plasticcredit.NewQueryClient(clientCtx)
 
 			res, err := queryClient.Params(context.Background(), &plasticcredit.QueryParamsRequest{})
@@ -66,7 +68,10 @@ func CmdQueryIssuer() *cobra.Command {
 		Short: "query for an issuer by its [issuer-id]",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 			queryClient := plasticcredit.NewQueryClient(clientCtx)
 
 			issuerID, err := cast.ToUint64E(args[0])
@@ -96,7 +101,10 @@ func CmdQueryIssuers() *cobra.Command {
 		Short: "query all issuers",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 			queryClient := plasticcredit.NewQueryClient(clientCtx)
 			pageReq, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
@@ -125,7 +133,10 @@ func CmdQueryApplicant() *cobra.Command {
 		Short: "query for an applicant by its [applicant-id]",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 			queryClient := plasticcredit.NewQueryClient(clientCtx)
 
 			applicantID, err := cast.ToUint64E(args[0])
@@ -155,7 +166,10 @@ func CmdQueryCreditType() *cobra.Command {
 		Short: "query for a credit type by its [abbreviation]",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 			queryClient := plasticcredit.NewQueryClient(clientCtx)
 
 			abbreviation := args[0]
@@ -182,7 +196,10 @@ func CmdQueryCreditTypes() *cobra.Command {
 		Short: "query all credit types",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 			queryClient := plasticcredit.NewQueryClient(clientCtx)
 			pageReq, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
@@ -211,7 +228,10 @@ func CmdQueryCreditCollection() *cobra.Command {
 		Short: "Query credit collection by it's denom",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 			queryClient := plasticcredit.NewQueryClient(clientCtx)
 
 			denom := args[0]
@@ -238,7 +258,10 @@ func CmdQueryCreditBalance() *cobra.Command {
 		Short: "Query credit balance by address and denom",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 			queryClient := plasticcredit.NewQueryClient(clientCtx)
 
 			owner := args[0]
@@ -267,7 +290,10 @@ func CmdQueryProject() *cobra.Command {
 		Short: "Query project by project-id",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 			queryClient := plasticcredit.NewQueryClient(clientCtx)
 
 			projectID, err := cast.ToUint64E(args[0])

@@ -34,7 +34,10 @@ func QueryProofCmd() *cobra.Command {
 		Short: "get proof metadata",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			clientCtx := client.GetClientContextFromCmd(cmd)
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			queryClient := proofofexistence.NewQueryClient(clientCtx)
 
