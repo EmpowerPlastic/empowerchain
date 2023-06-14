@@ -27,7 +27,7 @@ const handlePageChange = (currentPage: number) => {
 }
 
 const handleQueryParam = () => {
-  if (router.query) {
+  if (Object.keys(router.query).length !== 0) {
     const objectOfArrays = router.query;
     const filter: any = {};
     for (const key in objectOfArrays) {
@@ -73,7 +73,6 @@ const handleSearch = (filterValues: any) => {
   if (filterValues?.volume && (filterValues.volume[0] || filterValues.volume[1])) {
     queryBuilder.addVolume(filterValues.volume[0], filterValues.volume[1]);
   }
-  console.log(filterValues.registrationDate[0])
   if (filterValues?.registrationDate && (filterValues.registrationDate[0] || filterValues.registrationDate[1])) {
     queryBuilder.addRegistrationDate(new Date(filterValues.registrationDate[0]), new Date(filterValues.registrationDate[1]));
   }
