@@ -54,3 +54,4 @@ If you want to add your resource to this page, please create a PR with the chang
 | [NODERS]TEAM | http://empower.rpc.nodersteam.com:10657       | http://empower.api.nodersteam.com:2003       | empower.grpc.nodersteam.com:9791        |
 | Stake Village | https://empower-testnet.rpc.stakevillage.net | https://empower-testnet.api.stakevillage.net | empower-testnet.grpc.stakevillage.net:16590 |
 | Palamar    | https://empower-rpc.palamar.io:443             | https://empower-api.palamar.io:443           | empower-grpc.palamar.io:10891           |
+| Sr20de     | https://rpc-empower-testnet.sr20de.xyz:443     | https://api-empower-testnet.sr20de.xyz        | grpc-empower-testnet.sr20de.xyz        |
