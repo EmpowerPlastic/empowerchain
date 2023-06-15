@@ -21,7 +21,8 @@ If you want to add your resource to this page, please create a PR with the chang
 | 🔥STAVR🔥  | Node resources ( manuals, snapshots, statesync, peers, seeds, genesis, etc)                  | https://github.com/obajay/StateSync-snapshots/tree/main/Projects/Empower             |
 | [NODERS]TEAM | Node resources ( manuals, statesync, peers, seeds, genesis, etc)                           | https://nodeservice.nodersteam.com/title/testnets/empower                            |
 | Stake Village | Node resources ( manuals, snapshots, statesync, peers, seeds, genesis, etc)               | https://stakevillage.net/en/empowerchain-testnet                                     |
-| Palamar    | Node resources ( manuals, statesync, peers, seeds, genesis, etc)                             | https://github.com/Pa1amar/testnets/tree/main/empower                                |
+| Palamar    | Node resources ( manuals, statesync, peers, seeds, genesis, etc)                             | https://github.com/Pa1amar/testnets/tree/main/empower   
+| Sr20de     | Node resources ( manuals, statesync, peers, seeds, genesis, etc)                             | https://sr20de.xyz/services/empower-testnet/   |
 
 ## Explorers
 
