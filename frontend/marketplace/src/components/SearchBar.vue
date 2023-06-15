@@ -126,7 +126,7 @@ const applicantData: any = useQuery(gql`query{
         <img class="h-5" src="../assets/searchIconWhite.svg">
       </button>
     </div>
-    <div class="grid grid-cols-6  divide-x divide-dividerGray bg-mediumGray w-full rounded-b-sm">
+    <div class="flex divide-x divide-dividerGray bg-mediumGray w-full rounded-b-sm ">
       <div class="filter-box">
         <p class="filter-subtitle">LOCATION</p>
         <SearchFilterSelect

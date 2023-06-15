@@ -37,7 +37,10 @@ func CmdQueryParams() *cobra.Command {
 		Short: "shows the parameters of the module",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			queryClient := certificates.NewQueryClient(clientCtx)
 
@@ -61,7 +64,10 @@ func CmdQueryCertificate() *cobra.Command {
 		Short: "query for an certificate by its [owner-address] and [certificate-id]",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 			queryClient := certificates.NewQueryClient(clientCtx)
 
 			certificateID, err := cast.ToUint64E(args[1])
@@ -92,7 +98,10 @@ func CmdQueryCertificates() *cobra.Command {
 		Use:   "certificates",
 		Short: "query for all certificates",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 			queryClient := certificates.NewQueryClient(clientCtx)
 			res, err := queryClient.Certificates(
 				context.Background(),
@@ -114,7 +123,10 @@ func CmdQueryCertificatesByOwner() *cobra.Command {
 		Short: "query for all certificates of an owner by its [owner-address]",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 			queryClient := certificates.NewQueryClient(clientCtx)
 
 			res, err := queryClient.AllCertificatesByUser(

@@ -36,7 +36,7 @@ func (s *TestSuite) GetCreditBalance(address, denom string) plasticcredit.Credit
 	val := s.Network.Validators[0]
 
 	cmdQueryBalance := cli.CmdQueryCreditBalance()
-	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmdQueryBalance, []string{address, denom})
+	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmdQueryBalance, []string{address, denom, fmt.Sprintf("--%s=json", flags.FlagOutput)})
 	if err != nil && strings.Contains(err.Error(), "credit balance not found") {
 		return plasticcredit.CreditAmount{}
 	}
