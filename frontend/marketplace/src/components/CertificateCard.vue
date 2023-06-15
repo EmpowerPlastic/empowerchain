@@ -11,17 +11,17 @@ const showInfoToast=()=>{
 </script>
 <template>
   <div class="w-full rounded-lg bg-borderGray md:grid md:grid-cols-3 md:p-2 md:bg-lightBlack my-3">
-    <div class="h-48 bg-[#323232] rounded-lg "/>
+    <img class="h-48 w-full rounded-lg max-w-sm" src="../assets/auctionCard.png"/>
     <!--        Desktop UI-->
     <div class="hidden md:grid  md:col-span-2">
       <div class="grid-cols-4 grid gap-3 p-5">
         <div class="col-span-1">
           <p class="text-title14 font-light text-textGray">CREDIT type</p>
-          <p class="text-title18 font-bold">{{cardData?.creditType}}</p>
+          <p class="text-title18 font-bold">PCRD</p>
         </div>
         <div class="col-span-1">
-          <p class="text-title14 font-light text-textGray">Material</p>
-          <p class="text-title18 font-bold">{{cardData?.material}}</p>
+<!--          <p class="text-title14 font-light text-textGray">Material</p>-->
+<!--          <p class="text-title18 font-bold">{{cardData?.material}}</p>-->
         </div>
         <div class="col-span-2 flex flex-col justify-between text-right">
           <p class="text-title32 font-bold">{{cardData?.amount}}</p>
@@ -40,16 +40,16 @@ const showInfoToast=()=>{
       <div class="grid grid-cols-2 gap-1 pt-5 px-5">
         <div>
           <p class="text-title14 font-light">CREDIT type</p>
-          <p class="text-title14 font-bold">{{cardData.creditType}}</p>
+          <p class="text-title14 font-bold">PCRD</p>
         </div>
         <div class="text-right">
           <p class="text-title24 font-bold">{{cardData?.amount}}</p>
           <p class="text-title14 font-light">{{ cardData?.denom }}</p>
         </div>
-        <div>
-          <p class="text-title14 font-light">Material</p>
-          <p class="text-title14 font-bold">{{cardData.material}}</p>
-        </div>
+<!--        <div>-->
+<!--          <p class="text-title14 font-light">Material</p>-->
+<!--          <p class="text-title14 font-bold">{{cardData.material}}</p>-->
+<!--        </div>-->
       </div>
 
       <div class="grid grid-col-1 gap-6 p-5">
