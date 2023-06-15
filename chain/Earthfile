@@ -48,7 +48,7 @@ build-static:
           wget -O /lib/libwasmvm_muslc.a https://github.com/CosmWasm/wasmvm/releases/download/${WASM_VERSION}/libwasmvm_muslc.${ARCH}.a; \
         fi;
     RUN go mod download
-    RUN LEDGER_ENABLED=true BUILD_TAGS=muslc LINK_STATICALLY=true make build
+    RUN LEDGER_ENABLED=true BUILD_TAGS=muslc LINK_STATICALLY=true make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build
     SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-"$VERSION"-linux-amd64
 
 test-prep:
