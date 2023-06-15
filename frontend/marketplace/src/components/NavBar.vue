@@ -130,17 +130,17 @@ const connect = async () => {
               <!--                  <p class="text-title14 text-textGray">natasha@empower.eco</p>-->
             </div>
 
-            <!--                <div class="menu py-2 items-center w-full">-->
-            <!--                  <a-->
-            <!--                      href="/certificate"-->
-            <!--                      class="btn nav-dropdown-button">-->
-            <!--                    My Credits-->
-            <!--                  </a>-->
-            <!--                  &lt;!&ndash;                  <button&ndash;&gt;-->
-            <!--                  &lt;!&ndash;                      class="btn nav-dropdown-button">&ndash;&gt;-->
-            <!--                  &lt;!&ndash;                    Sign out&ndash;&gt;-->
-            <!--                  &lt;!&ndash;                  </button>&ndash;&gt;-->
-            <!--                </div>-->
+                            <div class="menu py-2 items-center w-full">
+                              <a
+                                  href="/certificate"
+                                  class="btn nav-dropdown-button">
+                                My Credits
+                              </a>
+                              <!--                  <button-->
+                              <!--                      class="btn nav-dropdown-button">-->
+                              <!--                    Sign out-->
+                              <!--                  </button>-->
+                            </div>
           </div>
         </div>
       </div>
@@ -173,9 +173,41 @@ const connect = async () => {
     </button>
     <div class="grid grid-cols-1 gap-8 p-5 w-full font-Inter text-title24 text-white">
       <div>
-        <button class="bg-buttonGray border border-greenPrimary w-full h-11 rounded-xl" @click="connect">
+        <button v-if="!address" class="bg-buttonGray border border-greenPrimary w-full h-11 rounded-xl" @click="connect">
           {{ address || 'Connect wallet' }}
         </button>
+        <!--          User Profile Dropdown-->
+        <div class="dropdown dropdown-start w-full">
+          <template v-if="address">
+            <button class="bg-buttonGray border border-greenPrimary w-full h-11 rounded-xl" @click="connect">
+              {{ address || 'Connect wallet' }}
+            </button>
+          </template>
+          <div tabindex="0"
+               class="dropdown-content menu font-Inter divide-y divide-lightGray  bg-avatarBlack  rounded-sm items-center border-avatarBorder border-[1.5px] w-full mt-2">
+            <div class="menu py-5 items-center mx-16 min-w-[120px]">
+              <div class="avatar mb-3">
+                <div class="w-[82px] rounded-full bg-lightBlack">
+                  <img class="p-4" src="../assets/walletAvatar.png"/>
+                </div>
+              </div>
+              <p class="text-title18 text-white">{{ address || 'Connect wallet' }}</p>
+              <!--                  <p class="text-title14 text-textGray">natasha@empower.eco</p>-->
+            </div>
+
+            <div class="menu py-2 items-center w-full">
+              <a
+                  href="/certificate"
+                  class="btn nav-dropdown-button">
+                My Credits
+              </a>
+              <!--                  <button-->
+              <!--                      class="btn nav-dropdown-button">-->
+              <!--                    Sign out-->
+              <!--                  </button>-->
+            </div>
+          </div>
+        </div>
       </div>
       <ul class="flex flex-col items-center gap-4">
         <li>
