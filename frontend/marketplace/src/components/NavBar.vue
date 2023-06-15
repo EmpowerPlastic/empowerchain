@@ -14,8 +14,9 @@ const selectWalletModal = ref(false);
 
 onMounted(() => {
   let addressLocal = localStorage.getItem('address')
-  if (addressLocal) {
-    connect()
+  let wallet = localStorage.getItem('wallet')
+  if (addressLocal && wallet) {
+    handleTransaction(wallet)
   }
 });
 const chainConfig = {
@@ -70,22 +71,6 @@ const closeSelectWalletModal = () => {
 }
 const connect = async () => {
   openSelectWalletModal()
-  // if (!window.keplr) {
-  //   toast.error("No wallet found");
-  //   localStorage.removeItem('address')
-  // } else {
-  //   await window.keplr.experimentalSuggestChain(chainConfig);
-  //   await window.keplr.enable(CHAIN_ID);
-  //   const account = await window.keplr.getKey(CHAIN_ID);
-  //   address.value = account.bech32Address.substring(0, 10) + '...';
-  //   localStorage.setItem('address', account.bech32Address);
-  //   // TODO add support for other wallets
-  //   /*await window.leap.experimentalSuggestChain(chainConfig);
-  //   await window.cosmostation.providers.keplr.experimentalSuggestChain(
-  //       chainConfig
-  //   );*/
-  // }
-
 }
 
 const onWalletSelect = (wallet: string) => {
@@ -121,8 +106,14 @@ const handleTransaction = async (wallet: string) => {
       break;
     default:
       openSelectWalletModal()
+      localStorage.removeItem('address');
+      localStorage.removeItem('wallet');
   }
   address.value = walletAddress
+  if (walletAddress && wallet) {
+    localStorage.setItem('address', walletAddress);
+    localStorage.setItem('wallet', wallet);
+  }
   closeSelectWalletModal()
 };
 
@@ -181,7 +172,8 @@ const handleTransaction = async (wallet: string) => {
                   <img class="p-4" src="../assets/walletAvatar.png"/>
                 </div>
               </div>
-              <p class="text-title18 text-white max-w-[150px] overflow-hidden text-ellipsis">{{ address || 'Connect wallet' }}333</p>
+              <p class="text-title18 text-white max-w-[150px] overflow-hidden text-ellipsis">
+                {{ address || 'Connect wallet' }}</p>
               <!--                  <p class="text-title14 text-textGray">natasha@empower.eco</p>-->
             </div>
 
