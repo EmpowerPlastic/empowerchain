@@ -10,7 +10,6 @@ const {transferCredits} = empowerchain.plasticcredit.MessageComposer.withTypeUrl
 export interface ModalProps {
   showModal: boolean
   denom: string
-  availableCredits: number
   address: string
 }
 
@@ -32,7 +31,7 @@ const handleTransferCredits = async () => {
       from: props.address,
       to: recAddress.value,
       denom: props.denom,
-      amount: creditsAmount.value as string,
+      amount: creditsAmount.value as bigint,
       retire: false,
       retiringEntityName: "",
       retiringEntityAdditionalData: "",

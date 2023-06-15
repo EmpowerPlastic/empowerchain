@@ -33,7 +33,7 @@ const handleRetireCredits = async () => {
     const retireCreditsMsg = retireCredits({
       owner: props.address,
       denom: props.denom,
-      amount: retireCreditsAmount.value as string,
+      amount: retireCreditsAmount.value as bigint,
       retiringEntityName: name.value,
       retiringEntityAdditionalData: additionalInfo.value,
     })
