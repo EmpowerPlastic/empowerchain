@@ -87,9 +87,9 @@ const handleRetireCredits = async () => {
           id="input-2" dashed :disabled="true" :denom="denom" type="number" />
       </div>
 
-      <RetireCreditTextArea label="Provide a name of the entity that should be visible as a retriever"
+      <RetireCreditTextArea label="Provide a name of the entity that should be visible as a retirerer"
         sub-text="(will be visible on generated Plastic Credit certificate)" id="message-1" v-model="name" />
-      <RetireCreditTextArea label="Provide additional data about the retriever"
+      <RetireCreditTextArea label="Provide additional data about the retirerer"
         sub-text="(will be visible on generated Plastic Credit certificate)" id="message-2" v-model="additionalInfo" />
 
       <div class="flex flex-col md:flex-row justify-between modal-action">
