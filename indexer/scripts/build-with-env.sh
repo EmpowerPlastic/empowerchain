@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 set -e
 
 # Get Google Maps API key from .env file (trim double quotes)
