@@ -13,11 +13,7 @@ const selectedWallet = ref();
 const selectWalletModal = ref(false);
 
 onMounted(() => {
-  let addressLocal = localStorage.getItem('address')
-  let wallet = localStorage.getItem('wallet')
-  if (addressLocal && wallet) {
-    handleTransaction(wallet)
-  }
+  connect()
 });
 const chainConfig = {
   chainId: CHAIN_ID,
@@ -70,12 +66,15 @@ const closeSelectWalletModal = () => {
   selectWalletModal.value = false
 }
 const connect = async () => {
-  openSelectWalletModal()
+  let addressLocal = localStorage.getItem('address')
+  let wallet = localStorage.getItem('wallet')
+  if (addressLocal && wallet) {
+    await handleTransaction(wallet)
+  }
 }
 
 const onWalletSelect = (wallet: string) => {
   selectedWallet.value = wallet
-  console.log(wallet, 'selected wallet')
   handleTransaction(wallet)
 }
 
@@ -87,7 +86,6 @@ const handleTransaction = async (wallet: string) => {
       await window.keplr.enable(CHAIN_ID);
       const account = await window.keplr.getKey(CHAIN_ID);
       walletAddress = account.bech32Address
-      console.log(account.bech32Address)
     }
       break;
     case Wallet.COSMOSTATION: {
@@ -117,6 +115,11 @@ const handleTransaction = async (wallet: string) => {
   closeSelectWalletModal()
 };
 
+const disconnectWallet = () => {
+  localStorage.removeItem('address');
+  localStorage.removeItem('wallet');
+  location.reload()
+}
 </script>
 
 <template>
@@ -150,7 +153,7 @@ const handleTransaction = async (wallet: string) => {
       <div class="flex flex-row justify-end">
         <button v-if="!address"
                 class="max-w-[220px] bg-lightBlack border border-borderBlack text-white text-title18  w-full rounded-xl h-full px-5 py-1"
-                @click="connect">
+                @click="openSelectWalletModal">
           {{ address || 'Connect wallet' }}
         </button>
         <!--          User Profile Dropdown-->
@@ -177,17 +180,17 @@ const handleTransaction = async (wallet: string) => {
               <!--                  <p class="text-title14 text-textGray">natasha@empower.eco</p>-->
             </div>
 
-                            <div class="menu py-2 items-center w-full">
-                              <a
-                                  href="/certificate"
-                                  class="btn nav-dropdown-button">
-                                My Credits
-                              </a>
-                              <!--                  <button-->
-                              <!--                      class="btn nav-dropdown-button">-->
-                              <!--                    Sign out-->
-                              <!--                  </button>-->
-                            </div>
+            <div class="menu py-2 items-center w-full">
+              <a
+                  href="/certificate"
+                  class="btn nav-dropdown-button">
+                My Credits
+              </a>
+              <button @click="disconnectWallet"
+                      class="btn nav-dropdown-button">
+                Disconnect
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -220,13 +223,14 @@ const handleTransaction = async (wallet: string) => {
     </button>
     <div class="grid grid-cols-1 gap-8 p-5 w-full font-Inter text-title24 text-white">
       <div>
-        <button v-if="!address" class="bg-buttonGray border border-greenPrimary w-full h-11 rounded-xl" @click="connect">
+        <button v-if="!address" class="bg-buttonGray border border-greenPrimary w-full h-11 rounded-xl text-ellipsis overflow-hidden"
+                @click="openSelectWalletModal">
           {{ address || 'Connect wallet' }}
         </button>
         <!--          User Profile Dropdown-->
         <div class="dropdown dropdown-start w-full">
           <template v-if="address">
-            <button class="bg-buttonGray border border-greenPrimary w-full h-11 rounded-xl" @click="connect">
+            <button class="bg-buttonGray border px-5 border-greenPrimary w-full h-11 rounded-xl text-ellipsis overflow-hidden">
               {{ address || 'Connect wallet' }}
             </button>
           </template>
@@ -238,7 +242,7 @@ const handleTransaction = async (wallet: string) => {
                   <img class="p-4" src="../assets/walletAvatar.png"/>
                 </div>
               </div>
-              <p class="text-title18 text-white">{{ address || 'Connect wallet' }}</p>
+              <p class="text-title18 text-white max-w-[150px] text-ellipsis overflow-hidden ">{{ address || 'Connect wallet' }}</p>
               <!--                  <p class="text-title14 text-textGray">natasha@empower.eco</p>-->
             </div>
 
@@ -248,10 +252,10 @@ const handleTransaction = async (wallet: string) => {
                   class="btn nav-dropdown-button">
                 My Credits
               </a>
-              <!--                  <button-->
-              <!--                      class="btn nav-dropdown-button">-->
-              <!--                    Sign out-->
-              <!--                  </button>-->
+              <button @click="disconnectWallet"
+                      class="btn nav-dropdown-button">
+                Disconnect
+              </button>
             </div>
           </div>
         </div>
