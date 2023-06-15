@@ -8,7 +8,7 @@ import {DEFAULT_CREDIT_TYPE} from "@/config/config";
 
 export interface SearchBarProps {
   filterValues?: {
-    volume:any []
+    volume: any []
     location: string [],
     registrationDate: any[]
     organization: string[],
@@ -30,7 +30,7 @@ const filterValues = ref({
 })
 
 watch(props, () => {
-  if (props?.filterValues) {
+  if (Object.keys(props?.filterValues as any).length !== 0) {
     filterValues.value = props.filterValues as any;
   }
 });
