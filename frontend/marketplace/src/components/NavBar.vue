@@ -3,10 +3,14 @@ import {CHAIN_ID, CHAIN_NAME, REST_ENDPOINT, RPC_ENDPOINT} from '@/config/config
 import {onMounted, ref} from 'vue';
 import {toast} from 'vue3-toastify';
 import {useRoute} from "vue-router";
+import SellectWalletModal from "@/components/SellectWalletModal.vue";
+import {Wallet} from "@/types/WalletEnums";
 
 const router = useRoute()
 const address = ref();
 const showNav = ref(false)
+const selectedWallet = ref();
+const selectWalletModal = ref(false);
 
 onMounted(() => {
   let addressLocal = localStorage.getItem('address')
@@ -14,67 +18,113 @@ onMounted(() => {
     connect()
   }
 });
+const chainConfig = {
+  chainId: CHAIN_ID,
+  chainName: CHAIN_NAME,
+  rpc: RPC_ENDPOINT,
+  rest: REST_ENDPOINT,
+  bip44: {
+    coinType: 118,
+  },
+  bech32Config: {
+    bech32PrefixAccAddr: "empower",
+    bech32PrefixAccPub: "empower" + "pub",
+    bech32PrefixValAddr: "empower" + "valoper",
+    bech32PrefixValPub: "empower" + "valoperpub",
+    bech32PrefixConsAddr: "empower" + "valcons",
+    bech32PrefixConsPub: "empower" + "valconspub",
+  },
+  currencies: [
+    {
+      coinDenom: "MPWR",
+      coinMinimalDenom: "umpwr",
+      coinDecimals: 6,
+      coinGeckoId: "mpwr",
+    },
+  ],
+  feeCurrencies: [
+    {
+      coinDenom: "MPWR",
+      coinMinimalDenom: "umpwr",
+      coinDecimals: 6,
+      gasPriceStep: {
+        low: 0.01,
+        average: 0.025,
+        high: 0.04,
+      },
+    },
+  ],
+  stakeCurrency: {
+    coinDenom: "MPWR",
+    coinMinimalDenom: "umpwr",
+    coinDecimals: 6,
+  },
+};
 
+const openSelectWalletModal = () => {
+  selectWalletModal.value = true
+}
+
+const closeSelectWalletModal = () => {
+  selectWalletModal.value = false
+}
 const connect = async () => {
-  if (!window.keplr) {
-    toast.error("No wallet found");
-    localStorage.removeItem('address')
-  } else {
-    const chainConfig = {
-      chainId: CHAIN_ID,
-      chainName: CHAIN_NAME,
-      rpc: RPC_ENDPOINT,
-      rest: REST_ENDPOINT,
-      bip44: {
-        coinType: 118,
-      },
-      bech32Config: {
-        bech32PrefixAccAddr: "empower",
-        bech32PrefixAccPub: "empower" + "pub",
-        bech32PrefixValAddr: "empower" + "valoper",
-        bech32PrefixValPub: "empower" + "valoperpub",
-        bech32PrefixConsAddr: "empower" + "valcons",
-        bech32PrefixConsPub: "empower" + "valconspub",
-      },
-      currencies: [
-        {
-          coinDenom: "MPWR",
-          coinMinimalDenom: "umpwr",
-          coinDecimals: 6,
-          coinGeckoId: "mpwr",
-        },
-      ],
-      feeCurrencies: [
-        {
-          coinDenom: "MPWR",
-          coinMinimalDenom: "umpwr",
-          coinDecimals: 6,
-          gasPriceStep: {
-            low: 0.01,
-            average: 0.025,
-            high: 0.04,
-          },
-        },
-      ],
-      stakeCurrency: {
-        coinDenom: "MPWR",
-        coinMinimalDenom: "umpwr",
-        coinDecimals: 6,
-      },
-    };
-    await window.keplr.experimentalSuggestChain(chainConfig);
-    await window.keplr.enable(CHAIN_ID);
-    const account = await window.keplr.getKey(CHAIN_ID);
-    address.value = account.bech32Address.substring(0, 10) + '...';
-    localStorage.setItem('address', account.bech32Address);
-    // TODO add support for other wallets
-    /*await window.leap.experimentalSuggestChain(chainConfig);
-    await window.cosmostation.providers.keplr.experimentalSuggestChain(
-        chainConfig
-    );*/
-  }
+  openSelectWalletModal()
+  // if (!window.keplr) {
+  //   toast.error("No wallet found");
+  //   localStorage.removeItem('address')
+  // } else {
+  //   await window.keplr.experimentalSuggestChain(chainConfig);
+  //   await window.keplr.enable(CHAIN_ID);
+  //   const account = await window.keplr.getKey(CHAIN_ID);
+  //   address.value = account.bech32Address.substring(0, 10) + '...';
+  //   localStorage.setItem('address', account.bech32Address);
+  //   // TODO add support for other wallets
+  //   /*await window.leap.experimentalSuggestChain(chainConfig);
+  //   await window.cosmostation.providers.keplr.experimentalSuggestChain(
+  //       chainConfig
+  //   );*/
+  // }
 
 }
+
+const onWalletSelect = (wallet: string) => {
+  selectedWallet.value = wallet
+  console.log(wallet, 'selected wallet')
+  handleTransaction(wallet)
+}
+
+const handleTransaction = async (wallet: string) => {
+  let walletAddress;
+  switch (wallet) {
+    case Wallet.KEPLR: {
+      await window.keplr.experimentalSuggestChain(chainConfig);
+      await window.keplr.enable(CHAIN_ID);
+      const account = await window.keplr.getKey(CHAIN_ID);
+      walletAddress = account.bech32Address
+      console.log(account.bech32Address)
+    }
+      break;
+    case Wallet.COSMOSTATION: {
+      await window.cosmostation.providers.keplr.experimentalSuggestChain(chainConfig);
+      await window.cosmostation.providers.keplr.enable(CHAIN_ID);
+      const account = await window.cosmostation.providers.keplr.getKey(CHAIN_ID);
+      walletAddress = account.bech32Address
+    }
+      break;
+    case Wallet.LEAP: {
+      await window.leap.experimentalSuggestChain(chainConfig);
+      await window.leap.enable(CHAIN_ID);
+      const account = await window.leap.getKey(CHAIN_ID);
+      walletAddress = account.bech32Address
+    }
+      break;
+    default:
+      openSelectWalletModal()
+  }
+  address.value = walletAddress
+  closeSelectWalletModal()
+};
 
 </script>
 
@@ -83,7 +133,7 @@ const connect = async () => {
   <template v-if="!router.meta?.hideNavFooter" >
   <nav class="bg-gradient-radial bg-opacity-40 px-5 py-4"
        style="background-image: radial-gradient(50% 50% at 50% 50%, rgba(0, 227, 58, 0.4) 0%, rgba(0, 0, 0, 0.4) 88.02%);">
-
+    <SellectWalletModal :show-modal="selectWalletModal" @on-wallet-select="onWalletSelect"/>
     <!-- Desktop Navbar-->
     <div class="hidden md:grid grid-cols-3 md:px-[10%] items-center">
       <div>
