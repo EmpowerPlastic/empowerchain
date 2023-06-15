@@ -24,7 +24,7 @@ const showInfoToast=()=>{
 <!--          <p class="text-title18 font-bold">{{cardData?.material}}</p>-->
         </div>
         <div class="col-span-2 flex flex-col justify-between text-right">
-          <p class="text-title32 font-bold">{{cardData?.amount}}</p>
+          <p class="text-title32 font-bold">{{cardData?.amount}} kg</p>
           <p class="text-title24 text-subTextGray mb-1">{{ cardData?.denom }}</p>
           <div>
             <button

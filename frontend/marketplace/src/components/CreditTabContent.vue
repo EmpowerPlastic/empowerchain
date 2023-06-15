@@ -38,7 +38,7 @@ const getCreditsData = async () => {
         address:{equalTo:"${walletAddress}"}
       }
       ${searchTerm.value && `creditCollection:{
-        denom:{equalTo:"${searchTerm.value}"}
+        denom:{includesInsensitive:"${searchTerm.value}"}
       }`}
     }){
       totalCount

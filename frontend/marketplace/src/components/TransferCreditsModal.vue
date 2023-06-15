@@ -27,7 +27,7 @@ const closeModal = () => {
 const handleTransferCredits = async () => {
   try {
     loading.value = true
-    const retireCreditsMsg = transferCredits({
+    const transferCreditsMsg = transferCredits({
       from: props.address,
       to: recAddress.value,
       denom: props.denom,
@@ -42,19 +42,26 @@ const handleTransferCredits = async () => {
       rpcEndpoint: RPC_ENDPOINT,
       signer: offlineSigner,
     });
+    const fee = {
+      amount: [{ amount: "100000", denom: "umpwr" }],
+      gas: "200000",
+    };
     const response = await chainClient.signAndBroadcast(
         props.address,
-        [retireCreditsMsg],
-        "auto"
+        [transferCreditsMsg],
+        fee
     );
-    if (response) {
+    if (response && !response.code) {
       loading.value = false
       toast.success("Credits transferred successfully")
       closeModal()
+    } else {
+      throw new Error("Transfering credits failed " + response.rawLog)
     }
   } catch (error) {
     loading.value = false
     toast.error("Credits transfer failed")
+    throw error
   }
 }
 

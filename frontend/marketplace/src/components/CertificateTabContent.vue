@@ -67,7 +67,8 @@ onMounted(() => {
 
 </script>
 <template>
-  <CustomSearchBar v-model="searchTerm" placeholder="Search Certificates" @search-click="handleSearch"/>
+  <!-- TODO disabling search here for now. Not sure how it should work -->
+  <!-- <CustomSearchBar v-model="searchTerm" placeholder="Search Certificates" @search-click="handleSearch"/> -->
   <CustomSpinner :visible="showSpinner"/>
   <template v-if="!showSpinner">
     <CustomAlert :visible="true" :label="`${data?.result?.creditOffsetCertificates?.totalCount || 0} certificates found`"/>
