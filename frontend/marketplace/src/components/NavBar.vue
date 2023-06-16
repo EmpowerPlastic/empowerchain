@@ -2,7 +2,9 @@
 import {CHAIN_ID, CHAIN_NAME, REST_ENDPOINT, RPC_ENDPOINT} from '@/config/config';
 import {onMounted, ref} from 'vue';
 import {toast} from 'vue3-toastify';
+import {useRoute} from "vue-router";
 
+const router = useRoute()
 const address = ref();
 const showNav = ref(false)
 
@@ -77,6 +79,8 @@ const connect = async () => {
 </script>
 
 <template>
+<!--  To hide on certificate page-->
+  <template v-if="!router.meta?.hideNavFooter" >
   <nav class="bg-gradient-radial bg-opacity-40 px-5 py-4"
        style="background-image: radial-gradient(50% 50% at 50% 50%, rgba(0, 227, 58, 0.4) 0%, rgba(0, 0, 0, 0.4) 88.02%);">
 
@@ -231,7 +235,7 @@ const connect = async () => {
 
 
   </div>
-
+  </template>
 </template>
 
 <style scoped>
