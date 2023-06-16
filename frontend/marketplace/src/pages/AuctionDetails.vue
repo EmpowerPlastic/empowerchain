@@ -9,7 +9,7 @@ import {useRoute} from "vue-router";
 import {useQuery} from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import CustomSpinner from "@/components/CustomSpinner.vue";
-import { convertIPFStoHTTPS } from "@/utils/utils";
+import {convertIPFStoHTTPS} from "@/utils/utils";
 
 const router = useRoute()
 
@@ -179,7 +179,6 @@ onMounted(() => {
 })
 
 
-
 </script>
 <template>
   <CustomSpinner :visible="showSpinner"/>
@@ -201,9 +200,8 @@ onMounted(() => {
         :available-credits="`${data?.result?.marketplaceListings?.nodes[0].amount}/${data?.result?.marketplaceListings?.nodes[0].initialAmount}`"
         v-model:selected-coin="selectedCoin"
         :price-per-credit="data?.result?.marketplaceListings?.nodes[0].pricePerCreditAmount/1000000"
-        v-model:amount="amount"
-        v-model:denom="denom"
-        v-model:owner="owner"/>
+        :denom="data?.result?.marketplaceListings?.nodes[0].denom"
+        :owner="data?.result?.marketplaceListings?.nodes[0].owner"/>
 
     <!--    Project Details-->
     <div class="flex flex-col md:flex-row w-full mt-5 justify-between ">
@@ -219,7 +217,7 @@ onMounted(() => {
         <ProjectDetailContent label="Location"
                               :value="auctionDetails?.location"
                               list/>
-        <ProjectDetailContent label="Collection organization" 
+        <ProjectDetailContent label="Collection organization"
                               :value="auctionDetails?.applicant"/>
         <ProjectDetailContent label="Volume"
                               :value="auctionDetails?.volume+'kg'"/>
@@ -264,7 +262,7 @@ onMounted(() => {
           <div class="flex justify-between">
             <div class="md:flex x md:flex-row text-title12 md:text-title14 break-words">
               <p class="text-textInfoGray">07:00AM 10/Jan/2023</p>
-              <p class="text-greenPrimary md:ml-16">{{data.buyer}}</p>
+              <p class="text-greenPrimary md:ml-16">{{ data.buyer }}</p>
             </div>
             <div>
               <button class="btn btn-ghost bg-transparent p-0 md:hidden" @click="copyToken('test')">
@@ -273,8 +271,8 @@ onMounted(() => {
             </div>
           </div>
           <div class="flex justify-between text-title14 text-textInfoGray">
-            <p>{{data.numberOfCreditsBought}} {{data.denom}}</p>
-            <p class="md:ml-16"> {{data.totalPriceAmount}} {{data.totalPriceDenom}}</p>
+            <p>{{ data.numberOfCreditsBought }} {{ data.denom }}</p>
+            <p class="md:ml-16"> {{ data.totalPriceAmount }} {{ data.totalPriceDenom }}</p>
           </div>
         </div>
       </div>
