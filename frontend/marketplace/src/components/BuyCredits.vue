@@ -11,11 +11,11 @@ export interface BuyCreditsProps {
   availableCredits: string
   pricePerCredit: number
   selectedCoin: string
-  amount: number,
   denom: string,
   owner: string
 }
 
+const amount = ref<number>(0)
 const props = defineProps<BuyCreditsProps>();
 const emitModalValue = defineEmits(['update:selectedCoin', 'update:amount'])
 const showButtonSpinner = ref(false)
@@ -43,17 +43,19 @@ const buyCredits = async () => {
     const res = await contract.buyCredits({
       denom: props.denom,
       owner: props.owner,
-      numberOfCreditsToBuy: props.amount,
+      numberOfCreditsToBuy: amount.value ,
     }, "auto", "", [{
       denom: "umpwr",
-      amount: (props.pricePerCredit * 1000000 * props.amount).toString(),
+      amount: (props.pricePerCredit * 1000000 * amount.value).toString(),
     }]);
-    if(res){
+
+    if (res) {
       toast.success('Purchase was successful')
       showButtonSpinner.value = false
     }
   } catch (error) {
     showButtonSpinner.value = false
+    console.error(error)
     toast.error('Purchase failed')
   }
 }
@@ -75,8 +77,7 @@ const buyCredits = async () => {
           {{ pricePerCredit * amount }}</p>
         <div>
           <p class="text-title18">How many you want to buy?</p>
-          <input type="number" class="input bg-darkGray mt-1 text-white text-title38 font-bold w-full" :value="amount"
-                 @input="updateAmount"/>
+          <input type="number" class="input bg-darkGray mt-1 text-white text-title38 font-bold w-full" v-model="amount"/>
         </div>
       </div>
       <p class="text-title18 text-subLabel mt-1 md:hidden">Cost {{ pricePerCredit * amount }} $MPWR</p>
