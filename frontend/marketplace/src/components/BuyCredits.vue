@@ -3,9 +3,10 @@ import {contracts} from "@empower-plastic/empowerjs";
 import {GasPrice} from '@cosmjs/stargate';
 import {SigningCosmWasmClient} from "@cosmjs/cosmwasm-stargate";
 import {Tendermint37Client} from '@cosmjs/tendermint-rpc';
-import {CHAIN_ID, MARKETPLACE_CONTRACT, RPC_ENDPOINT} from "@/config/config";
+import { MARKETPLACE_CONTRACT, RPC_ENDPOINT} from "@/config/config";
 import {ref} from "vue";
 import {toast} from "vue3-toastify";
+import { walletHandler} from "@/utils/utils";
 
 export interface BuyCreditsProps {
   availableCredits: string
@@ -29,7 +30,7 @@ const coinsArray = ['Pay by invoice coming soon']
 const buyCredits = async () => {
   showButtonSpinner.value = true
   try {
-    const offlineSigner = window.keplr.getOfflineSigner(CHAIN_ID);
+    const { offlineSigner } = await walletHandler();
     const accounts = await offlineSigner.getAccounts();
     const tmClient = await Tendermint37Client.connect(
         RPC_ENDPOINT);

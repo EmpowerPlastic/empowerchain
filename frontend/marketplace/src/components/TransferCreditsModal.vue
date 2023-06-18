@@ -2,8 +2,9 @@
 import {ref} from 'vue'
 import InputWithLabel from '@/components/InputWithLabel.vue'
 import {empowerchain, getSigningTM37EmpowerchainClient} from "@empower-plastic/empowerjs";
-import {CHAIN_ID, RPC_ENDPOINT} from "@/config/config";
+import {RPC_ENDPOINT} from "@/config/config";
 import {toast} from "vue3-toastify";
+import {walletHandler} from "@/utils/utils";
 
 const {transferCredits} = empowerchain.plasticcredit.MessageComposer.withTypeUrl;
 
@@ -37,7 +38,7 @@ const handleTransferCredits = async () => {
       retiringEntityAdditionalData: "",
     })
 
-    const offlineSigner = window.keplr.getOfflineSigner(CHAIN_ID);
+    const { offlineSigner } = await walletHandler();
     const chainClient = await getSigningTM37EmpowerchainClient({
       rpcEndpoint: RPC_ENDPOINT,
       signer: offlineSigner,
