@@ -1,22 +1,27 @@
 <script setup lang="ts">
 import {useQuery} from "@vue/apollo-composable";
 import gql from "graphql-tag";
-import {onMounted, ref} from "vue";
-import {useRouter} from "vue-router";
+import {onBeforeUnmount, onMounted, ref} from "vue";
+import {useRoute, useRouter} from "vue-router";
 
-const router = useRouter()
+const router = useRoute()
 const data = ref()
 const showSpinner = ref(true)
 
 onMounted(() => {
-  getCertificateData()
+  document.body.style.backgroundColor = '#ffff';
+  const id = router.params?.id
+  if (id) {
+    getCertificateData(id as string)
+  }
+})
+onBeforeUnmount(()=>{
+  document.body.style.backgroundColor = '';
 })
 
-const getCertificateData = () => {
-  const
-      let
-  query = `query{
-  creditOffsetCertificate(id:"1"){
+const getCertificateData = (id:string) => {
+  const query = `query{
+  creditOffsetCertificate(id:"${id}"){
     nodeId
     denom
     walletId
@@ -25,17 +30,15 @@ const getCertificateData = () => {
   showSpinner.value = true
   const {result, loading, error} = useQuery(gql`${query}`);
   data.value = {result, loading, error}
+  console.log(result)
   showSpinner.value = false
 }
 
 </script>
 <template>
   <div class="background">
-    <p class="text-black text-[200px]">Hiiiiiiiiii</p>
+    <p class="text-black text-title24">Node Id - {{data?.result?.creditOffsetCertificate?.nodeId}}</p>
+    <p class="text-black text-title38">Wallet Id - {{data?.result?.creditOffsetCertificate?.walletId}}</p>
+    <p class="text-black text-title38">Denom - {{data?.result?.creditOffsetCertificate?.denom}}</p>
   </div>
 </template>
-<style scoped>
-.background {
-  @apply h-screen w-screen bg-white;
-}
-</style>
