@@ -6,7 +6,6 @@ import {useRoute, useRouter} from "vue-router";
 
 const router = useRoute()
 const data = ref()
-const showSpinner = ref(true)
 
 onMounted(() => {
   document.body.style.backgroundColor = '#ffff';
@@ -27,11 +26,8 @@ const getCertificateData = (id:string) => {
     walletId
   }
 }`
-  showSpinner.value = true
   const {result, loading, error} = useQuery(gql`${query}`);
   data.value = {result, loading, error}
-  console.log(result)
-  showSpinner.value = false
 }
 
 </script>
