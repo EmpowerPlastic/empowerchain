@@ -70,7 +70,7 @@ export const walletHandler = async () => {
             offlineSigner = window.leap.getOfflineSigner(CHAIN_ID);
             break
         default:
-            offlineSigner = window.keplr.getOfflineSigner(CHAIN_ID);
+          console.error("Please connect wallet")
     }
     return {offlineSigner: offlineSigner}
 }
