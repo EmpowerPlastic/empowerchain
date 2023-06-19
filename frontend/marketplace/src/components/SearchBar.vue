@@ -81,11 +81,11 @@ const applicantData: any = useQuery(gql`query{
               v-model="filterValues.location"
               placeholder="Select Location"/>
         </div>
-        <div>
+        <!-- <div>
           <p class="filter-subtitle">VOLUME</p>
           <SearchFilterRange v-model:from="filterValues.volume[0]" v-model:to="filterValues.volume[1]"
                              placeholder="Select Volume" unit="Kg" class="ml-1"/>
-        </div>
+        </div> -->
         <div>
           <p class="filter-subtitle">REGISTRATION DATE</p>
           <VueDatePicker :enable-time-picker="false" placeholder="Select date"
@@ -134,11 +134,11 @@ const applicantData: any = useQuery(gql`query{
             v-model="filterValues.location"
             placeholder="Select Location"/>
       </div>
-      <div class="filter-box">
+      <!-- <div class="filter-box">
         <p class="filter-subtitle mb-2">VOLUME</p>
         <SearchFilterRange v-model:from="filterValues.volume[0]" v-model:to="filterValues.volume[1]"
                            placeholder="Select Volume" unit="Kg"/>
-      </div>
+      </div> -->
       <div class="filter-box">
         <p class="filter-subtitle  mb-1">REGISTRATION DATE</p>
         <VueDatePicker :enable-time-picker="false" placeholder="Select date"

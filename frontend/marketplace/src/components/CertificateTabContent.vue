@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
 import CustomSearchBar from "@/components/CustomSearchBar.vue";
 import CustomPagination from "@/components/CustomPagination.vue";
 import CertificateCard from "@/components/CertificateCard.vue";
-import {CHAIN_ID} from "@/config/config";
-import {toast} from "vue3-toastify";
-import {useQuery} from "@vue/apollo-composable";
+import { CHAIN_ID } from "@/config/config";
+import { toast } from "vue3-toastify";
+import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import CustomAlert from "@/components/CustomAlert.vue";
 
@@ -56,8 +56,8 @@ const getCertificatesData = async () => {
 
 const loadQueryData = (query: string) => {
   showSpinner.value = true
-  const {result, loading, error} = useQuery(gql`${query}`);
-  data.value = {result, loading, error}
+  const { result, loading, error } = useQuery(gql`${query}`);
+  data.value = { result, loading, error }
   showSpinner.value = false
 }
 
@@ -69,16 +69,18 @@ onMounted(() => {
 <template>
   <!-- TODO disabling search here for now. Not sure how it should work -->
   <!-- <CustomSearchBar v-model="searchTerm" placeholder="Search Certificates" @search-click="handleSearch"/> -->
-  <CustomSpinner :visible="showSpinner"/>
-  <template v-if="!showSpinner">
-    <CustomAlert :visible="true" :label="`${data?.result?.creditOffsetCertificates?.totalCount || 0} certificates found`"/>
-    <div v-for="certificate in data?.result?.creditOffsetCertificates?.nodes" :key="certificate.id">
-      <CertificateCard :card-data="certificate"/>
-    </div>
-    <div class="flex justify-center md:justify-end my-10">
-      <CustomPagination :total="data?.result?.creditOffsetCertificates?.totalCount" :item-per-page="itemsPerPage"
-                        v-model:current-page="pageNumber"
-                        @page-change="handlePageChange"/>
-    </div>
-  </template>
+  <div class="my-3">
+    <CustomSpinner :visible="showSpinner" />
+    <template v-if="!showSpinner">
+      <CustomAlert :visible="true"
+        :label="`${data?.result?.creditOffsetCertificates?.totalCount || 0} certificates found`" />
+      <div v-for="certificate in data?.result?.creditOffsetCertificates?.nodes" :key="certificate.id">
+        <CertificateCard :card-data="certificate" />
+      </div>
+      <div class="flex justify-center md:justify-end my-10">
+        <CustomPagination :total="data?.result?.creditOffsetCertificates?.totalCount" :item-per-page="itemsPerPage"
+          v-model:current-page="pageNumber" @page-change="handlePageChange" />
+      </div>
+    </template>
+  </div>
 </template>
