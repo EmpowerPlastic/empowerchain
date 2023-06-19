@@ -1,11 +1,55 @@
 <script setup lang="ts">
 import {Wallet} from "@/types/WalletEnums";
 import {toast} from "vue3-toastify";
-import {CHAIN_ID} from "@/config/config";
+import {CHAIN_ID, CHAIN_NAME, REST_ENDPOINT, RPC_ENDPOINT} from "@/config/config";
+import {getWallet} from "@/utils/wallet-utils";
 
 export interface SelectWalletModalProps {
   showModal: boolean
 }
+
+const chainConfig = {
+  chainId: CHAIN_ID,
+  chainName: CHAIN_NAME,
+  rpc: RPC_ENDPOINT,
+  rest: REST_ENDPOINT,
+  bip44: {
+    coinType: 118,
+  },
+  bech32Config: {
+    bech32PrefixAccAddr: "empower",
+    bech32PrefixAccPub: "empower" + "pub",
+    bech32PrefixValAddr: "empower" + "valoper",
+    bech32PrefixValPub: "empower" + "valoperpub",
+    bech32PrefixConsAddr: "empower" + "valcons",
+    bech32PrefixConsPub: "empower" + "valconspub",
+  },
+  currencies: [
+    {
+      coinDenom: "MPWR",
+      coinMinimalDenom: "umpwr",
+      coinDecimals: 6,
+      coinGeckoId: "mpwr",
+    },
+  ],
+  feeCurrencies: [
+    {
+      coinDenom: "MPWR",
+      coinMinimalDenom: "umpwr",
+      coinDecimals: 6,
+      gasPriceStep: {
+        low: 0.01,
+        average: 0.025,
+        high: 0.04,
+      },
+    },
+  ],
+  stakeCurrency: {
+    coinDenom: "MPWR",
+    coinMinimalDenom: "umpwr",
+    coinDecimals: 6,
+  },
+};
 
 defineProps<SelectWalletModalProps>()
 const emitWalletModal = defineEmits(["update:showModal", "onWalletSelect"])
@@ -14,13 +58,13 @@ const closeModal = () => {
   emitWalletModal("update:showModal", false)
 }
 
-const passWalletToParent = (wallet: Wallet) => {
-  emitWalletModal("onWalletSelect", wallet);
+const passWalletToParent = (walletType: Wallet) => {
+  emitWalletModal("onWalletSelect", walletType);
 };
 
-const handleWallet = async (wallet: Wallet, provider: any) => {
+const handleWallet = async (walletType: Wallet, provider: any) => {
   const checkWalletInstalled =
-      wallet === Wallet.COSMOSTATION
+      walletType === Wallet.COSMOSTATION
           ? await window.cosmostation?.providers?.keplr
           : await window?.[provider];
 
@@ -28,14 +72,12 @@ const handleWallet = async (wallet: Wallet, provider: any) => {
     toast.error(`Please install the wallet extension`)
     return;
   }
-
   try {
-    if (wallet === Wallet.COSMOSTATION) {
-      await window.cosmostation.providers.keplr.enable(CHAIN_ID);
-    } else {
-      await window[provider]?.enable(CHAIN_ID);
-    }
-    passWalletToParent(wallet);
+    const wallet = getWallet(walletType);
+    await wallet.experimentalSuggestChain(chainConfig);
+    await wallet.enable(CHAIN_ID);
+
+    passWalletToParent(walletType);
   } catch (error) {
     toast.error(`Failed to enable wallet: ${error}`)
     console.error(`Failed to enable wallet: ${error}`);

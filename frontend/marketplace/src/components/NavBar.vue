@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import {CHAIN_ID, CHAIN_NAME, REST_ENDPOINT, RPC_ENDPOINT} from '@/config/config';
+import {CHAIN_ID} from '@/config/config';
 import {onMounted, ref} from 'vue';
 import {toast} from 'vue3-toastify';
 import {useRoute} from "vue-router";
 import SellectWalletModal from "@/components/SellectWalletModal.vue";
-import {Wallet} from "@/types/WalletEnums";
+import {getWallet} from "@/utils/wallet-utils";
 
 const router = useRoute()
 const address = ref();
@@ -15,48 +15,6 @@ const selectWalletModal = ref(false);
 onMounted(() => {
   connect()
 });
-const chainConfig = {
-  chainId: CHAIN_ID,
-  chainName: CHAIN_NAME,
-  rpc: RPC_ENDPOINT,
-  rest: REST_ENDPOINT,
-  bip44: {
-    coinType: 118,
-  },
-  bech32Config: {
-    bech32PrefixAccAddr: "empower",
-    bech32PrefixAccPub: "empower" + "pub",
-    bech32PrefixValAddr: "empower" + "valoper",
-    bech32PrefixValPub: "empower" + "valoperpub",
-    bech32PrefixConsAddr: "empower" + "valcons",
-    bech32PrefixConsPub: "empower" + "valconspub",
-  },
-  currencies: [
-    {
-      coinDenom: "MPWR",
-      coinMinimalDenom: "umpwr",
-      coinDecimals: 6,
-      coinGeckoId: "mpwr",
-    },
-  ],
-  feeCurrencies: [
-    {
-      coinDenom: "MPWR",
-      coinMinimalDenom: "umpwr",
-      coinDecimals: 6,
-      gasPriceStep: {
-        low: 0.01,
-        average: 0.025,
-        high: 0.04,
-      },
-    },
-  ],
-  stakeCurrency: {
-    coinDenom: "MPWR",
-    coinMinimalDenom: "umpwr",
-    coinDecimals: 6,
-  },
-};
 
 const openSelectWalletModal = () => {
   selectWalletModal.value = true
@@ -69,48 +27,31 @@ const connect = async () => {
   let addressLocal = localStorage.getItem('address')
   let wallet = localStorage.getItem('wallet')
   if (addressLocal && wallet) {
-    await handleTransaction(wallet)
+    await handleSelectWallet(wallet)
   }
 }
 
 const onWalletSelect = (wallet: string) => {
   selectedWallet.value = wallet
-  handleTransaction(wallet)
+  handleSelectWallet(wallet)
 }
 
-const handleTransaction = async (wallet: string) => {
-  let walletAddress;
-  switch (wallet) {
-    case Wallet.KEPLR: {
-      await window.keplr.experimentalSuggestChain(chainConfig);
-      await window.keplr.enable(CHAIN_ID);
-      const account = await window.keplr.getKey(CHAIN_ID);
-      walletAddress = account.bech32Address
-    }
-      break;
-    case Wallet.COSMOSTATION: {
-      await window.cosmostation.providers.keplr.experimentalSuggestChain(chainConfig);
-      await window.cosmostation.providers.keplr.enable(CHAIN_ID);
-      const account = await window.cosmostation.providers.keplr.getKey(CHAIN_ID);
-      walletAddress = account.bech32Address
-    }
-      break;
-    case Wallet.LEAP: {
-      await window.leap.experimentalSuggestChain(chainConfig);
-      await window.leap.enable(CHAIN_ID);
-      const account = await window.leap.getKey(CHAIN_ID);
-      walletAddress = account.bech32Address
-    }
-      break;
-    default:
-      openSelectWalletModal()
-      localStorage.removeItem('address');
-      localStorage.removeItem('wallet');
+const handleSelectWallet = async (walletType: string) => {
+  if (!walletType) {
+    localStorage.removeItem('address');
+    localStorage.removeItem('wallet');
+    openSelectWalletModal()
+    return;
   }
+
+  const wallet = getWallet(walletType);
+  const account = await wallet.getKey(CHAIN_ID);
+  const walletAddress = account.bech32Address;
+
   address.value = walletAddress
-  if (walletAddress && wallet) {
+  if (walletAddress && walletType) {
     localStorage.setItem('address', walletAddress);
-    localStorage.setItem('wallet', wallet);
+    localStorage.setItem('wallet', walletType);
   }
   closeSelectWalletModal()
 };
