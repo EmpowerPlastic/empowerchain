@@ -72,6 +72,7 @@ These rewards are split among the different categories below:
 | Bugs              | 230,000 $MPWR | Critical bugs are not subject to vesting            |
 | Security issues   | 250,000 $MPWR | Critical security issues are not subject to vesting |
 | Stress testing    | 30,000 $MPWR  | Not until phase 3                                   |
+| Community helper  | 5,000 $MPWR   |                                                     |
 
 Max tokens per category are split among the participants in that category according to the rules of each category (see
 below).
@@ -121,6 +122,7 @@ See [First and last serve submissions](#first-and-last-serve-submissions) for de
 | Create proof of existence | 15 $MPWR for first 200     | 6 $MPWR for last 500      |
 | Buy plastic credits       | 30 $MPWR for first 200     | 12 $MPWR for last 500     |
 | Retire plastic credits    | 30 $MPWR for the first 200 | 12 $MPWR for the last 500 |
+| Transfer plastic credits  | 30 $MPWR for the first 200 | 12 $MPWR for the last 500 |
 
 ### Instructions
 
@@ -130,10 +132,9 @@ Create proof of existence: https://forms.gle/i2TSGvN2AL983WS16
 
 Buy plastic credits: https://forms.gle/MDfBbZZSv3rDh11W7
 
-_(Right now, the credits you buy will not show up anywhere (except if you know how to query the marketplace contract
-manually). This will be added shortly.)_
+Retire plastic credits: https://forms.gle/UQiyWdwatPZTJqhz9
 
-Retire plastic credits: Will be provided later when this functionality is turned on.
+Transfer plastic credits: https://forms.gle/mBGXAkgruZ4sGCyn9
 
 ## CLI Testing
 
@@ -346,4 +347,17 @@ Disclosing security issues in public can be harmful to all users of that softwar
 
 This will be for phase 3 and details will be added and announced later.
 
+## Community helper
 
+For the community helper reward there will be maximum 1 winner and 3 runner-ups. So even if you don't win, you might
+still get rewarded well.
+
+| Task             | Winner      | Runner-ups |
+|------------------|-------------|------------|
+| Community helper | 3,500 $MPWR | 500 $MPWR  |
+
+To be eligible for this reward you need to be active in the community and help others. This can be in the form of
+answering questions, helping people with issues, helping people with their submissions, etc. If you can prove
+that you have been active in the community and helped others, you can win this!
+
+Submit your proof here: https://forms.gle/UMgJWK6m7M1in5Hq9

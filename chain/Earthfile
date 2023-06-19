@@ -34,21 +34,22 @@ build-with-wasmvm:
     RUN find /root/go -name libwasmvm.x86_64.so -exec cp {} build/libwasmvm.x86_64.so \;
     SAVE ARTIFACT build/*
 
-build-all:
+build-static:
     ARG EARTHLY_GIT_HASH
     ARG EARTHLY_GIT_SHORT_HASH
     ARG VERSION=dev-$EARTHLY_GIT_SHORT_HASH
-    FROM +build-prep
-    RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-linux-amd64
+    FROM golang:1.20-alpine
+    WORKDIR /app
+    RUN apk add --no-cache ca-certificates build-base git libusb-dev linux-headers
+    COPY . .
+    RUN export ARCH=$(uname -m); \
+        WASM_VERSION=$(go list -m all | grep github.com/CosmWasm/wasmvm | awk '{print $2}'); \
+        if [ ! -z "${WASM_VERSION}" ]; then \
+          wget -O /lib/libwasmvm_muslc.a https://github.com/CosmWasm/wasmvm/releases/download/${WASM_VERSION}/libwasmvm_muslc.${ARCH}.a; \
+        fi;
+    RUN go mod download
+    RUN LEDGER_ENABLED=true BUILD_TAGS=muslc LINK_STATICALLY=true make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build
     SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-"$VERSION"-linux-amd64
-    RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-linux-arm64
-    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-"$VERSION"-linux-arm64
-    RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-darwin-amd64
-    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-"$VERSION"-darwin-amd64
-    RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-darwin-arm64
-    SAVE ARTIFACT build/empowerd AS LOCAL build/empowerd-"$VERSION"-darwin-arm64
-    RUN make VERSION=$VERSION COMMIT=$EARTHLY_GIT_HASH build-windows-amd64
-    SAVE ARTIFACT build/empowerd.exe AS LOCAL build/empowerd-"$VERSION".exe
 
 test-prep:
     FROM +build

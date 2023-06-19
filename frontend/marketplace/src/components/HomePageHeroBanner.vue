@@ -3,7 +3,7 @@
 <template>
   <!--  Home Banner-->
   <div class="text-white">
-    <div class="flex flex-row justify-center md:justify-end bg-white rounded-lg md:h-[30vw] p-2">
+    <div class="flex flex-row justify-center md:justify-end bg-white rounded-lg md:h-[30vw] p-2 max-h-[600px]">
       <div class="hidden md:block mt-7 text-black self-center px-10 pb-5">
         <p class="font-openSans whitespace-pre-wrap text-title40">
           <b>Empower</b>

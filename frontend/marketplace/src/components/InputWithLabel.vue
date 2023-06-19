@@ -5,6 +5,10 @@ export interface InputWithLabelProps {
   placeholder: string
   id: string
   dashed?: boolean
+  denom?:string
+  disabled?:boolean
+  longWidth?:boolean
+  type?:string
 }
 defineProps<InputWithLabelProps>()
 
@@ -20,19 +24,21 @@ const updateValue = (e: Event) => {
       <span class="input-label">{{ label }}</span>
     </label>
     <label
-      :class="`input-group rounded-sm w-fit ${
+      :class="`input-group rounded-sm w-full ${
         dashed ? 'border-dashed border-[1px] border-dashedBorderBlack' : ''
       }`"
     >
       <input
         :id="id"
-        type="text"
+        :type="type"
         :placeholder="placeholder"
-        class="input input-text"
+        class="input input-text disabled:bg-lightBlack disabled:border-none disabled:text-white"
+        :class="longWidth && '!w-[100%]'"
         :value="modelValue"
         @input="updateValue"
+        :disabled="disabled"
       />
-      <span class="input-sub-text">$MPWR</span>
+      <span class="input-sub-text" :class="disabled && '!bg-lightBlack'">{{denom}}</span>
     </label>
   </div>
 </template>

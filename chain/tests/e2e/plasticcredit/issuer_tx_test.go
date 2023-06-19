@@ -94,7 +94,7 @@ func (s *E2ETestSuite) TestCmdCreateIssuer() {
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &propResponse))
 				s.Require().Equal(govtypesv1.ProposalStatus_PROPOSAL_STATUS_PASSED, propResponse.Status)
 				queryCmd = cli.CmdQueryIssuers()
-				out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{})
+				out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, queryCmd, []string{fmt.Sprintf("--%s=json", flags.FlagOutput)})
 				s.Require().NoError(err)
 				var resp plasticcredit.QueryIssuersResponse
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))
@@ -181,7 +181,7 @@ func (s *E2ETestSuite) TestCmdUpdateIssuerCreator() {
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &propResponse))
 				s.Require().Equal(govtypesv1.ProposalStatus_PROPOSAL_STATUS_PASSED, propResponse.Status)
 				cmd = cli.CmdQueryParams()
-				out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{})
+				out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, []string{fmt.Sprintf("--%s=%s", "output", "json")})
 				s.Require().NoError(err)
 				var resp plasticcredit.QueryParamsResponse
 				s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resp))

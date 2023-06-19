@@ -8,7 +8,7 @@ import {DEFAULT_CREDIT_TYPE} from "@/config/config";
 
 export interface SearchBarProps {
   filterValues?: {
-    volume:any []
+    volume: any []
     location: string [],
     registrationDate: any[]
     organization: string[],
@@ -30,7 +30,7 @@ const filterValues = ref({
 })
 
 watch(props, () => {
-  if (props?.filterValues) {
+  if (Object.keys(props?.filterValues as any).length !== 0) {
     filterValues.value = props.filterValues as any;
   }
 });
@@ -126,7 +126,7 @@ const applicantData: any = useQuery(gql`query{
         <img class="h-5" src="../assets/searchIconWhite.svg">
       </button>
     </div>
-    <div class="grid grid-cols-6  divide-x divide-dividerGray bg-mediumGray w-full rounded-b-sm">
+    <div class="flex divide-x divide-dividerGray bg-mediumGray w-full rounded-b-sm ">
       <div class="filter-box">
         <p class="filter-subtitle">LOCATION</p>
         <SearchFilterSelect

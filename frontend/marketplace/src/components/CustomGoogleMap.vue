@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { GOOGLE_MAPS_API_KEY } from "@/config/config";
 import {GoogleMap, Marker} from "vue3-google-map"
-import {onMounted, ref} from "vue";
+import {ref, watch} from "vue";
 
 export interface CustomGoogleMapProps {
   locations: {
@@ -44,7 +44,7 @@ const getMapCenter = () => {
   zoomLevel.value = zoom
 }
 
-onMounted(() => {
+watch(() => props.locations, () => {
   getMapCenter()
 })
 

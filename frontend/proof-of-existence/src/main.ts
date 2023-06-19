@@ -17,19 +17,21 @@ app.use(Vue3Toasity, {
   autoClose: 3000,
 } as ToastContainerOptions);
 
-const rollbar = new Rollbar({
-  accessToken: ROLLBAR_ACCESS_TOKEN,
-  captureUncaught: true,
-  captureUnhandledRejections: true,
-  environment: ENVIRONMENT,
-  payload: {
-    code_version: REVISION_ID,
-  },
-});
-app.config.errorHandler = (err, vm, info) => {
-  rollbar.error(err as any);
-  throw err;
-};
-app.config.globalProperties.$rollbar = rollbar;
+if (ENVIRONMENT && ENVIRONMENT !== "local") {
+  const rollbar = new Rollbar({
+    accessToken: ROLLBAR_ACCESS_TOKEN,
+    captureUncaught: true,
+    captureUnhandledRejections: true,
+    environment: ENVIRONMENT,
+    payload: {
+      code_version: REVISION_ID,
+    },
+  });
+  app.config.errorHandler = (err, vm, info) => {
+    rollbar.error(err as any);
+    throw err;
+  };
+  app.config.globalProperties.$rollbar = rollbar;
+}
 
 app.mount("#app");

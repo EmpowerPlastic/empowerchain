@@ -18,8 +18,11 @@ If you want to add your resource to this page, please create a PR with the chang
 | KonsorTech | Node resources (instructions, state sync, peers, seeds, genesis, etc)                        | https://konsortech.xyz/testnet/empower                                               |
 | AutoStake  | Node resources ( snapshots, state sync, peers, seeds, etc)                                   | https://autostake.com/networks/testnets/empower/#services                            |
 | AM Solutions | Node resources (instructions, state sync, peers, seeds, genesis, etc)                      | https://www.theamsolutions.info/empowerchain                                         |
-| 🔥STAVR🔥  | Node resources ( manuals, snapshots, statesync, peers, seeds, genesis, etc)                 | https://github.com/obajay/StateSync-snapshots/tree/main/Projects/Empower             |
+| 🔥STAVR🔥  | Node resources ( manuals, snapshots, statesync, peers, seeds, genesis, etc)                  | https://github.com/obajay/StateSync-snapshots/tree/main/Projects/Empower             |
 | [NODERS]TEAM | Node resources ( manuals, statesync, peers, seeds, genesis, etc)                           | https://nodeservice.nodersteam.com/title/testnets/empower                            |
+| Stake Village | Node resources ( manuals, snapshots, statesync, peers, seeds, genesis, etc)               | https://stakevillage.net/en/empowerchain-testnet                                     |
+| Palamar    | Node resources ( manuals, statesync, peers, seeds, genesis, etc)                             | https://github.com/Pa1amar/testnets/tree/main/empower   
+| Sr20de     | Node resources ( manuals, statesync, peers, seeds, genesis, etc)                             | https://sr20de.xyz/services/empower-testnet/   |
 
 ## Explorers
 
@@ -32,6 +35,8 @@ If you want to add your resource to this page, please create a PR with the chang
 | 🔥STAVR🔥 | Ping      | https://explorer.stavr.tech/empower            |
 | KonsorTech | Ping     | https://testnet-explorer.konsortech.xyz/empower |
 | AM Solutions | Ping     | https://explorer.theamsolutions.info/empower-test |
+| Stake Village | Ping     | https://exp.stakevillage.net/empower-testnet |
+| Palamar   | Ping      | https://testnet.explorer.palamar.io/circulus-1 |
 
 ## Endpoints
 
@@ -48,4 +53,6 @@ If you want to add your resource to this page, please create a PR with the chang
 | AM Solutions | https://rpc-empower.test.theamsolutions.info:443 | https://rest-empower.test.theamsolutions.info:443 | grpc-empower.test.theamsolutions.info:443 |
 | 🔥STAVR🔥  | http://empw.rpc.t.stavr.tech:22057             | https://empw.api.t.stavr.tech                | empw.grpc.t.stavr.tech:9141             |
 | [NODERS]TEAM | http://empower.rpc.nodersteam.com:10657       | http://empower.api.nodersteam.com:2003       | empower.grpc.nodersteam.com:9791        |
-
+| Stake Village | https://empower-testnet.rpc.stakevillage.net | https://empower-testnet.api.stakevillage.net | empower-testnet.grpc.stakevillage.net:16590 |
+| Palamar    | https://empower-rpc.palamar.io:443             | https://empower-api.palamar.io:443           | empower-grpc.palamar.io:10891           |
+| Sr20de     | https://rpc-empower-testnet.sr20de.xyz:443     | https://api-empower-testnet.sr20de.xyz        | grpc-empower-testnet.sr20de.xyz        |

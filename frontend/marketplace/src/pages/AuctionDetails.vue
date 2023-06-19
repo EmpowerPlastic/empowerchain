@@ -3,15 +3,68 @@ import ImageCarousel from "@/components/ImageCarousel.vue";
 import ImageGallery from "@/components/ImageGallery.vue";
 import CustomGoogleMap from "@/components/CustomGoogleMap.vue";
 import BuyCredits from "@/components/BuyCredits.vue";
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import ProjectDetailContent from "@/components/ProjectDetailContent.vue";
 import {useRoute} from "vue-router";
 import {useQuery} from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import CustomSpinner from "@/components/CustomSpinner.vue";
-import { convertIPFStoHTTPS } from "@/utils/utils";
+import {convertIPFStoHTTPS} from "@/utils/utils";
 
 const router = useRoute()
+
+const getDetailsList = (data: any) => {
+  let applicantArray: string[] = []
+  let locationArray: string[] = []
+  let locationPointersArray: {
+    lat: number;
+    lng: number
+  }[] = []
+  let imageArray: string[] = []
+  let fileArray: { url: string, name: string }[] = []
+  let materialArray: { key: string, value: string }[] = []
+  let volume: number = 0
+  let registrationDateArray: string[] = []
+
+  data?.map((item: any) => {
+    item.applicantDataByCreditDataId.nodes.map((node: any) => {
+      applicantArray.push(node.name)
+    })
+
+    item.eventData.nodes.map((node: any) => {
+      volume = volume + node.amount
+      locationArray.push(node.country)
+      locationPointersArray.push({lat: node.latitude, lng: node.longitude})
+      materialArray.push(...node.material.nodes)
+      registrationDateArray.push(new Date(node.registrationDate).toLocaleDateString())
+    })
+
+    item.mediaFiles.nodes.map((node: any) => {
+      imageArray.push(convertIPFStoHTTPS(node.url))
+    })
+    item.binaryFiles.nodes.map((node: any) => {
+      fileArray.push({
+        url: convertIPFStoHTTPS(node.url), name: node.name
+      })
+    })
+  })
+
+  const uniqueMaterialArray = materialArray.filter((obj, index, self) =>
+          index === self.findIndex((o) =>
+              o.key === obj.key && o.value === obj.value
+          )
+  );
+  return {
+    applicant: applicantArray[0],
+    location: Array.from(new Set(locationArray)),
+    material: uniqueMaterialArray.map(item => item.value),
+    volume: volume,
+    image: imageArray,
+    file: fileArray,
+    locationPointers: locationPointersArray,
+    registrationDate: registrationDateArray[0]
+  }
+}
 
 const copyToken = async (text: string) => {
   await navigator.clipboard.writeText(text);
@@ -19,9 +72,11 @@ const copyToken = async (text: string) => {
 const selectedCoin = ref('MPWR')
 const data = ref()
 const orderHistory = ref()
-const auctionData = ref()
 const showSpinner = ref(true)
 const amount = ref(0)
+const denom = ref('')
+const owner = ref('')
+const auctionDetails = ref(getDetailsList(null))
 
 const getAuctionDetails = (id: string | string[]) => {
   let query = `query {
@@ -85,8 +140,14 @@ const getAuctionDetails = (id: string | string[]) => {
 
   const {result, loading, error} = useQuery(gql`${query}`);
   data.value = {result, loading, error}
+
+  watch(result, value => {
+    auctionDetails.value = getDetailsList(value.marketplaceListings?.nodes[0].creditCollection.creditData.nodes)
+  })
+
   showSpinner.value = false
-  auctionData.value = result.value?.marketplaceListings?.nodes[0]
+  denom.value = result.value?.marketplaceListings?.nodes[0].denom
+  owner.value = result.value?.marketplaceListings?.nodes[0].owner
 }
 
 const getOrderHistory = (id: string | string[]) => {
@@ -117,58 +178,6 @@ onMounted(() => {
   getOrderHistory(router.params.id)
 })
 
-const getDetailsList = (data: any) => {
-  let applicantArray: string[] = []
-  let locationArray: string[] = []
-  let locationPointersArray: {
-    lat: number;
-    lng: number
-  }[] = []
-  let imageArray: string[] = []
-  let fileArray: { url: string, name: string }[] = []
-  let materialArray: { key: string, value: string }[] = []
-  let volume: number = 0
-  let registrationDateArray: Date[] = []
-
-  data?.map((item: any) => {
-    item.applicantDataByCreditDataId.nodes.map((node: any) => {
-      applicantArray.push(node.name)
-    })
-
-    item.eventData.nodes.map((node: any) => {
-      volume = volume + node.amount
-      locationArray.push(node.country)
-      locationPointersArray.push({lat: node.latitude, lng: node.longitude})
-      materialArray.push(...node.material.nodes)
-      registrationDateArray.push(new Date(node.registrationDate))
-    })
-
-    item.mediaFiles.nodes.map((node: any) => {
-      imageArray.push(convertIPFStoHTTPS(node.url))
-    })
-    item.binaryFiles.nodes.map((node: any) => {
-      fileArray.push({
-        url: convertIPFStoHTTPS(node.url), name: node.name
-      })
-    })
-  })
-
-  const uniqueMaterialArray = materialArray.filter((obj, index, self) =>
-          index === self.findIndex((o) =>
-              o.key === obj.key && o.value === obj.value
-          )
-  );
-  return {
-    applicant: applicantArray[0],
-    location: Array.from(new Set(locationArray)),
-    material: uniqueMaterialArray.map(item => item.value),
-    volume: volume,
-    image: imageArray,
-    file: fileArray,
-    locationPointers: locationPointersArray,
-    registrationDate: registrationDateArray[0]
-  }
-}
 
 </script>
 <template>
@@ -182,18 +191,17 @@ const getDetailsList = (data: any) => {
 
     <!--    Gallery-->
     <ImageCarousel class="md:hidden my-5"
-                   :image-array="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).image"/>
+                   :image-array="auctionDetails?.image"/>
     <ImageGallery class="hidden md:flex"
-                  :image-array="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).image"/>
+                  :image-array="auctionDetails?.image"/>
 
     <!--    Buy Credits-->
     <BuyCredits
         :available-credits="`${data?.result?.marketplaceListings?.nodes[0].amount}/${data?.result?.marketplaceListings?.nodes[0].initialAmount}`"
         v-model:selected-coin="selectedCoin"
         :price-per-credit="data?.result?.marketplaceListings?.nodes[0].pricePerCreditAmount/1000000"
-        v-model:amount="amount"
-        v-model:denom="data.result.marketplaceListings.nodes[0].denom"
-        v-model:owner="data.result.marketplaceListings.nodes[0].owner"/>
+        :denom="data?.result?.marketplaceListings?.nodes[0].denom"
+        :owner="data?.result?.marketplaceListings?.nodes[0].owner"/>
 
     <!--    Project Details-->
     <div class="flex flex-col md:flex-row w-full mt-5 justify-between ">
@@ -201,24 +209,24 @@ const getDetailsList = (data: any) => {
         <ProjectDetailContent label="CREDIT type"
                               :value="data?.result?.marketplaceListings?.nodes[0].creditCollection.creditType"/>
         <ProjectDetailContent label="Material"
-                              :value="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).material"
+                              :value="auctionDetails?.material"
                               list/>
         <ProjectDetailContent label="Credits per kg" value="1"/>
         <ProjectDetailContent label="Registration date"
-                              :value="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).registrationDate.toLocaleDateString()"/>
+                              :value="auctionDetails?.registrationDate"/>
         <ProjectDetailContent label="Location"
-                              :value="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).location"
+                              :value="auctionDetails?.location"
                               list/>
-        <ProjectDetailContent label="Collection organization" 
-                              :value="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).applicant"/>
+        <ProjectDetailContent label="Collection organization"
+                              :value="auctionDetails?.applicant"/>
         <ProjectDetailContent label="Volume"
-                              :value="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).volume+'kg'"/>
+                              :value="auctionDetails?.volume+'kg'"/>
       </div>
 
       <!--      Map Section-->
       <div class="mt-5 md:mt-0 md:w-[60%] md:ml-5 h-[330px] md:h-auto rounded-lg relative">
         <CustomGoogleMap
-            :locations="getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).locationPointers"/>
+            :locations="auctionDetails?.locationPointers"/>
       </div>
     </div>
 
@@ -237,7 +245,7 @@ const getDetailsList = (data: any) => {
       <p class="text-title18  font-semibold mb-3">Public files available for download</p>
       <ul class="pl-5">
         <li class="text-title14 text-greenPrimary underline"
-            v-for="file in getDetailsList(data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData?.nodes).file"
+            v-for="file in auctionDetails?.file"
             :key="file.name">
           <a target="_blank" :href="file.url">{{ file.name }}</a>
         </li>
@@ -254,7 +262,7 @@ const getDetailsList = (data: any) => {
           <div class="flex justify-between">
             <div class="md:flex x md:flex-row text-title12 md:text-title14 break-words">
               <p class="text-textInfoGray">07:00AM 10/Jan/2023</p>
-              <p class="text-greenPrimary md:ml-16">{{data.buyer}}</p>
+              <p class="text-greenPrimary md:ml-16">{{ data.buyer }}</p>
             </div>
             <div>
               <button class="btn btn-ghost bg-transparent p-0 md:hidden" @click="copyToken('test')">
@@ -263,8 +271,8 @@ const getDetailsList = (data: any) => {
             </div>
           </div>
           <div class="flex justify-between text-title14 text-textInfoGray">
-            <p>{{data.numberOfCreditsBought}} {{data.denom}}</p>
-            <p class="md:ml-16"> {{data.totalPriceAmount}} {{data.totalPriceDenom}}</p>
+            <p>{{ data.numberOfCreditsBought }} {{ data.denom }}</p>
+            <p class="md:ml-16"> {{ data.totalPriceAmount }} {{ data.totalPriceDenom }}</p>
           </div>
         </div>
       </div>
