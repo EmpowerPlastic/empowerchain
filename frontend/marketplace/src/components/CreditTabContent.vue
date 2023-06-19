@@ -9,6 +9,7 @@ import {CHAIN_ID} from "@/config/config";
 import CustomSpinner from "@/components/CustomSpinner.vue";
 import CustomAlert from "@/components/CustomAlert.vue";
 import {toast} from "vue3-toastify";
+import {walletConnected} from "@/utils/utils";
 
 const pageNumber = ref(1)
 const itemsPerPage = ref(5)
@@ -96,7 +97,11 @@ const loadQueryData = (query: string) => {
 }
 
 onMounted(() => {
-  getCreditsData()
+  if (walletConnected()) {
+    getCreditsData()
+  } else {
+    toast.error("Please connect to wallet")
+  }
 })
 </script>
 <template>

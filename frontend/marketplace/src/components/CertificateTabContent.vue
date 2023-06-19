@@ -8,6 +8,7 @@ import { toast } from "vue3-toastify";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import CustomAlert from "@/components/CustomAlert.vue";
+import {walletConnected} from "@/utils/utils";
 
 const pageNumber = ref(1)
 const itemsPerPage = ref(5)
@@ -62,7 +63,11 @@ const loadQueryData = (query: string) => {
 }
 
 onMounted(() => {
-  getCertificatesData()
+  if (walletConnected()) {
+    getCertificatesData()
+  } else {
+    toast.error("Please connect to wallet")
+  }
 })
 
 </script>

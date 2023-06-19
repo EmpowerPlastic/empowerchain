@@ -70,7 +70,12 @@ export const walletHandler = async () => {
             offlineSigner = window.leap.getOfflineSigner(CHAIN_ID);
             break
         default:
-          console.error("Please connect wallet")
+            console.error("Please connect wallet")
     }
     return {offlineSigner: offlineSigner}
+}
+
+export const walletConnected = () => {
+    const address = localStorage.getItem('address');
+    return !!address;
 }
