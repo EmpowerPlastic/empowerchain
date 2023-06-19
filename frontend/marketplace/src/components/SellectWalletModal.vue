@@ -2,7 +2,7 @@
 import {Wallet} from "@/types/WalletEnums";
 import {toast} from "vue3-toastify";
 import {CHAIN_ID, CHAIN_NAME, REST_ENDPOINT, RPC_ENDPOINT} from "@/config/config";
-import {getWallet} from "@/utils/wallet-utils";
+import {getWalletFromType} from "@/utils/wallet-utils";
 
 export interface SelectWalletModalProps {
   showModal: boolean
@@ -73,7 +73,7 @@ const handleWallet = async (walletType: Wallet, provider: any) => {
     return;
   }
   try {
-    const wallet = getWallet(walletType);
+    const wallet = getWalletFromType(walletType);
     await wallet.experimentalSuggestChain(chainConfig);
     await wallet.enable(CHAIN_ID);
 

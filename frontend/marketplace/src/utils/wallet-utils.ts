@@ -1,6 +1,6 @@
 import type {Keplr} from "@keplr-wallet/types";
 
-export function getWallet(wallet: string): Keplr {
+export function getWalletFromType(wallet: string): Keplr {
   switch (wallet) {
         case "Keplr":
             return window.keplr;

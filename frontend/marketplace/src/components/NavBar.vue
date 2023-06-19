@@ -4,7 +4,7 @@ import {onMounted, ref} from 'vue';
 import {toast} from 'vue3-toastify';
 import {useRoute} from "vue-router";
 import SellectWalletModal from "@/components/SellectWalletModal.vue";
-import {getWallet} from "@/utils/wallet-utils";
+import {getWalletFromType} from "@/utils/wallet-utils";
 
 const router = useRoute()
 const address = ref();
@@ -44,7 +44,7 @@ const handleSelectWallet = async (walletType: string) => {
     return;
   }
 
-  const wallet = getWallet(walletType);
+  const wallet = getWalletFromType(walletType);
   const account = await wallet.getKey(CHAIN_ID);
   const walletAddress = account.bech32Address;
 
