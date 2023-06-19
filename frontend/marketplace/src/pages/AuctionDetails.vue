@@ -138,8 +138,11 @@ const getAuctionDetails = (id: string | string[]) => {
 }
 `
 
-  const {result, loading, error} = useQuery(gql`${query}`);
+  const {result, loading, error, refetch} = useQuery(gql`${query}`);
   data.value = {result, loading, error}
+  setInterval(() => {
+    refetch()
+  }, 5000);
 
   watch(result, value => {
     auctionDetails.value = getDetailsList(value.marketplaceListings?.nodes[0].creditCollection.creditData.nodes)
@@ -148,6 +151,7 @@ const getAuctionDetails = (id: string | string[]) => {
   showSpinner.value = false
   denom.value = result.value?.marketplaceListings?.nodes[0].denom
   owner.value = result.value?.marketplaceListings?.nodes[0].owner
+  console.log(`${data?.value.result?.marketplaceListings?.nodes[0].amount}/${data?.value.result?.marketplaceListings?.nodes[0].initialAmount}`)
 }
 
 const getOrderHistory = (id: string | string[]) => {
@@ -173,6 +177,7 @@ const getOrderHistory = (id: string | string[]) => {
   const {result, loading, error} = useQuery(gql`${query}`);
   orderHistory.value = {result, loading, error}
 }
+
 onMounted(() => {
   getAuctionDetails(router.params.id)
   getOrderHistory(router.params.id)
