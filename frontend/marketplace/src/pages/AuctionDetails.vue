@@ -151,7 +151,6 @@ const getAuctionDetails = (id: string | string[]) => {
   showSpinner.value = false
   denom.value = result.value?.marketplaceListings?.nodes[0].denom
   owner.value = result.value?.marketplaceListings?.nodes[0].owner
-  console.log(`${data?.value.result?.marketplaceListings?.nodes[0].amount}/${data?.value.result?.marketplaceListings?.nodes[0].initialAmount}`)
 }
 
 const getOrderHistory = (id: string | string[]) => {
