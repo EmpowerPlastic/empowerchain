@@ -9,7 +9,7 @@ import {CHAIN_ID} from "@/config/config";
 import CustomSpinner from "@/components/CustomSpinner.vue";
 import CustomAlert from "@/components/CustomAlert.vue";
 import {toast} from "vue3-toastify";
-import {walletConnected} from "@/utils/utils";
+import {getWallet, walletConnected} from "@/utils/wallet-utils";
 
 const pageNumber = ref(1)
 const itemsPerPage = ref(5)
@@ -27,7 +27,8 @@ const handleSearch = () => {
 
 const getCreditsData = async () => {
   try {
-    const account = await window.keplr.getKey(CHAIN_ID);
+    const wallet = getWallet()
+    const account = await wallet.getKey(CHAIN_ID);
     const walletAddress = account.bech32Address
     if (walletAddress) {
       const query = `{

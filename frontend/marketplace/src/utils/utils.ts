@@ -1,5 +1,4 @@
-import {CHAIN_ID, HTTPS_FILE_URL} from "@/config/config";
-import {Wallet} from "@/types/WalletEnums";
+import {HTTPS_FILE_URL} from "@/config/config";
 
 export const convertIPFStoHTTPS = (url: string) => {
     const IPFS_URL = url.split('//')[1]
@@ -53,29 +52,4 @@ export const getDetailsList = (data: any) => {
         thumbnailUrl: thumbnailUrl,
         image: imageArray,
     }
-}
-
-export const walletHandler = async () => {
-    const selectedWallet = localStorage.getItem('wallet')
-    let offlineSigner;
-    switch (selectedWallet) {
-        case Wallet.KEPLR:
-            offlineSigner = window.keplr.getOfflineSigner(CHAIN_ID);
-            break;
-        case Wallet.COSMOSTATION:
-            await window.cosmostation.providers.keplr.enable(CHAIN_ID);
-            offlineSigner = window.cosmostation.providers.keplr.getOfflineSigner(CHAIN_ID);
-            break
-        case Wallet.LEAP:
-            offlineSigner = window.leap.getOfflineSigner(CHAIN_ID);
-            break
-        default:
-            console.error("Please connect wallet")
-    }
-    return {offlineSigner: offlineSigner}
-}
-
-export const walletConnected = () => {
-    const address = localStorage.getItem('address');
-    return !!address;
 }

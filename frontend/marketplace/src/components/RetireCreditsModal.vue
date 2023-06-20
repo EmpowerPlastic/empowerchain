@@ -4,9 +4,8 @@ import RetireCreditTextArea from '@/components/RetireCreditTextArea.vue'
 import InputWithLabel from '@/components/InputWithLabel.vue'
 import {empowerchain, getSigningTM37EmpowerchainClient} from "@empower-plastic/empowerjs";
 import {toast} from "vue3-toastify";
-import { RPC_ENDPOINT} from "@/config/config";
-import {walletHandler} from "@/utils/utils";
-
+import {CHAIN_ID, RPC_ENDPOINT} from "@/config/config";
+import {getWallet} from "@/utils/wallet-utils";
 const {retireCredits, transferCredits} = empowerchain.plasticcredit.MessageComposer.withTypeUrl;
 
 export interface ModalProps {
@@ -38,8 +37,8 @@ const handleRetireCredits = async () => {
       retiringEntityName: name.value,
       retiringEntityAdditionalData: additionalInfo.value,
     })
-
-    const {offlineSigner} = await walletHandler();
+    const wallet = getWallet()
+    const offlineSigner = await wallet.getOfflineSigner(CHAIN_ID);
     const chainClient = await getSigningTM37EmpowerchainClient({
       rpcEndpoint: RPC_ENDPOINT,
       signer: offlineSigner,

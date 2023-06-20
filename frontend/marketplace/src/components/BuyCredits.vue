@@ -6,7 +6,7 @@ import {Tendermint37Client} from '@cosmjs/tendermint-rpc';
 import { MARKETPLACE_CONTRACT, RPC_ENDPOINT} from "@/config/config";
 import {ref} from "vue";
 import {toast} from "vue3-toastify";
-import { walletHandler} from "@/utils/utils";
+import {getWallet, walletConnected} from "@/utils/wallet-utils";
 
 export interface BuyCreditsProps {
   availableCredits: string
