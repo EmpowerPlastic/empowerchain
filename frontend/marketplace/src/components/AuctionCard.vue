@@ -2,6 +2,7 @@
 import router from "@/router";
 import { convertIPFStoHTTPS } from "@/utils/utils";
 import auctionCard from "@/assets/auctionCard.png";
+import { formatDenom } from "@/utils/wallet-utils";
 export interface AuctionCardProps{
   auctionData:any
 }
@@ -14,7 +15,7 @@ defineProps<AuctionCardProps>()
       <div>
         <div>
           <p class="font-Inter text-white text-title24 md:text-title32 font-bold">
-            {{ auctionData?.pricePerCreditAmount / 1000000 }} $MPWR
+            {{ auctionData?.pricePerCreditAmount / 1000000 }} ${{ formatDenom(auctionData?.pricePerCreditDenom) }}
           </p>
           <p class="font-Inter text-white text-title15 md:text-title18">
             Price per credit

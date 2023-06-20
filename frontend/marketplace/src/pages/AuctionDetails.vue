@@ -69,7 +69,6 @@ const getDetailsList = (data: any) => {
 const copyToken = async (text: string) => {
   await navigator.clipboard.writeText(text);
 }
-const selectedCoin = ref('MPWR')
 const data = ref()
 const orderHistory = ref()
 const showSpinner = ref(true)
@@ -202,7 +201,7 @@ onMounted(() => {
     <!--    Buy Credits-->
     <BuyCredits
         :available-credits="`${data?.result?.marketplaceListings?.nodes[0].amount}/${data?.result?.marketplaceListings?.nodes[0].initialAmount}`"
-        v-model:selected-coin="selectedCoin"
+        :selected-coin="`${data?.result?.marketplaceListings?.nodes[0].pricePerCreditDenom}`"
         :price-per-credit="data?.result?.marketplaceListings?.nodes[0].pricePerCreditAmount/1000000"
         :denom="data?.result?.marketplaceListings?.nodes[0].denom"
         :owner="data?.result?.marketplaceListings?.nodes[0].owner"/>

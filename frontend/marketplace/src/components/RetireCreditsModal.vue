@@ -6,6 +6,7 @@ import {empowerchain, getSigningTM37EmpowerchainClient} from "@empower-plastic/e
 import {toast} from "vue3-toastify";
 import {CHAIN_ID, RPC_ENDPOINT} from "@/config/config";
 import {getWallet} from "@/utils/wallet-utils";
+import { resolveSdkError } from '@/utils/wallet-utils';
 const {retireCredits, transferCredits} = empowerchain.plasticcredit.MessageComposer.withTypeUrl;
 
 export interface ModalProps {
@@ -61,7 +62,7 @@ const handleRetireCredits = async () => {
     }
   } catch (error) {
     loading.value = false
-    toast.error("Retire credits failed")
+    toast.error("Retire credits failed: " + resolveSdkError(error))
     throw error
   }
 }

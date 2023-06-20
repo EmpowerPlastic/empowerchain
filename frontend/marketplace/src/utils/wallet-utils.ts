@@ -1,5 +1,7 @@
-import type {Keplr} from "@keplr-wallet/types";
-import {Wallet} from "@/types/WalletEnums";
+import type { Keplr } from "@keplr-wallet/types";
+import { Wallet } from "@/types/WalletEnums";
+import { empowerchain } from "@empower-plastic/empowerjs";
+import { RPC_ENDPOINT } from "@/config/config";
 
 export function getWalletFromType(wallet: string): Keplr {
     switch (wallet) {
@@ -26,4 +28,23 @@ export const getWallet = () => {
 export const walletConnected = () => {
     const address = localStorage.getItem('address');
     return !!address;
+}
+
+export function resolveSdkError(error: any): string {
+    switch (error?.code) {
+        case 13:
+            return 'Fee too low';
+        default:
+            return 'Unknown error';
+    }
+}
+
+export async function formatDenom(denom: string): string {
+    const { createRPCQueryClient } = empowerchain.ClientFactory;
+    const rpcQueryClient = await createRPCQueryClient({ rpcEndpoint: RPC_ENDPOINT });
+    const balance = await rpcQueryClient.cosmos
+    if (denom.startsWith('u') && denom.at(1) !== 'u') {
+        denom = denom.slice(1);
+    }
+    return denom.toUpperCase();
 }

@@ -5,6 +5,7 @@ import {empowerchain, getSigningTM37EmpowerchainClient} from "@empower-plastic/e
 import {CHAIN_ID, RPC_ENDPOINT} from "@/config/config";
 import {toast} from "vue3-toastify";
 import {getWallet} from "@/utils/wallet-utils";
+import { resolveSdkError } from '@/utils/wallet-utils';
 
 const {transferCredits} = empowerchain.plasticcredit.MessageComposer.withTypeUrl;
 
@@ -45,8 +46,8 @@ const handleTransferCredits = async () => {
       signer: offlineSigner,
     });
     const fee = {
-      amount: [{amount: "100000", denom: "umpwr"}],
       gas: "200000",
+      amount: [{amount: "1000000", denom: "umpwr"}],
     };
     const response = await chainClient.signAndBroadcast(
         props.address,
@@ -62,7 +63,7 @@ const handleTransferCredits = async () => {
     }
   } catch (error) {
     loading.value = false
-    toast.error("Credits transfer failed")
+    toast.error("Credit transfer failed: " + resolveSdkError(error))
     throw error
   }
 }
