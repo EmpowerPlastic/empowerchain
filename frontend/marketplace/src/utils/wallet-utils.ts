@@ -43,13 +43,11 @@ export async function formatDenom(denom: string): string {
     const { createRPCQueryClient } = ibc.ClientFactory;
     const rpcQueryClient = await createRPCQueryClient({ rpcEndpoint: RPC_ENDPOINT });
     if (denom.startsWith('ibc/')) {
-        const tracedDenom = await rpcQueryClient.ibc.applications.transfer.v1.denomTrace({ hash: denom});
+        const tracedDenom = await rpcQueryClient.ibc.applications.transfer.v1.denomTrace({ hash: denom });
         if (tracedDenom?.denomTrace) {
             denom = tracedDenom.denomTrace.baseDenom;
         }
     }
-    if (denom.startsWith('u') && denom.at(1) !== 'u') {
-        denom = denom.slice(1);
-    }
+    denom = denom.slice(1);
     return denom.toUpperCase();
 }
