@@ -1,6 +1,6 @@
 import type { Keplr } from "@keplr-wallet/types";
 import { Wallet } from "@/types/WalletEnums";
-import { empowerchain } from "@empower-plastic/empowerjs";
+import { empowerchain, ibc } from "@empower-plastic/empowerjs";
 import { RPC_ENDPOINT } from "@/config/config";
 
 export function getWalletFromType(wallet: string): Keplr {
@@ -40,9 +40,14 @@ export function resolveSdkError(error: any): string {
 }
 
 export async function formatDenom(denom: string): string {
-    const { createRPCQueryClient } = empowerchain.ClientFactory;
+    const { createRPCQueryClient } = ibc.ClientFactory;
     const rpcQueryClient = await createRPCQueryClient({ rpcEndpoint: RPC_ENDPOINT });
-    const balance = await rpcQueryClient.cosmos
+    if (denom.startsWith('ibc/')) {
+        const tracedDenom = await rpcQueryClient.ibc.applications.transfer.v1.denomTrace({ hash: denom});
+        if (tracedDenom?.denomTrace) {
+            denom = tracedDenom.denomTrace.baseDenom;
+        }
+    }
     if (denom.startsWith('u') && denom.at(1) !== 'u') {
         denom = denom.slice(1);
     }
