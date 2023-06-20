@@ -39,7 +39,7 @@ export function resolveSdkError(error: any): string {
     }
 }
 
-export async function formatDenom(denom: string): string {
+export async function formatDenom(denom: string): Promise<string> {
     const { createRPCQueryClient } = ibc.ClientFactory;
     const rpcQueryClient = await createRPCQueryClient({ rpcEndpoint: RPC_ENDPOINT });
     if (denom.startsWith('ibc/')) {
