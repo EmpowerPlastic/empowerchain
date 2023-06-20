@@ -22,10 +22,12 @@
 .filter-subtitle {
     @apply text-title14 text-dropDownText
 }
+
 .filter-title {
     @apply flex justify-between text-title16 text-white cursor-pointer
 }
-.filter-box{
+
+.filter-box {
     @apply w-full p-3 px-4
 }
 
@@ -35,31 +37,42 @@
 }
 
 /*My Credits*/
-.custom-tab{
+.custom-tab {
     @apply text-center rounded-xl p-2 cursor-pointer
 }
+
 /*Credit Card*/
 .certificate-button {
     @apply rounded-sm text-greenPrimary font-bold text-title14 bg-buttonBlack normal-case border-none
 }
 
 /*Project Details*/
-.details-label{
+.details-label {
     @apply text-title14 text-dropDownText
 }
-.details-content{
+
+.details-content {
     @apply text-title18 mt-1
 }
+
 .google-map {
     border-radius: 15px;
 }
 
 /*Image Gallery*/
-.scroll-button{
+.scroll-button {
     @apply absolute ml-[130px] btn-ghost bg-scrollButtonBackground
 }
 
 /*Toast*/
-.Toastify__toast{
+.Toastify__toast {
     @apply bg-tabGray text-white
+}
+
+/*Sellect Wallet Modal*/
+.wallet-box {
+    @apply bg-lightBlack p-3 rounded-sm cursor-pointer
+}
+.wallet-image{
+    @apply max-w-[200px] max-h-[100px]
 }

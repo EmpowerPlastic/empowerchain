@@ -4,6 +4,8 @@ import InputWithLabel from '@/components/InputWithLabel.vue'
 import {empowerchain, getSigningTM37EmpowerchainClient} from "@empower-plastic/empowerjs";
 import {CHAIN_ID, RPC_ENDPOINT} from "@/config/config";
 import {toast} from "vue3-toastify";
+import {getWallet} from "@/utils/wallet-utils";
+import { resolveSdkError } from '@/utils/wallet-utils';
 
 const {transferCredits} = empowerchain.plasticcredit.MessageComposer.withTypeUrl;
 
@@ -37,14 +39,15 @@ const handleTransferCredits = async () => {
       retiringEntityAdditionalData: "",
     })
 
-    const offlineSigner = window.keplr.getOfflineSigner(CHAIN_ID);
+    const wallet = getWallet()
+    const offlineSigner = await wallet.getOfflineSigner(CHAIN_ID);
     const chainClient = await getSigningTM37EmpowerchainClient({
       rpcEndpoint: RPC_ENDPOINT,
       signer: offlineSigner,
     });
     const fee = {
-      amount: [{ amount: "100000", denom: "umpwr" }],
       gas: "200000",
+      amount: [{amount: "1000000", denom: "umpwr"}],
     };
     const response = await chainClient.signAndBroadcast(
         props.address,
@@ -60,7 +63,7 @@ const handleTransferCredits = async () => {
     }
   } catch (error) {
     loading.value = false
-    toast.error("Credits transfer failed")
+    toast.error("Credit transfer failed: " + resolveSdkError(error))
     throw error
   }
 }
@@ -107,7 +110,8 @@ const handleTransferCredits = async () => {
             @click="closeModal"
         >Cancel!</label
         >
-        <button class="btn modal-button !ml-0 bg-greenPrimary disabled:text-white" :disabled="!(creditsAmount && recAddress) || loading" @click="handleTransferCredits">
+        <button class="btn modal-button !ml-0 bg-greenPrimary disabled:text-white"
+                :disabled="!(creditsAmount && recAddress) || loading" @click="handleTransferCredits">
           {{ loading ? "Processing..." : "Transfer credits" }}
         </button>
       </div>

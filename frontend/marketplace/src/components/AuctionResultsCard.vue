@@ -3,6 +3,8 @@ import type { MarketplaceListing } from "@/types/GraphqlSchema";
 import router from "@/router";
 import auctionCard from "@/assets/auctionCard.png";
 import { getDetailsList } from "@/utils/utils";
+import { formatDenom } from "@/utils/wallet-utils";
+import { onMounted, ref } from "vue";
 
 export interface AuctionResultsCardProps {
   cardData: MarketplaceListing & {
@@ -10,7 +12,13 @@ export interface AuctionResultsCardProps {
   }
 }
 
-defineProps<AuctionResultsCardProps>()
+const props = defineProps<AuctionResultsCardProps>()
+const denom = ref("")
+
+onMounted(async () => {
+  denom.value = await formatDenom(props.cardData?.pricePerCreditDenom)
+})
+
 
 </script>
 <template>
@@ -86,7 +94,7 @@ defineProps<AuctionResultsCardProps>()
       </div>
       <div class="col-span-1 text-right">
         <p class="text-title32 font-bold leading-7 mt-6">{{ cardData?.pricePerCreditAmount / 1000000 }}</p>
-        <p class="text-title14 font-bold text-textGray leading-6">MPWR</p>
+        <p class="text-title14 font-bold text-textGray leading-6">{{ denom }}</p>
         <p class="text-title18 leading-3 font-light">Price per credit</p>
 
         <p class="text-title14 font-bold mt-7 leading-[13px]">{{ cardData?.amount }}/{{ cardData?.initialAmount }}</p>
