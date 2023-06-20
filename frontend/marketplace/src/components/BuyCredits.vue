@@ -85,7 +85,6 @@ const buyCredits = async () => {
       denom: props.selectedCoin,
       amount: (props.pricePerCredit * 1000000 * amount.value).toString(),
     }]);
-
     if (res) {
       toast.success('Purchase was successful')
       showButtonSpinner.value = false
@@ -93,27 +92,38 @@ const buyCredits = async () => {
   } catch (error) {
     showButtonSpinner.value = false
     console.error(error)
+<<<<<<< HEAD
     toast.error('Purchase failed: ' + resolveSdkError(error))
+=======
+    toast.error(`Purchase failed ${error}`)
+>>>>>>> 56dd7bf9898c2ef30158b130a9223bf19cfba88c
   }
 }
 
 </script>
 <template>
-  <div class="bg-darkGray md:grid md:grid-cols-4 flex flex-col gap-1 p-6 rounded-sm">
-    <div>
+  <div class="bg-darkGray md:flex-row flex md:justify-between flex-col gap-1 p-6 rounded-sm flex-wrap">
+    <div class="flex flex-col">
       <p class="text-title18">Available credits</p>
       <p class="text-title38">{{ availableCredits }}</p>
     </div>
-    <div>
+    <div class="flex flex-col">
       <p class="text-title18">Price per credit</p>
       <p class="text-title38 font-bold">{{ pricePerCredit }} ${{ coinFormatted }}</p>
     </div>
-    <div>
-      <div class="flex md:ml-[-60px]">
-        <p class="text-title18 text-subLabel  text-right hidden md:block mr-3 mt-8">Cost
-          {{ pricePerCredit * amount }}</p>
-        <div>
+    <div class="flex flex-col">
+      <div class="flex">
+        <div class="flex flex-col mb-0 mt-7">
+          <p class="text-title18 text-subLabel text-right hidden md:block mr-3">
+            Cost
+          </p>
+          <p class="text-title18 text-subLabel text-right hidden md:block mr-3">
+            {{ amount >= 0 ? pricePerCredit * amount : "0" }}
+          </p>
+        </div>
+        <div class="flex flex-col flex-wrap">
           <p class="text-title18">How many you want to buy?</p>
+<<<<<<< HEAD
           <input type="number" class="input bg-darkGray mt-1 text-white text-title38 font-bold w-full" min="1" v-model="amount"/>
         </div>
       </div>
@@ -126,10 +136,25 @@ const buyCredits = async () => {
           @click="buyCredits">
         <span class="loading loading-spinner"></span>
         {{ insufficientBalance ? 'Insufficient balance' : showButtonSpinner ? 'Processing transaction' : ('Buy with $' + coinFormatted) }}
+=======
+          <input type="number" class="input bg-darkGray mt-1 text-white text-title38 font-bold md:max-w-[200px] w-full"
+                 v-model="amount"/>
+        </div>
+      </div>
+      <p class="text-title18 text-subLabel mt-1 md:hidden">Cost {{ amount >= 0 ? pricePerCredit * amount : "0" }}
+        $MPWR</p>
+    </div>
+    <div class="flex flex-row mt-8">
+      <button
+          :disabled="showButtonSpinner || (amount <= 0)"
+          class="btn btn-ghost w-full rounded-r-none w-[75%] normal-case bg-greenPrimary text-title24 p-0 font-normal md:ml-4 disabled:bg-lightGray disabled:text-white text-ellipsis overflow-hidden whitespace-nowrap"
+          @click="buyCredits">
+        {{ showButtonSpinner ? 'Processing transaction' : `Buy with ${selectedCoin}` }}
+>>>>>>> 56dd7bf9898c2ef30158b130a9223bf19cfba88c
       </button>
       <div class="dropdown dropdown-end">
-        <label tabindex="0" class="btn btn-ghost rounded-l-none bg-dropdownGreen">
-          <img class="w-4" src="../assets/dropdownIconButton.svg"/>
+        <label tabindex="0" class="btn btn-ghost rounded-l-none bg-dropdownGreen !px-0 mr-5">
+          <img class="w-4 mx-5" src="../assets/dropdownIconButton.svg"/>
         </label>
         <div tabindex="0" class="dropdown-content menu p-4 shadow bg-dropdownGray rounded-box w-52 !list-none">
           <li disabled class="text-title12 font-semibold my-1 cursor-pointer" v-for="coin in coinsArray" :key="coin"

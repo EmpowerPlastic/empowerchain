@@ -10,6 +10,7 @@ import {useQuery} from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import CustomSpinner from "@/components/CustomSpinner.vue";
 import {convertIPFStoHTTPS} from "@/utils/utils";
+import {toast} from "vue3-toastify";
 
 const router = useRoute()
 
@@ -68,6 +69,7 @@ const getDetailsList = (data: any) => {
 
 const copyToken = async (text: string) => {
   await navigator.clipboard.writeText(text);
+  toast.success("Copied to clipboard")
 }
 const data = ref()
 const orderHistory = ref()
@@ -168,6 +170,7 @@ const getOrderHistory = (id: string | string[]) => {
       denom
       buyer
       numberOfCreditsBought
+      saleDate
     }
   }
 }`
@@ -260,15 +263,15 @@ onMounted(() => {
       <p class="text-title18 font-semibold mb-3">Order buy history</p>
 
       <div class="divide-y md:divide-none divide-dividerGray">
-        <div class="md:p-2 py-2 md:flex md:justify-between" :class="index%2===0 ? 'md:bg-lightBlack':null"
+        <div class="md:p-2 py-2 md:flex md:justify-between flex-wrap" :class="index%2===0 ? 'md:bg-lightBlack':null"
              v-for="(data,index) in orderHistory?.result?.buyCreditsWasmEvents?.nodes" :key="data">
-          <div class="flex justify-between">
-            <div class="md:flex x md:flex-row text-title12 md:text-title14 break-words">
-              <p class="text-textInfoGray">07:00AM 10/Jan/2023</p>
-              <p class="text-greenPrimary md:ml-16">{{ data.buyer }}</p>
+          <div class="flex flex-row justify-between flex-wrap">
+            <div class="flex flex-col md:flex-row text-title12 md:text-title14 flex-wrap break-words max-w-[70%] md:max-w-fit">
+              <p class="text-textInfoGray whitespace-nowrap overflow-hidden">{{new Date(data?.saleDate).toLocaleString()}}</p>
+              <p class="text-greenPrimary md:ml-16 text-ellipsis whitespace-nowrap overflow-hidden max-w-full cursor-pointer" @click="copyToken(data.buyer)">{{ data.buyer }}</p>
             </div>
-            <div>
-              <button class="btn btn-ghost bg-transparent p-0 md:hidden" @click="copyToken('test')">
+            <div class="flex">
+              <button class="btn btn-ghost bg-transparent p-0 md:hidden" @click="copyToken(data.buyer)">
                 <img src="../assets/copyIcon.svg"/>
               </button>
             </div>
