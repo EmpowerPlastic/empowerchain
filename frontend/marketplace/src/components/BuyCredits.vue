@@ -3,7 +3,7 @@ import {contracts} from "@empower-plastic/empowerjs";
 import {GasPrice} from '@cosmjs/stargate';
 import {SigningCosmWasmClient} from "@cosmjs/cosmwasm-stargate";
 import {Tendermint37Client} from '@cosmjs/tendermint-rpc';
-import { MARKETPLACE_CONTRACT, RPC_ENDPOINT} from "@/config/config";
+import {CHAIN_ID, MARKETPLACE_CONTRACT, RPC_ENDPOINT} from "@/config/config";
 import {ref} from "vue";
 import {toast} from "vue3-toastify";
 import {getWallet, walletConnected} from "@/utils/wallet-utils";
@@ -28,9 +28,15 @@ const coinsArray = ['Pay by invoice coming soon']
 
 
 const buyCredits = async () => {
+  if (!walletConnected()) {
+    toast.error("Please connect to wallet")
+    return;
+  }
+
   showButtonSpinner.value = true
   try {
-    const { offlineSigner } = await walletHandler();
+    const wallet = getWallet()
+    const offlineSigner = wallet.getOfflineSigner(CHAIN_ID)
     const accounts = await offlineSigner.getAccounts();
     const tmClient = await Tendermint37Client.connect(
         RPC_ENDPOINT);
