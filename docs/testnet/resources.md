@@ -37,6 +37,7 @@ If you want to add your resource to this page, please create a PR with the chang
 | AM Solutions | Ping     | https://explorer.theamsolutions.info/empower-test |
 | Stake Village | Ping     | https://exp.stakevillage.net/empower-testnet |
 | Palamar   | Ping      | https://testnet.explorer.palamar.io/circulus-1 |
+| Sr20de    | Ping      | https://explorer.sr20de.xyz/Empower-testnet |
 
 ## Endpoints
 

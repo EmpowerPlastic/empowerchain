@@ -87,9 +87,12 @@ const getCreditsData = async () => {
 
 const loadQueryData = (query: string) => {
   showSpinner.value = true
-  const {result, loading, error} = useQuery(gql`${query}`);
+  const {result, loading, error, refetch} = useQuery(gql`${query}`);
   data.value = {result, loading, error}
   showSpinner.value = false
+  setInterval(() => {
+    refetch()
+  }, 5000)
 }
 
 onMounted(() => {
