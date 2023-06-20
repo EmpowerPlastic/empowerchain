@@ -30,13 +30,12 @@ watch(amount, (newVal) => {
 
 watch(props, async (newVal) => {
     coinFormatted.value = await formatDenom(newVal.selectedCoin);
-    console.log(coinFormatted.value)
 })
 
 const coinsArray = ['Pay by invoice coming soon']
 
 onMounted(async () => {
-  coinFormatted.value = formatDenom(props.selectedCoin);
+  coinFormatted.value = await formatDenom(props.selectedCoin);
   const { createRPCQueryClient } = empowerchain.ClientFactory;
   const rpcQueryClient = await createRPCQueryClient({ rpcEndpoint: RPC_ENDPOINT });
   const balance = await rpcQueryClient.cosmos.bank.v1beta1.allBalances({
