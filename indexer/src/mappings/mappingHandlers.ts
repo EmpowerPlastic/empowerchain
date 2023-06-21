@@ -33,6 +33,7 @@ export async function handleCreateListing(event: CosmosEvent): Promise<void> {
     numberOfCredits: numberOfCredits,
     pricePerCreditAmount: pricePerCreditAmount,
     pricePerCreditDenom: pricePerCreditDenom,
+    timestamp: new Date(event.block.header.time.toISOString()),
   });
   await createListingWasmEvent.save();
   const marketplaceListing = MarketplaceListing.create({
@@ -64,6 +65,7 @@ export async function handleUpdateListing(event: CosmosEvent): Promise<void> {
     numberOfCredits: numberOfCredits,
     pricePerCreditAmount: pricePerCreditAmount,
     pricePerCreditDenom: pricePerCreditDenom,
+    timestamp: new Date(event.block.header.time.toISOString()),
   });
   await updateListingWasmEvent.save();
 
@@ -84,6 +86,7 @@ export async function handleCancelListing(event: CosmosEvent): Promise<void> {
     id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
     listingOwner: listingOwner,
     denom: denom,
+    timestamp: new Date(event.block.header.time.toISOString()),
   });
   await cancelListingWasmEvent.save();
 
