@@ -8,6 +8,7 @@ import { toast } from "vue3-toastify";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import CustomAlert from "@/components/CustomAlert.vue";
+import {walletConnected, getWallet} from "@/utils/wallet-utils";
 
 const pageNumber = ref(1)
 const itemsPerPage = ref(5)
@@ -25,7 +26,8 @@ const handleSearch = () => {
 
 const getCertificatesData = async () => {
   try {
-    const account = await window.keplr.getKey(CHAIN_ID);
+    const wallet = getWallet()
+    const account = await wallet.getKey(CHAIN_ID);
     const walletAddress = account.bech32Address
     if (walletAddress) {
       const query = `query {
@@ -62,7 +64,11 @@ const loadQueryData = (query: string) => {
 }
 
 onMounted(() => {
-  getCertificatesData()
+  if (walletConnected()) {
+    getCertificatesData()
+  } else {
+    toast.error("Please connect to wallet")
+  }
 })
 
 </script>

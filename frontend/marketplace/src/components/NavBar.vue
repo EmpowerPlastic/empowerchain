@@ -1,81 +1,66 @@
 <script setup lang="ts">
-import {CHAIN_ID, CHAIN_NAME, REST_ENDPOINT, RPC_ENDPOINT} from '@/config/config';
+import {CHAIN_ID} from '@/config/config';
 import {onMounted, ref} from 'vue';
 import {toast} from 'vue3-toastify';
 import {useRoute} from "vue-router";
+import SellectWalletModal from "@/components/SellectWalletModal.vue";
+import {getWalletFromType} from "@/utils/wallet-utils";
 
 const router = useRoute()
 const address = ref();
 const showNav = ref(false)
+const selectedWallet = ref();
+const selectWalletModal = ref(false);
 
 onMounted(() => {
-  let addressLocal = localStorage.getItem('address')
-  if (addressLocal) {
-    connect()
-  }
+  connect()
 });
 
-const connect = async () => {
-  if (!window.keplr) {
-    toast.error("No wallet found");
-    localStorage.removeItem('address')
-  } else {
-    const chainConfig = {
-      chainId: CHAIN_ID,
-      chainName: CHAIN_NAME,
-      rpc: RPC_ENDPOINT,
-      rest: REST_ENDPOINT,
-      bip44: {
-        coinType: 118,
-      },
-      bech32Config: {
-        bech32PrefixAccAddr: "empower",
-        bech32PrefixAccPub: "empower" + "pub",
-        bech32PrefixValAddr: "empower" + "valoper",
-        bech32PrefixValPub: "empower" + "valoperpub",
-        bech32PrefixConsAddr: "empower" + "valcons",
-        bech32PrefixConsPub: "empower" + "valconspub",
-      },
-      currencies: [
-        {
-          coinDenom: "MPWR",
-          coinMinimalDenom: "umpwr",
-          coinDecimals: 6,
-          coinGeckoId: "mpwr",
-        },
-      ],
-      feeCurrencies: [
-        {
-          coinDenom: "MPWR",
-          coinMinimalDenom: "umpwr",
-          coinDecimals: 6,
-          gasPriceStep: {
-            low: 0.01,
-            average: 0.025,
-            high: 0.04,
-          },
-        },
-      ],
-      stakeCurrency: {
-        coinDenom: "MPWR",
-        coinMinimalDenom: "umpwr",
-        coinDecimals: 6,
-      },
-    };
-    await window.keplr.experimentalSuggestChain(chainConfig);
-    await window.keplr.enable(CHAIN_ID);
-    const account = await window.keplr.getKey(CHAIN_ID);
-    address.value = account.bech32Address.substring(0, 10) + '...';
-    localStorage.setItem('address', account.bech32Address);
-    // TODO add support for other wallets
-    /*await window.leap.experimentalSuggestChain(chainConfig);
-    await window.cosmostation.providers.keplr.experimentalSuggestChain(
-        chainConfig
-    );*/
-  }
-
+const openSelectWalletModal = () => {
+  selectWalletModal.value = true
 }
 
+const closeSelectWalletModal = () => {
+  selectWalletModal.value = false
+}
+const connect = async () => {
+  let addressLocal = localStorage.getItem('address')
+  let wallet = localStorage.getItem('wallet')
+  if (addressLocal && wallet) {
+    await handleSelectWallet(wallet)
+  }
+}
+
+const onWalletSelect = (wallet: string) => {
+  selectedWallet.value = wallet
+  handleSelectWallet(wallet)
+}
+
+const handleSelectWallet = async (walletType: string) => {
+  if (!walletType) {
+    localStorage.removeItem('address');
+    localStorage.removeItem('wallet');
+    openSelectWalletModal()
+    return;
+  }
+
+  const wallet = getWalletFromType(walletType);
+  const account = await wallet.getKey(CHAIN_ID);
+  const walletAddress = account.bech32Address;
+
+  address.value = walletAddress
+  if (walletAddress && walletType) {
+    localStorage.setItem('address', walletAddress);
+    localStorage.setItem('wallet', walletType);
+  }
+  closeSelectWalletModal()
+};
+
+const disconnectWallet = () => {
+  localStorage.removeItem('address');
+  localStorage.removeItem('wallet');
+  location.reload()
+}
 </script>
 
 <template>
@@ -83,7 +68,7 @@ const connect = async () => {
   <template v-if="!router.meta?.hideNavFooter" >
   <nav class="bg-gradient-radial bg-opacity-40 px-5 py-4"
        style="background-image: radial-gradient(50% 50% at 50% 50%, rgba(0, 227, 58, 0.4) 0%, rgba(0, 0, 0, 0.4) 88.02%);">
-
+    <SellectWalletModal v-model:show-modal="selectWalletModal" @on-wallet-select="onWalletSelect"/>
     <!-- Desktop Navbar-->
     <div class="hidden md:grid grid-cols-3 md:px-[10%] items-center">
       <div>
@@ -107,8 +92,9 @@ const connect = async () => {
       </div>
 
       <div class="flex flex-row justify-end">
-        <button v-if="!address" class="max-w-[220px] bg-lightBlack border border-borderBlack text-white text-title18  w-full rounded-xl h-full px-5 py-1"
-                @click="connect">
+        <button v-if="!address"
+                class="max-w-[220px] bg-lightBlack border border-borderBlack text-white text-title18  w-full rounded-xl h-full px-5 py-1"
+                @click="openSelectWalletModal">
           {{ address || 'Connect wallet' }}
         </button>
         <!--          User Profile Dropdown-->
@@ -130,21 +116,22 @@ const connect = async () => {
                   <img class="p-4" src="../assets/walletAvatar.png"/>
                 </div>
               </div>
-              <p class="text-title18 text-white">{{ address || 'Connect wallet' }}</p>
+              <p class="text-title18 text-white max-w-[150px] overflow-hidden text-ellipsis">
+                {{ address || 'Connect wallet' }}</p>
               <!--                  <p class="text-title14 text-textGray">natasha@empower.eco</p>-->
             </div>
 
-                            <div class="menu py-2 items-center w-full">
-                              <a
-                                  href="/certificate"
-                                  class="btn nav-dropdown-button">
-                                My Credits
-                              </a>
-                              <!--                  <button-->
-                              <!--                      class="btn nav-dropdown-button">-->
-                              <!--                    Sign out-->
-                              <!--                  </button>-->
-                            </div>
+            <div class="menu py-2 items-center w-full">
+              <a
+                  href="/certificate"
+                  class="btn nav-dropdown-button">
+                My Credits
+              </a>
+              <button @click="disconnectWallet"
+                      class="btn nav-dropdown-button">
+                Disconnect
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -177,13 +164,14 @@ const connect = async () => {
     </button>
     <div class="grid grid-cols-1 gap-8 p-5 w-full font-Inter text-title24 text-white">
       <div>
-        <button v-if="!address" class="bg-buttonGray border border-greenPrimary w-full h-11 rounded-xl" @click="connect">
+        <button v-if="!address" class="bg-buttonGray border border-greenPrimary w-full h-11 rounded-xl text-ellipsis overflow-hidden"
+                @click="openSelectWalletModal">
           {{ address || 'Connect wallet' }}
         </button>
         <!--          User Profile Dropdown-->
         <div class="dropdown dropdown-start w-full">
           <template v-if="address">
-            <button class="bg-buttonGray border border-greenPrimary w-full h-11 rounded-xl" @click="connect">
+            <button class="bg-buttonGray border px-5 border-greenPrimary w-full h-11 rounded-xl text-ellipsis overflow-hidden">
               {{ address || 'Connect wallet' }}
             </button>
           </template>
@@ -195,7 +183,7 @@ const connect = async () => {
                   <img class="p-4" src="../assets/walletAvatar.png"/>
                 </div>
               </div>
-              <p class="text-title18 text-white">{{ address || 'Connect wallet' }}</p>
+              <p class="text-title18 text-white max-w-[150px] text-ellipsis overflow-hidden ">{{ address || 'Connect wallet' }}</p>
               <!--                  <p class="text-title14 text-textGray">natasha@empower.eco</p>-->
             </div>
 
@@ -205,10 +193,10 @@ const connect = async () => {
                   class="btn nav-dropdown-button">
                 My Credits
               </a>
-              <!--                  <button-->
-              <!--                      class="btn nav-dropdown-button">-->
-              <!--                    Sign out-->
-              <!--                  </button>-->
+              <button @click="disconnectWallet"
+                      class="btn nav-dropdown-button">
+                Disconnect
+              </button>
             </div>
           </div>
         </div>

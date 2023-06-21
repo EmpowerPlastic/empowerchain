@@ -14,4 +14,6 @@ export * from "./empowerchain/bundle";
 export * from "./empowerchain/client";
 export * from "./gogoproto/bundle";
 export * from "./google/bundle";
+export * from "./ibc/bundle";
+export * from "./ibc/client";
 export * from "./tendermint/bundle";
