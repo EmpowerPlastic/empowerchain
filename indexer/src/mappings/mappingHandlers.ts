@@ -13,7 +13,7 @@ async function logRollbarError(error: Error, txHash: string): Promise<void> {
     },
     body: JSON.stringify({
       data: {
-        environment: "production",
+        environment: "$ENVIRONMENT",
         level: "error",
         timestamp: Date.now() / 1000,
         platform: "javascript",
