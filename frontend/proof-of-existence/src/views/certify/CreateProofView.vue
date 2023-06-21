@@ -12,6 +12,7 @@ import { CHAIN_ID, RPC_URL } from "@/config/config";
 import type { OfflineSigner } from "@cosmjs/proto-signing";
 import type { DeliverTxResponse } from "@cosmjs/stargate/build/stargateclient";
 import { toast } from "vue3-toastify";
+import { getWalletFromType } from "@/utils/wallet-utils";
 
 const fee = {
   amount: [{ amount: "100000", denom: "umpwr" }],
@@ -28,6 +29,8 @@ const showModal = ref(false);
 const selectedWallet = ref("");
 const errorMessage = ref<string | undefined>();
 const loading = ref(false);
+const address = ref();
+const addressVisible = ref();
 
 //Methods
 const back = () => {
@@ -46,7 +49,19 @@ const closeModal = () => {
 
 const handleSelectedWallet = (wallet: Wallet) => {
   selectedWallet.value = wallet;
+  showWalletAddress(wallet);
   closeModal();
+};
+
+const showWalletAddress = async (selectedWallet: Wallet) => {
+  const wallet = getWalletFromType(selectedWallet);
+  const account = await wallet.getKey(CHAIN_ID);
+  const walletAddress = account.bech32Address;
+  address.value = walletAddress;
+  addressVisible.value =
+    walletAddress?.substring(0, 10) +
+    "..." +
+    walletAddress?.substring(walletAddress?.length - 4);
 };
 
 const handleTransaction = async () => {
@@ -124,6 +139,11 @@ const pushToSuccessPage = () => {
       time: route.query.time,
     },
   });
+};
+
+const copyAddress = async () => {
+  await navigator.clipboard.writeText(address.value);
+  toast.success("Address copied to clipboard");
 };
 </script>
 <template>
@@ -209,6 +229,14 @@ const pushToSuccessPage = () => {
           class="h-20 cursor-pointer mb-3"
           v-if="selectedWallet === Wallet.Leap"
         />
+        <div
+          v-if="addressVisible"
+          class="flex flex-row bg-lightGray rounded-lg p-2 cursor-pointer w-fit mt-5 flex-wrap"
+          @click="copyAddress"
+        >
+          <p class="text-white text-title12">{{ addressVisible }}</p>
+          <img class="w-4 ml-4" src="../../assets/images/copy-icon.svg" />
+        </div>
         <button
           @click="openModal"
           class="bg-lightGreen mt-7 content-center p-1 px-7 rounded text-white"

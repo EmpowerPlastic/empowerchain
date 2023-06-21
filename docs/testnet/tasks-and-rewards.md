@@ -345,7 +345,87 @@ Disclosing security issues in public can be harmful to all users of that softwar
 
 ## Stress testing
 
-This will be for phase 3 and details will be added and announced later.
+**Make sure you are following all the instructions laid out here. Especially the windows for stress testing, the scope
+for each window, and only using a single wallet is very important!**
+
+Always check back here before each window as we might change the exact scope if we find it necessary.
+
+For stress testing we will reward evenly across all submissions that meet the requirements.
+The total number of tokens to be distributed is 30,000 $MPWR.
+
+25,000 $MPWR will be distributed evenly across transactions that meet the requirements,
+and 5,000 $MPWR will be distributed to the top 3 participants who can prove they have
+stress tested the frontend in a meaningful way (a scripted headless browser for instance?).
+
+The stress test phase will last from 21st of June to EOD (or early next day) 25th of June.
+
+The plan is not to stress test the whole network all the time, but to focus stress testing on specific parts of the
+network at specific times (windows).
+
+The plan is as follows:
+
+On 21st of June, we will start with a stress test of the network at a single window of 1 hour.
+The next days we will have 3 windows where we will only ask to stress test our custom modules, not the whole network.
+If we find anyone is stress testing the whole network, they will be disqualified from the stress testing rewards.
+
+The windows are as follows:
+
+| What to test                                 | Date         | Time              |
+|----------------------------------------------|--------------|-------------------|
+| Everything, transactions of any kind         | 21st of June | 16:00 - 17:00 UTC |
+| Everything, transactions of any kind         | 22nd of June | 10:00 - 11:00 UTC |
+| Plastic credit purchase, transfer and retire | 22nd of June | 16:00 - 17:00 UTC |
+| Plastic credit purchase, transfer and retire | 22nd of June | 23:00 - 00:00 UTC |
+| Plastic credit purchase, transfer and retire | 23rd of June | 10:00 - 11:00 UTC |
+| Plastic credit purchase, transfer and retire | 23rd of June | 16:00 - 17:00 UTC |
+| Plastic credit purchase, transfer and retire | 23rd of June | 23:00 - 00:00 UTC |
+| Plastic credit purchase, transfer and retire | 24th of June | 10:00 - 11:00 UTC |
+| Plastic credit purchase, transfer and retire | 24th of June | 16:00 - 17:00 UTC |
+| Plastic credit purchase, transfer and retire | 24th of June | 23:00 - 00:00 UTC |
+| Plastic credit purchase, transfer and retire | 25th of June | 10:00 - 11:00 UTC |
+| Plastic credit purchase, transfer and retire | 25th of June | 16:00 - 17:00 UTC |
+| Plastic credit purchase, transfer and retire | 25th of June | 23:00 - 00:00 UTC |
+
+It is important that you don't keep spamming the network outside of these windows, if we find anyone doing this, they
+will be disqualified from the stress testing rewards (and potentially previous rewards if they are causing harm).
+
+### Instructions
+
+Each participant is only allowed to stress test with a single account, the same account they have been using for the
+previous tasks. Using multiple wallets will not help you in any way. So be smart with your transactions and tokens (*
+*remember: you
+can bundle many messages in a single transaction if you know what you are doing**).
+
+We are not going to give detailed instructions on _how_ to stress test the network, but we will give some important
+notes.
+
+We are increasing the number of tokens given out by the faucet, so you can have enough tokens a lot of transactions.
+(**Keep in mind: there is 0 point in spending those tokens on delegating to your validator, it doesn't help your case in
+any way**).
+
+For "Everything, throw transactions of any kind at the network", you can use any transaction type you want.
+Just throw transactions at the network within the assigned window.
+
+For "Plastic credit purchase, transfer and retire transactions", do any of the following (ideally all of them):
+
+- Purchase plastic credits
+    - Either on the marketplace website or using cosmwasm execute
+      directly ([Rust msg.rs for reference](https://github.com/EmpowerPlastic/empowerchain/blob/main/cosmwasm/contracts/plastic-credit-marketplace/src/msg.rs))
+    - **Please:** only buy 1 or a few at a time so others can also buy some
+- Transfer plastic credits
+    - Either on the marketplace website or using the cli/gprc/api
+      directly ([cli reference](../references/cli-docs/empowerd_tx_plasticcredit_transfer))
+- Retire plastic credits (makes them non-transferable)
+    - Either on the marketplace website or using the cli/grpc/api
+      directly ([cli reference](../references/cli-docs/empowerd_tx_plasticcredit_retire))
+
+At any point during the stress test phase, but before the end of the stress test phase, you can submit your
+participation
+with the account you have been using here: https://forms.gle/XPt6hPwx8amy7DmDA
+
+For the frontend stress testing mentioned earlier, we are not going to give any instructions, but leave it
+open to you to figure out how to stress test the frontend in a meaningful way. If you can prove you have done this,
+fill in the form here: https://forms.gle/EAWS38XGvJCArkKw8
 
 ## Community helper
 

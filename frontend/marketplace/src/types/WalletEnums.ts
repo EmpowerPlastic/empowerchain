@@ -1,5 +1,5 @@
 export enum Wallet {
-    KEPLR = "Keplr",
-    COSMOSTATION = "Cosmostation",
-    LEAP = "Leap",
+  KEPLR = "Keplr",
+  COSMOSTATION = "Cosmostation",
+  LEAP = "Leap",
 }

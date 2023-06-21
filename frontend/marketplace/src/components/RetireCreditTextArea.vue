@@ -1,17 +1,17 @@
 <script setup lang="ts">
 export interface RetireCreditsTextAreaProps {
-  modelValue: string
-  label: string
-  subText: string
-  id: string
+  modelValue: string;
+  label: string;
+  subText: string;
+  id: string;
 }
-defineProps<RetireCreditsTextAreaProps>()
+defineProps<RetireCreditsTextAreaProps>();
 
-const emitModalValue = defineEmits(['update:modelValue'])
+const emitModalValue = defineEmits(["update:modelValue"]);
 
 const updateValue = (e: Event) => {
-  emitModalValue('update:modelValue', (e.target as HTMLInputElement).value)
-}
+  emitModalValue("update:modelValue", (e.target as HTMLInputElement).value);
+};
 </script>
 <template>
   <div class="form-control my-2">
