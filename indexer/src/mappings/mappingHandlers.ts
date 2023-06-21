@@ -1,11 +1,37 @@
-import { ExecuteEvent, Message, Transaction, Block, CreditCollection, EventData, MaterialData, MetadataUri, MediaFile, BinaryFile, ApplicantData, WebReference, CreditData, CreateListingWasmEvent, MarketplaceListing, BuyCreditsWasmEvent, UpdateListingWasmEvent, CancelListingWasmEvent, Country, Organization, Wallet, CreditBalance, TransferedCreditsEvent, RetiredCreditsEvent, Certificate, CreditOffsetCertificate } from "../types";
+import { CreditCollection, EventData, MaterialData, MetadataUri, MediaFile, BinaryFile, ApplicantData, WebReference, CreditData, CreateListingWasmEvent, MarketplaceListing, BuyCreditsWasmEvent, UpdateListingWasmEvent, CancelListingWasmEvent, Country, Organization, Wallet, CreditBalance, TransferedCreditsEvent, RetiredCreditsEvent, Certificate, CreditOffsetCertificate } from "../types";
 import {
   CosmosEvent,
-  CosmosBlock,
-  CosmosMessage,
-  CosmosTransaction,
 } from "@subql/types-cosmos";
 import fetch from "node-fetch";
+
+async function logRollbarError(error: Error, txHash: string): Promise<void> {
+  const request = await fetch("https://api.rollbar.com/api/1/item/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Rollbar-Access-Token": "$ROLLBAR_ACCESS_TOKEN",
+    },
+    body: JSON.stringify({
+      data: {
+        environment: "production",
+        level: "error",
+        timestamp: Date.now() / 1000,
+        platform: "javascript",
+        framework: "node",
+        language: "javascript",
+        body: {
+          message: {
+            body: error?.message,
+          },
+        },
+        custom: {
+          txHash: txHash,
+        },
+      }
+    }),
+  });
+  await request.json();
+}
 
 async function createNewWallet(address: string, applicantId?: number): Promise<Wallet> {
   const wallet = Wallet.create({
@@ -18,7 +44,7 @@ async function createNewWallet(address: string, applicantId?: number): Promise<W
 }
 
 export async function handleCreateListing(event: CosmosEvent): Promise<void> {
-
+try {
   const listingOwner = fetchPropertyFromEvent(event, "listing_owner");
   const denom = fetchPropertyFromEvent(event, "denom");
   const numberOfCredits = BigInt(fetchPropertyFromEvent(event, "number_of_credits"));
@@ -47,10 +73,14 @@ export async function handleCreateListing(event: CosmosEvent): Promise<void> {
     creditCollectionId: denom,
   });
   await marketplaceListing.save();
+} catch (e) {
+  await logRollbarError(e, event.tx.hash);
+  throw new Error("Error in handleCreateListing: " + e.message);
+}
 }
 
 export async function handleUpdateListing(event: CosmosEvent): Promise<void> {
-
+try {
   const listingOwner = fetchPropertyFromEvent(event, "listing_owner");
   const denom = fetchPropertyFromEvent(event, "denom");
   const numberOfCredits = BigInt(fetchPropertyFromEvent(event, "number_of_credits"));
@@ -73,162 +103,189 @@ export async function handleUpdateListing(event: CosmosEvent): Promise<void> {
   marketplaceListing.pricePerCreditAmount = pricePerCreditAmount;
   marketplaceListing.pricePerCreditDenom = pricePerCreditDenom;
   await marketplaceListing.save();
+} catch (e) {
+  await logRollbarError(e, event.tx.hash);
+  throw new Error("Error in handleUpdateListing: " + e.message);
+}
 }
 
 export async function handleCancelListing(event: CosmosEvent): Promise<void> {
+  try {
+    const listingOwner = fetchPropertyFromEvent(event, "listing_owner");
+    const denom = fetchPropertyFromEvent(event, "denom");
 
-  const listingOwner = fetchPropertyFromEvent(event, "listing_owner");
-  const denom = fetchPropertyFromEvent(event, "denom");
+    const cancelListingWasmEvent = CancelListingWasmEvent.create({
+      id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
+      listingOwner: listingOwner,
+      denom: denom,
+    });
+    await cancelListingWasmEvent.save();
 
-  const cancelListingWasmEvent = CancelListingWasmEvent.create({
-    id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
-    listingOwner: listingOwner,
-    denom: denom,
-  });
-  await cancelListingWasmEvent.save();
-
-  await MarketplaceListing.remove(`${listingOwner}-${denom}`);
+    await MarketplaceListing.remove(`${listingOwner}-${denom}`);
+  } catch (e) {
+    await logRollbarError(e, event.tx.hash);
+    throw new Error("Error in handleCancelListing: " + e.message);
+  }
 }
 
 export async function handleBuyCredits(event: CosmosEvent): Promise<void> {
+  try {
+    const listingOwner = fetchPropertyFromEvent(event, "listing_owner");
+    const denom = fetchPropertyFromEvent(event, "denom");
+    const buyer = fetchPropertyFromEvent(event, "buyer");
+    const numberOfCreditsBought = BigInt(fetchPropertyFromEvent(event, "number_of_credits_bought"));
+    const totalPriceAmount = BigInt(fetchPropertyFromEvent(event, "total_price_amount"));
+    const totalPriceDenom = fetchPropertyFromEvent(event, "total_price_denom");
 
-  const listingOwner = fetchPropertyFromEvent(event, "listing_owner");
-  const denom = fetchPropertyFromEvent(event, "denom");
-  const buyer = fetchPropertyFromEvent(event, "buyer");
-  const numberOfCreditsBought = BigInt(fetchPropertyFromEvent(event, "number_of_credits_bought"));
-  const totalPriceAmount = BigInt(fetchPropertyFromEvent(event, "total_price_amount"));
-  const totalPriceDenom = fetchPropertyFromEvent(event, "total_price_denom");
+    // this is because there is a bug in SubQuery, which causes event to be processed multiple times
+    // for every transaction in the same block, therefore we're skipping processing
+    // of events that are already present in the database
+    const eventAlreadyProcessed = await BuyCreditsWasmEvent.get(`${event.tx.hash}-${event.msg.idx}-${event.idx}`);
+    if (eventAlreadyProcessed) {
+      return;
+    }
 
-  // this is because there is a bug in SubQuery, which causes event to be processed multiple times
-  // for every transaction in the same block, therefore we're skipping processing
-  // of events that are already present in the database
-  const eventAlreadyProcessed = await BuyCreditsWasmEvent.get(`${event.tx.hash}-${event.msg.idx}-${event.idx}`);
-  if (eventAlreadyProcessed) {
-    return;
-  }
+    const buyCreditsWasmEvent = BuyCreditsWasmEvent.create({
+      id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
+      listingOwner: listingOwner,
+      denom: denom,
+      buyer: buyer,
+      numberOfCreditsBought: numberOfCreditsBought,
+      totalPriceAmount: totalPriceAmount,
+      totalPriceDenom: totalPriceDenom,
+      saleDate: new Date(event.block.header.time.toISOString())
+    });
+    await buyCreditsWasmEvent.save();
 
-  const buyCreditsWasmEvent = BuyCreditsWasmEvent.create({
-    id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
-    listingOwner: listingOwner,
-    denom: denom,
-    buyer: buyer,
-    numberOfCreditsBought: numberOfCreditsBought,
-    totalPriceAmount: totalPriceAmount,
-    totalPriceDenom: totalPriceDenom,
-    saleDate: new Date(event.block.header.time.toISOString())
-  });
-  await buyCreditsWasmEvent.save();
-
-  const marketplaceListing = await MarketplaceListing.get(`${listingOwner}-${denom}`);
-  marketplaceListing.amount = marketplaceListing.amount - numberOfCreditsBought;
-  if (marketplaceListing.amount === BigInt(0)) {
-    await MarketplaceListing.remove(`${listingOwner}-${denom}`);
-  } else {
-    await marketplaceListing.save();
+    const marketplaceListing = await MarketplaceListing.get(`${listingOwner}-${denom}`);
+    marketplaceListing.amount = marketplaceListing.amount - numberOfCreditsBought;
+    if (marketplaceListing.amount === BigInt(0)) {
+      await MarketplaceListing.remove(`${listingOwner}-${denom}`);
+    } else {
+      await marketplaceListing.save();
+    }
+  } catch (e) {
+    await logRollbarError(e, event.tx.hash);
+    throw new Error("Error in handleBuyCredits: " + e.message);
   }
 }
 
 export async function handleWasmEvents(event: CosmosEvent): Promise<void> {
-  const action = fetchPropertyFromEvent(event, "action");
-  switch (action) {
-    case "create_listing":
-      await handleCreateListing(event);
-      break;
-    case "update_listing":
-      await handleUpdateListing(event);
-      break;
-    case "cancel_listing":
-      await handleCancelListing(event);
-      break;
-    case "buy_credits":
-      await handleBuyCredits(event);
-      break;
-    default:
-      break;
+  try {
+    const action = fetchPropertyFromEvent(event, "action");
+    switch (action) {
+      case "create_listing":
+        await handleCreateListing(event);
+        break;
+      case "update_listing":
+        await handleUpdateListing(event);
+        break;
+      case "cancel_listing":
+        await handleCancelListing(event);
+        break;
+      case "buy_credits":
+        await handleBuyCredits(event);
+        break;
+      default:
+        break;
+    }
+  } catch (e) {
+    await logRollbarError(e, event.tx.hash);
+    throw new Error("Error in handleWasmEvents: " + e.message);
   }
 }
 
 export async function handleTransferCredits(event: CosmosEvent): Promise<void> {
-  const sender = fetchPropertyFromEvent(event, "sender");
-  const recipient = fetchPropertyFromEvent(event, "recipient");
-  const denom = fetchPropertyFromEvent(event, "denom");
-  const amount = BigInt(fetchPropertyFromEvent(event, "amount"));
+  try {
+    const sender = fetchPropertyFromEvent(event, "sender");
+    const recipient = fetchPropertyFromEvent(event, "recipient");
+    const denom = fetchPropertyFromEvent(event, "denom");
+    const amount = BigInt(fetchPropertyFromEvent(event, "amount"));
 
-  // this is because there is a bug in SubQuery, which causes event to be processed multiple times
-  // for every transaction in the same block, therefore we're skipping processing
-  // of events that are already present in the database
-  const eventAlreadyProcessed = await TransferedCreditsEvent.get(`${event.tx.hash}-${event.msg.idx}-${event.idx}`);
-  if (eventAlreadyProcessed) {
-    return;
-  }
+    // this is because there is a bug in SubQuery, which causes event to be processed multiple times
+    // for every transaction in the same block, therefore we're skipping processing
+    // of events that are already present in the database
+    const eventAlreadyProcessed = await TransferedCreditsEvent.get(`${event.tx.hash}-${event.msg.idx}-${event.idx}`);
+    if (eventAlreadyProcessed) {
+      return;
+    }
 
-  const transferedCreditsEvent = TransferedCreditsEvent.create({
-    id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
-    sender: sender,
-    recipient: recipient,
-    amount: amount,
-    creditCollectionId: denom,
-  });
-  await transferedCreditsEvent.save();
-
-  let senderBalance = await CreditBalance.get(`${sender}-${denom}`);
-  senderBalance.amountActive = senderBalance.amountActive - amount;
-  await senderBalance.save();
-
-  let recipientWallet = await Wallet.get(recipient);
-  if (!recipientWallet) {
-    recipientWallet = Wallet.create({
-      id: recipient,
-      address: recipient,
-    });
-    await recipientWallet.save();
-  }
-  let recipientBalance = await CreditBalance.get(`${recipient}-${denom}`);
-  if (!recipientBalance) {
-    recipientBalance = CreditBalance.create({
-      id: `${recipient}-${denom}`,
-      walletId: recipientWallet.id,
+    const transferedCreditsEvent = TransferedCreditsEvent.create({
+      id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
+      sender: sender,
+      recipient: recipient,
+      amount: amount,
       creditCollectionId: denom,
-      amountActive: amount,
-      amountRetired: BigInt(0),
     });
-    await recipientBalance.save();
-  } else {
-    recipientBalance.amountActive = recipientBalance.amountActive + amount;
-    await recipientBalance.save();
+    await transferedCreditsEvent.save();
+
+    let senderBalance = await CreditBalance.get(`${sender}-${denom}`);
+    senderBalance.amountActive = senderBalance.amountActive - amount;
+    await senderBalance.save();
+
+    let recipientWallet = await Wallet.get(recipient);
+    if (!recipientWallet) {
+      recipientWallet = Wallet.create({
+        id: recipient,
+        address: recipient,
+      });
+      await recipientWallet.save();
+    }
+    let recipientBalance = await CreditBalance.get(`${recipient}-${denom}`);
+    if (!recipientBalance) {
+      recipientBalance = CreditBalance.create({
+        id: `${recipient}-${denom}`,
+        walletId: recipientWallet.id,
+        creditCollectionId: denom,
+        amountActive: amount,
+        amountRetired: BigInt(0),
+      });
+      await recipientBalance.save();
+    } else {
+      recipientBalance.amountActive = recipientBalance.amountActive + amount;
+      await recipientBalance.save();
+    }
+  } catch (e) {
+    await logRollbarError(e, event.tx.hash);
+    throw new Error("Error in handleTransferCredits: " + e.message);
   }
 }
 
 export async function handleRetiredCredits(event: CosmosEvent): Promise<void> {
-  const owner = fetchPropertyFromEvent(event, "owner");
-  const denom = fetchPropertyFromEvent(event, "denom");
-  const amount = BigInt(fetchPropertyFromEvent(event, "amount"));
+  try {
+    const owner = fetchPropertyFromEvent(event, "owner");
+    const denom = fetchPropertyFromEvent(event, "denom");
+    const amount = BigInt(fetchPropertyFromEvent(event, "amount"));
 
-  // this is because there is a bug in SubQuery, which causes event to be processed multiple times
-  // for every transaction in the same block, therefore we're skipping processing
-  // of events that are already present in the database
-  const eventAlreadyProcessed = await RetiredCreditsEvent.get(`${event.tx.hash}-${event.msg.idx}-${event.idx}`);
-  if (eventAlreadyProcessed) {
-    return;
+    // this is because there is a bug in SubQuery, which causes event to be processed multiple times
+    // for every transaction in the same block, therefore we're skipping processing
+    // of events that are already present in the database
+    const eventAlreadyProcessed = await RetiredCreditsEvent.get(`${event.tx.hash}-${event.msg.idx}-${event.idx}`);
+    if (eventAlreadyProcessed) {
+      return;
+    }
+
+    const retiredCreditsEvent = RetiredCreditsEvent.create({
+      id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
+      owner: owner,
+      amount: amount,
+      creditCollectionId: denom,
+    });
+    await retiredCreditsEvent.save();
+
+    let ownerBalance = await CreditBalance.get(`${owner}-${denom}`);
+    ownerBalance.amountActive = ownerBalance.amountActive - amount;
+    ownerBalance.amountRetired = ownerBalance.amountRetired + amount;
+    await ownerBalance.save();
+
+    let creditCollection = await CreditCollection.get(denom);
+    creditCollection.activeAmount = creditCollection.activeAmount - amount;
+    creditCollection.retiredAmount = creditCollection.retiredAmount + amount;
+    await creditCollection.save();
+  } catch (e) {
+    await logRollbarError(e, event.tx.hash);
+    throw new Error("Error in handleRetiredCredits: " + e.message);
   }
-
-  const retiredCreditsEvent = RetiredCreditsEvent.create({
-    id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
-    owner: owner,
-    amount: amount,
-    creditCollectionId: denom,
-  });
-  await retiredCreditsEvent.save();
-
-  let ownerBalance = await CreditBalance.get(`${owner}-${denom}`);
-  ownerBalance.amountActive = ownerBalance.amountActive - amount;
-  ownerBalance.amountRetired = ownerBalance.amountRetired + amount;
-  await ownerBalance.save();
-
-  let creditCollection = await CreditCollection.get(denom);
-  creditCollection.activeAmount = creditCollection.activeAmount - amount;
-  creditCollection.retiredAmount = creditCollection.retiredAmount + amount;
-  await creditCollection.save();
 }
 
 function findCertificateDataValueByKey(certificate: any[], key: string): string {
@@ -257,75 +314,84 @@ async function handleOffsetCertificate(certificateId: string, owner: string, cer
 }
 
 export async function handleCreateCertificate(event: CosmosEvent): Promise<void> {
-  const certificateId = fetchPropertyFromEvent(event, "certificate_id");
-  const issuer = fetchPropertyFromEvent(event, "issuer");
-  const owner = fetchPropertyFromEvent(event, "owner");
-  const certificateType = fetchPropertyFromEvent(event, "certificate_type");
-  const additionalData = fetchPropertyFromEvent(event, "additional_data");
+  try {
+    const certificateId = fetchPropertyFromEvent(event, "certificate_id");
+    const issuer = fetchPropertyFromEvent(event, "issuer");
+    const owner = fetchPropertyFromEvent(event, "owner");
+    const certificateType = fetchPropertyFromEvent(event, "certificate_type");
+    const additionalData = fetchPropertyFromEvent(event, "additional_data");
 
-  const certificate = Certificate.create({
-    id: certificateId,
-    type: certificateType,
-    issuer: issuer,
-    owner: owner,
-    data: additionalData,
-    walletId: owner,
-  });
-  await certificate.save();
+    const certificate = Certificate.create({
+      id: certificateId,
+      type: certificateType,
+      issuer: issuer,
+      owner: owner,
+      data: additionalData,
+      walletId: owner,
+    });
+    await certificate.save();
 
-  if (certificateType === "CREDIT_RETIREMENT") {
-    await handleOffsetCertificate(certificateId, owner, additionalData);
+    if (certificateType === "CREDIT_RETIREMENT") {
+      await handleOffsetCertificate(certificateId, owner, additionalData);
+    }
+  } catch (e) {
+    await logRollbarError(e, event.tx.hash);
+    throw new Error("Error in handleCreateCertificate: " + e.message);
   }
 }
 
 export async function handleIssueCredits(event: CosmosEvent): Promise<void> {
-  let denom = fetchPropertyFromEvent(event, "denom");
-  let amount = fetchPropertyFromEvent(event, "amount");
-  let projectId = fetchPropertyFromEvent(event, "project_id");
-  let applicantId = fetchPropertyFromEvent(event, "applicant_id");
-  let recipient = fetchPropertyFromEvent(event, "recipient");
-  let creditTypeAbbreviation = fetchPropertyFromEvent(event, "credit_type_abbreviation");
+  try {
+    let denom = fetchPropertyFromEvent(event, "denom");
+    let amount = fetchPropertyFromEvent(event, "amount");
+    let projectId = fetchPropertyFromEvent(event, "project_id");
+    let applicantId = fetchPropertyFromEvent(event, "applicant_id");
+    let recipient = fetchPropertyFromEvent(event, "recipient");
+    let creditTypeAbbreviation = fetchPropertyFromEvent(event, "credit_type_abbreviation");
 
-  const metadataUrls = fetchPropertyFromEvent(event, "metadata_uris");
-  const metadataUrlsArray = decodeUriArrayFromEvent(metadataUrls);
+    const metadataUrls = fetchPropertyFromEvent(event, "metadata_uris");
+    const metadataUrlsArray = decodeUriArrayFromEvent(metadataUrls);
 
-  const creditCollection = CreditCollection.create({
-    id: denom,
-    denom: denom,
-    projectId: parseInt(projectId),
-    applicantId: parseInt(applicantId),
-    issuanceDate: new Date(event.block.header.time.toISOString()),
-    activeAmount: BigInt(amount),
-    retiredAmount: BigInt(0),
-    creditType: creditTypeAbbreviation,
-  });
-  await creditCollection.save();
+    const creditCollection = CreditCollection.create({
+      id: denom,
+      denom: denom,
+      projectId: parseInt(projectId),
+      applicantId: parseInt(applicantId),
+      issuanceDate: new Date(event.block.header.time.toISOString()),
+      activeAmount: BigInt(amount),
+      retiredAmount: BigInt(0),
+      creditType: creditTypeAbbreviation,
+    });
+    await creditCollection.save();
 
-  let wallet = await Wallet.get(recipient);
-  if (!wallet) {
-    wallet = await createNewWallet(recipient, parseInt(applicantId));
-  } else {
-    if (!wallet.applicantId) {
-      wallet.applicantId = parseInt(applicantId);
-      await wallet.save();
+    let wallet = await Wallet.get(recipient);
+    if (!wallet) {
+      wallet = await createNewWallet(recipient, parseInt(applicantId));
+    } else {
+      if (!wallet.applicantId) {
+        wallet.applicantId = parseInt(applicantId);
+        await wallet.save();
+      }
     }
+    const creditBalance = CreditBalance.create({
+      id: `${recipient}-${denom}`,
+      creditCollectionId: denom,
+      amountActive: BigInt(amount),
+      amountRetired: BigInt(0),
+      walletId: wallet.id,
+    });
+    await creditBalance.save();
+
+    await handleMetadataUris(metadataUrlsArray, creditCollection.id);
+
+    for (let [i, metadataUri] of metadataUrlsArray.entries()) {
+      const metadata = await fetchMetadataFromIpfs(metadataUri);
+      await handleCreditData(metadata, creditCollection.id, i.toString());
+    }
+  } catch (e) {
+    await logRollbarError(e, event.tx.hash);
+    throw new Error("Error in handleIssueCredits: " + e.message);
   }
-  const creditBalance = CreditBalance.create({
-    id: `${recipient}-${denom}`,
-    creditCollectionId: denom,
-    amountActive: BigInt(amount),
-    amountRetired: BigInt(0),
-    walletId: wallet.id,
-  });
-  await creditBalance.save();
-
-  await handleMetadataUris(metadataUrlsArray, creditCollection.id);
-
-  for (let [i, metadataUri] of metadataUrlsArray.entries()) {
-    const metadata = await fetchMetadataFromIpfs(metadataUri);
-    await handleCreditData(metadata, creditCollection.id, i.toString());
-  }
-
 }
 
 function findPropById(id: string, creditProps: any[]): any {
@@ -390,7 +456,7 @@ async function handleEventData(eventDataJson: any, creditDataId: string, eventIn
   let country = "";
 
   try {
-    const reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latitude + "," + longitude + "&key=$KEY";
+    const reqUri = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + latitude + "," + longitude + "&key=$GOOGLE_MAPS_API_KEY";
     const response = await fetch(reqUri);
     const result = await response.json();
 
