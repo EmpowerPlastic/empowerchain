@@ -124,7 +124,7 @@ const buyCredits = async () => {
         </div>
         <div class="flex flex-col flex-wrap">
           <p class="text-title18">How many you want to buy?</p>
-          <input type="number" class="input bg-darkGray mt-1 text-white text-title38 font-bold w-full" min="1" v-model="amount"/>
+          <input type="number" class="input bg-darkGray mt-1 text-white text-title38 font-bold w-full md:max-w-[200px]" min="1" v-model="amount"/>
         </div>
       </div>
       <p class="text-title18 text-subLabel mt-1 md:hidden">Cost {{ pricePerCredit * amount }} ${{ coinFormatted }}</p>
