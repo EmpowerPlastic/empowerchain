@@ -44,71 +44,71 @@ async function createNewWallet(address: string, applicantId?: number): Promise<W
 }
 
 export async function handleCreateListing(event: CosmosEvent): Promise<void> {
-try {
-  const listingOwner = fetchPropertyFromEvent(event, "listing_owner");
-  const denom = fetchPropertyFromEvent(event, "denom");
-  const numberOfCredits = BigInt(fetchPropertyFromEvent(event, "number_of_credits"));
-  const pricePerCreditAmount = BigInt(fetchPropertyFromEvent(event, "price_per_credit_amount"));
-  const pricePerCreditDenom = fetchPropertyFromEvent(event, "price_per_credit_denom");
+  try {
+    const listingOwner = fetchPropertyFromEvent(event, "listing_owner");
+    const denom = fetchPropertyFromEvent(event, "denom");
+    const numberOfCredits = BigInt(fetchPropertyFromEvent(event, "number_of_credits"));
+    const pricePerCreditAmount = BigInt(fetchPropertyFromEvent(event, "price_per_credit_amount"));
+    const pricePerCreditDenom = fetchPropertyFromEvent(event, "price_per_credit_denom");
 
 
-  const createListingWasmEvent = CreateListingWasmEvent.create({
-    id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
-    listingOwner: listingOwner,
-    denom: denom,
-    numberOfCredits: numberOfCredits,
-    pricePerCreditAmount: pricePerCreditAmount,
-    pricePerCreditDenom: pricePerCreditDenom,
-    timestamp: new Date(event.block.header.time.toISOString()),
-  });
-  await createListingWasmEvent.save();
-  const marketplaceListing = MarketplaceListing.create({
-    id: `${listingOwner}-${denom}`,
-    owner: listingOwner,
-    denom: denom,
-    amount: numberOfCredits,
-    initialAmount: numberOfCredits,
-    pricePerCreditAmount: pricePerCreditAmount,
-    pricePerCreditDenom: pricePerCreditDenom,
-    createdDate: new Date(event.block.header.time.toISOString()),
-    creditCollectionId: denom,
-  });
-  await marketplaceListing.save();
-} catch (e) {
-  await logRollbarError(e, event.tx.hash);
-  throw new Error("Error in handleCreateListing: " + e.message);
-}
+    const createListingWasmEvent = CreateListingWasmEvent.create({
+      id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
+      listingOwner: listingOwner,
+      denom: denom,
+      numberOfCredits: numberOfCredits,
+      pricePerCreditAmount: pricePerCreditAmount,
+      pricePerCreditDenom: pricePerCreditDenom,
+      timestamp: new Date(event.block.header.time.toISOString()),
+    });
+    await createListingWasmEvent.save();
+    const marketplaceListing = MarketplaceListing.create({
+      id: `${listingOwner}-${denom}`,
+      owner: listingOwner,
+      denom: denom,
+      amount: numberOfCredits,
+      initialAmount: numberOfCredits,
+      pricePerCreditAmount: pricePerCreditAmount,
+      pricePerCreditDenom: pricePerCreditDenom,
+      createdDate: new Date(event.block.header.time.toISOString()),
+      creditCollectionId: denom,
+    });
+    await marketplaceListing.save();
+  } catch (e) {
+    await logRollbarError(e, event.tx.hash);
+    throw new Error("Error in handleCreateListing: " + e.message);
+  }
 }
 
 export async function handleUpdateListing(event: CosmosEvent): Promise<void> {
-try {
-  const listingOwner = fetchPropertyFromEvent(event, "listing_owner");
-  const denom = fetchPropertyFromEvent(event, "denom");
-  const numberOfCredits = BigInt(fetchPropertyFromEvent(event, "number_of_credits"));
-  const pricePerCreditAmount = BigInt(fetchPropertyFromEvent(event, "price_per_credit_amount"));
-  const pricePerCreditDenom = fetchPropertyFromEvent(event, "price_per_credit_denom");
+  try {
+    const listingOwner = fetchPropertyFromEvent(event, "listing_owner");
+    const denom = fetchPropertyFromEvent(event, "denom");
+    const numberOfCredits = BigInt(fetchPropertyFromEvent(event, "number_of_credits"));
+    const pricePerCreditAmount = BigInt(fetchPropertyFromEvent(event, "price_per_credit_amount"));
+    const pricePerCreditDenom = fetchPropertyFromEvent(event, "price_per_credit_denom");
 
-  const updateListingWasmEvent = UpdateListingWasmEvent.create({
-    id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
-    listingOwner: listingOwner,
-    denom: denom,
-    numberOfCredits: numberOfCredits,
-    pricePerCreditAmount: pricePerCreditAmount,
-    pricePerCreditDenom: pricePerCreditDenom,
-    timestamp: new Date(event.block.header.time.toISOString()),
-  });
-  await updateListingWasmEvent.save();
+    const updateListingWasmEvent = UpdateListingWasmEvent.create({
+      id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
+      listingOwner: listingOwner,
+      denom: denom,
+      numberOfCredits: numberOfCredits,
+      pricePerCreditAmount: pricePerCreditAmount,
+      pricePerCreditDenom: pricePerCreditDenom,
+      timestamp: new Date(event.block.header.time.toISOString()),
+    });
+    await updateListingWasmEvent.save();
 
-  const marketplaceListing = await MarketplaceListing.get(`${listingOwner}-${denom}`);
-  marketplaceListing.amount = numberOfCredits;
-  marketplaceListing.initialAmount = numberOfCredits;
-  marketplaceListing.pricePerCreditAmount = pricePerCreditAmount;
-  marketplaceListing.pricePerCreditDenom = pricePerCreditDenom;
-  await marketplaceListing.save();
-} catch (e) {
-  await logRollbarError(e, event.tx.hash);
-  throw new Error("Error in handleUpdateListing: " + e.message);
-}
+    const marketplaceListing = await MarketplaceListing.get(`${listingOwner}-${denom}`);
+    marketplaceListing.amount = numberOfCredits;
+    marketplaceListing.initialAmount = numberOfCredits;
+    marketplaceListing.pricePerCreditAmount = pricePerCreditAmount;
+    marketplaceListing.pricePerCreditDenom = pricePerCreditDenom;
+    await marketplaceListing.save();
+  } catch (e) {
+    await logRollbarError(e, event.tx.hash);
+    throw new Error("Error in handleUpdateListing: " + e.message);
+  }
 }
 
 export async function handleCancelListing(event: CosmosEvent): Promise<void> {
@@ -116,16 +116,13 @@ export async function handleCancelListing(event: CosmosEvent): Promise<void> {
     const listingOwner = fetchPropertyFromEvent(event, "listing_owner");
     const denom = fetchPropertyFromEvent(event, "denom");
 
-  const listingOwner = fetchPropertyFromEvent(event, "listing_owner");
-  const denom = fetchPropertyFromEvent(event, "denom");
-
-  const cancelListingWasmEvent = CancelListingWasmEvent.create({
-    id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
-    listingOwner: listingOwner,
-    denom: denom,
-    timestamp: new Date(event.block.header.time.toISOString()),
-  });
-  await cancelListingWasmEvent.save();
+    const cancelListingWasmEvent = CancelListingWasmEvent.create({
+      id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
+      listingOwner: listingOwner,
+      denom: denom,
+      timestamp: new Date(event.block.header.time.toISOString()),
+    });
+    await cancelListingWasmEvent.save();
 
     await MarketplaceListing.remove(`${listingOwner}-${denom}`);
   } catch (e) {
