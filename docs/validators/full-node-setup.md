@@ -129,7 +129,7 @@ cd empowerchain
 Checkout the desired version to build. The latest release tag can be found on the [EmpowerChain Release Page](https://github.com/EmpowerPlastic/empowerchain/releases/)
 
 ```bash
-git checkout v1.0.0-rc2
+git checkout v1.0.0-rc3
 ```
 
 Compile the empowerd binary
