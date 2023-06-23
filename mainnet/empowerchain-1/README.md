@@ -13,7 +13,6 @@ PLEASE READ:
 ```bash
 git clone https://github.com/EmpowerPlastic/empowerchain && \
 cd empowerchain && \
-git checkout main && \
 cd chain && \
 make install
 ```
