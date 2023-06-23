@@ -29,7 +29,7 @@ empowerd keys add <WALLET_NAME>
 
 4. **Copy genesis.json from empowerchain repo to your local chain home directory**
 ```bash
-cp <PATH_TO_EMPOWERCHAIN_REPO>/mainnet/empowerchain-1/genesis.json ~/.empowerchain/config/genesis.json
+cp <PATH_TO_EMPOWERCHAIN_REPO>/mainnet/empowerchain-1/base-genesis.json ~/.empowerchain/config/genesis.json
 ```
 
 6. **Add genesis account**
