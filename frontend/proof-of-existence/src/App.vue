@@ -33,12 +33,12 @@ import "flowbite";
     class="fixed top-0 left-0 z-40 sm:w-64 w-full h-screen transition-transform -translate-x-full sm:translate-x-0 sm:bg-lightBlack bg-darkBlack"
     aria-label="Sidebar"
   >
-    <div class="flex flex-row w-full p-3 justify-end">
+    <div class="flex flex-row w-full justify-end sm:hidden">
       <button
         data-drawer-target="logo-sidebar"
         data-drawer-toggle="logo-sidebar"
         type="button"
-        class="md:hidden"
+        class="md:hidden p-5"
         aria-controls="navbar-default"
         aria-expanded="false"
       >
@@ -55,27 +55,22 @@ import "flowbite";
         />
       </a>
       <div class="flex justify-center flex-col h-5/6 items-center">
-        <ul class="space-y-2 w-full flex flex-col items-center">
-          <li>
-            <a href="/" class="flex items-center w-full">
-              <img class="w-7" src="../src/assets/images/certifyIcon.svg" />
-              <span class="flex-1 ml-3 whitespace-nowrap text-white"
-                >Certify</span
-              >
-            </a>
-          </li>
-          <li>
-            <a
-              href="/verify"
-              class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <img class="w-7" src="../src/assets/images/verifyIcon.svg" />
-              <span class="flex-1 ml-3 whitespace-nowrap text-white"
-                >Verify</span
-              >
-            </a>
-          </li>
-        </ul>
+        <div class="space-y-2 w-full flex flex-col items-center p-3">
+          <a
+            href="/"
+            class="flex flex-row w-full p-2 sm:justify-start justify-center sm:ml-14"
+          >
+            <img class="w-7 mr-3" src="../src/assets/images/certifyIcon.svg" />
+            <p href="/verify" class="text-white text-title16">Certify</p>
+          </a>
+          <a
+            href="/verify"
+            class="flex flex-row w-full p-2 sm:justify-start justify-center sm:ml-14"
+          >
+            <img class="w-7 mr-3" src="../src/assets/images/verifyIcon.svg" />
+            <p href="/verify" class="text-white text-title16">Verify</p>
+          </a>
+        </div>
       </div>
     </div>
   </aside>

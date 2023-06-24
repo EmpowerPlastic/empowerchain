@@ -29,8 +29,6 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
-
-	accesscontrolmodulekeeper "github.com/EmpowerPlastic/empowerchain/x/accesscontrol/keeper"
 )
 
 func NewAppConstructor() network.AppConstructor {
@@ -209,13 +207,6 @@ func CreateRandomAccounts(accNum int) []sdk.AccAddress {
 	}
 
 	return testAddrs
-}
-
-func InitAccessControlSubKeepers(keeper *accesscontrolmodulekeeper.Keeper) *[]accesscontrolmodulekeeper.IAccessControlSubKeeper {
-	var sk []accesscontrolmodulekeeper.IAccessControlSubKeeper
-	sk = append(sk, accesscontrolmodulekeeper.NewSubKeeper(keeper, "mockmodule1"))
-	sk = append(sk, accesscontrolmodulekeeper.NewSubKeeper(keeper, "mockmodule2"))
-	return &sk
 }
 
 // NewTestNetworkFixture returns a new EmpowerApp AppConstructor for network simulation tests

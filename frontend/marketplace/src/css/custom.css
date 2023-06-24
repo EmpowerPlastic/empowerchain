@@ -1,60 +1,78 @@
 .input-label {
-    @apply label-text text-white text-title18
+  @apply label-text text-white text-title18;
 }
 
 .input-text {
-    @apply text-white text-title24 bg-mediumGray w-[180px]
+  @apply text-white text-title24 bg-mediumGray w-[180px];
 }
 
 .input-box {
-    @apply rounded-sm w-fit
+  @apply rounded-sm w-fit;
 }
 
 .input-sub-text {
-    @apply bg-mediumGray text-title16 text-dropDownText
+  @apply bg-mediumGray text-title16 text-dropDownText;
 }
 
 .modal-button {
-    @apply rounded-sm  font-bold text-title14 normal-case border-none px-10
+  @apply rounded-sm  font-bold text-title14 normal-case border-none px-10;
 }
 
 /*Search Bar*/
 .filter-subtitle {
-    @apply text-title14 text-dropDownText
+  @apply text-title14 text-dropDownText;
 }
+
 .filter-title {
-    @apply flex flex-row justify-between text-title18 text-white cursor-pointer
+  @apply flex justify-between text-title16 text-white cursor-pointer;
 }
-.filter-box{
-    @apply w-full p-3 px-4
+
+.filter-box {
+  @apply w-full p-3 px-4;
 }
 
 /*Auctions Results Card*/
 .details-title {
-    @apply text-title14 font-bold text-textGray mb-3
+  @apply text-title14 font-bold text-textGray mb-3;
 }
 
 /*My Credits*/
-.custom-tab{
-    @apply text-center rounded-xl p-2 cursor-pointer
+.custom-tab {
+  @apply text-center rounded-xl p-2 cursor-pointer;
 }
+
 /*Credit Card*/
 .certificate-button {
-    @apply rounded-sm text-greenPrimary font-bold text-title14 bg-buttonBlack normal-case border-none
+  @apply rounded-sm text-greenPrimary font-bold text-title14 bg-buttonBlack normal-case border-none;
 }
 
 /*Project Details*/
-.details-label{
-    @apply text-title14 text-dropDownText
+.details-label {
+  @apply text-title14 text-dropDownText;
 }
-.details-content{
-    @apply text-title18 mt-1
+
+.details-content {
+  @apply text-title18 mt-1;
 }
+
 .google-map {
-    border-radius: 15px;
+  border-radius: 15px;
 }
 
 /*Image Gallery*/
-.scroll-button{
-    @apply absolute ml-[130px] btn-ghost bg-scrollButtonBackground
+.scroll-button {
+  @apply absolute ml-[130px] btn-ghost bg-scrollButtonBackground;
+}
+
+/*Toast*/
+.Toastify__toast {
+  @apply bg-tabGray text-white;
+}
+
+/*Sellect Wallet Modal*/
+.wallet-box {
+  @apply bg-lightBlack p-3 rounded-sm cursor-pointer;
+}
+.wallet-image {
+  @apply max-w-[200px] max-h-[100px];
 }
