@@ -97,6 +97,7 @@ type CreateListingWasmEvent @entity {
   numberOfCredits: BigInt!
   pricePerCreditAmount: BigInt!
   pricePerCreditDenom: String!
+  timestamp: Date!
 }
 
 type UpdateListingWasmEvent @entity {
@@ -106,12 +107,14 @@ type UpdateListingWasmEvent @entity {
   numberOfCredits: BigInt!
   pricePerCreditAmount: BigInt!
   pricePerCreditDenom: String!
+  timestamp: Date!
 }
 
 type CancelListingWasmEvent @entity {
   id: ID!
   listingOwner: String!
   denom: String!
+  timestamp: Date!
 }
 
 type BuyCreditsWasmEvent @entity {
