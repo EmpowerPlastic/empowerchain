@@ -36,6 +36,7 @@ import (
 
 // SetSupply calculates and sets the total supply from the balances in the bank genesis state.
 func SetSupply(genesisState *GenesisState) {
+	fmt.Println("Setting total supply from bank genesis state")
 	supply := sdk.NewCoins()
 	for _, account := range genesisState.BankGenesis.Balances {
 		supply = supply.Add(account.Coins...)
