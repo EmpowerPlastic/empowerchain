@@ -50,7 +50,7 @@ const (
 )
 
 var leftToBeDistributed = []uint64{
-	60,
+	30,
 }
 
 type groupConfig struct {
@@ -72,9 +72,9 @@ var defaultGroupVotingTime = time.Hour * 336
 
 var genesisAccountConfigs = map[string]*genesisAccountConfig{
 	"P-1": {
-		amount:      100,
+		amount:      115,
 		accountType: basicAccount,
-		address:     "empower1fqsfh795c3cvvhkd6nd2036mzavrnchny0j3u3", // FINAL ADDRESS (GG)
+		address:     "empower1fqsfh795c3cvvhkd6nd2036mzavrnchny0j3u3", // FINAL ADDRESS (G)
 	},
 	"P-2": {
 		amount:      10,
@@ -87,14 +87,14 @@ var genesisAccountConfigs = map[string]*genesisAccountConfig{
 		address:     "empower1zmz636u0fsjsslk36r57780w2p5dznxgea59en", // FINAL ADDRESS (J)
 	},
 	"P-4": {
-		amount:      10,
+		amount:      25,
 		accountType: basicAccount,
-		address:     "empower1ypynejafjw6u2cucqp9yjnahxjt3vkl6j7wny5", // TODO: TMP ACCT - REPLACE WITH REAL ADDRESS WHEN WE HAVE IT
+		address:     "empower19reldm703kn8ada764r56cavka870xruafpe30", // FINAL ADDRESS (C)
 	},
 	"P-5": {
 		amount:      10,
 		accountType: basicAccount,
-		address: "empower16jaagrs8kd46hndaq7t38g3eekcy3chu8rhcyz",
+		address: "empower16jaagrs8kd46hndaq7t38g3eekcy3chu8rhcyz", // FINAL ADDRESS (EHW)
 	},
 	"A-1": {
 		amount:      0,
@@ -121,7 +121,7 @@ var genesisAccountConfigs = map[string]*genesisAccountConfig{
 		groupRef:    "G-3",
 	},
 	"A-5": {
-		amount:      20_000_000 - 7249999.999997, // TODO: Adjust for actual amount (minus genesis airdrop)
+		amount:      20_000_000 - 7249984.367949, // TODO: Adjust for actual amount (minus genesis airdrop)
 		accountType: groupPolicyAccount,
 		metadata:    `{"name": "Future airdrops, etc"}`,
 		groupRef:    "G-3",
@@ -175,7 +175,7 @@ var genesisAccountConfigs = map[string]*genesisAccountConfig{
 		groupRef:    "G-5",
 	},
 	"A-14": {
-		amount:      1_000_000 + 1_000_000 - 180600.350837, // TODO: Adjust for remaining tokens (minus testnet rewards)
+		amount:      1_000_000 + 1_000_000 - 252305.385279, // TODO: Adjust for remaining tokens (minus testnet rewards)
 		accountType: groupPolicyAccount,
 		metadata:    `{"name": "Testnet rewards"}`,
 		groupRef:    "G-3",
