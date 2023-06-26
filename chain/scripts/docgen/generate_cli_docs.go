@@ -56,7 +56,7 @@ func generateCLIDocs() {
 
 		filename := d.Name()
 		commandSplit := strings.Split(strings.TrimSuffix(filename, filepath.Ext(filename)), "_")
-		sidebarItems = buildCLIDocsSidebarTree(sidebarItems, commandSplit, "/cli_docs/"+filename)
+		sidebarItems = buildCLIDocsSidebarTree(sidebarItems, commandSplit, "/references/cli-docs/"+filename)
 
 		return nil
 	}); err != nil {
@@ -73,7 +73,7 @@ func generateCLIDocs() {
 	}
 
 	jsContent := "export default " + string(jsonSidebar)
-	outputFilePath := filepath.Join(vitepressConfigOutputDir, "sidebar_cli_docs.js")
+	outputFilePath := filepath.Join(vitepressConfigOutputDir, "sidebar-cli-docs.js")
 
 	err = os.WriteFile(outputFilePath, []byte(jsContent), 0644)
 	if err != nil {

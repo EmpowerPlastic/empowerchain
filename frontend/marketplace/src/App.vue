@@ -4,8 +4,7 @@ import Footer from "@/components/MainFooter.vue";
 </script>
 
 <template>
-  <NavBar/>
-  <RouterView/>
-  <Footer/>
+  <NavBar />
+  <RouterView />
+  <Footer />
 </template>
-

@@ -1,0 +1,62 @@
+specVersion: 1.0.0
+name: empowerchain-indexer
+version: 0.0.1
+runner:
+  node:
+    name: "@subql/node-cosmos"
+    version: "*"
+  query:
+    name: "@subql/query"
+    version: "*"
+description: >-
+  Empowerchain indexer
+repository: "https://github.com/EmpowerPlastic/empowerchain"
+schema:
+  file: ./schema.graphql
+network:
+  chainId: emp-devnet-1
+  # This endpoint must be a public non-pruned archive node
+  # Public nodes may be rate limited, which can affect indexing speed
+  # When developing your project we suggest getting a private API key
+  endpoint: "https://devnet.empowerchain.io:26657/"
+  # Optionally provide the HTTP endpoint of a full chain dictionary to speed up processing
+  # dictionary: "https://api.subquery.network/sq/subquery/cosmos-stargaze-dictionary"
+  # chainTypes:
+  #   cosmos.bank.v1beta1:
+  #     file: ./proto/cosmos/bank/v1beta1/tx.proto
+  #     messages:
+  #       - MsgSend
+  #   empowerchain.plasticcredit:
+  #     file: ./proto/empowerchain/plasticcredit/tx.proto
+  #     messages:
+  #       - MsgTransferCredits
+  #   publicawesome.stargaze.claim.v1beta1:
+  #     file: ./proto/stargaze/claim/v1beta1/tx.proto
+  #     messages:
+  #       - MsgInitialClaim
+dataSources:
+  - kind: cosmos/Runtime
+    startBlock: 1
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleIssueCredits
+          kind: cosmos/EventHandler
+          filter:
+            type: empowerchain.plasticcredit.EventIssuedCredits
+        - handler: handleTransferCredits
+          kind: cosmos/EventHandler
+          filter:
+            type: empowerchain.plasticcredit.EventTransferCredits
+        - handler: handleRetiredCredits
+          kind: cosmos/EventHandler
+          filter:
+            type: empowerchain.plasticcredit.EventRetiredCredits
+        - handler: handleCreateCertificate
+          kind: cosmos/EventHandler
+          filter:
+            type: empowerchain.certificates.EventCreateCertificate
+        - handler: handleWasmEvents
+          kind: cosmos/EventHandler
+          filter:
+            type: wasm

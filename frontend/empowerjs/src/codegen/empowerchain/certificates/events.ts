@@ -6,6 +6,7 @@ export interface EventCreateCertificate {
   issuer: string;
   owner: string;
   certificateType: string;
+  additionalData: string;
 }
 /** EventCreateCertificate is an event emitted when a new certificate is created */
 export interface EventCreateCertificateSDKType {
@@ -13,13 +14,15 @@ export interface EventCreateCertificateSDKType {
   issuer: string;
   owner: string;
   certificate_type: string;
+  additional_data: string;
 }
 function createBaseEventCreateCertificate(): EventCreateCertificate {
   return {
     certificateId: BigInt("0"),
     issuer: "",
     owner: "",
-    certificateType: ""
+    certificateType: "",
+    additionalData: ""
   };
 }
 export const EventCreateCertificate = {
@@ -35,6 +38,9 @@ export const EventCreateCertificate = {
     }
     if (message.certificateType !== "") {
       writer.uint32(34).string(message.certificateType);
+    }
+    if (message.additionalData !== "") {
+      writer.uint32(42).string(message.additionalData);
     }
     return writer;
   },
@@ -57,6 +63,9 @@ export const EventCreateCertificate = {
         case 4:
           message.certificateType = reader.string();
           break;
+        case 5:
+          message.additionalData = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -69,7 +78,8 @@ export const EventCreateCertificate = {
       certificateId: isSet(object.certificateId) ? BigInt(object.certificateId.toString()) : BigInt("0"),
       issuer: isSet(object.issuer) ? String(object.issuer) : "",
       owner: isSet(object.owner) ? String(object.owner) : "",
-      certificateType: isSet(object.certificateType) ? String(object.certificateType) : ""
+      certificateType: isSet(object.certificateType) ? String(object.certificateType) : "",
+      additionalData: isSet(object.additionalData) ? String(object.additionalData) : ""
     };
   },
   toJSON(message: EventCreateCertificate): unknown {
@@ -78,6 +88,7 @@ export const EventCreateCertificate = {
     message.issuer !== undefined && (obj.issuer = message.issuer);
     message.owner !== undefined && (obj.owner = message.owner);
     message.certificateType !== undefined && (obj.certificateType = message.certificateType);
+    message.additionalData !== undefined && (obj.additionalData = message.additionalData);
     return obj;
   },
   fromPartial(object: Partial<EventCreateCertificate>): EventCreateCertificate {
@@ -86,6 +97,7 @@ export const EventCreateCertificate = {
     message.issuer = object.issuer ?? "";
     message.owner = object.owner ?? "";
     message.certificateType = object.certificateType ?? "";
+    message.additionalData = object.additionalData ?? "";
     return message;
   }
 };

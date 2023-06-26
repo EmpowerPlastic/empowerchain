@@ -1,8 +1,9 @@
-import { createRouter, createWebHistory } from "vue-router";
+import {createRouter, createWebHistory} from "vue-router";
 import CertifyView from "../views/certify/CertifyView.vue";
 import VerifyView from "../views/Verify/VerifyView.vue";
 import CreateProofView from "../views/certify/CreateProofView.vue";
-import SuccessScreen from "../views/certify/SuccessScreen.vue";
+import CertifySuccessScreen from "@/views/certify/CertifySuccessScreen.vue";
+import VerifySuccessScreen from "@/views/certify/VerifySuccessScreen.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,6 +19,11 @@ const router = createRouter({
       component: VerifyView,
     },
     {
+      path: "/verify/success",
+      name: "verify-success",
+      component: VerifySuccessScreen,
+    },
+    {
       path: "/proof/:hash",
       name: "proof",
       component: CreateProofView,
@@ -29,8 +35,8 @@ const router = createRouter({
     },
     {
       path: "/certify/success",
-      name: "success",
-      component: SuccessScreen,
+      name: "certify-success",
+      component: CertifySuccessScreen,
     },
   ],
 });

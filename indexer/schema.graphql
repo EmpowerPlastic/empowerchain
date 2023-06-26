@@ -1,0 +1,224 @@
+# To improve query performance, we strongly suggest adding indexes to any field that you plan to filter or sort by
+# Add the `@index` or `@index(unique: true)` annotation after any non-key field
+# https://academy.subquery.network/build/graphql.html#indexing-by-non-primary-key-field
+
+type Block @entity {
+  id: ID! # The block hash
+  height: BigInt!
+}
+
+type Transaction @entity {
+  id: ID!
+  blockHeight: BigInt!
+  timestamp: String!
+}
+
+type ExecuteEvent @entity {
+  id: ID!
+  blockHeight: BigInt!
+  txHash: String!
+}
+
+type Country @entity {
+  id: ID!
+}
+
+type Organization @entity {
+  id: ID!
+}
+
+type Wallet @entity {
+  id: ID!
+  address: String! @index(unique: true)
+  applicantId: Int
+  creditBalances: [CreditBalance!] @derivedFrom(field: "wallet")
+  certificates: [Certificate!] @derivedFrom(field: "wallet")
+  creditOffsetCertificates: [CreditOffsetCertificate!] @derivedFrom(field: "wallet")
+}
+
+type CreditBalance @entity {
+  id: ID!
+  creditCollection: CreditCollection!
+  amountActive: BigInt!
+  amountRetired: BigInt!
+  wallet: Wallet!
+}
+
+type Certificate @entity {
+  id: ID!
+  type: String!
+  issuer: String!
+  owner: String!
+  data: String!
+  wallet: Wallet!
+}
+
+type CreditOffsetCertificate @entity {
+  id: ID!
+  denom: String!
+  amount: BigInt!
+  retiringEntityAddress: String!
+  retiringEntityName: String!
+  retiringEntityAdditionalData: String!
+  wallet: Wallet!
+}
+
+type MarketplaceListing @entity {
+  id: ID!
+  owner: String!
+  denom: String!
+  amount: BigInt!
+  initialAmount: BigInt!
+  pricePerCreditAmount: BigInt!
+  pricePerCreditDenom: String!
+  createdDate: Date!
+  creditCollection: CreditCollection!
+}
+
+type TransferedCreditsEvent @entity {
+  id: ID!
+  creditCollection: CreditCollection!
+  sender: String!
+  recipient: String!
+  amount: BigInt!
+}
+
+type RetiredCreditsEvent @entity {
+  id: ID!
+  creditCollection: CreditCollection!
+  owner: String!
+  amount: BigInt!
+}
+
+type CreateListingWasmEvent @entity {
+  id: ID!
+  listingOwner: String!
+  denom: String!
+  numberOfCredits: BigInt!
+  pricePerCreditAmount: BigInt!
+  pricePerCreditDenom: String!
+  timestamp: Date!
+}
+
+type UpdateListingWasmEvent @entity {
+  id: ID!
+  listingOwner: String!
+  denom: String!
+  numberOfCredits: BigInt!
+  pricePerCreditAmount: BigInt!
+  pricePerCreditDenom: String!
+  timestamp: Date!
+}
+
+type CancelListingWasmEvent @entity {
+  id: ID!
+  listingOwner: String!
+  denom: String!
+  timestamp: Date!
+}
+
+type BuyCreditsWasmEvent @entity {
+  id: ID!
+  listingOwner: String!
+  denom: String!
+  buyer: String!
+  numberOfCreditsBought: BigInt!
+  totalPriceAmount: BigInt!
+  totalPriceDenom: String!
+  saleDate: Date!
+}
+
+type CreateListing @entity {
+  id: ID!
+  owner: String!
+  denom: String!
+  amount: BigInt!
+  pricePerCredit: String!
+}
+
+type CreditCollection @entity {
+  id: ID!
+  denom: String! @index(unique: true)
+  projectId: Int!
+  applicantId: Int! @index
+  issuanceDate: Date!
+  activeAmount: BigInt!
+  retiredAmount: BigInt!
+  creditType: String!
+  metadataUris: [MetadataUri!] @derivedFrom(field: "creditCollection")
+  creditData: [CreditData!] @derivedFrom(field: "creditCollection")
+  marketplaceListings: [MarketplaceListing!] @derivedFrom(field: "creditCollection")
+}
+
+type CreditData @entity {
+  id: ID!
+  issuanceDate: Date!
+  creditType: String!
+  aggregationLatitude: Float!
+  aggregationLongitude: Float!
+  rawJsonData: String!
+  eventData: [EventData!] @derivedFrom(field: "creditData")
+  mediaFiles: [MediaFile!] @derivedFrom(field: "creditData")
+  binaryFiles: [BinaryFile!] @derivedFrom(field: "creditData")
+  applicantData: ApplicantData! @derivedFrom(field: "creditData")
+  creditCollection: CreditCollection!
+}
+
+type WebReference @entity {
+  id: ID!
+  applicantData: ApplicantData!
+  url: String!
+}
+
+type ApplicantData @entity {
+  id: ID!
+  name: String!
+  description: String!
+  webReferences: [WebReference!]! @derivedFrom(field: "applicantData")
+  creditData: CreditData!
+}
+
+type MediaFile @entity {
+  id: ID!
+  name: String!
+  url: String!
+  creditData: CreditData!
+}
+
+type BinaryFile @entity {
+  id: ID!
+  name: String!
+  url: String!
+  creditData: CreditData!
+}
+
+type EventData @entity {
+  id: ID!
+  latitude: Float!
+  longitude: Float!
+  country: String
+  amount: Float!
+  magnitude: String!
+  material: [MaterialData!]! @derivedFrom(field: "eventData")
+  registrationDate: Date!
+  creditData: CreditData!
+}
+
+type MaterialData @entity {
+  id: ID!
+  key: String!
+  value: String!
+  eventData: EventData!
+}
+
+type MetadataUri @entity {
+  id: ID!
+  creditCollection: CreditCollection!
+  url: String! @index
+}
+
+type Message @entity {
+  id: ID!
+  blockHeight: BigInt!
+  txHash: String!
+}

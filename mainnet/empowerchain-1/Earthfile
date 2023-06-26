@@ -1,0 +1,13 @@
+VERSION 0.6
+FROM earthly/dind:ubuntu
+WORKDIR /empowerchain/mainnet/empowerchain-1
+
+test-collect-gentx:
+    FROM ../../chain/+build
+    WORKDIR /empowerchain/chain/build
+    RUN ./empowerd init empower
+    COPY ./gentx/ /root/.empowerchain/config/gentx/
+    COPY base-genesis.json /root/.empowerchain/config/genesis.json
+    COPY collect-gentxs.sh .
+    RUN ./collect-gentxs.sh
+    SAVE ARTIFACT /root/.empowerchain/config/genesis.json AS LOCAL genesis.json

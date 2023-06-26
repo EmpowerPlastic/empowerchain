@@ -5,7 +5,7 @@ The circular economy is an economic model that aims to eliminate waste and promo
 The illustration below shows a slightly simplified and idealized version of the circular economy. 
 In reality, the circular economy is much more complex, but this illustration should give you a good idea of what it is all about.
 
-![Circular Economy](./circular_economy.png 'A circular economy aims to eliminate waste and promote the continuous use of resources')
+![Circular Economy](./circular-economy.png 'A circular economy aims to eliminate waste and promote the continuous use of resources')
 
 ## Why is the Circular Economy important?
 Plastic waste can currently be found in your blood. It is in the air you breathe and the water you drink. It is in the food you eat and the clothes you wear. It is everywhere.

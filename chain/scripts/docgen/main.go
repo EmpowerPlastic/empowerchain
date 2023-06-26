@@ -4,8 +4,8 @@ import "os"
 
 const (
 	vitepressConfigOutputDir = "./output/.vitepress"
-	cliDocsOuputDir          = "./output/cli_docs"
-	moduleDocsOuputDir       = "./output/module_docs"
+	cliDocsOuputDir          = "./output/cli-docs"
+	moduleDocsOuputDir       = "./output/module-docs"
 	chainDir                 = "../../"
 )
 
