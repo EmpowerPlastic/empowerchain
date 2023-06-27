@@ -72,6 +72,14 @@ sha256sum $HOME/.empowerchain/config/genesis.json
 Result: 819d33d14c35bbfbc5997db9bf545eb7a5504b5870a307ce90c3813add4b316b
 ```
 
+**Verify empowerd binary version**
+```bash
+empowerd version --long
+Result:
+version: 1.0.0
+commit: 5d80d3c26256d9809cbd0b4dacfd0a8dbcaacc95
+```
+
 **Set minimum gas price**
 ```bash
 sed -i.bak -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.025umpwr\"/" $HOME/.empowerchain/config/app.toml
@@ -79,6 +87,6 @@ sed -i.bak -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.025umpwr\"/" 
 
 **Seeds**
 ```bash
-seeds="a1427b456513ab70967a2a5c618d347bc89e8848@seed.empowerchain.io:26656"
+seeds="a1427b456513ab70967a2a5c618d347bc89e8848@seed.empowerchain.io:26656,6740fa259552a628266a85de8c2a3dee7702b8f9@empower-mainnet-seed.itrocket.net:14656,e16668ddd526f4e114ebb6c4714f0c18c0add8f8@empower-seed.zenscape.one:26656"
 sed -i -e 's|^seeds *=.*|seeds = "'$seeds'"|' $HOME/.empowerchain/config/config.toml
 ```
