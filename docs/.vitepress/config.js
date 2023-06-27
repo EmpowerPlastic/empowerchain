@@ -103,6 +103,14 @@ export default withMermaid(
             {
               text: 'Overview',
               link: '/tokenomics/overview'
+            },
+            {
+              text: 'Initial token distribution',
+              link: '/tokenomics/initial-token-distribution'
+            },
+            {
+              text: 'Emission distribution',
+              link: '/tokenomics/emission-distribution'
             }
           ],
         },

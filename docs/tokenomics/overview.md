@@ -1,11 +1,11 @@
 # Tokenomics Overview
 
-The EmpowerChain tokenomics are designed to make the native network utility token, $MPWR, a useful and valuable asset
-for all participants in the EmpowerChain ecosystem. This is important for long-term development and maintenance, but
-more importantly, to ensure that the token is a viable incentive for actors in the waste sector to participate.
+The EmpowerChain tokenomics are designed to make the native network utility token, $MPWR, a useful asset
+for all participants in the EmpowerChain ecosystem. This is important for long-term development and maintenance, 
+as well as to ensure that the token is a viable incentive for actors in the waste sector to participate.
 
-**Disclaimer**: The tokenomics are subject to change and might get updated before launch. The tokenomics are also subject
-to governance, and can be changed by governance at any time after launch.
+**Disclaimer**: The tokenomics are subject to change through governance, but the following is presented
+as the initial plan for the tokenomics.
 
 ## Token overview
 
@@ -26,9 +26,7 @@ firepower to incentivize users and actors in both the web3 and waste sector worl
 
 ![token-distribution.png](./token-distribution.png)
 
-More details on the initial distribution will be published before launch.
-
-<!-- To read more details about the initial distribution, see [Initial token distribution](./initial-token-distribution.md). -->
+More details on the initial distribution can be found in the [Initial token distribution](./initial-token-distribution.md) document.
 
 ## Emission schedule
 
@@ -59,7 +57,7 @@ Together, they are designed to ensure that the network has long-term sustainabil
 
 More details on the final block rewards will be published before launch.
 
-<!-- To read more details about the final block rewards, see [Block rewards](./block-rewards.md). -->
+To read more details about the emission distribution, see [Emission distribution](./emission-distribution.md).
 
 ## Sustainable economics
 The big question for any blockchain is how it will operate sustainably in the long term. The EmpowerChain network token
@@ -72,4 +70,4 @@ is a utility token and is needed to use the network. It is needed not only for g
 - Participating/voting in governance
 
 The utility of the MPWR token, and its demand, will be driven by the usage of the network.
-With the network owning and using the tokens for various purposes, there will be a constant demand for the token.
+The plan is to keep building the network and its offerings to ensure that the token is useful and in demand.

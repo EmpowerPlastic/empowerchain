@@ -1,4 +1,6 @@
-# Block rewards
+# Emission distribution
+
+The term emission distribution and block rewards are used interchangeably in this document.
 
 At launch, the block rewards are very simply made up of 75% to stakers and 25% to the community pool in the form of the community pool tax.
 The 25% of block rewards going to the community pool is not intended to be there for too long and there will be a governance proposal to split
