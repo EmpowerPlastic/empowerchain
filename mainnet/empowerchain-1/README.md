@@ -60,4 +60,25 @@ Make sure you also do a rename of the file when copying or before submitting the
 
 ## Genesis launch
 
-TODO
+**Download genesis**
+```bash
+URL=https://github.com/EmpowerPlastic/empowerchain/raw/main/mainnet/empowerchain-1/genesis.tar.gz
+curl -L $URL | tar -xz -C $HOME/.empowerchain/config/
+```
+
+**Check genesis**
+```bash
+sha256sum $HOME/.empowerchain/config/genesis.json
+Result: 819d33d14c35bbfbc5997db9bf545eb7a5504b5870a307ce90c3813add4b316b
+```
+
+**Set minimum gas price**
+```bash
+sed -i.bak -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.025umpwr\"/" $HOME/.empowerchain/config/app.toml
+```
+
+**Seeds**
+```bash
+seeds="a1427b456513ab70967a2a5c618d347bc89e8848@51.159.190.53:26656"
+sed -i -e 's|^seeds *=.*|seeds = "'$seeds'"|' $HOME/.empowerchain/config/config.toml
+```
