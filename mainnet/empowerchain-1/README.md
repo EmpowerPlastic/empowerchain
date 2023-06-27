@@ -79,6 +79,6 @@ sed -i.bak -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.025umpwr\"/" 
 
 **Seeds**
 ```bash
-seeds="a1427b456513ab70967a2a5c618d347bc89e8848@51.159.190.53:26656"
+seeds="a1427b456513ab70967a2a5c618d347bc89e8848@seed.empowerchain.io:26656"
 sed -i -e 's|^seeds *=.*|seeds = "'$seeds'"|' $HOME/.empowerchain/config/config.toml
 ```
