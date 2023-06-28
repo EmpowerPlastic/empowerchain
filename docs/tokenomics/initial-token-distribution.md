@@ -19,6 +19,13 @@ Any tokens not owned by the team will be locked in on-chain groups (similar to a
 but will be preset with members of the team, and potentially other community members. The makeup of these groups will be decided by governance of time.
 Read more about this under [Governance overview](../governance/overview.md) and [Governance structure](../governance/structure.md).
 
+Any locked or vested tokens are still possible to stake and accrue staking rewards. The staking rewards are
+liquid tokens that are transferable. This is how the Cosmos SDK vesting accounts work, so the design of the
+tokenomics is trying to take this into account. This means that for instance Empower's long-term lockup tokens will
+be able to accrue staking rewards (even though the initial amount is fully locked for 5 years).
+There will be some exceptions to this, for instance the team tokens will not be paid out any staking rewards
+the first year. The exact mechanism we will use for this is still being discussed and will be announced later.
+
 Each section is explained in more detail below.
 
 > A short note on usage incentives: most of the usage incentives in both the
