@@ -6,6 +6,6 @@
 body {
     @apply bg-main-image min-h-screen w-screen bg-no-repeat bg-black;
     background-size: 100vw;
-    background-position:top;
+    background-position: 0px 200px;
 
 }
