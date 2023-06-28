@@ -12,7 +12,7 @@
   >
     <div class="flex-1">
       <a href="/">
-        <img class="h-7" src="src/assets/mainLogo.svg" />
+        <img class="h-7" src="../assets/mainLogo.svg" />
       </a>
     </div>
     <div class="flex-none">
