@@ -47,10 +47,6 @@ export default withMermaid(
               link: '/introduction/applications'
             },
             {
-              text: 'Tokenomics',
-              link: '/introduction/tokenomics'
-            },
-            {
               text: 'Roadmap',
               link: '/introduction/roadmap'
             }
@@ -75,6 +71,10 @@ export default withMermaid(
             {
               text: 'Build challenges',
               link: '/testnet/build-challenges'
+            },
+            {
+              text: 'Resources',
+              link: '/testnet/resources'
             }
           ],
         },
@@ -85,8 +85,34 @@ export default withMermaid(
             {
               text: 'Overview',
               link: '/governance/overview'
+            },
+            {
+              text: 'Constitution',
+              link: '/governance/constitution'
+            },
+            {
+              text: 'Structure',
+              link: '/governance/structure'
             }
           ]
+        },
+        {
+          text: 'Tokenomics',
+          collapsed: true,
+          items: [
+            {
+              text: 'Overview',
+              link: '/tokenomics/overview'
+            },
+            {
+              text: 'Initial token distribution',
+              link: '/tokenomics/initial-token-distribution'
+            },
+            {
+              text: 'Emission distribution',
+              link: '/tokenomics/emission-distribution'
+            }
+          ],
         },
         {
           text: 'Core modules',
@@ -98,7 +124,7 @@ export default withMermaid(
               items: [
                 {
                   text: 'High level overview',
-                  link: '/proof-of-existence/high-level-overview'
+                  link: '/core-modules/proof-of-existence/high-level-overview'
                 }
               ]
             },
@@ -108,7 +134,7 @@ export default withMermaid(
               items: [
                 {
                   text: 'High level overview',
-                  link: '/plastic-credits/high-level-overview'
+                  link: '/core-modules/plastic-credits/high-level-overview'
                 }
               ],
             },
@@ -118,7 +144,7 @@ export default withMermaid(
               items: [
                 {
                   text: 'High level overview',
-                  link: '/deposit-schemes/high-level-overview'
+                  link: '/core-modules/deposit-schemes/high-level-overview'
                 }
               ]
             },
@@ -188,7 +214,7 @@ export default withMermaid(
           ].concat(cliDocs.concat([
             {
               text: 'API docs',
-              link: '/api-docs/swagger'
+              link: '/references/api-docs/swagger'
             },
           ]))
         },

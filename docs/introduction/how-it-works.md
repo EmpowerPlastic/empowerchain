@@ -10,19 +10,19 @@ As outlined in [What is EmpowerChain](./what-is-empowerchain.md#how-does-empower
 
 EmpowerChain also facilitates the issuance of Plastic Credits (PCRDs), which incentivize collection organizations, sorting facilities, and recyclers to handle waste materials responsibly. PCRDs can be traded, used as proof of offset, or applied in gamification strategies to promote better waste management practices and drive circular economy efforts.
 
-To read more about plastic credits, please refer to the [Plastic Credits](../plastic-credits/high-level-overview.md) section.
+To read more about plastic credits, please refer to the [Plastic Credits](../core-modules/plastic-credits/high-level-overview.md) section.
 
 ## Ensuring Traceability and Transparency
 
 EmpowerChain uses blockchain technology to create a secure and reliable foundation for traceability. By employing cryptographic hashing and the immutability of blockchain, EmpowerChain ensures that tracking data points, such as material flows or product lifecycles, remain tamper-proof and transparent.
 
-The initial application to support this on EmpowerChain is the Proof of Existence (PoE) module, which you can read more about [here](../proof-of-existence/high-level-overview.md).
+The initial application to support this on EmpowerChain is the Proof of Existence (PoE) module, which you can read more about [here](../core-modules/proof-of-existence/high-level-overview.md).
 
 ## Creating Deposit Schemes
 
 EmpowerChain supports the development of customizable incentive schemes designed to encourage material and product collection and recycling. These deposit systems can be tailored to the unique requirements of various actors, including Extended Producer Responsibility organizations, recyclers, or volunteer cleanup initiatives. Incentive schemes can take the form of monetary rewards or gamification strategies and are adaptable to a global audience.
 
-To read more about incentive schemes, please refer to the [Deposit Schemes](../deposit-schemes/high-level-overview.md) section.
+To read more about incentive schemes, please refer to the [Deposit Schemes](../core-modules/deposit-schemes/high-level-overview.md) section.
 
 ## Encouraging Collaboration and Innovation
 

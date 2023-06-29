@@ -5,11 +5,13 @@ import { RPC_URL } from "@/config/config";
 import { empowerchain } from "@empower-plastic/empowerjs";
 import NoProofModal from "@/views/Verify/NoProofModal.vue";
 import { ErrorModalType } from "@/types/enums";
+import AboutModal from "@/views/Verify/AboutModal.vue";
 
 const file = ref<File | undefined>(undefined);
 const inputString = ref<string>();
 const isValid = ref<boolean>(false);
-const showModal = ref<boolean>(false);
+const shownNoProofModal = ref<boolean>(false);
+const showAboutModal = ref<boolean>(false);
 const modalType = ref<ErrorModalType>(ErrorModalType.FILE);
 
 const { createRPCQueryClient } = empowerchain.ClientFactory;
@@ -54,10 +56,10 @@ const hashAndSetResult = async (byteArray: Uint8Array) => {
   try {
     const result = window.empSha256(byteArray);
     const verifyResult = await verifyHash(result?.value);
-    pushToSuccessPage(result?.value, verifyResult?.metadata?.timestamp);
+    pushToSuccessPage(result?.value);
   } catch (error) {
     modalType.value = ErrorModalType.FILE;
-    openModal();
+    openNoProofModal();
   }
 };
 
@@ -69,13 +71,12 @@ const verifyHash = async (hash: string) => {
   return proof;
 };
 
-const pushToSuccessPage = (hash: string, timeStamp: Date | undefined) => {
+const pushToSuccessPage = (hash: string) => {
   router.push({
-    path: `/certify/success`,
+    path: `/verify/success`,
     query: {
       hash: hash,
       fileName: undefined,
-      time: timeStamp?.getTime(),
     },
   });
 };
@@ -109,30 +110,39 @@ const handleInputString = async () => {
     })
   );
 
-  const finalResult = verifyResults.find((result) => result.success === true);
+  const finalResult = verifyResults.find((result) => result.success);
   if (finalResult?.hash) {
-    pushToSuccessPage(finalResult?.hash, finalResult.timestamp);
+    pushToSuccessPage(finalResult?.hash);
   } else {
     modalType.value = ErrorModalType.STRING;
-    openModal();
+    openNoProofModal();
   }
 };
 
-const openModal = () => {
-  showModal.value = true;
+const openNoProofModal = () => {
+  shownNoProofModal.value = true;
 };
 
-const closeModal = () => {
-  showModal.value = false;
+const closeNoProofModal = () => {
+  shownNoProofModal.value = false;
+};
+
+const openAboutModal = () => {
+  showAboutModal.value = true;
+};
+
+const closeAboutModal = () => {
+  showAboutModal.value = false;
 };
 </script>
 
 <template>
   <NoProofModal
-    v-show="showModal"
-    :close-modal="closeModal"
+    v-show="shownNoProofModal"
+    :close-modal="closeNoProofModal"
     :modal-type="modalType"
   />
+  <AboutModal :close-modal="closeAboutModal" v-show="showAboutModal" />
   <img
     src="../../assets/images/emp-astro-3.svg"
     class="left-28 top-full sm:top-auto sm:left-auto sm:ml-[500px] w-32 absolute animate-bounce -m-12"
@@ -163,15 +173,15 @@ const closeModal = () => {
         </li>
         <li>
           <button
-            id="hash-tab"
-            data-tabs-target="#hash"
+            id="text-tab"
+            data-tabs-target="#text"
             type="button"
             role="tab"
-            aria-controls="hash"
+            aria-controls="text"
             aria-selected="false"
             class="flex flex-col justify-center text-center px-6 text-title16 aria-selected:bg-lightWhite aria-selected:text-white rounded-t-lg h-9"
           >
-            Hash
+            Text
           </button>
         </li>
       </ul>
@@ -183,13 +193,17 @@ const closeModal = () => {
           aria-labelledby="file-tab"
         >
           <p class="mb-3 text-white text-title14 mt-2">
-            Drag and drop your document here, or choose a file. Your file will
-            <b>not</b> be uploaded.
+            Select a file to verify if the file has a proof of existence on
+            EmpowerChain.
             <a
               href="#"
               class="inline-flex items-center font-medium text-lightGreen"
+              @click="openAboutModal"
               >Learn more.</a
             >
+            <br />
+            Drag and drop your document here, or choose a file. Your file will
+            <b>not</b> be uploaded.
           </p>
           <div class="w-full p-3 mt-7 rounded bg-lightGray">
             <label class="cursor-pointer" for="file_input">
@@ -223,18 +237,28 @@ const closeModal = () => {
         </div>
         <div
           class="hidden md:p-1 border-t border-lightGray"
-          id="hash"
+          id="text"
           role="tabpanel"
-          aria-labelledby="hash-tab"
+          aria-labelledby="text-tab"
         >
           <p class="mb-3 text-white text-title14 mt-2">
-            You can input arbitrary plain text below to verify a proof of it's
+            Input some text to verify if the text has a proof of existence on
+            the EmpowerChain.
+            <a
+              href="#"
+              class="inline-flex items-center font-medium text-lightGreen"
+              @click="openAboutModal"
+              >Learn more.</a
+            >
+            <br />
+            You can input arbitrary plain text below to verify a proof of its
+            existence.
           </p>
           <div class="w-full p-3 mt-7 rounded bg-lightGray">
             <label class="cursor-pointer" for="file_input">
               <textarea
                 rows="3"
-                placeholder="Document Hash"
+                placeholder="Text"
                 v-model="inputString"
                 class="p-1 rounded bg-lightGray w-full mr-4 text-white text-title16 h-36 md:h-auto"
               />

@@ -19,16 +19,11 @@ jobs:
         with:
           version: 0.6.30
 
-      - run: earthly --ci --output +build-all --VERSION=${{ github.ref_name }}
+      - run: earthly --ci --output +build-static --VERSION=${{ github.ref_name }}
         working-directory: ./chain
 
       - run: |
-          zip -q empowerd-${{ github.ref_name }}-linux-amd64.zip empowerd-${{ github.ref_name }}-linux-amd64 && rm empowerd-${{ github.ref_name }}-linux-amd64 && \
-          zip -q empowerd-${{ github.ref_name }}-linux-arm64.zip empowerd-${{ github.ref_name }}-linux-arm64 && rm empowerd-${{ github.ref_name }}-linux-arm64 && \
-          zip -q empowerd-${{ github.ref_name }}-darwin-amd64.zip empowerd-${{ github.ref_name }}-darwin-amd64 && rm empowerd-${{ github.ref_name }}-darwin-amd64 && \
-          zip -q empowerd-${{ github.ref_name }}-darwin-arm64.zip empowerd-${{ github.ref_name }}-darwin-arm64 && rm empowerd-${{ github.ref_name }}-darwin-arm64 && \
-          zip -q empowerd-${{ github.ref_name }}-windows-amd64.zip empowerd-${{ github.ref_name }}.exe && rm empowerd-${{ github.ref_name }}.exe
-
+          mv empowerd-${{ github.ref_name }}-linux-amd64 empowerd && zip -q empowerd-${{ github.ref_name }}-linux-amd64.zip empowerd && rm empowerd
         working-directory: ./chain/build
 
       - uses: "marvinpinto/action-automatic-releases@latest"

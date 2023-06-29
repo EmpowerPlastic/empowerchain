@@ -19,7 +19,7 @@ The criteria for each task and how to submit them will be detailed in a separate
 
 ## Eligibility requirements
 
-- All users need to have registered for the incentivized testnet before the start date of the main phase.
+- All users need to be registered for the incentivized testnet.
 - Users must be at least the age of majority in the jurisdiction where they live when joining the EmpowerChain incentivized testnet.
 - Users must be legally capable to participate under the regulations of their homeland. KYC might be required when claiming rewards.
 - Users must be legally capable of receiving rewards and crypto transactions (if they win), and are responsible for settling any tax liabilities on the reward winnings.
@@ -29,7 +29,7 @@ The criteria for each task and how to submit them will be detailed in a separate
 
 ## Participation rules
 
-- All users need to have joined the EmpowerChain Discord before the start date
+- All users need to have joined the EmpowerChain Discord
 - Only submit work you have actually done. Copying others work, or obviously scripting or circumventing the challenges in any way is reason for immediate disqualification (and obviously any rewards are forfeited)
 - Don’t abuse the testnet faucet. No points are given out for having a bunch of tokens. If we see that you are scripting or otherwise abusing the testnet faucet to get into the active set, you will be disqualified.
 
