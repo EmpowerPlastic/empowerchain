@@ -5,7 +5,7 @@ import {
   CHAIN_ID,
   CHAIN_NAME,
   REST_ENDPOINT,
-  TESTNET_RPC_ENDPOINT,
+  RPC_ENDPOINT,
 } from "@/config/config";
 import { getWalletFromType } from "@/utils/wallet-utils";
 import { defineProps, defineEmits } from "vue";
@@ -16,7 +16,7 @@ export interface SelectWalletModalProps {
 const chainConfig = {
   chainId: CHAIN_ID,
   chainName: CHAIN_NAME,
-  rpc: TESTNET_RPC_ENDPOINT,
+  rpc: RPC_ENDPOINT,
   rest: REST_ENDPOINT,
   bip44: {
     coinType: 118,
