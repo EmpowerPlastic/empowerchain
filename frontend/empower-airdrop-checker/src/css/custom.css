@@ -1,0 +1,11 @@
+/*Toast*/
+.Toastify__toast {
+    @apply bg-dropdownGray text-white;
+}
+/*Sellect Wallet Modal*/
+.wallet-box {
+    @apply bg-lightBlack p-3 rounded-sm cursor-pointer;
+}
+.wallet-image {
+    @apply max-w-[200px] max-h-[100px];
+}

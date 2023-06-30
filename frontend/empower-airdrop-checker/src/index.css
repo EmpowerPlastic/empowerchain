@@ -4,8 +4,8 @@
 @tailwind utilities;
 
 body {
-    @apply bg-main-image min-h-screen w-screen bg-no-repeat bg-black;
-    background-size: 100vw;
+    @apply bg-main-image min-h-screen  bg-no-repeat bg-black;
+    background-size: cover ;
     background-position: 0px 200px;
 
 }

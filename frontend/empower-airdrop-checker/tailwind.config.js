@@ -6,6 +6,12 @@ module.exports = {
     extend: {
       colors: {
         black: 'rgba(0, 0, 0, 1)',
+        titleText: '#00C131',
+        inputContainer: 'rgba(255, 255, 255, 0.22)',
+        inputBox: 'rgba(14, 14, 14, 0.56)',
+        inputBorder: 'rgba(10, 10, 10, 0.18)',
+        buttonGreen: '#00E33A',
+        contentTitle: 'rgba(255, 255, 255, 0.80)',
         lightBlack: 'rgba(255, 255, 255, 0.06)',
         white: '#FFFFFF',
         lightGray: 'rgba(255, 255, 255, 0.1)',
@@ -29,6 +35,7 @@ module.exports = {
         subLabel: '#9B9B9B'
       },
       fontSize: {
+        title86: '120px',
         title32: '32px',
         title26: '26px',
         title16: '16px',
