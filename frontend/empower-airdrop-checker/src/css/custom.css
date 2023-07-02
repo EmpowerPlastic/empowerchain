@@ -9,3 +9,16 @@
 .wallet-image {
     @apply max-w-[200px] max-h-[100px];
 }
+/*Homepage content*/
+.content-title{
+   @apply text-title24 text-contentTitle mb-3
+}
+.content-text{
+    @apply text-title17 text-contentTitle capitalize
+}
+.image-container{
+    @apply min-w-[350px] min-h-[200px]
+}
+.image{
+    @apply w-[350px] h-[200px]
+}
