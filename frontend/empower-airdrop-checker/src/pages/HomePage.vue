@@ -1,21 +1,58 @@
 <script setup lang="ts">
-import { toBech32, fromBech32 } from "cosmwasm";
+import { toBech32, fromBech32 } from "@cosmjs/encoding";
 import { ref } from "vue";
+import {cosmos, empowerchain} from "@empower-plastic/empowerjs";
 
 const address = ref();
-const toStars = (addr: string) => {
+const toEmpowerAddress = () => {
+  const addr = address.value.trim();
   try {
-    // const { prefix, data } = fromBech32(addr);
-    // const starsAddr = toBech32("stars", data);
-    // // wallet address length 20, contract address length 32
-    // if (![20, 32].includes(data.length)) {
-    //   throw new Error("Invalid address: " + addr + " " + starsAddr);
-    // }
-    // addr = starsAddr;
-    // return addr;
+    const { prefix, data } = fromBech32(addr);
+    const empowerAddress = toBech32("empower", data);
+    // wallet address length 20, contract address length 32
+    if (![20, 32].includes(data.length)) {
+      throw new Error("Invalid address: " + addr + ", got: " + empowerAddress);
+    }
+    console.log("empowerAddr", empowerAddress);
+    return empowerAddress;
   } catch (e) {
     throw new Error("Invalid address: " + addr + "," + e);
   }
+};
+
+const checkAirdrop = async () => {
+  const empowerAddress = toEmpowerAddress();
+  const { createRPCQueryClient } = empowerchain.ClientFactory;
+  const rpcQueryClient = await createRPCQueryClient({
+    rpcEndpoint: "https://rpc.empowerchain.io:26657",
+  });
+  let queryBalanceResponse = await rpcQueryClient.cosmos.bank.v1beta1.balance({
+    address: empowerAddress,
+    denom: "umpwr",
+  });
+  console.log("queryBalanceResponse", queryBalanceResponse);
+  console.log("queryBalanceResponse.balance as MPWR", queryBalanceResponse.balance?.amount/1000000);
+
+  let querySpendableBalance = await rpcQueryClient.cosmos.bank.v1beta1.spendableBalanceByDenom({
+    address: empowerAddress,
+    denom: "umpwr",
+  });
+  console.log("querySpendableBalance", querySpendableBalance);
+  console.log("querySpendableBalance.amount as MPWR", querySpendableBalance.balance?.amount/1000000);
+
+  let queryAccount = await rpcQueryClient.cosmos.auth.v1beta1.account({
+    address: empowerAddress,
+  });
+  console.log("queryAccount", queryAccount);
+  if (queryAccount.account?.typeUrl === "/cosmos.vesting.v1beta1.ContinuousVestingAccount") {
+    const vestingAccount = cosmos.vesting.v1beta1.ContinuousVestingAccount.decode(queryAccount.account.value);
+    console.log(vestingAccount);
+    console.log("start time in seconds", vestingAccount.startTime);
+    console.log("start time date", new Date(Number(vestingAccount.startTime) * 1000));
+    console.log("end time in seconds", vestingAccount.baseVestingAccount?.endTime);
+    console.log("end time date", new Date(Number(vestingAccount.baseVestingAccount?.endTime) * 1000));
+  }
+
 };
 </script>
 <template>
@@ -43,7 +80,7 @@ const toStars = (addr: string) => {
       />
       <button
         class="btn btn-ghost bg-buttonGreen ml-5 normal-case px-7"
-        @click=""
+        @click="checkAirdrop"
       >
         Check Eligibility
       </button>
