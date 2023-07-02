@@ -1,19 +1,25 @@
 <script setup lang="ts">
 import { toBech32, fromBech32 } from "@cosmjs/encoding";
 import { ref } from "vue";
-import {cosmos, empowerchain} from "@empower-plastic/empowerjs";
+import { cosmos, empowerchain } from "@empower-plastic/empowerjs";
+import SuccessModal from "@/components/SuccessModal.vue";
+import { RPC_ENDPOINT } from "@/config/config";
+import { toast } from "vue3-toastify";
 
 const address = ref();
+const showModal = ref(false);
+const data = ref();
+const loading = ref(false);
+
 const toEmpowerAddress = () => {
   const addr = address.value.trim();
   try {
-    const { prefix, data } = fromBech32(addr);
+    const { data } = fromBech32(addr);
     const empowerAddress = toBech32("empower", data);
     // wallet address length 20, contract address length 32
     if (![20, 32].includes(data.length)) {
       throw new Error("Invalid address: " + addr + ", got: " + empowerAddress);
     }
-    console.log("empowerAddr", empowerAddress);
     return empowerAddress;
   } catch (e) {
     throw new Error("Invalid address: " + addr + "," + e);
@@ -21,41 +27,58 @@ const toEmpowerAddress = () => {
 };
 
 const checkAirdrop = async () => {
-  const empowerAddress = toEmpowerAddress();
-  const { createRPCQueryClient } = empowerchain.ClientFactory;
-  const rpcQueryClient = await createRPCQueryClient({
-    rpcEndpoint: "https://rpc.empowerchain.io:26657",
-  });
-  let queryBalanceResponse = await rpcQueryClient.cosmos.bank.v1beta1.balance({
-    address: empowerAddress,
-    denom: "umpwr",
-  });
-  console.log("queryBalanceResponse", queryBalanceResponse);
-  console.log("queryBalanceResponse.balance as MPWR", queryBalanceResponse.balance?.amount/1000000);
+  try {
+    loading.value = true;
+    const empowerAddress = toEmpowerAddress();
+    const { createRPCQueryClient } = empowerchain.ClientFactory;
+    const rpcQueryClient = await createRPCQueryClient({
+      rpcEndpoint: RPC_ENDPOINT,
+    });
+    let queryBalanceResponse = await rpcQueryClient.cosmos.bank.v1beta1.balance(
+      {
+        address: empowerAddress,
+        denom: "umpwr",
+      }
+    );
+    let querySpendableBalance =
+      await rpcQueryClient.cosmos.bank.v1beta1.spendableBalanceByDenom({
+        address: empowerAddress,
+        denom: "umpwr",
+      });
 
-  let querySpendableBalance = await rpcQueryClient.cosmos.bank.v1beta1.spendableBalanceByDenom({
-    address: empowerAddress,
-    denom: "umpwr",
-  });
-  console.log("querySpendableBalance", querySpendableBalance);
-  console.log("querySpendableBalance.amount as MPWR", querySpendableBalance.balance?.amount/1000000);
+    let queryAccount = await rpcQueryClient.cosmos.auth.v1beta1.account({
+      address: empowerAddress,
+    });
 
-  let queryAccount = await rpcQueryClient.cosmos.auth.v1beta1.account({
-    address: empowerAddress,
-  });
-  console.log("queryAccount", queryAccount);
-  if (queryAccount.account?.typeUrl === "/cosmos.vesting.v1beta1.ContinuousVestingAccount") {
-    const vestingAccount = cosmos.vesting.v1beta1.ContinuousVestingAccount.decode(queryAccount.account.value);
-    console.log(vestingAccount);
-    console.log("start time in seconds", vestingAccount.startTime);
-    console.log("start time date", new Date(Number(vestingAccount.startTime) * 1000));
-    console.log("end time in seconds", vestingAccount.baseVestingAccount?.endTime);
-    console.log("end time date", new Date(Number(vestingAccount.baseVestingAccount?.endTime) * 1000));
+    if (
+      queryAccount.account?.typeUrl ===
+      "/cosmos.vesting.v1beta1.ContinuousVestingAccount"
+    ) {
+      const vestingAccount =
+        cosmos.vesting.v1beta1.ContinuousVestingAccount.decode(
+          queryAccount.account.value
+        );
+
+      data.value = {
+        totalBalance: queryBalanceResponse.balance?.amount / 1000000,
+        spendableBalance: querySpendableBalance.balance?.amount / 1000000,
+        startDate: new Date(Number(vestingAccount.startTime) * 1000),
+        endDate: new Date(
+          Number(vestingAccount.baseVestingAccount?.endTime) * 1000
+        ),
+      };
+      loading.value = false;
+      showModal.value = true;
+    }
+  } catch (e) {
+    toast.error(`${e}`);
+    console.error(e);
+    loading.value = false;
   }
-
 };
 </script>
 <template>
+  <SuccessModal v-model:show-modal="showModal" :data="data" />
   <div class="p-5 md:px-[10%] min-h-[50vh]">
     <!--    Header-->
     <div class="flex flex-row">
@@ -79,41 +102,36 @@ const checkAirdrop = async () => {
         class="input bg-inputBox w-full rounded-sm border-[2px] border-inputBorder text-white text-title18"
       />
       <button
-        class="btn btn-ghost bg-buttonGreen ml-5 normal-case px-7"
+        class="btn btn-ghost bg-buttonGreen ml-5 normal-case px-7 disabled:bg-modalBackground text-title24 disabled:text-white"
         @click="checkAirdrop"
+        :disabled="loading || !address"
       >
-        Check Eligibility
+        {{ loading ? "Processing" : "Check Eligibility" }}
       </button>
     </div>
     <!--    Content-->
     <div class="flex flex-col mt-14 px-[120px] break-words mt-20">
       <div class="flex flex-row">
         <div class="text-left mr-10">
-          <p class="text-title24 text-contentTitle">What is an Airdrop?</p>
-          <p class="text-title17 text-contentTitle capitalize">
+          <p class="content-title">What is an Airdrop?</p>
+          <p class="content-text">
             An Airdrop is a free distribution of tokens across a number of
             wallet addresses that meet a certain criteria, or show past signs of
             activity on chain or other chains.
           </p>
         </div>
-        <div class="min-w-[350px] min-h-[200px]">
-          <img
-            class="w-[350px] h-[200px]"
-            src="https://dummyimage.com/16:9x1080/"
-          />
+        <div class="image-container">
+          <img class="image" src="../assets/image3.png" />
         </div>
       </div>
 
       <div class="flex flex-row mt-20">
-        <div class="min-w-[350px] min-h-[200px]">
-          <img
-            class="w-[350px] h-[200px]"
-            src="https://dummyimage.com/16:9x1080/"
-          />
+        <div class="image-container">
+          <img class="image" src="../assets/image6.png" />
         </div>
         <div class="text-right ml-10">
-          <p class="text-title24 text-contentTitle">Why we’re doing it</p>
-          <p class="text-title17 text-contentTitle capitalize">
+          <p class="content-title">Why we’re doing it</p>
+          <p class="content-text">
             The Genesis Airdrop is a way for the Archway Foundation to give back
             to active Cosmonauts and at the same time decentralize the ARCH
             token supply, making sure we’re what you want us to be, from day
@@ -124,27 +142,28 @@ const checkAirdrop = async () => {
 
       <div class="flex flex-row mt-20">
         <div class="text-left mr-10">
-          <p class="text-title24 text-contentTitle">Eligibility Criteria</p>
-          <p class="text-title17 text-contentTitle capitalize">
+          <p class="content-title">Eligibility Criteria</p>
+          <p class="content-text">
             To participate in this first airdrop, your address must meet the
             following criteria:
             <br />
             &#x2022; You must not be a U.S. person or from a prohibited
-            jurisdiction. At 1/16/2023 18:03 UTC, you had either More than 25
-            ATOM delegated (to any number of validators) Bridged more than €5k
-            worth of assets in a single transaction, through Axelar Deployed a
-            contract on Terra (Classic) Used Constantine-2, or Torii testnets By
+            jurisdiction.<br />
+            &#x2022; At 1/16/2023 18:03 UTC, you had either <br />
+            &emsp; &#x2022; More than 25 ATOM delegated (to any number of
+            validators)<br />
+            &emsp; &#x2022; Bridged more than €5k worth of assets in a single
+            transaction, through &emsp;&nbsp;&nbsp; Axelar <br />
+            &emsp; &#x2022; Deployed a contract on Terra (Classic) <br />
+            &emsp; &#x2022; Used Constantine-2, or Torii testnets <br />By
             providing an address that meets at least one of the practical
             requirements you will be able to participate in the airdrop. But
             your total possible allocation will change depending on how many of
             the practical requirements you meet. More details can be found here.
           </p>
         </div>
-        <div class="min-w-[350px] min-h-[200px]">
-          <img
-            class="w-[350px] h-[200px]"
-            src="https://dummyimage.com/16:9x1080/"
-          />
+        <div class="image-container">
+          <img class="image" src="../assets/image1.png" />
         </div>
       </div>
     </div>
