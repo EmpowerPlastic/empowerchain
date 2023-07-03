@@ -75,7 +75,6 @@ const handleSelectWallet = async (walletType: string) => {
   if (walletAddress && walletType) {
     localStorage.setItem("address", walletAddress);
     localStorage.setItem("wallet", walletType);
-    console.log(walletAddress);
     store.address = walletAddress;
   }
   closeSelectWalletModal();
