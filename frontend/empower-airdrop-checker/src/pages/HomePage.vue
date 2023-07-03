@@ -6,7 +6,6 @@ import SuccessModal from "@/components/ResultModal.vue";
 import { RPC_ENDPOINT } from "@/config/config";
 import { toast } from "vue3-toastify";
 import { store } from "@/store/store";
-import type { QueryAccountResponse } from "@empower-plastic/empowerjs/types/codegen/cosmos/auth/v1beta1/query";
 
 const address = ref();
 const showModal = ref(false);
@@ -31,8 +30,7 @@ const toEmpowerAddress = () => {
 };
 watch(
   () => store.address,
-  (newValue: string) => {
-    console.log("DIS HAPPENING", newValue);
+  (newValue: any) => {
     address.value = newValue;
   }
 );
@@ -47,7 +45,7 @@ const checkAirdrop = async () => {
       rpcEndpoint: RPC_ENDPOINT,
     });
 
-    let queryAccount: QueryAccountResponse;
+    let queryAccount;
     try {
       queryAccount = await rpcQueryClient.cosmos.auth.v1beta1.account({
         address: empowerAddress,
@@ -86,8 +84,9 @@ const checkAirdrop = async () => {
         );
 
       data.value = {
-        totalBalance: queryBalanceResponse.balance?.amount / 1000000,
-        spendableBalance: querySpendableBalance.balance?.amount / 1000000,
+        totalBalance: parseInt(queryBalanceResponse.balance!.amount) / 1000000,
+        spendableBalance:
+          parseInt(querySpendableBalance.balance!.amount) / 1000000,
         startDate: new Date(Number(vestingAccount.startTime) * 1000),
         endDate: new Date(
           Number(vestingAccount.baseVestingAccount?.endTime) * 1000

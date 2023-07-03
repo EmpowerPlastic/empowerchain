@@ -8,7 +8,6 @@ import {
   RPC_ENDPOINT,
 } from "@/config/config";
 import {getWalletFromType} from "@/utils/wallet-utils";
-import {defineProps, defineEmits} from "vue";
 
 export interface SelectWalletModalProps {
   showModal: boolean;
