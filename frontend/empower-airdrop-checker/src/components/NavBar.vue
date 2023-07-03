@@ -12,21 +12,28 @@ const selectedWallet = ref();
 const selectWalletModal = ref(false);
 
 onMounted(() => {
-  let wallet = localStorage.getItem("wallet");
-  //Check wallet in kepler
+  //Check wallet change in kepler
   window.addEventListener("keplr_keystorechange", () => {
-    if (wallet) {
-      handleSelectWallet(wallet);
-    }
+    handleWalletAccountChange();
   });
-  //Check wallet in cosmostation
-  const event = window.cosmostation.cosmos.on("accountChanged", () => {
-    if (wallet) {
-      handleSelectWallet(wallet);
-    }
+
+  //Check wallet change in cosmostation
+  window.addEventListener("cosmostation_keystorechange", () => {
+    handleWalletAccountChange();
   });
-  window.cosmostation.cosmos.off(event);
+
+  //Check wallet change in leap
+  window.addEventListener("leap_keystorechange", () => {
+    handleWalletAccountChange();
+  });
 });
+
+const handleWalletAccountChange = () => {
+  let wallet = localStorage.getItem("wallet");
+  if (wallet && address.value) {
+    handleSelectWallet(wallet);
+  }
+};
 const openSelectWalletModal = () => {
   selectWalletModal.value = true;
 };
@@ -34,6 +41,7 @@ const openSelectWalletModal = () => {
 const closeSelectWalletModal = () => {
   selectWalletModal.value = false;
 };
+
 const connect = async () => {
   let addressLocal = localStorage.getItem("address");
   let wallet = localStorage.getItem("wallet");
@@ -67,6 +75,7 @@ const handleSelectWallet = async (walletType: string) => {
   if (walletAddress && walletType) {
     localStorage.setItem("address", walletAddress);
     localStorage.setItem("wallet", walletType);
+    console.log(walletAddress);
     store.address = walletAddress;
   }
   closeSelectWalletModal();
