@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { toBech32, fromBech32 } from "@cosmjs/encoding";
-import { ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { cosmos, empowerchain } from "@empower-plastic/empowerjs";
 import SuccessModal from "@/components/SuccessModal.vue";
 import { RPC_ENDPOINT } from "@/config/config";
 import { toast } from "vue3-toastify";
+import { store } from "@/store/store";
 
 const address = ref();
 const showModal = ref(false);
+const showModalError = ref(false);
 const data = ref();
 const loading = ref(false);
 
@@ -25,6 +27,12 @@ const toEmpowerAddress = () => {
     throw new Error("Invalid address: " + addr + "," + e);
   }
 };
+watch(
+  () => store.address,
+  (newValue: string) => {
+    address.value = newValue;
+  }
+);
 
 const checkAirdrop = async () => {
   try {
@@ -69,6 +77,9 @@ const checkAirdrop = async () => {
       };
       loading.value = false;
       showModal.value = true;
+    } else {
+      showModal.value = true;
+      showModalError.value = true;
     }
   } catch (e) {
     toast.error(`${e}`);
@@ -78,7 +89,11 @@ const checkAirdrop = async () => {
 };
 </script>
 <template>
-  <SuccessModal v-model:show-modal="showModal" :data="data" />
+  <SuccessModal
+    v-model:show-modal="showModal"
+    :data="data"
+    :show-error="showModalError"
+  />
   <div class="p-5 md:px-[10%] min-h-[50vh]">
     <!--    Header-->
     <div class="flex flex-row">

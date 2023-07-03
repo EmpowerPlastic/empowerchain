@@ -4,6 +4,7 @@ import { toast } from "vue3-toastify";
 import { onMounted, ref } from "vue";
 import { getWalletFromType } from "@/utils/wallet-utils";
 import { CHAIN_ID } from "@/config/config";
+import { store } from "../store/store";
 
 const address = ref();
 const addressVisible = ref();
@@ -11,9 +12,21 @@ const selectedWallet = ref();
 const selectWalletModal = ref(false);
 
 onMounted(() => {
-  connect();
+  let wallet = localStorage.getItem("wallet");
+  //Check wallet in kepler
+  window.addEventListener("keplr_keystorechange", () => {
+    if (wallet) {
+      handleSelectWallet(wallet);
+    }
+  });
+  //Check wallet in cosmostation
+  const event = window.cosmostation.cosmos.on("accountChanged", () => {
+    if (wallet) {
+      handleSelectWallet(wallet);
+    }
+  });
+  window.cosmostation.cosmos.off(event);
 });
-
 const openSelectWalletModal = () => {
   selectWalletModal.value = true;
 };
@@ -54,6 +67,7 @@ const handleSelectWallet = async (walletType: string) => {
   if (walletAddress && walletType) {
     localStorage.setItem("address", walletAddress);
     localStorage.setItem("wallet", walletType);
+    store.address = walletAddress;
   }
   closeSelectWalletModal();
 };
@@ -61,6 +75,7 @@ const handleSelectWallet = async (walletType: string) => {
 const disconnectWallet = () => {
   localStorage.removeItem("address");
   localStorage.removeItem("wallet");
+  store.address = undefined;
   location.reload();
 };
 

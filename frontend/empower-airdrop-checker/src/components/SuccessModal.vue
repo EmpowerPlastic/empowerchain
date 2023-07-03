@@ -2,6 +2,7 @@
 import { defineProps, defineEmits } from "vue";
 export interface SuccessModalProps {
   showModal: boolean;
+  showError: boolean;
   data: {
     totalBalance: number;
     spendableBalance: number;
@@ -36,10 +37,14 @@ const closeModal = () => {
       </label>
       <div class="p-10">
         <div class="flex justify-center">
-          <p class="text-title38 text-buttonGreen">Congratulations!</p>
+          <p class="text-title38 text-buttonGreen">
+            {{ showError ? "Opps !" : "Congratulations!" }}
+          </p>
         </div>
-        <div class="flex md:flex-row flex-col items-center gap-5 my-5">
-          <p class="text-title17 text-center">
+        <div
+          class="flex md:flex-row flex-col items-center justify-center gap-5 my-5"
+        >
+          <p class="text-title17 text-center" v-if="!showError">
             Congratulations, your address was eligible for the EmpowerChain
             airdrop! The tokens are already in your wallet, nothing to claim!<br />
             You have {{ data?.totalBalance }} MPWR tokens in your wallet, of
@@ -47,6 +52,9 @@ const closeModal = () => {
             {{ data?.totalBalance - data?.spendableBalance }} MPWR will vest
             linearly from {{ new Date(data?.startDate).toLocaleString() }} to
             {{ new Date(data?.endDate).toLocaleDateString() }}
+          </p>
+          <p class="text-title17 text-center" v-if="showError">
+            Sorry,You were not eligible for the airdrop
           </p>
         </div>
 
