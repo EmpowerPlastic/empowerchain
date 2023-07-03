@@ -24,6 +24,12 @@ The font we typically use is OpenSans.
 ## Empower logo
 ![Empower Logo](./empower-logo.png)
 
+## Empower logo filled green
+![Empower Logo filled green](./empower-logo-filled-green.png)
+
+## Empower logo filled white
+![Empower Logo filled white](./empower-logo-filled-white.png)
+
 ## EmpowerChain banner
 ![EmpowerChain Banner](./empowerchain-banner.png)
 
