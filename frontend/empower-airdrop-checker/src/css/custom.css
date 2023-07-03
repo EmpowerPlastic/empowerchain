@@ -14,7 +14,7 @@
    @apply text-title24 text-contentTitle mb-3
 }
 .content-text{
-    @apply text-title17 text-contentTitle capitalize
+    @apply text-title17 text-contentTitle
 }
 .image-container{
     @apply min-w-[350px] min-h-[200px]

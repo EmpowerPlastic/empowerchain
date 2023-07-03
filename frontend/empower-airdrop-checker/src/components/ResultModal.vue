@@ -17,6 +17,10 @@ const emitWalletModal = defineEmits(["update:showModal"]);
 const closeModal = () => {
   emitWalletModal("update:showModal", false);
 };
+
+const goToStake = () => {
+  window.open("https://ping.pub/empower/staking", "_blank");
+};
 </script>
 <template>
   <input
@@ -38,7 +42,7 @@ const closeModal = () => {
       <div class="p-10">
         <div class="flex justify-center">
           <p class="text-title38 text-buttonGreen">
-            {{ showError ? "Opps !" : "Congratulations!" }}
+            {{ showError ? "Not this time..." : "Congratulations!" }}
           </p>
         </div>
         <div
@@ -46,7 +50,9 @@ const closeModal = () => {
         >
           <p class="text-title17 text-center" v-if="!showError">
             Congratulations, your address was eligible for the EmpowerChain
-            airdrop! The tokens are already in your wallet, nothing to claim!<br />
+            airdrop and/or testnet rewards! The tokens are already in your
+            wallet, nothing to claim!
+            <br /><br />
             You have {{ data?.totalBalance }} MPWR tokens in your wallet, of
             which {{ data?.spendableBalance }} MPWR is spendable. The remaining
             {{ data?.totalBalance - data?.spendableBalance }} MPWR will vest
@@ -54,13 +60,13 @@ const closeModal = () => {
             {{ new Date(data?.endDate).toLocaleDateString() }}
           </p>
           <p class="text-title17 text-center" v-if="showError">
-            Sorry,You were not eligible for the airdrop
+            Sorry, you were not eligible for the airdrop.
           </p>
         </div>
 
-        <!--        <button class="btn btn-ghost w-full bg-modalButton">-->
-        <!--          Action Button-->
-        <!--        </button>-->
+        <button @click="goToStake" v-if="!showError" class="btn btn-ghost w-full bg-modalButton">
+          Stake your tokens now
+        </button>
       </div>
     </div>
   </div>

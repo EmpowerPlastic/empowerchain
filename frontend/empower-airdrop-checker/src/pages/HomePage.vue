@@ -2,10 +2,11 @@
 import { toBech32, fromBech32 } from "@cosmjs/encoding";
 import { onMounted, ref, watch } from "vue";
 import { cosmos, empowerchain } from "@empower-plastic/empowerjs";
-import SuccessModal from "@/components/SuccessModal.vue";
+import SuccessModal from "@/components/ResultModal.vue";
 import { RPC_ENDPOINT } from "@/config/config";
 import { toast } from "vue3-toastify";
 import { store } from "@/store/store";
+import type { QueryAccountResponse } from "@empower-plastic/empowerjs/types/codegen/cosmos/auth/v1beta1/query";
 
 const address = ref();
 const showModal = ref(false);
@@ -14,6 +15,7 @@ const data = ref();
 const loading = ref(false);
 
 const toEmpowerAddress = () => {
+  console.log("Address", address.value);
   const addr = address.value.trim();
   try {
     const { data } = fromBech32(addr);
@@ -30,6 +32,7 @@ const toEmpowerAddress = () => {
 watch(
   () => store.address,
   (newValue: string) => {
+    console.log("DIS HAPPENING", newValue);
     address.value = newValue;
   }
 );
@@ -37,11 +40,29 @@ watch(
 const checkAirdrop = async () => {
   try {
     loading.value = true;
+
     const empowerAddress = toEmpowerAddress();
     const { createRPCQueryClient } = empowerchain.ClientFactory;
     const rpcQueryClient = await createRPCQueryClient({
       rpcEndpoint: RPC_ENDPOINT,
     });
+
+    let queryAccount: QueryAccountResponse;
+    try {
+      queryAccount = await rpcQueryClient.cosmos.auth.v1beta1.account({
+        address: empowerAddress,
+      });
+    } catch (e: any) {
+      loading.value = false;
+      if (e.message && e.message.includes("key not found")) {
+        showModal.value = true;
+        showModalError.value = true;
+      } else {
+        toast.error(`${e}`);
+      }
+      return;
+    }
+
     let queryBalanceResponse = await rpcQueryClient.cosmos.bank.v1beta1.balance(
       {
         address: empowerAddress,
@@ -54,14 +75,11 @@ const checkAirdrop = async () => {
         denom: "umpwr",
       });
 
-    let queryAccount = await rpcQueryClient.cosmos.auth.v1beta1.account({
-      address: empowerAddress,
-    });
-
     if (
       queryAccount.account?.typeUrl ===
       "/cosmos.vesting.v1beta1.ContinuousVestingAccount"
     ) {
+      console.log("is vesting account");
       const vestingAccount =
         cosmos.vesting.v1beta1.ContinuousVestingAccount.decode(
           queryAccount.account.value
@@ -77,6 +95,7 @@ const checkAirdrop = async () => {
       };
       loading.value = false;
       showModal.value = true;
+      showModalError.value = false;
     } else {
       showModal.value = true;
       showModalError.value = true;
@@ -114,6 +133,7 @@ const checkAirdrop = async () => {
     <div class="flex flex-row p-[30px] bg-inputContainer rounded-lg mt-10">
       <input
         v-model="address"
+        placeholder="Enter your cosmos-based wallet address (or connect your wallet)"
         class="input bg-inputBox w-full rounded-sm border-[2px] border-inputBorder text-white text-title18"
       />
       <button
@@ -128,29 +148,49 @@ const checkAirdrop = async () => {
     <div class="flex flex-col mt-14 px-[120px] break-words mt-20">
       <div class="flex flex-row">
         <div class="text-left mr-10">
-          <p class="content-title">What is an Airdrop?</p>
+          <p class="content-title">What is this Airdrop thing?</p>
           <p class="content-text">
-            An Airdrop is a free distribution of tokens across a number of
-            wallet addresses that meet a certain criteria, or show past signs of
-            activity on chain or other chains.
+            An airdrop is a distribution of tokens to a wallet addresses that
+            meet some set of criteria. In our case, we’re airdropping to stakers
+            on certain blockchains which Empower is aligned and/or partnering
+            with. For full details, see the Eligibility Criteria section below.
+            <br />
+            <br />
+            All tokens airdropped will be locked until 7th of July 2023 and then
+            vest linearly over 12 months (meaning you’ll get 1/12th of after the
+            first month of vesting, 2/12th after the second month, etc).
           </p>
         </div>
         <div class="image-container">
-          <img class="image" src="../assets/image3.png" />
+          <img class="image" src="../assets/image1.png" />
         </div>
       </div>
 
       <div class="flex flex-row mt-20">
         <div class="image-container">
-          <img class="image" src="../assets/image6.png" />
+          <img class="image" src="../assets/image3.png" />
         </div>
-        <div class="text-right ml-10">
-          <p class="content-title">Why we’re doing it</p>
+        <div class="text-left ml-10">
+          <p class="content-title">EmpowerChain and MPWR</p>
           <p class="content-text">
-            The Genesis Airdrop is a way for the Archway Foundation to give back
-            to active Cosmonauts and at the same time decentralize the ARCH
-            token supply, making sure we’re what you want us to be, from day
-            one.
+            EmpowerChain is a blockchain network designed to support the
+            circular economy and promote equal opportunities for all
+            stakeholders. Empower has been working on this problem for more than
+            5 years and already have users on our SaaS platform from more than
+            45 countries.
+            <br />
+            <br />
+            The MPWR token is the native utility network token for EmpowerChain
+            and is needed to secure the network, participate in governance and
+            pay for fees on different dApps built on it. For a deeper dive into
+            the tokenomics, see
+            <a
+              style="text-decoration: underline"
+              href="https://docs.empowerchain.io/tokenomics/overview"
+              target="_blank"
+              >Tokenomics Overview</a
+            >
+            in our docs.
           </p>
         </div>
       </div>
@@ -159,26 +199,31 @@ const checkAirdrop = async () => {
         <div class="text-left mr-10">
           <p class="content-title">Eligibility Criteria</p>
           <p class="content-text">
-            To participate in this first airdrop, your address must meet the
-            following criteria:
+            At the genesis of EmpowerChain, 7,250,000 MPWR tokens have been
+            distributed to 122,386 recipients. More airdrops will come at a
+            later time, with main bonuses coming to those who keep and stake
+            their MPWR.
             <br />
-            &#x2022; You must not be a U.S. person or from a prohibited
-            jurisdiction.<br />
-            &#x2022; At 1/16/2023 18:03 UTC, you had either <br />
-            &emsp; &#x2022; More than 25 ATOM delegated (to any number of
-            validators)<br />
-            &emsp; &#x2022; Bridged more than €5k worth of assets in a single
-            transaction, through &emsp;&nbsp;&nbsp; Axelar <br />
-            &emsp; &#x2022; Deployed a contract on Terra (Classic) <br />
-            &emsp; &#x2022; Used Constantine-2, or Torii testnets <br />By
-            providing an address that meets at least one of the practical
-            requirements you will be able to participate in the airdrop. But
-            your total possible allocation will change depending on how many of
-            the practical requirements you meet. More details can be found here.
+            <br />
+            The following chains have gotten airdropped: <br />
+            &#x2022; Stargaze (cap at 15000 STARS and minimum 251 STARS)<br />
+            &#x2022; Osmosis (cap at 300 OSMO and minimum 11 OSMO)<br />
+            &#x2022; Regen (cap at 1000 REGEN and minimum 10 REGEN)<br />
+            &#x2022; Cheqd (cap at 5000 CHEQ, minimum 15 CHEQ)<br />
+            &#x2022; Ixo (cap at 2500 IXO, minimum 100 IXO)<br />
+            &#x2022; Jackal (cap 1000 JKL, minimum 11 JKL)<br />
+            <br /><br />
+            To read more about the whole process, see the
+            <a
+              style="text-decoration: underline"
+              href="https://medium.com/empowerplastic/empowerchain-launch-airdrop-and-testnet-rewards-1c8a595cd26f"
+              target="_blank"
+              >EmpowerChain launch blogpost</a
+            >
           </p>
         </div>
         <div class="image-container">
-          <img class="image" src="../assets/image1.png" />
+          <img class="image" src="../assets/eligible2.png" />
         </div>
       </div>
     </div>

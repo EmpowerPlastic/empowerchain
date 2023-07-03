@@ -31,7 +31,17 @@ import { defineComponent } from "vue";
       <ul>
         <p class="font-bold text-title18 mb-4">Quick Links</p>
         <li class="text-title14 text-textLightGray mb-2">
-          <a @click="toast.info('Coming soon!')">FAQ</a>
+          <a @click="toast.info('Coming soon!')">StreamSwap</a>
+        </li>
+        <li class="text-title14 text-textLightGray mb-2">
+          <a
+            target="_blank"
+            href="https://docs.empowerchain.io/tokenomics/overview"
+            >Tokenomics</a
+          >
+        </li>
+        <li class="text-title14 text-textLightGray mb-2">
+          <a target="_blank" href="https://docs.empowerchain.io/">Docs</a>
         </li>
       </ul>
       <ul>
