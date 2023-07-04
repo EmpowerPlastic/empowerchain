@@ -13,17 +13,3 @@ export function getWalletFromType(wallet: string): Keplr {
       throw new Error("Wallet not supported");
   }
 }
-
-export const getWallet = () => {
-  const selectedWallet = localStorage.getItem("wallet");
-  if (selectedWallet) {
-    return getWalletFromType(selectedWallet);
-  } else {
-    throw new Error("Please connect wallet");
-  }
-};
-
-export const walletConnected = () => {
-  const address = localStorage.getItem("address");
-  return !!address;
-};

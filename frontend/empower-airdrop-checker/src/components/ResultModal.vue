@@ -52,9 +52,9 @@ const goToStake = () => {
             airdrop and/or testnet rewards! The tokens are already in your
             wallet, nothing to claim!
             <br /><br />
-            You have {{ data?.totalBalance }} MPWR tokens in your wallet, of
-            which {{ data?.spendableBalance }} MPWR is spendable. The remaining
-            {{ data?.totalBalance - data?.spendableBalance }} MPWR will vest
+            You got {{ data?.totalBalance }} MPWR tokens in the airdrop, and you
+            have have {{ data?.spendableBalance }} MPWR which is spendable right
+            now. The {{ data?.totalBalance }} MPWR from the airdrop will vest
             linearly from {{ new Date(data?.startDate).toLocaleString() }} to
             {{ new Date(data?.endDate).toLocaleDateString() }}
           </p>
@@ -63,7 +63,11 @@ const goToStake = () => {
           </p>
         </div>
 
-        <button @click="goToStake" v-if="!showError" class="btn btn-ghost w-full bg-modalButton">
+        <button
+          @click="goToStake"
+          v-if="!showError"
+          class="btn btn-ghost w-full bg-modalButton"
+        >
           Stake your tokens now
         </button>
       </div>

@@ -61,12 +61,6 @@ const checkAirdrop = async () => {
       return;
     }
 
-    let queryBalanceResponse = await rpcQueryClient.cosmos.bank.v1beta1.balance(
-      {
-        address: empowerAddress,
-        denom: "umpwr",
-      }
-    );
     let querySpendableBalance =
       await rpcQueryClient.cosmos.bank.v1beta1.spendableBalanceByDenom({
         address: empowerAddress,
@@ -77,14 +71,13 @@ const checkAirdrop = async () => {
       queryAccount.account?.typeUrl ===
       "/cosmos.vesting.v1beta1.ContinuousVestingAccount"
     ) {
-      console.log("is vesting account");
       const vestingAccount =
         cosmos.vesting.v1beta1.ContinuousVestingAccount.decode(
           queryAccount.account.value
         );
 
       data.value = {
-        totalBalance: parseInt(queryBalanceResponse.balance!.amount) / 1000000,
+        totalBalance: parseInt(vestingAccount.baseVestingAccount!.originalVesting[0].amount) / 1000000,
         spendableBalance:
           parseInt(querySpendableBalance.balance!.amount) / 1000000,
         startDate: new Date(Number(vestingAccount.startTime) * 1000),
