@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { toBech32, fromBech32 } from "@cosmjs/encoding";
-import { onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { cosmos, empowerchain } from "@empower-plastic/empowerjs";
 import SuccessModal from "@/components/ResultModal.vue";
 import { RPC_ENDPOINT } from "@/config/config";
@@ -108,29 +108,45 @@ const checkAirdrop = async () => {
   />
   <div class="p-5 md:px-[10%] min-h-[50vh]">
     <!--    Header-->
-    <div class="flex flex-row">
-      <div class="flex flex-col mt-10">
-        <div class="flex flex-row items-end">
-          <h1 class="text-title38 mr-2">EMPOWER CHAIN</h1>
-          <h1 class="text-titleText text-title86 leading-[133px]">AIRDROP</h1>
+    <div class="flex flex-row justify-center">
+      <div class="flex flex-col md:mt-10 mt-5">
+        <div class="flex md:flex-row flex-col md:items-end">
+          <h1 class="text-[1rem] md:text-title38 mr-2">EMPOWER CHAIN</h1>
+          <h1
+            class="text-titleText text-[3rem] leading-[45px] md:text-title86 md:leading-[133px]"
+          >
+            AIRDROP
+          </h1>
         </div>
         <div>
-          <h1 class="text-white text-title86 leading-[90px]">CHECKER</h1>
+          <h1
+            class="text-white text-[3rem] leading-[45px] md:text-title86 md:leading-[90px]"
+          >
+            CHECKER
+          </h1>
         </div>
       </div>
       <div>
-        <img class="w-80 ml-10" src="../assets/coinImage.svg" />
+        <img class="h-[190px] md:w-80 md:ml-10" src="../assets/coinImage.svg" />
       </div>
     </div>
     <!--    Check Eligibility-->
-    <div class="flex flex-row p-[30px] bg-inputContainer rounded-lg mt-10">
+    <div
+      class="flex flex-col md:flex-row p-4 md:p-[30px] bg-inputContainer rounded-lg mt-5 md:mt-20"
+    >
+      <textarea
+        v-model="address"
+        rows="4"
+        placeholder="Enter your cosmos-based wallet address (or connect your wallet)"
+        class="input md:hidden bg-inputBox w-full p-3 rounded-sm border-[2px] border-inputBorder text-white text-title18 h-[200px]"
+      />
       <input
         v-model="address"
         placeholder="Enter your cosmos-based wallet address (or connect your wallet)"
-        class="input bg-inputBox w-full rounded-sm border-[2px] border-inputBorder text-white text-title18"
+        class="input hidden md:block bg-inputBox w-full rounded-sm border-[2px] border-inputBorder text-white text-title18"
       />
       <button
-        class="btn btn-ghost bg-buttonGreen ml-5 normal-case px-7 disabled:bg-modalBackground text-title24 disabled:text-white"
+        class="btn btn-ghost bg-buttonGreen mt-5 md:mt-0 md:ml-5 normal-case px-7 disabled:bg-modalBackground text-title24 disabled:text-white font-normal"
         @click="checkAirdrop"
         :disabled="loading || !address"
       >
@@ -138,9 +154,9 @@ const checkAirdrop = async () => {
       </button>
     </div>
     <!--    Content-->
-    <div class="flex flex-col mt-14 px-[120px] break-words mt-20">
-      <div class="flex flex-row">
-        <div class="text-left mr-10">
+    <div class="flex flex-col md:px-[120px] break-words mt-20">
+      <div class="flex flex-col md:flex-row">
+        <div class="md:text-left md:mr-10 mb-10 md:mb-0">
           <p class="content-title">What is this Airdrop thing?</p>
           <p class="content-text">
             An airdrop is a distribution of tokens to a wallet addresses that
@@ -154,16 +170,16 @@ const checkAirdrop = async () => {
             first month of vesting, 2/12th after the second month, etc).
           </p>
         </div>
-        <div class="image-container">
+        <div class="image-container pr-3 md:pr-0">
           <img class="image" src="../assets/image1.png" />
         </div>
       </div>
 
-      <div class="flex flex-row mt-20">
-        <div class="image-container">
+      <div class="flex flex-col md:flex-row mt-20">
+        <div class="image-container hidden md:block">
           <img class="image" src="../assets/image3.png" />
         </div>
-        <div class="text-left ml-10">
+        <div class="md:text-left md:ml-10 mb-5 md:mb-0">
           <p class="content-title">EmpowerChain and MPWR</p>
           <p class="content-text">
             EmpowerChain is a blockchain network designed to support the
@@ -186,10 +202,13 @@ const checkAirdrop = async () => {
             in our docs.
           </p>
         </div>
+        <div class="image-container md:hidden pr-3 md:pr-0">
+          <img class="image" src="../assets/image3.png" />
+        </div>
       </div>
 
-      <div class="flex flex-row mt-20">
-        <div class="text-left mr-10">
+      <div class="flex flex-col md:flex-row mt-10 md:mt-20">
+        <div class="md:text-left md:mr-10 mb-10 md:mb-0">
           <p class="content-title">Eligibility Criteria</p>
           <p class="content-text">
             At the genesis of EmpowerChain, 7,250,000 MPWR tokens have been
@@ -215,7 +234,7 @@ const checkAirdrop = async () => {
             >
           </p>
         </div>
-        <div class="image-container">
+        <div class="image-container pr-3 md:pr-0">
           <img class="image" src="../assets/eligible2.png" />
         </div>
       </div>
