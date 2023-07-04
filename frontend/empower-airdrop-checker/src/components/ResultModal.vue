@@ -40,7 +40,7 @@ const goToStake = () => {
       </label>
       <div class="p-10">
         <div class="flex justify-center">
-          <p class="text-title38 text-buttonGreen">
+          <p class="text-title24 md:text-title38 text-buttonGreen">
             {{ showError ? "Not this time..." : "Congratulations!" }}
           </p>
         </div>
@@ -63,7 +63,11 @@ const goToStake = () => {
           </p>
         </div>
 
-        <button @click="goToStake" v-if="!showError" class="btn btn-ghost w-full bg-modalButton">
+        <button
+          @click="goToStake"
+          v-if="!showError"
+          class="btn btn-ghost w-full bg-modalButton"
+        >
           Stake your tokens now
         </button>
       </div>

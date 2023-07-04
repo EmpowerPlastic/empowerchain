@@ -20,5 +20,5 @@
     @apply min-w-[350px] min-h-[200px]
 }
 .image{
-    @apply w-[350px] h-[200px]
+    @apply w-full md:w-[350px] h-[200px]
 }

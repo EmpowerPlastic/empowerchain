@@ -98,7 +98,7 @@ const copyAddress = async () => {
     @on-wallet-select="onWalletSelect"
   />
   <div
-    class="navbar bg-gradient-radial bg-opacity-40 md:px-[10%]"
+    class="navbar bg-gradient-radial bg-opacity-40 px-5 md:px-[10%]"
     style="
       background-image: radial-gradient(
         50% 50% at 50% 50%,
@@ -109,14 +109,14 @@ const copyAddress = async () => {
   >
     <div class="flex-1">
       <a href="/">
-        <img class="h-7" src="../assets/mainLogo.svg" />
+        <img class="h-6 md:h-7" src="../assets/mainLogo.svg" />
       </a>
     </div>
     <div class="flex-none">
       <button
         v-if="!address"
         @click="openSelectWalletModal"
-        class="max-w-[220px] bg-lightBlack border border-borderBlack text-white text-title18 w-full rounded-xl h-full px-5 py-1 px-7"
+        class="max-w-[220px] bg-lightBlack border border-borderBlack text-white text-title18 w-full rounded-xl h-full py-1 px-3 md:px-7"
       >
         Connect wallet
       </button>
