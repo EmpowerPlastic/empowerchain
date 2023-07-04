@@ -89,6 +89,7 @@ const checkAirdrop = async () => {
       showModal.value = true;
       showModalError.value = false;
     } else {
+      loading.value = false;
       showModal.value = true;
       showModalError.value = true;
     }
