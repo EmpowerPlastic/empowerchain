@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 body {
-    @apply bg-main-image min-h-screen  bg-no-repeat bg-black;
+    @apply bg-main-image min-h-screen bg-no-repeat bg-black max-w-[1540px] mx-auto font-Inter;
     background-size: cover ;
     background-position: 0px 200px;
 
