@@ -1,0 +1,30 @@
+name: "Update Swagger docs"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'chain/proto/**' # On updating proto
+
+jobs:
+  build:
+    name: Update Swagger docs
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: earthly/actions/setup-earthly@v1
+        with:
+          version: v0.6.22
+
+      - run: earthly --ci --output +swagger-docs
+        working-directory: .chain/
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: Update chain Swagger docs
+          title: Update chain Swagger docs
+          branch: update-swagger-docs
+      
