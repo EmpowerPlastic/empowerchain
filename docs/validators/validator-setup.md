@@ -18,34 +18,7 @@ empowerd keys add <wallet-name> --recover
 
 This will prompt the user for the bip-32 mnemonic to properly recover the wallet.
 
-
-## Pre-Genesis
-
-For validators trying to join a testnet prior to launch, follow these instructions. For existing networks, follow the Post-Genesis steps.
-
-Now that a wallet has been created for the validator, initial funds must be added to the genesis account. The amount of the token to be added to the genesis account will normally be communicated prior to gentx collection.
-
-```bash
-empowerd gentx <key-name> 100000000umpwr
-```
-
-To assign this node as a validator during genesis, the initial gentx must be created. Replace any of the informational fields with the desired values at launch. Replace the `chain-id` with the desired chain-id.
-
-```bash
-empowerd gentx <key-name> 100000000umpwr \
-    --chain-id circulus-1 \
-    --commission-max-change-rate 0.1  \
-    --commission-max-rate 0.2   \
-    --commission-rate 0.05   \
-    --min-self-delegation "1"   \
-    --moniker "<moniker>"   \
-    --details= "" \
-    --website "" \
-    --security-contact=""   \
-    --identity= "<keybase-id>"
-```
-
-## Post-Genesis
+## Create validator
 
 For validators trying to join an existing network, follow this section to join the network.
 
@@ -64,7 +37,7 @@ Once the node is synced and the wallet has funds in it, the node can be upgraded
 ```bash
 empowerd tx staking create-validator \
     --amount 1000000umpwr \
-    --chain-id circulus-1 \
+    --chain-id empowerchain-1 \
     --commission-max-change-rate 0.1 \
     --commission-max-rate 0.2 \
     --commission-rate 0.05 \
