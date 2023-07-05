@@ -129,13 +129,13 @@ cd empowerchain
 Checkout the desired version to build. The latest release tag can be found on the [EmpowerChain Release Page](https://github.com/EmpowerPlastic/empowerchain/releases/)
 
 ```bash
-git checkout v1.0.0-rc2
+git checkout v1.0.0
 ```
 
 Compile the empowerd binary
 
 ```bash
-make install
+cd chain && make install
 ```
 
 Verify empowerd was built and can be found in the existing PATH.
@@ -154,36 +154,41 @@ Replace the `<chain-id>` field with the chain-id of the desired network.
 empowerd init "custom_moniker" --chain-id <chain-id>
 ```
 
-Example for the `circulus-1` testnet:
+Example for the `empowerchain-1` mainnet:
 
 ```bash
-empowerd init "custom_moniker" --chain-id circulus-1
+empowerd init "custom_moniker" --chain-id empowerchain-1
 ```
 
 ### Retrieve the Genesis File
 
-Retrieve a copy of the genesis file for the desired chain. The genesis file defines the initial state of the chain. Replace the `<genesis-url>` with the desired chain's genesis file URL from the official Empowerchain repo. For pre-genesis validator nodes, skip to the [Validator Setup](/validators/validator-setup) page to continue following pre-genesis setup steps.
+Retrieve a copy of the genesis file for the desired chain. The genesis file defines the initial state of the chain.
 
-```bash
-wget -O $HOME/empowerchain/config/genesis.json <genesis-url>
-```
-
-Example for the `circulus-1` testnet:
+For the `circulus-1` testnet use:
 ```bash
 wget -O $HOME/.empowerchain/config/genesis.json https://raw.githubusercontent.com/EmpowerPlastic/empowerchain/main/testnets/circulus-1/genesis.json
 ```
 
-### Set Persistent Peers and Seeds
-
-Retrieve the persistent peers and seeds from the Empowerchain official repo. All peer addresses follow the format of `<NODE-ID>@<IP-ADDRESS>:<PORT>`
-
+For `empowerchain-1` mainnet use:
 ```bash
-# Obtain the peers and seeds from the Empowerchain repository
-seeds="d6a7cd9fa2bafc0087cb606de1d6d71216695c25@51.159.161.174:26656"
-peers="e8b3fa38a15c426e046dd42a41b8df65047e03d5@95.217.144.107:26656,89ea54a37cd5a641e44e0cee8426b8cc2c8e5dfb@51.159.141.221:26656,0747860035271d8f088106814a4d0781eb7b2bc7@142.132.203.60:27656,3c758d8e37748dc692621a0d59b454bacb69b501@65.108.224.156:26656,41b97fced48681273001692d3601cd4024ceba59@5.9.147.185:26656"
+URL=https://github.com/EmpowerPlastic/empowerchain/raw/main/mainnet/empowerchain-1/genesis.tar.gz && \
+curl -L $URL | tar -xz -C $HOME/.empowerchain/config/
+```
 
-# Set the peers and seeds in the empowerd configuration file
-sed -i -e 's|^seeds *=.*|seeds = "'$seeds'"|; s|^persistent_peers *=.*|persistent_peers = "'$peers'"|' $HOME/.empowerchain/config/config.toml
+### Set Seed nodes
+
+Retrieve seeds from the Empowerchain official repo. All addresses follow the format of `<NODE-ID>@<IP-ADDRESS>:<PORT>`
+
+For `circulus-1` testnet use:
+```bash
+seeds="d6a7cd9fa2bafc0087cb606de1d6d71216695c25@51.159.161.174:26656" && \
+sed -i -e 's|^seeds *=.*|seeds = "'$seeds'"|' $HOME/.empowerchain/config/config.toml
+```
+
+For `empowerchain-1` mainnet use:
+```bash
+seeds="a1427b456513ab70967a2a5c618d347bc89e8848@seed.empowerchain.io:26656,6740fa259552a628266a85de8c2a3dee7702b8f9@empower-mainnet-seed.itrocket.net:14656,e16668ddd526f4e114ebb6c4714f0c18c0add8f8@empower-seed.zenscape.one:26656,f2ed98cf518b501b6d1c10c4a16d0dfbc4a9cc98@tenderseed.ccvalidators.com:27001" && \
+sed -i -e 's|^seeds *=.*|seeds = "'$seeds'"|' $HOME/.empowerchain/config/config.toml
 ```
 
 ### Set the minimum gas price
