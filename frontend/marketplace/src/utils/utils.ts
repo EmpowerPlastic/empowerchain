@@ -14,6 +14,10 @@ export const getDetailsList = (data: any) => {
   const materialArray: { key: string; value: string }[] = [];
   let volume: number = 0;
   let thumbnailUrl: string = "";
+  const locationPointersArray: {
+    lat: number;
+    lng: number;
+  }[] = [];
 
   data.map((item: any) => {
     if (item.applicantDataByCreditDataId) {
@@ -27,6 +31,10 @@ export const getDetailsList = (data: any) => {
         if (node.country) {
           locationArray.push(node.country);
         }
+        locationPointersArray.push({
+          lat: node?.latitude,
+          lng: node?.longitude,
+        });
         materialArray.push(...node.material.nodes);
       });
     }
@@ -51,5 +59,6 @@ export const getDetailsList = (data: any) => {
     volume: volume,
     thumbnailUrl: thumbnailUrl,
     image: imageArray,
+    locationPointers: locationPointersArray,
   };
 };

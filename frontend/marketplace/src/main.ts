@@ -9,6 +9,7 @@ import {
   provideApolloClient,
 } from "@vue/apollo-composable";
 import VueDatePicker from "@vuepic/vue-datepicker";
+import { VueHtmlToPaper } from "vue-html-to-paper";
 import Vue3Toastify, { type ToastContainerOptions } from "vue3-toastify";
 import Rollbar from "rollbar";
 import "vue-awesome-paginate/dist/style.css";
@@ -23,6 +24,18 @@ import {
   ROLLBAR_ACCESS_TOKEN,
 } from "@/config/config";
 
+const options = {
+  name: "_blank",
+  specs: ["fullscreen=yes", "titlebar=yes", "scrollbars=yes"],
+  styles: [
+    "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css",
+    "https://unpkg.com/kidlat-css/css/kidlat.css",
+  ],
+  timeout: 1000, // default timeout before the print window appears
+  autoClose: true, // if false, the window will not close after printing
+  windowTitle: window.document.title, // override the window title
+};
+
 const cache = new InMemoryCache();
 const apolloClient = new ApolloClient({
   cache,
@@ -34,6 +47,7 @@ const app = createApp(App);
 app.use(createPinia());
 app.use(router as any);
 app.use(VueAwesomePaginate);
+app.use(VueHtmlToPaper, options);
 app.component("VueDatePicker", VueDatePicker);
 app.provide(DefaultApolloClient, apolloClient);
 app.use(Vue3Toastify, {
