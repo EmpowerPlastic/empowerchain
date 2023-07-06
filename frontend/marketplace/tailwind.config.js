@@ -71,7 +71,7 @@ module.exports = {
         xl: "50px",
       },
       backgroundImage: {
-        "certificate-image": "url('/src/assets/certificatePageBackground.svg')",
+        "certificate-image": "url('/src/assets/ceritifcateBG.png')",
       },
     },
   },
