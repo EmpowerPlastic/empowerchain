@@ -88,6 +88,6 @@
     "@cosmjs/tendermint-rpc": "0.30.0",
     "@osmonauts/lcd": "^0.10.0",
     "jsonschema": "^1.4.1",
-    "protobufjs": "^6.11.2"
+    "protobufjs": "^7.2.4"
   }
 }
