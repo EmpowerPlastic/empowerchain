@@ -216,7 +216,12 @@ export default withMermaid(
               text: 'API docs',
               link: '/references/api-docs/swagger'
             },
-          ]))
+          ]).concat(cliDocs.concat([
+            {
+              text: 'Swagger',
+              link: 'https://api.empowerchain.io:1317/swagger/'
+            }
+          ])))
         },
         {
           text: 'Misc',
