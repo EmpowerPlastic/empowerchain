@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 
@@ -119,6 +120,8 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
+	"github.com/gorilla/mux"
+	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 
 	"github.com/EmpowerPlastic/empowerchain/app/upgrades"
@@ -131,6 +134,9 @@ import (
 	proofofexistencemoduletypes "github.com/EmpowerPlastic/empowerchain/x/proofofexistence"
 	proofofexistencemodulekeeper "github.com/EmpowerPlastic/empowerchain/x/proofofexistence/keeper"
 	proofofexistencemodule "github.com/EmpowerPlastic/empowerchain/x/proofofexistence/module"
+
+	// unnamed import of statik for swagger UI support
+	_ "github.com/EmpowerPlastic/empowerchain/client/docs/statik"
 )
 
 const (
@@ -938,6 +944,10 @@ func (app *EmpowerApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.AP
 	nodeservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
+
+	if apiConfig.Swagger {
+		RegisterSwaggerAPI(clientCtx, apiSvr.Router)
+	}
 }
 
 func (app *EmpowerApp) setupUpgradeStoreLoaders() {
@@ -1038,4 +1048,14 @@ func BlockedAddresses() map[string]bool {
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
 	return modAccAddrs
+}
+
+// RegisterSwaggerAPI registers swagger route with API Server.
+func RegisterSwaggerAPI(ctx client.Context, rtr *mux.Router) {
+	statikFS, err := fs.New()
+	if err != nil {
+		panic(err)
+	}
+	staticServer := http.FileServer(statikFS)
+	rtr.PathPrefix("/swagger/").Handler(http.StripPrefix("/swagger/", staticServer))
 }

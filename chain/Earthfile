@@ -122,10 +122,20 @@ swagger-gen:
         chmod +x /usr/local/bin/swagger
     # Install protoc-gen-swagger
     RUN go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@latest
+    # Install statik
+    RUN go install github.com/rakyll/statik@latest
     RUN make swagger-gen
+
+swagger-md:
+    FROM +swagger-gen
     RUN cd client/docs/swagger-ui && swagger generate markdown
     SAVE ARTIFACT client/docs/swagger-ui/swagger.yaml
     SAVE ARTIFACT client/docs/swagger-ui/markdown.md
+
+swagger-docs:
+    FROM +swagger-gen
+    SAVE ARTIFACT client/docs/* AS LOCAL client/docs/
+
 
 docgen:
     FROM +build-prep
