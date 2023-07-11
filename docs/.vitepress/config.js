@@ -199,6 +199,10 @@ export default withMermaid(
             {
               text: 'Delegation program',
               link: '/validators/delegation-program'
+            },
+            {
+              text: 'Resources',
+              link: '/validators/resources'
             }
           ]
         },
