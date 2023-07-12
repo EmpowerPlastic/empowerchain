@@ -6,11 +6,17 @@ import { useRoute } from "vue-router";
 import CustomGoogleMap from "@/components/CustomGoogleMap.vue";
 import { getDetailsList } from "@/utils/utils";
 import auctionCard from "@/assets/auctionCard.png";
+import { GOOGLE_MAPS_API_KEY } from "@/config/config";
+import { jsPDF } from "jspdf";
+import { PDFGenerator } from "@/pdfGenerator/pdfGenerator";
+import { toast } from "vue3-toastify";
 
+const doc = new jsPDF("p", "mm", "a4", true);
 const router = useRoute();
 const certificateData = ref();
 const creditData = ref();
 const dataFormatted = ref();
+const loading = ref(true);
 
 onMounted(() => {
   document.body.style.backgroundColor = "#ffff";
@@ -74,6 +80,7 @@ const getCreditData = (denom: string) => {
     dataFormatted.value = getDetailsList(
       result?.value?.creditCollections?.nodes[0]?.creditData?.nodes
     );
+    loading.value = false;
   }
 };
 
@@ -96,17 +103,66 @@ watchEffect(() => {
     getCreditData(result.value.creditOffsetCertificate.denom);
   }
 });
+
+const generatePDF = async () => {
+  try {
+    const PDFData = {
+      title: certificateData.value?.retiringEntityName,
+      volume: dataFormatted.value?.volume,
+      material: dataFormatted.value?.material,
+      credit: creditData?.value?.creditType,
+      projectInfo:
+        creditData?.value?.creditData?.nodes[0]?.applicantDataByCreditDataId
+          ?.nodes[0]?.description,
+      images: dataFormatted.value?.image,
+      map: generateMapImageUrl(dataFormatted.value?.locationPointers),
+    };
+    const results = await PDFGenerator(PDFData);
+    if (results?.success) {
+      toast.success("Certificate downloaded successfully");
+    }
+  } catch (e) {
+    console.error(e);
+    toast.error("Something went wrong");
+  }
+};
+
+const generateMapImageUrl = (locations: { lat: number; lng: number }[]) => {
+  const baseUrl = "https://maps.googleapis.com/maps/api/staticmap?";
+  const apiKey = GOOGLE_MAPS_API_KEY;
+
+  const markers = locations
+    .map((location) => `markers=${location.lat},${location.lng}`)
+    .join("&");
+
+  const url = `${baseUrl}size=1500x300&maptype=roadmap&${markers}&key=${apiKey}`;
+  return url;
+};
 </script>
 <template>
-  <page size="A4" id="page">
+  <div class="flex flex-row justify-end p-5 min-w-[21cm]">
+    <button
+      class="btn btn-ghost text-white normal-case bg-greenPrimary"
+      @click="generatePDF"
+      :disabled="!loading"
+    >
+      <img class="w-7 mr-2" src="../assets/downloadIcon.svg" />
+      Download Certificate
+    </button>
+  </div>
+  <page size="A4" id="pdfContent">
     <div class="h-full bg-certificate-image bg-cover p-5">
       <div class="flex flex-row justify-between">
-        <img src="../assets/cerificateVerified.svg" />
+        <a href="https://www.empower.eco/" target="_blank">
+          <img src="../assets/cerificateVerified.svg" />
+        </a>
         <img class="mt-3 h-9" src="../assets/logo.png" />
       </div>
 
       <div class="flex flex-col mt-[90px] items-center font-Inter text-black">
-        <p class="text-title38 font-bold">
+        <p
+          class="text-title38 font-bold max-w-[700px] text-ellipsis whitespace-nowrap overflow-hidden"
+        >
           {{ certificateData?.retiringEntityName }}
         </p>
         <p class="text-title38 font-bold mt-[10px]">
@@ -115,7 +171,7 @@ watchEffect(() => {
         <div class="flex w-full mt-7 px-[80px] flex-row justify-between">
           <div>
             <p class="text-title16 font-semibold">Material</p>
-            <div class="columns-1 gap-10 h-[70px]">
+            <div class="columns-1 gap-10 h-[80px]">
               <ul class="list-disc">
                 <li
                   class="text-title14 mt-[5px] leading-[15px]"
@@ -129,7 +185,7 @@ watchEffect(() => {
           </div>
           <div>
             <p class="text-title16 font-semibold">CREDIT type</p>
-            <p class="text-title24 mt-[2px]">PCRD</p>
+            <p class="text-title16 mt-[2px]">{{ creditData?.creditType }}</p>
           </div>
         </div>
 
@@ -145,7 +201,7 @@ watchEffect(() => {
           </p>
         </div>
 
-        <div class="flex w-full flex-row mt-[60px] justify-between px-2">
+        <div class="flex w-full flex-row mt-[55px] justify-between px-2">
           <img
             :key="item"
             class="h-[145px] w-[230px] rounded-sm"
@@ -158,19 +214,10 @@ watchEffect(() => {
           <div class="w-[500px] h-[225px]">
             <CustomGoogleMap :locations="dataFormatted?.locationPointers" />
           </div>
-          <div class="flex flex-col w-[240px] items-center mt-[50px]">
+          <div class="flex flex-col w-[240px] items-center mt-[80px]">
             <div class="flex flex-col items-center">
               <img src="../assets/certificateLogo.svg" />
               <img class="mt-4" src="../assets/certificateLogoTitle.svg" />
-            </div>
-            <div class="flex flex-col mt-[30px]">
-              <div class="bg-certificateButton py-1 px-7 rounded-[7px]">
-                12345
-              </div>
-              <img
-                class="mt-[25px] w-[118px] absolute cursor-pointer"
-                src="../assets/certificateButton.svg"
-              />
             </div>
           </div>
         </div>
