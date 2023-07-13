@@ -11,6 +11,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/cosmos/gogoproto/proto"
+	"golang.org/x/exp/slices"
 
 	"github.com/EmpowerPlastic/empowerchain/utils"
 	"github.com/EmpowerPlastic/empowerchain/x/certificates"
@@ -278,8 +279,12 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 	} else {
 		// If collection already exists, add new credits to the total and append new data if present
 		creditCollection.TotalAmount.Active += amount
-		creditCollection.MetadataUris = append(creditCollection.MetadataUris, metadataUris...)
-
+		// avoid adding duplicate metadata uris
+		for _, uri := range metadataUris {
+			if !slices.Contains(creditCollection.MetadataUris, uri) {
+				creditCollection.MetadataUris = append(creditCollection.MetadataUris, uri)
+			}
+		}
 	}
 
 	err = k.setCreditCollection(ctx, creditCollection)

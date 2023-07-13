@@ -1264,6 +1264,7 @@ func (s *TestSuite) TestIssueCredits() {
 				s.Require().Equal(uint64(0), resp.Collection.TotalAmount.Retired)
 				s.Require().Equal(uint64(0), creditCollection.TotalAmount.Retired)
 				s.Require().Equal(uint64(0), ownerBalance.Balance.Retired)
+				s.Require().Equal(tc.msg.MetadataUris, creditCollection.MetadataUris)
 				s.Require().Len(events, 1)
 				parsedEvent, err := sdk.ParseTypedEvent(events[0])
 				s.Require().NoError(err)
