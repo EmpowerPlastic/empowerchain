@@ -34,6 +34,7 @@ const app = createApp(App);
 app.use(createPinia());
 app.use(router as any);
 app.use(VueAwesomePaginate);
+
 app.component("VueDatePicker", VueDatePicker);
 app.provide(DefaultApolloClient, apolloClient);
 app.use(Vue3Toastify, {

@@ -43,6 +43,7 @@ module.exports = {
         textInfoGray: "#B4B4B4",
         tabGray: "#3E3E3E",
         scrollButtonBackground: "rgba(255, 255, 255, 0.38)",
+        certificateButton: "rgba(1, 1, 1, 0.06)",
       },
       fontSize: {
         title32: "32px",
@@ -54,6 +55,7 @@ module.exports = {
         title12: "12px",
         title13: "13px",
         title11: "11px",
+        title10: "10px",
         title14: "14px",
         title15: "15px",
         title18: "18px",
@@ -67,6 +69,9 @@ module.exports = {
         sm: "15px",
         lg: "20px",
         xl: "50px",
+      },
+      backgroundImage: {
+        "certificate-image": "url('/src/assets/ceritifcateBG.png')",
       },
     },
   },
