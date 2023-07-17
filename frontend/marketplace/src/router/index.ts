@@ -5,6 +5,7 @@ import CertificatesAndCreditsPage from "@/pages/CertificatesAndCreditsPage.vue";
 import AuctionPage from "@/pages/AuctionPage.vue";
 import AuctionDetails from "@/pages/AuctionDetails.vue";
 import CertificatePage from "@/pages/CertificatePage.vue";
+import PlasticCreditRegistry from "@/pages/PlasticCreditRegistry.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,6 +40,11 @@ const router = createRouter({
       name: "CertificatePage",
       component: CertificatePage,
       meta: { hideNavFooter: true }, //To hide nav and footer on this page
+    },
+    {
+      path: "/registry",
+      name: "PlasticCreditRegistry",
+      component: PlasticCreditRegistry,
     },
   ],
 });

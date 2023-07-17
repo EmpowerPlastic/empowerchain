@@ -104,6 +104,7 @@ const copyAddress = async () => {
             Get <b>$MPWR</b>
           </button>
           <button type="button" @click="toast.info('Coming soon!')">FAQ</button>
+          <a href="/registry">Registry</a>
         </div>
 
         <div class="flex flex-row justify-end">
@@ -255,6 +256,9 @@ const copyAddress = async () => {
             <button type="button" @click="toast.info('Coming soon!')">
               FAQ
             </button>
+          </li>
+          <li>
+            <a href="/registry">Registry</a>
           </li>
         </ul>
       </div>
