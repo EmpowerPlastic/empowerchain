@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { GOOGLE_MAPS_API_KEY } from "@/config/config";
-import { GoogleMap, Marker, InfoWindow, Circle } from "vue3-google-map";
-import { ref, watch } from "vue";
+import { GoogleMap, InfoWindow, Circle } from "vue3-google-map";
+import { ref } from "vue";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "vue-chartjs";
-export interface CustomGoogleMapProps {
+
+export interface MapWithInfoWindowProps {
   mapData: {
     location: {
       lat: number;
@@ -18,7 +19,8 @@ export interface CustomGoogleMapProps {
   }[];
 }
 ChartJS.register(ArcElement, Tooltip, Legend);
-const props = defineProps<CustomGoogleMapProps>();
+
+const props = defineProps<MapWithInfoWindowProps>();
 
 const showInfo = ref(false);
 const selectedIndex = ref(0);
