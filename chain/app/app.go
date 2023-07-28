@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	v2 "github.com/EmpowerPlastic/empowerchain/app/upgrades/v2"
 	"io"
 	"net/http"
 	"os"
@@ -124,7 +125,6 @@ import (
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 
-	"github.com/EmpowerPlastic/empowerchain/app/upgrades"
 	certificatemoduletypes "github.com/EmpowerPlastic/empowerchain/x/certificates"
 	certificatemodulekeeper "github.com/EmpowerPlastic/empowerchain/x/certificates/keeper"
 	certificatemodule "github.com/EmpowerPlastic/empowerchain/x/certificates/module"
@@ -207,8 +207,6 @@ var (
 		ibcfeetypes.ModuleName:         nil,
 		icatypes.ModuleName:            nil,
 	}
-
-	Upgrades = []upgrades.Upgrade{}
 )
 
 var (
@@ -950,6 +948,8 @@ func (app *EmpowerApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.AP
 	}
 }
 
+// setupUpgradeStoreLoaders is for any new modules introduced, new modules deleted, or store names renamed.
+// read more here: https://docs.cosmos.network/main/core/upgrade
 func (app *EmpowerApp) setupUpgradeStoreLoaders() {
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
@@ -960,20 +960,27 @@ func (app *EmpowerApp) setupUpgradeStoreLoaders() {
 		return
 	}
 
-	for _, u := range Upgrades {
-		if upgradeInfo.Name == u.UpgradeName {
-			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &u.StoreUpgrades))
-		}
+	var storeUpgrades *storetypes.StoreUpgrades
+
+	// Whenever we need to add/remove/rename modules, remove this comment and use the following as example:
+	// https://github.com/Stride-Labs/stride/blob/a8eb76937569cb285bb6e870af30afbddfcf1def/app/upgrades.go#L175
+
+	if storeUpgrades != nil {
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
 	}
 }
 
+// setupUpgradeHandlers is where we add any upgrades for state breaking changes
+// read more here: https://docs.cosmos.network/main/core/upgrade
 func (app *EmpowerApp) setupUpgradeHandlers() {
-	for _, u := range Upgrades {
-		app.UpgradeKeeper.SetUpgradeHandler(
-			u.UpgradeName,
-			u.CreateUpgradeHandler(app.ModuleManager, app.configurator),
-		)
-	}
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v2.UpgradeName,
+		v2.CreateV2UpgradeHandler(
+			*app.ModuleManager,
+			app.configurator,
+			app.IBCKeeper.ClientKeeper,
+		),
+	)
 }
 
 // RegisterTxService implements the Application.RegisterTxService method.
