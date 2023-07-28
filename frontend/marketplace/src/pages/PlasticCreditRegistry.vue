@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import MapWithInfoWindow from "@/components/MapWithInfoWindow.vue";
+import RegistrySearchBar from "@/components/RegistrySearchBar.vue";
+import RegistryCard from "@/components/RegistryCard.vue";
+import CustomPagination from "@/components/CustomPagination.vue";
 const dummyData = [
   {
     location: { lat: 40.7322, lng: -74.004 },
@@ -34,6 +37,14 @@ const dummyData = [
     <div class="w-full h-[600px]">
       <MapWithInfoWindow :map-data="dummyData" />
     </div>
-    <div class="bg-white"></div>
+    <div class="mt-10">
+      <RegistrySearchBar />
+    </div>
+    <div class="mt-10">
+      <RegistryCard card-data="" :key="item" v-for="item in 4" />
+    </div>
+    <div class="mt-10">
+      <CustomPagination total="10" item-per-page="2" current-page="1" />
+    </div>
   </div>
 </template>

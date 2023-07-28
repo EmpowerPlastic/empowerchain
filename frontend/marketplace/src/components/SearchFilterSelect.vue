@@ -74,6 +74,7 @@ watch(props, () => {
 
 .multiselect__tag {
   background: #00c131 !important;
+  max-width: 60vw !important;
 }
 
 .multiselect__tag > span {
