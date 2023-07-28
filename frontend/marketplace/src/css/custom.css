@@ -20,7 +20,7 @@
 
 /*Search Bar*/
 .filter-subtitle {
-  @apply text-title14 text-dropDownText;
+  @apply text-title14 text-dropDownText uppercase ;
 }
 
 .filter-title {
