@@ -49,7 +49,7 @@ const props = defineProps<RegistryCardProps>();
     <!--      Details for Desktop UI-->
     <div
       class="hidden md:grid grid-cols-4 gap-5 w-full col-span-4 py-5 px-6 ml-2 cursor-pointer"
-      @click="router.push(`/auction/1`)"
+      @click="router.push(`/registry/1`)"
     >
       <div class="col-span-1 ...">
         <p class="details-title">Retirerer Name</p>

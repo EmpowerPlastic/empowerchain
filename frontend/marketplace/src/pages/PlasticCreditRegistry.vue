@@ -34,6 +34,9 @@ const dummyData = [
 </script>
 <template>
   <div class="p-5 md:px-[10%]">
+    <h1 class="text-title24 md:text-title38 text-white mb-5">
+      Plastic Credit Registry
+    </h1>
     <div class="w-full h-[600px]">
       <MapWithInfoWindow :map-data="dummyData" />
     </div>

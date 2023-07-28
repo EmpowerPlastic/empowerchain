@@ -6,6 +6,7 @@ import AuctionPage from "@/pages/AuctionPage.vue";
 import AuctionDetails from "@/pages/AuctionDetails.vue";
 import CertificatePage from "@/pages/CertificatePage.vue";
 import PlasticCreditRegistry from "@/pages/PlasticCreditRegistry.vue";
+import RegistryDetailsPage from "@/pages/RegistryDetailsPage.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,6 +46,11 @@ const router = createRouter({
       path: "/registry",
       name: "PlasticCreditRegistry",
       component: PlasticCreditRegistry,
+    },
+    {
+      path: "/registry/:id",
+      name: "RegistryDetails",
+      component: RegistryDetailsPage,
     },
   ],
 });
