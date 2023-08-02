@@ -46,7 +46,7 @@ const dummyData = [
     <div class="mt-10">
       <RegistryCard card-data="" :key="item" v-for="item in 4" />
     </div>
-    <div class="mt-10">
+    <div class="flex justify-center md:justify-end my-10">
       <CustomPagination total="10" item-per-page="2" current-page="1" />
     </div>
   </div>
