@@ -77,6 +77,10 @@ import "flowbite";
 
   <div class="p-4 sm:ml-64">
     <div class="flex flex-col items-start p-4 mt-0 sm:mt-40">
+      <img
+        class="hidden md:block absolute right-[50px] top-[30px]"
+        src="./assets/images/top-logo.svg"
+      />
       <div class="flex flex-col items-center">
         <RouterView />
       </div>

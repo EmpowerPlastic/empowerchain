@@ -98,30 +98,30 @@ const closeModal = () => {
 
 <template>
   <SupportedFilesModal v-show="showModal" :close-modal="closeModal" />
-  <img
-    src="../../assets/images/emp-astro-1.png"
-    class="left-28 top-full sm:top-auto sm:left-auto w-32 absolute animate-bounce -m-24"
-  />
-  <div class="p-4 text-left bg-lightBlack rounded-lg sm:p-8 lg:w-[700px]">
-    <h5 class="mb-2 mt-3 text-2xl font-bold text-white text-title28">
+  <div
+    class="p-4 text-left bg-bgPrimary rounded-lg sm:p-8 lg:w-[700px] custom-shadow"
+  >
+    <h5 class="mb-2 mt-3 text-2xl font-bold text-textPrimary text-title28">
       Certify documents
     </h5>
     <div class="mt-3 w-30">
       <div class="flex flex-row w-full border-b-1">
         <div
-          class="px-7 py-2 text-white cursor-pointer"
+          class="px-7 py-2 text-textSecondary cursor-pointer"
           :class="{
-            'bg-lightWhite !text-lightGreen rounded-t-lg': activeTab === 'File',
+            'bg-bgTertiary bg-opacity-[0.06] !text-textPrimary rounded-t-lg':
+              activeTab === 'File',
           }"
           @click="activeTab = 'File'"
         >
           File
         </div>
         <div
-          class="px-7 py-2 text-white cursor-pointer"
+          class="px-7 py-2 text-textSecondary cursor-pointer"
           @click="activeTab = 'Text'"
           :class="{
-            'bg-lightWhite !text-lightGreen rounded-t-lg': activeTab === 'Text',
+            'bg-bgTertiary bg-opacity-[0.06] !text-textPrimary rounded-t-lg':
+              activeTab === 'Text',
           }"
         >
           Text
@@ -129,20 +129,22 @@ const closeModal = () => {
       </div>
     </div>
     <template v-if="activeTab === 'File'">
-      <div class="md:p-1 border-t border-lightGray w-full">
-        <p class="mb-3 text-white text-title14 mt-2">
+      <div
+        class="md:p-1 border-t border-textPrimary border-opacity-[0.3] w-full"
+      >
+        <p class="mb-3 text-textPrimary text-title14 mt-2">
           Create an immutable proof of existence for your document.
           <a
             href="#"
             @click="openModal"
-            class="inline-flex items-center font-medium text-lightGreen"
+            class="inline-flex items-center font-medium text-textSecondary"
             >Learn more.</a
           >
           <br />
           Drag and drop your document here, or choose a file. Your file will
           <b>not</b> be uploaded.
         </p>
-        <div class="w-full p-3 mt-7 rounded bg-lightGray">
+        <div class="w-full p-3 mt-7 rounded bg-textPrimary bg-opacity-[0.06]">
           <label class="cursor-pointer" for="file_input">
             <input
               class="hidden"
@@ -150,23 +152,24 @@ const closeModal = () => {
               type="file"
               @change="handleFileUpload"
             />
-            <div class="flex items-center">
+            <div class="flex flex-col md:flex-row-reverse items-center">
+              <span
+                class="text-textPrimary text-title16 mb-2 md:mb-0 text-left w-full"
+                >{{ file ? file?.name : "Choose file" }}</span
+              >
               <div
-                class="flex justify-center p-1 rounded bg-lightGreen w-24 mr-4 text-white text-title16"
+                class="flex w-full justify-center p-1 rounded bg-bgSecondary md:w-24 md:mr-4 text-title16"
               >
                 Browse
               </div>
-              <span class="text-lightGray text-title16">{{
-                file ? file?.name : "Choose file"
-              }}</span>
             </div>
           </label>
         </div>
-        <div class="flex flex-row justify-center">
+        <div class="flex flex-row justify-center px-2">
           <button
             :disabled="!file"
             @click="hashFile(file)"
-            class="bg-lightGreen mt-10 content-center p-1 px-9 rounded text-white text-title22 disabled:bg-lightGray disabled:text-gray"
+            class="bg-bgSecondary md:w-[200px] w-full mt-10 content-center p-1 px-9 rounded text-textPrimary text-title22 disabled:opacity-[0.3]"
           >
             Create proof
           </button>
@@ -174,31 +177,31 @@ const closeModal = () => {
       </div>
     </template>
     <template v-if="activeTab === 'Text'">
-      <div class="md:p-1 border-t border-lightGray">
-        <p class="mb-3 text-white text-title14 mt-2">
+      <div class="md:p-1 border-t border-textPrimary border-opacity-[0.3]">
+        <p class="mb-3 text-textPrimary text-title14 mt-2">
           Create an immutable proof of existence for your document.
           <a
             href="#"
             @click="openModal"
-            class="inline-flex items-center font-medium text-lightGreen"
+            class="inline-flex items-center font-medium text-textSecondary"
             >Learn more.</a
           >
           <br />
           You can input arbitrary plain text below to create a proof of its
           existence.
         </p>
-        <div class="w-full p-3 mt-7 rounded bg-lightGray">
+        <div class="w-full p-3 mt-7 rounded">
           <label class="cursor-pointer" for="file_input">
             <textarea
               rows="3"
               placeholder="Text"
               v-model="inputString"
-              class="p-1 rounded bg-lightGray w-full mr-4 text-white text-title16 h-36 md:h-auto"
+              class="p-2 border-none rounded bg-bgTertiary bg-opacity-[0.06] w-full mr-4 text-textPrimary text-title16 h-36 md:h-auto"
             />
           </label>
         </div>
 
-        <div class="p-5 text-white">
+        <div class="p-5">
           <div class="flex items-center mb-2">
             <input
               id="checkbox-1"
@@ -208,7 +211,7 @@ const closeModal = () => {
             />
             <label
               for="default-checkbox"
-              class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+              class="ml-2 text-sm font-medium text-textPrimary"
               >Include whitespace characters (spaces, tabs, new lines,
               etc.)</label
             >
@@ -222,17 +225,17 @@ const closeModal = () => {
             />
             <label
               for="checked-checkbox"
-              class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+              class="ml-2 text-sm font-medium text-textPrimary"
               >Include letter casing</label
             >
           </div>
         </div>
 
-        <div class="flex flex-row justify-center">
+        <div class="flex flex-row justify-center px-2">
           <button
             :disabled="!inputString"
             @click="handleInputString"
-            class="bg-lightGreen mt-18 content-center p-1 px-9 rounded text-white text-title22 disabled:bg-lightGray disabled:text-gray"
+            class="bg-bgSecondary md:w-[200px] w-full mt-10 content-center p-1 px-9 rounded text-textPrimary text-title22 disabled:opacity-[0.3]"
           >
             Create proof
           </button>
@@ -242,4 +245,8 @@ const closeModal = () => {
   </div>
 </template>
 
-<style></style>
+<style scoped>
+.custom-shadow {
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.13);
+}
+</style>

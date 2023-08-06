@@ -12,11 +12,17 @@ module.exports = {
         lightBlack: "rgba(0, 0, 0, 0.22)",
         darkBlack: "rgba(0, 0, 0, 0.91)",
         black: "rgba(0, 0, 0, 1)",
-        lightGreen: "rgba(0, 211, 73, 1)",
+        lightGreen: "#00D045",
         lightGray: "rgba(255, 255, 255, 0.2)",
         gray: "rgba(112, 112, 112, 1)",
         white: "rgba(255, 255, 255, 1)",
         lightWhite: "rgba(255, 255, 255, 0.08)",
+        //Proper naming
+        textPrimary: "#022D41",
+        textSecondary: "#00D045",
+        bgPrimary: "rgba(255, 255, 255, 1)",
+        bgSecondary: "#00D045",
+        bgTertiary: "#022D41",
       },
       fontSize: {
         title28: "1.75rem",
@@ -29,7 +35,7 @@ module.exports = {
         openSans: ["Open Sans", "sans-serif"],
       },
       backgroundImage: {
-        "main-image": "url('/src/assets/images/main-bg.jpg')",
+        "main-image": "url('/src/assets/images/main-bg.png')",
         "emp-astro": "url('/src/assets/images/emp-astro-1.png')",
       },
     },
