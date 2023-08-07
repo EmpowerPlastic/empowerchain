@@ -23,8 +23,8 @@ NEW_MAJOR_VERSION=$(echo "$NEW_VERSION" | cut -d '.' -f 1)
 OLD_MAJOR_VERSION=$(echo "$OLD_VERSION" | cut -d '.' -f 1)
 
 TEMP_CHANGELOG="TEMP_CHANGELOG.md"
-UPGRADE_CHANGELOG="../app/upgrades/$NEW_MAJOR_VERSION/RELEASE_NOTES.md"
-MAIN_CHANGELOG="../CHANGELOG.md"
+UPGRADE_CHANGELOG="chain/app/upgrades/$NEW_MAJOR_VERSION/RELEASE_NOTES.md"
+MAIN_CHANGELOG="chain/CHANGELOG.md"
 MAIN_CHANGELOG_INSERT_STATEMENT="<!-- GH ACTIONS TEMPLATE - INSERT NEW VERSION HERE -->"
 
 # First write all changes to the main changelog
@@ -32,7 +32,7 @@ MAIN_CHANGELOG_INSERT_STATEMENT="<!-- GH ACTIONS TEMPLATE - INSERT NEW VERSION H
 echo "## [$NEW_VERSION]($REPO_URL/releases/tag/$NEW_VERSION) - $CURRENT_DATE" >> $TEMP_CHANGELOG
 
 i=1
-git log --pretty=format:"%h %H %s" ${OLD_VERSION}..${NEW_VERSION} -- "../**/*.go" ":(exclude)**/*_test.go" | while read LINE; do
+git log --pretty=format:"%h %H %s" ${OLD_VERSION}..${NEW_VERSION} -- "chain/**/*.go" ":(exclude)**/*_test.go" | while read LINE; do
   SHORT_COMMIT_HASH=$(echo $LINE | cut -d' ' -f1)
   LONG_COMMIT_HASH=$(echo $LINE | cut -d' ' -f2)
   COMMIT_TITLE=$(echo $LINE | cut -d' ' -f3-)
@@ -56,7 +56,7 @@ rm $TEMP_CHANGELOG
 # If major upgrade (software upgrade), write the changes to the upgrade changelog
 if [[ "$NEW_MAJOR_VERSION" != "$OLD_MAJOR_VERSION" ]]; then
   i=1
-  git log --pretty=format:"%h %H %s" ${OLD_VERSION}..${NEW_VERSION} -- "../**/*.go" ":(exclude)**/*_test.go" | while read LINE; do
+  git log --pretty=format:"%h %H %s" ${OLD_VERSION}..${NEW_VERSION} -- "chain/**/*.go" ":(exclude)**/*_test.go" | while read LINE; do
     if [[ "$i" == "1" ]]; then
       echo "# Upgrade $NEW_MAJOR_VERSION Changelog" > $UPGRADE_CHANGELOG
     fi
