@@ -99,12 +99,12 @@ const closeModal = () => {
 <template>
   <SupportedFilesModal v-show="showModal" :close-modal="closeModal" />
   <div
-    class="p-4 text-left bg-bgPrimary rounded-sm sm:p-8 lg:w-[700px] custom-shadow"
+    class="p-4 text-left bg-bgPrimary rounded-sm md:p-8 lg:w-[700px] custom-shadow"
   >
     <h5
-      class="mt-5 my-7 text-title28 text-center font-bold text-textPrimary text-title28"
+      class="mt-5 my-7 text-title28 text-center md:text-left font-bold text-textPrimary text-title28"
     >
-      Certify documents DC
+      Certify documents
     </h5>
     <div class="mt-3 w-30">
       <div class="flex flex-row w-full border-b-1">
@@ -158,7 +158,7 @@ const closeModal = () => {
             />
             <div class="flex flex-col md:flex-row-reverse items-center">
               <span
-                class="text-textPrimary text-title16 my-3 md:mb-0 text-left w-full"
+                class="text-textPrimary text-title16 my-3 md:my-0 md:mb-0 text-left w-full"
                 >{{ file ? file?.name : "Choose file" }}</span
               >
               <div

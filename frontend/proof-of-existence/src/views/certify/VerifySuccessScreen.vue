@@ -2,7 +2,7 @@
 import { useRoute } from "vue-router";
 import { RPC_URL } from "@/config/config";
 import { empowerchain } from "@empower-plastic/empowerjs";
-import {onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
 
 const { createRPCQueryClient } = empowerchain.ClientFactory;
 const route = useRoute();
@@ -29,7 +29,7 @@ onMounted(async () => {
 
 <template>
   <div
-    class="flex flex-col items-center w-full px-14 text-left bg-lightBlack rounded-lg sm:p-8"
+    class="flex flex-col items-center w-full px-14 text-left bg-lightBlack rounded-lg md:p-8"
   >
     <h5 class="mb-2 mt-3 mb-4 font-bold text-white text-title28">Verified!</h5>
     <p class="text-white text-title12 text-center mb-7">

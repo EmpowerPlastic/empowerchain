@@ -28,7 +28,7 @@ defineProps<ModalProps>();
           </button>
         </div>
         <!-- Modal body -->
-        <div class="flex flex-wrap sm:flex-row justify-around p-5">
+        <div class="flex flex-wrap md:flex-row justify-around p-5">
           <p>
             Proof of Existence Verification is the process through which you can
             confirm the existence and integrity of a piece of data or document

@@ -121,7 +121,7 @@ onMounted(() => {
           </button>
         </div>
         <!-- Modal body -->
-        <div class="flex flex-wrap sm:flex-row justify-around p-2">
+        <div class="flex flex-wrap md:flex-row justify-around p-2">
           <div
             v-show="showWarning"
             class="p-4 mb-4 w-full mx-2 text-sm text-red-800 rounded-lg bg-red-50"

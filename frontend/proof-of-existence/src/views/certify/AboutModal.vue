@@ -28,7 +28,7 @@ defineProps<ModalProps>();
           </button>
         </div>
         <!-- Modal body -->
-        <div class="flex flex-wrap sm:flex-row justify-around p-5">
+        <div class="flex flex-wrap md:flex-row justify-around p-5">
           <p>
             Proof of Existence is a blockchain-based protocol that allows you to
             prove the existence of a piece of data or a document at a specific
