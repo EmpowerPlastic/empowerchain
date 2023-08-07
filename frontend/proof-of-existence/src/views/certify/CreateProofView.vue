@@ -154,7 +154,7 @@ const copyAddress = async () => {
   />
   <div class="flex flex-col !items-center w-full">
     <h5 class="font-bold text-textPrimary text-title28 mb-3">Create proof</h5>
-    <div class="flex flex-col sm:flex-row w-full gap-3">
+    <div class="flex flex-col md:flex-row w-full gap-3">
       <div
         class="flex flex-col items-center bg-bgPrimary w-full rounded-lg custom-shadow p-3 py-5 text-center"
       >
@@ -239,7 +239,7 @@ const copyAddress = async () => {
   <!--      <h5 class="mb-2 mt-3 font-bold text-center text-textPrimary text-title28">-->
   <!--        Create proof-->
   <!--      </h5>-->
-  <!--    <div class="grid grid-cols-1 sm:grid-cols-3 sm:gap-6">-->
+  <!--    <div class="grid grid-cols-1 md:grid-cols-3 md:gap-6">-->
   <!--      <div class="col-span-2 bg-bgPrimary w-full mt-3 custom-shadow rounded-lg">-->
   <!--        <div-->
   <!--          class="bg-lightGray rounded-lg break-words text-center items-center flex flex-col p-4"-->
@@ -275,7 +275,7 @@ const copyAddress = async () => {
   <!--        >-->
   <!--          {{ errorMessage }}-->
   <!--        </div>-->
-  <!--        <div class="flex flex-col sm:flex-row justify-between">-->
+  <!--        <div class="flex flex-col md:flex-row justify-between">-->
   <!--            <button-->
   <!--              :disabled="!selectedWallet || loading"-->
   <!--              @click="handleTransaction"-->
@@ -291,7 +291,7 @@ const copyAddress = async () => {
   <!--          </button>-->
   <!--        </div>-->
   <!--      </div>-->
-  <!--      <div class="sm:col-span-1 p-3 bg-bgPrimary mt-5 custom-shadow rounded-lg">-->
+  <!--      <div class="md:col-span-1 p-3 bg-bgPrimary mt-5 custom-shadow rounded-lg">-->
   <!--        <h5-->
   <!--          class="mb-2 mt-3 mb-6 text-2xl font-bold text-textPrimary text-title28"-->
   <!--        >-->

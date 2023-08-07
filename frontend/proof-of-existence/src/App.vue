@@ -4,14 +4,14 @@ import "flowbite";
 </script>
 
 <template>
-  <nav class="bg-transparent sm:hidden">
+  <nav class="bg-transparent md:hidden">
     <div
       class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
     >
       <a href="/" class="flex items-center">
         <img
           src="../src/assets/images/emopwer-logo.svg"
-          class="ml-3 mt-3 w-32 sm:w-36"
+          class="ml-3 mt-3 w-32 md:w-36"
           alt="Logo"
         />
       </a>
@@ -30,10 +30,10 @@ import "flowbite";
 
   <aside
     id="logo-sidebar"
-    class="fixed top-0 left-0 z-40 sm:w-64 w-full h-screen transition-transform -translate-x-full sm:translate-x-0 sm:bg-lightBlack bg-darkBlack"
+    class="fixed top-0 left-0 z-40 md:w-64 w-full h-screen transition-transform -translate-x-full md:translate-x-0 md:bg-lightBlack bg-darkBlack"
     aria-label="Sidebar"
   >
-    <div class="flex flex-row w-full justify-end sm:hidden">
+    <div class="flex flex-row w-full justify-end md:hidden">
       <button
         data-drawer-target="logo-sidebar"
         data-drawer-toggle="logo-sidebar"
@@ -50,7 +50,7 @@ import "flowbite";
       <a href="/" class="flex items-center pl-2.5 mb-5">
         <img
           src="../src/assets/images/emopwer-logo.svg"
-          class="ml-3 mt-3 hidden sm:inline-block sm:w-36"
+          class="ml-3 mt-3 hidden md:inline-block md:w-36"
           alt="Logo"
         />
       </a>
@@ -58,14 +58,14 @@ import "flowbite";
         <div class="space-y-2 w-full flex flex-col items-center p-3">
           <a
             href="/"
-            class="flex flex-row w-full p-2 sm:justify-start justify-center sm:ml-14"
+            class="flex flex-row w-full p-2 md:justify-start justify-center md:ml-14"
           >
             <img class="w-7 mr-3" src="../src/assets/images/certifyIcon.svg" />
             <p href="/verify" class="text-white text-title16">Certify</p>
           </a>
           <a
             href="/verify"
-            class="flex flex-row w-full p-2 sm:justify-start justify-center sm:ml-14"
+            class="flex flex-row w-full p-2 md:justify-start justify-center md:ml-14"
           >
             <img class="w-7 mr-3" src="../src/assets/images/verifyIcon.svg" />
             <p href="/verify" class="text-white text-title16">Verify</p>
@@ -75,13 +75,13 @@ import "flowbite";
     </div>
   </aside>
 
-  <div class="p-4 sm:ml-64">
-    <div class="flex flex-col items-start mt-0 sm:mt-40">
+  <div class="p-4 md:ml-64">
+    <div class="flex flex-col items-start mt-0 md:mt-40">
       <img
         class="hidden md:block absolute right-[50px] top-[30px]"
         src="./assets/images/top-logo.svg"
       />
-      <div class="flex flex-col items-center sm:items-start w-full">
+      <div class="flex flex-col items-center md:items-start w-full">
         <RouterView />
       </div>
     </div>
