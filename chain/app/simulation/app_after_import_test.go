@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -45,7 +45,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		nil,
 		true,
 		simtestutil.NewAppOptionsWithFlagHome(dir),
-		[]wasm.Option{},
+		[]wasmkeeper.Option{},
 		fauxMerkleModeOpt,
 		baseapp.SetChainID(SimAppChainID),
 	)
@@ -105,7 +105,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		nil,
 		true,
 		simtestutil.NewAppOptionsWithFlagHome(newDir),
-		[]wasm.Option{},
+		[]wasmkeeper.Option{},
 		fauxMerkleModeOpt,
 		baseapp.SetChainID(SimAppChainID),
 	)

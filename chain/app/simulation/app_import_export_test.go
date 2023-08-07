@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -63,7 +63,7 @@ func TestAppImportExport(t *testing.T) {
 		nil,
 		true,
 		simtestutil.NewAppOptionsWithFlagHome(dir),
-		[]wasm.Option{},
+		[]wasmkeeper.Option{},
 		fauxMerkleModeOpt,
 		baseapp.SetChainID(SimAppChainID),
 	)
@@ -118,7 +118,7 @@ func TestAppImportExport(t *testing.T) {
 		nil,
 		true,
 		simtestutil.NewAppOptionsWithFlagHome(newDir),
-		[]wasm.Option{},
+		[]wasmkeeper.Option{},
 		fauxMerkleModeOpt,
 		baseapp.SetChainID(SimAppChainID),
 	)

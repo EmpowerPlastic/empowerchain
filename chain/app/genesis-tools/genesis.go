@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -156,7 +156,7 @@ func UnmarshalGenesis(clientCtx client.Context, genesisState *GenesisState, appS
 	cdc.MustUnmarshalJSON(appState[slashingtypes.ModuleName], &genesisState.SlashingGenesis)
 	genesisState.StakingGenesis = *stakingtypes.GetGenesisStateFromAppState(cdc, appState)
 	cdc.MustUnmarshalJSON(appState[plasticcredit.ModuleName], &genesisState.PlasticcreditGenesis)
-	cdc.MustUnmarshalJSON(appState[wasm.ModuleName], &genesisState.WasmGenesis)
+	cdc.MustUnmarshalJSON(appState[wasmtypes.ModuleName], &genesisState.WasmGenesis)
 }
 
 // MarshalGenesis marshals the provided GenesisState into a map of module name to
@@ -270,7 +270,7 @@ func MarshalGenesis(clientCtx client.Context, genesisState *GenesisState, appSta
 	if err != nil {
 		log.Panic(fmt.Errorf("failed to marshal wasm genesis state: %w", err), err)
 	}
-	appState[wasm.ModuleName] = wasmGenStateBz
+	appState[wasmtypes.ModuleName] = wasmGenStateBz
 
 	return appState
 }
@@ -298,5 +298,5 @@ type GenesisState struct {
 	StakingGenesis          stakingtypes.GenesisState
 	PlasticcreditGenesis    plasticcredit.GenesisState
 	ProofofexistenceGenesis proofofexistence.GenesisState
-	WasmGenesis             wasm.GenesisState
+	WasmGenesis             wasmtypes.GenesisState
 }

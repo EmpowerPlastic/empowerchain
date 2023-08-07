@@ -14,7 +14,7 @@ const (
 
 func CreateV2UpgradeHandler(
 	moduleManager module.Manager,
-	configurator  module.Configurator,
+	configurator module.Configurator,
 	clientKeeper clientkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
