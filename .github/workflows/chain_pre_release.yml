@@ -26,10 +26,9 @@ jobs:
           mv empowerd-${{ github.ref_name }}-linux-amd64 empowerd && zip -q empowerd-${{ github.ref_name }}-linux-amd64.zip empowerd && rm empowerd
         working-directory: ./chain/build
 
-      - uses: "marvinpinto/action-automatic-releases@latest"
+      - uses: "ncipollo/release-action@v1"
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          title: "Development Build"
+          tag: "latest"
+          name: "Development Build"
           prerelease: true
-          files: ./chain/build/*
+          artifacts: ./chain/build/*

@@ -1,0 +1,34 @@
+name: Write EmpowerChain changelog
+
+on:
+  workflow_dispatch:
+    inputs:
+      old_version:
+        description: "Specify the old version (tag)"
+      new_version:
+        description: "Specify the new version (tag)"
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-22.04
+    steps:
+
+      - name: Get versions
+        run: |
+          old_version=${{ github.event.inputs.old_version }}
+          new_version=${{ github.event.inputs.new_version }}
+          branch_name=actions/changelog-version-${new_major_version}
+
+          echo "OLD_VERSION=$old_version" >> $GITHUB_ENV
+          echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
+          echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v3
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: "Update changelog for ${{ env.NEW_VERSION }}"
+          title: "Update changelog for ${{ env.NEW_VERSION }}"
+          branch: "${{ env.BRANCH_NAME }}"
