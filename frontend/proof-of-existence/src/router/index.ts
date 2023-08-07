@@ -1,23 +1,44 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import CertifyView from '../views/CertifyView.vue'
+import {createRouter, createWebHistory} from "vue-router";
+import CertifyView from "../views/certify/CertifyView.vue";
+import VerifyView from "../views/Verify/VerifyView.vue";
+import CreateProofView from "../views/certify/CreateProofView.vue";
+import CertifySuccessScreen from "@/views/certify/CertifySuccessScreen.vue";
+import VerifySuccessScreen from "@/views/certify/VerifySuccessScreen.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: CertifyView
-    }/*,
+      path: "/",
+      name: "certify",
+      component: CertifyView,
+    },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
-    } */
-  ]
-})
+      path: "/verify",
+      name: "verify",
+      component: VerifyView,
+    },
+    {
+      path: "/verify/success",
+      name: "verify-success",
+      component: VerifySuccessScreen,
+    },
+    {
+      path: "/proof/:hash",
+      name: "proof",
+      component: CreateProofView,
+    },
+    {
+      path: "/",
+      name: "certify",
+      component: CertifyView,
+    },
+    {
+      path: "/certify/success",
+      name: "certify-success",
+      component: CertifySuccessScreen,
+    },
+  ],
+});
 
-export default router
+export default router;

@@ -4,10 +4,17 @@
     <meta charset="UTF-8">
     <link rel="icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vite App</title>
+    <title>Proof of Existence</title>
   </head>
   <body>
     <div id="app"></div>
+    <script type="module">
+        import '/src/assets/wasm_exec.js'
+        const go = new Go();
+        WebAssembly.instantiateStreaming(fetch("/empSha256.wasm"), go.importObject).then((result) => {
+            go.run(result.instance);
+        });
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

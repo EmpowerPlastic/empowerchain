@@ -13,7 +13,7 @@ To keep a clean separation of concerns in our modules, we construct our keeper t
 - Business logic layer: Public Keeper methods
 - Storage layer: Private Keeper methods
 
-![](../docs/static/img/keeper_structure.png)
+![](../docs/static/img/keeper-structure.png)
 
 ### API Layer: MsgServer and Querier
 
@@ -85,6 +85,38 @@ var (
 )
 ```
 
+## Testing
+
+We are using the Test Pyramid approach to cover new code with tests. Everything should be tested on the lowest possible level.
+Duplicating exactly the same tests in different test types is discuraged. Below are types of tests used listed from the lowest
+to highest level of test pyramid. Simulation and smoke tests are not a part of test pyramid as they do not provide code coverage in a standard way, but are also encouraged.
+### Unit Tests
+
+Should be used to handle message and various objects validation testing, so we don't have to care about empty or invalid messages in more complex tests. Genesis tests are also a part of this category. Most of the unit tests are in:
+- `types_test.go`
+- `msgs_test.go`
+- `genesis_test.go`
+
+### Integration Tests
+
+Second level of the Test Pyramid. Should be used to test messages, queries and various interactions between modules and states. Tests are usually placed in:
+- `msg_server_test.go`
+- `query_server_test.go`
+
+### End to End Tests
+
+Highest level of the Test Pyramid. Spins up a local instance of the chain that can be interacted with using cli commands. Should be used whenever test scenario is complex enough that it cannot be properly implemented on the integration test level, for example, when it concerns IBC.
+
+E2E Tests are placed in a separate package `tests/e2e`.
+
+### Simulation Tests
+
+Simulation tests are an automated way to create pseudorandom blockchain states and verify the integrity of the data. It is encouraged to cover keeper messages with simulation tests.
+
+### Smoke Tests
+
+Similar to E2E tests, but automated using Bash instead of Go Test Suite, smoke tests spin up a local blockchain node and run test scenarios using blockchain's cli. It is encouraged to cover every new cli command with a smoke test.
+
 ## Coding tips
 
 ### Where to look for typical ways of doing this
@@ -106,19 +138,19 @@ If you are not sure what a good way of doing something in particular, there are 
 3. Implement/Update `Validate()` on any non-rpc messages (i.e. data structures to be persisted in the keeper and in genesis)
 4. If you created any new rpc messages:
     - Implement the `sdk.Msg` interface in `msgs.go` (`_ sdk.Msg = &MsgName{}`)
+    - Update `WeightedOperations` in simulation/operations.go with the new operation
     - Don't forget to create tests for `ValidateBasic`!
 5. Implement `MsgServer`/`Querier` and `Keeper` methods
     - Don't forget events
     - Don't forget integration tests
     - If you create public Keeper methods, they need to be tested as well
-6. Update genesis if necessary (in genesis and keeper/genesis)
-7. Update the client/cli if necessary
-8. Create e2e tests in  `scripts/test/`
-    - Remember to `$ make install` after every change you make so the binary under test is the correct one.
-    - Hot tip: stop the test at some point before the serve is killed with `exit 0` and run just the script (e.g. `$ ./scripts/test/smoke_plastic_credit.sh`). 
-    - This way the server is still running, and you can manually run your CLI commands in the terminal.
-    - To get access to the environment variables such as `$CHAIN_ID` and `$CHAIN_DIR` you can use the env script like this: `$ source ./scripts/serve_env.sh`.
-9. Format and lint your code before committing: `$ make format` and `$ make lint`
+6. If you created a new type to be stored (i.e. you added a new store key in keys.go)
+    - Update `NewDecodeStore` in simulation/decoder.go
+7. Update genesis if necessary (in genesis and keeper/genesis)
+    - Update `RandomizedGenState` in simulation/genesis.go if necessary 
+8. Update the client/cli if necessary
+9. Create e2e tests in `tests/e2e`
+10. Format and lint your code before committing: `$ make format` and `$ make lint`
 
 ## Native modules vs smart contracts
 Short version: core stable functionality/protocol implemented as native Cosmos SDK modules, extra functionality/nice-to-have stuff that can change often as smart contracts.

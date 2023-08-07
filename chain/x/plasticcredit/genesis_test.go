@@ -28,8 +28,8 @@ func TestGenesisState_Validate(t *testing.T) {
 		"kitchen sink is valid": {
 			genState: plasticcredit.GenesisState{
 				Params: plasticcredit.Params{
-					IssuerCreator:          sample.AccAddress(),
-					CreditClassCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
+					IssuerCreator:         sample.AccAddress(),
+					CreditTypeCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 				IdCounters: plasticcredit.IDCounters{
 					NextIssuerId:    3,
@@ -76,9 +76,9 @@ func TestGenesisState_Validate(t *testing.T) {
 						Admin:       sample.AccAddress(),
 					},
 				},
-				CreditClasses: []plasticcredit.CreditClass{
+				CreditTypes: []plasticcredit.CreditType{
 					{
-						Abbreviation: "PCRD",
+						Abbreviation: "PTEST",
 						IssuerId:     1,
 						Name:         "Empower Plastic Credits",
 					},
@@ -95,52 +95,54 @@ func TestGenesisState_Validate(t *testing.T) {
 				},
 				Projects: []plasticcredit.Project{
 					{
-						Id:                      1,
-						ApplicantId:             1,
-						CreditClassAbbreviation: "PCRD",
-						Name:                    "My project 1",
+						Id:                     1,
+						ApplicantId:            1,
+						CreditTypeAbbreviation: "PTEST",
+						Name:                   "My project 1",
 					},
 					{
-						Id:                      2,
-						ApplicantId:             1,
-						CreditClassAbbreviation: "WEC",
-						Name:                    "My project 2",
+						Id:                     2,
+						ApplicantId:            1,
+						CreditTypeAbbreviation: "WEC",
+						Name:                   "My project 2",
 					},
 					{
-						Id:                      3,
-						ApplicantId:             2,
-						CreditClassAbbreviation: "PCRD",
-						Name:                    "My project 3",
+						Id:                     3,
+						ApplicantId:            2,
+						CreditTypeAbbreviation: "PTEST",
+						Name:                   "My project 3",
 					},
 					{
-						Id:                      4,
-						ApplicantId:             2,
-						CreditClassAbbreviation: "RCRD",
-						Name:                    "My project 4",
+						Id:                     4,
+						ApplicantId:            2,
+						CreditTypeAbbreviation: "RCRD",
+						Name:                   "My project 4",
 					},
 					{
-						Id:                      5,
-						ApplicantId:             3,
-						CreditClassAbbreviation: "WEC",
-						Name:                    "My project 5",
+						Id:                     5,
+						ApplicantId:            3,
+						CreditTypeAbbreviation: "WEC",
+						Name:                   "My project 5",
 					},
 				},
 				CreditCollections: []plasticcredit.CreditCollection{
 					{
-						Denom:     "PCRD/0001",
+						Denom:     "PTEST/0001",
 						ProjectId: 1,
 						TotalAmount: plasticcredit.CreditAmount{
 							Active:  50,
 							Retired: 50,
 						},
+						MetadataUris: []string{"ipfs://CID1", "ipfs://CID2"},
 					},
 					{
-						Denom:     "PCRD/0002",
+						Denom:     "PTEST/0002",
 						ProjectId: 1,
 						TotalAmount: plasticcredit.CreditAmount{
 							Active:  100,
 							Retired: 0,
 						},
+						MetadataUris: []string{"ipfs://CID3", "ipfs://CID4"},
 					},
 					{
 						Denom:     "WEC/0001",
@@ -149,14 +151,16 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  1,
 							Retired: 0,
 						},
+						MetadataUris: []string{"ipfs://CID5", "ipfs://CID6"},
 					},
 					{
-						Denom:     "PCRD/0003",
+						Denom:     "PTEST/0003",
 						ProjectId: 3,
 						TotalAmount: plasticcredit.CreditAmount{
 							Active:  42,
 							Retired: 0,
 						},
+						MetadataUris: []string{"ipfs://CID7", "ipfs://CID8"},
 					},
 					{
 						Denom:     "RCRD/0001",
@@ -165,12 +169,13 @@ func TestGenesisState_Validate(t *testing.T) {
 							Active:  60,
 							Retired: 40,
 						},
+						MetadataUris: []string{"ipfs://CID9", "ipfs://CID10"},
 					},
 				},
 				CreditBalances: []plasticcredit.CreditBalance{
 					{
 						Owner: sample.AccAddress(),
-						Denom: "PCRD/0001",
+						Denom: "PTEST/0001",
 						Balance: plasticcredit.CreditAmount{
 							Active:  30,
 							Retired: 40,
@@ -178,7 +183,7 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 					{
 						Owner: duplicateAddress,
-						Denom: "PCRD/0001",
+						Denom: "PTEST/0001",
 						Balance: plasticcredit.CreditAmount{
 							Active:  20,
 							Retired: 10,
@@ -186,7 +191,7 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 					{
 						Owner: sample.AccAddress(),
-						Denom: "PCRD/0002",
+						Denom: "PTEST/0002",
 						Balance: plasticcredit.CreditAmount{
 							Active:  100,
 							Retired: 0,
@@ -202,7 +207,7 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 					{
 						Owner: sample.AccAddress(),
-						Denom: "PCRD/0003",
+						Denom: "PTEST/0003",
 						Balance: plasticcredit.CreditAmount{
 							Active:  42,
 							Retired: 0,
@@ -223,29 +228,29 @@ func TestGenesisState_Validate(t *testing.T) {
 		"invalid issue creator params": {
 			genState: plasticcredit.GenesisState{
 				Params: plasticcredit.Params{
-					IssuerCreator:          "invalid",
-					CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
+					IssuerCreator:         "invalid",
+					CreditTypeCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 				IdCounters:        plasticcredit.DefaultGenesis().IdCounters,
 				Issuers:           plasticcredit.DefaultGenesis().Issuers,
 				Applicants:        plasticcredit.DefaultGenesis().Applicants,
-				CreditClasses:     plasticcredit.DefaultGenesis().CreditClasses,
+				CreditTypes:       plasticcredit.DefaultGenesis().CreditTypes,
 				Projects:          plasticcredit.DefaultGenesis().Projects,
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		},
-		"invalid credit class creation fee params": {
+		"invalid credit type creation fee params": {
 			genState: plasticcredit.GenesisState{
 				Params: plasticcredit.Params{
-					IssuerCreator:          sample.AccAddress(),
-					CreditClassCreationFee: sdk.Coin{},
+					IssuerCreator:         sample.AccAddress(),
+					CreditTypeCreationFee: sdk.Coin{},
 				},
 				IdCounters:        plasticcredit.DefaultGenesis().IdCounters,
 				Issuers:           plasticcredit.DefaultGenesis().Issuers,
 				Applicants:        plasticcredit.DefaultGenesis().Applicants,
-				CreditClasses:     plasticcredit.DefaultGenesis().CreditClasses,
+				CreditTypes:       plasticcredit.DefaultGenesis().CreditTypes,
 				Projects:          plasticcredit.DefaultGenesis().Projects,
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
@@ -258,7 +263,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				IdCounters:        plasticcredit.IDCounters{},
 				Issuers:           plasticcredit.DefaultGenesis().Issuers,
 				Applicants:        plasticcredit.DefaultGenesis().Applicants,
-				CreditClasses:     plasticcredit.DefaultGenesis().CreditClasses,
+				CreditTypes:       plasticcredit.DefaultGenesis().CreditTypes,
 				Projects:          plasticcredit.DefaultGenesis().Projects,
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
@@ -282,7 +287,7 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				Applicants:        plasticcredit.DefaultGenesis().Applicants,
-				CreditClasses:     plasticcredit.DefaultGenesis().CreditClasses,
+				CreditTypes:       plasticcredit.DefaultGenesis().CreditTypes,
 				Projects:          plasticcredit.DefaultGenesis().Projects,
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
@@ -306,7 +311,7 @@ func TestGenesisState_Validate(t *testing.T) {
 						Admin:       sample.AccAddress(),
 					},
 				},
-				CreditClasses:     plasticcredit.DefaultGenesis().CreditClasses,
+				CreditTypes:       plasticcredit.DefaultGenesis().CreditTypes,
 				Projects:          plasticcredit.DefaultGenesis().Projects,
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
@@ -337,19 +342,19 @@ func TestGenesisState_Validate(t *testing.T) {
 						Admin:       sample.AccAddress(),
 					},
 				},
-				CreditClasses: []plasticcredit.CreditClass{
+				CreditTypes: []plasticcredit.CreditType{
 					{
-						Abbreviation: "PCRD",
+						Abbreviation: "PTEST",
 						IssuerId:     1,
 						Name:         "Empower Plastic Credits",
 					},
 				},
 				Projects: []plasticcredit.Project{
 					{
-						Id:                      1,
-						ApplicantId:             1,
-						CreditClassAbbreviation: "PCRD",
-						Name:                    "My project",
+						Id:                     1,
+						ApplicantId:            1,
+						CreditTypeAbbreviation: "PTEST",
+						Name:                   "My project",
 					},
 				},
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
@@ -363,7 +368,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				IdCounters:        plasticcredit.DefaultGenesis().IdCounters,
 				Issuers:           []plasticcredit.Issuer{{}},
 				Applicants:        plasticcredit.DefaultGenesis().Applicants,
-				CreditClasses:     plasticcredit.DefaultGenesis().CreditClasses,
+				CreditTypes:       plasticcredit.DefaultGenesis().CreditTypes,
 				Projects:          plasticcredit.DefaultGenesis().Projects,
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
@@ -389,7 +394,7 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				Applicants:        plasticcredit.DefaultGenesis().Applicants,
-				CreditClasses:     plasticcredit.DefaultGenesis().CreditClasses,
+				CreditTypes:       plasticcredit.DefaultGenesis().CreditTypes,
 				Projects:          plasticcredit.DefaultGenesis().Projects,
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
@@ -402,7 +407,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				IdCounters:        plasticcredit.DefaultGenesis().IdCounters,
 				Issuers:           plasticcredit.DefaultGenesis().Issuers,
 				Applicants:        []plasticcredit.Applicant{{}},
-				CreditClasses:     plasticcredit.DefaultGenesis().CreditClasses,
+				CreditTypes:       plasticcredit.DefaultGenesis().CreditTypes,
 				Projects:          plasticcredit.DefaultGenesis().Projects,
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
@@ -428,27 +433,27 @@ func TestGenesisState_Validate(t *testing.T) {
 						Admin:       sample.AccAddress(),
 					},
 				},
-				CreditClasses:     plasticcredit.DefaultGenesis().CreditClasses,
+				CreditTypes:       plasticcredit.DefaultGenesis().CreditTypes,
 				Projects:          plasticcredit.DefaultGenesis().Projects,
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
 			},
 			err: plasticcredit.ErrApplicantDuplicate,
 		},
-		"invalid credit class": {
+		"invalid credit type": {
 			genState: plasticcredit.GenesisState{
 				Params:            plasticcredit.DefaultGenesis().Params,
 				IdCounters:        plasticcredit.DefaultGenesis().IdCounters,
 				Issuers:           plasticcredit.DefaultGenesis().Issuers,
 				Applicants:        plasticcredit.DefaultGenesis().Applicants,
-				CreditClasses:     []plasticcredit.CreditClass{{}},
+				CreditTypes:       []plasticcredit.CreditType{{}},
 				Projects:          plasticcredit.DefaultGenesis().Projects,
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
 			},
 			err: utils.ErrInvalidValue,
 		},
-		"duplicate credit class ids": {
+		"duplicate credit type ids": {
 			genState: plasticcredit.GenesisState{
 				Params:     plasticcredit.DefaultGenesis().Params,
 				IdCounters: plasticcredit.DefaultGenesis().IdCounters,
@@ -461,14 +466,14 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				Applicants: plasticcredit.DefaultGenesis().Applicants,
-				CreditClasses: []plasticcredit.CreditClass{
+				CreditTypes: []plasticcredit.CreditType{
 					{
-						Abbreviation: "PCRD",
+						Abbreviation: "PTEST",
 						IssuerId:     1,
 						Name:         "Empower Plastic Credit",
 					},
 					{
-						Abbreviation: "PCRD",
+						Abbreviation: "PTEST",
 						IssuerId:     1,
 						Name:         "Only abbreviation counts",
 					},
@@ -477,15 +482,15 @@ func TestGenesisState_Validate(t *testing.T) {
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
 			},
-			err: plasticcredit.ErrCreditClassDuplicate,
+			err: plasticcredit.ErrCreditTypeDuplicate,
 		},
-		"credit class with non-existent issuer id": {
+		"credit type with non-existent issuer id": {
 			genState: plasticcredit.GenesisState{
 				Params:     plasticcredit.DefaultGenesis().Params,
 				IdCounters: plasticcredit.DefaultGenesis().IdCounters,
 				Issuers:    plasticcredit.DefaultGenesis().Issuers,
 				Applicants: plasticcredit.DefaultGenesis().Applicants,
-				CreditClasses: []plasticcredit.CreditClass{
+				CreditTypes: []plasticcredit.CreditType{
 					{
 						Abbreviation: "PPP",
 						IssuerId:     37,
@@ -504,7 +509,7 @@ func TestGenesisState_Validate(t *testing.T) {
 				IdCounters:        plasticcredit.DefaultGenesis().IdCounters,
 				Issuers:           plasticcredit.DefaultGenesis().Issuers,
 				Applicants:        plasticcredit.DefaultGenesis().Applicants,
-				CreditClasses:     plasticcredit.DefaultGenesis().CreditClasses,
+				CreditTypes:       plasticcredit.DefaultGenesis().CreditTypes,
 				Projects:          []plasticcredit.Project{{}},
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
@@ -531,25 +536,25 @@ func TestGenesisState_Validate(t *testing.T) {
 						Admin:       sample.AccAddress(),
 					},
 				},
-				CreditClasses: []plasticcredit.CreditClass{
+				CreditTypes: []plasticcredit.CreditType{
 					{
-						Abbreviation: "PCRD",
+						Abbreviation: "PTEST",
 						IssuerId:     1,
 						Name:         "Empower Plastic Credits",
 					},
 				},
 				Projects: []plasticcredit.Project{
 					{
-						Id:                      1,
-						ApplicantId:             1,
-						CreditClassAbbreviation: "PCRD",
-						Name:                    "My Project",
+						Id:                     1,
+						ApplicantId:            1,
+						CreditTypeAbbreviation: "PTEST",
+						Name:                   "My Project",
 					},
 					{
-						Id:                      1,
-						ApplicantId:             1,
-						CreditClassAbbreviation: "PCRD",
-						Name:                    "Only ID matters",
+						Id:                     1,
+						ApplicantId:            1,
+						CreditTypeAbbreviation: "PTEST",
+						Name:                   "Only ID matters",
 					},
 				},
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
@@ -570,19 +575,19 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				Applicants: plasticcredit.DefaultGenesis().Applicants,
-				CreditClasses: []plasticcredit.CreditClass{
+				CreditTypes: []plasticcredit.CreditType{
 					{
-						Abbreviation: "PCRD",
+						Abbreviation: "PTEST",
 						IssuerId:     1,
 						Name:         "Empower Plastic Credits",
 					},
 				},
 				Projects: []plasticcredit.Project{
 					{
-						Id:                      1,
-						ApplicantId:             42,
-						CreditClassAbbreviation: "PCRD",
-						Name:                    "My Project",
+						Id:                     1,
+						ApplicantId:            42,
+						CreditTypeAbbreviation: "PTEST",
+						Name:                   "My Project",
 					},
 				},
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
@@ -590,7 +595,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			},
 			err: plasticcredit.ErrApplicantNotFound,
 		},
-		"project with not found credit class": {
+		"project with not found credit type": {
 			genState: plasticcredit.GenesisState{
 				Params:     plasticcredit.DefaultGenesis().Params,
 				IdCounters: plasticcredit.DefaultGenesis().IdCounters,
@@ -603,28 +608,28 @@ func TestGenesisState_Validate(t *testing.T) {
 						Admin:       sample.AccAddress(),
 					},
 				},
-				CreditClasses: plasticcredit.DefaultGenesis().CreditClasses,
+				CreditTypes: plasticcredit.DefaultGenesis().CreditTypes,
 				Projects: []plasticcredit.Project{
 					{
-						Id:                      1,
-						ApplicantId:             1,
-						CreditClassAbbreviation: "NOTFOUND",
-						Name:                    "My Project",
+						Id:                     1,
+						ApplicantId:            1,
+						CreditTypeAbbreviation: "NOTFOUND",
+						Name:                   "My Project",
 					},
 				},
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances:    plasticcredit.DefaultGenesis().CreditBalances,
 			},
-			err: plasticcredit.ErrCreditClassNotFound,
+			err: plasticcredit.ErrCreditTypeNotFound,
 		},
 		"invalid credit collections": {
 			genState: plasticcredit.GenesisState{
-				Params:        plasticcredit.DefaultGenesis().Params,
-				IdCounters:    plasticcredit.DefaultGenesis().IdCounters,
-				Issuers:       plasticcredit.DefaultGenesis().Issuers,
-				Applicants:    plasticcredit.DefaultGenesis().Applicants,
-				CreditClasses: plasticcredit.DefaultGenesis().CreditClasses,
-				Projects:      plasticcredit.DefaultGenesis().Projects,
+				Params:      plasticcredit.DefaultGenesis().Params,
+				IdCounters:  plasticcredit.DefaultGenesis().IdCounters,
+				Issuers:     plasticcredit.DefaultGenesis().Issuers,
+				Applicants:  plasticcredit.DefaultGenesis().Applicants,
+				CreditTypes: plasticcredit.DefaultGenesis().CreditTypes,
+				Projects:    plasticcredit.DefaultGenesis().Projects,
 				CreditCollections: []plasticcredit.CreditCollection{
 					{
 						Denom:     "",
@@ -659,37 +664,39 @@ func TestGenesisState_Validate(t *testing.T) {
 						Admin:       sample.AccAddress(),
 					},
 				},
-				CreditClasses: []plasticcredit.CreditClass{
+				CreditTypes: []plasticcredit.CreditType{
 					{
-						Abbreviation: "PCRD",
+						Abbreviation: "PTEST",
 						IssuerId:     1,
 						Name:         "Empower Plastic Credits",
 					},
 				},
 				Projects: []plasticcredit.Project{
 					{
-						Id:                      1,
-						ApplicantId:             1,
-						CreditClassAbbreviation: "PCRD",
-						Name:                    "My project",
+						Id:                     1,
+						ApplicantId:            1,
+						CreditTypeAbbreviation: "PTEST",
+						Name:                   "My project",
 					},
 				},
 				CreditCollections: []plasticcredit.CreditCollection{
 					{
-						Denom:     "PCRD/1",
+						Denom:     "PTEST/1",
 						ProjectId: 1,
 						TotalAmount: plasticcredit.CreditAmount{
 							Active:  1,
 							Retired: 0,
 						},
+						MetadataUris: []string{"ipfs://CID1"},
 					},
 					{
-						Denom:     "PCRD/1",
+						Denom:     "PTEST/1",
 						ProjectId: 1,
 						TotalAmount: plasticcredit.CreditAmount{
 							Active:  0,
 							Retired: 1,
 						},
+						MetadataUris: []string{"ipfs://CID1"},
 					},
 				},
 				CreditBalances: plasticcredit.DefaultGenesis().CreditBalances,
@@ -709,9 +716,9 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				Applicants: plasticcredit.DefaultGenesis().Applicants,
-				CreditClasses: []plasticcredit.CreditClass{
+				CreditTypes: []plasticcredit.CreditType{
 					{
-						Abbreviation: "PCRD",
+						Abbreviation: "PTEST",
 						IssuerId:     1,
 						Name:         "Empower Plastic Credits",
 					},
@@ -719,12 +726,13 @@ func TestGenesisState_Validate(t *testing.T) {
 				Projects: plasticcredit.DefaultGenesis().Projects,
 				CreditCollections: []plasticcredit.CreditCollection{
 					{
-						Denom:     "PCRD/1",
+						Denom:     "PTEST/1",
 						ProjectId: 37,
 						TotalAmount: plasticcredit.CreditAmount{
 							Active:  1,
 							Retired: 0,
 						},
+						MetadataUris: []string{"ipfs://CID1"},
 					},
 				},
 				CreditBalances: plasticcredit.DefaultGenesis().CreditBalances,
@@ -737,13 +745,13 @@ func TestGenesisState_Validate(t *testing.T) {
 				IdCounters:        plasticcredit.DefaultGenesis().IdCounters,
 				Issuers:           plasticcredit.DefaultGenesis().Issuers,
 				Applicants:        plasticcredit.DefaultGenesis().Applicants,
-				CreditClasses:     plasticcredit.DefaultGenesis().CreditClasses,
+				CreditTypes:       plasticcredit.DefaultGenesis().CreditTypes,
 				Projects:          plasticcredit.DefaultGenesis().Projects,
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances: []plasticcredit.CreditBalance{
 					{
 						Owner:   "emp123",
-						Denom:   "EMP/123",
+						Denom:   "ETEST/123",
 						Balance: plasticcredit.CreditAmount{},
 					},
 				},
@@ -770,40 +778,41 @@ func TestGenesisState_Validate(t *testing.T) {
 						Admin:       sample.AccAddress(),
 					},
 				},
-				CreditClasses: []plasticcredit.CreditClass{
+				CreditTypes: []plasticcredit.CreditType{
 					{
-						Abbreviation: "PCRD",
+						Abbreviation: "PTEST",
 						IssuerId:     1,
 						Name:         "Empower Plastic Credits",
 					},
 				},
 				Projects: []plasticcredit.Project{
 					{
-						Id:                      1,
-						ApplicantId:             1,
-						CreditClassAbbreviation: "PCRD",
-						Name:                    "My project",
+						Id:                     1,
+						ApplicantId:            1,
+						CreditTypeAbbreviation: "PTEST",
+						Name:                   "My project",
 					},
 				},
 				CreditCollections: []plasticcredit.CreditCollection{
 					{
-						Denom:     "PCRD/123",
+						Denom:     "PTEST/123",
 						ProjectId: 1,
 						TotalAmount: plasticcredit.CreditAmount{
 							Active:  1,
 							Retired: 0,
 						},
+						MetadataUris: []string{"ipfs://CID1"},
 					},
 				},
 				CreditBalances: []plasticcredit.CreditBalance{
 					{
 						Owner:   duplicateAddress,
-						Denom:   "PCRD/123",
+						Denom:   "PTEST/123",
 						Balance: plasticcredit.CreditAmount{},
 					},
 					{
 						Owner:   duplicateAddress,
-						Denom:   "PCRD/123",
+						Denom:   "PTEST/123",
 						Balance: plasticcredit.CreditAmount{},
 					},
 				},
@@ -816,13 +825,13 @@ func TestGenesisState_Validate(t *testing.T) {
 				IdCounters:        plasticcredit.DefaultGenesis().IdCounters,
 				Issuers:           plasticcredit.DefaultGenesis().Issuers,
 				Applicants:        plasticcredit.DefaultGenesis().Applicants,
-				CreditClasses:     plasticcredit.DefaultGenesis().CreditClasses,
+				CreditTypes:       plasticcredit.DefaultGenesis().CreditTypes,
 				Projects:          plasticcredit.DefaultGenesis().Projects,
 				CreditCollections: plasticcredit.DefaultGenesis().CreditCollections,
 				CreditBalances: []plasticcredit.CreditBalance{
 					{
 						Owner:   sample.AccAddress(),
-						Denom:   "PCRD/123",
+						Denom:   "PTEST/123",
 						Balance: plasticcredit.CreditAmount{},
 					},
 				},

@@ -1,6 +1,7 @@
 name: "Docs depoly"
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -12,17 +13,12 @@ jobs:
     name: Deploy EmpowerChain docs
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
-      - name: Build docs
-        working-directory: ./docs
-        run: |
-         npm i
-         npm run docs:build
-      
-      - uses: amondnet/vercel-action@v20
+      - uses: actions/checkout@v3   
+      - uses: amondnet/vercel-action@v25
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-args: '--prod'
-          vercel-org-id: ${{ secrets.ORG_ID}}  #Required
-          vercel-project-id: ${{ secrets.PROJECT_ID}} #Required 
-          working-directory: ./docs/.vitepress/dist
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}}
+          working-directory: ./docs

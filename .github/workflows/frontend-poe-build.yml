@@ -1,0 +1,23 @@
+name: "Build PoE Frontend"
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/proof-of-frontend/**'
+
+jobs:
+  build:
+    name: Build Proof of Existence Frontend
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: earthly/actions-setup@v1
+        with:
+          version: 0.6.30
+
+      - run: npm ci && npm run build
+        working-directory: ./frontend/proof-of-existence

@@ -21,7 +21,7 @@ func DefaultGenesis() GenesisState {
 		},
 		Issuers:           []Issuer{},
 		Applicants:        []Applicant{},
-		CreditClasses:     []CreditClass{},
+		CreditTypes:       []CreditType{},
 		Projects:          []Project{},
 		CreditCollections: []CreditCollection{},
 		CreditBalances:    []CreditBalance{},
@@ -31,7 +31,7 @@ func DefaultGenesis() GenesisState {
 // Validate performs basic genesis state validation returning an error upon any
 // failure.
 func (gs GenesisState) Validate() error {
-	creditClasses := make(map[string]CreditClass)
+	creditTypes := make(map[string]CreditType)
 	issuers := make(map[uint64]Issuer)
 	applicants := make(map[uint64]Applicant)
 	projects := make(map[uint64]Project)
@@ -64,19 +64,19 @@ func (gs GenesisState) Validate() error {
 		applicants[applicant.Id] = applicant
 	}
 
-	for _, creditClass := range gs.CreditClasses {
-		if err := creditClass.Validate(); err != nil {
+	for _, creditType := range gs.CreditTypes {
+		if err := creditType.Validate(); err != nil {
 			return err
 		}
 
-		if _, exists := issuers[creditClass.IssuerId]; !exists {
-			return errors.Wrapf(ErrIssuerNotFound, "credit class with abbreviation %s had issuer_id %d that was not found", creditClass.Abbreviation, creditClass.IssuerId)
+		if _, exists := issuers[creditType.IssuerId]; !exists {
+			return errors.Wrapf(ErrIssuerNotFound, "credit type with abbreviation %s had issuer_id %d that was not found", creditType.Abbreviation, creditType.IssuerId)
 		}
 
-		if _, exists := creditClasses[creditClass.Abbreviation]; exists {
-			return errors.Wrapf(ErrCreditClassDuplicate, "duplicate credit class with abbreviation %s was found", creditClass.Abbreviation)
+		if _, exists := creditTypes[creditType.Abbreviation]; exists {
+			return errors.Wrapf(ErrCreditTypeDuplicate, "duplicate credit type with abbreviation %s was found", creditType.Abbreviation)
 		}
-		creditClasses[creditClass.Abbreviation] = creditClass
+		creditTypes[creditType.Abbreviation] = creditType
 	}
 
 	for _, project := range gs.Projects {
@@ -88,12 +88,12 @@ func (gs GenesisState) Validate() error {
 			return errors.Wrapf(ErrApplicantNotFound, "project with id %d had applicant_id %d that was not found", project.Id, project.ApplicantId)
 		}
 
-		if _, exists := creditClasses[project.CreditClassAbbreviation]; !exists {
-			return errors.Wrapf(ErrCreditClassNotFound, "project with id %d had credit class abbreviation %s that was not found", project.Id, project.CreditClassAbbreviation)
+		if _, exists := creditTypes[project.CreditTypeAbbreviation]; !exists {
+			return errors.Wrapf(ErrCreditTypeNotFound, "project with id %d had credit type abbreviation %s that was not found", project.Id, project.CreditTypeAbbreviation)
 		}
 
 		if _, exists := projects[project.Id]; exists {
-			return errors.Wrapf(ErrProjectDuplicate, "duplicate project ith id %d was found", project.Id)
+			return errors.Wrapf(ErrProjectDuplicate, "duplicate project with id %d was found", project.Id)
 		}
 		projects[project.Id] = project
 	}

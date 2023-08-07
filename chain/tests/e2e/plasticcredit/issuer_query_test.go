@@ -1,15 +1,19 @@
 package e2e_test
 
 import (
+	"fmt"
+
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/gogoproto/proto"
 
+	"github.com/EmpowerPlastic/empowerchain/tests/e2e"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *E2ETestSuite) TestCmdQueryParams() {
-	val := s.network.Validators[0]
+	val := s.Network.Validators[0]
 	issuerCreator := ""
 	testCases := map[string]struct {
 		args []string
@@ -22,7 +26,7 @@ func (s *E2ETestSuite) TestCmdQueryParams() {
 		s.Run(name, func() {
 			cmd := cli.CmdQueryParams()
 			clientCtx := val.ClientCtx
-			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, append(tc.args, fmt.Sprintf("--%s=json", flags.FlagOutput)))
 			s.Require().NoError(err)
 			var result plasticcredit.QueryParamsResponse
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &result))
@@ -32,8 +36,8 @@ func (s *E2ETestSuite) TestCmdQueryParams() {
 }
 
 func (s *E2ETestSuite) TestCmdQueryIssuer() {
-	val := s.network.Validators[0]
-	issuerKey, err := val.ClientCtx.Keyring.Key(issuerKeyName)
+	val := s.Network.Validators[0]
+	issuerKey, err := val.ClientCtx.Keyring.Key(e2e.IssuerKeyName)
 	s.Require().NoError(err)
 	issuer, err := issuerKey.GetAddress()
 	s.Require().NoError(err)
@@ -67,7 +71,7 @@ func (s *E2ETestSuite) TestCmdQueryIssuer() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.CmdQueryIssuer()
-			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, tc.args)
+			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, fmt.Sprintf("--%s=json", flags.FlagOutput)))
 
 			if tc.expectedErr {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
@@ -82,7 +86,7 @@ func (s *E2ETestSuite) TestCmdQueryIssuer() {
 }
 
 func (s *E2ETestSuite) TestCmdQueryProject() {
-	val := s.network.Validators[0]
+	val := s.Network.Validators[0]
 	testCases := map[string]struct {
 		args           []string
 		expectedErr    bool
@@ -95,11 +99,11 @@ func (s *E2ETestSuite) TestCmdQueryProject() {
 			"",
 			&plasticcredit.QueryProjectResponse{
 				Project: plasticcredit.Project{
-					Id:                      1,
-					ApplicantId:             1,
-					CreditClassAbbreviation: "EMP",
-					Name:                    "Approved project",
-					Status:                  plasticcredit.ProjectStatus_APPROVED,
+					Id:                     1,
+					ApplicantId:            1,
+					CreditTypeAbbreviation: "ETEST",
+					Name:                   "Approved project",
+					Status:                 plasticcredit.ProjectStatus_APPROVED,
 				},
 			},
 		},
@@ -114,7 +118,7 @@ func (s *E2ETestSuite) TestCmdQueryProject() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.CmdQueryProject()
-			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, tc.args)
+			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, fmt.Sprintf("--%s=json", flags.FlagOutput)))
 
 			if tc.expectedErr {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
@@ -129,7 +133,7 @@ func (s *E2ETestSuite) TestCmdQueryProject() {
 }
 
 func (s *E2ETestSuite) TestCmdQueryApplicant() {
-	val := s.network.Validators[0]
+	val := s.Network.Validators[0]
 	testCases := map[string]struct {
 		args           []string
 		expectedErr    bool
@@ -160,7 +164,7 @@ func (s *E2ETestSuite) TestCmdQueryApplicant() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.CmdQueryApplicant()
-			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, tc.args)
+			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, fmt.Sprintf("--%s=json", flags.FlagOutput)))
 
 			if tc.expectedErr {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)

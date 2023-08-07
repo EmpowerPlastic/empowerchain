@@ -17,11 +17,22 @@ build-prep:
     COPY Cargo.toml .
     COPY .cargo .cargo
     COPY contracts contracts
+    COPY packages packages
 
 build:
     FROM +build-prep
     RUN cargo build
     RUN cargo wasm
+
+build-optimized:
+    FROM +build-prep
+    WITH DOCKER --pull cosmwasm/workspace-optimizer:0.12.11
+        RUN docker run -v "$(pwd)":/code \
+          --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+          --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+          cosmwasm/workspace-optimizer:0.12.11
+    END
+    SAVE ARTIFACT --keep-own ./artifacts/* AS LOCAL artifacts/
 
 test:
     FROM +build-prep
@@ -35,3 +46,10 @@ test-with-coverage:
     RUN mkdir target/coverage
     RUN grcov . --binary-path ./target/debug/deps/ -s . -t lcov --branch --ignore-not-existing --ignore '../*' --ignore "/*" -o target/coverage/tests.lcov
     SAVE ARTIFACT target/coverage/tests.lcov AS LOCAL tests.lcov
+
+generate-schema:
+    FROM +build-prep
+    RUN cargo schema
+    SAVE ARTIFACT ./schema/* AS LOCAL schema/
+
+

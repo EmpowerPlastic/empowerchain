@@ -11,7 +11,4 @@ const (
 
 	// StoreKey defines the module's store key.
 	StoreKey = ModuleName
-
-	// QuerierRoute defines the module's query routing key
-	QuerierRoute = ModuleName
 )

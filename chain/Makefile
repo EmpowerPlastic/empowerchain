@@ -11,6 +11,9 @@ DOCKER := $(shell which docker)
 BUILD_DIR ?= $(CURDIR)/build
 COSMOS_SDK_VERSION := $(shell go list -m -f '{{ .Version }}' github.com/cosmos/cosmos-sdk)
 
+GO_SYSTEM_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f1-2)
+REQUIRE_GO_VERSION = 1.20
+
 export GO111MODULE = on
 
 # process build tags
@@ -84,6 +87,12 @@ endif
 ###                                  Build                                  ###
 ###############################################################################
 
+check_go_version:
+ifneq ($(GO_SYSTEM_VERSION), $(REQUIRE_GO_VERSION))
+	@echo "ERROR: Go $(REQUIRE_GO_VERSION) is required for $(VERSION) version of EmpowerChain. Currently Go $(GO_SYSTEM_VERSION) is being used."
+	exit 1
+endif
+
 ver:
 	@echo $(VERSION)
 
@@ -93,7 +102,7 @@ BUILD_TARGETS := build install
 
 build: BUILD_ARGS=-o $(BUILD_DIR)/
 
-$(BUILD_TARGETS): go.sum $(BUILD_DIR)/
+$(BUILD_TARGETS): check_go_version go.sum $(BUILD_DIR)/
 	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
 
 $(BUILD_DIR)/:
@@ -143,15 +152,62 @@ smoketest: install
 	./scripts/test/smoke_gov_proposals.sh
 	./scripts/test/smoke_poe.sh
 	./scripts/test/smoke_plastic_credit.sh
+	./scripts/test/smoke_wasm.sh
+	./scripts/test/smoke_certificate.sh
+	# TODO: ADD BACK IN https://github.com/EmpowerPlastic/empowerchain/issues/516
+	#./scripts/test/smoke_ibc.sh
 
-smoketest-ibc: install
-	./scripts/test/smoke_ibc.sh
+###############################################################################
+###                               Simulations                               ###
+###############################################################################
+
+SIMAPP = github.com/EmpowerPlastic/empowerchain/app/simulation
+SIM_TEST_DIR = ./app/simulation
+TOOLS_DESTDIR  ?= $(GOPATH)/bin
+RUNSIM         = $(TOOLS_DESTDIR)/runsim
+default_seeds := 1,2,4,7,32,123,124,582,1893,2989,3012,4728,37827,981928,87821, \
+	891823782,989182,89182391,11,22,44,77,99,2020,3232,123123,124124,582582,18931893, \
+	29892989,30123012,47284728,7601778,8090485,977367484,491163361,424254581,673398983
+
+JOBS ?= 4
+SEED ?= 1
+SEEDS ?= $(subst $(whitespace),$(empty),$(default_seeds))
+PERIOD ?= 5
+NUM_BLOCKS ?= 100
+BLOCK_SIZE ?= 200
+
+# Install the runsim binary
+runsim: $(RUNSIM)
+$(RUNSIM):
+	@echo "Installing runsim..."
+	@go install github.com/cosmos/tools/cmd/runsim@v1.0.0
+
+test-sim-import-export: runsim
+	@echo "Running application import/export simulation. This may take several minutes..."
+	@runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 50 5 TestAppImportExport
+
+test-sim-after-import: runsim
+	@echo "Running application simulation-after-import. This may take several minutes..."
+	@runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 50 5 TestAppSimulationAfterImport
+
+test-sim-multi-seed-short: runsim
+	@echo "Running short multi-seed application simulation. This may take awhile!"
+	@runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 50 10 TestFullAppSimulation
+
+test-sim-multi-seed-long: runsim
+	@echo "Running long multi-seed application simulation. This may take awhile!"
+	@runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 500 50 TestFullAppSimulation
+
+test-sim-nondeterminism:
+	@echo "Running non-determinism test..."
+	go test $(SIM_TEST_DIR) -mod=readonly -run TestAppStateDeterminism -Enabled=true \
+		-NumBlocks=100 -BlockSize=200 -Commit=true -Period=0 -v -timeout 24h
 
 ###############################################################################
 ###                                  Proto                                  ###
 ###############################################################################
 
-protoVer=0.11.5
+protoVer=0.11.6
 protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
 protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 
@@ -166,12 +222,22 @@ proto:
 
 swagger-gen:
 	@echo
-	@echo "=========== Generate Message ============"
+	@echo "=========== Generate Swagger Docs ============"
 	@echo
 	./scripts/generate-docs.sh
+	$(MAKE) update-swagger-docs
 	@echo
 	@echo "=========== Generate Complete ============"
 	@echo
+
+update-swagger-docs:
+	statik -src=client/docs/swagger-ui -dest=client/docs -f -m
+	@if [ -n "$(git status --porcelain)" ]; then \
+		echo "\033[91mSwagger docs are out of sync!!!\033[0m";\
+		exit 1;\
+	else \
+		echo "\033[92mSwagger docs are in sync\033[0m";\
+	fi
 
 ###############################################################################
 ###                                  Serve                                  ###

@@ -3,11 +3,11 @@ package keeper_test
 import (
 	"testing"
 
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtime "github.com/cometbft/cometbft/types/time"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/stretchr/testify/suite"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
 
 	"github.com/EmpowerPlastic/empowerchain/app"
 	"github.com/EmpowerPlastic/empowerchain/app/params"
@@ -24,32 +24,27 @@ type TestSuite struct {
 	addrs          []sdk.AccAddress
 	numTestIssuers uint64 // number of issuers created in the initial state of the test
 
-	issuerCreator                 string
-	sampleIssuerID                uint64
-	sampleIssuerAdmin             string
-	noCoinsIssuerID               uint64
-	noCoinsIssuerAdmin            string
-	sampleCreditClassAbbreviation string
-	sampleApplicantID             uint64
-	sampleApplicantAdmin          string
-	sampleProjectID               uint64
-	sampleUnapprovedProjectID     uint64
-	sampleRejectionProjectID      uint64
-	sampleSuspendedProjectID      uint64
-	sampleCreditDenom             string
+	issuerCreator                string
+	sampleIssuerID               uint64
+	sampleIssuerAdmin            string
+	noCoinsIssuerID              uint64
+	noCoinsIssuerAdmin           string
+	sampleCreditTypeAbbreviation string
+	sampleApplicantID            uint64
+	sampleApplicantAdmin         string
+	sampleProjectID              uint64
+	sampleUnapprovedProjectID    uint64
+	sampleRejectionProjectID     uint64
+	sampleSuspendedProjectID     uint64
+	sampleCreditDenom            string
 
-	creditClassCreationFee sdk.Coin
+	creditTypeCreationFee sdk.Coin
 }
 
 func (s *TestSuite) SetupTest() {
 	empowerApp := app.Setup(s.T(), false)
 	ctx := empowerApp.BaseApp.NewContext(false, tmproto.Header{})
 	ctx = ctx.WithBlockHeader(tmproto.Header{Time: tmtime.Now()})
-
-	//TODO:
-	/*queryHelper := baseapp.NewQueryServerTestHelper(ctx, app.InterfaceRegistry())
-	nft.RegisterQueryServer(queryHelper, app.NFTKeeper)
-	queryClient := nft.NewQueryClient(queryHelper)*/
 
 	s.empowerApp = empowerApp
 	s.ctx = ctx
@@ -79,8 +74,8 @@ func (s *TestSuite) PopulateWithSamples() {
 	_, err := ms.UpdateParams(goCtx, &plasticcredit.MsgUpdateParams{
 		Authority: k.Authority(),
 		Params: plasticcredit.Params{
-			IssuerCreator:          s.issuerCreator,
-			CreditClassCreationFee: s.creditClassCreationFee,
+			IssuerCreator:         s.issuerCreator,
+			CreditTypeCreationFee: s.creditTypeCreationFee,
 		},
 	})
 	s.Require().NoError(err)
@@ -104,9 +99,9 @@ func (s *TestSuite) PopulateWithSamples() {
 	s.Require().NoError(err)
 	s.Require().Equal(s.noCoinsIssuerID, respIssuer.IssuerId)
 
-	_, err = ms.CreateCreditClass(goCtx, &plasticcredit.MsgCreateCreditClass{
+	_, err = ms.CreateCreditType(goCtx, &plasticcredit.MsgCreateCreditType{
 		Creator:      s.sampleIssuerAdmin,
-		Abbreviation: s.sampleCreditClassAbbreviation,
+		Abbreviation: s.sampleCreditTypeAbbreviation,
 		IssuerId:     s.sampleIssuerID,
 		Name:         "Empower Plastic Credits",
 	})
@@ -121,37 +116,37 @@ func (s *TestSuite) PopulateWithSamples() {
 	s.Require().Equal(s.sampleApplicantID, respApplicant.ApplicantId)
 
 	respProject, err := ms.CreateProject(goCtx, &plasticcredit.MsgCreateProject{
-		Creator:                 s.sampleApplicantAdmin,
-		ApplicantId:             s.sampleApplicantID,
-		CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-		Name:                    "Cool project",
+		Creator:                s.sampleApplicantAdmin,
+		ApplicantId:            s.sampleApplicantID,
+		CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
+		Name:                   "Cool project",
 	})
 	s.Require().NoError(err)
 	s.Require().Equal(s.sampleProjectID, respProject.ProjectId)
 
 	respUnapprovedProject, err := ms.CreateProject(goCtx, &plasticcredit.MsgCreateProject{
-		Creator:                 s.sampleApplicantAdmin,
-		ApplicantId:             s.sampleApplicantID,
-		CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-		Name:                    "Another cool project",
+		Creator:                s.sampleApplicantAdmin,
+		ApplicantId:            s.sampleApplicantID,
+		CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
+		Name:                   "Another cool project",
 	})
 	s.Require().NoError(err)
 	s.Require().Equal(s.sampleUnapprovedProjectID, respUnapprovedProject.ProjectId)
 
 	respRejectionProject, err := ms.CreateProject(goCtx, &plasticcredit.MsgCreateProject{
-		Creator:                 s.sampleApplicantAdmin,
-		ApplicantId:             s.sampleApplicantID,
-		CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-		Name:                    "no bueno project",
+		Creator:                s.sampleApplicantAdmin,
+		ApplicantId:            s.sampleApplicantID,
+		CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
+		Name:                   "no bueno project",
 	})
 	s.Require().NoError(err)
 	s.Require().Equal(s.sampleRejectionProjectID, respRejectionProject.ProjectId)
 
 	respSuspendedProject, err := ms.CreateProject(goCtx, &plasticcredit.MsgCreateProject{
-		Creator:                 s.sampleApplicantAdmin,
-		ApplicantId:             s.sampleApplicantID,
-		CreditClassAbbreviation: s.sampleCreditClassAbbreviation,
-		Name:                    "suspended project",
+		Creator:                s.sampleApplicantAdmin,
+		ApplicantId:            s.sampleApplicantID,
+		CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
+		Name:                   "suspended project",
 	})
 	s.Require().NoError(err)
 	s.Require().Equal(s.sampleSuspendedProjectID, respSuspendedProject.ProjectId)
@@ -185,6 +180,7 @@ func (s *TestSuite) PopulateWithSamples() {
 		ProjectId:    s.sampleProjectID,
 		SerialNumber: "123",
 		CreditAmount: 100000000,
+		MetadataUris: []string{"ipfs://CID1", "ipfs://CID2"},
 	})
 	s.Require().NoError(err)
 	s.Require().Equal(s.sampleCreditDenom, respIssue.Collection.Denom)
@@ -202,15 +198,15 @@ func TestTestSuite(t *testing.T) {
 	ts.sampleIssuerAdmin = sample.AccAddress()
 	ts.noCoinsIssuerID = 2
 	ts.noCoinsIssuerAdmin = sample.AccAddress()
-	ts.sampleCreditClassAbbreviation = "EMP"
+	ts.sampleCreditTypeAbbreviation = "ETEST"
 	ts.sampleApplicantID = 1
 	ts.sampleApplicantAdmin = sample.AccAddress()
 	ts.sampleProjectID = 1
 	ts.sampleUnapprovedProjectID = 2
 	ts.sampleRejectionProjectID = 3
 	ts.sampleSuspendedProjectID = 4
-	ts.sampleCreditDenom = "EMP/123"
-	ts.creditClassCreationFee = sdk.NormalizeCoin(plasticcredit.DefaultCreditClassCreationFee)
+	ts.sampleCreditDenom = "ETEST/123"
+	ts.creditTypeCreationFee = sdk.NormalizeCoin(plasticcredit.DefaultCreditTypeCreationFee)
 
 	suite.Run(t, ts)
 }

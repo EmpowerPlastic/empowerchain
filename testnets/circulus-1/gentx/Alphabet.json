@@ -1,0 +1,68 @@
+{
+  "body": {
+    "messages": [
+      {
+        "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+        "description": {
+          "moniker": "Alphabet",
+          "identity": "",
+          "website": "",
+          "security_contact": "https://t.me/intelix",
+          "details": ""
+        },
+        "commission": {
+          "rate": "0.050000000000000000",
+          "max_rate": "0.200000000000000000",
+          "max_change_rate": "0.100000000000000000"
+        },
+        "min_self_delegation": "1",
+        "delegator_address": "empower1davz40kat93t49ljrkmkl5uqhqq45e0t5taj8w",
+        "validator_address": "empowervaloper1davz40kat93t49ljrkmkl5uqhqq45e0tvsrafm",
+        "pubkey": {
+          "@type": "/cosmos.crypto.ed25519.PubKey",
+          "key": "0DvdDvwNsWKIK6oamglLHAWHfmA/OhTtR3s+L7T2saU="
+        },
+        "value": {
+          "denom": "umpwr",
+          "amount": "1000000"
+        }
+      }
+    ],
+    "memo": "6cf26e3e374f9ca79cd3f9aac72a5dff081c8008@195.201.83.166:26656",
+    "timeout_height": "0",
+    "extension_options": [
+      
+    ],
+    "non_critical_extension_options": [
+      
+    ]
+  },
+  "auth_info": {
+    "signer_infos": [
+      {
+        "public_key": {
+          "@type": "/cosmos.crypto.secp256k1.PubKey",
+          "key": "As1SQq2spG6XoreXb1Bgvya8jdCvVjT+kobMKyhPf2oB"
+        },
+        "mode_info": {
+          "single": {
+            "mode": "SIGN_MODE_DIRECT"
+          }
+        },
+        "sequence": "0"
+      }
+    ],
+    "fee": {
+      "amount": [
+        
+      ],
+      "gas_limit": "200000",
+      "payer": "",
+      "granter": ""
+    },
+    "tip": null
+  },
+  "signatures": [
+    "FOuGjDUeme1THaf+NtuZkTVT5eSJRULU69gkufYiuxUZudr8Kr6davtvCT2gQbp4a1Mv8u3LesnfJeM9TSOIIQ=="
+  ]
+}

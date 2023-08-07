@@ -23,8 +23,18 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: sample.AccAddress(),
 				Params: Params{
-					IssuerCreator:          sample.AccAddress(),
-					CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
+					IssuerCreator:         sample.AccAddress(),
+					CreditTypeCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
+				},
+			},
+			expectedError: nil,
+		},
+		"happy path - no issuer creator": {
+			msgUnderTest: &MsgUpdateParams{
+				Authority: sample.AccAddress(),
+				Params: Params{
+					IssuerCreator:         "",
+					CreditTypeCreationFee: sdk.NewCoin(params.BaseCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 			},
 			expectedError: nil,
@@ -33,8 +43,8 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: "invalid",
 				Params: Params{
-					IssuerCreator:          sample.AccAddress(),
-					CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
+					IssuerCreator:         sample.AccAddress(),
+					CreditTypeCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
@@ -43,18 +53,18 @@ func TestMsgUpdateParams_ValidateBasic(t *testing.T) {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: sample.AccAddress(),
 				Params: Params{
-					IssuerCreator:          "invalid",
-					CreditClassCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
+					IssuerCreator:         "invalid",
+					CreditTypeCreationFee: sdk.NewCoin(params.HumanCoinDenom, sdk.NewInt(rand.Int63())),
 				},
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
 		},
-		"invalid credit class creation fee params": {
+		"invalid credit type creation fee params": {
 			msgUnderTest: &MsgUpdateParams{
 				Authority: sample.AccAddress(),
 				Params: Params{
-					IssuerCreator:          sample.AccAddress(),
-					CreditClassCreationFee: sdk.Coin{},
+					IssuerCreator:         sample.AccAddress(),
+					CreditTypeCreationFee: sdk.Coin{},
 				},
 			},
 			expectedError: sdkerrors.ErrInvalidCoins,
@@ -235,6 +245,14 @@ func TestMsgCreateApplicant_ValidateBasic(t *testing.T) {
 			},
 			expectedError: nil,
 		},
+		"invalid description": {
+			msgUnderTest: &MsgCreateApplicant{
+				Name:        "Empower",
+				Description: sample.String(257),
+				Admin:       sample.AccAddress(),
+			},
+			expectedError: nil,
+		},
 	}
 
 	for name, tc := range testCases {
@@ -318,28 +336,28 @@ func TestMsgUpdateApplicant_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgCreateCreditClass_ValidateBasic(t *testing.T) {
+func TestMsgCreateTypeClass_ValidateBasic(t *testing.T) {
 	testCases := map[string]validateTest{
 		"happy path": {
-			msgUnderTest: &MsgCreateCreditClass{
+			msgUnderTest: &MsgCreateCreditType{
 				Creator:      sample.AccAddress(),
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
 			},
 			expectedError: nil,
 		},
 		"invalid creator": {
-			msgUnderTest: &MsgCreateCreditClass{
+			msgUnderTest: &MsgCreateCreditType{
 				Creator:      "hoppsasa",
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "Empower Plastic Credits",
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
 		},
 		"empty abbreviation": {
-			msgUnderTest: &MsgCreateCreditClass{
+			msgUnderTest: &MsgCreateCreditType{
 				Creator:      sample.AccAddress(),
 				Abbreviation: "",
 				IssuerId:     1,
@@ -348,18 +366,18 @@ func TestMsgCreateCreditClass_ValidateBasic(t *testing.T) {
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},
 		"empty issuer": {
-			msgUnderTest: &MsgCreateCreditClass{
+			msgUnderTest: &MsgCreateCreditType{
 				Creator:      sample.AccAddress(),
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				IssuerId:     0,
 				Name:         "Empower Plastic Credits",
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},
 		"empty name": {
-			msgUnderTest: &MsgCreateCreditClass{
+			msgUnderTest: &MsgCreateCreditType{
 				Creator:      sample.AccAddress(),
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				IssuerId:     1,
 				Name:         "",
 			},
@@ -375,26 +393,26 @@ func TestMsgCreateCreditClass_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgUpdateCreditClass_ValidateBasic(t *testing.T) {
+func TestMsgUpdateCreditType_ValidateBasic(t *testing.T) {
 	testCases := map[string]validateTest{
 		"happy path": {
-			msgUnderTest: &MsgUpdateCreditClass{
+			msgUnderTest: &MsgUpdateCreditType{
 				Updater:      sample.AccAddress(),
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				Name:         "Empower Plastic Credits",
 			},
 			expectedError: nil,
 		},
 		"invalid creator": {
-			msgUnderTest: &MsgUpdateCreditClass{
+			msgUnderTest: &MsgUpdateCreditType{
 				Updater:      "hoppsasa",
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				Name:         "Empower Plastic Credits",
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
 		},
 		"empty abbreviation": {
-			msgUnderTest: &MsgUpdateCreditClass{
+			msgUnderTest: &MsgUpdateCreditType{
 				Updater:      sample.AccAddress(),
 				Abbreviation: "",
 				Name:         "Empower Plastic Credits",
@@ -402,9 +420,9 @@ func TestMsgUpdateCreditClass_ValidateBasic(t *testing.T) {
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},
 		"empty name": {
-			msgUnderTest: &MsgUpdateCreditClass{
+			msgUnderTest: &MsgUpdateCreditType{
 				Updater:      sample.AccAddress(),
-				Abbreviation: "PCRD",
+				Abbreviation: "PTEST",
 				Name:         "",
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
@@ -423,46 +441,46 @@ func TestMsgCreateProject_ValidateBasic(t *testing.T) {
 	testCases := map[string]validateTest{
 		"happy path": {
 			msgUnderTest: &MsgCreateProject{
-				Creator:                 sample.AccAddress(),
-				ApplicantId:             42,
-				CreditClassAbbreviation: "PCRD",
-				Name:                    "Project Name",
+				Creator:                sample.AccAddress(),
+				ApplicantId:            42,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   "Project Name",
 			},
 			expectedError: nil,
 		},
 		"invalid creator": {
 			msgUnderTest: &MsgCreateProject{
-				Creator:                 "herpaderpa",
-				ApplicantId:             42,
-				CreditClassAbbreviation: "PCRD",
-				Name:                    "Project Name",
+				Creator:                "herpaderpa",
+				ApplicantId:            42,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   "Project Name",
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
 		},
 		"invalid applicant id": {
 			msgUnderTest: &MsgCreateProject{
-				Creator:                 sample.AccAddress(),
-				ApplicantId:             0,
-				CreditClassAbbreviation: "PCRD",
-				Name:                    "Project Name",
+				Creator:                sample.AccAddress(),
+				ApplicantId:            0,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   "Project Name",
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},
 		"empty abbreviation": {
 			msgUnderTest: &MsgCreateProject{
-				Creator:                 sample.AccAddress(),
-				ApplicantId:             42,
-				CreditClassAbbreviation: "",
-				Name:                    "Project Name",
+				Creator:                sample.AccAddress(),
+				ApplicantId:            42,
+				CreditTypeAbbreviation: "",
+				Name:                   "Project Name",
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},
 		"empty name": {
 			msgUnderTest: &MsgCreateProject{
-				Creator:                 sample.AccAddress(),
-				ApplicantId:             42,
-				CreditClassAbbreviation: "PCRD",
-				Name:                    "",
+				Creator:                sample.AccAddress(),
+				ApplicantId:            42,
+				CreditTypeAbbreviation: "PTEST",
+				Name:                   "",
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},
@@ -627,6 +645,7 @@ func TestMsgIssueCredits_ValidateBasic(t *testing.T) {
 				ProjectId:    1,
 				SerialNumber: "123",
 				CreditAmount: 10,
+				MetadataUris: []string{"ipfs://CID"},
 			},
 			expectedError: nil,
 		},
@@ -636,6 +655,7 @@ func TestMsgIssueCredits_ValidateBasic(t *testing.T) {
 				ProjectId:    1,
 				SerialNumber: "123",
 				CreditAmount: 10,
+				MetadataUris: []string{"ipfs://CID"},
 			},
 			expectedError: sdkerrors.ErrInvalidAddress,
 		},
@@ -644,6 +664,7 @@ func TestMsgIssueCredits_ValidateBasic(t *testing.T) {
 				Creator:      sample.AccAddress(),
 				SerialNumber: "123",
 				CreditAmount: 10,
+				MetadataUris: []string{"ipfs://CID"},
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},
@@ -652,6 +673,7 @@ func TestMsgIssueCredits_ValidateBasic(t *testing.T) {
 				Creator:      sample.AccAddress(),
 				ProjectId:    1,
 				CreditAmount: 10,
+				MetadataUris: []string{"ipfs://CID"},
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},
@@ -661,6 +683,17 @@ func TestMsgIssueCredits_ValidateBasic(t *testing.T) {
 				ProjectId:    1,
 				SerialNumber: "123",
 				CreditAmount: 0,
+				MetadataUris: []string{"ipfs://CID"},
+			},
+			expectedError: sdkerrors.ErrInvalidRequest,
+		},
+		"invalid metadata uri": {
+			msgUnderTest: &MsgIssueCredits{
+				Creator:      sample.AccAddress(),
+				ProjectId:    1,
+				SerialNumber: "123",
+				CreditAmount: 10,
+				MetadataUris: []string{},
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,
 		},
@@ -679,7 +712,7 @@ func TestMsgTransferCredits(t *testing.T) {
 			msgUnderTest: &MsgTransferCredits{
 				From:   sample.AccAddress(),
 				To:     sample.AccAddress(),
-				Denom:  "EMP/123",
+				Denom:  "ETEST/123",
 				Amount: 100,
 				Retire: false,
 			},
@@ -689,7 +722,7 @@ func TestMsgTransferCredits(t *testing.T) {
 			msgUnderTest: &MsgTransferCredits{
 				From:   "Empower",
 				To:     sample.AccAddress(),
-				Denom:  "EMP/123",
+				Denom:  "ETEST/123",
 				Amount: 100,
 				Retire: false,
 			},
@@ -699,7 +732,7 @@ func TestMsgTransferCredits(t *testing.T) {
 			msgUnderTest: &MsgTransferCredits{
 				From:   sample.AccAddress(),
 				To:     "Empower",
-				Denom:  "EMP/123",
+				Denom:  "ETEST/123",
 				Amount: 100,
 				Retire: false,
 			},
@@ -719,7 +752,7 @@ func TestMsgTransferCredits(t *testing.T) {
 			msgUnderTest: &MsgTransferCredits{
 				From:   sample.AccAddress(),
 				To:     sample.AccAddress(),
-				Denom:  "EMP/123",
+				Denom:  "ETEST/123",
 				Amount: 0,
 				Retire: false,
 			},
@@ -740,7 +773,7 @@ func TestMsgRetireCredits(t *testing.T) {
 		"happy path": {
 			msgUnderTest: &MsgRetireCredits{
 				Owner:  sample.AccAddress(),
-				Denom:  "EMP/123",
+				Denom:  "ETEST/123",
 				Amount: 100,
 			},
 			expectedError: nil,
@@ -756,7 +789,7 @@ func TestMsgRetireCredits(t *testing.T) {
 		"invalid amount": {
 			msgUnderTest: &MsgRetireCredits{
 				Owner:  sample.AccAddress(),
-				Denom:  "EMP/123",
+				Denom:  "ETEST/123",
 				Amount: 0,
 			},
 			expectedError: sdkerrors.ErrInvalidRequest,

@@ -3,6 +3,9 @@ package plasticcredit
 import (
 	"testing"
 
+	dbm "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/store"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,9 +14,6 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
 	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
 	"github.com/EmpowerPlastic/empowerchain/utils"
@@ -21,7 +21,7 @@ import (
 
 func TestTransferAuthorization_MsgTypeURL(t *testing.T) {
 	authorization := TransferAuthorization{
-		Denom:      "PCRD",
+		Denom:      "PTEST",
 		MaxCredits: 42,
 	}
 	require.Equal(t, authorization.MsgTypeURL(), "/empowerchain.plasticcredit.MsgTransferCredits")
@@ -34,7 +34,7 @@ func TestTransferAuthorization_ValidateBasic(t *testing.T) {
 	}{
 		"happy path": {
 			authorization: TransferAuthorization{
-				Denom:      "PCRD",
+				Denom:      "PTEST",
 				MaxCredits: 1_000_000_000,
 			},
 			err: nil,
@@ -48,7 +48,7 @@ func TestTransferAuthorization_ValidateBasic(t *testing.T) {
 		},
 		"invalid number of credits": {
 			authorization: TransferAuthorization{
-				Denom:      "PCRD",
+				Denom:      "PTEST",
 				MaxCredits: 0,
 			},
 			err: utils.ErrInvalidValue,
@@ -76,7 +76,7 @@ func TestTransferAuthorization_Accept(t *testing.T) {
 	}{
 		"happy path with no remaining allowance": {
 			authorization: TransferAuthorization{
-				Denom:      "PCRD",
+				Denom:      "PTEST",
 				MaxCredits: 1000,
 			},
 			expectedResponse: authz.AcceptResponse{
@@ -87,7 +87,7 @@ func TestTransferAuthorization_Accept(t *testing.T) {
 			msg: &MsgTransferCredits{
 				From:   fromAddr,
 				To:     toAddr,
-				Denom:  "PCRD",
+				Denom:  "PTEST",
 				Amount: 1000,
 				Retire: false,
 			},
@@ -95,21 +95,21 @@ func TestTransferAuthorization_Accept(t *testing.T) {
 		},
 		"happy path with remaining allowance": {
 			authorization: TransferAuthorization{
-				Denom:      "PCRD",
+				Denom:      "PTEST",
 				MaxCredits: 1000,
 			},
 			expectedResponse: authz.AcceptResponse{
 				Accept: true,
 				Delete: false,
 				Updated: &TransferAuthorization{
-					Denom:      "PCRD",
+					Denom:      "PTEST",
 					MaxCredits: 958,
 				},
 			},
 			msg: &MsgTransferCredits{
 				From:   fromAddr,
 				To:     toAddr,
-				Denom:  "PCRD",
+				Denom:  "PTEST",
 				Amount: 42,
 				Retire: false,
 			},
@@ -117,7 +117,7 @@ func TestTransferAuthorization_Accept(t *testing.T) {
 		},
 		"invalid msg type": {
 			authorization: TransferAuthorization{
-				Denom:      "PCRD",
+				Denom:      "PTEST",
 				MaxCredits: 1000,
 			},
 			expectedResponse: authz.AcceptResponse{},
@@ -125,7 +125,7 @@ func TestTransferAuthorization_Accept(t *testing.T) {
 				FromAddress: fromAddr,
 				ToAddress:   toAddr,
 				Amount: []sdk.Coin{{
-					Denom:  "PCRD",
+					Denom:  "PTEST",
 					Amount: sdk.NewInt(1000),
 				}},
 			},
@@ -133,14 +133,14 @@ func TestTransferAuthorization_Accept(t *testing.T) {
 		},
 		"not enough allowance": {
 			authorization: TransferAuthorization{
-				Denom:      "PCRD",
+				Denom:      "PTEST",
 				MaxCredits: 1000,
 			},
 			expectedResponse: authz.AcceptResponse{},
 			msg: &MsgTransferCredits{
 				From:   fromAddr,
 				To:     toAddr,
-				Denom:  "PCRD",
+				Denom:  "PTEST",
 				Amount: 1001,
 				Retire: false,
 			},
@@ -148,7 +148,7 @@ func TestTransferAuthorization_Accept(t *testing.T) {
 		},
 		"wrong denom": {
 			authorization: TransferAuthorization{
-				Denom:      "PCRD",
+				Denom:      "PTEST",
 				MaxCredits: 1001,
 			},
 			expectedResponse: authz.AcceptResponse{},

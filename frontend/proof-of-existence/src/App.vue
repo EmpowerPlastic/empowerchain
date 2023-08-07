@@ -1,215 +1,86 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import { RouterView } from "vue-router";
+import "flowbite";
 </script>
 
 <template>
-  <header class="navbar navbar-dark sticky-top flex-md-nowrap p-0">
-    <a
-      class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6"
-      href="#"
+  <nav class="bg-transparent sm:hidden">
+    <div
+      class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
     >
-      <img
-        class="logo"
-        src="src/assets/images/emp-logo.png"
+      <a href="/" class="flex items-center">
+        <img
+          src="../src/assets/images/emopwer-logo.svg"
+          class="ml-3 mt-3 w-32 sm:w-36"
+          alt="Logo"
+        />
+      </a>
+      <button
+        data-drawer-target="logo-sidebar"
+        data-drawer-toggle="logo-sidebar"
+        type="button"
+        class="inline-flex items-center p-2 ml-3 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+        aria-controls="navbar-default"
+        aria-expanded="false"
       >
-    </a>
-    <button
-      class="navbar-toggler position-absolute d-md-none collapsed"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#sidebarMenu"
-      aria-controls="sidebarMenu"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon" />
-    </button>
+        <img class="w-7" src="../src/assets/images/sideButton.svg" />
+      </button>
+    </div>
+  </nav>
 
-    <div class="navbar-nav">
-      <div class="nav-item text-nowrap">
-        <!--<a class="nav-link px-3" href="#">Sign out</a>-->
+  <aside
+    id="logo-sidebar"
+    class="fixed top-0 left-0 z-40 sm:w-64 w-full h-screen transition-transform -translate-x-full sm:translate-x-0 sm:bg-lightBlack bg-darkBlack"
+    aria-label="Sidebar"
+  >
+    <div class="flex flex-row w-full justify-end sm:hidden">
+      <button
+        data-drawer-target="logo-sidebar"
+        data-drawer-toggle="logo-sidebar"
+        type="button"
+        class="md:hidden p-5"
+        aria-controls="navbar-default"
+        aria-expanded="false"
+      >
+        <img class="w-7" src="../src/assets/images/close-icon.svg" />
+      </button>
+    </div>
+
+    <div class="h-full px-3 py-4 overflow-y-auto bg-lightBlack">
+      <a href="/" class="flex items-center pl-2.5 mb-5">
+        <img
+          src="../src/assets/images/emopwer-logo.svg"
+          class="ml-3 mt-3 hidden sm:inline-block sm:w-36"
+          alt="Logo"
+        />
+      </a>
+      <div class="flex justify-center flex-col h-5/6 items-center">
+        <div class="space-y-2 w-full flex flex-col items-center p-3">
+          <a
+            href="/"
+            class="flex flex-row w-full p-2 sm:justify-start justify-center sm:ml-14"
+          >
+            <img class="w-7 mr-3" src="../src/assets/images/certifyIcon.svg" />
+            <p href="/verify" class="text-white text-title16">Certify</p>
+          </a>
+          <a
+            href="/verify"
+            class="flex flex-row w-full p-2 sm:justify-start justify-center sm:ml-14"
+          >
+            <img class="w-7 mr-3" src="../src/assets/images/verifyIcon.svg" />
+            <p href="/verify" class="text-white text-title16">Verify</p>
+          </a>
+        </div>
       </div>
     </div>
-  </header>
+  </aside>
 
-  <div class="container-fluid">
-    <div class="row">
-      <nav
-        id="sidebarMenu"
-        class="col-md-3 col-lg-2 d-md-block sidebar collapse shadow emp-sidebar"
-      >
-        <div class="position-sticky pt-3 sidebar-sticky menu-deck">
-          <ul class="nav flex-column">
-            <li class="nav-item">
-              <a
-                class="nav-link active home"
-                aria-current="page"
-                href="#"
-              >
-                Home
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link wallet"
-                href="#"
-              >
-                My wallet
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link contact"
-                href="#"
-              >
-                Contact
-              </a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-        <div class="emp-content-box emp-astro">
-          <div class="emp-character" />
-          <RouterView />
-        </div>
-      </main>
+  <div class="p-4 sm:ml-64">
+    <div class="flex flex-col items-start p-4 mt-0 sm:mt-40">
+      <div class="flex flex-col items-center">
+        <RouterView />
+      </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.navbar-brand {
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
-  display: flex;
-  justify-content: center;
-}
-.logo {
-  width: 90%;
-  max-width: 200px;
-}
-.container-fluid {
-  height: calc(100vh - 75px);
-}
-.emp-sidebar {
-  background-color: rgba(0, 0, 0, 0.22);
-}
-.menu-deck {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.nav {
-  width: 70%;
-}
-.nav-item {
-  margin: 10px 0;
-}
-.nav-link {
-  color: #ffffff;
-  font-size: 14px;
-  padding-left: 70px;
-  height: 62px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  background-repeat: no-repeat;
-  background-position: 10% center;
-  border-radius: 16px;
-}
-.nav-link.home {
-  background-image: url("src/assets/images/icon-home.svg");
-}
-.nav-link.wallet {
-  background-image: url(src/assets//images/icon-my-wallet.svg);
-}
-.nav-link.contact {
-  background-image: url(src/assets//images/icon-contact.svg);
-}
-.nav-link.active {
-  background-color: rgba(0, 0, 0, 0.4);
-}
-.emp-content-box {
-  background-color: rgba(0, 0, 0, 0.22);
-  border-radius: 16px;
-  padding: 2rem;
-  max-width: 1000px;
-}
-.emp-content-box.emp-astro {
-  margin-top: 160px;
-  position: relative;
-}
-.emp-character {
-  background-image: url(src/assets//images/emp-astro-1.png);
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-  width: 248px;
-  height: 194px;
-  position: absolute;
-  top: -184px;
-  right: calc(25% + 124px);
-  animation: float 6s ease-in-out infinite;
-}
-@media (max-width: 575.98px) {
-  .emp-sidebar {
-    background-color: rgba(0, 0, 0, 0.8);
-  }
-  .nav-link.active {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-  .emp-content-box.emp-astro {
-    margin-top: 0;
-  }
-  .emp-character {
-    background-image: none;
-  }
-}
-@media (max-width: 767.98px) {
-  .emp-content-box.emp-astro {
-    margin-top: 0;
-  }
-  .emp-character {
-    background-image: none;
-  }
-}
-@media (max-width: 991.98px) {
-  .emp-character {
-    width: 248px;
-    height: 194px;
-    top: -184px;
-  }
-}
-.sidebar {
-  position: fixed;
-  top: 0;
-  /* rtl:raw:
-  right: 0;
-  */
-  bottom: 0;
-  /* rtl:remove */
-  left: 0;
-  z-index: 100; /* Behind the navbar */
-  padding: 0; /* Height of navbar */
-  box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
-}
-
-@media (max-width: 767.98px) {
-  .sidebar {
-    top: 4.4rem;
-  }
-}
-
-.sidebar-sticky {
-  height: calc(100vh - 48px);
-  overflow-x: hidden;
-  overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
-}
-
-.navbar-toggler {
-  right: 1rem;
-}
-
-</style>
+<style scoped></style>

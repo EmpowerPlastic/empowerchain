@@ -25,9 +25,9 @@ jobs:
 
       - uses: earthly/actions-setup@v1
         with:
-          version: v0.6.30
+          version: 0.6.30
 
-      - run: earthly --ci --output +build
+      - run: earthly --ci --output +build-local
         working-directory: ./chain
 
       - uses: actions/upload-artifact@v3

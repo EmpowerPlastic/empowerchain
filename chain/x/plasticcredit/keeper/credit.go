@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"strings"
 
 	"cosmossdk.io/errors"
@@ -8,9 +9,12 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/cosmos/gogoproto/proto"
+	"golang.org/x/exp/slices"
 
 	"github.com/EmpowerPlastic/empowerchain/utils"
+	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 )
 
@@ -42,7 +46,37 @@ func (k Keeper) GetCreditBalance(ctx sdk.Context, owner sdk.AccAddress, denom st
 	return creditBalance, true
 }
 
-func (k Keeper) retireCreditsForAddress(ctx sdk.Context, owner sdk.AccAddress, denom string, amount uint64) (plasticcredit.CreditBalance, error) {
+func (k Keeper) GetCreditBalances(ctx sdk.Context, pageReq query.PageRequest) ([]plasticcredit.CreditBalance, query.PageResponse, error) {
+	store := k.getCreditBalanceStore(ctx)
+
+	var creditBalances []plasticcredit.CreditBalance
+	pageRes, err := query.Paginate(store, &pageReq, func(_ []byte, value []byte) error {
+		var creditBalance plasticcredit.CreditBalance
+		if err := k.cdc.Unmarshal(value, &creditBalance); err != nil {
+			return err
+		}
+		creditBalances = append(creditBalances, creditBalance)
+
+		return nil
+	})
+	if err != nil {
+		return nil, query.PageResponse{}, err
+	}
+
+	return creditBalances, *pageRes, nil
+}
+
+func (k Keeper) retireCreditsForAddress(
+	ctx sdk.Context,
+	ownerAccAddress string,
+	denom string, amount uint64,
+	retiringEntityName string,
+	retiringEntityAdditionalData string,
+) (plasticcredit.CreditBalance, error) {
+	owner, err := sdk.AccAddressFromBech32(ownerAccAddress)
+	if err != nil {
+		return plasticcredit.CreditBalance{}, sdkerrors.ErrInvalidAddress
+	}
 	creditBalance, found := k.GetCreditBalance(ctx, owner, denom)
 	if !found {
 		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrCreditsNotEnough, "user %s doesn't have credits of denom %s", owner.String(), denom)
@@ -53,7 +87,7 @@ func (k Keeper) retireCreditsForAddress(ctx sdk.Context, owner sdk.AccAddress, d
 	creditBalance.Balance.Active -= amount
 	creditBalance.Balance.Retired += amount
 
-	err := k.setCreditBalance(ctx, creditBalance)
+	err = k.setCreditBalance(ctx, creditBalance)
 	if err != nil {
 		return plasticcredit.CreditBalance{}, err
 	}
@@ -63,16 +97,41 @@ func (k Keeper) retireCreditsForAddress(ctx sdk.Context, owner sdk.AccAddress, d
 		return plasticcredit.CreditBalance{}, err
 	}
 	abbrev, _ := SplitCreditDenom(denom)
-	creditClass, found := k.GetCreditClass(ctx, abbrev)
+	creditType, found := k.GetCreditType(ctx, abbrev)
 	if !found {
-		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrCreditClassNotFound, "credit class with abbrev %s not found", abbrev)
+		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit type with abbrev %s not found", abbrev)
+	}
+	issuer, found := k.GetIssuer(ctx, creditType.IssuerId)
+	if !found {
+		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrIssuerNotFound, "issuer with id %d not found", creditType.IssuerId)
+	}
+
+	certificatesAdditionalData := []*certificates.AdditionalData{
+		{Key: "denom", Value: denom},
+		{Key: "amount", Value: fmt.Sprint(amount)},
+		{Key: "retiring_entity_address", Value: owner.String()},
+		{Key: "retiring_entity_name", Value: retiringEntityName},
+		{Key: "retiring_entity_additional_data", Value: retiringEntityAdditionalData},
+	}
+	certificate := certificates.MsgCreateCertificate{
+		Owner:          owner.String(),
+		Issuer:         issuer.Admin,
+		Type:           0,
+		AdditionalData: certificatesAdditionalData,
+	}
+	_, err = k.certificatesKeeper.CreateCertificateSkipAllowedIssuers(ctx, &certificate)
+	if err != nil {
+		return creditBalance, errors.Wrapf(plasticcredit.ErrFailedCreateCertificate,
+			"unable to create certificate for owner %s for issuer %s",
+			owner.String(), issuer.Admin,
+		)
 	}
 	return creditBalance, ctx.EventManager().EmitTypedEvent(&plasticcredit.EventRetiredCredits{
-		Owner:                   owner.String(),
-		Denom:                   denom,
-		Amount:                  amount,
-		IssuerId:                creditClass.IssuerId,
-		CreditClassAbbreviation: abbrev,
+		Owner:                  owner.String(),
+		Denom:                  denom,
+		Amount:                 amount,
+		IssuerId:               creditType.IssuerId,
+		CreditTypeAbbreviation: abbrev,
 	})
 }
 
@@ -104,70 +163,72 @@ func (k Keeper) transferCredits(ctx sdk.Context, denom string, from sdk.AccAddre
 		return errors.Wrapf(plasticcredit.ErrCreditsNotEnough, "sender only has %d credits of denom %s", balanceSender.Balance.Active, denom)
 	}
 
-	var balanceRecipient *plasticcredit.CreditBalance
 	if from.Equals(to) {
-		balanceRecipient = &balanceSender
-	} else {
-		rec, found := k.GetCreditBalance(ctx, to, denom)
-		if !found {
-			rec = plasticcredit.CreditBalance{
-				Owner: to.String(),
-				Denom: denom,
-				Balance: plasticcredit.CreditAmount{
-					Active:  0,
-					Retired: 0,
-				},
-			}
+		return errors.Wrapf(plasticcredit.ErrSameSenderAndRecipient, "sender and recipient are the same")
+	}
+
+	balanceRecipient, found := k.GetCreditBalance(ctx, to, denom)
+	if !found {
+		// Create a new, empty one if not found
+		balanceRecipient = plasticcredit.CreditBalance{
+			Owner: to.String(),
+			Denom: denom,
+			Balance: plasticcredit.CreditAmount{
+				Active:  0,
+				Retired: 0,
+			},
 		}
-		balanceRecipient = &rec
 	}
 	balanceSender.Balance.Active -= amount
+
 	// If retiring credits, retire and update retired balance, if not, update active balance
 	if retire {
-		err := k.retireCreditsInCollection(ctx, denom, amount)
-		if err != nil {
+		if err := k.retireCreditsInCollection(ctx, denom, amount); err != nil {
 			return err
 		}
 		balanceRecipient.Balance.Retired += amount
 	} else {
 		balanceRecipient.Balance.Active += amount
 	}
+
 	err := k.setCreditBalance(ctx, balanceSender)
 	if err != nil {
 		return err
 	}
-	err = k.setCreditBalance(ctx, *balanceRecipient)
+
+	err = k.setCreditBalance(ctx, balanceRecipient)
 	if err != nil {
 		return err
 	}
+
 	abbrev, _ := SplitCreditDenom(denom)
-	creditClass, found := k.GetCreditClass(ctx, abbrev)
+	creditType, found := k.GetCreditType(ctx, abbrev)
 	if !found {
-		return errors.Wrapf(plasticcredit.ErrCreditClassNotFound, "credit class with abbrev %s not found", abbrev)
+		return errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit type with abbrev %s not found", abbrev)
 	}
 	events := []proto.Message{
 		&plasticcredit.EventTransferCredits{
-			Sender:                  from.String(),
-			Recipient:               to.String(),
-			Denom:                   denom,
-			Amount:                  amount,
-			IssuerId:                creditClass.IssuerId,
-			CreditClassAbbreviation: abbrev,
+			Sender:                 from.String(),
+			Recipient:              to.String(),
+			Denom:                  denom,
+			Amount:                 amount,
+			IssuerId:               creditType.IssuerId,
+			CreditTypeAbbreviation: abbrev,
 		},
 	}
 	if retire {
 		events = append(events, &plasticcredit.EventRetiredCredits{
-			Owner:                   to.String(),
-			Denom:                   denom,
-			Amount:                  amount,
-			IssuerId:                creditClass.IssuerId,
-			CreditClassAbbreviation: abbrev,
+			Owner:                  to.String(),
+			Denom:                  denom,
+			Amount:                 amount,
+			IssuerId:               creditType.IssuerId,
+			CreditTypeAbbreviation: abbrev,
 		})
 	}
 	return ctx.EventManager().EmitTypedEvents(events...)
 }
 
-func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, serialNumber string, amount uint64) (collection plasticcredit.CreditCollection, err error) {
+func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, serialNumber string, amount uint64, metadataUris []string) (collection plasticcredit.CreditCollection, err error) {
 	if amount == 0 {
 		return plasticcredit.CreditCollection{}, errors.Wrapf(utils.ErrInvalidValue, "cannot issue 0 credits")
 	}
@@ -180,18 +241,18 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrProjectNotApproved, "project with id %d is not in approved state", projectID)
 	}
 
-	creditClass, found := k.GetCreditClass(ctx, project.CreditClassAbbreviation)
+	creditType, found := k.GetCreditType(ctx, project.CreditTypeAbbreviation)
 	if !found {
-		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrCreditClassNotFound, "credit class with abbreviation %s not found", project.CreditClassAbbreviation)
+		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit type with abbreviation %s not found", project.CreditTypeAbbreviation)
 	}
 
-	issuer, found := k.GetIssuer(ctx, creditClass.IssuerId)
+	issuer, found := k.GetIssuer(ctx, creditType.IssuerId)
 	if !found {
-		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrIssuerNotFound, "issuer with id %d not found", creditClass.IssuerId)
+		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrIssuerNotFound, "issuer with id %d not found", creditType.IssuerId)
 	}
 	// Check if creator is issuer admin
 	if issuer.Admin != creator {
-		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrIssuerNotAllowed, "%s is not allowed to issue credits for class with abbreviation %s", creator, creditClass.Abbreviation)
+		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrIssuerNotAllowed, "%s is not allowed to issue credits for type with abbreviation %s", creator, creditType.Abbreviation)
 	}
 
 	applicant, found := k.GetApplicant(ctx, project.ApplicantId)
@@ -199,7 +260,7 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 		return plasticcredit.CreditCollection{}, errors.Wrapf(plasticcredit.ErrApplicantNotFound, "applicant with id %d not found", project.ApplicantId)
 	}
 
-	denom, err := CreateCreditDenom(creditClass.Abbreviation, serialNumber)
+	denom, err := CreateCreditDenom(creditType.Abbreviation, serialNumber)
 	if err != nil {
 		return plasticcredit.CreditCollection{}, err
 	}
@@ -213,10 +274,17 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 				Active:  amount,
 				Retired: 0,
 			},
+			MetadataUris: metadataUris,
 		}
 	} else {
 		// If collection already exists, add new credits to the total and append new data if present
 		creditCollection.TotalAmount.Active += amount
+		// avoid adding duplicate metadata uris
+		for _, uri := range metadataUris {
+			if !slices.Contains(creditCollection.MetadataUris, uri) {
+				creditCollection.MetadataUris = append(creditCollection.MetadataUris, uri)
+			}
+		}
 	}
 
 	err = k.setCreditCollection(ctx, creditCollection)
@@ -251,12 +319,15 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 		return plasticcredit.CreditCollection{}, err
 	}
 	return creditCollection, ctx.EventManager().EmitTypedEvent(&plasticcredit.EventIssuedCredits{
-		IssuerId:                issuer.Id,
-		ProjectId:               projectID,
-		CreditClassAbbreviation: creditClass.Abbreviation,
-		Denom:                   denom,
-		Amount:                  amount,
-		IssuerAddress:           creator,
+		IssuerId:               issuer.Id,
+		ProjectId:              projectID,
+		ApplicantId:            applicant.Id,
+		Recipient:              recipient.String(),
+		CreditTypeAbbreviation: creditType.Abbreviation,
+		Denom:                  denom,
+		Amount:                 amount,
+		IssuerAddress:          creator,
+		MetadataUris:           metadataUris,
 	})
 }
 
@@ -339,14 +410,14 @@ func (k Keeper) getCreditBalanceStore(ctx sdk.Context) storetypes.KVStore {
 	return creditBalanceStore
 }
 
-func CreateCreditDenom(creditClassAbbreviation string, serialNumber string) (string, error) {
-	if creditClassAbbreviation == "" || serialNumber == "" {
+func CreateCreditDenom(creditTypeAbbreviation string, serialNumber string) (string, error) {
+	if creditTypeAbbreviation == "" || serialNumber == "" {
 		return "", errors.Wrap(utils.ErrInvalidValue, "empty denom part")
 	}
-	return creditClassAbbreviation + "/" + serialNumber, nil
+	return creditTypeAbbreviation + "/" + serialNumber, nil
 }
 
-func SplitCreditDenom(denom string) (creditClassAbbreviation string, serialNumber string) {
+func SplitCreditDenom(denom string) (creditTypeAbbreviation string, serialNumber string) {
 	delimIndex := strings.Index(denom, "/")
 	return denom[:delimIndex], denom[delimIndex:]
 }

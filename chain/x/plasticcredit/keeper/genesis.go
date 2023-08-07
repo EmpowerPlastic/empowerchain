@@ -27,8 +27,8 @@ func (k Keeper) InitGenesis(ctx sdk.Context, genState *plasticcredit.GenesisStat
 		}
 	}
 
-	for _, creditClass := range genState.CreditClasses {
-		if err := k.setCreditClass(ctx, creditClass); err != nil {
+	for _, creditType := range genState.CreditTypes {
+		if err := k.setCreditType(ctx, creditType); err != nil {
 			return err
 		}
 	}
@@ -65,8 +65,8 @@ func (k Keeper) ExportGenesis(ctx sdk.Context) *plasticcredit.GenesisState {
 	k.iterateApplicants(ctx, func(applicant plasticcredit.Applicant) {
 		genesis.Applicants = append(genesis.Applicants, applicant)
 	})
-	k.iterateCreditClasses(ctx, func(creditClass plasticcredit.CreditClass) {
-		genesis.CreditClasses = append(genesis.CreditClasses, creditClass)
+	k.iterateCreditTypes(ctx, func(creditType plasticcredit.CreditType) {
+		genesis.CreditTypes = append(genesis.CreditTypes, creditType)
 	})
 	k.iterateProjects(ctx, func(project plasticcredit.Project) {
 		genesis.Projects = append(genesis.Projects, project)

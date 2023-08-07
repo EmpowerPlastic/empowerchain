@@ -1,0 +1,14 @@
+syntax = "proto3";
+package empowerchain.certificates;
+
+import "gogoproto/gogo.proto";
+import "empowerchain/certificates/types.proto";
+
+option go_package = "github.com/EmpowerPlastic/empowerchain/x/certificates";
+
+// GenesisState defines the certificates module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  repeated Certificate certificates = 2 [(gogoproto.nullable) = false];
+  IDCounters id_counters = 3 [(gogoproto.nullable) = false];
+}

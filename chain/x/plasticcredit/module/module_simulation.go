@@ -1,58 +1,37 @@
 package module
 
 import (
-	"math/rand"
-
-	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	"github.com/EmpowerPlastic/empowerchain/testutil/sample"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/simulation"
 )
 
-// avoid unused import issue
 var (
-	_ = sample.AccAddress
-	_ = simulation.MsgEntryKind
-	_ = baseapp.Paramspace
+	_ module.AppModuleSimulation = AppModule{}
+	_ module.HasProposalMsgs     = AppModule{}
 )
 
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	accs := make([]string, len(simState.Accounts))
-	for i, acc := range simState.Accounts {
-		accs[i] = acc.Address.String()
-	}
-	plasticcreditGenesis := types.GenesisState{
-		Params: types.DefaultParams(),
-	}
-	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&plasticcreditGenesis)
+	simulation.RandomizedGenState(simState)
 }
 
-// ProposalContents doesn't return any content functions for governance proposals
-func (AppModule) ProposalContents(_ module.SimulationState) []simtypes.WeightedProposalMsg {
-	return nil
+// ProposalMsgs returns msgs used for governance proposals for simulations.
+func (AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.WeightedProposalMsg {
+	return simulation.ProposalMsgs()
 }
 
-// RandomizedParams creates randomized  param changes for the simulator
-func (am AppModule) RandomizedParams(_ *rand.Rand) []simtypes.LegacyParamChange {
-	// plasticcreditParams := types.DefaultParams()
-	return []simtypes.LegacyParamChange{
-		/*simulation.NewSimParamChange(types.ModuleName, string(types.KeyCreateissuerAllowlist), func(r *rand.Rand) string {
-			return string(types.Amino.MustMarshalJSON(plasticcreditParams.CreateissuerAllowlist))
-		}),*/
-	}
+// RegisterStoreDecoder registers a decoder for plasticcredit module's types
+func (am AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
+	sdr[plasticcredit.StoreKey] = simulation.NewDecodeStore(am.cdc)
 }
 
-// RegisterStoreDecoder registers a decoder
-func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
-
-// WeightedOperations returns the all the gov module operations with their respective weights.
+// WeightedOperations returns the all the plasticcredit module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
-	operations := make([]simtypes.WeightedOperation, 0)
-
-	return operations
+	return simulation.WeightedOperations(
+		simState.AppParams, simState.Cdc, am.accountKeeper, am.bankKeeper, am.keeper,
+	)
 }

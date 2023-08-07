@@ -1,7 +1,11 @@
 use cosmwasm_std::{
-    entry_point, DepsMut, Empty, Env, MessageInfo, Response, StdResult,
+    entry_point, DepsMut, Env, MessageInfo, Response,
 };
-use state::NEXT_LISTING_ID;
+use fee_splitter::instantiate_fee_splitter;
+use msg::InstantiateMsg;
+use crate::error::ContractError;
+use crate::error::ContractError::FeeSplitError;
+use crate::state::ADMIN;
 
 pub mod state;
 pub mod msg;
@@ -14,125 +18,67 @@ pub fn instantiate(
 	deps: DepsMut,
 	_env: Env,
 	_info: MessageInfo,
-	_msg: Empty,
-) -> StdResult<Response> {
-	NEXT_LISTING_ID.save(deps.storage, &0)?;
+	msg: InstantiateMsg,
+) -> Result<Response, ContractError> {
+	instantiate_fee_splitter(deps.storage, msg.fee_percentage, msg.shares).map_err(|e| FeeSplitError(e))?;
+
+	let admin = deps.api.addr_validate(&msg.admin)?;
+	ADMIN.save(deps.storage, &admin).unwrap();
 
 	Ok(Response::new())
 }
 
 #[cfg(test)]
-mod test {
-    use cosmwasm_std::{Empty, Addr, Uint128, Coin};
-    use cw_multi_test::{App, Contract, ContractWrapper, Executor};
-
-	use crate::instantiate;
-    use crate::execute::execute;
-	use crate::query::query;
-	use crate::state::NEXT_LISTING_ID;
-	use crate::msg::{ExecuteMsg, QueryMsg, ListingsResponse};
-	use crate::error::ContractError;
-
-	fn marketplace_contract() -> Box<dyn Contract<Empty>> {
-		let contract = ContractWrapper::new(execute, instantiate, query);
-		Box::new(contract)
-	}
-
-	fn setup() -> (App, Addr, Addr) {
-		let mut app = App::default();
-		let code_id = app.store_code(marketplace_contract());
-		let owner = Addr::unchecked("owner");
-
-		let contract_addr = app
-			.instantiate_contract(code_id, owner.clone(), &Empty{}, &[], "plastic-credit-marketplace", None)
-			.unwrap();
-
-		(app, contract_addr, owner)
-	}
+mod tests {
+	use super::*;
+	use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
+	use cosmwasm_std::{coins, Decimal};
+	use fee_splitter::Share;
+	use crate::state::ADMIN;
 
 	#[test]
-	fn test_instantiate() {
-		let (app, contract_addr, _) = setup();
+	fn test_initialization() {
+		let mut deps = mock_dependencies();
 
-		let next_listing = NEXT_LISTING_ID.query(&app.wrap(), contract_addr.clone()).unwrap();
-		assert_eq!(0, next_listing)
-	}
+		let info = mock_info("creator", &coins(1, "BTC"));
 
-	#[test]
-	fn test_create_listing() {
-		let (mut app, contract_addr, owner) = setup();
-
-		for _ in 0..5 {
-			app.execute_contract(owner.clone(), contract_addr.clone(), &ExecuteMsg::CreateListing{
-				denom: "pcrd".to_string(),
-				number_of_credits: Uint128::new(1),
-				price_per_credit: Coin{
-					denom: "umpwr".to_string(),
-					amount: Uint128::new(100),
-				}
-			}, &[]).unwrap();
-		}
-
-		let listings_resp: ListingsResponse = app.wrap().query_wasm_smart(contract_addr.clone(), &QueryMsg::Listings {
-			limit: None,
-			start_after: None,
-		}).unwrap();
-		assert_eq!(5, listings_resp.listings.len());
-
-		for (i, listing) in listings_resp.listings.iter().enumerate() {
-			assert_eq!(i as u64, listing.id);
-			assert_eq!(owner.clone(), listing.owner);
-			assert_eq!("pcrd".to_string(), listing.denom);
-			assert_eq!(Uint128::new(1), listing.number_of_credits);
-			assert_eq!(Coin{
-				denom: "umpwr".to_string(),
-				amount: Uint128::new(100),
-			}, listing.price_per_credit);
-		}
-
-		let next_listing = NEXT_LISTING_ID.query(&app.wrap(), contract_addr.clone()).unwrap();
-		assert_eq!(listings_resp.listings.len(), next_listing as usize);
-	}
-
-	#[test]
-	fn test_create_listing_with_zero_credits() {
-		let (mut app, contract_addr, owner) = setup();
-
-		let msg = ExecuteMsg::CreateListing{
-			denom: "pcrd".to_string(),
-			number_of_credits: Uint128::new(0),
-			price_per_credit: Coin{
-				denom: "umpwr".to_string(),
-				amount: Uint128::new(100),
-			}
+		let dev_share = Share {
+			address: "devs".to_string(),
+			percentage: Decimal::percent(80)
 		};
-		let err = app.execute_contract(owner.clone(), contract_addr.clone(), &msg, &[]).unwrap_err();
-		assert_eq!(err.downcast::<ContractError>().unwrap(), ContractError::ZeroCredits {});
-		let listings: ListingsResponse = app.wrap().query_wasm_smart(contract_addr.clone(), &QueryMsg::Listings {
-			limit: None,
-			start_after: None,
-		}).unwrap();
-		assert_eq!(0, listings.listings.len());
+		let user_share = Share {
+			address: "users".to_string(),
+			percentage: Decimal::percent(10)
+		};
+		let grandma_share = Share {
+			address: "grandma".to_string(),
+			percentage: Decimal::percent(10)
+		};
+		let res = instantiate(deps.as_mut(), mock_env(), info.clone(), InstantiateMsg{ admin: info.sender.to_string(), fee_percentage: Decimal::permille(10), shares: vec![dev_share, user_share, grandma_share] }).unwrap();
+		assert_eq!(0, res.messages.len());
+
+		let config = fee_splitter::get_config(deps.as_ref().storage).unwrap();
+		assert_eq!(config.fee_percentage, Decimal::permille(10));
+		assert_eq!(config.shares.len(), 3);
+		assert_eq!(config.shares[0].address, "devs");
+		assert_eq!(config.shares[0].percentage, Decimal::percent(80));
+		assert_eq!(config.shares[1].address, "users");
+		assert_eq!(config.shares[1].percentage, Decimal::percent(10));
+		assert_eq!(config.shares[2].address, "grandma");
+		assert_eq!(config.shares[2].percentage, Decimal::percent(10));
+
+		let admin = ADMIN.load(deps.as_ref().storage).unwrap();
+		assert_eq!(admin, info.sender);
 	}
 
 	#[test]
-	fn test_create_listing_with_zero_price() {
-		let (mut app, contract_addr, owner) = setup();
+	fn test_initialization_with_no_fee_share() {
+		let mut deps = mock_dependencies();
 
-		let msg = ExecuteMsg::CreateListing{
-			denom: "pcrd".to_string(),
-			number_of_credits: Uint128::new(1),
-			price_per_credit: Coin{
-				denom: "umpwr".to_string(),
-				amount: Uint128::new(0),
-			}
-		};
-		let err = app.execute_contract(owner.clone(), contract_addr.clone(), &msg, &[]).unwrap_err();
-		assert_eq!(err.downcast::<ContractError>().unwrap(), ContractError::ZeroPrice {});
-		let listings: ListingsResponse = app.wrap().query_wasm_smart(contract_addr.clone(), &QueryMsg::Listings {
-			limit: None,
-			start_after: None,
-		}).unwrap();
-		assert_eq!(0, listings.listings.len());
+		let info = mock_info("creator", &coins(1, "BTC"));
+
+		// we can just call .unwrap() to assert this was a success
+		let res = instantiate(deps.as_mut(), mock_env(), info.clone(), InstantiateMsg{ admin: info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+		assert_eq!(0, res.messages.len());
 	}
 }
