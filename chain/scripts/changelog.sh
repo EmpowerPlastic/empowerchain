@@ -2,7 +2,7 @@
 
 set -eu
 
-VERSION_REGEX='v[0-9]{1,2}\.[0-9]{1}\.[0-9]{1}$'
+VERSION_REGEX='v[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$'
 
 # Validate script parameters
 if ! echo $OLD_VERSION | grep -Eq $VERSION_REGEX; then 
