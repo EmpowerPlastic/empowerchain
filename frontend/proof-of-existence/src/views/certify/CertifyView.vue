@@ -99,10 +99,12 @@ const closeModal = () => {
 <template>
   <SupportedFilesModal v-show="showModal" :close-modal="closeModal" />
   <div
-    class="p-4 text-left bg-bgPrimary rounded-lg sm:p-8 lg:w-[700px] custom-shadow"
+    class="p-4 text-left bg-bgPrimary rounded-sm sm:p-8 lg:w-[700px] custom-shadow"
   >
-    <h5 class="mb-2 mt-3 text-2xl font-bold text-textPrimary text-title28">
-      Certify documents
+    <h5
+      class="mt-5 my-7 text-title28 text-center font-bold text-textPrimary text-title28"
+    >
+      Certify documents DC
     </h5>
     <div class="mt-3 w-30">
       <div class="flex flex-row w-full border-b-1">
@@ -144,7 +146,9 @@ const closeModal = () => {
           Drag and drop your document here, or choose a file. Your file will
           <b>not</b> be uploaded.
         </p>
-        <div class="w-full p-3 mt-7 rounded bg-textPrimary bg-opacity-[0.06]">
+        <div
+          class="w-full p-3 mt-7 rounded-lg bg-textPrimary bg-opacity-[0.06]"
+        >
           <label class="cursor-pointer" for="file_input">
             <input
               class="hidden"
@@ -154,11 +158,11 @@ const closeModal = () => {
             />
             <div class="flex flex-col md:flex-row-reverse items-center">
               <span
-                class="text-textPrimary text-title16 mb-2 md:mb-0 text-left w-full"
+                class="text-textPrimary text-title16 my-3 md:mb-0 text-left w-full"
                 >{{ file ? file?.name : "Choose file" }}</span
               >
               <div
-                class="flex w-full justify-center p-1 rounded bg-bgSecondary md:w-24 md:mr-4 text-title16"
+                class="flex w-full justify-center p-1 py-2 rounded-sm bg-bgSecondary md:w-24 md:mr-4 text-title16"
               >
                 Browse
               </div>
@@ -169,7 +173,7 @@ const closeModal = () => {
           <button
             :disabled="!file"
             @click="hashFile(file)"
-            class="bg-bgSecondary md:w-[200px] w-full mt-10 content-center p-1 px-9 rounded text-textPrimary text-title22 disabled:opacity-[0.3]"
+            class="bg-bgSecondary md:w-[200px] w-full mt-10 content-center p-1 px-9 rounded-sm text-textPrimary text-title22 disabled:opacity-[0.3]"
           >
             Create proof
           </button>
@@ -190,13 +194,13 @@ const closeModal = () => {
           You can input arbitrary plain text below to create a proof of its
           existence.
         </p>
-        <div class="w-full p-3 mt-7 rounded">
+        <div class="w-full p-3 mt-7 rounded-lg">
           <label class="cursor-pointer" for="file_input">
             <textarea
               rows="3"
               placeholder="Text"
               v-model="inputString"
-              class="p-2 border-none rounded bg-bgTertiary bg-opacity-[0.06] w-full mr-4 text-textPrimary text-title16 h-36 md:h-auto"
+              class="p-2 border-none rounded-lg bg-bgTertiary bg-opacity-[0.06] w-full mr-4 text-textPrimary text-title16 h-36 md:h-auto"
             />
           </label>
         </div>
@@ -235,7 +239,7 @@ const closeModal = () => {
           <button
             :disabled="!inputString"
             @click="handleInputString"
-            class="bg-bgSecondary md:w-[200px] w-full mt-10 content-center p-1 px-9 rounded text-textPrimary text-title22 disabled:opacity-[0.3]"
+            class="bg-bgSecondary md:w-[200px] w-full mt-10 content-center p-1 rounded-sm text-textPrimary text-title22 disabled:opacity-[0.3]"
           >
             Create proof
           </button>
@@ -244,9 +248,3 @@ const closeModal = () => {
     </template>
   </div>
 </template>
-
-<style scoped>
-.custom-shadow {
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.13);
-}
-</style>

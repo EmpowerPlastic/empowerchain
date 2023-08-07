@@ -1,3 +1,6 @@
 .Toastify__toast{
     @apply bg-darkBlack text-white text-title14
 }
+.custom-shadow {
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.13);
+}
