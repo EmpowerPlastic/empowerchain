@@ -31,6 +31,11 @@ module.exports = {
         title14: "0.875rem",
         title12: "0.75rem",
       },
+      borderRadius: {
+        sm: "10px",
+        lg: "12px",
+        xl: "15px",
+      },
       fontFamily: {
         openSans: ["Open Sans", "sans-serif"],
       },
