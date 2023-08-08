@@ -171,6 +171,10 @@ export default withMermaid(
               link: '/developers/architecture'
             },
             {
+              text: 'Release Life Cycle',
+              link: '/developers/release-life-cycle'
+            },
+            {
               text: 'Plastic Credits',
               link: '/developers/plastic-credits'
             }
