@@ -529,7 +529,8 @@
           "params": {
             "allowed_clients": [
               "06-solomachine",
-              "07-tendermint"
+              "07-tendermint",
+	            "09-localhost"
             ]
           },
           "create_localhost": false,
@@ -911,7 +912,6 @@
         "params": {
           "code_upload_access": {
             "permission": "Everybody",
-            "address": "",
             "addresses": []
           },
           "instantiate_default_permission": "Everybody"
