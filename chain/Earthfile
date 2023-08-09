@@ -6,7 +6,8 @@ docker:
     RUN apt-get update -yq \
         && apt-get install --no-install-recommends -yq \
         wget gnupg ca-certificates gcc g++ make
-    RUN wget -qO- https://go.dev/dl/go1.20.linux-amd64.tar.gz | tar -v -C /usr/local -xz
+    RUN GOARCH=$(case "$(uname -m)" in x86_64) echo "amd64";; aarch64) echo "arm64";; *) exit 1;; esac) && \
+    wget -qO- "https://go.dev/dl/go1.20.linux-$GOARCH.tar.gz" | tar -v -C /usr/local -xz
     ENV PATH $PATH:/usr/local/go/bin:/root/go/bin
 
 build-prep:
@@ -32,6 +33,7 @@ build-local:
 build-with-wasmvm:
     FROM +build
     RUN find /root/go -name libwasmvm.x86_64.so -exec cp {} build/libwasmvm.x86_64.so \;
+    RUN find /root/go -name libwasmvm.aarch64.so -exec cp {} build/libwasmvm.aarch64.so \;
     SAVE ARTIFACT build/*
 
 build-static:
@@ -143,7 +145,7 @@ docgen:
     SAVE ARTIFACT scripts/docgen/output
 
 devnet:
-    FROM golang:1.20-bullseye
+    FROM golang:1.20-bookworm
     ARG EARTHLY_GIT_SHORT_HASH
     ARG VERSION=$EARTHLY_GIT_SHORT_HASH
     ARG IMAGE_NAME=empowerchain-devnet
@@ -154,6 +156,7 @@ devnet:
     WORKDIR /
     COPY +build-with-wasmvm/empowerd /usr/local/bin/empowerd
     COPY +build-with-wasmvm/libwasmvm.x86_64.so /usr/local/lib/libwasmvm.x86_64.so
+    COPY +build-with-wasmvm/libwasmvm.aarch64.so /usr/local/lib/libwasmvm.aarch64.so
     ENV LD_LIBRARY_PATH=/usr/local/lib
 
     RUN apt update && apt install jq -y

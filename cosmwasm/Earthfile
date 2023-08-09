@@ -26,11 +26,11 @@ build:
 
 build-optimized:
     FROM +build-prep
-    WITH DOCKER --pull cosmwasm/workspace-optimizer:0.12.11
+    WITH DOCKER --pull cosmwasm/workspace-optimizer:0.14.0
         RUN docker run -v "$(pwd)":/code \
           --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
           --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-          cosmwasm/workspace-optimizer:0.12.11
+          cosmwasm/workspace-optimizer:0.14.0
     END
     SAVE ARTIFACT --keep-own ./artifacts/* AS LOCAL artifacts/
 

@@ -12,7 +12,7 @@ import (
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	wasmTypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmjson "github.com/cometbft/cometbft/libs/json"
@@ -124,7 +124,7 @@ import (
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 
-	"github.com/EmpowerPlastic/empowerchain/app/upgrades"
+	v2 "github.com/EmpowerPlastic/empowerchain/app/upgrades/v2"
 	certificatemoduletypes "github.com/EmpowerPlastic/empowerchain/x/certificates"
 	certificatemodulekeeper "github.com/EmpowerPlastic/empowerchain/x/certificates/keeper"
 	certificatemodule "github.com/EmpowerPlastic/empowerchain/x/certificates/module"
@@ -202,13 +202,11 @@ var (
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
-		wasm.ModuleName:                {authtypes.Burner},
+		wasmtypes.ModuleName:           {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		ibcfeetypes.ModuleName:         nil,
 		icatypes.ModuleName:            nil,
 	}
-
-	Upgrades = []upgrades.Upgrade{}
 )
 
 var (
@@ -259,7 +257,7 @@ type EmpowerApp struct {
 	ConsensusParamsKeeper consensuskeeper.Keeper
 
 	// CosmWasm: wasmd
-	WasmKeeper wasm.Keeper
+	WasmKeeper wasmkeeper.Keeper
 
 	// Custom module keepers
 	ProofofexistenceKeeper proofofexistencemodulekeeper.Keeper
@@ -294,7 +292,7 @@ func New(
 	traceStore io.Writer,
 	loadLatest bool,
 	appOpts servertypes.AppOptions,
-	wasmOpts []wasm.Option,
+	wasmOpts []wasmkeeper.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *EmpowerApp {
 	encodingConfig := MakeEncodingConfig()
@@ -315,7 +313,7 @@ func New(
 		paramstypes.StoreKey, consensustypes.StoreKey, upgradetypes.StoreKey,
 		feegrant.StoreKey, evidencetypes.StoreKey, capabilitytypes.StoreKey, group.StoreKey,
 		// wasm-related store keys
-		wasm.StoreKey,
+		wasmtypes.StoreKey,
 		// ibc-related store keys
 		ibcexported.StoreKey, ibctransfertypes.StoreKey, ibcfeetypes.StoreKey,
 		icahosttypes.StoreKey, icacontrollertypes.StoreKey,
@@ -350,7 +348,7 @@ func New(
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(appCodec, storeKeys[capabilitytypes.StoreKey], memoryStoreKeys[capabilitytypes.MemStoreKey])
 
 	// grant capabilities for the ibc and ibc-transfer modules
-	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
+	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasmtypes.ModuleName)
 	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibcexported.ModuleName)
 	scopedICAHostKeeper := app.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
 	scopedICAControllerKeeper := app.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
@@ -424,9 +422,9 @@ func New(
 	// if we want to allow any custom callbacks
 	// See https://github.com/CosmWasm/cosmwasm/blob/main/docs/CAPABILITIES-BUILT-IN.md
 	availableCapabilities := "iterator,staking,stargate,cosmwasm_1_1,cosmwasm_1_2"
-	app.WasmKeeper = wasm.NewKeeper(
+	app.WasmKeeper = wasmkeeper.NewKeeper(
 		appCodec,
-		storeKeys[wasm.StoreKey],
+		storeKeys[wasmtypes.StoreKey],
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.StakingKeeper,
@@ -455,7 +453,7 @@ func New(
 		AddRoute(paramproposal.RouterKey, sdkparams.NewParamChangeProposalHandler(app.ParamsKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
-		AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, wasm.EnableAllProposals))
+		AddRoute(wasmtypes.RouterKey, wasmkeeper.NewWasmProposalHandler(app.WasmKeeper, wasmtypes.EnableAllProposals)) //nolint:staticcheck
 	govConfig := govtypes.DefaultConfig()
 	/*
 		Example of setting gov params:
@@ -567,7 +565,7 @@ func New(
 
 	// Create static IBC router, add ibc-tranfer module route, then set and seal it
 	ibcRouter := porttypes.NewRouter().
-		AddRoute(wasm.ModuleName, wasmStack).
+		AddRoute(wasmtypes.ModuleName, wasmStack).
 		AddRoute(ibctransfertypes.ModuleName, transferStack).
 		AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
 		AddRoute(icahosttypes.SubModuleName, icaHostStack)
@@ -606,7 +604,7 @@ func New(
 		sdkparams.NewAppModule(app.ParamsKeeper),
 		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
 		// CosmWasm modules
-		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasm.ModuleName)),
+		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
 		// Custom modules
 		proofofexistencemodule.NewAppModule(appCodec, app.ProofofexistenceKeeper, app.AccountKeeper, app.BankKeeper),
 		plasticcreditmodule.NewAppModule(appCodec, app.PlasticcreditKeeper, app.AccountKeeper, app.BankKeeper),
@@ -652,7 +650,7 @@ func New(
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		// CosmWasm modules
-		wasm.ModuleName,
+		wasmtypes.ModuleName,
 	)
 
 	app.ModuleManager.SetOrderEndBlockers(
@@ -684,7 +682,7 @@ func New(
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		// CosmWasm modules
-		wasm.ModuleName,
+		wasmtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -721,7 +719,7 @@ func New(
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		// wasm after ibc transfer
-		wasm.ModuleName,
+		wasmtypes.ModuleName,
 		// crisis after initializing genesis states of all modules
 		crisistypes.ModuleName,
 	)
@@ -761,7 +759,7 @@ func New(
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
-	app.setAnteHandler(encodingConfig.TxConfig, wasmConfig, storeKeys[wasm.StoreKey])
+	app.setAnteHandler(encodingConfig.TxConfig, wasmConfig, storeKeys[wasmtypes.StoreKey])
 
 	// must be before Loading version
 	// requires the snapshot store to be created and registered as a BaseAppOption
@@ -800,7 +798,7 @@ func New(
 	return app
 }
 
-func (app *EmpowerApp) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmTypes.WasmConfig, txCounterStoreKey storetypes.StoreKey) {
+func (app *EmpowerApp) setAnteHandler(txConfig client.TxConfig, wasmConfig wasmtypes.WasmConfig, txCounterStoreKey storetypes.StoreKey) {
 	anteHandler, err := NewAnteHandler(
 		HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
@@ -950,6 +948,8 @@ func (app *EmpowerApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.AP
 	}
 }
 
+// setupUpgradeStoreLoaders is for any new modules introduced, new modules deleted, or store names renamed.
+// read more here: https://docs.cosmos.network/main/core/upgrade
 func (app *EmpowerApp) setupUpgradeStoreLoaders() {
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
@@ -960,20 +960,27 @@ func (app *EmpowerApp) setupUpgradeStoreLoaders() {
 		return
 	}
 
-	for _, u := range Upgrades {
-		if upgradeInfo.Name == u.UpgradeName {
-			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &u.StoreUpgrades))
-		}
+	var storeUpgrades *storetypes.StoreUpgrades
+
+	// Whenever we need to add/remove/rename modules, remove this comment and use the following as example:
+	// https://github.com/Stride-Labs/stride/blob/a8eb76937569cb285bb6e870af30afbddfcf1def/app/upgrades.go#L175
+
+	if storeUpgrades != nil {
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, storeUpgrades))
 	}
 }
 
+// setupUpgradeHandlers is where we add any upgrades for state breaking changes
+// read more here: https://docs.cosmos.network/main/core/upgrade
 func (app *EmpowerApp) setupUpgradeHandlers() {
-	for _, u := range Upgrades {
-		app.UpgradeKeeper.SetUpgradeHandler(
-			u.UpgradeName,
-			u.CreateUpgradeHandler(app.ModuleManager, app.configurator),
-		)
-	}
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v2.UpgradeName,
+		v2.CreateV2UpgradeHandler(
+			*app.ModuleManager,
+			app.configurator,
+			app.IBCKeeper.ClientKeeper,
+		),
+	)
 }
 
 // RegisterTxService implements the Application.RegisterTxService method.
@@ -1018,7 +1025,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(govtypes.ModuleName)
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	// CosmWasm
-	paramsKeeper.Subspace(wasm.ModuleName)
+	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	// Custom modules
 	paramsKeeper.Subspace(proofofexistencemoduletypes.ModuleName)
 	paramsKeeper.Subspace(plasticcreditmoduletypes.ModuleName)
