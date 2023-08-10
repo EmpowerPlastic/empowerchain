@@ -30,8 +30,8 @@ jobs:
 
       - uses: "ncipollo/release-action@v1"
         with:
-          tag: "latest"
+          tag: "test"
           allowUpdates: true
-          name: "Development Build"
+          name: "Test Build"
           prerelease: true
           artifacts: ./chain/build/*
