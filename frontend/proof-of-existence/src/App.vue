@@ -76,7 +76,7 @@ import "flowbite";
   </aside>
 
   <div class="p-4 md:ml-64">
-    <div class="flex flex-col items-start mt-0 md:mt-40">
+    <div class="flex flex-col items-start mt-0 md:ml-4 md:mt-[110px]">
       <img
         class="hidden md:block absolute right-[50px] top-[30px]"
         src="./assets/images/top-logo.svg"

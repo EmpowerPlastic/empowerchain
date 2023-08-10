@@ -23,6 +23,9 @@ module.exports = {
         bgPrimary: "rgba(255, 255, 255, 1)",
         bgSecondary: "#00D045",
         bgTertiary: "#022D41",
+        bgBigButton: "rgba(255, 255, 255, 0.55)",
+        hashBackground: "rgba(217, 217, 217, 0.30)",
+        modalBackground: "rgba(3, 3, 3, 0.85)",
       },
       fontSize: {
         title28: "1.75rem",
