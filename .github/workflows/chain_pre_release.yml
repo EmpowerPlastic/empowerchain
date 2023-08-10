@@ -30,6 +30,8 @@ jobs:
 
       - uses: "ncipollo/release-action@v1"
         with:
+          tag: "latest"
+          commit: "$GITHUB_SHA"
           allowUpdates: true
           name: "Development Build"
           makeLatest: true
