@@ -143,11 +143,16 @@ const closeAboutModal = () => {
     :modal-type="modalType"
   />
   <AboutModal :close-modal="closeAboutModal" v-show="showAboutModal" />
+  <h5
+    class="hidden md:block mt-5 my-5 text-title28 text-left font-bold text-textPrimary"
+  >
+    Verify documents
+  </h5>
   <div
     class="p-4 text-left bg-bgPrimary rounded-sm md:p-8 lg:w-[700px] custom-shadow"
   >
     <h5
-      class="mb-2 mt-3 text-center md:text-left text-2xl font-bold text-textPrimary text-title28"
+      class="md:hidden mb-2 mt-3 text-center font-bold text-textPrimary text-title28"
     >
       Verify documents
     </h5>
@@ -221,7 +226,7 @@ const closeAboutModal = () => {
                   >{{ file ? file?.name : "Choose file" }}</span
                 >
                 <div
-                  class="flex w-full justify-center p-1 py-2 rounded-sm bg-bgSecondary md:w-24 md:mr-4 text-title16"
+                  class="flex w-full justify-center p-1 py-2 rounded-sm bg-bgSecondary md:w-[150px] md:mr-4 text-title16"
                 >
                   Browse
                 </div>

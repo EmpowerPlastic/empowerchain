@@ -98,11 +98,16 @@ const closeModal = () => {
 
 <template>
   <SupportedFilesModal v-show="showModal" :close-modal="closeModal" />
+  <h5
+    class="hidden md:block mt-5 my-5 text-title28 text-left font-bold text-textPrimary"
+  >
+    Certify documents
+  </h5>
   <div
     class="p-4 text-left bg-bgPrimary rounded-sm md:p-8 lg:w-[700px] custom-shadow"
   >
     <h5
-      class="mt-5 my-7 text-title28 text-center md:text-left font-bold text-textPrimary text-title28"
+      class="md:hidden mt-5 my-7 text-title28 text-center font-bold text-textPrimary"
     >
       Certify documents
     </h5>
@@ -162,7 +167,7 @@ const closeModal = () => {
                 >{{ file ? file?.name : "Choose file" }}</span
               >
               <div
-                class="flex w-full justify-center p-1 py-2 rounded-sm bg-bgSecondary md:w-24 md:mr-4 text-title16"
+                class="flex w-full justify-center p-1 py-2 rounded-sm bg-bgSecondary md:w-[150px] md:mr-4 text-title16"
               >
                 Browse
               </div>
@@ -239,7 +244,7 @@ const closeModal = () => {
           <button
             :disabled="!inputString"
             @click="handleInputString"
-            class="bg-bgSecondary md:w-[200px] w-full mt-10 content-center p-1 rounded-sm text-textPrimary text-title22 disabled:opacity-[0.3]"
+            class="bg-bgSecondary md:w-[200px] w-full mt-8 content-center p-1 rounded-sm text-textPrimary text-title22 disabled:opacity-[0.3]"
           >
             Create proof
           </button>
