@@ -4,13 +4,14 @@ import { useRoute } from "vue-router";
 
 export interface ModalProps {
   closeModal: (val: MouseEvent) => void;
+  modalType: "CERTIFY" | "VERIFY";
+  time: string;
+  hash: string;
 }
-defineProps<ModalProps>();
-const route = useRoute();
-const hash: string | string[] = route.params.hash;
+const props = defineProps<ModalProps>();
 
 const copyAddress = async () => {
-  await navigator.clipboard.writeText(hash.toString());
+  await navigator.clipboard.writeText(props.hash);
   toast.success("Address copied to clipboard");
 };
 
@@ -59,11 +60,17 @@ const copyLink = () => {
             class="flex flex-col h-[140px] w-[140px] mt-[-70px] rounded-[70px] bg-transparent border-[2px] border-bgPrimary items-center justify-center"
           >
             <div
-              class="h-[120px] w-[120px] bg-bgPrimary round-shadow rounded-[60px] overflow-hidden"
+              class="flex flex-col h-[120px] w-[120px] bg-bgPrimary round-shadow rounded-[60px] overflow-hidden items-center justify-center"
             >
               <img
+                v-show="props.modalType === 'CERTIFY'"
                 src="../../assets/images/modal-top-icon.svg"
-                class="w-full"
+                class="w-full mt-[-40px]"
+              />
+              <img
+                v-show="props.modalType === 'VERIFY'"
+                class="w-10"
+                src="../../assets/images/certificate.svg"
               />
             </div>
           </div>
@@ -81,7 +88,7 @@ const copyLink = () => {
             Received Time
           </p>
           <p class="text-textPrimary text-title18 mb-3 break-all">
-            {{ new Date(Number($route.query.time)).toLocaleString() }}
+            {{ props.time }}
           </p>
           <p class="text-textPrimary text-title14 font-bold mt-3 mb-3">
             Transaction Hash
@@ -92,7 +99,7 @@ const copyLink = () => {
             <p
               class="text-textPrimary text-title18 text-ellipsis w-[70%] overflow-hidden whitespace-nowrap"
             >
-              {{ $route.params.hash }}
+              {{ props.hash }}
             </p>
             <img
               @click="copyAddress"
@@ -101,6 +108,7 @@ const copyLink = () => {
             />
           </div>
           <button
+            v-if="props.modalType === 'CERTIFY'"
             @click="copyLink"
             class="bg-bgSecondary mt-5 content-center p-1 px-7 rounded-sm text-textPrimary"
           >
