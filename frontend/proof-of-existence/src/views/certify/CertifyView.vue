@@ -60,7 +60,7 @@ const redirectToWalletPage = (
 ) => {
   if (hash) {
     router.push({
-      path: `/proof/${hash}`,
+      path: `certify/proof/${hash}`,
       query: { fileName: fileName, time: timestamp },
     });
   } else {

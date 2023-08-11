@@ -153,7 +153,7 @@ const copyAddress = async () => {
   </h5>
   <div class="flex flex-col !items-center w-full md:max-w-[80%]">
     <h5
-      class="md:hidden mt-5 my-7 text-title28 text-center font-bold text-textPrimary"
+      class="md:hidden mb-2 md:my-7 text-title28 text-center font-bold text-textPrimary"
     >
       Create proof
     </h5>
@@ -163,6 +163,12 @@ const copyAddress = async () => {
           class="flex flex-col items-center bg-bgPrimary w-full rounded-lg custom-shadow p-3 py-5 text-center"
         >
           <img class="w-16 mb-4" src="../../assets/images/certificate.svg" />
+          <p
+            v-show="$route.query.fileName"
+            class="text-textPrimary text-title14 font-bold"
+          >
+            File
+          </p>
           <p
             class="text-textPrimary text-title18 mb-3"
             v-show="$route.query.fileName"
@@ -179,10 +185,14 @@ const copyAddress = async () => {
           <p class="text-textPrimary text-title18 mb-3 break-all">
             {{ $route.params.hash }}
           </p>
-          <p class="text-textPrimary text-title14 text-center mt-5 mb-2">
+          <p
+            class="hidden md:block text-textPrimary text-title14 text-center mt-5 mb-2"
+          >
             Hooray!! We are just one step away!
           </p>
-          <p class="text-textPrimary text-title12 text-center mb-3">
+          <p
+            class="hidden md:block text-textPrimary text-title12 text-center mb-3"
+          >
             Connect your wallet for the transaction fee, its Only 0.00025 $MPWR
           </p>
         </div>
@@ -195,13 +205,16 @@ const copyAddress = async () => {
           >
             Wallet
           </h5>
-          <p class="md:hidden text-textPrimary text-title12 text-center my-5">
+          <p
+            v-if="selectedWallet === ''"
+            class="md:hidden text-textPrimary text-title12 text-center my-5"
+          >
             Hooray!! We are just one step away! <br />Connect your wallet for
             the transaction fee, its Only 0.00025 $MPWR
           </p>
 
           <div
-            class="flex flex-col items-center mt-5"
+            class="flex flex-col items-center mt-10"
             v-if="selectedWallet !== ''"
           >
             <img
@@ -227,7 +240,7 @@ const copyAddress = async () => {
               class="flex flex-row justify-center bg-bgTertiary rounded-lg p-3 cursor-pointer w-full my-3 flex-wrap bg-opacity-[0.04]"
               @click="copyAddress"
             >
-              <p class="text-textPrimary text-center text-title12">
+              <p class="text-textPrimary text-center text-title12 break-all">
                 {{ addressVisible }}
               </p>
               <img class="w-4 ml-4" src="../../assets/images/copy-icon.svg" />
@@ -266,5 +279,3 @@ const copyAddress = async () => {
     </div>
   </div>
 </template>
-
-<style></style>

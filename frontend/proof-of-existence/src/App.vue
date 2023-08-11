@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { RouterView } from "vue-router";
+import { RouterView, useRoute } from "vue-router";
 import "flowbite";
+const route = useRoute();
 </script>
 
 <template>
@@ -30,7 +31,7 @@ import "flowbite";
 
   <aside
     id="logo-sidebar"
-    class="fixed top-0 left-0 z-40 md:w-64 w-full h-screen transition-transform -translate-x-full md:translate-x-0 md:bg-lightBlack bg-darkBlack"
+    class="fixed top-0 left-0 z-40 md:w-64 w-full h-screen transition-transform -translate-x-full md:translate-x-0 bg-darkBlack md:bg-transparent border-r-[1px] border-bgPrimary border-opacity-10"
     aria-label="Sidebar"
   >
     <div class="flex flex-row w-full justify-end md:hidden">
@@ -46,30 +47,70 @@ import "flowbite";
       </button>
     </div>
 
-    <div class="h-full px-3 py-4 overflow-y-auto bg-lightBlack">
+    <div class="h-full px-3 py-4">
       <a href="/" class="flex items-center pl-2.5 mb-5">
         <img
           src="../src/assets/images/emopwer-logo.svg"
-          class="ml-3 mt-3 hidden md:inline-block md:w-36"
+          class="mx-3 mt-3 hidden md:inline-block md:w-[180px]"
           alt="Logo"
         />
       </a>
       <div class="flex justify-center flex-col h-5/6 items-center">
-        <div class="space-y-2 w-full flex flex-col items-center p-3">
-          <a
-            href="/"
-            class="flex flex-row w-full p-2 md:justify-start justify-center md:ml-14"
+        <!--        Desktop Sidebar-->
+        <div
+          class="hidden space-y-2 w-full md:flex flex-col items-center p-3 px-5"
+        >
+          <div
+            :class="
+              route.path.split('/')[1] !== 'verify' &&
+              'bg-bgPrimary rounded-[13px]'
+            "
+            class="flex flex-row w-full p-3 justify-start"
           >
-            <img class="w-7 mr-3" src="../src/assets/images/certifyIcon.svg" />
-            <p href="/verify" class="text-white text-title16">Certify</p>
-          </a>
-          <a
-            href="/verify"
-            class="flex flex-row w-full p-2 md:justify-start justify-center md:ml-14"
+            <a href="/" class="flex flex-row items-center">
+              <img
+                class="w-7 mr-3 md:ml-10"
+                src="../src/assets/images/certify-icon.svg"
+              />
+              <p class="text-textPrimary text-title16">Certify</p>
+            </a>
+          </div>
+          <div
+            :class="
+              route.path.split('/')[1] === 'verify' &&
+              'bg-bgPrimary rounded-[13px]'
+            "
+            class="flex flex-row w-full p-3 justify-start"
           >
-            <img class="w-7 mr-3" src="../src/assets/images/verifyIcon.svg" />
-            <p href="/verify" class="text-white text-title16">Verify</p>
-          </a>
+            <a href="/verify" class="flex flex-row items-center">
+              <img
+                class="w-7 mr-3 md:ml-10"
+                src="../src/assets/images/verify-icon.svg"
+              />
+              <p class="text-textPrimary text-title16">Verify</p>
+            </a>
+          </div>
+        </div>
+        <!--        Mobile Sidebar-->
+        <div class="flex flex-col items-center md:hidden mt-[-30px]">
+          <div class="flex flex-row w-full p-3 justify-start">
+            <a href="/" class="flex flex-row items-center">
+              <img
+                class="w-7 mr-3"
+                src="../src/assets/images/certify-icon-mobile.svg"
+              />
+              <p class="text-textTertiary text-title14">Certify</p>
+            </a>
+          </div>
+          <div class="flex flex-row w-full p-3 justify-start">
+            <a href="/verify" class="flex flex-row items-center">
+              <img
+                class="w-7 mr-3"
+                src="../src/assets/images/verify-icon-mobile.svg"
+              />
+              <p class="text-textTertiary text-title14">Verify</p>
+            </a>
+          </div>
         </div>
       </div>
     </div>

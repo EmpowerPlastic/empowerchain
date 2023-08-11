@@ -24,7 +24,7 @@ const router = createRouter({
       component: VerifySuccessScreen,
     },
     {
-      path: "/proof/:hash",
+      path: "/certify/proof/:hash",
       name: "proof",
       component: CreateProofView,
     },

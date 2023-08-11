@@ -20,6 +20,7 @@ module.exports = {
         //Proper naming
         textPrimary: "#022D41",
         textSecondary: "#00D045",
+        textTertiary: "rgba(255, 255, 255, 1)",
         bgPrimary: "rgba(255, 255, 255, 1)",
         bgSecondary: "#00D045",
         bgTertiary: "#022D41",
