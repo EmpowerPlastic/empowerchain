@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { toast } from "vue3-toastify";
-import { useRoute } from "vue-router";
 
 export interface ModalProps {
   closeModal: (val: MouseEvent) => void;
@@ -110,7 +109,7 @@ const copyLink = () => {
           <button
             v-if="props.modalType === 'CERTIFY'"
             @click="copyLink"
-            class="bg-bgSecondary mt-5 content-center p-1 px-7 rounded-sm text-textPrimary"
+            class="bg-bgSecondary mt-3 content-center p-2 px-7 rounded-sm text-textPrimary"
           >
             Copy verification link
           </button>
