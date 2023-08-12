@@ -13,6 +13,7 @@ const isValid = ref<boolean>(false);
 const shownNoProofModal = ref<boolean>(false);
 const showAboutModal = ref<boolean>(false);
 const modalType = ref<ErrorModalType>(ErrorModalType.FILE);
+const activeTab = ref("File");
 
 const { createRPCQueryClient } = empowerchain.ClientFactory;
 //Methods
@@ -165,34 +166,33 @@ const closeAboutModal = () => {
       >
         <li>
           <button
-            id="file-tab"
-            data-tabs-target="#file"
-            type="button"
-            role="tab"
-            aria-controls="file"
-            aria-selected="true"
-            class="flex flex-col justify-center text-center px-6 text-title16 aria-selected:bg-bgTertiary aria-selected:bg-opacity-[0.06] aria-selected:text-textPrimary rounded-t-lg h-9"
+            class="px-7 py-2 text-textSecondary cursor-pointer"
+            :class="{
+              'bg-bgTertiary bg-opacity-[0.06] !text-textPrimary rounded-t-lg':
+                activeTab === 'File',
+            }"
+            @click="activeTab = 'File'"
           >
             File
           </button>
         </li>
         <li>
           <button
-            id="text-tab"
-            data-tabs-target="#text"
-            type="button"
-            role="tab"
-            aria-controls="text"
-            aria-selected="false"
-            class="flex flex-col bg-opacity-[0.06] justify-center text-center px-6 text-title16 aria-selected:bg-bgTertiary aria-selected:bg-opacity-[0.06] aria-selected:text-textPrimary rounded-t-lg h-9"
+            class="px-7 py-2 text-textSecondary cursor-pointer"
+            :class="{
+              'bg-bgTertiary bg-opacity-[0.06] !text-textPrimary rounded-t-lg':
+                activeTab === 'Text',
+            }"
+            @click="activeTab = 'Text'"
           >
             Text
           </button>
         </li>
       </ul>
-      <div id="defaultTabContent">
+      <div>
         <div
-          class="hidden md:p-1 border-t border-bgTertiary border-opacity-[0.3] w-full"
+          v-if="activeTab === 'File'"
+          class="md:p-1 border-t border-bgTertiary border-opacity-[0.3] w-full"
           id="file"
           role="tabpanel"
           aria-labelledby="file-tab"
@@ -244,7 +244,8 @@ const closeAboutModal = () => {
           </div>
         </div>
         <div
-          class="hidden md:p-1 border-t border-bgTertiary border-opacity-[0.3]"
+          v-if="activeTab === 'Text'"
+          class="md:p-1 border-t border-bgTertiary border-opacity-[0.3]"
           id="text"
           role="tabpanel"
           aria-labelledby="text-tab"
