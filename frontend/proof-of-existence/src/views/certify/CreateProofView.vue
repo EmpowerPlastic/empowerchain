@@ -120,6 +120,12 @@ const handleResponse = (response: DeliverTxResponse) => {
     pushToSuccessPage();
   } else {
     loading.value = false;
+    if (response?.rawLog) {
+      toast.error(response?.rawLog);
+    } else {
+      toast.error("Something went wrong!");
+    }
+
     errorMessage.value = response?.rawLog;
   }
 };

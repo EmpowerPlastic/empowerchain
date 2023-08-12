@@ -2,8 +2,10 @@
 import { RouterView, useRoute } from "vue-router";
 import "flowbite";
 const route = useRoute();
+const activeTab = (path: "certify" | "verify") => {
+  return route?.path?.split("/")[1] === path;
+};
 </script>
-
 <template>
   <nav class="bg-transparent md:hidden">
     <div
@@ -43,7 +45,10 @@ const route = useRoute();
         aria-controls="navbar-default"
         aria-expanded="false"
       >
-        <img class="w-7" src="../src/assets/images/close-icon.svg" />
+        <img
+          class="w-7 bg-bgPrimary rounded-[16px]"
+          src="../src/assets/images/close-icon.svg"
+        />
       </button>
     </div>
 
@@ -61,23 +66,24 @@ const route = useRoute();
           class="hidden space-y-2 w-full md:flex flex-col items-center p-3 px-5"
         >
           <div
-            :class="
-              route.path.split('/')[1] !== 'verify' &&
-              'bg-bgPrimary rounded-[13px]'
-            "
+            :class="!activeTab('verify') && 'bg-bgPrimary rounded-[13px]'"
             class="flex flex-row w-full p-3 justify-start"
           >
             <a href="/" class="flex flex-row items-center">
               <img
                 class="w-7 mr-3 md:ml-10"
-                src="../src/assets/images/certify-icon.svg"
+                :src="
+                  activeTab('verify')
+                    ? '../src/assets/images/certify-icon.svg'
+                    : '../src/assets/images/certify-active-icon.svg'
+                "
               />
               <p class="text-textPrimary text-title16">Certify</p>
             </a>
           </div>
           <div
             :class="
-              route.path.split('/')[1] === 'verify' &&
+              route?.path?.split('/')[1] === 'verify' &&
               'bg-bgPrimary rounded-[13px]'
             "
             class="flex flex-row w-full p-3 justify-start"
@@ -85,7 +91,11 @@ const route = useRoute();
             <a href="/verify" class="flex flex-row items-center">
               <img
                 class="w-7 mr-3 md:ml-10"
-                src="../src/assets/images/verify-icon.svg"
+                :src="
+                  activeTab('verify')
+                    ? '../src/assets/images/verify-active-icon.svg'
+                    : '../src/assets/images/verify-icon.svg'
+                "
               />
               <p class="text-textPrimary text-title16">Verify</p>
             </a>
