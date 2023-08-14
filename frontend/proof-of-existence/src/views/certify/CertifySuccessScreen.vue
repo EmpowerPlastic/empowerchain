@@ -19,12 +19,14 @@ const closSuccessModal = () => {
 </script>
 
 <template>
-  <SuccessModal
-    modal-type="CERTIFY"
-    :close-modal="closSuccessModal"
-    v-show="showSuccessModal"
-    :time="new Date(Number(route.query.time)).toLocaleString()"
-    :hash="route.query.hash.toString()"
-  />
+  <template v-if="route && route.query && route.query.hash">
+    <SuccessModal
+      modal-type="CERTIFY"
+      :close-modal="closSuccessModal"
+      v-show="showSuccessModal"
+      :time="new Date(Number(route.query.time)).toLocaleString()"
+      :hash="route?.query?.hash.toString()"
+    />
+  </template>
   <CertifyView />
 </template>
