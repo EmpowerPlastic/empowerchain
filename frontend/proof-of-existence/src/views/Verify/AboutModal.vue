@@ -13,10 +13,10 @@ defineProps<ModalProps>();
   >
     <div class="relative w-full items-center h-full max-w-xl md:h-auto">
       <!-- Modal content -->
-      <div class="relative w-full bg-white rounded-lg shadow">
+      <div class="relative w-full bg-bgPrimary rounded-lg shadow">
         <!-- Modal header -->
         <div class="flex items-start justify-between p-4 rounded-t">
-          <h3 class="font-bold text-black text-title22">
+          <h3 class="font-bold text-textPrimary text-title22">
             About Proof of Existence Verification
           </h3>
           <button type="button" class="bg-transparent" @click="closeModal">

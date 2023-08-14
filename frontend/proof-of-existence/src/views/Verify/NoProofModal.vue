@@ -16,7 +16,7 @@ defineProps<ModalProps>();
   >
     <div class="relative w-full items-center h-full max-w-xl md:h-auto">
       <!-- Modal content -->
-      <div class="relative w-full bg-white rounded-lg shadow">
+      <div class="relative w-full bg-bgPrimary rounded-lg shadow">
         <!-- Modal header -->
         <div class="flex items-start justify-between rounded-t">
           <button type="button" class="bg-transparent" @click="closeModal">
@@ -29,16 +29,16 @@ defineProps<ModalProps>();
         <!-- Modal body -->
         <div class="flex flex-wrap flex-col items-center p-2 mt-7">
           <img
-            src="../../assets/images/emp-astro-4.svg"
+            src="../../assets/images/no-proof-1.svg"
             v-show="modalType === ErrorModalType.FILE"
             class="w-24"
           />
           <img
-            src="../../assets/images/emp-astro-5.svg"
+            src="../../assets/images/no-proof-2.svg"
             v-show="modalType === ErrorModalType.STRING"
             class="w-32"
           />
-          <h3 class="font-bold text-black text-title28 my-7 text-center">
+          <h3 class="font-bold text-textPrimary text-title28 my-7 text-center">
             {{
               modalType === ErrorModalType.FILE
                 ? "No proof of existence for this data!"
