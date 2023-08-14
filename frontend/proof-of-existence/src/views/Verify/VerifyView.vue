@@ -159,7 +159,7 @@ const closeAboutModal = () => {
     </h5>
     <div class="mt-3 w-30">
       <ul
-        class="flex flex-wrap text-center text-lightGreen border-gray-200 rounded-t-lg"
+        class="flex flex-wrap text-center text-textSecondary rounded-t-lg"
         id="defaultTab"
         data-tabs-toggle="#defaultTabContent"
         role="tablist"
@@ -202,7 +202,7 @@ const closeAboutModal = () => {
             EmpowerChain.
             <a
               href="#"
-              class="inline-flex items-center font-medium text-lightGreen"
+              class="inline-flex items-center font-medium text-textSecondary"
               @click="openAboutModal"
               >Learn more.</a
             >
@@ -255,7 +255,7 @@ const closeAboutModal = () => {
             the EmpowerChain.
             <a
               href="#"
-              class="inline-flex items-center font-medium text-lightGreen"
+              class="inline-flex items-center font-medium text-textSecondary"
               @click="openAboutModal"
               >Learn more.</a
             >

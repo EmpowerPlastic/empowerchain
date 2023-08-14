@@ -13,7 +13,7 @@ const activeTab = (path: "certify" | "verify") => {
     >
       <a href="/" class="flex items-center">
         <img
-          src="../src/assets/images/emopwer-logo.svg"
+          src="../src/assets/images/empower-logo.svg"
           class="ml-3 mt-3 w-32 md:w-36"
           alt="Logo"
         />
@@ -22,18 +22,18 @@ const activeTab = (path: "certify" | "verify") => {
         data-drawer-target="logo-sidebar"
         data-drawer-toggle="logo-sidebar"
         type="button"
-        class="inline-flex items-center p-2 ml-3 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+        class="inline-flex items-center p-2 ml-3 rounded-lg md:hidden"
         aria-controls="navbar-default"
         aria-expanded="false"
       >
-        <img class="w-7" src="../src/assets/images/sideButton.svg" />
+        <img class="w-7" src="../src/assets/images/side-button.svg" />
       </button>
     </div>
   </nav>
 
   <aside
     id="logo-sidebar"
-    class="fixed top-0 left-0 z-40 md:w-64 w-full h-screen transition-transform -translate-x-full md:translate-x-0 bg-darkBlack md:bg-transparent border-r-[1px] border-bgPrimary border-opacity-10"
+    class="fixed top-0 left-0 z-40 md:w-64 w-full h-screen transition-transform -translate-x-full md:translate-x-0 bg-drawerBackground md:bg-transparent border-r-[1px] border-bgPrimary border-opacity-10"
     aria-label="Sidebar"
   >
     <div class="flex flex-row w-full justify-end md:hidden">
@@ -55,7 +55,7 @@ const activeTab = (path: "certify" | "verify") => {
     <div class="h-full px-3 py-4">
       <a href="/" class="flex items-center pl-2.5 mb-5">
         <img
-          src="../src/assets/images/emopwer-logo.svg"
+          src="../src/assets/images/empower-logo.svg"
           class="mx-3 mt-3 hidden md:inline-block md:w-[180px]"
           alt="Logo"
         />
@@ -107,7 +107,11 @@ const activeTab = (path: "certify" | "verify") => {
             <a href="/" class="flex flex-row items-center">
               <img
                 class="w-7 mr-3"
-                src="../src/assets/images/certify-icon-mobile.svg"
+                :src="
+                  activeTab('verify')
+                    ? '../src/assets/images/certify-icon-mobile.svg'
+                    : '../src/assets/images/certify-active-icon-mobile.svg'
+                "
               />
               <p class="text-textTertiary text-title14">Certify</p>
             </a>
@@ -116,7 +120,11 @@ const activeTab = (path: "certify" | "verify") => {
             <a href="/verify" class="flex flex-row items-center">
               <img
                 class="w-7 mr-3"
-                src="../src/assets/images/verify-icon-mobile.svg"
+                :src="
+                  activeTab('verify')
+                    ? '../src/assets/images/verify-active-icon-mobile.svg'
+                    : '../src/assets/images/verify-icon-mobile.svg'
+                "
               />
               <p class="text-textTertiary text-title14">Verify</p>
             </a>

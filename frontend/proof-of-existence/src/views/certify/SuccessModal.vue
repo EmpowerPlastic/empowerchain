@@ -36,7 +36,7 @@ const copyLink = () => {
       class="relative mt-7 w-full items-center h-full max-w-lg md:h-auto relative"
     >
       <!-- Modal content -->
-      <div class="relative w-full bg-white rounded-lg shadow">
+      <div class="relative w-full bg-bgPrimary rounded-lg shadow">
         <!-- Modal header -->
 
         <!-- Modal body -->

@@ -108,12 +108,12 @@ onMounted(() => {
   >
     <div class="relative w-full items-center h-full max-w-xl md:h-auto">
       <!-- Modal content -->
-      <div class="relative w-full bg-white rounded-lg shadow">
+      <div class="relative w-full bg-bgPrimary rounded-lg shadow">
         <!-- Modal header -->
         <div
           class="flex justify-center md:justify-start items-center p-3 rounded-lg"
         >
-          <h3 class="font-bold text-black text-title28 mt-2">
+          <h3 class="font-bold text-textPrimary text-title28 mt-2">
             Select your wallet
           </h3>
           <button type="button" class="bg-transparent" @click="closeModal">
