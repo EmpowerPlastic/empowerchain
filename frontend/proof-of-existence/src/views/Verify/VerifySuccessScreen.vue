@@ -36,13 +36,16 @@ const closSuccessModal = () => {
 };
 </script>
 <template>
-  <SuccessModal
-    modal-type="VERIFY"
-    :close-modal="closSuccessModal"
-    :hash="route.query.hash.toString()"
-    :time="new Date(proofTimestamp).toLocaleString()"
-    v-show="showSuccessModal"
-  />
+  <template v-if="route && route.query && route.query.hash">
+    <SuccessModal
+      modal-type="VERIFY"
+      :close-modal="closSuccessModal"
+      :hash="route?.query?.hash?.toString()"
+      :time="new Date(proofTimestamp).toLocaleString()"
+      v-show="showSuccessModal"
+    />
+  </template>
+
   <VerifyView />
 </template>
 
