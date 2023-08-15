@@ -23,26 +23,23 @@ const props = defineProps<RegistryCardProps>();
     />
 
     <!--    Details for Mobile UI-->
-    <div class="grid grid-cols-2 p-5 gap-4 md:hidden">
+    <div
+      class="grid grid-rows-2 p-4 gap-4 md:hidden cursor-pointer"
+      @click="router.push(`/registry/1`)"
+    >
       <div>
-        <p class="text-title17 font-bold">The Coca-Cola Company</p>
-        <p class="text-title15 font-light">Retirerer Name</p>
+        <p class="text-title24 font-bold mb-2">11,000 kgs</p>
+        <p class="text-title18">The Coca-Cola Company</p>
       </div>
-      <div class="text-right">
-        <p class="text-title13 font-bold">Asia</p>
-        <p class="text-title11 font-light">Region</p>
-      </div>
-      <div>
-        <p class="text-title14 font-bold">11,000 kgs</p>
-        <p class="text-title12 font-light">Volume</p>
-      </div>
-      <div>
-        <button
-          class="btn bg-greenPrimary w-full h-full rounded-sm text-title15 px-2 normal-case font-normal"
-          @click="router.push(`/registry/1`)"
-        >
-          View details
-        </button>
+      <div class="flex justify-between">
+        <div>
+          <p class="text-title11 font-light">Region</p>
+          <p class="text-title13 font-bold">Asia</p>
+        </div>
+        <div>
+          <p class="text-title15 font-light">Applicant</p>
+          <p class="text-title13 font-bold">Plastic Collectors Ltd</p>
+        </div>
       </div>
     </div>
 

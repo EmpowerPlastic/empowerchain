@@ -3,6 +3,7 @@ import MapWithInfoWindow from "@/components/MapWithInfoWindow.vue";
 import RegistrySearchBar from "@/components/RegistrySearchBar.vue";
 import RegistryCard from "@/components/RegistryCard.vue";
 import CustomPagination from "@/components/CustomPagination.vue";
+import CustomAlert from "@/components/CustomAlert.vue";
 const dummyData = [
   {
     location: { lat: 40.7322, lng: -74.004 },
@@ -42,6 +43,9 @@ const dummyData = [
     </div>
     <div class="mt-10">
       <RegistrySearchBar />
+    </div>
+    <div class="mt-10">
+      <CustomAlert :visible="true" label="5 Plastic Credit registries found" />
     </div>
     <div class="mt-10">
       <RegistryCard card-data="" :key="item" v-for="item in 4" />
