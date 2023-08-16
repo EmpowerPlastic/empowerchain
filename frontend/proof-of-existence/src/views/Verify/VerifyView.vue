@@ -13,6 +13,7 @@ const isValid = ref<boolean>(false);
 const shownNoProofModal = ref<boolean>(false);
 const showAboutModal = ref<boolean>(false);
 const modalType = ref<ErrorModalType>(ErrorModalType.FILE);
+const activeTab = ref("File");
 
 const { createRPCQueryClient } = empowerchain.ClientFactory;
 //Methods
@@ -143,61 +144,65 @@ const closeAboutModal = () => {
     :modal-type="modalType"
   />
   <AboutModal :close-modal="closeAboutModal" v-show="showAboutModal" />
-  <img
-    src="../../assets/images/emp-astro-3.svg"
-    class="left-28 top-full sm:top-auto sm:left-auto sm:ml-[500px] w-32 absolute animate-bounce -m-12"
-  />
-  <div class="p-4 text-left bg-lightBlack rounded-lg sm:p-8 lg:w-[700px]">
-    <h5 class="mb-2 mt-3 text-2xl font-bold text-white text-title28">
+  <h5
+    class="hidden md:block mt-5 my-5 text-title28 text-left font-bold text-textPrimary"
+  >
+    Verify documents
+  </h5>
+  <div
+    class="p-4 text-left bg-bgPrimary rounded-sm md:p-8 lg:w-[700px] custom-shadow"
+  >
+    <h5
+      class="md:hidden mb-2 mt-3 text-center font-bold text-textPrimary text-title28"
+    >
       Verify documents
     </h5>
-    <div class="mt-3 p-4 w-30">
+    <div class="mt-3 w-30">
       <ul
-        class="flex flex-wrap text-center text-lightGreen border-gray-200 rounded-t-lg"
+        class="flex flex-wrap text-center text-textSecondary rounded-t-lg"
         id="defaultTab"
         data-tabs-toggle="#defaultTabContent"
         role="tablist"
       >
         <li>
           <button
-            id="file-tab"
-            data-tabs-target="#file"
-            type="button"
-            role="tab"
-            aria-controls="file"
-            aria-selected="true"
-            class="flex flex-col justify-center text-center px-6 text-title16 aria-selected:bg-lightWhite aria-selected:text-white rounded-t-lg h-9"
+            class="px-7 py-2 text-textSecondary cursor-pointer"
+            :class="{
+              'bg-bgTertiary bg-opacity-[0.06] !text-textPrimary rounded-t-lg':
+                activeTab === 'File',
+            }"
+            @click="activeTab = 'File'"
           >
             File
           </button>
         </li>
         <li>
           <button
-            id="text-tab"
-            data-tabs-target="#text"
-            type="button"
-            role="tab"
-            aria-controls="text"
-            aria-selected="false"
-            class="flex flex-col justify-center text-center px-6 text-title16 aria-selected:bg-lightWhite aria-selected:text-white rounded-t-lg h-9"
+            class="px-7 py-2 text-textSecondary cursor-pointer"
+            :class="{
+              'bg-bgTertiary bg-opacity-[0.06] !text-textPrimary rounded-t-lg':
+                activeTab === 'Text',
+            }"
+            @click="activeTab = 'Text'"
           >
             Text
           </button>
         </li>
       </ul>
-      <div id="defaultTabContent">
+      <div>
         <div
-          class="hidden md:p-1 border-t border-lightGray w-full"
+          v-if="activeTab === 'File'"
+          class="md:p-1 border-t border-bgTertiary border-opacity-[0.3] w-full"
           id="file"
           role="tabpanel"
           aria-labelledby="file-tab"
         >
-          <p class="mb-3 text-white text-title14 mt-2">
+          <p class="mb-3 text-textPrimary text-title14 mt-2">
             Select a file to verify if the file has a proof of existence on
             EmpowerChain.
             <a
               href="#"
-              class="inline-flex items-center font-medium text-lightGreen"
+              class="inline-flex items-center font-medium text-textSecondary"
               @click="openAboutModal"
               >Learn more.</a
             >
@@ -205,7 +210,9 @@ const closeAboutModal = () => {
             Drag and drop your document here, or choose a file. Your file will
             <b>not</b> be uploaded.
           </p>
-          <div class="w-full p-3 mt-7 rounded bg-lightGray">
+          <div
+            class="w-full p-3 mt-7 rounded-lg bg-textPrimary bg-opacity-[0.06]"
+          >
             <label class="cursor-pointer" for="file_input">
               <input
                 class="hidden"
@@ -213,15 +220,16 @@ const closeAboutModal = () => {
                 type="file"
                 @change="handleFileUpload"
               />
-              <div class="flex items-center">
+              <div class="flex flex-col md:flex-row-reverse items-center">
+                <span
+                  class="text-textPrimary text-title16 my-3 md:my-0 md:mb-0 text-left w-full"
+                  >{{ file ? file?.name : "Choose file" }}</span
+                >
                 <div
-                  class="flex justify-center p-1 rounded bg-lightGreen w-24 mr-4 text-white text-title16"
+                  class="flex w-full justify-center p-1 py-2 rounded-sm bg-bgSecondary md:w-[150px] md:mr-4 text-title16"
                 >
                   Browse
                 </div>
-                <span class="text-lightGray text-title16">{{
-                  file ? file?.name : "Choose file"
-                }}</span>
               </div>
             </label>
           </div>
@@ -229,24 +237,25 @@ const closeAboutModal = () => {
             <button
               :disabled="!file"
               @click="hashFile(file)"
-              class="bg-lightGreen mt-10 content-center p-1 px-9 rounded text-white text-title22 disabled:bg-lightGray disabled:text-gray"
+              class="bg-bgSecondary md:w-[200px] w-full mt-10 content-center p-1 px-9 rounded-sm text-textPrimary text-title22 disabled:opacity-[0.3]"
             >
               Verify
             </button>
           </div>
         </div>
         <div
-          class="hidden md:p-1 border-t border-lightGray"
+          v-if="activeTab === 'Text'"
+          class="md:p-1 border-t border-bgTertiary border-opacity-[0.3]"
           id="text"
           role="tabpanel"
           aria-labelledby="text-tab"
         >
-          <p class="mb-3 text-white text-title14 mt-2">
+          <p class="mb-3 text-textPrimary text-title14 mt-2">
             Input some text to verify if the text has a proof of existence on
             the EmpowerChain.
             <a
               href="#"
-              class="inline-flex items-center font-medium text-lightGreen"
+              class="inline-flex items-center font-medium text-textSecondary"
               @click="openAboutModal"
               >Learn more.</a
             >
@@ -254,13 +263,13 @@ const closeAboutModal = () => {
             You can input arbitrary plain text below to verify a proof of its
             existence.
           </p>
-          <div class="w-full p-3 mt-7 rounded bg-lightGray">
+          <div class="w-full p-3 mt-7 rounded-lg">
             <label class="cursor-pointer" for="file_input">
               <textarea
                 rows="3"
                 placeholder="Text"
                 v-model="inputString"
-                class="p-1 rounded bg-lightGray w-full mr-4 text-white text-title16 h-36 md:h-auto"
+                class="p-2 border-none rounded-lg bg-bgTertiary bg-opacity-[0.06] w-full mr-4 text-textPrimary text-title16 h-36 md:h-auto"
               />
             </label>
           </div>
@@ -268,7 +277,7 @@ const closeAboutModal = () => {
             <button
               :disabled="!inputString"
               @click="handleInputString"
-              class="bg-lightGreen mt-10 content-center p-1 px-9 rounded text-white text-title22 disabled:bg-lightGray disabled:text-gray"
+              class="bg-bgSecondary md:w-[200px] w-full mt-10 content-center p-1 rounded-sm text-textPrimary text-title22 disabled:opacity-[0.3]"
             >
               Verify
             </button>
