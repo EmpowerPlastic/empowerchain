@@ -22,8 +22,14 @@ const showSpinner = ref(true);
       Plastic Credit Registry
     </h1>
     <!--    Gallery-->
-    <ImageCarousel class="md:hidden my-5" image-array="" />
-    <ImageGallery class="hidden md:flex" image-array="" />
+    <ImageCarousel
+      class="md:hidden my-5"
+      :image-array="['https://dummyimage.com/16:9x1080/']"
+    />
+    <ImageGallery
+      class="hidden md:flex"
+      :image-array="['https://dummyimage.com/16:9x1080/']"
+    />
 
     <!--    Retired credits detail-->
     <div
@@ -51,7 +57,7 @@ const showSpinner = ref(true);
       <div
         class="mt-5 md:mt-0 md:w-[60%] md:ml-5 h-[330px] md:h-auto rounded-lg relative"
       >
-        <CustomGoogleMap locations="" />
+        <CustomGoogleMap :locations="[{ lat: 40.7322, lng: -74.004 }]" />
       </div>
     </div>
 
@@ -75,7 +81,7 @@ const showSpinner = ref(true);
       <ul class="pl-5">
         <li
           class="text-title14 text-greenPrimary underline"
-          v-for="file in []"
+          v-for="file in [{ name: 'Test', url: '' }]"
           :key="file.name"
         >
           <a target="_blank" :href="file.url">{{ file.name }}</a>
