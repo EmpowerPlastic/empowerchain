@@ -38,7 +38,7 @@ const dummyData = [
     <h1 class="text-title24 md:text-title38 text-white mb-5">
       Plastic Credit Registry
     </h1>
-    <div class="w-full h-[600px]">
+    <div class="w-full md:h-[600px] h-[400px]">
       <MapWithInfoWindow :map-data="dummyData" />
     </div>
     <div class="mt-10">
@@ -48,10 +48,19 @@ const dummyData = [
       <CustomAlert :visible="true" label="5 Plastic Credit registries found" />
     </div>
     <div class="mt-10">
-      <RegistryCard card-data="" :key="item" v-for="item in 4" />
+      <RegistryCard
+        :card-data="{
+          retirererName: 'test',
+          applicant: 'test',
+          region: 'test',
+          amount: 10,
+        }"
+        :key="item"
+        v-for="item in 4"
+      />
     </div>
     <div class="flex justify-center md:justify-end my-10">
-      <CustomPagination total="10" item-per-page="2" current-page="1" />
+      <CustomPagination :total="10" :item-per-page="2" :current-page="1" />
     </div>
   </div>
 </template>

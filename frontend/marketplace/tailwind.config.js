@@ -44,6 +44,7 @@ module.exports = {
         tabGray: "#3E3E3E",
         scrollButtonBackground: "rgba(255, 255, 255, 0.38)",
         certificateButton: "rgba(1, 1, 1, 0.06)",
+        mapWindowBackground: "rgba(0, 0, 0, 0.60)",
       },
       fontSize: {
         title32: "32px",

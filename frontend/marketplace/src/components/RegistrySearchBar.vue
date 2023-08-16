@@ -4,16 +4,6 @@ import SearchFilterSelect from "@/components/SearchFilterSelect.vue";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 
-export interface RegistrySearchBarProps {
-  filterValues?: {
-    retirerer: string[];
-    applicant: string[];
-    region: string[];
-    searchTerm: string;
-  };
-}
-
-const props = defineProps<RegistrySearchBarProps>();
 const filterValues = ref({
   retirerer: [],
   applicant: [],
@@ -33,6 +23,15 @@ const applicantData: any = useQuery(gql`
       nodes {
         id
         name
+      }
+    }
+  }
+`);
+const locationData: any = useQuery(gql`
+  query {
+    countries {
+      nodes {
+        id
       }
     }
   }
@@ -70,7 +69,7 @@ const applicantData: any = useQuery(gql`
           <p class="filter-subtitle">Applicant</p>
           <SearchFilterSelect
             select
-            :options="Array.from(new Set(locationData?.result.value?.countries?.nodes.map((item: any) => item.id)))"
+            :options="Array.from(new Set(applicantData?.result.value?.applicantData?.nodes.map((item: any)=>item.name)))"
             v-model="filterValues.applicant"
             placeholder="Select Applicant"
           />
@@ -78,7 +77,7 @@ const applicantData: any = useQuery(gql`
         <div>
           <p class="filter-subtitle">Region</p>
           <SearchFilterSelect
-            :options="Array.from(new Set(applicantData?.result.value?.applicantData?.nodes.map((item: any)=>item.name)))"
+            :options="Array.from(new Set(locationData?.result.value?.countries?.nodes.map((item: any) => item.id)))"
             v-model="filterValues.region"
             placeholder="Select Region"
           />
@@ -134,7 +133,7 @@ const applicantData: any = useQuery(gql`
       <div class="filter-box">
         <p class="filter-subtitle">Regions</p>
         <SearchFilterSelect
-          :options="Array.from(new Set(applicantData?.result.value?.applicantData?.nodes.map((item: any)=>item.name)))"
+          :options="Array.from(new Set(locationData?.result.value?.countries?.nodes.map((item: any) => item.id)))"
           v-model="filterValues.region"
           placeholder="Select Region"
         />

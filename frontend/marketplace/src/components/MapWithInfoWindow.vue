@@ -280,7 +280,7 @@ const onMarkerClick = (
     style="width: 100%; height: 100%; overflow: hidden"
     :center="{ lat: 0, lng: 0 }"
     :zoom="1.8"
-    :zoomControl="false"
+    :zoomControl="true"
     :scrollwheel="false"
     :streetViewControl="false"
     :fullscreenControl="false"
@@ -300,6 +300,7 @@ const onMarkerClick = (
       @click="onMarkerClick(point.location, index)"
     />
     <InfoWindow
+      class="px-0 py-0 p-1 mr-2"
       v-if="showInfo"
       :options="{
         position: mapData[selectedIndex]?.location,
@@ -307,8 +308,9 @@ const onMarkerClick = (
       :opened="showInfo"
       @closeclick="showInfo = false"
     >
-      <div class="w-[200px] h-[100px] p-1">
+      <div class="w-[200px] h-[120px] p-1">
         <Pie
+          class="bg-mapWindowBackground"
           :data="{
             labels: mapData[selectedIndex]?.chartData?.labels,
             datasets: mapData[selectedIndex]?.chartData?.data,
@@ -322,3 +324,15 @@ const onMarkerClick = (
     </InfoWindow>
   </GoogleMap>
 </template>
+<style>
+.gm-style .gm-style-iw-c {
+  background: rgba(0, 0, 0, 0.6) !important;
+}
+.gm-style .gm-style-iw-d {
+  background: rgba(0, 0, 0, 0.6) !important;
+  overflow: hidden !important;
+}
+.gm-style .gm-style-iw-tc::after {
+  background: rgba(0, 0, 0, 0.6) !important;
+}
+</style>
