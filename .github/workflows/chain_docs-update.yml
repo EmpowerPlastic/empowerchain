@@ -13,7 +13,7 @@ jobs:
     name: Update Swagger docs
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: earthly/actions/setup-earthly@v1
         with:
           version: v0.6.22
