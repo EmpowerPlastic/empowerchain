@@ -14,6 +14,25 @@ import { toast } from "vue3-toastify";
 
 const router = useRoute();
 
+const data = ref();
+const orderHistory = ref();
+const showSpinner = ref(true);
+const amount = ref(0);
+const denom = ref("");
+const owner = ref("");
+const auctionDetails = ref({
+  applicant: "",
+  location: [""],
+  material: [""],
+  volume: 0,
+  image: [""],
+  file: [{ url: "", name: "" }],
+  locationPointers: [{ lat: 0, lng: 0 }],
+  registrationDate: "",
+});
+const pricePerCreditDenom = ref("");
+const plasticType = ref("");
+
 const getDetailsList = (data: any) => {
   let applicantArray: string[] = [];
   let locationArray: string[] = [];
@@ -58,6 +77,8 @@ const getDetailsList = (data: any) => {
       index ===
       self.findIndex((o) => o.key === obj.key && o.value === obj.value)
   );
+  plasticType.value =
+    materialArray.find((item) => item.key === "plasticType")?.value || "";
   return {
     applicant: applicantArray[0],
     location: Array.from(new Set(locationArray)),
@@ -74,13 +95,6 @@ const copyToken = async (text: string) => {
   await navigator.clipboard.writeText(text);
   toast.success("Copied to clipboard");
 };
-const data = ref();
-const orderHistory = ref();
-const showSpinner = ref(true);
-const amount = ref(0);
-const denom = ref("");
-const owner = ref("");
-const auctionDetails = ref(getDetailsList(null));
 
 const getAuctionDetails = (id: string | string[]) => {
   let query = `query {
@@ -156,6 +170,8 @@ const getAuctionDetails = (id: string | string[]) => {
     auctionDetails.value = getDetailsList(
       value.marketplaceListings?.nodes[0].creditCollection.creditData.nodes
     );
+    pricePerCreditDenom.value =
+      value.marketplaceListings?.nodes[0].pricePerCreditDenom;
   });
 
   showSpinner.value = false;
@@ -209,7 +225,11 @@ onMounted(() => {
       ><span class="text-subTextGray">/ Auction Details</span>
     </p>
     <h1 class="text-title38">
-      {{ data?.result?.marketplaceListings?.nodes[0].denom }}
+      {{
+        data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData
+          ?.nodes[0].applicantDataByCreditDataId.nodes[0].name
+      }}
+      - {{ plasticType }}
     </h1>
     <!--    <p class="text-title18 text-subTextGray">Sri Lanka</p>-->
 
@@ -223,7 +243,7 @@ onMounted(() => {
     <!--    Buy Credits-->
     <BuyCredits
       :available-credits="`${data?.result?.marketplaceListings?.nodes[0].amount}/${data?.result?.marketplaceListings?.nodes[0].initialAmount}`"
-      :selected-coin="`${data?.result?.marketplaceListings?.nodes[0].pricePerCreditDenom}`"
+      :selected-coin="`${pricePerCreditDenom}`"
       :price-per-credit="
         data?.result?.marketplaceListings?.nodes[0].pricePerCreditAmount /
         1000000
@@ -249,7 +269,7 @@ onMounted(() => {
           :value="auctionDetails?.material"
           list
         />
-        <ProjectDetailContent label="Credits per kg" value="1" />
+        <ProjectDetailContent label="Kgs per credit" value="1" />
         <ProjectDetailContent
           label="Registration date"
           :value="auctionDetails?.registrationDate"

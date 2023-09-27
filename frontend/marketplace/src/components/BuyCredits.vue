@@ -29,13 +29,17 @@ watch(amount, (newVal) => {
 });
 
 watch(props, async (newVal) => {
-  coinFormatted.value = await formatDenom(newVal.selectedCoin);
+  if (newVal.selectedCoin) {
+    coinFormatted.value = await formatDenom(newVal.selectedCoin);
+  }
 });
 
 const coinsArray = ["Pay by invoice coming soon"];
 
 onMounted(async () => {
-  coinFormatted.value = await formatDenom(props.selectedCoin);
+  if (props.selectedCoin) {
+    coinFormatted.value = await formatDenom(props.selectedCoin);
+  }
   const { createRPCQueryClient } = empowerchain.ClientFactory;
   const rpcQueryClient = await createRPCQueryClient({
     rpcEndpoint: RPC_ENDPOINT,
