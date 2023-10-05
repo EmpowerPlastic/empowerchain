@@ -2,9 +2,6 @@ name: "Deploy Marketplace Frontend - mainnet"
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - 'frontend/marketplace/**'
 
 jobs:
   build:

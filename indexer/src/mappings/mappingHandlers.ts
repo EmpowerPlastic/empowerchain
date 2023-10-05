@@ -4,7 +4,7 @@ import {
 } from "@subql/types-cosmos";
 import fetch from "node-fetch";
 
-async function logRollbarError(error: Error, txHash: string): Promise<void> {
+async function logRollbarError(error: Error, txHash: string, blockHeight: number): Promise<void> {
   const request = await fetch("https://api.rollbar.com/api/1/item/", {
     method: "POST",
     headers: {
@@ -26,6 +26,7 @@ async function logRollbarError(error: Error, txHash: string): Promise<void> {
         },
         custom: {
           txHash: txHash,
+          blockHeight: blockHeight, 
         },
       }
     }),
@@ -75,7 +76,7 @@ export async function handleCreateListing(event: CosmosEvent): Promise<void> {
     });
     await marketplaceListing.save();
   } catch (e) {
-    await logRollbarError(e, event.tx.hash);
+    await logRollbarError(e, event.tx.hash, event.block.header.height);
     throw new Error("Error in handleCreateListing: " + e.message);
   }
 }
@@ -106,7 +107,7 @@ export async function handleUpdateListing(event: CosmosEvent): Promise<void> {
     marketplaceListing.pricePerCreditDenom = pricePerCreditDenom;
     await marketplaceListing.save();
   } catch (e) {
-    await logRollbarError(e, event.tx.hash);
+    await logRollbarError(e, event.tx.hash, event.block.header.height);
     throw new Error("Error in handleUpdateListing: " + e.message);
   }
 }
@@ -126,7 +127,7 @@ export async function handleCancelListing(event: CosmosEvent): Promise<void> {
 
     await MarketplaceListing.remove(`${listingOwner}-${denom}`);
   } catch (e) {
-    await logRollbarError(e, event.tx.hash);
+    await logRollbarError(e, event.tx.hash, event.block.header.height);
     throw new Error("Error in handleCancelListing: " + e.message);
   }
 }
@@ -168,7 +169,7 @@ export async function handleBuyCredits(event: CosmosEvent): Promise<void> {
       await marketplaceListing.save();
     }
   } catch (e) {
-    await logRollbarError(e, event.tx.hash);
+    await logRollbarError(e, event.tx.hash, event.block.header.height);
     throw new Error("Error in handleBuyCredits: " + e.message);
   }
 }
@@ -193,7 +194,7 @@ export async function handleWasmEvents(event: CosmosEvent): Promise<void> {
         break;
     }
   } catch (e) {
-    await logRollbarError(e, event.tx.hash);
+    await logRollbarError(e, event.tx.hash, event.block.header.height);
     throw new Error("Error in handleWasmEvents: " + e.message);
   }
 }
@@ -249,7 +250,7 @@ export async function handleTransferCredits(event: CosmosEvent): Promise<void> {
       await recipientBalance.save();
     }
   } catch (e) {
-    await logRollbarError(e, event.tx.hash);
+    await logRollbarError(e, event.tx.hash, event.block.header.height);
     throw new Error("Error in handleTransferCredits: " + e.message);
   }
 }
@@ -286,7 +287,7 @@ export async function handleRetiredCredits(event: CosmosEvent): Promise<void> {
     creditCollection.retiredAmount = creditCollection.retiredAmount + amount;
     await creditCollection.save();
   } catch (e) {
-    await logRollbarError(e, event.tx.hash);
+    await logRollbarError(e, event.tx.hash, event.block.header.height);
     throw new Error("Error in handleRetiredCredits: " + e.message);
   }
 }
@@ -338,7 +339,7 @@ export async function handleCreateCertificate(event: CosmosEvent): Promise<void>
       await handleOffsetCertificate(certificateId, owner, additionalData);
     }
   } catch (e) {
-    await logRollbarError(e, event.tx.hash);
+    await logRollbarError(e, event.tx.hash, event.block.header.height);
     throw new Error("Error in handleCreateCertificate: " + e.message);
   }
 }
@@ -392,8 +393,8 @@ export async function handleIssueCredits(event: CosmosEvent): Promise<void> {
       await handleCreditData(metadata, creditCollection.id, i.toString());
     }
   } catch (e) {
-    await logRollbarError(e, event.tx.hash);
-    throw new Error("Error in handleIssueCredits: " + e.message);
+    await logRollbarError(e, event.tx.hash, event.block.header.height);
+    // throw new Error("Error in handleIssueCredits: " + e.message);
   }
 }
 
