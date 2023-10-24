@@ -190,3 +190,44 @@ ibc-conformance-test:
         RUN ./interchaintest -matrix tests/e2e/interchaintest.json
     END
     SAVE ARTIFACT /root/.interchaintest/reports/* AS LOCAL build/interchaintest-reports/
+
+# TODO: Make all the URLs and network version (mainnet/testnet) into ARGS
+prep-genesis:
+    ARG VERSION=v1.0.0
+    RUN apt-get update -yq \
+        && apt-get install --no-install-recommends -yq \
+        curl tar wget clang pkg-config libssl-dev jq \
+        build-essential bsdmainutils git make ncdu gcc \
+        git jq chrony liblz4-tool unzip
+    RUN wget https://github.com/EmpowerPlastic/empowerchain/releases/download/${VERSION}/empowerd-${VERSION}-linux-amd64.zip
+    RUN unzip empowerd-${VERSION}-linux-amd64.zip
+    RUN ./empowerd init genesis-prepper --chain-id empowerchain-1 #TODO: USE ARG HERE
+    RUN echo '#!/bin/bash\n\
+        \n\
+        SNAP_RPC="https://empower-rpc.polkachu.com:443"\n\
+        PEER="074640d8f2bc981fd201badd19c5b6dba38e00be@65.108.238.219:17456"\n\
+        \n\
+        LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height)\n\
+        BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000))\n\
+        TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)\n\
+        \n\
+        echo SNAP_RPC: $SNAP_RPC\n\
+        echo LATEST_HEIGHT: $LATEST_HEIGHT\n\
+        echo BLOCK_HEIGHT: $BLOCK_HEIGHT\n\
+        echo TRUST_HASH: $TRUST_HASH\n\
+        echo PEER: $PEER\n\
+        \n\
+        sed -i.bak -E "s|^(enable[[:space:]]+=[[:space:]]+).*$|\\1true| ; \\\n\
+        s|^(rpc_servers[[:space:]]+=[[:space:]]+).*$|\\1\"$SNAP_RPC,$SNAP_RPC\"| ; \\\n\
+        s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\\1$BLOCK_HEIGHT| ; \\\n\
+        s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\\1\"$TRUST_HASH\"| ; \\\n\
+        s|^(persistent_peers[[:space:]]+=[[:space:]]+).*$|\\1\"$PEER\"|" $HOME/.empowerchain/config/config.toml' > state_sync.sh
+    RUN chmod 700 state_sync.sh
+    RUN ./state_sync.sh
+    RUN ./empowerd start > /dev/null 2>&1 & sleep 5; \
+        while [ "`./empowerd status | jq -r ".SyncInfo.catching_up"`" != "false" ]; do \
+            echo "Waiting to catch up, current block: $(./empowerd status | jq -r ".SyncInfo.latest_block_height")"; \
+            sleep 5; \
+        done
+    RUN ./empowerd export > exported-genesis.json
+    SAVE ARTIFACT exported-genesis.json AS LOCAL exported-genesis.json
