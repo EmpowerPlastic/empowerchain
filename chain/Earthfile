@@ -191,19 +191,24 @@ ibc-conformance-test:
     END
     SAVE ARTIFACT /root/.interchaintest/reports/* AS LOCAL build/interchaintest-reports/
 
-prep-genesis:
+node-base:
     ARG CURRENT_VERSION=v1.0.0 # TODO: Any way to get the correct version for mainnet, testnet?
-    ARG CHAIN_ID=circulus-1 #empowerchain-1
-    ARG STATE_SYNC_RPC=https://empower-testnet-rpc.polkachu.com:443 #https://empower-rpc.polkachu.com:443 # TODO: Switch to Empower's own STATE SYNC RPC
-    ARG STATE_SYNC_PEER=95ea7999e3ecd3fb7fd73fae70b3b29a6af24c8d@46.4.5.45:17456 #074640d8f2bc981fd201badd19c5b6dba38e00be@65.108.238.219:17456 # TODO: Switch to Empower's own state sync peer
     RUN apt-get update -yq \
         && apt-get install --no-install-recommends -yq \
         curl tar wget clang pkg-config libssl-dev jq \
         build-essential bsdmainutils git make ncdu gcc \
         git jq chrony liblz4-tool unzip
     RUN wget https://github.com/EmpowerPlastic/empowerchain/releases/download/${CURRENT_VERSION}/empowerd-${CURRENT_VERSION}-linux-amd64.zip
-    RUN unzip empowerd-${CURRENT_VERSION}-linux-amd64.zip
-    RUN ./empowerd init genesis-prepper --chain-id ${CHAIN_ID}
+    RUN unzip empowerd-${CURRENT_VERSION}-linux-amd64.zip -d /root/binaries
+    ENV PATH $PATH:/root/binaries
+
+prep-genesis:
+    ARG CURRENT_VERSION=v1.0.0 # TODO: Any way to get the correct version for mainnet, testnet?
+    ARG CHAIN_ID=circulus-1 #empowerchain-1
+    ARG STATE_SYNC_RPC=https://empower-testnet-rpc.polkachu.com:443 #https://empower-rpc.polkachu.com:443 # TODO: Switch to Empower's own STATE SYNC RPC
+    ARG STATE_SYNC_PEER=95ea7999e3ecd3fb7fd73fae70b3b29a6af24c8d@46.4.5.45:17456 #074640d8f2bc981fd201badd19c5b6dba38e00be@65.108.238.219:17456 # TODO: Switch to Empower's own state sync peer
+    FROM +node-base --CURRENT_VERSION=${CURRENT_VERSION}
+    RUN empowerd init genesis-prepper --chain-id ${CHAIN_ID}
     RUN echo '#!/bin/bash\n\
         \n\
         SNAP_RPC="${STATE_SYNC_RPC}"\n\
@@ -226,10 +231,28 @@ prep-genesis:
         s|^(persistent_peers[[:space:]]+=[[:space:]]+).*$|\\1\"$PEER\"|" $HOME/.empowerchain/config/config.toml' > state_sync.sh
     RUN chmod 700 state_sync.sh
     RUN ./state_sync.sh
-    RUN ./empowerd start > /dev/null 2>&1 & sleep 5; \
-        while [ "`./empowerd status | jq -r ".SyncInfo.catching_up"`" != "false" ]; do \
-            echo "Waiting to catch up, current block: $(./empowerd status | jq -r ".SyncInfo.latest_block_height")"; \
+    RUN empowerd start > /dev/null 2>&1 & sleep 5; \
+        while [ "`empowerd status | jq -r ".SyncInfo.catching_up"`" != "false" ]; do \
+            echo "Waiting to catch up, current block: $(empowerd status | jq -r ".SyncInfo.latest_block_height")"; \
             sleep 5; \
         done
-    RUN ./empowerd export > exported-genesis.json
+    RUN empowerd export > exported-genesis.json
     SAVE ARTIFACT exported-genesis.json AS LOCAL exported-genesis.json
+
+upgrade-test:
+    ARG CURRENT_VERSION=v1.0.0 # TODO: Any way to get the correct version for mainnet, testnet?
+    ARG VALPASS=passw0rd
+    ARG VALNAME=validator
+    ARG --required UPGRADE_NAME # TODO: Could this be parsed from CURRENT_VERSION if we keep a sane naming scheme?
+    FROM +node-base --CURRENT_VERSION=${CURRENT_VERSION}
+    COPY exported-genesis.json exported-genesis.json
+
+    RUN empowerd init ${VALNAME}
+    # Set up validator key
+    RUN { echo ${VALPASS}; echo ${VALPASS}; } | empowerd keys add ${VALNAME}
+
+        # Set up devnet genesis for new key
+    RUN echo ${VALPASS} | empowerd genesis single-validator ./exported-genesis ${VALNAME} $(jq -r .pub_key.value ~/.empowerchain/config/priv_validator_key.json)
+    RUN mv exported-genesis.json.generated ~/.empowerchain/config/genesis.json
+
+    RUN false
