@@ -191,7 +191,6 @@ ibc-conformance-test:
     END
     SAVE ARTIFACT /root/.interchaintest/reports/* AS LOCAL build/interchaintest-reports/
 
-# TODO: Make all the URLs and network version (mainnet/testnet) into ARGS
 prep-genesis:
     ARG CURRENT_VERSION=v1.0.0 # TODO: Any way to get the correct version for mainnet, testnet?
     ARG CHAIN_ID=circulus-1 #empowerchain-1

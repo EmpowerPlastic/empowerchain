@@ -15,7 +15,7 @@ jobs:
         with:
           version: 0.6.30
 
-      - run: earthly --ci +prep-genesis
+      - run: earthly --ci --no-cache --output +prep-genesis
         working-directory: ./chain
 
       - name: Archive genesis file
