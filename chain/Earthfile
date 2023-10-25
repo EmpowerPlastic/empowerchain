@@ -193,19 +193,22 @@ ibc-conformance-test:
 
 # TODO: Make all the URLs and network version (mainnet/testnet) into ARGS
 prep-genesis:
-    ARG VERSION=v1.0.0
+    ARG CURRENT_VERSION=v1.0.0 # TODO: Any way to get the correct version for mainnet, testnet?
+    ARG CHAIN_ID=circulus-1 #empowerchain-1
+    ARG STATE_SYNC_RPC=https://empower-testnet-rpc.polkachu.com:443 #https://empower-rpc.polkachu.com:443 # TODO: Switch to Empower's own STATE SYNC RPC
+    ARG STATE_SYNC_PEER=95ea7999e3ecd3fb7fd73fae70b3b29a6af24c8d@46.4.5.45:17456 #074640d8f2bc981fd201badd19c5b6dba38e00be@65.108.238.219:17456 # TODO: Switch to Empower's own state sync peer
     RUN apt-get update -yq \
         && apt-get install --no-install-recommends -yq \
         curl tar wget clang pkg-config libssl-dev jq \
         build-essential bsdmainutils git make ncdu gcc \
         git jq chrony liblz4-tool unzip
-    RUN wget https://github.com/EmpowerPlastic/empowerchain/releases/download/${VERSION}/empowerd-${VERSION}-linux-amd64.zip
-    RUN unzip empowerd-${VERSION}-linux-amd64.zip
-    RUN ./empowerd init genesis-prepper --chain-id empowerchain-1 #TODO: USE ARG HERE
+    RUN wget https://github.com/EmpowerPlastic/empowerchain/releases/download/${CURRENT_VERSION}/empowerd-${CURRENT_VERSION}-linux-amd64.zip
+    RUN unzip empowerd-${CURRENT_VERSION}-linux-amd64.zip
+    RUN ./empowerd init genesis-prepper --chain-id ${CHAIN_ID}
     RUN echo '#!/bin/bash\n\
         \n\
-        SNAP_RPC="https://empower-rpc.polkachu.com:443"\n\
-        PEER="074640d8f2bc981fd201badd19c5b6dba38e00be@65.108.238.219:17456"\n\
+        SNAP_RPC="${STATE_SYNC_RPC}"\n\
+        PEER="${STATE_SYNC_PEER}"\n\
         \n\
         LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height)\n\
         BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000))\n\
