@@ -51,6 +51,8 @@ Output:
 				return fmt.Errorf("failed to get pubkey: %w", err)
 			}
 
+			genDoc.Validators = []tmtypes.GenesisValidator{}
+
 			genesistools.UnmarshalGenesis(clientCtx, &genesisState, appState)
 			genesistools.SingleValidatorGenesisState(clientCtx, &genesisState, pubKey, args[2])
 			if len(args) == 4 {
