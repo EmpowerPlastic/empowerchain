@@ -300,3 +300,33 @@ type GenesisState struct {
 	ProofofexistenceGenesis proofofexistence.GenesisState
 	WasmGenesis             wasm.GenesisState
 }
+
+func GetModuleAccount(cdc codec.Codec, genesisState *GenesisState, moduleAccountName string) (authtypes.ModuleAccountI, bool) {
+	for _, accountAny := range genesisState.AuthGenesis.Accounts {
+		var account authtypes.AccountI
+		err := cdc.UnpackAny(accountAny, &account)
+		if err == nil {
+			moduleAccount, isModuleAccount := account.(authtypes.ModuleAccountI)
+			if isModuleAccount {
+				if moduleAccount.GetName() == moduleAccountName {
+					return moduleAccount, true
+				}
+			}
+		}
+	}
+	return nil, false
+}
+
+func GetBalanceOfAddress(genesisState *GenesisState, address string, denom string) (sdk.Coin, bool) {
+	for _, balance := range genesisState.BankGenesis.Balances {
+		if balance.Address == address {
+			for _, coin := range balance.Coins {
+				if coin.Denom == denom {
+					return coin, true
+				}
+			}
+		}
+	}
+
+	return sdk.Coin{}, false
+}

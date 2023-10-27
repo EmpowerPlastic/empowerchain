@@ -23,7 +23,7 @@ import (
 // SingleValidatorGenesisState sets the genesis state for the devnet
 func SingleValidatorGenesisState(ctx client.Context, genesisState *GenesisState, pubKey cryptotypes.PubKey, consensusPubKey string) {
 	// set distribution genesis state
-	SetDistributionSingleValidator(genesisState, pubKey)
+	SetDistributionSingleValidator(ctx.Codec, genesisState, pubKey)
 
 	// set staking genesis state
 	SetStakingSingleValidator(genesisState, pubKey, consensusPubKey)
@@ -110,10 +110,24 @@ func SetAuthBankSingleValidator(cdc codec.Codec, genesisState *GenesisState, pub
 }
 
 // SetDistributionSingleValidator sets the distribution genesis state for devnet.
-func SetDistributionSingleValidator(genesisState *GenesisState, pubKey cryptotypes.PubKey) {
+func SetDistributionSingleValidator(cdc codec.Codec, genesisState *GenesisState, pubKey cryptotypes.PubKey) {
 	valAddress := sdk.ValAddress(pubKey.Address()).String()
 	consAddress := sdk.GetConsAddress(pubKey)
 	accAddress := sdk.AccAddress(pubKey.Address()).String()
+
+	// Get distribution module and set community pool == distribution module balance (rewards are now removed, so this is to get the balance to add up correctly)
+	distModuleAccount, found := GetModuleAccount(cdc, genesisState, distrtypes.ModuleName)
+	if !found {
+		log.Panicf("%s module account not found", distrtypes.ModuleName)
+	}
+	distrModuleBalance, found := GetBalanceOfAddress(genesisState, distModuleAccount.GetAddress().String(), params.BaseCoinDenom)
+	if !found {
+		log.Panicf("%s distrModuleBalance not found", distrtypes.ModuleName)
+	}
+	genesisState.DistrGenesis.FeePool.CommunityPool = sdk.NewDecCoins(sdk.NewDecCoin(params.BaseCoinDenom, distrModuleBalance.Amount))
+
+	// Since we are removing all previous validators, we need to remove the slashing events to make event numbers add up correctly
+	genesisState.DistrGenesis.ValidatorSlashEvents = []distrtypes.ValidatorSlashEventRecord{}
 
 	genesisState.DistrGenesis.DelegatorStartingInfos = []distrtypes.DelegatorStartingInfoRecord{
 		{

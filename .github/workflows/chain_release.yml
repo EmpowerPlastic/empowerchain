@@ -29,6 +29,7 @@ jobs:
         working-directory: ./chain/build
       # TODO: 1. Generate release notes
       # TODO: 2. Build darwin + darwin arm version (maybe windows too)
+      # TODO: 3. Set prerelease to true if tag is not a full release
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
