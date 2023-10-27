@@ -117,14 +117,13 @@ func SetDistributionSingleValidator(cdc codec.Codec, genesisState *GenesisState,
 
 	// Get distribution module and set community pool == distribution module balance (rewards are now removed, so this is to get the balance to add up correctly)
 	distModuleAccount, found := GetModuleAccount(cdc, genesisState, distrtypes.ModuleName)
-	if !found {
-		log.Panicf("%s module account not found", distrtypes.ModuleName)
+	if found {
+		distrModuleBalance, found := GetBalanceOfAddress(genesisState, distModuleAccount.GetAddress().String(), params.BaseCoinDenom)
+		if !found {
+			log.Panicf("%s distrModuleBalance not found", distrtypes.ModuleName)
+		}
+		genesisState.DistrGenesis.FeePool.CommunityPool = sdk.NewDecCoins(sdk.NewDecCoin(params.BaseCoinDenom, distrModuleBalance.Amount))
 	}
-	distrModuleBalance, found := GetBalanceOfAddress(genesisState, distModuleAccount.GetAddress().String(), params.BaseCoinDenom)
-	if !found {
-		log.Panicf("%s distrModuleBalance not found", distrtypes.ModuleName)
-	}
-	genesisState.DistrGenesis.FeePool.CommunityPool = sdk.NewDecCoins(sdk.NewDecCoin(params.BaseCoinDenom, distrModuleBalance.Amount))
 
 	// Since we are removing all previous validators, we need to remove the slashing events to make event numbers add up correctly
 	genesisState.DistrGenesis.ValidatorSlashEvents = []distrtypes.ValidatorSlashEventRecord{}
