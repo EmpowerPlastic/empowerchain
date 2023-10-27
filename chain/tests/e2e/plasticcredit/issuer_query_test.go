@@ -1,6 +1,9 @@
 package e2e_test
 
 import (
+	"fmt"
+
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/gogoproto/proto"
 
@@ -23,7 +26,7 @@ func (s *E2ETestSuite) TestCmdQueryParams() {
 		s.Run(name, func() {
 			cmd := cli.CmdQueryParams()
 			clientCtx := val.ClientCtx
-			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, append(tc.args, fmt.Sprintf("--%s=json", flags.FlagOutput)))
 			s.Require().NoError(err)
 			var result plasticcredit.QueryParamsResponse
 			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &result))
@@ -68,7 +71,7 @@ func (s *E2ETestSuite) TestCmdQueryIssuer() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.CmdQueryIssuer()
-			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, tc.args)
+			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, fmt.Sprintf("--%s=json", flags.FlagOutput)))
 
 			if tc.expectedErr {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
@@ -115,7 +118,7 @@ func (s *E2ETestSuite) TestCmdQueryProject() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.CmdQueryProject()
-			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, tc.args)
+			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, fmt.Sprintf("--%s=json", flags.FlagOutput)))
 
 			if tc.expectedErr {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
@@ -161,7 +164,7 @@ func (s *E2ETestSuite) TestCmdQueryApplicant() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			cmd := cli.CmdQueryApplicant()
-			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, tc.args)
+			out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmd, append(tc.args, fmt.Sprintf("--%s=json", flags.FlagOutput)))
 
 			if tc.expectedErr {
 				s.Require().Contains(out.String(), tc.expectedErrMsg)

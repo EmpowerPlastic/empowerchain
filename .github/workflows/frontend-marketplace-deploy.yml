@@ -17,6 +17,20 @@ jobs:
 
       - run: npm ci && npm run build
         working-directory: ./frontend/marketplace
+        env:
+          VITE_API_ENDPOINT: "https://testnet.empowerchain.io:3000/"
+          VITE_HTTPS_FILE_URL: "https://testnet.empowerchain.io:8080/ipfs/"
+          VITE_MARKETPLACE_CONTRACT: "empower14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9sfg4umu"
+          VITE_CHAIN_ID: "circulus-1"
+          VITE_CHAIN_NAME: "Empowerchain Testnet"
+          VITE_RPC_ENDPOINT: "https://testnet.empowerchain.io:26659"
+          VITE_REST_ENDPOINT: "https://testnet.empowerchain.io:1319"
+          VITE_DEFAULT_CREDIT_TYPE: "PCRD"
+          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          VITE_REVISION_ID: ${{ github.sha }}
+          VITE_ENVIRONMENT: testnet
+          VITE_ROLLBAR_ACCESS_TOKEN: ${{ secrets.MARKETPLACE_ROLLBAR_ACCESS_TOKEN }}
+
 
       - uses: amondnet/vercel-action@v25
         with:

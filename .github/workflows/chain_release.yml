@@ -20,7 +20,7 @@ jobs:
         working-directory: ./chain
 
       - run: |
-          zip -q empowerd-${{ github.ref_name }}-linux-amd64.zip empowerd-${{ github.ref_name }}-linux-amd64 && rm empowerd-${{ github.ref_name }}-linux-amd64
+          mv empowerd-${{ github.ref_name }}-linux-amd64 empowerd && zip -q empowerd-${{ github.ref_name }}-linux-amd64.zip empowerd && rm empowerd
         working-directory: ./chain/build
 
       - uses: "marvinpinto/action-automatic-releases@latest"

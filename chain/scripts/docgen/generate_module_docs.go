@@ -34,7 +34,7 @@ func generateModuleDocs() {
 		// Create sidebar item for this module
 		moduleSidebarItems = append(moduleSidebarItems, VitepressSidebarItem{
 			Text: module,
-			Link: "/module-docs/" + module + ".md",
+			Link: "/references/module-docs/" + module + ".md",
 		})
 	}
 	fmt.Println("✅ Generated module docs")
