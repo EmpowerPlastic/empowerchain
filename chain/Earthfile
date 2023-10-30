@@ -254,5 +254,56 @@ upgrade-test:
         # Set up devnet genesis for new key
     RUN echo ${VALPASS} | empowerd genesis single-validator ./exported-genesis.json ${VALNAME} $(jq -r .pub_key.value ~/.empowerchain/config/priv_validator_key.json)
     RUN mv exported-genesis.json.generated ~/.empowerchain/config/genesis.json
+    RUN sed -i -e 's/"voting_period": "172800s"/"voting_period": "30s"/g' ~/.empowerchain/config/genesis.json
+
+    RUN empowerd start > /dev/null 2>&1 & sleep 10; \
+        while [ "`empowerd status | jq -r ".SyncInfo.catching_up"`" != "false" ]; do \
+            echo "Waiting to catch up, current block: $(empowerd status | jq -r ".SyncInfo.latest_block_height")"; \
+            sleep 5; \
+        done; \
+        sleep 10; \
+        UPGRADE_HEIGHT=$(($(empowerd status | jq -r ".SyncInfo.latest_block_height")+20)); \
+        echo "Upgrade prop for height $UPGRADE_HEIGHT"; \
+        echo "{\n\
+           \"messages\": [\n\
+            {\n\
+             \"@type\": \"/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade\",\n\
+             \"authority\": \"empower10d07y265gmmuvt4z0w9aw880jnsr700jxwhwvd\",\n\
+             \"plan\": {\n\
+              \"name\": \"${UPGRADE_NAME}\",\n\
+              \"time\": \"0001-01-01T00:00:00Z\",\n\
+              \"height\": \"${UPGRADE_HEIGHT}\",\n\
+              \"info\": \"${UPGRADE_NAME}\",\n\
+              \"upgraded_client_state\": null\n\
+             }\n\
+            }\n\
+           ],\n\
+           \"metadata\": \"ipfs://CID\",\n\
+           \"deposit\": \"2000000000umpwr\",\n\
+           \"title\": \"Test upgrade proposal\",\n\
+           \"summary\": \"Test upgrade proposal summary\"\n\
+                  }" > upgrade_proposal.json; \
+        echo ${VALPASS} | empowerd tx gov submit-proposal upgrade_proposal.json --from validator --yes --chain-id emp-devnet-1; \
+        sleep 5; \
+        PROP_ID=$(empowerd q gov proposals --reverse --limit 1 --output json | jq -r ".proposals[0].id"); \
+        echo "Voting on proposal $PROP_ID"; \
+        echo ${VALPASS} | empowerd tx gov vote ${PROP_ID} yes --from validator --yes --chain-id emp-devnet-1; \
+        sleep 30; \
+        GOV_RESULT=$(empowerd q gov proposal ${PROP_ID} --output json | jq -r ".status"); \
+        if [ "$GOV_RESULT" != "PROPOSAL_STATUS_PASSED" ]; then \
+          echo "Error: Proposal not passed: $GOV_RESULT"; \
+          exit 1; \
+        fi; \
+        while [ "`empowerd status | jq -r ".SyncInfo.latest_block_height"`" != ${UPGRADE_HEIGHT} ]; do \
+            echo "Waiting for upgrade height (${UPGRADE_HEIGHT}), current block: $(empowerd status | jq -r ".SyncInfo.latest_block_height")"; \
+            sleep 5; \
+        done; \
+
+    COPY +build-with-wasmvm/empowerd ./new_empowerd
+    COPY +build-with-wasmvm/libwasmvm.x86_64.so /usr/local/lib/libwasmvm.x86_64.so
+    COPY +build-with-wasmvm/libwasmvm.aarch64.so /usr/local/lib/libwasmvm.aarch64.so
+    ENV LD_LIBRARY_PATH=/usr/local/lib
+
+    # TODO: Next up: start with the new binary and let it run for a few blocks
 
     RUN false
