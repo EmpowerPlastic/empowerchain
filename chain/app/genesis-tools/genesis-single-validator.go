@@ -180,6 +180,8 @@ func SetStakingSingleValidator(genesisState *GenesisState, pubKey cryptotypes.Pu
 			Shares:           sdk.NewDec(900000000000),
 		},
 	}
+	genesisState.StakingGenesis.Redelegations = []stakingtypes.Redelegation{}
+	genesisState.StakingGenesis.UnbondingDelegations = []stakingtypes.UnbondingDelegation{}
 	genesisState.StakingGenesis.Exported = true
 	genesisState.StakingGenesis.LastTotalPower = sdk.NewInt(900000)
 	genesisState.StakingGenesis.LastValidatorPowers = []stakingtypes.LastValidatorPower{

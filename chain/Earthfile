@@ -179,7 +179,7 @@ devnet:
 interchaintest-prep:
     FROM golang:1.20-bullseye
     WORKDIR /interchaintest
-    GIT CLONE https://github.com/strangelove-ventures/interchaintest /interchaintest
+    GIT CLONE --branch v7 https://github.com/strangelove-ventures/interchaintest /interchaintest
     RUN make interchaintest
     SAVE ARTIFACT bin/interchaintest
 
