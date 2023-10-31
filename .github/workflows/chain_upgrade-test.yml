@@ -1,0 +1,25 @@
+name: "Test EmpowerChain Upgrade"
+
+on:
+  workflow_dispatch:
+  # TODO: Maybe do on a cron schedule, every week or something?
+
+jobs:
+  test-testnet-upgrade:
+    name: Test EmpowerChain Testnet Upgrade
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: earthly/actions-setup@v1
+        with:
+          version: 0.6.30
+
+      - name: Download a single artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: exported-testnet-genesis
+          path: chain
+
+      - run: earthly --ci --no-cache +upgrade-test --UPGRADE_NAME=v2 # Rely on defaults for other args/env vars
+        working-directory: ./chain
