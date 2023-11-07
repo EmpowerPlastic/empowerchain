@@ -2,11 +2,22 @@ name: "Test EmpowerChain Upgrade"
 
 on:
   workflow_dispatch:
+    inputs:
+      chain:
+        type: choice
+        description: "Used to get a correct name for the exported genesis file"
+        options:
+          - mainnet
+          - testnet
+      current_version:
+        description: "Current version of the binary"
+      upgrade_name:
+        description: "Name of the upgrade"
   # TODO: Maybe do on a cron schedule, every week or something?
 
 jobs:
-  test-testnet-upgrade:
-    name: Test EmpowerChain Testnet Upgrade
+  test-upgrade:
+    name: Test EmpowerChain Upgrade
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -18,8 +29,8 @@ jobs:
       - name: Download a single artifact
         uses: actions/download-artifact@v3
         with:
-          name: exported-testnet-genesis
+          name: exported-${{ github.event.inputs.chain }}-genesis
           path: chain
 
-      - run: earthly --ci --no-cache +upgrade-test --UPGRADE_NAME=v2 # Rely on defaults for other args/env vars
+      - run: earthly --ci --no-cache +upgrade-test --CURRENT_VERSION=${{ github.event.inputs.current_version }} --UPGRADE_NAME=${{ github.event.inputs.upgrade_name }}
         working-directory: ./chain
