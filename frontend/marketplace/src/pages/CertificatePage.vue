@@ -3,10 +3,7 @@ import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
 import { useRoute } from "vue-router";
-import CustomGoogleMap from "@/components/CustomGoogleMap.vue";
 import { getDetailsList } from "@/utils/utils";
-import auctionCard from "@/assets/auctionCard.png";
-import { GOOGLE_MAPS_API_KEY } from "@/config/config";
 import { jsPDF } from "jspdf";
 import { PDFGenerator } from "@/pdfGenerator/pdfGenerator";
 import { toast } from "vue3-toastify";
@@ -73,7 +70,8 @@ const getCreditData = (denom: string) => {
       ${query}
     `
   );
-
+  console.log(creditData.value);
+  
   creditData.value = result?.value?.creditCollections?.nodes[0];
 
   if (result?.value?.creditCollections?.nodes[0]?.creditData?.nodes) {
@@ -115,7 +113,6 @@ const generatePDF = async () => {
         creditData?.value?.creditData?.nodes[0]?.applicantDataByCreditDataId
           ?.nodes[0]?.description,
       images: dataFormatted.value?.image,
-      map: generateMapImageUrl(dataFormatted.value?.locationPointers),
     };
     const results = await PDFGenerator(PDFData);
     if (results?.success) {
@@ -127,17 +124,6 @@ const generatePDF = async () => {
   }
 };
 
-const generateMapImageUrl = (locations: { lat: number; lng: number }[]) => {
-  const baseUrl = "https://maps.googleapis.com/maps/api/staticmap?";
-  const apiKey = GOOGLE_MAPS_API_KEY;
-
-  const markers = locations
-    .map((location) => `markers=${location.lat},${location.lng}`)
-    .join("&");
-
-  const url = `${baseUrl}size=1500x300&maptype=roadmap&${markers}&key=${apiKey}`;
-  return url;
-};
 </script>
 <template>
   <div class="flex flex-row justify-end p-5 min-w-[21cm]">
@@ -150,89 +136,234 @@ const generateMapImageUrl = (locations: { lat: number; lng: number }[]) => {
       Download Certificate
     </button>
   </div>
-  <page size="A4" id="pdfContent">
-    <div class="h-full bg-certificate-image bg-cover p-5">
-      <div class="flex flex-row justify-between">
-        <a href="https://www.empower.eco/" target="_blank">
-          <img src="../assets/cerificateVerified.svg" />
-        </a>
-        <img class="mt-3 h-9" src="../assets/logo.png" />
-      </div>
-
-      <div class="flex flex-col mt-[90px] items-center font-Inter text-black">
-        <p
-          class="text-title38 font-bold max-w-[700px] text-ellipsis whitespace-nowrap overflow-hidden"
-        >
-          {{ certificateData?.retiringEntityName }}
-        </p>
-        <p class="text-title38 font-bold mt-[10px]">
-          {{ dataFormatted?.volume }}kg
-        </p>
-        <div class="flex w-full mt-7 px-[80px] flex-row justify-between">
-          <div>
-            <p class="text-title16 font-semibold">Material</p>
-            <div class="columns-1 gap-10 h-[80px]">
-              <ul class="list-disc">
-                <li
-                  class="text-title14 mt-[5px] leading-[15px]"
-                  v-for="material in dataFormatted?.material"
-                  :key="material"
-                >
-                  {{ material?.value }}
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div>
-            <p class="text-title16 font-semibold">CREDIT type</p>
-            <p class="text-title16 mt-[2px]">{{ creditData?.creditType }}</p>
-          </div>
-        </div>
-
-        <div class="mt-10 flex flex-col items-center">
-          <p class="text-title16 font-semibold">Project Information</p>
-          <p
-            class="text-title12 text-center mt-3 h-[70px] text-ellipsis line-clamp-4"
-          >
-            {{
-              creditData?.creditData?.nodes[0]?.applicantDataByCreditDataId
-                ?.nodes[0]?.description
-            }}
-          </p>
-        </div>
-
-        <div class="flex w-full flex-row mt-[55px] justify-between px-2">
-          <img
-            :key="item"
-            class="h-[145px] w-[230px] rounded-sm"
-            :src="dataFormatted?.image[index] || auctionCard"
-            v-for="(item, index) in 3"
-          />
-        </div>
-
-        <div class="flex flex-row w-full mt-5 justify-between">
-          <div class="w-[500px] h-[225px]">
-            <CustomGoogleMap :locations="dataFormatted?.locationPointers" />
-          </div>
-          <div class="flex flex-col w-[240px] items-center mt-[80px]">
-            <div class="flex flex-col items-center">
-              <img src="../assets/certificateLogo.svg" />
-              <img class="mt-4" src="../assets/certificateLogoTitle.svg" />
-            </div>
-          </div>
-        </div>
-      </div>
+  <page size="A4" id="pdfContent" class="page1">
+    <div class="wasteBox">
+      <img src="../assets/wastePick.jpg" alt="">
     </div>
+    <div class="innerBox1">
+
+      <img src="../assets/leaf1.png" alt="" class="leaf1">
+        <div class="certificateBox">
+          <div class="plasticCreditText">
+            <h1>plastic credit</h1>
+          </div>
+          <h1 class="certificateText">certificate</h1>
+        </div> 
+        
+        <div class="horizontal-line"></div>
+
+        <div class="nameBox">
+        </div>
+
+        <h2 class="presented">PROUDLY PRESENTED TO</h2>
+        <h1 class="namePage1">John Doe</h1>
+        <div class="horizontal-line2"></div>
+        <h2 class="presented">FOR OFFSETTING</h2>
+        <p class="weight">750 kg</p>
+        <h2 class="presented">OF</h2>
+        <p class="weight">OCEAN BOUND PLASTIC</p>
+
+        <div class="logoBox">
+          <img src="../assets/circular.png" alt="">
+        </div>
+    </div>
+    <img src="../assets/leaf2.png" alt="" class="leaf2">
+    <img src="../assets/leaf4.png" alt="" class="leaf4">
+    <img src="../assets/leaf3.png" alt="" class="leaf3">
+    <img src="../assets/leaf5.png" alt="" class="leaf5">
+    <img src="../assets/leaf6.png" alt="" class="leaf6">
+  </page>
+
+  <page size="A4" class="page2">
+      <div class="innerBox2">
+
+      </div>
   </page>
 </template>
 <style scoped>
 page {
-  background: white;
+  background: #32393C;
   display: block;
   margin: 0.5cm auto;
   box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
 }
-page[size="A4"] {
-  @apply w-[21cm] h-[29.7cm];
+.page1[size="A4"] {
+  position: relative;
+  overflow: hidden;
+  @apply w-[29.7cm] h-[21cm];
 }
+
+.page2[size="A4"] {
+  @apply w-[21cm] h-[29.7cm];
+  padding: 40px;
+}
+
+.innerBox1 {
+  z-index: 2;
+  display: flex;
+  position: relative;
+  background-color: white;
+  height: 712px;
+  width: 766px;
+  top: 40px;
+  left: 317px;
+  align-items: center;
+  flex-direction: column;
+  padding: 30px;
+}
+
+.wasteBox{
+  position: absolute;
+  background-color: green;
+  height: 100%;
+  width: 280px;
+  left: 37px;
+  z-index: 1;
+}
+
+.wasteBox img {
+  height: 100%;
+  width: auto;
+}
+
+.certificateBox {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Open Sans';
+  align-items: center;
+}
+
+.leaf1 {
+  position: absolute;
+  left: 233px;
+  top: 37px;
+  height: 34px;
+  width: auto;
+}
+
+.leaf2 {
+  position: absolute;
+  left: 415px;
+  bottom: -10px;
+  height: 65px;
+  width: auto;
+  z-index: 2;
+}
+.leaf3 {
+  position: absolute;
+  right: 20px;
+  top: 0px;
+  height: 76px;
+  width: auto;
+  z-index: 3;
+}
+.leaf4 {
+  position: absolute;
+  left: 319px;
+  bottom: 0px;
+  height: 113px;
+  width: auto;
+  z-index: 2;
+}
+
+.leaf5 {
+  position: absolute;
+  right: 0px;
+  top: 39px;
+  height: 113px;
+  width: auto;
+  z-index: 2;
+}
+
+.leaf6 {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  height: 70px;
+  width: auto;
+  z-index: 2;
+}
+.plasticCreditText {
+  font-size: 30px;
+  font-weight: 700;
+  color: #206948;
+  margin-bottom: 50px;
+}
+
+.certificateText {
+  position: absolute;
+  top: 60px;
+  font-family: 'Open Sans';
+  font-size: 50px;
+  font-weight: 700;
+  color: #232323;
+}
+
+.horizontal-line {
+  height: 5px;
+  width: 60px; 
+  background-color: black;
+  margin-top: 10px;
+  margin-bottom: 80px; 
+}
+
+.horizontal-line2 {
+  height: 3px;
+  width: 500px; 
+  background-color: #232323; 
+  margin-bottom: 20px;
+
+}
+
+.nameBox {
+  position: absolute;
+  justify-content: center;
+  display: flex;
+  width: 806px;
+  top: 190px;
+  left: 0px;
+  bottom: 190px;
+  padding: 30px;
+  background-color: #DBE7D6;
+  z-index: -1;
+}
+
+.presented {
+  font-family: 'Inter';
+  font-size: 18px;
+  font-weight: 400;
+  color: #231F20;
+  letter-spacing: 3px;
+}
+
+.weight {
+  font-family: 'Open Sans';
+  font-size: 20px;
+  font-weight: 700;
+  color: #206A49;
+  margin: 5px 5px;
+}
+
+.namePage1 {
+  font-family: 'Open Sans';
+  font-size: 60px;
+  font-weight: 700;
+  color: #58B947;
+}
+
+.logoBox {
+  margin-top: auto;
+  height: 140px;
+  width: auto;
+}
+.logoBox img {
+  height: 100%;
+  width: auto;
+}
+.innerBox2 {
+  position: relative;
+  background-color: white;
+  height: 100%;
+}
+
 </style>
