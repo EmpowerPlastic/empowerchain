@@ -1,12 +1,24 @@
 <script setup lang="ts">
 import { toast } from "vue3-toastify";
+import { defineEmits } from 'vue';
 
 export interface CreditCardProps {
   cardData: any;
 }
-defineProps<CreditCardProps>();
-const showInfoToast = () => {
-  toast.info("Coming soon!");
+
+// Define the expected properties from the parent component
+const props = defineProps<CreditCardProps>();
+
+// Define the events that this component can emit
+const emit = defineEmits(['viewCertificate']);
+
+// Function to emit the 'viewCertificate' event
+const viewCertificate = () => {
+  if (props.cardData?.id) {
+    emit('viewCertificate', props.cardData.id);
+  } else {
+    toast.error('Certificate ID not found');
+  }
 };
 </script>
 <template>
@@ -34,7 +46,7 @@ const showInfoToast = () => {
             {{ cardData?.denom }}
           </p>
           <div>
-            <button class="btn certificate-button" @click="showInfoToast">
+            <button class="btn certificate-button" @click="viewCertificate">
               View certificate
             </button>
           </div>
@@ -59,7 +71,7 @@ const showInfoToast = () => {
       </div>
 
       <div class="grid grid-col-1 gap-6 p-5">
-        <button class="btn certificate-button" @click="showInfoToast">
+        <button class="btn certificate-button" @click="viewCertificate">
           View certificate
         </button>
       </div>

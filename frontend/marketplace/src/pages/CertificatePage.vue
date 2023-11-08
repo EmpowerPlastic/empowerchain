@@ -5,6 +5,7 @@ import { onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import { getDetailsList } from "@/utils/utils";
 import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 import { PDFGenerator } from "@/pdfGenerator/pdfGenerator";
 import { toast } from "vue3-toastify";
 
@@ -17,6 +18,7 @@ const loading = ref(true);
 
 onMounted(() => {
   document.body.style.backgroundColor = "#ffff";
+  queryNow();
 });
 onBeforeUnmount(() => {
   document.body.style.backgroundColor = "";
@@ -34,6 +36,7 @@ const getCreditData = (denom: string) => {
       creditType
       creditData{
         nodes{
+          id
           mediaFiles{
             nodes{
               name
@@ -70,7 +73,7 @@ const getCreditData = (denom: string) => {
       ${query}
     `
   );
-  console.log(creditData.value);
+  console.log(result?.value?.creditCollections?.nodes[0]?.creditData?.nodes[0].eventData);
   
   creditData.value = result?.value?.creditCollections?.nodes[0];
 
@@ -82,45 +85,78 @@ const getCreditData = (denom: string) => {
   }
 };
 
-watchEffect(() => {
-  const query = `query{
-  creditOffsetCertificate(id:"${router.params?.id}"){
-    nodeId
-    denom
-    retiringEntityName
-    walletId
-  }
-}`;
-  const { result } = useQuery(
-    gql`
-      ${query}
-    `
-  );
-  certificateData.value = result?.value?.creditOffsetCertificate;
-  if (result?.value?.creditOffsetCertificate?.denom) {
-    getCreditData(result.value.creditOffsetCertificate.denom);
-  }
-});
+const queryNow = () => {
+  const query = gql`
+    query GetCreditOffsetCertificate($id: String!) {
+      creditOffsetCertificates(filter: { id: { equalTo: $id } }) {
+        nodes {
+          id
+          nodeId
+          denom
+          retiringEntityName
+          walletId
+          amount
+        }
+      }
+    }
+  `;
+
+  const { result, loading, error } = useQuery(query, {
+    id: `${router.params?.id}`,
+  });
+
+  watchEffect(() => {
+    if (result.value) {
+      certificateData.value = result.value.creditOffsetCertificates.nodes[0];
+      console.log(certificateData.value);
+      console.log(result);
+      getCreditData(result.value.creditOffsetCertificates.nodes[0].denom);
+    }
+    if (error.value) {
+      console.error("Error fetching credit offset certificate:", error.value);
+    }
+  });
+};
 
 const generatePDF = async () => {
-  try {
-    const PDFData = {
-      title: certificateData.value?.retiringEntityName,
-      volume: dataFormatted.value?.volume,
-      material: dataFormatted.value?.material,
-      credit: creditData?.value?.creditType,
-      projectInfo:
-        creditData?.value?.creditData?.nodes[0]?.applicantDataByCreditDataId
-          ?.nodes[0]?.description,
-      images: dataFormatted.value?.image,
-    };
-    const results = await PDFGenerator(PDFData);
-    if (results?.success) {
-      toast.success("Certificate downloaded successfully");
-    }
-  } catch (e) {
-    console.error(e);
-    toast.error("Something went wrong");
+  if (!certificateData.value || !dataFormatted.value) {
+    toast.error("No data available to generate the PDF");
+    return;
+  }
+
+  // Create a new instance of jsPDF in landscape orientation
+  const doc = new jsPDF({
+    orientation: 'landscape',
+    unit: 'px',
+    format: 'a4',
+  });
+
+  // Element with the content of your first page
+  let contentPage1 = document.getElementById('pdfContent');
+  if (contentPage1) {
+    // Use html2canvas and jsPDF to capture the content
+    html2canvas(contentPage1, { scale: 2 }).then(canvas => {
+      // Add the first page
+      doc.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, doc.internal.pageSize.getWidth(), doc.internal.pageSize.getHeight());
+      // After the first page is added, insert the second page in portrait orientation
+      doc.addPage('a4', 'portrait');
+
+      // Element with the content of your second page
+      let contentPage2 = document.getElementById('pdfContent2');
+      if (contentPage2) {
+        html2canvas(contentPage2, { scale: 2 }).then(canvas => {
+          // Add the second page
+          doc.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, doc.internal.pageSize.getWidth(), doc.internal.pageSize.getHeight());
+          // Save the PDF after adding the second page
+          doc.save('certificate.pdf');
+          toast.success("Certificate downloaded successfully");
+        });
+      } else {
+        toast.error("Failed to find the content for the second page of the PDF");
+      }
+    });
+  } else {
+    toast.error("Failed to find the content for the first page of the PDF");
   }
 };
 
@@ -138,7 +174,7 @@ const generatePDF = async () => {
   </div>
   <page size="A4" id="pdfContent" class="page1">
     <div class="wasteBox">
-      <img src="../assets/wastePick.jpg" alt="">
+      
     </div>
     <div class="innerBox1">
 
@@ -156,15 +192,16 @@ const generatePDF = async () => {
         </div>
 
         <h2 class="presented">PROUDLY PRESENTED TO</h2>
-        <h1 class="namePage1">John Doe</h1>
+        <h1 class="namePage1" v-if="certificateData">{{ certificateData.retiringEntityName }}</h1>
+        <h1 v-else>Loading</h1>
         <div class="horizontal-line2"></div>
         <h2 class="presented">FOR OFFSETTING</h2>
-        <p class="weight">750 kg</p>
+        <p class="weight" v-if="certificateData">{{ certificateData.amount + " KG" }}</p>
         <h2 class="presented">OF</h2>
         <p class="weight">OCEAN BOUND PLASTIC</p>
 
         <div class="logoBox">
-          <img src="../assets/circular.png" alt="">
+          <img src="../assets/circular.svg" alt="">
         </div>
     </div>
     <img src="../assets/leaf2.png" alt="" class="leaf2">
@@ -174,10 +211,41 @@ const generatePDF = async () => {
     <img src="../assets/leaf6.png" alt="" class="leaf6">
   </page>
 
-  <page size="A4" class="page2">
+  <page size="A4" id="pdfContent2" class="page2">
       <div class="innerBox2">
+        <img src="../assets/leaf1.png" alt="" class="leaf7">
+        <div class="titleBoxPage2">
+          <h1>
+            plastic credit
+            <span class="highlight">certificate</span>
+            <span class="detail"> details</span>
+          </h1>
+        </div>
+        <div class="horizontal-line3"></div>
+        <div class="infoBox">
+          <p class="certificateHolder">Name of Certificate Holder: <span v-if="certificateData">{{ certificateData.retiringEntityName  }}</span></p>
 
+          <p class="textBox">This certificate, referred in the client contract as scope certificate covers the following products <br>
+              and units which complies with the <span>Ocean Bound Plastic Collection Organization</span></p>
+
+          <p class="certificateHolder">Certified OBP products</p>
+          <table class="certificateTable">
+            <tr class="tableTitle">
+              <th>OBP Cat</th>
+              <th>OBP Source</th>
+              <th>Material</th>
+            </tr>
+            <tr>
+              <td>Potential CR OBP</td>
+              <td>OBP within 50km from the Shoreline and 100m into the sea of low tide limits</td>
+              <td>Dry / Clean, Urban land litter, PET, Mixed colors</td>
+            </tr>
+            <!-- More rows as needed -->
+          </table>
+
+        </div>
       </div>
+      <img src="../assets/leaf3.png" class="leaf8" alt="">
   </page>
 </template>
 <style scoped>
@@ -192,12 +260,6 @@ page {
   overflow: hidden;
   @apply w-[29.7cm] h-[21cm];
 }
-
-.page2[size="A4"] {
-  @apply w-[21cm] h-[29.7cm];
-  padding: 40px;
-}
-
 .innerBox1 {
   z-index: 2;
   display: flex;
@@ -219,11 +281,9 @@ page {
   width: 280px;
   left: 37px;
   z-index: 1;
-}
-
-.wasteBox img {
-  height: 100%;
-  width: auto;
+  background: linear-gradient(rgba(0, 0, 0, 0.30), rgba(0, 0, 0, 0.30)), url(../assets/wastePick.png);
+  background-size: cover;
+  opacity: 90%;
 }
 
 .certificateBox {
@@ -312,7 +372,6 @@ page {
   width: 500px; 
   background-color: #232323; 
   margin-bottom: 20px;
-
 }
 
 .nameBox {
@@ -360,10 +419,111 @@ page {
   height: 100%;
   width: auto;
 }
+
+
+
+
+.page2[size="A4"] {
+  @apply w-[21cm] h-[29.7cm];
+  padding: 40px;
+}
 .innerBox2 {
+  display: flex;
+  flex-direction: column;
   position: relative;
   background-color: white;
   height: 100%;
 }
 
+.leaf7 {
+  position: absolute;
+  left: 100px;
+  top: 33px;
+  height: 33px;
+  width: auto;
+  z-index: 2;
+} 
+
+.titleBoxPage2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.titleBoxPage2 h1 {
+  display: flex; 
+  flex-wrap: wrap;
+  align-items: baseline; 
+  font-size: 27px;
+  gap: 0.5rem;
+  color: #206948
+}
+
+.titleBoxPage2 .highlight {
+  font-family: 'Open Sans';
+  font-weight: 700;
+  color: #232323;
+}
+
+.titleBoxPage2 .detail {
+  color: #232323; 
+}
+
+.horizontal-line3 {
+  margin-left: auto;
+  margin-right: auto;
+  height: 5px;
+  width: 60px; 
+  background-color: black;
+  margin-top: 10px;
+  margin-bottom: 30px; 
+}
+
+.infoBox {
+  padding-left: 25px;
+  padding-right: 25px;
+}
+
+.certificateHolder {
+  font-family: 'Open Sans';
+  font-size: 18px;
+  font-weight: 700;
+  color: #206A49;
+  margin-bottom: 20px;
+}
+
+.certificateHolder span {
+  color: #232323;
+}
+
+.textBox {
+  font-family: 'Open Sans';
+  font-size:13px;
+  font-weight: 400;
+  color: #232323;
+  margin-bottom: 20px;
+}
+
+.textBox span {
+  font-weight: bold;
+}
+
+.certificateTable {
+  border-top: solid 1px #7EC242;
+  border-bottom: solid 1px #7EC242;
+}
+
+.tableTitle {
+  border-bottom: solid 1px #7EC242;
+}
+
+.leaf8 {
+  position: relative;
+  right: 0px;
+  bottom: 0px;
+  height: 70px;
+  width: auto;
+  z-index: 2;
+}
 </style>

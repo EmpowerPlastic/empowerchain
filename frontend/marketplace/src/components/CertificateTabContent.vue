@@ -9,12 +9,19 @@ import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import CustomAlert from "@/components/CustomAlert.vue";
 import { walletConnected, getWallet } from "@/utils/wallet-utils";
+import { useRouter } from 'vue-router';
 
 const pageNumber = ref(1);
 const itemsPerPage = ref(5);
 const searchTerm = ref("");
 const data = ref();
 const showSpinner = ref(true);
+const router = useRouter();
+
+const viewCertificate = (certificateId: string) => {
+  router.push({ name: 'CertificatePage', params: { id: certificateId } });
+};
+
 
 const handlePageChange = () => {
   getCertificatesData();
@@ -46,6 +53,7 @@ const getCertificatesData = async () => {
     nodes {
       amount
       denom
+      id
     }
   }
   }
@@ -92,7 +100,7 @@ onMounted(() => {
         v-for="certificate in data?.result?.creditOffsetCertificates?.nodes"
         :key="certificate.id"
       >
-        <CertificateCard :card-data="certificate" />
+        <CertificateCard :card-data="certificate" @viewCertificate="viewCertificate" />
       </div>
       <div class="flex justify-center md:justify-end my-10">
         <CustomPagination
