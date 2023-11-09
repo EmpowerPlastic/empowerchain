@@ -15,6 +15,16 @@ const certificateData = ref();
 const creditData = ref();
 const dataFormatted = ref();
 const loading = ref(true);
+const materialData = ref();
+const eventData = ref();
+const materialValuesString = ref('');
+const plastciValuesString = ref('');
+const locations = ref([]);
+const mediaFileUrls = ref([]);
+const binaryFilesUrls = ref([]);
+const collectionAmount = ref(0);
+const issuanceDate = ref('');
+const applicantData = ref('');
 
 onMounted(() => {
   document.body.style.backgroundColor = "#ffff";
@@ -34,10 +44,19 @@ const getCreditData = (denom: string) => {
       id
       denom
       creditType
+      activeAmount
+      retiredAmount
+      issuanceDate
       creditData{
         nodes{
           id
           mediaFiles{
+            nodes{
+              name
+              url
+            }
+          }
+          binaryFiles{
             nodes{
               name
               url
@@ -55,6 +74,8 @@ const getCreditData = (denom: string) => {
               longitude
               amount
               magnitude
+              country
+              registrationDate
             }
           }
           applicantDataByCreditDataId{
@@ -73,18 +94,103 @@ const getCreditData = (denom: string) => {
       ${query}
     `
   );
-  console.log(result?.value?.creditCollections?.nodes[0]?.creditData?.nodes[0].eventData);
+  console.log(result?.value?.creditCollections);
   
-  creditData.value = result?.value?.creditCollections?.nodes[0];
+  console.log(result?.value?.creditCollections?.nodes[0]?.creditData?.nodes[0].eventData);
+ 
+  watchEffect(() => {
+  if (result.value?.creditCollections?.nodes?.length) {
+    const eventDataNodes = result.value.creditCollections.nodes[0]?.creditData?.nodes[0]?.eventData?.nodes;
+    const creditDataNode = result.value.creditCollections.nodes[0]?.creditData?.nodes[0];
 
-  if (result?.value?.creditCollections?.nodes[0]?.creditData?.nodes) {
-    dataFormatted.value = getDetailsList(
-      result?.value?.creditCollections?.nodes[0]?.creditData?.nodes
-    );
+    const creditCollectionsNode = result.value.creditCollections.nodes[0];
+
+    if(creditCollectionsNode) {
+      collectionAmount.value = Number(creditCollectionsNode.activeAmount) + Number(creditCollectionsNode.retiredAmount);
+      issuanceDate.value = creditCollectionsNode.issuanceDate.substring(0, 10);
+    }
+
+    if (creditDataNode) {
+      // Map over binaryFiles nodes to get all URLs and names
+      binaryFilesUrls.value = creditDataNode.binaryFiles.nodes.map(binaryFileNode => {
+        return {
+          name: binaryFileNode.name || "N/A",
+          url: binaryFileNode.url || "N/A",
+        };
+      });
+      // Map over mediaFiles nodes to get all URLs and names
+      mediaFileUrls.value = creditDataNode.mediaFiles.nodes.map(mediaFileNode => {
+        return {
+          name: mediaFileNode.name || "N/A",
+          url: mediaFileNode.url || "N/A",
+        };
+      });
+      applicantData.value = creditDataNode.applicantDataByCreditDataId.nodes[0].name;
+    }
+
+    if (eventDataNodes && eventDataNodes.length) {
+      // Assign the first event data node to eventData.value
+      eventData.value = eventDataNodes[0];
+      
+      locations.value = eventDataNodes.reduce((unique, eventNode) => {
+        // Check if the location already exists based on longitude and latitude
+        const duplicate = unique.find(location => 
+          location.longitude === eventNode.longitude && location.latitude === eventNode.latitude
+        );
+
+        // If it's not a duplicate, add it to the accumulator array
+        if (!duplicate) {
+          unique.push({
+            country: eventNode.country || "N/A",
+            longitude: eventNode.longitude != null ? eventNode.longitude : "N/A",
+            latitude: eventNode.latitude != null ? eventNode.latitude : "N/A",
+          });
+        }
+        
+        return unique; // Return the accumulated array
+      }, []); // Start with an empty array
+    
+      // Process and join all material values
+      const materialValuesSet = new Set(
+        eventDataNodes.map(eventNode =>
+          eventNode.material.nodes
+            .filter(material => material.key !== 'kilo') // Filter out 'kilo' key
+            .map(material => material.value)
+        ).flat()
+      );
+
+      const plastciValuesSet = new Set(
+        eventDataNodes.map(eventNode =>
+          eventNode.material.nodes
+            .filter(material => material.key == 'plasticType') // Filter out 'kilo' key
+            .map(material => material.value)
+        ).flat()
+      );
+      
+      plastciValuesString.value = Array.from(plastciValuesSet).join(', ');
+      // Convert the Set back to an array and join it into a string
+      materialValuesString.value = Array.from(materialValuesSet).join(', ');
+
+      console.log(materialValuesString);
+      console.log(plastciValuesString);
+      
+      
+      // Assign the first material node to materialData.value for whatever purpose you intended to use it
+      materialData.value = eventDataNodes[0].material.nodes[0];
+    }
+    // Set the rest of the data
+    creditData.value = result.value.creditCollections.nodes[0];
+    if (creditData.value?.creditData?.nodes) {
+      dataFormatted.value = getDetailsList(
+        creditData.value.creditData.nodes
+      );
+    }
     loading.value = false;
   }
-};
+});
 
+};
+  
 const queryNow = () => {
   const query = gql`
     query GetCreditOffsetCertificate($id: String!) {
@@ -94,6 +200,7 @@ const queryNow = () => {
           nodeId
           denom
           retiringEntityName
+          retiringEntityAdditionalData
           walletId
           amount
         }
@@ -198,7 +305,7 @@ const generatePDF = async () => {
         <h2 class="presented">FOR OFFSETTING</h2>
         <p class="weight" v-if="certificateData">{{ certificateData.amount + " KG" }}</p>
         <h2 class="presented">OF</h2>
-        <p class="weight">OCEAN BOUND PLASTIC</p>
+        <p class="weight" v-if="plastciValuesString">{{ plastciValuesString }}</p>
 
         <div class="logoBox">
           <img src="../assets/circular.svg" alt="">
@@ -223,30 +330,109 @@ const generatePDF = async () => {
         </div>
         <div class="horizontal-line3"></div>
         <div class="infoBox">
-          <p class="certificateHolder">Name of Certificate Holder: <span v-if="certificateData">{{ certificateData.retiringEntityName  }}</span></p>
+          <p class="certificateHodler">Name of Certificate Holder: <span v-if="certificateData">{{ certificateData.retiringEntityName  }}</span></p>
 
-          <p class="textBox">This certificate, referred in the client contract as scope certificate covers the following products <br>
-              and units which complies with the <span>Ocean Bound Plastic Collection Organization</span></p>
-
-          <p class="certificateHolder">Certified OBP products</p>
+          <p class="certificateHodler">Credit Information</p>
           <table class="certificateTable">
             <tr class="tableTitle">
-              <th>OBP Cat</th>
-              <th>OBP Source</th>
+              <th>Amount</th>
+              <th>ID</th>
               <th>Material</th>
             </tr>
             <tr>
-              <td>Potential CR OBP</td>
-              <td>OBP within 50km from the Shoreline and 100m into the sea of low tide limits</td>
-              <td>Dry / Clean, Urban land litter, PET, Mixed colors</td>
+              <td v-if="certificateData">{{ certificateData.amount + " KG" }}</td>
+              <td v-if="creditData">{{ creditData.id}}</td>
+              <td v-if="materialValuesString">{{ materialValuesString }}</td>
+              
+            </tr>
+            <!-- More rows as needed -->
+          </table>
+          
+          <p class="certificateHodler">Materials</p>
+          <table class="certificateTable">
+            <tr class="tableTitle">
+              <th>Plastic Type</th>
+              <th>Shape/Granularity</th>
+              <th>Condition</th>
+              <th>Color</th>
+            </tr>
+            <tr>
+              <td v-if="certificateData">{{ certificateData.amount + " KG" }}</td>
+              <td v-if="creditData">{{ creditData.id}}</td>
+              <td v-if="materialValuesString">{{ materialValuesString }}</td>
+              
             </tr>
             <!-- More rows as needed -->
           </table>
 
+          <p class="certificateHodler">Location Information</p>
+          <table class="certificateTable">
+            <tr class="tableTitle">
+              <th>Country</th>
+              <th>Longitude</th>
+              <th>Latitude</th>
+            </tr>
+            <tr v-for="(location, index) in locations" :key="index">
+              <td>{{ location.country }}</td>
+              <td>{{ location.longitude }}</td>
+              <td>{{ location.latitude }}</td>
+            </tr>
+
+            <!-- More rows as needed -->
+          </table>
+
+          <p class="certificateHodler">Photos</p>
+            <table class="certificateTable">
+              <tr class="tableTitle">
+                <th>Name</th>
+                <th>URL</th>
+              </tr>
+              <!-- Use v-for to create a row for each media file entry -->
+              <tr v-for="(mediaFile, index) in mediaFileUrls" :key="`media-${index}`">
+                <td>{{ mediaFile.name }}</td>
+                <td><a :href="mediaFile.url" target="_blank">{{ mediaFile.url }}</a></td>
+              </tr>
+            </table>
+
+
+            <p class="certificateHodler">Documents</p>
+              <table class="certificateTable">
+                <tr class="tableTitle">
+                  <th>Name</th>
+                  <th>URL</th>
+                </tr>
+                <!-- Use v-for to create a row for each binary file entry -->
+                <tr v-for="(binaryFile, index) in binaryFilesUrls" :key="`binary-${index}`">
+                  <td>{{ binaryFile.name }}</td>
+                  <td><a :href="binaryFile.url" target="_blank">{{ binaryFile.url }}</a></td>
+                </tr>
+              </table>
+
+
+
+          <p class="certificateHodler">Collection Information</p>
+          <table class="certificateTable">
+            <tr class="tableTitle">
+              <th>Amount</th>
+              <th>Organization</th>
+              <th>Issuance Date</th>
+            </tr>
+            <tr>
+              <td>{{ collectionAmount + " KG"}}</td>
+              <td>{{ applicantData }}</td>
+              <td>{{ issuanceDate }}</td>
+            </tr>
+            <!-- More rows as needed -->
+          </table>
         </div>
       </div>
       <img src="../assets/leaf3.png" class="leaf8" alt="">
-  </page>
+      <img src="../assets/leaf9.svg" class="leaf9" alt="">
+      <img src="../assets/leaf10.svg" class="leaf10" alt="">
+      <img src="../assets/leaf11.svg" class="leaf11" alt="">
+      <img src="../assets/leaf12.svg" class="leaf12" alt="">
+      <img src="../assets/leaf13.svg" class="leaf13" alt="">
+    </page>
 </template>
 <style scoped>
 page {
@@ -420,12 +606,10 @@ page {
   width: auto;
 }
 
-
-
-
 .page2[size="A4"] {
   @apply w-[21cm] h-[29.7cm];
   padding: 40px;
+  position: relative;
 }
 .innerBox2 {
   display: flex;
@@ -485,33 +669,33 @@ page {
   padding-right: 25px;
 }
 
-.certificateHolder {
+.certificateHodler {
   font-family: 'Open Sans';
   font-size: 18px;
   font-weight: 700;
   color: #206A49;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
-.certificateHolder span {
+.certificateHodler span {
   color: #232323;
 }
-
-.textBox {
-  font-family: 'Open Sans';
-  font-size:13px;
-  font-weight: 400;
-  color: #232323;
-  margin-bottom: 20px;
-}
-
 .textBox span {
   font-weight: bold;
 }
 
 .certificateTable {
+  display: table;
+  width: 100%;
+  text-align: center;
   border-top: solid 1px #7EC242;
   border-bottom: solid 1px #7EC242;
+  margin-bottom: 20px;
+}
+
+.certificateTable td {
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .tableTitle {
@@ -519,11 +703,60 @@ page {
 }
 
 .leaf8 {
-  position: relative;
-  right: 0px;
-  bottom: 0px;
+  position: absolute;
+  top: 0px;
+  right: 30px;
   height: 70px;
   width: auto;
   z-index: 2;
+  overflow: hidden;
 }
+.leaf9 {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  height: 50px;
+  width: auto;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.leaf10 {
+  position: absolute;
+  top: 10px;
+  right: 0px;
+  height: 120px;
+  width: auto;
+  z-index: 2;
+  overflow: hidden;
+}
+.leaf11 {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  height: 90px;
+  width: auto;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.leaf12 {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 120px;
+  width: auto;
+  z-index: 2;
+  overflow: hidden;
+}
+.leaf13 {
+  position: absolute;
+  top: 0px;
+  left: 30px;
+  height: 30px;
+  width: auto;
+  z-index: 2;
+  overflow: hidden;
+}
+
 </style>
