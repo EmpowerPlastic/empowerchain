@@ -26,9 +26,10 @@ jobs:
         with:
           version: 0.6.30
 
-      - name: Download a single artifact
-        uses: actions/download-artifact@v3
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
         with:
+          workflow: chain_genesis-export.yml
           name: exported-${{ github.event.inputs.chain }}-genesis
           path: chain
 

@@ -204,8 +204,6 @@ node-base:
     RUN chmod +x /root/binaries/empowerd
     ENV PATH $PATH:/root/binaries
 
-# earthly +prep-genesis --CURRENT_VERSION=v1.0.1-rc1 --CHAIN_ID=empowerchain-1 --STATE_SYNC_RPC=https://empower-rpc.polkachu.com:443 --STATE_SYNC_PEER=074640d8f2bc981fd201badd19c5b6dba38e00be@65.108.238.219:17456
-# earthly +prep-genesis --CURRENT_VERSION=v1.0.1-rc1 --CHAIN_ID=circulus-1  --STATE_SYNC_RPC=https://empower-testnet-rpc.polkachu.com:443 --STATE_SYNC_PEER=95ea7999e3ecd3fb7fd73fae70b3b29a6af24c8d@46.4.5.45:17456
 prep-genesis:
     ARG --required CURRENT_VERSION
     ARG --required CHAIN_ID
