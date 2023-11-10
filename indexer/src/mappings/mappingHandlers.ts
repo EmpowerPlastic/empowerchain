@@ -1,8 +1,8 @@
-import { CreditCollection, EventData, MaterialData, MetadataUri, MediaFile, BinaryFile, ApplicantData, WebReference, CreditData, CreateListingWasmEvent, MarketplaceListing, BuyCreditsWasmEvent, UpdateListingWasmEvent, CancelListingWasmEvent, Country, Organization, Wallet, CreditBalance, TransferedCreditsEvent, RetiredCreditsEvent, Certificate, CreditOffsetCertificate } from "../types";
 import {
   CosmosEvent,
 } from "@subql/types-cosmos";
 import fetch from "node-fetch";
+import { ApplicantData, BinaryFile, BuyCreditsWasmEvent, CancelListingWasmEvent, Certificate, Country, CreateListingWasmEvent, CreditBalance, CreditCollection, CreditData, CreditOffsetCertificate, EventData, MarketplaceListing, MaterialData, MediaFile, MetadataUri, Organization, RetiredCreditsEvent, TransferedCreditsEvent, UpdateListingWasmEvent, Wallet, WebReference } from "../types";
 
 async function logRollbarError(error: Error, txHash: string, blockHeight: number): Promise<void> {
   const request = await fetch("https://api.rollbar.com/api/1/item/", {
@@ -274,6 +274,7 @@ export async function handleRetiredCredits(event: CosmosEvent): Promise<void> {
       owner: owner,
       amount: amount,
       creditCollectionId: denom,
+      timestamp: new Date(event.block.header.time.toISOString()),
     });
     await retiredCreditsEvent.save();
 

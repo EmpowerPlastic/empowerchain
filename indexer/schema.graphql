@@ -88,6 +88,7 @@ type RetiredCreditsEvent @entity {
   creditCollection: CreditCollection!
   owner: String!
   amount: BigInt!
+  timestamp: Date!
 }
 
 type CreateListingWasmEvent @entity {
