@@ -1,0 +1,62 @@
+name: "Test EmpowerChain Upgrade"
+
+on:
+  workflow_dispatch:
+    inputs:
+      chain:
+        type: choice
+        description: "Used to get a correct name for the exported genesis file"
+        options:
+          - mainnet
+          - testnet
+      chain_id:
+        description: "Chain ID"
+      state_sync_rpc:
+        description: "State sync rpc"
+      state_sync_peer:
+        description: "State sync peer"
+      current_version:
+        description: "Current version of the binary"
+      upgrade_name:
+        description: "Name of the upgrade"
+  # TODO: Maybe do on a cron schedule, every week or something?
+  # TODO: Potentially allow for getting some of these values from secrets, especially if we run it as a cron schedule
+
+jobs:
+  export-genesis:
+    name: Export EmpowerChain Genesis
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: earthly/actions-setup@v1
+        with:
+          version: 0.6.30
+
+      - run: earthly --ci --no-cache --output +prep-genesis --CHAIN_ID=${{ github.event.inputs.chain_id }}  --STATE_SYNC_RPC=${{ github.event.inputs.state_sync_rpc }} --STATE_SYNC_PEER=${{ github.event.inputs.state_sync_peer }} --CURRENT_VERSION=${{ github.event.inputs.current_version }}
+        working-directory: ./chain
+
+      - name: Archive genesis file
+        uses: actions/upload-artifact@v3
+        with:
+          name: exported-${{ github.event.inputs.chain }}-genesis
+          path: chain/exported-genesis.json
+  test-upgrade:
+    name: Test EmpowerChain Upgrade
+    needs: [export-genesis]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: earthly/actions-setup@v1
+        with:
+          version: 0.6.30
+
+      - name: Download a single artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: exported-${{ github.event.inputs.chain }}-genesis
+          path: chain
+
+      - run: earthly --ci --no-cache +upgrade-test --CURRENT_VERSION=${{ github.event.inputs.current_version }} --UPGRADE_NAME=${{ github.event.inputs.upgrade_name }}
+        working-directory: ./chain

@@ -191,46 +191,43 @@ ibc-conformance-test:
     END
     SAVE ARTIFACT /root/.interchaintest/reports/* AS LOCAL build/interchaintest-reports/
 
-# TODO: Make all the URLs and network version (mainnet/testnet) into ARGS
-prep-genesis:
-    ARG CURRENT_VERSION=v1.0.0 # TODO: Any way to get the correct version for mainnet, testnet?
-    ARG CHAIN_ID=circulus-1 #empowerchain-1
-    ARG STATE_SYNC_RPC=https://empower-testnet-rpc.polkachu.com:443 #https://empower-rpc.polkachu.com:443 # TODO: Switch to Empower's own STATE SYNC RPC
-    ARG STATE_SYNC_PEER=95ea7999e3ecd3fb7fd73fae70b3b29a6af24c8d@46.4.5.45:17456 #074640d8f2bc981fd201badd19c5b6dba38e00be@65.108.238.219:17456 # TODO: Switch to Empower's own state sync peer
+node-base:
+    ARG --required CURRENT_VERSION
     RUN apt-get update -yq \
         && apt-get install --no-install-recommends -yq \
         curl tar wget clang pkg-config libssl-dev jq \
         build-essential bsdmainutils git make ncdu gcc \
         git jq chrony liblz4-tool unzip
     RUN wget https://github.com/EmpowerPlastic/empowerchain/releases/download/${CURRENT_VERSION}/empowerd-${CURRENT_VERSION}-linux-amd64.zip
-    RUN unzip empowerd-${CURRENT_VERSION}-linux-amd64.zip
-    RUN ./empowerd init genesis-prepper --chain-id ${CHAIN_ID}
-    RUN echo '#!/bin/bash\n\
-        \n\
-        SNAP_RPC="${STATE_SYNC_RPC}"\n\
-        PEER="${STATE_SYNC_PEER}"\n\
-        \n\
-        LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height)\n\
-        BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000))\n\
-        TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)\n\
-        \n\
-        echo SNAP_RPC: $SNAP_RPC\n\
-        echo LATEST_HEIGHT: $LATEST_HEIGHT\n\
-        echo BLOCK_HEIGHT: $BLOCK_HEIGHT\n\
-        echo TRUST_HASH: $TRUST_HASH\n\
-        echo PEER: $PEER\n\
-        \n\
-        sed -i.bak -E "s|^(enable[[:space:]]+=[[:space:]]+).*$|\\1true| ; \\\n\
-        s|^(rpc_servers[[:space:]]+=[[:space:]]+).*$|\\1\"$SNAP_RPC,$SNAP_RPC\"| ; \\\n\
-        s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\\1$BLOCK_HEIGHT| ; \\\n\
-        s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\\1\"$TRUST_HASH\"| ; \\\n\
-        s|^(persistent_peers[[:space:]]+=[[:space:]]+).*$|\\1\"$PEER\"|" $HOME/.empowerchain/config/config.toml' > state_sync.sh
-    RUN chmod 700 state_sync.sh
-    RUN ./state_sync.sh
-    RUN ./empowerd start > /dev/null 2>&1 & sleep 5; \
-        while [ "`./empowerd status | jq -r ".SyncInfo.catching_up"`" != "false" ]; do \
-            echo "Waiting to catch up, current block: $(./empowerd status | jq -r ".SyncInfo.latest_block_height")"; \
-            sleep 5; \
-        done
-    RUN ./empowerd export > exported-genesis.json
+    RUN mkdir -p /root/binaries
+    RUN unzip -p empowerd-${CURRENT_VERSION}-linux-amd64.zip > /root/binaries/empowerd
+    RUN chmod +x /root/binaries/empowerd
+    ENV PATH $PATH:/root/binaries
+
+prep-genesis:
+    ARG --required CURRENT_VERSION
+    ARG --required CHAIN_ID
+    ARG --required STATE_SYNC_RPC
+    ARG --required STATE_SYNC_PEER
+    FROM +node-base --CURRENT_VERSION=${CURRENT_VERSION}
+    COPY scripts/upgrade-test/state_sync.sh state_sync.sh
+    COPY scripts/upgrade-test/start_and_catch_up.sh start_and_catch_up.sh
+    RUN empowerd init genesis-prepper --chain-id ${CHAIN_ID}
+    RUN ./state_sync.sh ${STATE_SYNC_RPC} ${STATE_SYNC_PEER}
+    RUN ./start_and_catch_up.sh
+    RUN empowerd export > exported-genesis.json
     SAVE ARTIFACT exported-genesis.json AS LOCAL exported-genesis.json
+
+upgrade-test:
+    ARG --required CURRENT_VERSION
+    ARG --required UPGRADE_NAME # Need to match the actual upgrade name in app.go. If there is not upgrade or the name is wrong, this will fail
+    FROM +node-base --CURRENT_VERSION=${CURRENT_VERSION}
+    COPY scripts/upgrade-test/upgrade.sh upgrade.sh
+    COPY exported-genesis.json exported-genesis.json
+    COPY +build-with-wasmvm/empowerd ./new_empowerd
+    COPY +build-with-wasmvm/libwasmvm.x86_64.so /usr/local/lib/libwasmvm.x86_64.so
+    COPY +build-with-wasmvm/libwasmvm.aarch64.so /usr/local/lib/libwasmvm.aarch64.so
+    ENV LD_LIBRARY_PATH=/usr/local/lib
+
+    RUN ./upgrade.sh ${UPGRADE_NAME}
+
