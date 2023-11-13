@@ -8,6 +8,6 @@ const { isLoading } = useHandleSignInCallback(() => {
 </script>
 <template>
   <div class="h-[30vh] w-full flex">
-    <CustomSpinner visible="isLoading" />
+    <CustomSpinner :visible="isLoading" />
   </div>
 </template>
