@@ -10,7 +10,7 @@ use crate::state::ADMIN;
 #[entry_point]
 pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> Result<Response, ContractError> {
     match msg {
-        ExecuteMsg::CreateListing { denom, number_of_credits, price_per_credit } => execute_create_listing(deps, env, info, denom, number_of_credits, price_per_credit),
+        ExecuteMsg::CreateListing { denom, number_of_credits, price_per_credit, operator } => execute_create_listing(deps, env, info, denom, number_of_credits, price_per_credit, operator),
         ExecuteMsg::BuyCredits { owner, denom, number_of_credits_to_buy } => execute_buy_credits(deps, env, info, owner, denom, number_of_credits_to_buy),
         ExecuteMsg::UpdateListing { denom, number_of_credits, price_per_credit } => execute_update_listing(deps, env, info, denom, number_of_credits, price_per_credit),
         ExecuteMsg::CancelListing { denom } => execute_cancel_listing(deps, env, info, denom),
@@ -25,6 +25,7 @@ pub fn execute_create_listing(
     denom: String,
     number_of_credits: Uint64,
     price_per_credit: Coin,
+    operator: Option<Addr>,
 ) -> Result<Response, ContractError> {
     if number_of_credits.is_zero() {
         return Err(ContractError::ZeroCredits {});
@@ -43,6 +44,7 @@ pub fn execute_create_listing(
         denom: denom.clone(),
         number_of_credits,
         price_per_credit: price_per_credit.clone(),
+        operator,
     };
 
     LISTINGS.save(deps.storage, (info.sender.clone(), denom.clone()), listing)?;
@@ -336,6 +338,7 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 },
+                operator: None,
             };
 
             let res = execute(deps.as_mut(), mock_env(), info.clone(), msg).unwrap();
@@ -367,11 +370,42 @@ mod tests {
                 denom: "token".to_string(),
                 amount: Uint128::from(1337u128),
             });
+            assert_eq!(listing.operator, None);
 
             let all_listings = LISTINGS.range(deps.as_ref().storage, None, None, Order::Ascending)
                 .map(|item| item.unwrap())
                 .collect::<Vec<((Addr, String), Listing)>>();
             assert_eq!(all_listings.len(), 1);
+        }
+
+        #[test]
+        fn test_create_listing_with_operator() {
+            let mut deps = mock_dependencies();
+            let info = mock_info("creator", &coins(2, "token"));
+            let operator = mock_info("operator", &[]);
+            instantiate(deps.as_mut(), mock_env(), info.clone(), InstantiateMsg { admin: info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+
+            let msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+                operator: Some(operator.sender.clone()),
+            };
+
+            execute(deps.as_mut(), mock_env(), info.clone(), msg).unwrap();
+
+            let listing = LISTINGS.load(deps.as_ref().storage, (info.sender.clone(), "pcrd".to_string())).unwrap();
+            assert_eq!(listing.owner, info.sender);
+            assert_eq!(listing.denom, "pcrd");
+            assert_eq!(listing.number_of_credits, Uint64::from(42u64));
+            assert_eq!(listing.price_per_credit, Coin {
+                denom: "token".to_string(),
+                amount: Uint128::from(1337u128),
+            });
+            assert_eq!(listing.operator, Some(operator.sender.clone()));
         }
 
         #[test]
@@ -389,6 +423,7 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 },
+                operator: None,
             };
 
             execute(deps.as_mut(), mock_env(), info.clone(), msg.clone()).unwrap();
@@ -414,6 +449,7 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 },
+                operator: None,
             };
 
             let err = execute(deps.as_mut(), mock_env(), info.clone(), msg).unwrap_err();
@@ -438,6 +474,7 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(0u128),
                 },
+                operator: None,
             };
 
             let err = execute(deps.as_mut(), mock_env(), info.clone(), msg).unwrap_err();
@@ -462,6 +499,7 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 },
+                operator: None,
             };
 
             execute(deps.as_mut(), mock_env(), info.clone(), msg.clone()).unwrap();
@@ -504,6 +542,7 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 },
+                operator: None,
             };
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
@@ -558,6 +597,7 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 },
+                operator: None,
             };
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
@@ -608,6 +648,7 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 },
+                operator: None,
             };
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
@@ -664,6 +705,7 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 },
+                operator: None,
             };
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
@@ -680,6 +722,37 @@ mod tests {
         }
 
         #[test]
+        fn test_update_listing_operator_should_fail() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            let operator = mock_info("operator", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+                operator: Some(operator.sender.clone()),
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let update_listing_msg = ExecuteMsg::UpdateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(1337u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(42u128),
+                },
+            };
+            let err = execute(deps.as_mut(), mock_env(), operator, update_listing_msg).unwrap_err();
+            assert_eq!(err, ContractError::ListingNotFound {});
+        }
+
+
+        #[test]
         fn test_update_listing_zero_price() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
@@ -692,6 +765,7 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 },
+                operator: None,
             };
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
@@ -720,6 +794,7 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 },
+                operator: None,
             };
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
@@ -760,6 +835,7 @@ mod tests {
                     denom: "umpwr".to_string(),
                     amount: Uint128::from(2u128),
                 },
+                operator: None,
             };
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
@@ -820,6 +896,7 @@ mod tests {
                     denom: "umpwr".to_string(),
                     amount: Uint128::from(1000u128),
                 },
+                operator: None,
             };
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
@@ -890,6 +967,7 @@ mod tests {
                     denom: "umpwr".to_string(),
                     amount: Uint128::from(3u128),
                 },
+                operator: None,
             };
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
@@ -936,6 +1014,7 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 },
+                operator: None,
             };
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
@@ -962,6 +1041,7 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(2u128),
                 },
+                operator: None,
             };
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
@@ -988,6 +1068,7 @@ mod tests {
                     denom: "umpwr".to_string(),
                     amount: Uint128::from(2u128),
                 },
+                operator: None,
             };
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
@@ -1014,6 +1095,7 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 },
+                operator: None,
             };
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
 
@@ -1052,6 +1134,7 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 },
+                operator: None,
             };
 
             let res = execute(deps.as_mut(), mock_env(), creator_info.clone(), msg).unwrap();
@@ -1106,6 +1189,7 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 },
+                operator: None,
             };
             let owner = creator_info.sender.clone();
             execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
@@ -1118,6 +1202,56 @@ mod tests {
             let listing = LISTINGS.load(deps.as_ref().storage, (owner, "pcrd".to_string())).map_err(|_| ContractError::ListingNotFound {});
             assert_eq!(listing.unwrap_err(), ContractError::ListingNotFound {});
             let err = execute(deps.as_mut(), mock_env(), creator_info.clone(), cancel_listing_msg).unwrap_err();
+            assert_eq!(err, ContractError::ListingNotFound {});
+        }
+
+        #[test]
+        fn test_cancel_listing_not_owner_should_fail() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            let not_owner_info = mock_info("not_owner", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+                operator: None,
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let cancel_listing_msg = ExecuteMsg::CancelListing {
+                denom: "pcrd".to_string(),
+            };
+            let err = execute(deps.as_mut(), mock_env(), not_owner_info.clone(), cancel_listing_msg.clone()).unwrap_err();
+            assert_eq!(err, ContractError::ListingNotFound {});
+        }
+
+        #[test]
+        fn test_cancel_listing_operator_should_fail() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            let operator = mock_info("operator", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+                operator: Some(operator.sender.clone()),
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let cancel_listing_msg = ExecuteMsg::CancelListing {
+                denom: "pcrd".to_string(),
+            };
+            let err = execute(deps.as_mut(), mock_env(), operator.clone(), cancel_listing_msg.clone()).unwrap_err();
             assert_eq!(err, ContractError::ListingNotFound {});
         }
     }

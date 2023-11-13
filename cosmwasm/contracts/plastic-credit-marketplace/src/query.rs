@@ -45,7 +45,7 @@ pub fn listing(
 #[cfg(test)]
 mod tests {
     mod query_listings_tests {
-        use cosmwasm_std::{Coin, coins, from_binary, Uint128, Uint64, StdError, Decimal};
+        use cosmwasm_std::{Coin, coins, from_binary, Uint128, Uint64, StdError, Decimal, Addr};
         use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
         use crate::execute::execute;
         use crate::{instantiate, query};
@@ -65,6 +65,7 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 },
+                operator: None,
             };
             execute(deps.as_mut(), mock_env(), info.clone(), msg.clone()).unwrap();
 
@@ -120,7 +121,8 @@ mod tests {
                 }
             }
 
-            for denom in denoms.clone() {
+            // Let every other listing have an operator
+            for (i, denom) in denoms.clone().iter().enumerate() {
                 let msg = ExecuteMsg::CreateListing {
                     denom: denom.to_string(),
                     number_of_credits: Uint64::from(42u64),
@@ -128,6 +130,7 @@ mod tests {
                         denom: "token".to_string(),
                         amount: Uint128::from(1337u128),
                     },
+                    operator: if i % 2 == 0 { Some(Addr::unchecked("operator".to_string())) } else { None },
                 };
                 execute(deps.as_mut(), mock_env(), info.clone(), msg.clone()).unwrap();
             }
@@ -147,6 +150,8 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 });
+                // Every other listing has an operator
+                assert_eq!(res.listings[i].operator, if i % 2 == 0 { Some(Addr::unchecked("operator".to_string())) } else { None });
             }
 
             // Query with limit 50 should return 50 listings
@@ -172,6 +177,8 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 });
+                // Every other listing has an operator
+                assert_eq!(res.listings[i].operator, if (i + 50) % 2 == 0 { Some(Addr::unchecked("operator".to_string())) } else { None });
             }
 
             // Query the next 50 listings, should return the last 4 listings
@@ -189,6 +196,8 @@ mod tests {
                     denom: "token".to_string(),
                     amount: Uint128::from(1337u128),
                 });
+                // Every other listing has an operator
+                assert_eq!(res.listings[i].operator, if (i + 100) % 2 == 0 { Some(Addr::unchecked("operator".to_string())) } else { None });
             }   
         }
     }

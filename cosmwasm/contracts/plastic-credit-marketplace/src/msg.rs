@@ -17,6 +17,7 @@ pub enum ExecuteMsg {
         denom: String,
         number_of_credits: Uint64,
         price_per_credit: Coin,
+        operator: Option<Addr>,
     },
     UpdateListing {
         denom: String,

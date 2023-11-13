@@ -8,6 +8,7 @@ pub struct Listing<> {
     pub denom: String,
     pub number_of_credits: Uint64,
     pub price_per_credit: Coin,
+    pub operator: Option<Addr>,
 }
 
 pub const LISTINGS: Map<(Addr, String), Listing> = Map::new("listings");
