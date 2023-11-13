@@ -3,7 +3,6 @@ import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
 import { useRoute } from "vue-router";
-import { getDetailsList } from "@/utils/utils";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import { PDFGenerator } from "@/pdfGenerator/pdfGenerator";
@@ -17,7 +16,6 @@ const dataFormatted = ref();
 const loading = ref(true);
 const materialData = ref();
 const eventData = ref();
-const materialValuesString = ref('');
 const plastciValuesString = ref('');
 const locations = ref([]);
 const mediaFileUrls = ref([]);
@@ -25,6 +23,12 @@ const binaryFilesUrls = ref([]);
 const collectionAmount = ref(0);
 const issuanceDate = ref('');
 const applicantData = ref('');
+const materialDetails = ref([]);
+const currentHeaders = ref([]);
+const primaryHeaders = ref([]);
+const secondaryHeaders = ref([]);
+const retiredDate = ref('');
+
 
 onMounted(() => {
   document.body.style.backgroundColor = "#ffff";
@@ -47,6 +51,14 @@ const getCreditData = (denom: string) => {
       activeAmount
       retiredAmount
       issuanceDate
+      retiredCreditsEvents{
+        nodes {
+          amount
+          id
+          owner
+          creditCollectionId
+        }
+      }
       creditData{
         nodes{
           id
@@ -94,14 +106,13 @@ const getCreditData = (denom: string) => {
       ${query}
     `
   );
-  console.log(result?.value?.creditCollections);
+  console.log(result.value.creditCollections.nodes[0]);
   
-  console.log(result?.value?.creditCollections?.nodes[0]?.creditData?.nodes[0].eventData);
- 
   watchEffect(() => {
   if (result.value?.creditCollections?.nodes?.length) {
     const eventDataNodes = result.value.creditCollections.nodes[0]?.creditData?.nodes[0]?.eventData?.nodes;
     const creditDataNode = result.value.creditCollections.nodes[0]?.creditData?.nodes[0];
+    creditData.value = result.value.creditCollections.nodes[0];
 
     const creditCollectionsNode = result.value.creditCollections.nodes[0];
 
@@ -111,14 +122,12 @@ const getCreditData = (denom: string) => {
     }
 
     if (creditDataNode) {
-      // Map over binaryFiles nodes to get all URLs and names
       binaryFilesUrls.value = creditDataNode.binaryFiles.nodes.map(binaryFileNode => {
         return {
           name: binaryFileNode.name || "N/A",
           url: binaryFileNode.url || "N/A",
         };
       });
-      // Map over mediaFiles nodes to get all URLs and names
       mediaFileUrls.value = creditDataNode.mediaFiles.nodes.map(mediaFileNode => {
         return {
           name: mediaFileNode.name || "N/A",
@@ -129,16 +138,14 @@ const getCreditData = (denom: string) => {
     }
 
     if (eventDataNodes && eventDataNodes.length) {
-      // Assign the first event data node to eventData.value
       eventData.value = eventDataNodes[0];
+      materialData.value = eventDataNodes[0].material.nodes[0];
       
       locations.value = eventDataNodes.reduce((unique, eventNode) => {
-        // Check if the location already exists based on longitude and latitude
         const duplicate = unique.find(location => 
           location.longitude === eventNode.longitude && location.latitude === eventNode.latitude
         );
 
-        // If it's not a duplicate, add it to the accumulator array
         if (!duplicate) {
           unique.push({
             country: eventNode.country || "N/A",
@@ -147,45 +154,80 @@ const getCreditData = (denom: string) => {
           });
         }
         
-        return unique; // Return the accumulated array
-      }, []); // Start with an empty array
+        return unique;
+      }, []);
     
-      // Process and join all material values
-      const materialValuesSet = new Set(
-        eventDataNodes.map(eventNode =>
-          eventNode.material.nodes
-            .filter(material => material.key !== 'kilo') // Filter out 'kilo' key
-            .map(material => material.value)
-        ).flat()
-      );
+      const uniqueMaterialsSet = new Set();
+      const uniqueMaterials = [];
+
+      // Process each eventNode's material nodes
+      eventDataNodes.forEach(eventNode => {
+        const materialCombination = {
+          plasticType: '',
+          condition: '',
+          shapeGranularity: '',
+          color: '',
+          brand: '',
+        };
+
+        eventNode.material.nodes.forEach(materialNode => {
+          const key = materialNode.key === 'granularity' || materialNode.key === 'shape / granularity' ? 'shapeGranularity' : materialNode.key;
+          materialCombination[key] = materialNode.value;
+        });
+
+        const materialString = JSON.stringify(materialCombination);
+
+        if (!uniqueMaterialsSet.has(materialString)) {
+          uniqueMaterialsSet.add(materialString);
+          uniqueMaterials.push(materialCombination);
+        }
+      });
+
+      materialDetails.value = uniqueMaterials;
+
+
+      const getTableHeaders = () => {
+        // Assuming materialDetails is an array of objects with keys as the property names
+        // and values are the content you want to display
+        const headers = [];
+
+        // Check if at least one object has a non-empty value for each key
+        for (const detail of materialDetails.value) {
+          for (const key in detail) {
+            if (detail[key] && !headers.includes(key)) {
+              headers.push(key); // Only push unique keys
+            }
+          }
+        }
+        return headers;
+      };
+
+      // Call this method to get the current headers based on `materialDetails`
+      currentHeaders.value = getTableHeaders();
+
+      primaryHeaders.value = currentHeaders.value.slice(0, 2); // First three headers
+        if (currentHeaders.value.length >= 3) { // Only split if more than three headers
+          secondaryHeaders.value = currentHeaders.value.slice(2); // Remaining headers
+          console.log(secondaryHeaders.value);
+          
+        } else {
+          secondaryHeaders.value = [];
+          console.log(secondaryHeaders.value);
+           // No secondary headers if three or less
+        }
+
 
       const plastciValuesSet = new Set(
         eventDataNodes.map(eventNode =>
           eventNode.material.nodes
-            .filter(material => material.key == 'plasticType') // Filter out 'kilo' key
+            .filter(material => material.key == 'plasticType') 
             .map(material => material.value)
         ).flat()
       );
       
       plastciValuesString.value = Array.from(plastciValuesSet).join(', ');
-      // Convert the Set back to an array and join it into a string
-      materialValuesString.value = Array.from(materialValuesSet).join(', ');
 
-      console.log(materialValuesString);
-      console.log(plastciValuesString);
-      
-      
-      // Assign the first material node to materialData.value for whatever purpose you intended to use it
-      materialData.value = eventDataNodes[0].material.nodes[0];
     }
-    // Set the rest of the data
-    creditData.value = result.value.creditCollections.nodes[0];
-    if (creditData.value?.creditData?.nodes) {
-      dataFormatted.value = getDetailsList(
-        creditData.value.creditData.nodes
-      );
-    }
-    loading.value = false;
   }
 });
 
@@ -211,12 +253,18 @@ const queryNow = () => {
   const { result, loading, error } = useQuery(query, {
     id: `${router.params?.id}`,
   });
+  
 
   watchEffect(() => {
     if (result.value) {
       certificateData.value = result.value.creditOffsetCertificates.nodes[0];
       console.log(certificateData.value);
-      console.log(result);
+      if(certificateData.value.timestamp) {
+        retiredDate.value = certificateData.value.timestamp.substring(0, 10);
+      } else {
+        retiredDate.value = 'N/A';
+      }
+      
       getCreditData(result.value.creditOffsetCertificates.nodes[0].denom);
     }
     if (error.value) {
@@ -226,7 +274,7 @@ const queryNow = () => {
 };
 
 const generatePDF = async () => {
-  if (!certificateData.value || !dataFormatted.value) {
+  if (!certificateData.value) {
     toast.error("No data available to generate the PDF");
     return;
   }
@@ -300,7 +348,6 @@ const generatePDF = async () => {
 
         <h2 class="presented">PROUDLY PRESENTED TO</h2>
         <h1 class="namePage1" v-if="certificateData">{{ certificateData.retiringEntityName }}</h1>
-        <h1 v-else>Loading</h1>
         <div class="horizontal-line2"></div>
         <h2 class="presented">FOR OFFSETTING</h2>
         <p class="weight" v-if="certificateData">{{ certificateData.amount + " KG" }}</p>
@@ -309,6 +356,10 @@ const generatePDF = async () => {
 
         <div class="logoBox">
           <img src="../assets/circular.svg" alt="">
+          <div class="idBox">{{ router.params.id }}</div>
+          <p class="checkBlockchain">check on <br>
+            blockchain!
+          </p>
         </div>
     </div>
     <img src="../assets/leaf2.png" alt="" class="leaf2">
@@ -316,6 +367,7 @@ const generatePDF = async () => {
     <img src="../assets/leaf3.png" alt="" class="leaf3">
     <img src="../assets/leaf5.png" alt="" class="leaf5">
     <img src="../assets/leaf6.png" alt="" class="leaf6">
+    <img src="../assets/greenlogo.svg" alt="" class="greenLogo">
   </page>
 
   <page size="A4" id="pdfContent2" class="page2">
@@ -337,33 +389,74 @@ const generatePDF = async () => {
             <tr class="tableTitle">
               <th>Amount</th>
               <th>ID</th>
-              <th>Material</th>
+              <th>Retired Date</th>
+
             </tr>
             <tr>
               <td v-if="certificateData">{{ certificateData.amount + " KG" }}</td>
               <td v-if="creditData">{{ creditData.id}}</td>
-              <td v-if="materialValuesString">{{ materialValuesString }}</td>
+              <td>{{ retiredDate }}</td>
               
             </tr>
             <!-- More rows as needed -->
           </table>
-          
-          <p class="certificateHodler">Materials</p>
-          <table class="certificateTable">
-            <tr class="tableTitle">
-              <th>Plastic Type</th>
-              <th>Shape/Granularity</th>
-              <th>Condition</th>
-              <th>Color</th>
-            </tr>
-            <tr>
-              <td v-if="certificateData">{{ certificateData.amount + " KG" }}</td>
-              <td v-if="creditData">{{ creditData.id}}</td>
-              <td v-if="materialValuesString">{{ materialValuesString }}</td>
-              
-            </tr>
-            <!-- More rows as needed -->
-          </table>
+          <div v-if="secondaryHeaders.length === 0">
+            <p class="certificateHodler">Material</p>
+            <table class="certificateTable">
+              <tr class="tableTitle">
+                <th>Event</th>
+                <!-- Loop over each header -->
+                <th v-for="header in primaryHeaders" :key="header">
+                  {{ header }} <!-- Display the header's name -->
+                </th>
+              </tr>
+              <!-- Loop over each row of details -->
+              <tr v-for="(material, index) in materialDetails" :key="index">
+                <td>{{ index + 1 }}</td> 
+                <!-- Loop over each header again for the corresponding data cell -->
+                <td v-for="header in currentHeaders" :key="`${index}-${header}`">
+                  {{ material[header] ? material[header] : '-' }}
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <div v-else-if="secondaryHeaders.length > 0">
+            <p class="certificateHodler">Material</p>
+            <table class="certificateTable">
+              <tr class="tableTitle">
+                <th>Event</th>
+                <!-- Loop over each header -->
+                <th v-for="header in primaryHeaders" :key="header">
+                  {{ header }} <!-- Display the header's name -->
+                </th>
+              </tr>
+              <!-- Loop over each row of details -->
+              <tr v-for="(material, index) in materialDetails" :key="index">
+                <td>{{ index + 1 }}</td> 
+                <!-- Loop over each header again for the corresponding data cell -->
+                <td v-for="header in primaryHeaders" :key="`${index}-${header}`">
+                  {{ material[header] ? material[header] : '-' }}
+                </td>
+              </tr>
+            </table>
+            <table class="certificateTable">
+              <tr class="tableTitle">
+                <!-- Loop over each header -->
+                <th v-for="header in secondaryHeaders" :key="header">
+                  {{ header }} <!-- Display the header's name -->
+                </th>
+              </tr>
+              <!-- Loop over each row of details -->
+              <tr v-for="(material, index) in materialDetails" :key="index">
+                <!-- Loop over each header again for the corresponding data cell -->
+                <td v-for="header in secondaryHeaders" :key="`${index}-${header}`">
+                  {{ material[header] ? material[header] : '-' }}
+                </td>
+              </tr>
+            </table>
+          </div>
+
 
           <p class="certificateHodler">Location Information</p>
           <table class="certificateTable">
@@ -396,6 +489,30 @@ const generatePDF = async () => {
 
 
             <p class="certificateHodler">Documents</p>
+              <table class="certificateTable">
+                <tr class="tableTitle">
+                  <th>Name</th>
+                  <th>URL</th>
+                </tr>
+                <!-- Use v-for to create a row for each binary file entry -->
+                <tr v-for="(binaryFile, index) in binaryFilesUrls" :key="`binary-${index}`">
+                  <td>{{ binaryFile.name }}</td>
+                  <td><a :href="binaryFile.url" target="_blank">{{ binaryFile.url }}</a></td>
+                </tr>
+              </table>
+              <p class="certificateHodler">Documents</p>
+              <table class="certificateTable">
+                <tr class="tableTitle">
+                  <th>Name</th>
+                  <th>URL</th>
+                </tr>
+                <!-- Use v-for to create a row for each binary file entry -->
+                <tr v-for="(binaryFile, index) in binaryFilesUrls" :key="`binary-${index}`">
+                  <td>{{ binaryFile.name }}</td>
+                  <td><a :href="binaryFile.url" target="_blank">{{ binaryFile.url }}</a></td>
+                </tr>
+              </table>
+                          <p class="certificateHodler">Documents</p>
               <table class="certificateTable">
                 <tr class="tableTitle">
                   <th>Name</th>
@@ -597,6 +714,7 @@ page {
 }
 
 .logoBox {
+  position: relative;
   margin-top: auto;
   height: 140px;
   width: auto;
@@ -606,10 +724,34 @@ page {
   width: auto;
 }
 
+.idBox {
+  position: absolute;
+  font-family: 'Open Sans';
+  font-weight: 700;
+  font-size: 18px;
+  bottom: 60px;
+  right: 46px;
+  height: 27px;
+  width: auto;
+}
+
+.checkBlockchain {
+  position: absolute;
+  font-family: 'Open Sans';
+  text-align: center;
+  font-weight: 700;
+  font-size: 11px;
+  bottom: 30px;
+  right: 46px;
+  letter-spacing: -1px;
+  color: #58B947;
+}
+
 .page2[size="A4"] {
   @apply w-[21cm] h-[29.7cm];
   padding: 40px;
   position: relative;
+
 }
 .innerBox2 {
   display: flex;
@@ -617,6 +759,7 @@ page {
   position: relative;
   background-color: white;
   height: 100%;
+  overflow: hidden;
 }
 
 .leaf7 {
@@ -754,6 +897,16 @@ page {
   top: 0px;
   left: 30px;
   height: 30px;
+  width: auto;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.greenLogo {
+  position: absolute;
+  bottom: 164px;
+  right: 411px;
+  height: 18px;
   width: auto;
   z-index: 2;
   overflow: hidden;
