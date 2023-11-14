@@ -19,6 +19,8 @@ import "./css/custom.css";
 import {
   API_ENDPOINT,
   ENVIRONMENT,
+  LOGTO_APP_ID,
+  LOGTO_ENDPOINT,
   REVISION_ID,
   ROLLBAR_ACCESS_TOKEN,
 } from "@/config/config";
@@ -32,8 +34,8 @@ const apolloClient = new ApolloClient({
 
 const app = createApp(App);
 const config = {
-  endpoint: "https://gvh0nr.logto.app/",
-  appId: "912y9wns0uaidu5sdh3tm",
+  endpoint: LOGTO_ENDPOINT,
+  appId: LOGTO_APP_ID,
   scopes: ["email"],
   resources: ["http://localhost:3000"],
 };

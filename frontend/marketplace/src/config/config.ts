@@ -10,6 +10,8 @@ const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 const REVISION_ID = import.meta.env.VITE_REVISION_ID;
 const ENVIRONMENT = import.meta.env.VITE_ENVIRONMENT;
 const ROLLBAR_ACCESS_TOKEN = import.meta.env.VITE_ROLLBAR_ACCESS_TOKEN;
+const LOGTO_ENDPOINT = import.meta.env.VITE_LOGTO_ENDPOINT;
+const LOGTO_APP_ID = import.meta.env.VITE_LOGTO_APP_ID;
 export {
   API_ENDPOINT,
   HTTPS_FILE_URL,
@@ -23,4 +25,6 @@ export {
   REVISION_ID,
   ENVIRONMENT,
   ROLLBAR_ACCESS_TOKEN,
+  LOGTO_ENDPOINT,
+  LOGTO_APP_ID,
 };
