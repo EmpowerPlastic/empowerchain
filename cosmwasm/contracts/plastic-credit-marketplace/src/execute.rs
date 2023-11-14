@@ -1,11 +1,13 @@
 use cosmos_sdk_proto::cosmos::authz::v1beta1::MsgExec;
 use cosmos_sdk_proto::traits::{Message, TypeUrl};
 use cosmos_sdk_proto::traits::MessageExt;
-use cosmwasm_std::{entry_point, Binary, DepsMut, Env, MessageInfo, Response, Uint64, Coin, CosmosMsg, BankMsg, Addr, Decimal};
+use cosmwasm_std::{entry_point, Binary, DepsMut, Env, MessageInfo, Response, Uint64, Coin, CosmosMsg, BankMsg, Addr, Decimal, Timestamp};
 use fee_splitter::{edit_fee_split_config, get_fee_split, Share};
 use crate::{msg::ExecuteMsg, error::ContractError, state::{LISTINGS, Listing}};
 use crate::error::ContractError::FeeSplitError;
-use crate::state::ADMIN;
+use crate::state::{ADMIN, Freeze};
+
+const MAX_TIMEOUT_SECONDS : u64 = 2419200; // 4 weeks
 
 #[entry_point]
 pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> Result<Response, ContractError> {
@@ -14,6 +16,7 @@ pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> R
         ExecuteMsg::BuyCredits { owner, denom, number_of_credits_to_buy } => execute_buy_credits(deps, env, info, owner, denom, number_of_credits_to_buy),
         ExecuteMsg::UpdateListing { denom, number_of_credits, price_per_credit } => execute_update_listing(deps, env, info, denom, number_of_credits, price_per_credit),
         ExecuteMsg::CancelListing { denom } => execute_cancel_listing(deps, env, info, denom),
+        ExecuteMsg::FreezeCredits { owner, denom, number_of_credits_to_freeze, buyer, timeout_unix_timestamp } => execute_freeze_credits(deps, env, info, owner, denom, number_of_credits_to_freeze, buyer, timeout_unix_timestamp),
         ExecuteMsg::EditFeeSplitConfig { fee_percentage, shares } => execute_edit_fee_split_config(deps, info, fee_percentage, shares),
     }
 }
@@ -45,6 +48,7 @@ pub fn execute_create_listing(
         number_of_credits,
         price_per_credit: price_per_credit.clone(),
         operator,
+        freezes: vec![],
     };
 
     LISTINGS.save(deps.storage, (info.sender.clone(), denom.clone()), listing)?;
@@ -223,6 +227,56 @@ fn execute_cancel_listing(
     )
 }
 
+fn execute_freeze_credits(
+    deps: DepsMut,
+    env: Env,
+    info: MessageInfo,
+    owner: Addr,
+    denom: String,
+    number_of_credits_to_freeze: u64,
+    buyer: Addr,
+    timeout_unix_timestamp: u64,
+) -> Result<Response, ContractError> {
+    if number_of_credits_to_freeze == 0 {
+        return Err(ContractError::ZeroCredits {});
+    }
+
+    let seconds_until_timeout = timeout_unix_timestamp.checked_sub(env.block.time.seconds()).unwrap();
+    if seconds_until_timeout > MAX_TIMEOUT_SECONDS {
+        return Err(ContractError::TimeoutTooLong {max_timeout: MAX_TIMEOUT_SECONDS});
+    }
+
+    let mut listing = LISTINGS.load(deps.storage, (Addr::unchecked(owner.clone()), denom.clone())).map_err(|_| ContractError::ListingNotFound {})?;
+
+    // Check if the sender is either the owner or the operator
+    if info.sender != listing.owner && info.sender != listing.operator.unwrap_or(Addr::unchecked("".to_string())) {
+        return Err(ContractError::Unauthorized {});
+    }
+
+    if listing.number_of_credits < number_of_credits_to_freeze.into() {
+        return Err(ContractError::NotEnoughCredits {});
+    }
+
+    listing.freezes.push(Freeze {
+        buyer: buyer.clone(),
+        number_of_credits: number_of_credits_to_freeze.into(),
+        timeout: Timestamp::from_seconds(timeout_unix_timestamp),
+    });
+    listing.number_of_credits = listing.number_of_credits.checked_sub(number_of_credits_to_freeze.into()).unwrap();
+
+    Ok(Response::new()
+        .add_attribute("action", "freeze_credits")
+        .add_attribute("freezer", info.sender)
+        .add_attribute("listing_owner", listing.owner)
+        .add_attribute("denom", listing.denom)
+        .add_attribute("buyer", buyer)
+        .add_attribute("number_of_credits_frozen", number_of_credits_to_freeze.to_string())
+        .add_attribute("timeout_unix_timestamp", timeout_unix_timestamp.to_string())
+    )
+
+    // KEEP. might need for something else: let number_of_frozen_credits = listing.freezes.iter().fold(0, |acc, freeze| acc + freeze.number_of_credits.u64());
+}
+
 fn execute_edit_fee_split_config(
     deps: DepsMut,
     info: MessageInfo,
@@ -371,6 +425,7 @@ mod tests {
                 amount: Uint128::from(1337u128),
             });
             assert_eq!(listing.operator, None);
+            assert_eq!(listing.freezes.len(), 0);
 
             let all_listings = LISTINGS.range(deps.as_ref().storage, None, None, Order::Ascending)
                 .map(|item| item.unwrap())
@@ -406,6 +461,7 @@ mod tests {
                 amount: Uint128::from(1337u128),
             });
             assert_eq!(listing.operator, Some(operator.sender.clone()));
+            assert_eq!(listing.freezes.len(), 0);
         }
 
         #[test]
@@ -582,6 +638,7 @@ mod tests {
                 denom: "token".to_string(),
                 amount: Uint128::from(1337u128),
             });
+            assert_eq!(listing.freezes.len(), 0);
         }
 
         #[test]
@@ -633,6 +690,7 @@ mod tests {
                 denom: "token".to_string(),
                 amount: Uint128::from(1337u128),
             });
+            assert_eq!(listing.freezes.len(), 0);
         }
 
         #[test]
@@ -672,6 +730,7 @@ mod tests {
                 denom: "token".to_string(),
                 amount: Uint128::from(42u128),
             });
+            assert_eq!(listing.freezes.len(), 0);
         }
 
         #[test]
@@ -1255,6 +1314,54 @@ mod tests {
             assert_eq!(err, ContractError::ListingNotFound {});
         }
     }
+
+    mod freeze_credits_tests {
+        use cosmwasm_std::{Addr, Coin, Decimal, Uint128, Uint64};
+        use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
+        use crate::execute::execute;
+        use crate::instantiate;
+        use crate::msg::{ExecuteMsg, InstantiateMsg};
+
+        #[test]
+        fn test_freeze_credits_happy_path_by_seller() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+                operator: None,
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let freeze_message = ExecuteMsg::FreezeCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_freeze: 10u64,
+                buyer: Addr::unchecked("buyer"),
+                timeout_unix_timestamp: 1000u64,
+            };
+
+            // TODO: EXECUTE AND TEST
+        }
+    }
+
+    /*
+        - TODO Test freeze message happy path (by both operator and seller)
+        - TODO Test freeze message invalid values (zero credits, zero timeout, max timeout)
+        - TODO Test freeze fail because not enough credits
+        - TODO Test freeze + buy rest of credits (should not delete the listing!)
+        - TODO Test freeze by unauthorized
+        - TODO Test freeze too many (including counting existing freezes)
+        - TODO Test max freeze timeout (also, what is the max?)
+
+        After done with tests, add cancel freeze message and release freeze message
+     */
 
     mod edit_fee_split_config_tests {
         use cosmwasm_std::Decimal;

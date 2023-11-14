@@ -32,6 +32,13 @@ pub enum ExecuteMsg {
     CancelListing {
         denom: String,
     },
+    FreezeCredits {
+        owner: Addr,
+        denom: String,
+        number_of_credits_to_freeze: u64,
+        buyer: Addr,
+        timeout_unix_timestamp: u64,
+    },
     EditFeeSplitConfig {
         fee_percentage: Decimal,
         shares: Vec<Share>
