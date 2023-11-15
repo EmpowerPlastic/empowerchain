@@ -19,9 +19,12 @@ import "./css/custom.css";
 import {
   API_ENDPOINT,
   ENVIRONMENT,
+  LOGTO_APP_ID,
+  LOGTO_ENDPOINT,
   REVISION_ID,
   ROLLBAR_ACCESS_TOKEN,
 } from "@/config/config";
+import { createLogto } from "@logto/vue";
 
 const cache = new InMemoryCache();
 const apolloClient = new ApolloClient({
@@ -30,7 +33,14 @@ const apolloClient = new ApolloClient({
 });
 
 const app = createApp(App);
+const config = {
+  endpoint: LOGTO_ENDPOINT,
+  appId: LOGTO_APP_ID,
+  scopes: ["email"],
+  resources: ["http://localhost:3000"],
+};
 
+app.use(createLogto, config);
 app.use(createPinia());
 app.use(router as any);
 app.use(VueAwesomePaginate);
