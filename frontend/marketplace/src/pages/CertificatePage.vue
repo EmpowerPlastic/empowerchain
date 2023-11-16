@@ -14,6 +14,9 @@ import {
   circular,
   leaf1,
   leaf2,
+  greenLogo,
+  horizontalLeafs,
+  verticalLeafs,
 } from '../pdfGenerator/AssetsBase64';
 
 const doc = new jsPDF("p", "mm", "a4", true);
@@ -36,9 +39,10 @@ const primaryHeaders = ref([]);
 const secondaryHeaders = ref([]);
 const retiredDate = ref('');
 const allData = ref<RowData[]>([]);
-const MAX_ROWS_PER_PAGE = 4; // Example, adjust based on your layout
+const MAX_ROWS_PER_PAGE = 10; // Example, adjust based on your layout
 const pagesData = ref([]);
 const lastCategoryOnPreviousPage = ref('')
+const ID = router.params.id;
 
 type RowData = {
   data?: any[]; // Replace `any[]` with a more specific type if possible
@@ -130,6 +134,8 @@ const getCreditData = (denom: string) => {
     creditData.value = result.value.creditCollections.nodes[0];
 
     const creditCollectionsNode = result.value.creditCollections.nodes[0];
+    console.log(creditCollectionsNode);
+    
 
     if(creditCollectionsNode) {
       collectionAmount.value = Number(creditCollectionsNode.activeAmount) + Number(creditCollectionsNode.retiredAmount);
@@ -344,12 +350,25 @@ watchEffect(() => {
   });
 };
 
+const addTextWithSpacing = (doc, text, x, y, spacing) => {
+  for (let i = 0; i < text.length; i++) {
+    const currentLetter = text[i];
+    const letterWidth = doc.getStringUnitWidth(currentLetter) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+    // Move to the next character position based on the current letter width and desired spacing
+    doc.text(currentLetter, x, y);
+    x += letterWidth + spacing;
+  }
+};
+
+
+
+
+
 
 const generatePDF = () => {
   // Initialize jsPDF with the first page in landscape orientation
   const doc = new jsPDF('landscape');
-  const yPosition = 30;
-
+  
   // Add image to the first page
   const addGrayPadding = (doc) => {
     const paddingInMM = 10.58; // Approx 40px in mm
@@ -388,10 +407,18 @@ const generatePDF = () => {
   // Add gray padding to the first page
   
   doc.addImage(wastePick, "PNG", 10.58, 0, 70, 220);
+  doc.addImage(horizontalLeafs, "png", 0, 0, 297, 210);
 
   const customDrawCell = (data) => {
     // Set border color to green
-    doc.setDrawColor(32, 105, 72); // RGB for green
+    doc.setDrawColor(126, 194, 66); // RGB for green
+    doc.setLineWidth(0.5); // Set a thicker line for the header underline
+      // Draw the header line for the first cell
+      if (data.row.index === 0) { // Check if it's the first cell of the first row
+      // Set the color and width of the line for the header
+      
+      doc.line(data.cell.x, data.cell.y + data.cell.height, data.cell.x + data.cell.width, data.cell.y + data.cell.height);
+    }
 
     // Draw top border for each cell
     if (data.row.index === 0) { // Check if it's the first row
@@ -402,10 +429,10 @@ const generatePDF = () => {
     if (data.row.index === data.table.body.length - 1) { // Check if it's the last row
       doc.line(data.cell.x, data.cell.y + data.cell.height, data.cell.x + data.cell.width, data.cell.y + data.cell.height);
     }
+    
   };
 
-  doc.addImage(leaf1, "png", 137, 20, 10, 10);
-  doc.addImage(leaf2, "png", 104, 193, 35, 17);
+  doc.addImage(leaf1, "png", 137, 20, 10, 8);
 
   doc.setFontSize(28);
   doc.setTextColor(32, 105, 72);
@@ -423,7 +450,7 @@ const generatePDF = () => {
   doc.setFontSize(15);
   doc.setTextColor(35, 31, 32);
   doc.setFont('inter', 'normal');
-  doc.text("PROUDLY PRESENTED TO", 147, 75);
+  addTextWithSpacing(doc, "PROUDLY PRESENTED TO", 144, 75, 0.5);
 
   const name = certificateData.value.retiringEntityName;
   const nameLength = name.length;
@@ -436,20 +463,38 @@ const generatePDF = () => {
   doc.setFont('Open Sans', 'bold');
 
   // Adjust xPosition based on the length of the name
-  if (nameLength <= 3) {
-      xPos = 170; // Position for names up to 3 characters
-  } else if (nameLength <= 6) {
+  if (nameLength === 3) {
+      xPos = 157; // Position for names up to 3 characters
+  } else if (nameLength === 4) {
       xPos = 160; // Adjust position for names up to 6 characters
-  } else if (nameLength <= 9) {
-      xPos = 148; // Adjust for names up to 9 characters
-  } else if (nameLength <= 12) {
-      xPos = 138; // Adjust for names up to 12 characters
-  } else if (nameLength <= 15) {
-      xPos = 128; // Adjust for names up to 15 characters
+  } else if (nameLength === 5) {
+      xPos = 156; // Adjust position for names up to 6 characters
+  } else if (nameLength === 6) {
+      xPos = 153; // Adjust position for names up to 6 characters
+  } else if (nameLength === 7) {
+      xPos = 149; // Adjust for names up to 9 characters
+  } else if (nameLength === 8) {
+      xPos = 145; // Adjust for names up to 12 characters
+  } else if (nameLength === 9) {
+      xPos = 141; // Adjust for names up to 15 characters
+  } else if (nameLength === 10) {
+      xPos = 137; // Adjust for names up to 18 characters
+  } else if (nameLength === 11) {
+      xPos = 133; // Adjust for names up to 18 characters
+  } else if (nameLength === 12) {
+      xPos = 129; // Adjust for names up to 18 characters
+  } else if (nameLength === 13) {
+      xPos = 125; // Adjust for names up to 18 characters
+  } else if (nameLength === 14) {
+      xPos = 121; // Adjust for names up to 18 characters
+  } else if (nameLength === 15) {
+      xPos = 117; // Adjust for names up to 18 characters
+  } else if (nameLength === 16) {
+      xPos = 112; // Adjust for names up to 18 characters
+  } else if (nameLength === 17) {
+      xPos = 107; // Adjust for names up to 18 characters
   } else if (nameLength <= 18) {
-      xPos = 118; // Adjust for names up to 18 characters
-  } else if (nameLength <= 20) {
-      xPos = 108; // Adjust for names up to 20 characters
+      xPos = 100; // Adjust for names up to 20 characters
   } // Continue adding more conditions if needed
 
   // Render the text at the calculated position
@@ -457,29 +502,40 @@ const generatePDF = () => {
 
   doc.setDrawColor(0, 0, 0); 
   doc.setLineWidth(0.5);
-  doc.line(120, 100, pageWidth - 50, 100);
+  doc.line(110, 100, pageWidth - 50, 100);
 
   doc.setFontSize(15);
   doc.setTextColor(35, 31, 32);
   doc.setFont('inter', 'normal');
-  doc.text("FOR OFFSETTING", 158, 110);
+  addTextWithSpacing(doc, "FOR OFFSETTING", 154, 110, 0.5);
 
   doc.setFontSize(15);
   doc.setTextColor(32, 105, 72);
   doc.setFont('Open Sans', 'bold');
   doc.text(certificateData.value.amount + " KG", 174, 120);
 
-
   doc.setFontSize(15);
   doc.setTextColor(35, 31, 32);
   doc.setFont('inter', 'normal');
-  doc.text("OF", 176, 130);
+  addTextWithSpacing(doc, "OF", 176, 130, 0.5);
 
-  //doc.addImage(circular, "png", 150, 150, 50, 50);
+  doc.addImage(circular, "png", 160, 155, 40, 40);
+  doc.addImage(greenLogo, "png", 176, 162, 7, 6);
+  doc.setFontSize(15);
+  doc.setTextColor(0,0,0);
+  doc.setFont('Open Sans', 'bold');
+  doc.text(ID, 174, 175);
+  doc.setTextColor(88, 185, 71);
+  doc.setFontSize(12);
+  doc.text("check on", 171, 180);
+  doc.text("blockchain!", 169, 185);
+
   const text = plastciValuesString.value;
   const textLength = text.length;
   console.log(textLength);
   
+
+
   let xPosition = 0;
 
   if (textLength === 3) {
@@ -516,9 +572,14 @@ const generatePDF = () => {
   // Check if there's additional content for the first page
   if (pagesData.value.length > 0) {
     // Check if the first item in pagesData has specific content to add
+
+    const firstPageData = pagesData.value[0];
+
     doc.addPage('a4', 'portrait');
     addGrayPadding(doc);
-    const firstPageData = pagesData.value[0];
+    doc.addImage(verticalLeafs, "png", 0, 0, 210, 297);
+    doc.addImage(leaf1, "png", 30, 23, 10, 8);
+    
     doc.setFontSize(25);
       doc.setTextColor(32, 105, 72);
       doc.setFont('Open Sans', 'normal');
@@ -551,7 +612,7 @@ const generatePDF = () => {
           startY: 60,
           didDrawCell: customDrawCell,
         styles: {
-        lineWidth: 0.5, // Width of the border
+        lineWidth: 0, // Width of the border
       },
     });
 
@@ -562,70 +623,83 @@ const generatePDF = () => {
           didDrawCell: customDrawCell,
           startY: 90,
         styles: {
-        lineWidth: 0.5, // Width of the border
+        lineWidth: 0, // Width of the border
       },
     });
-    if (firstPageData.binaryFiles.length) {
-      
-    }
-    // ... Handle other content types for the first page similarly
-  }
-
-  // Loop through the rest of the pagesData array
-  for (let i = 0; i < pagesData.value.length; i++) {
-    // Add a new page in portrait orientation
-    doc.addPage('a4', 'portrait');
-    addGrayPadding(doc); 
+    console.log(pagesData.value);
+    console.log(firstPageData);
     
-    if (pagesData.value[i].binaryFiles[0]) {
-
-        doc.text("Documents", 5, yPosition);
-        doc.autoTable({ 
-          html: '#binaryTable', 
-          useCss: true,
-          didDrawCell: customDrawCell,
-        styles: {
-        lineWidth: 0.5, // Width of the border
-      },
-    });
+    
+     let yPosition = 115;
+     if (firstPageData.binaryFiles[0]) {
+        yPosition = addTitle(doc, "Documents", yPosition);
+        yPosition = addTable(doc, '#binaryTable', yPosition, customDrawCell);
     }
-
-    if (pagesData.value[i].locations[0]) {
-        doc.autoTable({ 
-          html: '#locations', 
-          useCss: true, 
-          didDrawCell: customDrawCell,
-        styles: {
-        lineWidth: 0.5,
-      },
-    });
+    if (firstPageData.mediaFiles[0]) {
+          yPosition = addTitle(doc, "Photos", yPosition);
+          yPosition = addTable(doc, '#mediaTable', yPosition, customDrawCell);
+      }
+    if (firstPageData.locations[0]) {
+        yPosition = addTitle(doc, "Locations", yPosition);
+        yPosition = addTable(doc, '#locations', yPosition, customDrawCell);
     }
-
-    if (pagesData.value[i].materialDetails[0]) {
-      // Replace '#binaryTable' with the actual selector or content for this page
-        doc.autoTable({ 
-          html: '#materials', 
-          useCss: true, 
-          didDrawCell: customDrawCell,
-        styles: {
-        lineWidth: 0.5, // Width of the border
-      },
-    });
+    if (firstPageData.materialDetails[0]) {
+        yPosition = addTitle(doc, "Materials", yPosition);
+        yPosition = addTable(doc, '#materials', yPosition, customDrawCell);
     }
-    // If there's media content for this page
-    if (pagesData.value[i].mediaFiles[0]) {
-      doc.autoTable({ 
-       html: '#mediaTable',
-       useCss: true,
-       didDrawCell: customDrawCell,
-        styles: {
-        lineWidth: 0.5, // Width of the border
-      },
-       });
-    }
+  }
+  doc.setLineWidth(0.5)
+  function addTitle(doc, title, yPosition) {
+    doc.setFontSize(15);
+    doc.setTextColor(32, 105, 72);
+    doc.setFont('Open Sans', 'bold');
+    doc.text(title, 20, yPosition);
+    return yPosition + 5; // Increase yPosition for the next content
 }
 
-  // Save the PDF
+  function addTable(doc, selector, yPosition, customDrawCell) {
+      doc.autoTable({ 
+          html: selector, 
+          useCss: true, 
+          didDrawCell: customDrawCell,
+          styles: {
+              lineWidth: 0,
+          },
+          startY: yPosition,
+      });
+
+      return doc.lastAutoTable.finalY + 10; // Update yPosition after the table
+  }
+
+  let yPosition = 30; // Initial yPosition
+
+  for (let i = 1; i < pagesData.value.length; i++) {
+      // Add a new page
+      doc.addPage('a4', 'portrait');
+      addGrayPadding(doc);
+      doc.addImage(verticalLeafs, "png", 0, 0, 210, 297);
+
+      // Add titles and tables
+      if (pagesData.value[i].binaryFiles[0]) {
+          yPosition = addTitle(doc, "Documents", yPosition);
+          yPosition = addTable(doc, '#binaryTable', yPosition, customDrawCell);
+      }
+
+      if (pagesData.value[i].mediaFiles[0]) {
+          yPosition = addTitle(doc, "Photos", yPosition);
+          yPosition = addTable(doc, '#mediaTable', yPosition, customDrawCell);
+      } 
+      if (pagesData.value[i].locations[0]) {
+          yPosition = addTitle(doc, "Locations", yPosition);
+          yPosition = addTable(doc, '#locations', yPosition, customDrawCell);
+      }
+      if (pagesData.value[i].materialDetails[0]) {
+          yPosition = addTitle(doc, "Materials", yPosition);
+          yPosition = addTable(doc, '#materials', yPosition, customDrawCell);
+      }
+      yPosition = 30;
+  }
+
   doc.save('certificate.pdf');
 };
 
@@ -692,6 +766,7 @@ const generatePDF = () => {
       <div class="innerBox2">
         <!-- ... other elements ... -->
         <div v-if="pageIndex === 0">
+          <img src="../assets/leaf1.png" alt="" class="leaf7">
       <div class="titleBoxPage2">
         <h1>
           plastic credit
@@ -1027,7 +1102,7 @@ page {
   width: 280px;
   left: 37px;
   z-index: 1;
-  background: linear-gradient(rgba(0, 0, 0, 0.30), rgba(0, 0, 0, 0.30)), url(../assets/wastePick.png);
+  background: url(../assets/wastePick.png);
   background-size: cover;
   opacity: 90%;
 }
