@@ -49,13 +49,8 @@ ChartJS.register(
         ],
       }"
       :options="{
-        scales: {
-          xAxes: [
-            {
-              barPercentage: 0.1,
-            },
-          ],
-        },
+        responsive: true,
+        maintainAspectRatio: false,
       }"
     />
   </div>
