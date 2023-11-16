@@ -7,6 +7,8 @@ import AuctionDetails from "@/pages/AuctionDetails.vue";
 import CertificatePage from "@/pages/CertificatePage.vue";
 import PlasticCreditRegistry from "@/pages/PlasticCreditRegistry.vue";
 import RegistryDetailsPage from "@/pages/RegistryDetailsPage.vue";
+import CallbackView from "@/pages/CallbackView.vue";
+import UserProfile from "@/pages/UserProfile.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,6 +53,17 @@ const router = createRouter({
       path: "/registry/:id",
       name: "RegistryDetails",
       component: RegistryDetailsPage,
+    },
+    {
+      path: "/callback",
+      name: "CallbackPage",
+      component: CallbackView,
+      meta: { hideNavFooter: true }, //To hide nav and footer on this page
+    },
+    {
+      path: "/profile",
+      name: "UserProfilePage",
+      component: UserProfile,
     },
   ],
 });

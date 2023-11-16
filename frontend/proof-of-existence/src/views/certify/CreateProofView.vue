@@ -25,7 +25,7 @@ const hash: string | string[] = route.params.hash;
 const { createProof } =
   empowerchain.proofofexistence.MessageComposer.withTypeUrl;
 
-const showModal = ref(false);
+const showWalletModal = ref(false);
 const selectedWallet = ref("");
 const errorMessage = ref<string | undefined>();
 const loading = ref(false);
@@ -33,24 +33,18 @@ const address = ref();
 const addressVisible = ref();
 
 //Methods
-const back = () => {
-  router.push({
-    path: `/`,
-  });
-};
-
 const openModal = () => {
-  showModal.value = true;
+  showWalletModal.value = true;
 };
 
-const closeModal = () => {
-  showModal.value = false;
+const closeWalletModal = () => {
+  showWalletModal.value = false;
 };
 
 const handleSelectedWallet = (wallet: Wallet) => {
   selectedWallet.value = wallet;
   showWalletAddress(wallet);
-  closeModal();
+  closeWalletModal();
 };
 
 const showWalletAddress = async (selectedWallet: Wallet) => {
@@ -126,6 +120,12 @@ const handleResponse = (response: DeliverTxResponse) => {
     pushToSuccessPage();
   } else {
     loading.value = false;
+    if (response?.rawLog) {
+      toast.error(response?.rawLog);
+    } else {
+      toast.error("Something went wrong!");
+    }
+
     errorMessage.value = response?.rawLog;
   }
 };
@@ -148,104 +148,140 @@ const copyAddress = async () => {
 </script>
 <template>
   <SelectWalletModel
-    v-show="showModal"
-    :close-modal="closeModal"
+    v-show="showWalletModal"
+    :close-modal="closeWalletModal"
     @selected-wallet="handleSelectedWallet"
   />
-  <img
-    src="../../assets/images/emp-astro-2.png"
-    class="left-28 top-full sm:top-auto sm:left-auto w-32 fixed sm:absolute animate-bounce -m-24"
-  />
-
-  <div class="w-full p-8 text-left bg-lightBlack rounded-lg sm:p-8">
-    <h5 class="mb-2 mt-3 font-bold text-white text-title28">Create proof</h5>
-    <div class="grid grid-cols-1 sm:grid-cols-3 sm:gap-6">
-      <div class="col-span-2 w-full mt-3">
+  <h5
+    class="hidden md:block mt-5 my-5 text-title28 text-left font-bold text-textPrimary"
+  >
+    Create proof
+  </h5>
+  <div class="flex flex-col !items-center w-full md:max-w-[80%]">
+    <h5
+      class="md:hidden mb-2 md:my-7 text-title28 text-center font-bold text-textPrimary"
+    >
+      Create proof
+    </h5>
+    <div class="flex flex-col w-full gap-3">
+      <div class="flex flex-col md:flex-row gap-3 md:gap-6">
         <div
-          class="bg-lightGray rounded-lg break-words text-center items-center flex flex-col p-4"
+          class="flex flex-col items-center bg-bgPrimary w-full rounded-lg custom-shadow p-3 py-5 text-center"
         >
-          <img class="w-20 mb-4" src="../../assets/images/certificate.png" />
-          <div v-show="$route.query.fileName">
-            <p class="text-lightGreen text-title14 break-all">File</p>
-            <p class="text-white text-title18 mb-3 break-all">
-              {{ $route.query.fileName }}
-            </p>
-          </div>
-
-          <p class="text-lightGreen text-title14" break-all>Received Time</p>
-          <p class="text-white text-title18 mb-3 break-all">
+          <img class="w-16 mb-4" src="../../assets/images/certificate.svg" />
+          <p
+            v-show="$route.query.fileName"
+            class="text-textPrimary text-title14 font-bold"
+          >
+            File
+          </p>
+          <p
+            class="text-textPrimary text-title18 mb-3"
+            v-show="$route.query.fileName"
+          >
+            {{ $route.query.fileName }}
+          </p>
+          <p class="text-textPrimary text-title14 font-bold">Received Time</p>
+          <p class="text-textPrimary text-title18 mb-3 break-all">
             {{ new Date(Number($route.query.time)).toLocaleString() }}
           </p>
-          <p class="text-lightGreen text-title14 break-all">Transaction Hash</p>
-          <p class="text-white text-title18 mb-6 break-all">
+          <p class="text-textPrimary text-title14 break-all font-bold">
+            Transaction Hash
+          </p>
+          <p class="text-textPrimary text-title18 mb-3 break-all">
             {{ $route.params.hash }}
           </p>
-          <p class="text-white text-title14">
+          <p
+            class="hidden md:block text-textPrimary text-title14 text-center mt-5 mb-2"
+          >
             Hooray!! We are just one step away!
           </p>
-          <p class="text-white text-title12">
+          <p
+            class="hidden md:block text-textPrimary text-title12 text-center mb-3"
+          >
             Connect your wallet for the transaction fee, its Only 0.00025 $MPWR
           </p>
         </div>
         <div
-          class="p-4 my-4 w-full text-sm text-red-800 rounded-lg bg-red-50 break-all"
-          role="alert"
-          v-show="errorMessage"
+          class="flex flex-col items-center bg-bgPrimary w-full rounded-lg custom-shadow p-3"
+          :class="selectedWallet === '' && 'md:hidden'"
         >
-          {{ errorMessage }}
-        </div>
-        <div class="flex flex-col sm:flex-row justify-between">
-          <button
-            :disabled="!selectedWallet || loading"
-            @click="handleTransaction"
-            class="bg-lightGreen disabled:bg-lightGray mt-4 content-center p-1 px-14 rounded text-white"
+          <h5
+            class="hidden md:block mb-3 text-title28 text-center font-bold text-textPrimary"
           >
-            {{ loading ? "Loading..." : "Complete" }}
-          </button>
-          <button
-            @click="back"
-            class="bg-transparent mt-4 content-center p-1 rounded text-lightGreen"
+            Wallet
+          </h5>
+          <p
+            v-if="selectedWallet === ''"
+            class="md:hidden text-textPrimary text-title12 text-center my-5"
           >
-            Back
-          </button>
+            Hooray!! We are just one step away! <br />Connect your wallet for
+            the transaction fee, its Only 0.00025 $MPWR
+          </p>
+
+          <div
+            class="flex flex-col items-center mt-10"
+            v-if="selectedWallet !== ''"
+          >
+            <img
+              src="../../assets/images/wallet-keplr.png"
+              class="h-20 cursor-pointer mb-3"
+              v-if="selectedWallet === Wallet.Keplr"
+            />
+            <img
+              src="../../assets/images/wallet-cosmostation.png"
+              class="h-20 cursor-pointer mb-3"
+              v-if="selectedWallet === Wallet.Cosmostation"
+            />
+            <img
+              src="../../assets/images/wallet-leap.png"
+              class="h-20 cursor-pointer mb-3"
+              v-if="selectedWallet === Wallet.Leap"
+            />
+          </div>
+
+          <div class="w-full md:w-[55%]">
+            <div
+              v-if="addressVisible"
+              class="flex flex-row justify-center bg-bgTertiary rounded-lg p-3 cursor-pointer w-full my-3 flex-wrap bg-opacity-[0.04]"
+              @click="copyAddress"
+            >
+              <p class="text-textPrimary text-center text-title12 break-all">
+                {{ addressVisible }}
+              </p>
+              <img class="w-4 ml-4" src="../../assets/images/copy-icon.svg" />
+            </div>
+
+            <button
+              @click="openModal"
+              class="bg-bgSecondary content-center p-1 rounded-sm text-textPrimary w-full text-title22"
+            >
+              {{ selectedWallet ? "Change wallet" : "Connect your wallet" }}
+            </button>
+          </div>
         </div>
-      </div>
-      <div class="sm:col-span-1 p-3">
-        <h5 class="mb-2 mt-3 mb-6 text-2xl font-bold text-white text-title28">
-          Wallet
-        </h5>
-        <img
-          src="../../assets/images/wallet-keplr.png"
-          class="h-20 cursor-pointer mb-3"
-          v-if="selectedWallet === Wallet.Keplr"
-        />
-        <img
-          src="../../assets/images/wallet-cosmostation.png"
-          class="h-20 cursor-pointer mb-3"
-          v-if="selectedWallet === Wallet.Cosmostation"
-        />
-        <img
-          src="../../assets/images/wallet-leap.png"
-          class="h-20 cursor-pointer mb-3"
-          v-if="selectedWallet === Wallet.Leap"
-        />
+
         <div
-          v-if="addressVisible"
-          class="flex flex-row bg-lightGray rounded-lg p-2 cursor-pointer w-fit mt-5 flex-wrap"
-          @click="copyAddress"
-        >
-          <p class="text-white text-title12">{{ addressVisible }}</p>
-          <img class="w-4 ml-4" src="../../assets/images/copy-icon.svg" />
-        </div>
-        <button
+          v-if="selectedWallet === ''"
+          class="hidden md:flex flex-col bg-bgBigButton w-full rounded-lg custom-shadow p-3 py-5 cursor-pointer"
           @click="openModal"
-          class="bg-lightGreen mt-7 content-center p-1 px-7 rounded text-white"
         >
-          {{ selectedWallet ? "Change wallet" : "Connect your wallet" }}
-        </button>
+          <h5 class="text-title28 font-bold text-textPrimary text-center">
+            Connect your wallet
+          </h5>
+          <img
+            class="w-10 self-center mt-[90px]"
+            src="../../assets/images/plus-icon.svg"
+          />
+        </div>
       </div>
+      <button
+        :disabled="!selectedWallet || loading"
+        @click="handleTransaction"
+        class="bg-bgSecondary disabled:opacity-[0.3] mt-5 content-center p-1 rounded-sm text-textPrimary text-title22 md:w-[30%] md:self-center"
+      >
+        {{ loading ? "Loading..." : "Create proof" }}
+      </button>
     </div>
   </div>
 </template>
-
-<style></style>

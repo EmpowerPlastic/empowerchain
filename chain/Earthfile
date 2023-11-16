@@ -179,7 +179,7 @@ devnet:
 interchaintest-prep:
     FROM golang:1.20-bullseye
     WORKDIR /interchaintest
-    GIT CLONE https://github.com/strangelove-ventures/interchaintest /interchaintest
+    GIT CLONE --branch v7 https://github.com/strangelove-ventures/interchaintest /interchaintest
     RUN make interchaintest
     SAVE ARTIFACT bin/interchaintest
 
@@ -190,3 +190,44 @@ ibc-conformance-test:
         RUN ./interchaintest -matrix tests/e2e/interchaintest.json
     END
     SAVE ARTIFACT /root/.interchaintest/reports/* AS LOCAL build/interchaintest-reports/
+
+node-base:
+    ARG --required CURRENT_VERSION
+    RUN apt-get update -yq \
+        && apt-get install --no-install-recommends -yq \
+        curl tar wget clang pkg-config libssl-dev jq \
+        build-essential bsdmainutils git make ncdu gcc \
+        git jq chrony liblz4-tool unzip
+    RUN wget https://github.com/EmpowerPlastic/empowerchain/releases/download/${CURRENT_VERSION}/empowerd-${CURRENT_VERSION}-linux-amd64.zip
+    RUN mkdir -p /root/binaries
+    RUN unzip -p empowerd-${CURRENT_VERSION}-linux-amd64.zip > /root/binaries/empowerd
+    RUN chmod +x /root/binaries/empowerd
+    ENV PATH $PATH:/root/binaries
+
+prep-genesis:
+    ARG --required CURRENT_VERSION
+    ARG --required CHAIN_ID
+    ARG --required STATE_SYNC_RPC
+    ARG --required STATE_SYNC_PEER
+    FROM +node-base --CURRENT_VERSION=${CURRENT_VERSION}
+    COPY scripts/upgrade-test/state_sync.sh state_sync.sh
+    COPY scripts/upgrade-test/start_and_catch_up.sh start_and_catch_up.sh
+    RUN empowerd init genesis-prepper --chain-id ${CHAIN_ID}
+    RUN ./state_sync.sh ${STATE_SYNC_RPC} ${STATE_SYNC_PEER}
+    RUN ./start_and_catch_up.sh
+    RUN empowerd export > exported-genesis.json
+    SAVE ARTIFACT exported-genesis.json AS LOCAL exported-genesis.json
+
+upgrade-test:
+    ARG --required CURRENT_VERSION
+    ARG --required UPGRADE_NAME # Need to match the actual upgrade name in app.go. If there is not upgrade or the name is wrong, this will fail
+    FROM +node-base --CURRENT_VERSION=${CURRENT_VERSION}
+    COPY scripts/upgrade-test/upgrade.sh upgrade.sh
+    COPY exported-genesis.json exported-genesis.json
+    COPY +build-with-wasmvm/empowerd ./new_empowerd
+    COPY +build-with-wasmvm/libwasmvm.x86_64.so /usr/local/lib/libwasmvm.x86_64.so
+    COPY +build-with-wasmvm/libwasmvm.aarch64.so /usr/local/lib/libwasmvm.aarch64.so
+    ENV LD_LIBRARY_PATH=/usr/local/lib
+
+    RUN ./upgrade.sh ${UPGRADE_NAME}
+

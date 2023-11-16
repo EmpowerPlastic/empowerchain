@@ -1,0 +1,41 @@
+name: "Deploy Marketplace Frontend - mainnet"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Deploy Marketplace Frontend - mainnet
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Load .env file
+        uses: xom9ikk/dotenv@v2
+        with:
+          path: ./frontend/marketplace
+          mode: prod
+      - run: npm ci && npm run build
+        working-directory: ./frontend/marketplace
+        env:
+          VITE_API_ENDPOINT: ${{ env.VITE_API_ENDPOINT }}
+          VITE_HTTPS_FILE_URL: ${{ env.VITE_HTTPS_FILE_URL }}
+          VITE_MARKETPLACE_CONTRACT: ${{ env.VITE_MARKETPLACE_CONTRACT }}
+          VITE_CHAIN_ID: ${{ env.VITE_CHAIN_ID }}
+          VITE_CHAIN_NAME: ${{ env.VITE_CHAIN_NAME }}
+          VITE_RPC_ENDPOINT: ${{ env.VITE_RPC_ENDPOINT }}
+          VITE_REST_ENDPOINT: ${{ env.VITE_REST_ENDPOINT }}
+          VITE_DEFAULT_CREDIT_TYPE: ${{ env.VITE_DEFAULT_CREDIT_TYPE }}
+          VITE_ENVIRONMENT: ${{ env.VITE_ENVIRONMENT }}
+          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          VITE_REVISION_ID: ${{ github.sha }}
+          VITE_ROLLBAR_ACCESS_TOKEN: ${{ secrets.MARKETPLACE_ROLLBAR_ACCESS_TOKEN }}
+
+
+      - uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-args: '--prod'
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_MARKETPLACE_MAINNET}}
+          working-directory: ./frontend/marketplace/
