@@ -5,15 +5,12 @@ import { onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import { jsPDF } from "jspdf";
 import 'jspdf-autotable';
-import html2canvas from "html2canvas";
-import { PDFGenerator } from "@/pdfGenerator/pdfGenerator";
 import { toast } from "vue3-toastify";
 import 'jspdf-autotable';
 import {
   wastePick,
   circular,
   leaf1,
-  leaf2,
   greenLogo,
   horizontalLeafs,
   verticalLeafs,
@@ -24,30 +21,31 @@ const router = useRoute();
 const certificateData = ref();
 const creditData = ref();
 const loading = ref(true);
-const materialData = ref([]);
+const materialData = ref<Array<{ type: string; [key: string]: any }>>([]);
 const eventData = ref();
 const plastciValuesString = ref('');
-const locations = ref([]);
-const mediaFileUrls = ref([]);
+const locations = ref<Array<{ type: string; [key: string]: any }>>([]);
+const mediaFileUrls = ref<Array<{ type: string; [key: string]: any }>>([]);
 const binaryFilesUrls = ref<Array<{ type: string; [key: string]: any }>>([]);
 const collectionAmount = ref(0);
 const issuanceDate = ref('');
 const applicantData = ref('');
-const materialDetails = ref([]);
-const currentHeaders = ref([]);
-const primaryHeaders = ref([]);
-const secondaryHeaders = ref([]);
+const materialDetails = ref<Array<{ type: string; [key: string]: any }>>([]);
+const currentHeaders =  ref<Array<{ type: string; [key: string]: any }>>([]);
+const primaryHeaders = ref<Array<{ type: string; [key: string]: any }>>([]);
+const secondaryHeaders = ref<Array<{ type: string; [key: string]: any }>>([]);
 const retiredDate = ref('');
 const allData = ref<RowData[]>([]);
-const MAX_ROWS_PER_PAGE = 10; // Example, adjust based on your layout
-const pagesData = ref([]);
+let MAX_ROWS_PER_PAGE = 4; 
+const pagesData = ref<Array<{ type: string; [key: string]: any }>>([]);
 const lastCategoryOnPreviousPage = ref('')
 const ID = router.params.id;
+const counts = ref({});
+const addedBinaryFiles = ref(false);
 
 type RowData = {
-  data?: any[]; // Replace `any[]` with a more specific type if possible
+  data?: any[];
   type: string;
-  // Include other properties that rows might have
 };
 
 onMounted(() => {
@@ -134,9 +132,7 @@ const getCreditData = (denom: string) => {
     creditData.value = result.value.creditCollections.nodes[0];
 
     const creditCollectionsNode = result.value.creditCollections.nodes[0];
-    console.log(creditCollectionsNode);
     
-
     if(creditCollectionsNode) {
       collectionAmount.value = Number(creditCollectionsNode.activeAmount) + Number(creditCollectionsNode.retiredAmount);
       issuanceDate.value = creditCollectionsNode.issuanceDate.substring(0, 10);
@@ -179,34 +175,32 @@ const getCreditData = (denom: string) => {
             type: "location",
           });
         }
-        
         return unique;
       }, []);
     
       const uniqueMaterialsSet = new Set();
       const uniqueMaterials = [];
-
+      let eventId = 1;
       // Process each eventNode's material nodes
       eventDataNodes.forEach(eventNode => {
         const materialCombination = {
-          plasticType: '',
-          condition: '',
-          shapeGranularity: '',
-          color: '',
-          brand: '',
           type: 'material',
+          eventId: eventId++,
         };
 
         eventNode.material.nodes.forEach(materialNode => {
           const key = materialNode.key === 'granularity' || materialNode.key === 'shape / granularity' ? 'shapeGranularity' : materialNode.key;
-          materialCombination[key] = materialNode.value;
+          if (materialNode.value) { // Check if the value is not empty
+            materialCombination[key] = materialNode.value;
+          }
         });
 
-        const materialString = JSON.stringify(materialCombination);
-
-        if (!uniqueMaterialsSet.has(materialString)) {
-          uniqueMaterialsSet.add(materialString);
-          uniqueMaterials.push(materialCombination);
+        if (Object.keys(materialCombination).length > 2) { // Check if materialCombination has more than just eventId and type
+          const materialString = JSON.stringify(materialCombination);
+          if (!uniqueMaterialsSet.has(materialString)) {
+            uniqueMaterialsSet.add(materialString);
+            uniqueMaterials.push(materialCombination);
+          }
         }
       });
 
@@ -216,7 +210,7 @@ const getCreditData = (denom: string) => {
       const getTableHeaders = () => {
         // Assuming materialDetails is an array of objects with keys as the property names
         // and values are the content you want to display
-        const headers = [];
+        const headers: Array<string> = [];
 
         // Check if at least one object has a non-empty value for each key
         for (const detail of materialDetails.value) {
@@ -232,10 +226,10 @@ const getCreditData = (denom: string) => {
    
       currentHeaders.value = getTableHeaders();
 
-      primaryHeaders.value = currentHeaders.value.slice(0, 2); 
+      primaryHeaders.value = currentHeaders.value.slice(1, 4); 
         if (currentHeaders.value.length >= 3) {
-          secondaryHeaders.value = currentHeaders.value.slice(2);
-          
+          secondaryHeaders.value = currentHeaders.value.slice(4);
+
         } else {
           secondaryHeaders.value = [];
         }
@@ -277,60 +271,66 @@ const queryNow = () => {
   const { result, loading, error } = useQuery(query, {
     id: `${router.params?.id}`,
   });
-
-  const preparePagesData = () => {
-  let currentPageData = {
-    locations: [],
-    materialDetails: [],
-    mediaFiles: [],
-    binaryFiles: [],
-    // Add other categories as needed
-  };
   
-  let currentRowCount = 0;
+const preparePagesData = () => {
+  let currentPageData = [];
+  let currentRowCount: number = 0;
 
   allData.value.forEach(item => {
-    // Determine item size (assuming each item counts as 1 row)
-    let itemSize = 1; // Adjust if different items have different sizes
+    let itemSize: number = 1; // Default item size
 
-    // Check for page overflow
+    // Increase item size for material items with secondary headers
+    if (item.type === 'material' && secondaryHeaders.value.length > 0) {
+      itemSize = 2; // Each material item with secondary headers counts as two rows
+    }
+
+    // Check if adding this item would exceed the max row count for the page
     if (currentRowCount + itemSize > MAX_ROWS_PER_PAGE) {
-      
-      // Start a new page if adding this item would overflow
+      // Start a new page
       pagesData.value.push(currentPageData);
-      currentPageData = { locations: [], materialDetails: [], mediaFiles: [], binaryFiles: [] };
+      currentPageData = [];
       currentRowCount = 0;
     }
 
-    if (item.type === 'material') {
-      if (secondaryHeaders.value.length > 0) {
-        // Count as 2 rows if there are secondary headers
-        itemSize = 2;
-      }
+    // Add item to the current page
+    let category = currentPageData.find(c => c.type === item.type);
+    if (!category) {
+      category = { type: item.type, items: [] };
+      currentPageData.push(category);
     }
-
-    // Add item to current page data based on its type
-    if (item.type === 'location') currentPageData.locations.push(item);
-    if (item.type === 'material') currentPageData.materialDetails.push(item);
-    if (item.type === 'media') currentPageData.mediaFiles.push(item);
-    if (item.type === 'binary') currentPageData.binaryFiles.push(item);
-    console.log(currentPageData);
-    
+    category.items.push(item);
     currentRowCount += itemSize;
+
+    // Handle the case where the last item exactly fills the page
+    if (currentRowCount === MAX_ROWS_PER_PAGE) {
+      pagesData.value.push(currentPageData);
+      currentPageData = [];
+      currentRowCount = 0;
+    }
   });
 
-  // Push the last page if it has any content
-  if (currentRowCount > 0) {
-    console.log(currentPageData);
+  // Push the last page if it has any content left
+  if (currentPageData.length > 0) {
     pagesData.value.push(currentPageData);
-    console.log(pagesData.value);
-    
   }
 };
 
+
 watchEffect(() => {
   preparePagesData();
+  console.log(pagesData.value);
   
+
+  pagesData.value.forEach((page, pageIndex) => {
+    console.log(`Page ${pageIndex + 1}:`);
+
+    page.forEach(category => {
+      console.log(`  ${category.type}:`);
+      category.items.forEach(item => {
+        console.log(`    - ${JSON.stringify(item)}`);
+      });
+    });
+  });
 });
 
   watchEffect(() => {
@@ -350,7 +350,7 @@ watchEffect(() => {
   });
 };
 
-const addTextWithSpacing = (doc, text, x, y, spacing) => {
+const addTextWithSpacing = (doc, text: string, x: number, y: number, spacing: number) => {
   for (let i = 0; i < text.length; i++) {
     const currentLetter = text[i];
     const letterWidth = doc.getStringUnitWidth(currentLetter) * doc.internal.getFontSize() / doc.internal.scaleFactor;
@@ -360,76 +360,117 @@ const addTextWithSpacing = (doc, text, x, y, spacing) => {
   }
 };
 
+function countNonEmptyCategories() {
 
+  // Loop through each page in pagesData
+  pagesData.value.forEach(page => {
+    // Loop through each key in the page object
+    for (let key in page) {
+      // Check if the property is an array and it's not empty
+      if (Array.isArray(page[key]) && page[key].length > 0) {
+        // If the key is already in the counts object, increment its value, otherwise set it to 1
+        counts[key] = (counts[key] || 0) + 1;
+      }
+    }
+  });
+  
+  return counts;
+}
 
+watchEffect(() => {
+  countNonEmptyCategories();  
+})
+
+function calculateTextProperties(name: string, baseXPos: number = 163, baseFontSize: number = 50): { xPos: number; fontSize: number } {
+  const nameLength = name.length;
+  
+  let stepSize = 0;
+  let charsPerStep = 1;
+  let fontSize = baseFontSize;
+  if (nameLength < 15) {
+    stepSize = 4;
+  } else if(nameLength >= 15 && nameLength < 20){
+    fontSize = 40; // Reduce font size for names with 15 characters or more
+    stepSize = 3; // Increase the number of characters per step
+  } else if (nameLength >= 20 && nameLength <= 30) {
+    fontSize = 30;
+    stepSize = 2.1;
+  } else {
+    fontSize = 20;
+    stepSize = 1.4;
+  }
+  // Calculate the number of steps to move
+  const steps = Math.floor((nameLength - 3) / charsPerStep);
+
+  // Calculate the new x position
+  let xPos = baseXPos - (steps * stepSize);
+
+  return { xPos, fontSize };
+}
+function calculateXPosition(text: string, basePosition: number = 179, capitalStep: number = 1.5, otherStep: number = 1, numberStep: number = 1.4): number {
+  let currentPosition = basePosition;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    // Check if the character is a capital letter
+    if (char === char.toUpperCase() && char.match(/[A-Z]/)) {
+      currentPosition -= capitalStep;
+    } else if (char.match(/[0-9]/)) { // Check if the character is a number
+      currentPosition -= numberStep;
+    } else {
+      currentPosition -= otherStep;
+    }
+  }
+
+  return currentPosition;
+}
 
 
 
 const generatePDF = () => {
-  // Initialize jsPDF with the first page in landscape orientation
-  const doc = new jsPDF('landscape');
   
-  // Add image to the first page
+  const doc = new jsPDF('landscape');
+
   const addGrayPadding = (doc) => {
-    const paddingInMM = 10.58; // Approx 40px in mm
+    const paddingInMM = 10.58;
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    // Set gray fill color
-    doc.setFillColor(50, 57, 60); // Light gray color (RGB)
-    // Draw rectangle slightly larger than the page
+    doc.setFillColor(50, 57, 60);
     doc.rect(0, 0, pageWidth, paddingInMM, 'F');
-    // Bottom border
     doc.rect(0, pageHeight - paddingInMM, pageWidth, paddingInMM, 'F');
-    // Left border
     doc.rect(0, 0, paddingInMM, pageHeight, 'F');
-    // Right border
     doc.rect(pageWidth - paddingInMM, 0, paddingInMM, pageHeight, 'F');
   };
     addGrayPadding(doc);
     const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
 
-    // Set the fill color for the green box
-    doc.setFillColor(219, 231, 214); // RGB for green
+    doc.setFillColor(219, 231, 214); 
 
-    // Coordinates for the top-left corner of the box
-    const x = 40; // 10mm from the left edge of the page
-    const y = 60; // 40mm from the top edge of the page
+    const x = 40; 
+    const y = 60; 
 
-    // The width and height of the box
-    const rectWidth = pageWidth; // Box width of page width minus 20mm for padding
-    const rectHeight = 90; // A height of 60mm
+    const rectWidth = pageWidth;
+    const rectHeight = 90; 
 
-    // Draw the filled rectangle
     doc.rect(x, y, rectWidth, rectHeight, 'F');
-
-  // Add gray padding to the first page
   
   doc.addImage(wastePick, "PNG", 10.58, 0, 70, 220);
   doc.addImage(horizontalLeafs, "png", 0, 0, 297, 210);
 
   const customDrawCell = (data) => {
-    // Set border color to green
-    doc.setDrawColor(126, 194, 66); // RGB for green
-    doc.setLineWidth(0.5); // Set a thicker line for the header underline
-      // Draw the header line for the first cell
-      if (data.row.index === 0) { // Check if it's the first cell of the first row
-      // Set the color and width of the line for the header
-      
+    doc.setDrawColor(126, 194, 66);
+    doc.setLineWidth(0.5);
+
+    if (data.row.index === 0 && data.cell.section === 'head') {
       doc.line(data.cell.x, data.cell.y + data.cell.height, data.cell.x + data.cell.width, data.cell.y + data.cell.height);
     }
-
-    // Draw top border for each cell
-    if (data.row.index === 0) { // Check if it's the first row
+    if (data.row.index === 0 && data.cell.section === 'head') {
       doc.line(data.cell.x, data.cell.y, data.cell.x + data.cell.width, data.cell.y);
     }
-
-    // Draw bottom border for each cell
-    if (data.row.index === data.table.body.length - 1) { // Check if it's the last row
+    if (data.cell.section === 'body' && data.row.index === data.table.body.length - 1) {
       doc.line(data.cell.x, data.cell.y + data.cell.height, data.cell.x + data.cell.width, data.cell.y + data.cell.height);
     }
-    
   };
 
   doc.addImage(leaf1, "png", 137, 20, 10, 8);
@@ -450,55 +491,18 @@ const generatePDF = () => {
   doc.setFontSize(15);
   doc.setTextColor(35, 31, 32);
   doc.setFont('inter', 'normal');
-  addTextWithSpacing(doc, "PROUDLY PRESENTED TO", 144, 75, 0.5);
+  addTextWithSpacing(doc, "PROUDLY PRESENTED TO", 142, 75, 0.5);
 
-  const name = certificateData.value.retiringEntityName;
-  const nameLength = name.length;
+  const name = certificateData.value.retiringEntityName || "N/A";
+  const yPos = 95;
 
-  let xPos= 158; // Starting position for x
-  const yPos = 95; // Fixed Y position
+  const { xPos, fontSize } = calculateTextProperties(name);
 
-  doc.setFontSize(50);
+  doc.setFontSize(fontSize);
   doc.setTextColor(88, 185, 71);
   doc.setFont('Open Sans', 'bold');
-
-  // Adjust xPosition based on the length of the name
-  if (nameLength === 3) {
-      xPos = 157; // Position for names up to 3 characters
-  } else if (nameLength === 4) {
-      xPos = 160; // Adjust position for names up to 6 characters
-  } else if (nameLength === 5) {
-      xPos = 156; // Adjust position for names up to 6 characters
-  } else if (nameLength === 6) {
-      xPos = 153; // Adjust position for names up to 6 characters
-  } else if (nameLength === 7) {
-      xPos = 149; // Adjust for names up to 9 characters
-  } else if (nameLength === 8) {
-      xPos = 145; // Adjust for names up to 12 characters
-  } else if (nameLength === 9) {
-      xPos = 141; // Adjust for names up to 15 characters
-  } else if (nameLength === 10) {
-      xPos = 137; // Adjust for names up to 18 characters
-  } else if (nameLength === 11) {
-      xPos = 133; // Adjust for names up to 18 characters
-  } else if (nameLength === 12) {
-      xPos = 129; // Adjust for names up to 18 characters
-  } else if (nameLength === 13) {
-      xPos = 125; // Adjust for names up to 18 characters
-  } else if (nameLength === 14) {
-      xPos = 121; // Adjust for names up to 18 characters
-  } else if (nameLength === 15) {
-      xPos = 117; // Adjust for names up to 18 characters
-  } else if (nameLength === 16) {
-      xPos = 112; // Adjust for names up to 18 characters
-  } else if (nameLength === 17) {
-      xPos = 107; // Adjust for names up to 18 characters
-  } else if (nameLength <= 18) {
-      xPos = 100; // Adjust for names up to 20 characters
-  } // Continue adding more conditions if needed
-
-  // Render the text at the calculated position
   doc.text(name, xPos, yPos);
+
 
   doc.setDrawColor(0, 0, 0); 
   doc.setLineWidth(0.5);
@@ -509,10 +513,13 @@ const generatePDF = () => {
   doc.setFont('inter', 'normal');
   addTextWithSpacing(doc, "FOR OFFSETTING", 154, 110, 0.5);
 
+  const weightText ="100 000 KG" || "N/A";
+  let xPosition = calculateXPosition(weightText);
+
   doc.setFontSize(15);
   doc.setTextColor(32, 105, 72);
   doc.setFont('Open Sans', 'bold');
-  doc.text(certificateData.value.amount + " KG", 174, 120);
+  doc.text(weightText, xPosition, 120);
 
   doc.setFontSize(15);
   doc.setTextColor(35, 31, 32);
@@ -530,50 +537,16 @@ const generatePDF = () => {
   doc.text("check on", 171, 180);
   doc.text("blockchain!", 169, 185);
 
-  const text = plastciValuesString.value;
-  const textLength = text.length;
-  console.log(textLength);
-  
+  const plasticText = plastciValuesString.value || "N/A";
+  xPosition = calculateXPosition(plasticText);
 
-
-  let xPosition = 0;
-
-  if (textLength === 3) {
-      xPosition = 175; // For shorter text
-  }
-  else if (textLength < 10) {
-  xPosition = 170; // For shorter text
-} else if (textLength >= 10 && textLength < 15) {
-  xPosition = 165; // For medium length text
-} else if (textLength >= 15 && textLength < 20) {
-  xPosition = 160; // For longer text
-} else if (textLength >= 20 && textLength < 25) {
-  xPosition = 155; // For longer text
-} else if (textLength >= 25 && textLength < 27) {
-  xPosition = 150; // For longer text
-  } else if (textLength >= 27 && textLength < 30) { 
-  xPosition = 147; // For longer text
-  } else if (textLength >= 30 && textLength < 35) {
-  xPosition = 145; // For longer text
-} else if (textLength >= 35 && textLength < 40) {
-  xPosition = 140; // For longer text
-} else if (textLength >= 40 && textLength < 45) {
-  xPosition = 135; // For longer text
-} else if (textLength >= 45 && textLength < 50) { 
-  xPosition = 130; // For longer text
-} 
 
   doc.setFontSize(15);
   doc.setTextColor(32, 105, 72);
   doc.setFont('Open Sans', 'bold');
-  doc.text(text, xPosition, 140);
+  doc.text(plasticText, xPosition, 140);
 
-
-  // Check if there's additional content for the first page
   if (pagesData.value.length > 0) {
-    // Check if the first item in pagesData has specific content to add
-
-    const firstPageData = pagesData.value[0];
 
     doc.addPage('a4', 'portrait');
     addGrayPadding(doc);
@@ -592,118 +565,303 @@ const generatePDF = () => {
 
       doc.setDrawColor(0, 0, 0); 
 
-      doc.setLineWidth(1.5);
+      doc.setLineWidth(1.4);
       const pageWidth = doc.internal.pageSize.getWidth();
-      doc.line(95, 35, pageWidth - 95, 35);
+      doc.line(97, 37, pageWidth - 97, 37);
 
       doc.setFontSize(15);
       doc.setTextColor(32, 105, 72);
       doc.setFont('Open Sans', 'bold');
-      doc.text("Name of Certificate Holder:", 20, 45);
+      doc.text("Name of Certificate Holder:", 20, 48);
       doc.setTextColor(0,0,0);
-      doc.text(certificateData.value.retiringEntityName, 84, 45);
-
-      doc.setTextColor(32, 105, 72);
-      doc.text("Credit Information", 20, 55);
-
-      doc.autoTable({ 
-          html: '#creditTable', 
-          useCss: true, 
-          startY: 60,
-          didDrawCell: customDrawCell,
-        styles: {
-        lineWidth: 0, // Width of the border
-      },
-    });
-
-    doc.text("Collection Information", 20, 85);
-    doc.autoTable({ 
-          html: '#collectionsTable', 
-          useCss: true, 
-          didDrawCell: customDrawCell,
-          startY: 90,
-        styles: {
-        lineWidth: 0, // Width of the border
-      },
-    });
-    console.log(pagesData.value);
-    console.log(firstPageData);
-    
-    
-     let yPosition = 115;
-     if (firstPageData.binaryFiles[0]) {
-        yPosition = addTitle(doc, "Documents", yPosition);
-        yPosition = addTable(doc, '#binaryTable', yPosition, customDrawCell);
-    }
-    if (firstPageData.mediaFiles[0]) {
-          yPosition = addTitle(doc, "Photos", yPosition);
-          yPosition = addTable(doc, '#mediaTable', yPosition, customDrawCell);
-      }
-    if (firstPageData.locations[0]) {
-        yPosition = addTitle(doc, "Locations", yPosition);
-        yPosition = addTable(doc, '#locations', yPosition, customDrawCell);
-    }
-    if (firstPageData.materialDetails[0]) {
-        yPosition = addTitle(doc, "Materials", yPosition);
-        yPosition = addTable(doc, '#materials', yPosition, customDrawCell);
-    }
+      doc.text(certificateData.value.retiringEntityName, 84, 48);
   }
+
   doc.setLineWidth(0.5)
   function addTitle(doc, title, yPosition) {
     doc.setFontSize(15);
     doc.setTextColor(32, 105, 72);
     doc.setFont('Open Sans', 'bold');
     doc.text(title, 20, yPosition);
-    return yPosition + 5; // Increase yPosition for the next content
+    return yPosition + 5; 
 }
 
-  function addTable(doc, selector, yPosition, customDrawCell) {
-      doc.autoTable({ 
-          html: selector, 
-          useCss: true, 
-          didDrawCell: customDrawCell,
-          styles: {
-              lineWidth: 0,
-          },
-          startY: yPosition,
-      });
+  function addTitle(doc, title, yPosition) {
+  doc.setFontSize(15);
+  doc.setTextColor(32, 105, 72);
+  doc.setFont('Open Sans', 'bold');
+  doc.text(title, 20, yPosition);
+  return yPosition + 5;
+}
 
-      return doc.lastAutoTable.finalY + 10; // Update yPosition after the table
-  }
+function prepareMaterialDataForPdf(materialDetails, primaryHeaders) {
+  const tableData = materialDetails.map(material => {
+    return primaryHeaders.map(header => {
+      return material[header] || '-';
+    });
+  });
 
-  let yPosition = 30; // Initial yPosition
+  return tableData;
+}
 
-  for (let i = 1; i < pagesData.value.length; i++) {
-      // Add a new page
-      doc.addPage('a4', 'portrait');
+function prepareSecondaryMaterialDataForPdf(materialDetails, secondaryHeaders) {
+  const tableData = materialDetails.map(material => {
+    return secondaryHeaders.map(header => {
+      return material[header] || '-';
+    });
+  });
+
+  return tableData;
+}
+
+function addMaterialTableToPdf(doc, materialDetails, primaryHeaders, startY, title) {
+  const tableData = prepareMaterialDataForPdf(materialDetails, primaryHeaders);
+  startY += 10;
+  startY = addTitle(doc, title, startY); 
+  doc.autoTable({
+    startY: startY,
+    head: [primaryHeaders],
+    body: tableData,
+    didDrawCell: customDrawCell,
+    styles: { 
+      cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 }, 
+      fontSize: 11,
+      lineWidth: 0,
+      align: 'center',
+      fillColor: false,
+      halign: 'center',
+
+    },
+    headStyles: {
+      cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 }, 
+      fillColor: false,
+      textColor: [0,0,0],
+      fontStyle: 'bold',
+      align: 'center',
+      fontSize: 12,
+    },
+    columnStyles: { 
+    0: { cellWidth: 'auto' },
+    1: { cellWidth: 'auto' }, 
+    halign: 'center',
+    fillColor: false,
+     
+    },
+  });
+
+  return doc.lastAutoTable.finalY;
+}
+
+function addSecondaryMaterialTableToPdf(doc, materialDetails, secondaryHeaders, startY) {
+  const tableData = prepareSecondaryMaterialDataForPdf(materialDetails, secondaryHeaders);
+  startY -= 10;
+  doc.autoTable({
+    startY: startY,
+    head: [secondaryHeaders],
+    body: tableData,
+    didDrawCell: customDrawCell,
+    styles: { 
+      fillColor: false,
+      cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 }, 
+      lineWidth: 0,
+      halign: 'center',
+
+    },
+    headStyles: {
+      fillColor: false,
+      cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 }, 
+      textColor: [0,0,0],
+      fontStyle: 'bold',
+      halign: 'center',
+      fontSize: 12,
+    },
+    columnStyles: {
+      fillColor: false,
+      0: { cellWidth: 'auto' },
+      1: { cellWidth: 'auto' }, 
+      halign: 'center', 
+      
+
+     },
+  });
+
+  return doc.lastAutoTable.finalY; 
+}
+
+function addSimpleTable(doc, title, headers, data, startY) {
+  startY = addTitle(doc, title, startY);
+
+  doc.autoTable({
+    startY: startY,
+    head: [headers],
+    body: data,
+    didDrawCell: customDrawCell,
+    styles: { 
+      cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },  
+      fontSize: 11,
+      lineWidth: 0,
+      halign: 'center',
+      fillColor: false,
+    },
+    headStyles: {
+      cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 }, 
+      halign: 'center',
+      textColor: [0,0, 0],
+      fontStyle: 'bold',
+      fontSize: 12,
+      fillColor: false,
+    },
+    columnStyles: { 
+      0: { cellWidth: 'auto' },
+      1: { cellWidth: 'auto' },
+      halign: 'center',
+      fillColor: false,
+    },
+  });
+
+  return doc.lastAutoTable.finalY;
+}
+
+function addTableWithLinks(doc, title, data, startY) {
+  startY = addTitle(doc, title, startY);
+  doc.autoTable({
+    startY: startY,
+    theme: 'grid',
+    head: [['Name', 'URL']],
+    styles: { 
+      cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },  
+      fontSize: 11,
+      lineWidth: 0,
+      halign: 'center',
+      fillColor: false,
+    },
+    headStyles: {
+      fillColor: false,
+      cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 }, 
+      halign: 'center',
+      textColor: [0,0, 0],
+      fontStyle: 'bold',
+      fontSize: 12,
+    },
+    columnStyles: {
+      0: { cellWidth: 'auto' },
+      1: { cellWidth: 'auto' },
+      halign: 'center',
+      fillColor: false,
+    },
+    willDrawCell: (data) => {
+      if (data.column.index === 1 && data.cell.section === 'body') {
+        data.cell.text = '';
+      }
+    },
+    body: data.map(item => [item.name, item.url]),
+    didDrawCell: (data) => {
+      doc.setDrawColor(126, 194, 66); 
+      doc.setLineWidth(0.5); 
+      if (data.row.index === 0 && data.cell.section === 'head') {
+        doc.line(data.cell.x, data.cell.y + data.cell.height, data.cell.x + data.cell.width, data.cell.y + data.cell.height);
+      }
+      if (data.row.index === 0 && data.cell.section === 'head') {
+        doc.line(data.cell.x, data.cell.y, data.cell.x + data.cell.width, data.cell.y);
+      }
+      if (data.cell.section === 'body' && data.row.index === data.table.body.length - 1) {
+        doc.line(data.cell.x, data.cell.y + data.cell.height, data.cell.x + data.cell.width, data.cell.y + data.cell.height);
+      }
+      if (data.column.index === 1 && data.cell.section === 'body') {
+        
+        const url = data.cell.raw;
+        if (url) {
+          doc.setTextColor(0, 0, 0); 
+          const textWidth = doc.getTextWidth(url);
+          const textPosX = data.cell.x + (data.cell.width - textWidth) / 2;
+          const textPosY = data.cell.y + data.cell.height / 1.5;
+          doc.text(url, textPosX, textPosY);
+          doc.link(textPosX, data.cell.y, textWidth, data.cell.height, { url: url });
+        }
+      }
+    },
+
+  });
+
+  return doc.lastAutoTable.finalY; 
+}
+
+function addAllTables(doc, pagesData, primaryHeaders, secondaryHeaders) {
+  let yPosition = 0; 
+  let marginBetweenTables = 10;
+
+  // Iterate over each page
+  pagesData.value.forEach((page, pageIndex) => {
+    if (pageIndex > 0) {
+      doc.addPage();
       addGrayPadding(doc);
       doc.addImage(verticalLeafs, "png", 0, 0, 210, 297);
+      yPosition = 10;
+    }
 
-      // Add titles and tables
-      if (pagesData.value[i].binaryFiles[0]) {
-          yPosition = addTitle(doc, "Documents", yPosition);
-          yPosition = addTable(doc, '#binaryTable', yPosition, customDrawCell);
-      }
+    if (pageIndex === 0) {
+        yPosition = 49;
+        const credit = [certificateData.value.amount + " KG", creditData.value.id, retiredDate.value]
+        yPosition = addSimpleTable(doc, "Credit Information", ["Amount", "Credit ID", "Retired Date"], [credit], yPosition + marginBetweenTables);
 
-      if (pagesData.value[i].mediaFiles[0]) {
-          yPosition = addTitle(doc, "Photos", yPosition);
-          yPosition = addTable(doc, '#mediaTable', yPosition, customDrawCell);
-      } 
-      if (pagesData.value[i].locations[0]) {
-          yPosition = addTitle(doc, "Locations", yPosition);
-          yPosition = addTable(doc, '#locations', yPosition, customDrawCell);
+        const collection = [collectionAmount.value + " KG", applicantData.value, issuanceDate.value];
+        yPosition = addSimpleTable(doc, "Collection Information", ["Amount", "Organization", "Issuance Date"], [collection], yPosition + marginBetweenTables);
       }
-      if (pagesData.value[i].materialDetails[0]) {
-          yPosition = addTitle(doc, "Materials", yPosition);
-          yPosition = addTable(doc, '#materials', yPosition, customDrawCell);
+    page.forEach(category => {
+      switch (category.type) {
+        case 'location':
+          addLocations(category.items);
+          break;
+        case 'material':
+          addMaterialData(category.items);
+          break;
+        case 'media':
+          addMediaFiles(category.items);
+          break;
+        case 'binary':
+          addBinaryFiles(category.items);
+          addedBinaryFiles.value = true;
+          break;
       }
-      yPosition = 30;
+    });
+  });
+
+  function addLocations(locations) {
+    const locationsData = locations.map(loc => [loc.country, loc.longitude, loc.latitude]);
+    yPosition = addSimpleTable(doc, "Locations", ["Country", "Longitude", "Latitude"], locationsData, yPosition + marginBetweenTables);
   }
 
+  function addMediaFiles(mediaFiles) {
+    const photosTableData = mediaFiles.map(mf => ({ name: mf.name, url: mf.url }));
+    yPosition = addTableWithLinks(doc, "Photos", photosTableData, yPosition + marginBetweenTables);
+  }
+
+  function addMaterialData(materialDetails) {
+    yPosition = addMaterialTableToPdf(doc, materialDetails, primaryHeaders, yPosition, "Materials");
+    yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
+
+    if (secondaryHeaders.length > 0) {
+      yPosition = addSecondaryMaterialTableToPdf(doc, materialDetails, secondaryHeaders, yPosition);
+      yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
+    }
+  }
+
+  function addBinaryFiles(binaryFiles) {
+    if(addedBinaryFiles.value === false) {
+    const binaryFilesTableData = binaryFiles.map(bf => ({ name: bf.name, url: bf.url }));
+    yPosition = addTableWithLinks(doc, "Documents", binaryFilesTableData, yPosition + marginBetweenTables);
+  } else {
+    yPosition -= 10;
+    const binaryFilesTableData = binaryFiles.map(bf => ({ name: bf.name, url: bf.url }));
+    yPosition = addTableWithLinks(doc, "", binaryFilesTableData, yPosition + marginBetweenTables);
+  }
+  }
+}
+
+// Call the function to add all tables
+addAllTables(doc, pagesData, primaryHeaders.value, secondaryHeaders.value);
   doc.save('certificate.pdf');
 };
-
-
 
 </script>
 <template>
@@ -760,12 +918,11 @@ const generatePDF = () => {
     <img src="../assets/greenlogo.svg" alt="" class="greenLogo">
   </page>
 
-
   <div v-for="(page, pageIndex) in pagesData" :key="pageIndex">
-    <page size="A4" :id="`pdfContent-${pageIndex}`" class="page2">
-      <div class="innerBox2">
-        <!-- ... other elements ... -->
-        <div v-if="pageIndex === 0">
+      <page size="A4" :id="`pdfContent-${pageIndex}`" class="page2">
+        <div class="innerBox2">
+          <!-- ... other elements ... -->
+          <div v-if="pageIndex === 0">
           <img src="../assets/leaf1.png" alt="" class="leaf7">
       <div class="titleBoxPage2">
         <h1>
@@ -806,262 +963,96 @@ const generatePDF = () => {
       </div>
     </div>
     <div class="infoBox">
-
-    <div v-if="page.binaryFiles.length">
-      <p class="certificateHodler">Documents</p>
-      <table class="certificateTable" id="binaryTable">
-        <!-- Render binaryFiles table here -->
-        <tr class="tableTitle">
-          <th>Name</th>
-          <th>URL</th>
-        </tr>
-        <tr v-for="(binaryFile, index) in page.binaryFiles" :key="`binary-${pageIndex}-${index}`">
-          <td>{{ binaryFile.name }}</td>
-          <td><a :href="binaryFile.url" target="_blank">{{ binaryFile.url }}</a></td>
-        </tr>
-      </table>
-    </div>
-    
-    <div v-if="page.mediaFiles.length">
-      <p class="certificateHodler">Photos</p>
-      <table class="certificateTable" id="mediaTable">
-        <!-- Render mediaFiles table here -->
-        <tr class="tableTitle">
-          <th>Name</th>
-          <th>URL</th>
-        </tr>
-        <tr v-for="(mediaFile, index) in page.mediaFiles" :key="`binary-${pageIndex}-${index}`">
-          <td>{{ mediaFile.name }}</td>
-          <td><a :href="mediaFile.url" target="_blank">{{ mediaFile.url }}</a></td>
-        </tr>
-      </table>
-    </div>
-
-    <div v-if="page.materialDetails.length">
-      <p class="certificateHodler">Material</p>
-      <table class="certificateTable" id="materials">
-        <!-- Render materialDetails table here -->
-        <tr class="tableTitle">
-          <th>Event</th>
-          <th v-for="header in primaryHeaders" :key="header">{{ header }}</th>
-        </tr>
-        <tr v-for="(material, index) in page.materialDetails" :key="`material-primary-${pageIndex}-${index}`">
-          <td>{{ index + 1 }}</td>
-          <td v-for="header in primaryHeaders" :key="`${pageIndex}-${index}-${header}`">
-            {{ material[header] ? material[header] : '-' }}
-          </td>
-        </tr>
-      </table>
-    </div>
-
-    <div v-if="page.locations.length">
-      <p class="certificateHodler">Location information</p>
-      <table class="certificateTable" id="locations">
-        <!-- Render locations table here -->
-        <tr class="tableTitle">
-          <th>Country</th>
-          <th>Longitude</th>
-          <th>Latitude</th>
-        </tr>
-        <tr v-for="(location, index) in page.locations" :key="`binary-${pageIndex}-${index}`">
-          <td>{{ location.country }}</td>
-          <td>{{ location.longitude }}</td>
-          <td>{{ location.latitude }}</td>
-        </tr>
-      </table>
-    </div>
-  </div>
-      </div>
-      <img src="../assets/leaf3.png" class="leaf8" alt="">
-      <img src="../assets/leaf9.svg" class="leaf9" alt="">
-      <img src="../assets/leaf10.svg" class="leaf10" alt="">
-      <img src="../assets/leaf11.svg" class="leaf11" alt="">
-      <img src="../assets/leaf12.svg" class="leaf12" alt="">
-      <img src="../assets/leaf13.svg" class="leaf13" alt="">
-      <!-- ... other images or elements ... -->
-    </page>
-  </div>
-  <!-- <page size="A4" id="pdfContent2" class="page2">
-      <div class="innerBox2">
-        <img src="../assets/leaf1.png" alt="" class="leaf7">
-        <div class="titleBoxPage2">
-          <h1>
-            plastic credit
-            <span class="highlight">certificate</span>
-            <span class="detail"> details</span>
-          </h1>
-        </div>
-        <div class="horizontal-line3"></div>
-        <div class="infoBox">
-          <p class="certificateHodler">Name of Certificate Holder: <span v-if="certificateData">{{ certificateData.retiringEntityName  }}</span></p>
-
-          <p class="certificateHodler">Credit Information</p>
-          <table class="certificateTable">
-            <tr class="tableTitle">
-              <th>Amount</th>
-              <th>ID</th>
-              <th>Retired Date</th>
-            </tr>
-            <tr>
-              <td v-if="certificateData">{{ certificateData.amount + " KG" }}</td>
-              <td v-if="creditData">{{ creditData.id}}</td>
-              <td>{{ retiredDate }}</td>
-            </tr>
-      
-          </table>
-          <div v-if="secondaryHeaders.length === 0">
-            <p class="certificateHodler">Material</p>
-            <table class="certificateTable">
-              <tr class="tableTitle">
-                <th>Event</th>
-              
-                <th v-for="header in primaryHeaders" :key="header">
-                  {{ header }} 
-                </th>
-              </tr>
-         
-              <tr v-for="(material, index) in materialDetails" :key="index">
-                <td>{{ index + 1 }}</td> 
-                
-                <td v-for="header in currentHeaders" :key="`${index}-${header}`">
-                  {{ material[header] ? material[header] : '-' }}
-                </td>
-              </tr>
-            </table>
-          </div>
-
-          <div v-else-if="secondaryHeaders.length > 0">
-            <p class="certificateHodler">Material</p>
-            <table class="certificateTable">
-              <tr class="tableTitle">
-                <th>Event</th>
-            
-                <th v-for="header in primaryHeaders" :key="header">
-                  {{ header }} 
-                </th>
-              </tr>
-
-              <tr v-for="(material, index) in materialDetails" :key="index">
-                <td>{{ index + 1 }}</td> 
-            
-                <td v-for="header in primaryHeaders" :key="`${index}-${header}`">
-                  {{ material[header] ? material[header] : '-' }}
-                </td>
-              </tr>
-            </table>
-            <table class="certificateTable">
-              <tr class="tableTitle">
-            
-                <th v-for="header in secondaryHeaders" :key="header">
-                  {{ header }} 
-                </th>
-              </tr>
-        
-              <tr v-for="(material, index) in materialDetails" :key="index">
-           
-                <td v-for="header in secondaryHeaders" :key="`${index}-${header}`">
-                  {{ material[header] ? material[header] : '-' }}
-                </td>
-              </tr>
-            </table>
-          </div>
-
-
-          <p class="certificateHodler">Location Information</p>
-          <table class="certificateTable">
-            <tr class="tableTitle">
-              <th>Country</th>
-              <th>Longitude</th>
-              <th>Latitude</th>
-            </tr>
-            <tr v-for="(location, index) in locations" :key="index">
-              <td>{{ location.country }}</td>
-              <td>{{ location.longitude }}</td>
-              <td>{{ location.latitude }}</td>
-            </tr>
-
-         
-          </table>
-
-          <p class="certificateHodler">Photos</p>
-            <table class="certificateTable">
-              <tr class="tableTitle">
-                <th>Name</th>
-                <th>URL</th>
-              </tr>
-           
-              <tr v-for="(mediaFile, index) in mediaFileUrls" :key="`media-${index}`">
-                <td>{{ mediaFile.name }}</td>
-                <td><a :href="mediaFile.url" target="_blank">{{ mediaFile.url }}</a></td>
-              </tr>
-            </table>
-
-
-            <p class="certificateHodler">Documents</p>
-              <table class="certificateTable">
+          <div v-for="category in page" :key="`category-${pageIndex}-${category.type}`">
+            <!-- Binary Files Table -->
+            <div v-if="category.type === 'binary'">
+              <p class="certificateHodler">Documents</p>
+              <table class="certificateTable" id="binaryTable">
                 <tr class="tableTitle">
                   <th>Name</th>
                   <th>URL</th>
                 </tr>
-            
-                <tr v-for="(binaryFile, index) in binaryFilesUrls" :key="`binary-${index}`">
+                <tr v-for="(binaryFile, index) in category.items" :key="`binary-${pageIndex}-${index}`">
                   <td>{{ binaryFile.name }}</td>
                   <td><a :href="binaryFile.url" target="_blank">{{ binaryFile.url }}</a></td>
                 </tr>
               </table>
-          <div v-if="createThirdPage===false">
-            <p class="certificateHodler">Collection Information</p>
-            <table class="certificateTable">
-              <tr class="tableTitle">
-                <th>Amount</th>
-                <th>Organization</th>
-                <th>Issuance Date</th>
-              </tr>
-              <tr>
-                <td>{{ collectionAmount + " KG"}}</td>
-                <td>{{ applicantData }}</td>
-                <td>{{ issuanceDate }}</td>
-              </tr>
-            </table>
+            </div>
+
+            <!-- Media Files Table -->
+            <div v-if="category.type === 'media'">
+              <p class="certificateHodler">Photos</p>
+              <table class="certificateTable" id="mediaTable">
+                <tr class="tableTitle">
+                  <th>Name</th>
+                  <th>URL</th>
+                </tr>
+                <tr v-for="(mediaFile, index) in category.items" :key="`media-${pageIndex}-${index}`">
+                  <td>{{ mediaFile.name }}</td>
+                  <td><a :href="mediaFile.url" target="_blank">{{ mediaFile.url }}</a></td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- Material Details Table -->
+            <div v-if="category.type === 'material'">
+              <p class="certificateHodler">Material</p>
+              <table class="certificateTable">
+                <tr class="tableTitle">
+                  <th v-for="header in primaryHeaders" :key="header">{{ header }}</th>
+                </tr>
+                <tr v-for="(material, index) in category.items" :key="`material-${pageIndex}-${index}`">
+                  <td v-for="header in primaryHeaders" :key="`${pageIndex}-${index}-${header}`">
+                    {{ material[header] ? material[header] : '-' }}
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Additional table for Secondary Headers -->
+              <div v-if="secondaryHeaders.length > 0">
+                <table class="certificateTable">
+                  <tr class="tableTitle">
+                    <th v-for="header in secondaryHeaders" :key="header">{{ header }}</th>
+                  </tr>
+                  <tr v-for="(material, index) in category.items" :key="`material-secondary-${pageIndex}-${index}`">
+                    <td v-for="header in secondaryHeaders" :key="`${pageIndex}-${index}-${header}`">
+                      {{ material[header] ? material[header] : '-' }}
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+
+            <!-- Location Information Table -->
+            <div v-if="category.type === 'location'">
+              <p class="certificateHodler">Location information</p>
+              <table class="certificateTable" id="locations">
+                <tr class="tableTitle">
+                  <th>Country</th>
+                  <th>Longitude</th>
+                  <th>Latitude</th>
+                </tr>
+                <tr v-for="(location, index) in category.items" :key="`location-${pageIndex}-${index}`">
+                  <td>{{ location.country }}</td>
+                  <td>{{ location.longitude }}</td>
+                  <td>{{ location.latitude }}</td>
+                </tr>
+              </table>
+            </div>
           </div>
         </div>
+
+ 
       </div>
-      <img src="../assets/leaf3.png" class="leaf8" alt="">
-      <img src="../assets/leaf9.svg" class="leaf9" alt="">
-      <img src="../assets/leaf10.svg" class="leaf10" alt="">
-      <img src="../assets/leaf11.svg" class="leaf11" alt="">
-      <img src="../assets/leaf12.svg" class="leaf12" alt="">
-      <img src="../assets/leaf13.svg" class="leaf13" alt="">
-    </page> -->
-<!-- 
-    <div v-if="createThirdPage===true">
-      <page class="page3">
-        <div class="innerBox2">
-          <div class="infoBox3">
-          <p class="certificateHodler">Collection Information</p>
-            <table class="certificateTable">
-              <tr class="tableTitle">
-                <th>Amount</th>
-                <th>Organization</th>
-                <th>Issuance Date</th>
-              </tr>
-              <tr>
-                <td>{{ collectionAmount + " KG"}}</td>
-                <td>{{ applicantData }}</td>
-                <td>{{ issuanceDate }}</td>
-              </tr>
-            </table>
-        </div>
-      </div>
-      <img src="../assets/leaf3.png" class="leaf8" alt="">
-      <img src="../assets/leaf9.svg" class="leaf9" alt="">
-      <img src="../assets/leaf10.svg" class="leaf10" alt="">
-      <img src="../assets/leaf11.svg" class="leaf11" alt="">
-      <img src="../assets/leaf12.svg" class="leaf12" alt="">
-      <img src="../assets/leaf13.svg" class="leaf13" alt="">
+        <img src="../assets/leaf3.png" class="leaf8" alt="">
+        <img src="../assets/leaf9.svg" class="leaf9" alt="">
+        <img src="../assets/leaf10.svg" class="leaf10" alt="">
+        <img src="../assets/leaf11.svg" class="leaf11" alt="">
+        <img src="../assets/leaf12.svg" class="leaf12" alt="">
+        <img src="../assets/leaf13.svg" class="leaf13" alt="">
       </page>
     </div>
-     -->
+  
 </template>
 <style scoped>
 page {
