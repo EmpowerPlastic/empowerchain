@@ -62,3 +62,76 @@ export const getDetailsList = (data: any) => {
     locationPointers: locationPointersArray,
   };
 };
+
+export const addTextWithSpacing = (
+  doc,
+  text: string,
+  x: number,
+  y: number,
+  spacing: number
+) => {
+  for (let i = 0; i < text.length; i++) {
+    const currentLetter = text[i];
+    const letterWidth =
+      (doc.getStringUnitWidth(currentLetter) * doc.internal.getFontSize()) /
+      doc.internal.scaleFactor;
+
+    doc.text(currentLetter, x, y);
+    x += letterWidth + spacing;
+  }
+};
+
+export function calculateTextProperties(
+  name: string,
+  baseXPos: number = 163,
+  baseFontSize: number = 50
+): { xPos: number; fontSize: number } {
+  const nameLength = name.length;
+
+  let stepSize = 0;
+  let charsPerStep = 1;
+  let fontSize = baseFontSize;
+  if (nameLength < 15) {
+    stepSize = 4;
+  } else if (nameLength >= 15 && nameLength < 20) {
+    fontSize = 40; // Reduce font size for names with 15 characters or more
+    stepSize = 3; // Increase the number of characters per step
+  } else if (nameLength >= 20 && nameLength <= 30) {
+    fontSize = 30;
+    stepSize = 2.1;
+  } else {
+    fontSize = 20;
+    stepSize = 1.4;
+  }
+  // Calculate the number of steps to move
+  const steps = Math.floor((nameLength - 3) / charsPerStep);
+
+  // Calculate the new x position
+  let xPos = baseXPos - steps * stepSize;
+
+  return { xPos, fontSize };
+}
+export function calculateXPosition(
+  text: string,
+  basePosition: number = 179,
+  capitalStep: number = 1.5,
+  otherStep: number = 1,
+  numberStep: number = 1.4
+): number {
+  let currentPosition = basePosition;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    // Check if the character is a capital letter
+    if (char === char.toUpperCase() && char.match(/[A-Z]/)) {
+      currentPosition -= capitalStep;
+    } else if (char.match(/[0-9]/)) {
+      // Check if the character is a number
+      currentPosition -= numberStep;
+    } else {
+      currentPosition -= otherStep;
+    }
+  }
+
+  return currentPosition;
+}

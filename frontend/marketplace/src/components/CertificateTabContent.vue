@@ -6,6 +6,7 @@ import CertificateCard from "@/components/CertificateCard.vue";
 import { CHAIN_ID } from "@/config/config";
 import { toast } from "vue3-toastify";
 import { useQuery } from "@vue/apollo-composable";
+import CustomSpinner from "@/components/CustomSpinner.vue";
 import gql from "graphql-tag";
 import CustomAlert from "@/components/CustomAlert.vue";
 import { walletConnected, getWallet } from "@/utils/wallet-utils";
@@ -19,8 +20,10 @@ const showSpinner = ref(true);
 const router = useRouter();
 
 const viewCertificate = (certificateId: string) => {
-  router.push({ name: 'CertificatePage', params: { id: certificateId } });
+  const url = `${window.location.origin}/certificate/${certificateId}`;
+  window.open(url, '_blank');
 };
+
 
 
 const handlePageChange = () => {

@@ -1,149 +1,660 @@
 import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 import {
-  AssetsBase64,
-  InterBold,
-  BackgroundImage,
-  EmpowerLogo,
-  VerifiedImage,
-  InterMedium,
-  LogotTitle,
-  LogoM,
-} from "./AssetsBase64";
-import auctionCard from "@/assets/auctionCard.png";
+  wastePick,
+  circular,
+  leaf1,
+  greenLogo,
+  horizontalLeafs,
+  verticalLeafs,
+} from "../pdfGenerator/AssetsBase64";
+import {
+  addTextWithSpacing,
+  calculateTextProperties,
+  calculateXPosition,
+} from "@/utils/utils";
+import { ref, watchEffect } from "vue";
 
-const doc = new jsPDF("p", "mm", "a4", true);
-export const PDFGenerator = async (data: any) => {
-  //Add font files
-  try {
-    if (AssetsBase64) {
-      doc.addFileToVFS("Inter-Regular.ttf", AssetsBase64);
+const addedBinaryFiles = ref(false);
+const addedMediaFiles = ref(false);
+const addedMaterialData = ref(false);
+const addedLocations = ref(false);
+
+function resetAddedValues() {
+  addedBinaryFiles.value = false;
+  addedMediaFiles.value = false;
+  addedMaterialData.value = false;
+  addedLocations.value = false;
+}
+
+export const generatePDF = (
+  certificateData,
+  pagesData,
+  primaryHeaders,
+  secondaryHeaders,
+  plastciValuesString,
+  collectionAmount,
+  applicantData,
+  issuanceDate,
+  retiredDate,
+  creditData,
+  ID
+) => {
+  console.log(
+    certificateData,
+    pagesData,
+    primaryHeaders,
+    secondaryHeaders,
+    plastciValuesString
+  );
+
+  const doc = new jsPDF("landscape");
+
+  const addGrayPadding = (doc: any) => {
+    const paddingInMM = 10.58;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    doc.setFillColor(50, 57, 60);
+    doc.rect(0, 0, pageWidth, paddingInMM, "F");
+    doc.rect(0, pageHeight - paddingInMM, pageWidth, paddingInMM, "F");
+    doc.rect(0, 0, paddingInMM, pageHeight, "F");
+    doc.rect(pageWidth - paddingInMM, 0, paddingInMM, pageHeight, "F");
+  };
+  addGrayPadding(doc);
+  const pageWidth = doc.internal.pageSize.getWidth();
+
+  doc.setFillColor(219, 231, 214);
+
+  const x = 40;
+  const y = 60;
+
+  const rectWidth = pageWidth;
+  const rectHeight = 90;
+
+  doc.rect(x, y, rectWidth, rectHeight, "F");
+
+  doc.addImage(wastePick, "PNG", 10.58, 0, 70, 220);
+  doc.addImage(horizontalLeafs, "png", 0, 0, 297, 210);
+
+  const customDrawCell = (data: any) => {
+    doc.setDrawColor(126, 194, 66);
+    doc.setLineWidth(0.5);
+
+    if (data.row.index === 0 && data.cell.section === "head") {
+      doc.line(
+        data.cell.x,
+        data.cell.y + data.cell.height,
+        data.cell.x + data.cell.width,
+        data.cell.y + data.cell.height
+      );
     }
-    if (InterBold) {
-      doc.addFileToVFS("Inter-Bold-normal.ttf", InterBold);
+    if (data.row.index === 0 && data.cell.section === "head") {
+      doc.line(
+        data.cell.x,
+        data.cell.y,
+        data.cell.x + data.cell.width,
+        data.cell.y
+      );
     }
-    if (InterMedium) {
-      doc.addFileToVFS("Inter-Medium.ttf", InterMedium);
+    if (
+      data.cell.section === "body" &&
+      data.row.index === data.table.body.length - 1
+    ) {
+      doc.line(
+        data.cell.x,
+        data.cell.y + data.cell.height,
+        data.cell.x + data.cell.width,
+        data.cell.y + data.cell.height
+      );
     }
+  };
 
-    //Add fonts
-    doc.addFont("Inter-Regular.ttf", "Inter", "regular");
-    doc.addFont("Inter-Bold-normal.ttf", "Inter", "bold");
-    doc.addFont("Inter-Medium.ttf", "Inter", "medium");
+  doc.addImage(leaf1, "png", 137, 20, 10, 8);
 
-    const pageWidth =
-      doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+  doc.setFontSize(28);
+  doc.setTextColor(32, 105, 72);
+  doc.setFont("Open Sans", "bold");
+  doc.text("plastic credit", 152, 28);
 
-    if (BackgroundImage) {
-      doc.addImage(BackgroundImage, "png", 0, 0, 210, 297, undefined, "FAST");
-    }
-    if (EmpowerLogo) {
-      doc.addImage(EmpowerLogo, "png", 140, 10, 65, 9, undefined, "FAST");
-    }
-    if (VerifiedImage) {
-      doc.addImage(VerifiedImage, "png", 5, 5, 40, 40, undefined, "FAST");
-    }
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(50);
+  doc.text("certificate", 142, 44);
 
-    //Hyperlink above the image
-    doc.textWithLink(
-      "                                                                                                                                          ",
-      5,
-      10,
-      {
-        url: "https://www.empower.eco/",
-        maxWidth: 40,
-      }
-    );
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(1.5);
+  doc.line(170, 50, pageWidth - 110, 50);
 
-    doc.setFont("Inter", "bold");
-    doc.setFontSize(35);
-    const title = doc.splitTextToSize(data?.title, pageWidth - 10);
-    doc.text(title[0]?.slice(0, -3) + "...", pageWidth / 2, 80, {
-      align: "center",
-    });
-    doc.text(`${data?.volume}kg`, pageWidth / 2, 100, {
-      align: "center",
-    });
+  doc.setFontSize(15);
+  doc.setTextColor(35, 31, 32);
+  doc.setFont("inter", "normal");
+  addTextWithSpacing(doc, "PROUDLY PRESENTED TO", 142, 75, 0.5);
 
-    doc.setFont("Inter", "medium");
-    doc.setFontSize(13);
-    doc.text("Material", 20, 120);
-    doc.text("CREDIT type", pageWidth - 50, 120);
+  const name = certificateData.retiringEntityName || "N/A";
+  const yPos = 95;
 
-    doc.setFont("Inter", "regular");
-    doc.setFontSize(11);
-    let initialY = 127;
-    let initialX = 20;
-    data.material?.map((item: any, index: number) => {
-      doc.text(`\u2022 ${item?.value}`, initialX, initialY);
-      if ((index + 1) % 4 == 0) {
-        initialY = 127;
-        initialX = initialX + 40;
-      } else {
-        initialY = initialY + 5;
-      }
-    });
-    doc.text(data?.credit, pageWidth - 50, 127);
+  const { xPos, fontSize } = calculateTextProperties(name);
 
-    doc.setFont("Inter", "medium");
-    doc.setFontSize(13);
-    doc.text("Project Information", pageWidth / 2, 160, { align: "center" });
-    doc.setFont("Inter", "regular");
-    doc.setFontSize(9);
-    const description = doc.splitTextToSize(data?.projectInfo, pageWidth - 20);
-    if (description.length > 4) {
-      description[3] = description[3]?.slice(0, -3) + "...";
-    }
-    const limitedDescription = description?.slice(0, 4);
-    doc.text(limitedDescription, 10, 170, { lineHeightFactor: 1.4 });
+  doc.setFontSize(fontSize);
+  doc.setTextColor(88, 185, 71);
+  doc.setFont("Open Sans", "bold");
+  doc.text(name, xPos, yPos);
 
-    doc.addImage(
-      data?.images[0] || auctionCard,
-      "JPEG",
-      10,
-      198,
-      60,
-      35,
-      undefined,
-      "FAST"
-    );
-    doc.addImage(
-      data?.images[1] || auctionCard,
-      "JPEG",
-      75,
-      198,
-      60,
-      35,
-      undefined,
-      "FAST"
-    );
-    doc.addImage(
-      data?.images[2] || auctionCard,
-      "JPEG",
-      140,
-      198,
-      60,
-      35,
-      undefined,
-      "FAST"
-    );
-    doc.addImage(
-      data?.map || auctionCard,
-      "JPEG",
-      10,
-      240,
-      125,
-      51,
-      undefined,
-      "FAST"
-    );
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.5);
+  doc.line(110, 100, pageWidth - 50, 100);
 
-    doc.addImage(LogoM, "png", 167, 260, 12, 9, undefined, "FAST");
-    doc.addImage(LogotTitle, "png", 152, 272, 40, 5.5, undefined, "FAST");
+  doc.setFontSize(15);
+  doc.setTextColor(35, 31, 32);
+  doc.setFont("inter", "normal");
+  addTextWithSpacing(doc, "FOR OFFSETTING", 154, 110, 0.5);
 
-    doc.save("Certificate.pdf");
-    return { success: true };
-  } catch (e) {
-    console.error(e);
-    throw new Error("Failed to generate PDF");
+  const weightText = certificateData.amount + " KG" || "N/A";
+  let xPosition = calculateXPosition(weightText);
+
+  doc.setFontSize(15);
+  doc.setTextColor(32, 105, 72);
+  doc.setFont("Open Sans", "bold");
+  doc.text(weightText, xPosition, 120);
+
+  doc.setFontSize(15);
+  doc.setTextColor(35, 31, 32);
+  doc.setFont("inter", "normal");
+  addTextWithSpacing(doc, "OF", 176, 130, 0.5);
+
+  doc.addImage(circular, "png", 160, 155, 40, 40);
+  doc.addImage(greenLogo, "png", 176, 162, 7, 6);
+  doc.setFontSize(15);
+  doc.setTextColor(0, 0, 0);
+  doc.setFont("Open Sans", "bold");
+  doc.text(ID, 174, 175);
+  doc.setTextColor(88, 185, 71);
+  doc.setFontSize(12);
+  doc.text("check on", 171, 180);
+  doc.text("blockchain!", 169, 185);
+
+  const plasticText = plastciValuesString || "N/A";
+  xPosition = calculateXPosition(plasticText);
+
+  doc.setFontSize(15);
+  doc.setTextColor(32, 105, 72);
+  doc.setFont("Open Sans", "bold");
+  doc.text(plasticText, xPosition, 140);
+
+  if (pagesData.length > 0) {
+    doc.addPage("a4", "portrait");
+    addGrayPadding(doc);
+    doc.addImage(verticalLeafs, "png", 0, 0, 210, 297);
+    doc.addImage(leaf1, "png", 30, 23, 10, 8);
+
+    doc.setFontSize(25);
+    doc.setTextColor(32, 105, 72);
+    doc.setFont("Open Sans", "normal");
+    doc.text("plastic credit", 45, 30);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont("Open Sans", "bold");
+    doc.text("certificate", 93, 30);
+    doc.setFont("Open Sans", "normal");
+    doc.text("details", 133, 30);
+
+    doc.setDrawColor(0, 0, 0);
+
+    doc.setLineWidth(1.4);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    doc.line(97, 37, pageWidth - 97, 37);
+
+    doc.setFontSize(15);
+    doc.setTextColor(32, 105, 72);
+    doc.setFont("Open Sans", "bold");
+    doc.text("Name of Certificate Holder:", 20, 48);
+    doc.setTextColor(0, 0, 0);
+    doc.text(certificateData.retiringEntityName, 84, 48);
   }
+
+  doc.setLineWidth(0.5);
+  function addTitle(doc, title, yPosition) {
+    doc.setFontSize(15);
+    doc.setTextColor(32, 105, 72);
+    doc.setFont("Open Sans", "bold");
+    doc.text(title, 20, yPosition);
+    return yPosition + 5;
+  }
+
+  function addTitle(doc, title, yPosition) {
+    doc.setFontSize(15);
+    doc.setTextColor(32, 105, 72);
+    doc.setFont("Open Sans", "bold");
+    doc.text(title, 20, yPosition);
+    return yPosition + 5;
+  }
+
+  function prepareMaterialDataForPdf(materialDetails, primaryHeaders) {
+    const tableData = materialDetails.map((material) => {
+      return primaryHeaders.map((header) => {
+        return material[header] || "-";
+      });
+    });
+
+    return tableData;
+  }
+
+  function prepareSecondaryMaterialDataForPdf(
+    materialDetails,
+    secondaryHeaders
+  ) {
+    const tableData = materialDetails.map((material) => {
+      return secondaryHeaders.map((header) => {
+        return material[header] || "-";
+      });
+    });
+
+    return tableData;
+  }
+
+  function addMaterialTableToPdf(
+    doc,
+    materialDetails,
+    primaryHeaders,
+    startY,
+    title
+  ) {
+    const tableData = prepareMaterialDataForPdf(
+      materialDetails,
+      primaryHeaders
+    );
+    startY += 10;
+    startY = addTitle(doc, title, startY);
+    doc.autoTable({
+      startY: startY,
+      head: [primaryHeaders],
+      body: tableData,
+      didDrawCell: customDrawCell,
+      styles: {
+        cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
+        fontSize: 11,
+        lineWidth: 0,
+        align: "center",
+        fillColor: false,
+        halign: "center",
+        textColor: [0, 0, 0],
+        fontFamily: "Inter",
+      },
+      headStyles: {
+        cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
+        fillColor: false,
+        textColor: [0, 0, 0],
+        fontStyle: "bold",
+        align: "center",
+        fontSize: 12,
+      },
+      columnStyles: {
+        0: { cellWidth: "auto" },
+        1: { cellWidth: "auto" },
+        halign: "center",
+        fillColor: false,
+      },
+    });
+
+    return doc.lastAutoTable.finalY;
+  }
+
+  function addSecondaryMaterialTableToPdf(
+    doc,
+    materialDetails,
+    secondaryHeaders,
+    startY
+  ) {
+    const tableData = prepareSecondaryMaterialDataForPdf(
+      materialDetails,
+      secondaryHeaders
+    );
+    startY -= 10;
+    doc.autoTable({
+      startY: startY,
+      head: [secondaryHeaders],
+      body: tableData,
+      didDrawCell: customDrawCell,
+      styles: {
+        fillColor: false,
+        cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
+        lineWidth: 0,
+        halign: "center",
+        textColor: [0, 0, 0],
+        fontFamily: "Inter",
+      },
+      headStyles: {
+        fillColor: false,
+        cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
+        textColor: [0, 0, 0],
+        fontStyle: "bold",
+        halign: "center",
+        fontSize: 12,
+      },
+      columnStyles: {
+        fillColor: false,
+        0: { cellWidth: "auto" },
+        1: { cellWidth: "auto" },
+        halign: "center",
+      },
+    });
+
+    return doc.lastAutoTable.finalY;
+  }
+
+  function addSimpleTable(doc, title, headers, data, startY) {
+    startY = addTitle(doc, title, startY);
+
+    doc.autoTable({
+      startY: startY,
+      head: [headers],
+      body: data,
+      didDrawCell: customDrawCell,
+      styles: {
+        cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
+        fontSize: 11,
+        lineWidth: 0,
+        halign: "center",
+        fillColor: false,
+        textColor: [0, 0, 0],
+        fontFamily: "Inter",
+      },
+      headStyles: {
+        cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
+        halign: "center",
+        textColor: [0, 0, 0],
+        fontStyle: "bold",
+        fontSize: 12,
+        fillColor: false,
+      },
+      columnStyles: {
+        0: { cellWidth: "auto" },
+        1: { cellWidth: "auto" },
+        halign: "center",
+        fillColor: false,
+      },
+    });
+
+    return doc.lastAutoTable.finalY;
+  }
+
+  function addTableWithLinks(doc, title, data, startY) {
+    startY = addTitle(doc, title, startY);
+    doc.autoTable({
+      startY: startY,
+      theme: "grid",
+      head: [["Name", "URL"]],
+      styles: {
+        cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
+        fontSize: 11,
+        lineWidth: 0,
+        halign: "center",
+        fillColor: false,
+        textColor: [0, 0, 0],
+        fontFamily: "Inter",
+      },
+      headStyles: {
+        fillColor: false,
+        cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
+        halign: "center",
+        textColor: [0, 0, 0],
+        fontStyle: "bold",
+        fontSize: 12,
+      },
+      columnStyles: {
+        0: { cellWidth: "auto" },
+        1: { cellWidth: "auto" },
+        halign: "center",
+        fillColor: false,
+      },
+      willDrawCell: (data) => {
+        if (data.column.index === 1 && data.cell.section === "body") {
+          data.cell.text = "";
+        }
+      },
+      body: data.map((item) => [item.name, item.url]),
+      didDrawCell: (data) => {
+        doc.setDrawColor(126, 194, 66);
+        doc.setLineWidth(0.5);
+        if (data.row.index === 0 && data.cell.section === "head") {
+          doc.line(
+            data.cell.x,
+            data.cell.y + data.cell.height,
+            data.cell.x + data.cell.width,
+            data.cell.y + data.cell.height
+          );
+        }
+        if (data.row.index === 0 && data.cell.section === "head") {
+          doc.line(
+            data.cell.x,
+            data.cell.y,
+            data.cell.x + data.cell.width,
+            data.cell.y
+          );
+        }
+        if (
+          data.cell.section === "body" &&
+          data.row.index === data.table.body.length - 1
+        ) {
+          doc.line(
+            data.cell.x,
+            data.cell.y + data.cell.height,
+            data.cell.x + data.cell.width,
+            data.cell.y + data.cell.height
+          );
+        }
+        if (data.column.index === 1 && data.cell.section === "body") {
+          const url = data.cell.raw;
+          if (url) {
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(11);
+            doc.setFont("Inter", "normal");
+            const textWidth = doc.getTextWidth(url);
+            const textPosX = data.cell.x + (data.cell.width - textWidth) / 2;
+            const textPosY = data.cell.y + data.cell.height / 1.5;
+            doc.text(url, textPosX, textPosY);
+            doc.link(textPosX, data.cell.y, textWidth, data.cell.height, {
+              url: url,
+            });
+          }
+        }
+      },
+    });
+
+    return doc.lastAutoTable.finalY;
+  }
+
+  function addAllTables(doc, pagesData, primaryHeaders, secondaryHeaders) {
+    let yPosition = 0;
+    let marginBetweenTables = 10;
+
+    // Iterate over each page
+    pagesData.forEach((page, pageIndex) => {
+      if (pageIndex > 0) {
+        doc.addPage();
+        addGrayPadding(doc);
+        doc.addImage(verticalLeafs, "png", 0, 0, 210, 297);
+        yPosition = 10;
+      }
+
+      if (pageIndex === 0) {
+        yPosition = 49;
+        const credit = [
+          certificateData.amount + " KG",
+          creditData.id,
+          retiredDate,
+        ];
+        yPosition = addSimpleTable(
+          doc,
+          "Credit Information",
+          ["Amount", "Credit ID", "Retired Date"],
+          [credit],
+          yPosition + marginBetweenTables
+        );
+
+        const collection = [
+          collectionAmount + " KG",
+          applicantData,
+          issuanceDate,
+        ];
+        yPosition = addSimpleTable(
+          doc,
+          "Collection Information",
+          ["Amount", "Organization", "Issuance Date"],
+          [collection],
+          yPosition + marginBetweenTables
+        );
+      }
+      page.forEach((category) => {
+        switch (category.type) {
+          case "location":
+            addLocations(category.items);
+            break;
+          case "material":
+            addMaterialData(category.items);
+            break;
+          case "media":
+            addMediaFiles(category.items);
+            break;
+          case "binary":
+            addBinaryFiles(category.items);
+            break;
+        }
+      });
+    });
+
+    function addLocations(locations) {
+      if (addedLocations.value === false) {
+        const locationsData = locations.map((loc) => [
+          loc.country,
+          loc.longitude,
+          loc.latitude,
+        ]);
+        yPosition = addSimpleTable(
+          doc,
+          "Locations",
+          ["Country", "Longitude", "Latitude"],
+          locationsData,
+          yPosition + marginBetweenTables
+        );
+        addedLocations.value = true;
+      } else {
+        yPosition -= 10;
+        const locationsData = locations.map((loc) => [
+          loc.country,
+          loc.longitude,
+          loc.latitude,
+        ]);
+        yPosition = addSimpleTable(
+          doc,
+          "",
+          ["Country", "Longitude", "Latitude"],
+          locationsData,
+          yPosition + marginBetweenTables
+        );
+      }
+    }
+
+    function addMediaFiles(mediaFiles) {
+      if (addedMediaFiles.value === false) {
+        const photosTableData = mediaFiles.map((mf) => ({
+          name: mf.name,
+          url: mf.url,
+        }));
+        yPosition = addTableWithLinks(
+          doc,
+          "Photos",
+          photosTableData,
+          yPosition + marginBetweenTables
+        );
+        addedMediaFiles.value = true;
+      } else {
+        yPosition -= 10;
+        const photosTableData = mediaFiles.map((mf) => ({
+          name: mf.name,
+          url: mf.url,
+        }));
+        yPosition = addTableWithLinks(
+          doc,
+          "",
+          photosTableData,
+          yPosition + marginBetweenTables
+        );
+      }
+    }
+
+    function addMaterialData(materialDetails) {
+      if (addedMaterialData.value === false) {
+        yPosition = addMaterialTableToPdf(
+          doc,
+          materialDetails,
+          primaryHeaders,
+          yPosition,
+          "Materials"
+        );
+        yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
+        addedMaterialData.value = true;
+        if (secondaryHeaders.length > 0) {
+          yPosition = addSecondaryMaterialTableToPdf(
+            doc,
+            materialDetails,
+            secondaryHeaders,
+            yPosition
+          );
+          yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
+        }
+      } else {
+        yPosition -= 10;
+        yPosition = addMaterialTableToPdf(
+          doc,
+          materialDetails,
+          primaryHeaders,
+          yPosition,
+          ""
+        );
+        yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
+        if (secondaryHeaders.length > 0) {
+          yPosition = addSecondaryMaterialTableToPdf(
+            doc,
+            materialDetails,
+            secondaryHeaders,
+            yPosition
+          );
+          yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
+        }
+      }
+    }
+
+    function addBinaryFiles(binaryFiles) {
+      if (addedBinaryFiles.value === false) {
+        const binaryFilesTableData = binaryFiles.map((bf) => ({
+          name: bf.name,
+          url: bf.url,
+        }));
+        yPosition = addTableWithLinks(
+          doc,
+          "Documents",
+          binaryFilesTableData,
+          yPosition + marginBetweenTables
+        );
+        addedBinaryFiles.value = true;
+      } else {
+        yPosition -= 10;
+        const binaryFilesTableData = binaryFiles.map((bf) => ({
+          name: bf.name,
+          url: bf.url,
+        }));
+        yPosition = addTableWithLinks(
+          doc,
+          "",
+          binaryFilesTableData,
+          yPosition + marginBetweenTables
+        );
+      }
+    }
+    resetAddedValues();
+  }
+
+  // Call the function to add all tables
+  addAllTables(doc, pagesData, primaryHeaders, secondaryHeaders);
+  doc.save("certificate.pdf");
 };
