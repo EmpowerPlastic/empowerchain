@@ -23,6 +23,7 @@ const binaryFilesUrls = ref<Array<{ type: string; [key: string]: any }>>([]);
 const collectionAmount = ref(0);
 const issuanceDate = ref("");
 const applicantData = ref("");
+const applicantDataDescription = ref("");
 const materialDetails = ref<Array<{ type: string; [key: string]: any }>>([]);
 const currentHeaders = ref<Array<{ type: string; [key: string]: any }>>([]);
 const primaryHeaders = ref<Array<{ type: string; [key: string]: any }>>([]);
@@ -124,6 +125,7 @@ const getCreditData = (denom: string) => {
       const creditDataNode =
         result.value.creditCollections.nodes[0]?.creditData?.nodes[0];
       creditData.value = result.value.creditCollections.nodes[0];
+      console.log(creditData.value);
 
       const creditCollectionsNode = result.value.creditCollections.nodes[0];
 
@@ -160,6 +162,8 @@ const getCreditData = (denom: string) => {
         );
         applicantData.value =
           creditDataNode.applicantDataByCreditDataId.nodes[0].name;
+        applicantDataDescription.value =
+          creditDataNode.applicantDataByCreditDataId.nodes[0].description;
       }
 
       if (eventDataNodes && eventDataNodes.length) {
@@ -189,18 +193,32 @@ const getCreditData = (denom: string) => {
         const uniqueMaterials = [];
         let eventId = 1;
         // Process each eventNode's material nodes
+        const keyMapping = {
+          granularity: "Shape/Granularity",
+          "shape / granularity": "Shape/Granularity",
+          plasticType: "Plastic Type",
+          eventId: "Tracking Event",
+          color: "Color",
+          kilo: "Weight (kg)",
+          condition: "Condition",
+          brand: "Brand",
+          "material origin": "Material Origin",
+
+          // Add more mappings as needed
+        };
+
         eventDataNodes.forEach((eventNode) => {
           const materialCombination = {
             type: "material",
-            eventId: eventId++,
+            [keyMapping["Tracking Event"] || "Tracking Event"]: eventId++,
           };
 
           eventNode.material.nodes.forEach((materialNode) => {
-            const key =
-              materialNode.key === "granularity" ||
-              materialNode.key === "shape / granularity"
-                ? "shapeGranularity"
-                : materialNode.key;
+            // Check if the current key is in the mapping object and use the new key if available
+            console.log(materialNode.key);
+
+            const key = keyMapping[materialNode.key] || materialNode.key;
+
             if (materialNode.value) {
               materialCombination[key] = materialNode.value;
             }
@@ -231,9 +249,9 @@ const getCreditData = (denom: string) => {
 
         currentHeaders.value = getTableHeaders();
 
-        primaryHeaders.value = currentHeaders.value.slice(1, 4);
+        primaryHeaders.value = currentHeaders.value.slice(1, 6);
         if (currentHeaders.value.length >= 3) {
-          secondaryHeaders.value = currentHeaders.value.slice(4);
+          secondaryHeaders.value = currentHeaders.value.slice(6);
         } else {
           secondaryHeaders.value = [];
         }
@@ -282,58 +300,164 @@ const queryNow = () => {
     id: `${router.params?.id}`,
   });
 
+  watchEffect(() => {
+    const descriptionRows = Math.ceil(
+      applicantDataDescription.value.length / 90
+    );
+    console.log(descriptionRows);
+  });
+
+  const calculateMaxRowsPerPage = (categories, isFirstPage = false) => {
+    const descriptionRows = Math.ceil(
+      applicantDataDescription.value.length / 90
+    );
+    console.log(categories.length);
+
+    let baseMaxRows = 15;
+
+    if (isFirstPage) {
+      switch (categories.length) {
+        case 1:
+          baseMaxRows = Math.max(14 - descriptionRows);
+          break;
+        case 2:
+          baseMaxRows = Math.max(12 - descriptionRows);
+          break;
+        case 3:
+          baseMaxRows = Math.max(10 - descriptionRows);
+          break;
+        case 4:
+          baseMaxRows = Math.max(8 - descriptionRows);
+          break;
+        default:
+          baseMaxRows = Math.max(15 - descriptionRows);
+      }
+    } else {
+      switch (categories.length) {
+        case 1:
+          baseMaxRows = 35;
+          break;
+        case 2:
+          baseMaxRows = 31;
+          break;
+        case 3:
+          baseMaxRows = 27;
+          break;
+        case 4:
+          baseMaxRows = 24;
+          break;
+        default:
+          baseMaxRows = 34;
+      }
+    }
+
+    return baseMaxRows;
+  };
+
   const preparePagesData = () => {
-    let currentPageData: any = [];
-    let currentRowCount: number = 0;
+    let currentPageData = [];
+    let currentRowCount = 0;
+    let currentItemIndex = 0;
+    let isFirstPage = true;
 
-    allData.value.forEach((item) => {
-      let itemSize: number = 1;
+    while (currentItemIndex < allData.value.length) {
+      let predictedCategories = new Set();
+      let tempRowCount = 0;
+      let startIndexForNextPage = currentItemIndex;
 
-      if (item.type === "material" && secondaryHeaders.value.length > 0) {
-        itemSize = 2;
+      // Predict categories and check row count for next page
+      for (let i = currentItemIndex; i < allData.value.length; i++) {
+        const item = allData.value[i];
+        const itemSize =
+          item.type === "material" && secondaryHeaders.value.length > 0 ? 2 : 1;
+        if (tempRowCount + itemSize > 4) {
+          break;
+        }
+        predictedCategories.add(item.type);
+        tempRowCount += itemSize;
+        startIndexForNextPage = i + 1;
       }
 
-      if (currentRowCount + itemSize > MAX_ROWS_PER_PAGE) {
-        pagesData.value.push(currentPageData);
-        currentPageData = [];
-        currentRowCount = 0;
+      const MAX_ROWS_PER_PAGE = calculateMaxRowsPerPage(
+        Array.from(predictedCategories),
+        isFirstPage
+      );
+
+      // Add items to currentPageData based on calculated MAX_ROWS_PER_PAGE
+
+      while (
+        currentItemIndex < allData.value.length &&
+        currentRowCount < MAX_ROWS_PER_PAGE
+      ) {
+        const item = allData.value[currentItemIndex];
+        const itemSize =
+          item.type === "material" && secondaryHeaders.value.length > 0 ? 2 : 1;
+
+        if (currentRowCount + itemSize > MAX_ROWS_PER_PAGE) {
+          break;
+        }
+
+        let category = currentPageData.find((c) => c.type === item.type);
+        if (!category) {
+          category = { type: item.type, items: [] };
+          currentPageData.push(category);
+        }
+        category.items.push(item);
+        currentRowCount += itemSize;
+        currentItemIndex++;
       }
 
-      let category = currentPageData.find((c) => c.type === item.type);
-      if (!category) {
-        category = { type: item.type, items: [] };
-        currentPageData.push(category);
-      }
-      category.items.push(item);
-      currentRowCount += itemSize;
-
-      if (currentRowCount === MAX_ROWS_PER_PAGE) {
-        pagesData.value.push(currentPageData);
-        currentPageData = [];
-        currentRowCount = 0;
-      }
-    });
-
-    if (currentPageData.length > 0) {
       pagesData.value.push(currentPageData);
+      currentPageData = [];
+      currentRowCount = 0;
+      isFirstPage = false; // After the first iteration, it's no longer the first page
     }
   };
 
   watchEffect(() => {
     preparePagesData();
-    console.log(pagesData.value);
-
-    pagesData.value.forEach((page, pageIndex) => {
-      console.log(`Page ${pageIndex + 1}:`);
-
-      page.forEach((category) => {
-        console.log(`  ${category.type}:`);
-        category.items.forEach((item) => {
-          console.log(`    - ${JSON.stringify(item)}`);
-        });
-      });
-    });
   });
+
+  // const preparePagesData = () => {
+  //   let currentPageData: any = [];
+  //   let currentRowCount: number = 0;
+
+  //   allData.value.forEach((item) => {
+  //     let itemSize: number = 1;
+
+  //     if (item.type === "material" && secondaryHeaders.value.length > 0) {
+  //       itemSize = 2;
+  //     }
+
+  //     if (currentRowCount + itemSize > MAX_ROWS_PER_PAGE) {
+  //       pagesData.value.push(currentPageData);
+  //       currentPageData = [];
+  //       currentRowCount = 0;
+  //     }
+
+  //     let category = currentPageData.find((c) => c.type === item.type);
+  //     if (!category) {
+  //       category = { type: item.type, items: [] };
+  //       currentPageData.push(category);
+  //     }
+  //     category.items.push(item);
+  //     currentRowCount += itemSize;
+
+  //     if (currentRowCount === MAX_ROWS_PER_PAGE) {
+  //       pagesData.value.push(currentPageData);
+  //       currentPageData = [];
+  //       currentRowCount = 0;
+  //     }
+  //   });
+
+  //   if (currentPageData.length > 0) {
+  //     pagesData.value.push(currentPageData);
+  //   }
+  // };
+
+  // watchEffect(() => {
+  //   preparePagesData();
+  // });
 
   watchEffect(() => {
     if (result.value) {
@@ -354,25 +478,26 @@ const queryNow = () => {
 
 const onGeneratePDF = () => {
   try {
-  generatePDF(
-    certificateData.value,
-    pagesData.value,
-    primaryHeaders.value,
-    secondaryHeaders.value,
-    plastciValuesString.value,
-    collectionAmount.value,
-    applicantData.value,
-    issuanceDate.value,
-    retiredDate.value,
-    creditData.value,
-    ID
-  );
+    generatePDF(
+      certificateData.value,
+      pagesData.value,
+      primaryHeaders.value,
+      secondaryHeaders.value,
+      plastciValuesString.value,
+      collectionAmount.value,
+      applicantData.value,
+      issuanceDate.value,
+      retiredDate.value,
+      creditData.value,
+      ID,
+      applicantDataDescription.value
+    );
     toast.success("Certificate downloaded successfully");
   } catch (e) {
     console.error(e);
     toast.error("Something went wrong");
   }
-}
+};
 </script>
 
 <template>
@@ -447,7 +572,6 @@ const onGeneratePDF = () => {
                 <span class="detail"> details</span>
               </h1>
             </div>
-            <div class="horizontal-line3"></div>
             <div class="infoBox">
               <p class="certificateHodler">
                 Name of Certificate Holder:
@@ -483,6 +607,8 @@ const onGeneratePDF = () => {
                   <td>{{ issuanceDate }}</td>
                 </tr>
               </table>
+              <p class="certificateHodler">Project description</p>
+              <p class="descriptionText">{{ applicantDataDescription }}</p>
             </div>
           </div>
           <div class="infoBox">
@@ -842,6 +968,7 @@ page {
   flex-direction: column;
   align-items: center;
   margin-top: 30px;
+  margin-bottom: 30px;
 }
 
 .titleBoxPage2 h1 {
@@ -912,6 +1039,12 @@ page {
   padding-left: 10px;
   padding-right: 10px;
   font-size: 14px;
+}
+
+.descriptionText {
+  margin-bottom: 20px;
+  border-top: solid 1px #7ec242;
+  border-bottom: solid 1px #7ec242;
 }
 
 .tableTitle {

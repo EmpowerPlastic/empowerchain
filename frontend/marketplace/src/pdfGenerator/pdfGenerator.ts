@@ -38,7 +38,8 @@ export const generatePDF = (
   issuanceDate,
   retiredDate,
   creditData,
-  ID
+  ID,
+  applicantDataDescription
 ) => {
   console.log(
     certificateData,
@@ -79,7 +80,7 @@ export const generatePDF = (
 
   const customDrawCell = (data: any) => {
     doc.setDrawColor(126, 194, 66);
-    doc.setLineWidth(0.5);
+    doc.setLineWidth(0.3);
 
     if (data.row.index === 0 && data.cell.section === "head") {
       doc.line(
@@ -197,29 +198,15 @@ export const generatePDF = (
     doc.setFont("Open Sans", "normal");
     doc.text("details", 133, 30);
 
-    doc.setDrawColor(0, 0, 0);
-
-    doc.setLineWidth(1.4);
-    const pageWidth = doc.internal.pageSize.getWidth();
-    doc.line(97, 37, pageWidth - 97, 37);
-
     doc.setFontSize(15);
     doc.setTextColor(32, 105, 72);
     doc.setFont("Open Sans", "bold");
-    doc.text("Name of Certificate Holder:", 20, 48);
+    doc.text("Name of Certificate Holder:", 20, 44);
     doc.setTextColor(0, 0, 0);
-    doc.text(certificateData.retiringEntityName, 84, 48);
+    doc.text(certificateData.retiringEntityName, 84, 44);
   }
 
   doc.setLineWidth(0.5);
-  function addTitle(doc, title, yPosition) {
-    doc.setFontSize(15);
-    doc.setTextColor(32, 105, 72);
-    doc.setFont("Open Sans", "bold");
-    doc.text(title, 20, yPosition);
-    return yPosition + 5;
-  }
-
   function addTitle(doc, title, yPosition) {
     doc.setFontSize(15);
     doc.setTextColor(32, 105, 72);
@@ -268,6 +255,7 @@ export const generatePDF = (
       startY: startY,
       head: [primaryHeaders],
       body: tableData,
+      theme: "plain",
       didDrawCell: customDrawCell,
       styles: {
         cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
@@ -313,6 +301,7 @@ export const generatePDF = (
       startY: startY,
       head: [secondaryHeaders],
       body: tableData,
+      theme: "plain",
       didDrawCell: customDrawCell,
       styles: {
         fillColor: false,
@@ -321,6 +310,7 @@ export const generatePDF = (
         halign: "center",
         textColor: [0, 0, 0],
         fontFamily: "Inter",
+        fontSize: 11,
       },
       headStyles: {
         fillColor: false,
@@ -348,6 +338,7 @@ export const generatePDF = (
       startY: startY,
       head: [headers],
       body: data,
+      theme: "plain",
       didDrawCell: customDrawCell,
       styles: {
         cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
@@ -414,7 +405,7 @@ export const generatePDF = (
       body: data.map((item) => [item.name, item.url]),
       didDrawCell: (data) => {
         doc.setDrawColor(126, 194, 66);
-        doc.setLineWidth(0.5);
+        doc.setLineWidth(0.3);
         if (data.row.index === 0 && data.cell.section === "head") {
           doc.line(
             data.cell.x,
@@ -472,12 +463,11 @@ export const generatePDF = (
       if (pageIndex > 0) {
         doc.addPage();
         addGrayPadding(doc);
-        doc.addImage(verticalLeafs, "png", 0, 0, 210, 297);
         yPosition = 10;
       }
 
       if (pageIndex === 0) {
-        yPosition = 49;
+        yPosition = 45;
         const credit = [
           certificateData.amount + " KG",
           creditData.id,
@@ -503,7 +493,35 @@ export const generatePDF = (
           [collection],
           yPosition + marginBetweenTables
         );
+        
+        const title = "Project Information";
+        const description = applicantDataDescription; // Dynamic content
+        
+        yPosition += 10; // Small space after the last table
+        doc.setDrawColor(0, 0, 0);
+        doc.setLineWidth(0.3);
+
+        doc.text(title, 20, yPosition);
+        doc.setFontSize(12);
+        doc.setFont("Inter", "normal");
+        doc.setTextColor(0, 0, 0);
+        
+        // Prepare for Description
+        yPosition += 5;
+        doc.setDrawColor(126, 194, 66);
+        doc.line(14, yPosition + 1, pageWidth - 101, yPosition + 1);
+        const lines = doc.splitTextToSize(description, 170); // Split description text
+        
+        // Add Description Line by Line
+        lines.forEach((line) => {
+          yPosition += 6; // Increment for each line, adjust this as needed
+          doc.text(line, 20, yPosition);
+        });
+        doc.setDrawColor(126, 194, 66);
+        doc.line(14, yPosition + 2, pageWidth - 102, yPosition + 2);
+        yPosition += 2;
       }
+      
       page.forEach((category) => {
         switch (category.type) {
           case "location":
@@ -520,6 +538,9 @@ export const generatePDF = (
             break;
         }
       });
+      if(pageIndex > 0) {
+        doc.addImage(verticalLeafs, "png", 0, 0, 210, 297);
+      }
     });
 
     function addLocations(locations) {
@@ -651,6 +672,7 @@ export const generatePDF = (
         );
       }
     }
+
     resetAddedValues();
   }
 
