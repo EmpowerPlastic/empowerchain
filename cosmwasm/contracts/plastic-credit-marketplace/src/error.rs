@@ -31,7 +31,10 @@ pub enum ContractError {
     #[error("listing already exists")]
     ListingAlreadyExists {},
 
-    #[error("Timeout over maximum, which is set to {max_timeout} seconds")]
+    #[error("timeout not in future")]
+    TimeoutNotInFuture {},
+
+    #[error("timeout over maximum, which is set to {max_timeout} seconds")]
     TimeoutTooLong {max_timeout: u64},
 
     #[error("fee split error {0}")]
