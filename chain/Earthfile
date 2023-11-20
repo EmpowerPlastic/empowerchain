@@ -91,7 +91,7 @@ smoketest-prep:
     WORKDIR /workbench
     GIT CLONE --branch v7.1.0 https://github.com/cosmos/gaia gaia
     RUN cd gaia && make install && cd ..
-    GIT CLONE https://github.com/cosmos/relayer relayer
+    GIT CLONE --branch v2.4.2 https://github.com/cosmos/relayer relayer
     RUN cd relayer && make install && cd ..
 
 smoketest:
