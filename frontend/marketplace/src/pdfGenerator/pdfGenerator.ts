@@ -13,7 +13,7 @@ import {
   calculateTextProperties,
   calculateXPosition,
 } from "@/utils/utils";
-import { ref, watchEffect } from "vue";
+import { ref } from "vue";
 
 const addedBinaryFiles = ref(false);
 const addedMediaFiles = ref(false);
@@ -41,14 +41,6 @@ export const generatePDF = (
   ID,
   applicantDataDescription
 ) => {
-  console.log(
-    certificateData,
-    pagesData,
-    primaryHeaders,
-    secondaryHeaders,
-    plastciValuesString
-  );
-
   const doc = new jsPDF("landscape");
 
   const addGrayPadding = (doc: any) => {
@@ -493,11 +485,11 @@ export const generatePDF = (
           [collection],
           yPosition + marginBetweenTables
         );
-        
+
         const title = "Project Information";
-        const description = applicantDataDescription; // Dynamic content
-        
-        yPosition += 10; // Small space after the last table
+        const description = applicantDataDescription;
+
+        yPosition += 10;
         doc.setDrawColor(0, 0, 0);
         doc.setLineWidth(0.3);
 
@@ -505,23 +497,22 @@ export const generatePDF = (
         doc.setFontSize(12);
         doc.setFont("Inter", "normal");
         doc.setTextColor(0, 0, 0);
-        
+
         // Prepare for Description
         yPosition += 5;
         doc.setDrawColor(126, 194, 66);
         doc.line(14, yPosition + 1, pageWidth - 101, yPosition + 1);
-        const lines = doc.splitTextToSize(description, 170); // Split description text
-        
-        // Add Description Line by Line
+        const lines = doc.splitTextToSize(description, 170);
+
         lines.forEach((line) => {
-          yPosition += 6; // Increment for each line, adjust this as needed
+          yPosition += 6;
           doc.text(line, 20, yPosition);
         });
         doc.setDrawColor(126, 194, 66);
         doc.line(14, yPosition + 2, pageWidth - 102, yPosition + 2);
         yPosition += 2;
       }
-      
+
       page.forEach((category) => {
         switch (category.type) {
           case "location":
@@ -538,7 +529,7 @@ export const generatePDF = (
             break;
         }
       });
-      if(pageIndex > 0) {
+      if (pageIndex > 0) {
         doc.addImage(verticalLeafs, "png", 0, 0, 210, 297);
       }
     });
@@ -676,7 +667,6 @@ export const generatePDF = (
     resetAddedValues();
   }
 
-  // Call the function to add all tables
   addAllTables(doc, pagesData, primaryHeaders, secondaryHeaders);
   doc.save("certificate.pdf");
 };

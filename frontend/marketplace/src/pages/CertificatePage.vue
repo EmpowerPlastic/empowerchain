@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
-import { onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
+import { onBeforeUnmount, onMounted, ref, watch, watchEffect } from "vue";
 import { useRoute } from "vue-router";
-import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import { toast } from "vue3-toastify";
 import { generatePDF } from "../pdfGenerator/pdfGenerator";
 import CustomSpinner from "@/components/CustomSpinner.vue";
 
-const doc = new jsPDF("p", "mm", "a4", true);
 const router = useRoute();
 const certificateData = ref();
 const creditData = ref();
@@ -30,10 +28,12 @@ const primaryHeaders = ref<Array<{ type: string; [key: string]: any }>>([]);
 const secondaryHeaders = ref<Array<{ type: string; [key: string]: any }>>([]);
 const retiredDate = ref("");
 const allData = ref<RowData[]>([]);
-let MAX_ROWS_PER_PAGE = 12;
 const pagesData = ref<Array<{ type: string; [key: string]: any }>>([]);
 const ID = router.params.id;
 const showSpinner = ref(true);
+const firstPageMaxRows = ref(0);
+const secondPageMaxRows = ref(0);
+const otherPageMaxRows = ref(35);
 
 type RowData = {
   data?: any[];
@@ -125,7 +125,6 @@ const getCreditData = (denom: string) => {
       const creditDataNode =
         result.value.creditCollections.nodes[0]?.creditData?.nodes[0];
       creditData.value = result.value.creditCollections.nodes[0];
-      console.log(creditData.value);
 
       const creditCollectionsNode = result.value.creditCollections.nodes[0];
 
@@ -192,7 +191,7 @@ const getCreditData = (denom: string) => {
         const uniqueMaterialsSet = new Set();
         const uniqueMaterials = [];
         let eventId = 1;
-        // Process each eventNode's material nodes
+
         const keyMapping = {
           granularity: "Shape/Granularity",
           "shape / granularity": "Shape/Granularity",
@@ -203,8 +202,6 @@ const getCreditData = (denom: string) => {
           condition: "Condition",
           brand: "Brand",
           "material origin": "Material Origin",
-
-          // Add more mappings as needed
         };
 
         eventDataNodes.forEach((eventNode) => {
@@ -214,9 +211,6 @@ const getCreditData = (denom: string) => {
           };
 
           eventNode.material.nodes.forEach((materialNode) => {
-            // Check if the current key is in the mapping object and use the new key if available
-            console.log(materialNode.key);
-
             const key = keyMapping[materialNode.key] || materialNode.key;
 
             if (materialNode.value) {
@@ -250,7 +244,7 @@ const getCreditData = (denom: string) => {
         currentHeaders.value = getTableHeaders();
 
         primaryHeaders.value = currentHeaders.value.slice(1, 6);
-        if (currentHeaders.value.length >= 3) {
+        if (currentHeaders.value.length >= 6) {
           secondaryHeaders.value = currentHeaders.value.slice(6);
         } else {
           secondaryHeaders.value = [];
@@ -301,165 +295,6 @@ const queryNow = () => {
   });
 
   watchEffect(() => {
-    const descriptionRows = Math.ceil(
-      applicantDataDescription.value.length / 90
-    );
-    console.log(descriptionRows);
-  });
-
-  const calculateMaxRowsPerPage = (categories, isFirstPage = false) => {
-    const descriptionRows = Math.ceil(
-      applicantDataDescription.value.length / 90
-    );
-    console.log(categories.length);
-
-    let baseMaxRows = 15;
-
-    if (isFirstPage) {
-      switch (categories.length) {
-        case 1:
-          baseMaxRows = Math.max(14 - descriptionRows);
-          break;
-        case 2:
-          baseMaxRows = Math.max(12 - descriptionRows);
-          break;
-        case 3:
-          baseMaxRows = Math.max(10 - descriptionRows);
-          break;
-        case 4:
-          baseMaxRows = Math.max(8 - descriptionRows);
-          break;
-        default:
-          baseMaxRows = Math.max(15 - descriptionRows);
-      }
-    } else {
-      switch (categories.length) {
-        case 1:
-          baseMaxRows = 35;
-          break;
-        case 2:
-          baseMaxRows = 31;
-          break;
-        case 3:
-          baseMaxRows = 27;
-          break;
-        case 4:
-          baseMaxRows = 24;
-          break;
-        default:
-          baseMaxRows = 34;
-      }
-    }
-
-    return baseMaxRows;
-  };
-
-  const preparePagesData = () => {
-    let currentPageData = [];
-    let currentRowCount = 0;
-    let currentItemIndex = 0;
-    let isFirstPage = true;
-
-    while (currentItemIndex < allData.value.length) {
-      let predictedCategories = new Set();
-      let tempRowCount = 0;
-      let startIndexForNextPage = currentItemIndex;
-
-      // Predict categories and check row count for next page
-      for (let i = currentItemIndex; i < allData.value.length; i++) {
-        const item = allData.value[i];
-        const itemSize =
-          item.type === "material" && secondaryHeaders.value.length > 0 ? 2 : 1;
-        if (tempRowCount + itemSize > 4) {
-          break;
-        }
-        predictedCategories.add(item.type);
-        tempRowCount += itemSize;
-        startIndexForNextPage = i + 1;
-      }
-
-      const MAX_ROWS_PER_PAGE = calculateMaxRowsPerPage(
-        Array.from(predictedCategories),
-        isFirstPage
-      );
-
-      // Add items to currentPageData based on calculated MAX_ROWS_PER_PAGE
-
-      while (
-        currentItemIndex < allData.value.length &&
-        currentRowCount < MAX_ROWS_PER_PAGE
-      ) {
-        const item = allData.value[currentItemIndex];
-        const itemSize =
-          item.type === "material" && secondaryHeaders.value.length > 0 ? 2 : 1;
-
-        if (currentRowCount + itemSize > MAX_ROWS_PER_PAGE) {
-          break;
-        }
-
-        let category = currentPageData.find((c) => c.type === item.type);
-        if (!category) {
-          category = { type: item.type, items: [] };
-          currentPageData.push(category);
-        }
-        category.items.push(item);
-        currentRowCount += itemSize;
-        currentItemIndex++;
-      }
-
-      pagesData.value.push(currentPageData);
-      currentPageData = [];
-      currentRowCount = 0;
-      isFirstPage = false; // After the first iteration, it's no longer the first page
-    }
-  };
-
-  watchEffect(() => {
-    preparePagesData();
-  });
-
-  // const preparePagesData = () => {
-  //   let currentPageData: any = [];
-  //   let currentRowCount: number = 0;
-
-  //   allData.value.forEach((item) => {
-  //     let itemSize: number = 1;
-
-  //     if (item.type === "material" && secondaryHeaders.value.length > 0) {
-  //       itemSize = 2;
-  //     }
-
-  //     if (currentRowCount + itemSize > MAX_ROWS_PER_PAGE) {
-  //       pagesData.value.push(currentPageData);
-  //       currentPageData = [];
-  //       currentRowCount = 0;
-  //     }
-
-  //     let category = currentPageData.find((c) => c.type === item.type);
-  //     if (!category) {
-  //       category = { type: item.type, items: [] };
-  //       currentPageData.push(category);
-  //     }
-  //     category.items.push(item);
-  //     currentRowCount += itemSize;
-
-  //     if (currentRowCount === MAX_ROWS_PER_PAGE) {
-  //       pagesData.value.push(currentPageData);
-  //       currentPageData = [];
-  //       currentRowCount = 0;
-  //     }
-  //   });
-
-  //   if (currentPageData.length > 0) {
-  //     pagesData.value.push(currentPageData);
-  //   }
-  // };
-
-  // watchEffect(() => {
-  //   preparePagesData();
-  // });
-
-  watchEffect(() => {
     if (result.value) {
       certificateData.value = result.value.creditOffsetCertificates.nodes[0];
       if (certificateData.value.timestamp) {
@@ -475,6 +310,110 @@ const queryNow = () => {
     }
   });
 };
+
+const calculateCategoryDistribution = () => {
+  const categoryCounts = new Map();
+
+  allData.value.forEach((item) => {
+    categoryCounts.set(item.type, (categoryCounts.get(item.type) || 0) + 1);
+  });
+
+  return categoryCounts;
+};
+
+const calculateMaxRows = () => {
+  const categoryCounts = calculateCategoryDistribution();
+  const descriptionRows = Math.ceil(applicantDataDescription.value.length / 90);
+  const mediaCount = categoryCounts.get("media");
+  const binaryCount = categoryCounts.get("binary");
+  const locationCount = categoryCounts.get("location");
+
+  if (mediaCount + descriptionRows >= 22) {
+    firstPageMaxRows.value = 22 - descriptionRows;
+  } else if (mediaCount + binaryCount + descriptionRows >= 19) {
+    firstPageMaxRows.value = 19 - descriptionRows;
+  } else if (mediaCount + binaryCount + locationCount + descriptionRows >= 14) {
+    firstPageMaxRows.value = 14 - descriptionRows;
+  } else {
+    firstPageMaxRows.value = 11 - descriptionRows;
+  }
+  if (mediaCount + descriptionRows > 65) {
+    secondPageMaxRows.value = 47;
+  } else if (mediaCount + binaryCount + descriptionRows > 60) {
+    secondPageMaxRows.value = 42;
+  } else if (mediaCount + binaryCount + locationCount + descriptionRows > 55) {
+    secondPageMaxRows.value = 38;
+  } else {
+    secondPageMaxRows.value = 35;
+  }
+};
+
+watchEffect(() => {
+  calculateMaxRows();
+});
+
+const preparePagesData = () => {
+  let currentPageData = [];
+  let currentRowCount = 0;
+  let isFirstPage = true;
+  let isSecondPage = false;
+
+  calculateMaxRows();
+
+  allData.value.forEach((item) => {
+    let maxRowsPerPage = isFirstPage
+      ? firstPageMaxRows.value
+      : otherPageMaxRows.value;
+
+    if (isSecondPage) {
+      maxRowsPerPage = secondPageMaxRows.value;
+    }
+
+    if (item.type === "material" && secondaryHeaders.value.length > 0) {
+      maxRowsPerPage -= item["Tracking Event"];
+    }
+
+    currentRowCount++;
+
+    if (currentRowCount > maxRowsPerPage) {
+      pagesData.value.push(currentPageData);
+      currentPageData = [];
+      currentRowCount = 0; 
+
+      if (isFirstPage) {
+        isFirstPage = false;
+        isSecondPage = true; 
+      } else if (isSecondPage) {
+        isSecondPage = false;
+      }
+    }
+
+    let category = currentPageData.find((c) => c.type === item.type);
+    if (!category) {
+      category = { type: item.type, items: [] };
+      currentPageData.push(category);
+    }
+    category.items.push(item);
+
+    if (currentRowCount === maxRowsPerPage && !isSecondPage) {
+      pagesData.value.push(currentPageData);
+      currentPageData = [];
+      currentRowCount = 0;
+      if (isFirstPage) {
+        isFirstPage = false;
+        isSecondPage = true;
+      }
+    }
+  });
+
+  if (currentPageData.length > 0) {
+    pagesData.value.push(currentPageData);
+  }
+};
+
+watchEffect(() => {
+  preparePagesData();
+});
 
 const onGeneratePDF = () => {
   try {
@@ -562,7 +501,6 @@ const onGeneratePDF = () => {
     <div v-for="(page, pageIndex) in pagesData" :key="pageIndex">
       <page size="A4" :id="`pdfContent-${pageIndex}`" class="page2">
         <div class="innerBox2">
-          <!-- ... other elements ... -->
           <div v-if="pageIndex === 0">
             <img src="../assets/leaf1.png" alt="" class="leaf7" />
             <div class="titleBoxPage2">
