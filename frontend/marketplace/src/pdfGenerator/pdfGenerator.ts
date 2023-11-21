@@ -28,18 +28,18 @@ function resetAddedValues() {
 }
 
 export const generatePDF = (
-  certificateData,
-  pagesData,
-  primaryHeaders,
-  secondaryHeaders,
-  plastciValuesString,
-  collectionAmount,
-  applicantData,
-  issuanceDate,
-  retiredDate,
-  creditData,
-  ID,
-  applicantDataDescription
+  certificateData: any,
+  pagesData: any,
+  primaryHeaders: any,
+  secondaryHeaders: any,
+  plastciValuesString: string,
+  collectionAmount: number,
+  applicantData: string,
+  issuanceDate: string,
+  retiredDate: string,
+  creditData: any,
+  ID: any,
+  applicantDataDescription: string
 ) => {
   const doc = new jsPDF("landscape");
 
@@ -199,7 +199,7 @@ export const generatePDF = (
   }
 
   doc.setLineWidth(0.5);
-  function addTitle(doc, title, yPosition) {
+  function addTitle(doc: any, title: string, yPosition: number) {
     doc.setFontSize(15);
     doc.setTextColor(32, 105, 72);
     doc.setFont("Open Sans", "bold");
@@ -207,7 +207,7 @@ export const generatePDF = (
     return yPosition + 5;
   }
 
-  function prepareMaterialDataForPdf(materialDetails, primaryHeaders) {
+  function prepareMaterialDataForPdf(materialDetails: [], primaryHeaders: []) {
     const tableData = materialDetails.map((material) => {
       return primaryHeaders.map((header) => {
         return material[header] || "-";
@@ -218,11 +218,11 @@ export const generatePDF = (
   }
 
   function prepareSecondaryMaterialDataForPdf(
-    materialDetails,
-    secondaryHeaders
+    materialDetails: [],
+    secondaryHeaders: []
   ) {
-    const tableData = materialDetails.map((material) => {
-      return secondaryHeaders.map((header) => {
+    const tableData = materialDetails.map((material: any) => {
+      return secondaryHeaders.map((header: any) => {
         return material[header] || "-";
       });
     });
@@ -231,11 +231,11 @@ export const generatePDF = (
   }
 
   function addMaterialTableToPdf(
-    doc,
-    materialDetails,
-    primaryHeaders,
-    startY,
-    title
+    doc: any,
+    materialDetails: [],
+    primaryHeaders: [],
+    startY: number,
+    title: string
   ) {
     const tableData = prepareMaterialDataForPdf(
       materialDetails,
@@ -279,10 +279,10 @@ export const generatePDF = (
   }
 
   function addSecondaryMaterialTableToPdf(
-    doc,
-    materialDetails,
-    secondaryHeaders,
-    startY
+    doc: any,
+    materialDetails: [],
+    secondaryHeaders: [],
+    startY: number
   ) {
     const tableData = prepareSecondaryMaterialDataForPdf(
       materialDetails,
@@ -323,7 +323,7 @@ export const generatePDF = (
     return doc.lastAutoTable.finalY;
   }
 
-  function addSimpleTable(doc, title, headers, data, startY) {
+  function addSimpleTable(doc: any, title: string, headers: any, data: any, startY: number) {
     startY = addTitle(doc, title, startY);
 
     doc.autoTable({
@@ -360,7 +360,7 @@ export const generatePDF = (
     return doc.lastAutoTable.finalY;
   }
 
-  function addTableWithLinks(doc, title, data, startY) {
+  function addTableWithLinks(doc: any, title: string, data: any, startY: number) {
     startY = addTitle(doc, title, startY);
     doc.autoTable({
       startY: startY,
@@ -389,13 +389,13 @@ export const generatePDF = (
         halign: "center",
         fillColor: false,
       },
-      willDrawCell: (data) => {
+      willDrawCell: (data: any) => {
         if (data.column.index === 1 && data.cell.section === "body") {
           data.cell.text = "";
         }
       },
-      body: data.map((item) => [item.name, item.url]),
-      didDrawCell: (data) => {
+      body: data.map((item: any) => [item.name, item.url]),
+      didDrawCell: (data: any) => {
         doc.setDrawColor(126, 194, 66);
         doc.setLineWidth(0.3);
         if (data.row.index === 0 && data.cell.section === "head") {
@@ -446,12 +446,12 @@ export const generatePDF = (
     return doc.lastAutoTable.finalY;
   }
 
-  function addAllTables(doc, pagesData, primaryHeaders, secondaryHeaders) {
+  function addAllTables(doc: any, pagesData: any, primaryHeaders: any, secondaryHeaders: any) {
     let yPosition = 0;
     let marginBetweenTables = 10;
 
     // Iterate over each page
-    pagesData.forEach((page, pageIndex) => {
+    pagesData.forEach((page: any, pageIndex: number) => {
       if (pageIndex > 0) {
         doc.addPage();
         addGrayPadding(doc);
@@ -504,7 +504,7 @@ export const generatePDF = (
         doc.line(14, yPosition + 1, pageWidth - 101, yPosition + 1);
         const lines = doc.splitTextToSize(description, 170);
 
-        lines.forEach((line) => {
+        lines.forEach((line: any) => {
           yPosition += 6;
           doc.text(line, 20, yPosition);
         });
@@ -513,7 +513,7 @@ export const generatePDF = (
         yPosition += 2;
       }
 
-      page.forEach((category) => {
+      page.forEach((category: any) => {
         switch (category.type) {
           case "location":
             addLocations(category.items);
@@ -534,9 +534,9 @@ export const generatePDF = (
       }
     });
 
-    function addLocations(locations) {
+    function addLocations(locations: any) {
       if (addedLocations.value === false) {
-        const locationsData = locations.map((loc) => [
+        const locationsData = locations.map((loc: any) => [
           loc.country,
           loc.longitude,
           loc.latitude,
@@ -551,7 +551,7 @@ export const generatePDF = (
         addedLocations.value = true;
       } else {
         yPosition -= 10;
-        const locationsData = locations.map((loc) => [
+        const locationsData = locations.map((loc: any) => [
           loc.country,
           loc.longitude,
           loc.latitude,
@@ -566,9 +566,9 @@ export const generatePDF = (
       }
     }
 
-    function addMediaFiles(mediaFiles) {
+    function addMediaFiles(mediaFiles: any) {
       if (addedMediaFiles.value === false) {
-        const photosTableData = mediaFiles.map((mf) => ({
+        const photosTableData = mediaFiles.map((mf: any) => ({
           name: mf.name,
           url: mf.url,
         }));
@@ -581,7 +581,7 @@ export const generatePDF = (
         addedMediaFiles.value = true;
       } else {
         yPosition -= 10;
-        const photosTableData = mediaFiles.map((mf) => ({
+        const photosTableData = mediaFiles.map((mf: any) => ({
           name: mf.name,
           url: mf.url,
         }));
@@ -594,7 +594,7 @@ export const generatePDF = (
       }
     }
 
-    function addMaterialData(materialDetails) {
+    function addMaterialData(materialDetails: any) {
       if (addedMaterialData.value === false) {
         yPosition = addMaterialTableToPdf(
           doc,
@@ -636,9 +636,9 @@ export const generatePDF = (
       }
     }
 
-    function addBinaryFiles(binaryFiles) {
+    function addBinaryFiles(binaryFiles: any) {
       if (addedBinaryFiles.value === false) {
-        const binaryFilesTableData = binaryFiles.map((bf) => ({
+        const binaryFilesTableData = binaryFiles.map((bf: any) => ({
           name: bf.name,
           url: bf.url,
         }));
@@ -651,7 +651,7 @@ export const generatePDF = (
         addedBinaryFiles.value = true;
       } else {
         yPosition -= 10;
-        const binaryFilesTableData = binaryFiles.map((bf) => ({
+        const binaryFilesTableData = binaryFiles.map((bf: any) => ({
           name: bf.name,
           url: bf.url,
         }));
