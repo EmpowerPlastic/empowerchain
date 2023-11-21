@@ -3,7 +3,6 @@ import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { onBeforeUnmount, onMounted, ref, watch, watchEffect } from "vue";
 import { useRoute } from "vue-router";
-import "jspdf-autotable";
 import { toast } from "vue3-toastify";
 import { generatePDF } from "../pdfGenerator/pdfGenerator";
 import CustomSpinner from "@/components/CustomSpinner.vue";
