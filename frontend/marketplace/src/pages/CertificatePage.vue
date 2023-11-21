@@ -22,9 +22,9 @@ const issuanceDate = ref("");
 const applicantData = ref("");
 const applicantDataDescription = ref("");
 const materialDetails = ref<Array<{ type: string; [key: string]: any }>>([]);
-const currentHeaders = ref<Array<{ type: string; [key: string]: any }>>([]);
-const primaryHeaders = ref<Array<{ type: string; [key: string]: any }>>([]);
-const secondaryHeaders = ref<Array<{ type: string; [key: string]: any }>>([]);
+const currentHeaders = ref<Array<string>>([]);
+const primaryHeaders = ref<Array<string>>([]);
+const secondaryHeaders = ref<Array<string>>([]);
 const retiredDate = ref("");
 const allData = ref<RowData[]>([]);
 const pagesData = ref<Array<{ type: string; [key: string]: any }>>([]);
@@ -139,7 +139,7 @@ const getCreditData = (denom: string) => {
 
       if (creditDataNode) {
         binaryFilesUrls.value = creditDataNode.binaryFiles.nodes.map(
-          (binaryFileNode) => {
+          (binaryFileNode: any) => {
             return {
               name: binaryFileNode.name || "N/A",
               url: binaryFileNode.url || "N/A",
@@ -150,7 +150,7 @@ const getCreditData = (denom: string) => {
           }
         );
         mediaFileUrls.value = creditDataNode.mediaFiles.nodes.map(
-          (mediaFileNode) => {
+          (mediaFileNode: any) => {
             return {
               name: mediaFileNode.name || "N/A",
               url: mediaFileNode.url || "N/A",
@@ -168,9 +168,9 @@ const getCreditData = (denom: string) => {
         eventData.value = eventDataNodes[0];
         materialData.value = eventDataNodes[0].material.nodes[0];
 
-        locations.value = eventDataNodes.reduce((unique, eventNode) => {
+        locations.value = eventDataNodes.reduce((unique: any, eventNode: any) => {
           const duplicate = unique.find(
-            (location) =>
+            (location: any) =>
               location.longitude === eventNode.longitude &&
               location.latitude === eventNode.latitude
           );
@@ -188,10 +188,10 @@ const getCreditData = (denom: string) => {
         }, []);
 
         const uniqueMaterialsSet = new Set();
-        const uniqueMaterials = [];
+        const uniqueMaterials: any = [];
         let eventId = 1;
 
-        const keyMapping = {
+        const keyMapping: { [key: string]: string } = {
           granularity: "Shape/Granularity",
           "shape / granularity": "Shape/Granularity",
           plasticType: "Plastic Type",
@@ -203,13 +203,13 @@ const getCreditData = (denom: string) => {
           "material origin": "Material Origin",
         };
 
-        eventDataNodes.forEach((eventNode) => {
-          const materialCombination = {
+        eventDataNodes.forEach((eventNode: any) => {
+          const materialCombination: any = {
             type: "material",
             [keyMapping["Tracking Event"] || "Tracking Event"]: eventId++,
           };
 
-          eventNode.material.nodes.forEach((materialNode) => {
+          eventNode.material.nodes.forEach((materialNode: any) => {
             const key = keyMapping[materialNode.key] || materialNode.key;
 
             if (materialNode.value) {
@@ -257,10 +257,10 @@ const getCreditData = (denom: string) => {
 
         const plastciValuesSet = new Set(
           eventDataNodes
-            .map((eventNode) =>
+            .map((eventNode: any) =>
               eventNode.material.nodes
-                .filter((material) => material.key == "plasticType")
-                .map((material) => material.value)
+                .filter((material: any) => material.key == "plasticType")
+                .map((material: any) => material.value)
             )
             .flat()
         );
@@ -352,14 +352,14 @@ watchEffect(() => {
 });
 
 const preparePagesData = () => {
-  let currentPageData = [];
+  let currentPageData: any = [];
   let currentRowCount = 0;
   let isFirstPage = true;
   let isSecondPage = false;
 
   calculateMaxRows();
 
-  allData.value.forEach((item) => {
+  allData.value.forEach((item: any) => {
     let maxRowsPerPage = isFirstPage
       ? firstPageMaxRows.value
       : otherPageMaxRows.value;
@@ -387,7 +387,7 @@ const preparePagesData = () => {
       }
     }
 
-    let category = currentPageData.find((c) => c.type === item.type);
+    let category = currentPageData.find((c: any) => c.type === item.type);
     if (!category) {
       category = { type: item.type, items: [] };
       currentPageData.push(category);

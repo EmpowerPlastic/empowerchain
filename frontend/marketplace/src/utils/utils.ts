@@ -64,7 +64,7 @@ export const getDetailsList = (data: any) => {
 };
 
 export const addTextWithSpacing = (
-  doc,
+  doc: any,
   text: string,
   x: number,
   y: number,
