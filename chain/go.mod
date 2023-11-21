@@ -16,7 +16,7 @@ require (
 	github.com/cosmos/ibc-go/v7 v7.3.1
 	github.com/golang/protobuf v1.5.3
 	github.com/golangci/golangci-lint v1.51.2
-	github.com/gorilla/mux v1.8.0
+	github.com/gorilla/mux v1.8.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/prometheus/client_golang v1.16.0
 	github.com/rakyll/statik v0.1.7
