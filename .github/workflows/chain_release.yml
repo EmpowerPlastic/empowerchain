@@ -28,4 +28,4 @@ jobs:
       - uses: "ncipollo/release-action@v1"
         with:
           artifacts: ./chain/build/*
-          bodyFile: "./chain/app/upgrades/{{ inputs.upgradeDir }}/RELEASE_NOTES.md"
+          bodyFile: "./chain/app/upgrades/${{ inputs.upgradeDir }}/RELEASE_NOTES.md"
