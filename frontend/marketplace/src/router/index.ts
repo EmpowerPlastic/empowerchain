@@ -52,8 +52,25 @@ const router = createRouter({
       path: "/profile",
       name: "UserProfilePage",
       component: UserProfile,
+      meta: { requiresAuth: true },
     },
   ],
+});
+
+const isAuthenticated = (): boolean => {
+  // return a boolean based on user's authentication status
+  return true; // TODO: implement this
+};
+
+router.beforeEach((to, from, next) => {
+  if (
+    to.matched.some((record) => record.meta.requiresAuth) &&
+    !isAuthenticated()
+  ) {
+    next({ name: "home" }); // redirect to home page if the user is not authenticated
+  } else {
+    next(); // proceed as normal if the user is authenticated or the route does not require authentication
+  }
 });
 
 export default router;
