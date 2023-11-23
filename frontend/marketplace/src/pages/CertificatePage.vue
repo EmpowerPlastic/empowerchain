@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
-import { onBeforeUnmount, onMounted, ref, watch, watchEffect } from "vue";
+import { onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import { toast } from "vue3-toastify";
 import { generatePDF } from "../pdfGenerator/pdfGenerator";
@@ -46,6 +46,41 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.body.style.backgroundColor = "";
 });
+
+const queryNow = () => {
+  showSpinner.value = true;
+  const query = gql`
+    query GetCreditOffsetCertificate($id: String!) {
+      creditOffsetCertificates(filter: { id: { equalTo: $id } }) {
+        nodes {
+          id
+          nodeId
+          denom
+          retiringEntityName
+          retiringEntityAdditionalData
+          walletId
+          amount
+        }
+      }
+    }
+  `;
+
+  const { result, error } = useQuery(query, {
+    id: `${router.params?.id}`,
+  });
+
+  watchEffect(() => {
+    if (result.value) {
+      processCertificateDataNode(
+        result.value.creditOffsetCertificates.nodes[0]
+      );
+      getCreditData(result.value.creditOffsetCertificates.nodes[0].denom);
+    }
+    if (error.value) {
+      console.error("Error fetching credit offset certificate:", error.value);
+    }
+  });
+};
 
 const getCreditData = (denom: string) => {
   let query = `query{
@@ -110,206 +145,202 @@ const getCreditData = (denom: string) => {
     }
   }
 }`;
-  const { result, loading, error } = useQuery(
+  const { result, error } = useQuery(
     gql`
       ${query}
     `
   );
 
-  watchEffect(() => {
-    if (result.value?.creditCollections?.nodes?.length) {
-      const eventDataNodes =
-        result.value.creditCollections.nodes[0]?.creditData?.nodes[0]?.eventData
-          ?.nodes;
-      const creditDataNode =
-        result.value.creditCollections.nodes[0]?.creditData?.nodes[0];
-      creditData.value = result.value.creditCollections.nodes[0];
-
-      const creditCollectionsNode = result.value.creditCollections.nodes[0];
-
-      if (creditCollectionsNode) {
-        collectionAmount.value =
-          Number(creditCollectionsNode.activeAmount) +
-          Number(creditCollectionsNode.retiredAmount);
-        issuanceDate.value = creditCollectionsNode.issuanceDate.substring(
-          0,
-          10
-        );
-      }
-
-      if (creditDataNode) {
-        binaryFilesUrls.value = creditDataNode.binaryFiles.nodes.map(
-          (binaryFileNode: any) => {
-            return {
-              name: binaryFileNode.name || "N/A",
-              url: binaryFileNode.url || "N/A",
-              type: "binary",
-              startIndex: 0,
-              endIndex: 0,
-            };
-          }
-        );
-        mediaFileUrls.value = creditDataNode.mediaFiles.nodes.map(
-          (mediaFileNode: any) => {
-            return {
-              name: mediaFileNode.name || "N/A",
-              url: mediaFileNode.url || "N/A",
-              type: "media",
-            };
-          }
-        );
-        applicantData.value =
-          creditDataNode.applicantDataByCreditDataId.nodes[0].name;
-        applicantDataDescription.value =
-          creditDataNode.applicantDataByCreditDataId.nodes[0].description;
-      }
-
-      if (eventDataNodes && eventDataNodes.length) {
-        eventData.value = eventDataNodes[0];
-        materialData.value = eventDataNodes[0].material.nodes[0];
-
-        locations.value = eventDataNodes.reduce((unique: any, eventNode: any) => {
-          const duplicate = unique.find(
-            (location: any) =>
-              location.longitude === eventNode.longitude &&
-              location.latitude === eventNode.latitude
-          );
-
-          if (!duplicate) {
-            unique.push({
-              country: eventNode.country || "N/A",
-              longitude:
-                eventNode.longitude != null ? eventNode.longitude : "N/A",
-              latitude: eventNode.latitude != null ? eventNode.latitude : "N/A",
-              type: "location",
-            });
-          }
-          return unique;
-        }, []);
-
-        const uniqueMaterialsSet = new Set();
-        const uniqueMaterials: any = [];
-        let eventId = 1;
-
-        const keyMapping: { [key: string]: string } = {
-          granularity: "Shape/Granularity",
-          "shape / granularity": "Shape/Granularity",
-          plasticType: "Plastic Type",
-          eventId: "Tracking Event",
-          color: "Color",
-          kilo: "Weight (kg)",
-          condition: "Condition",
-          brand: "Brand",
-          "material origin": "Material Origin",
-        };
-
-        eventDataNodes.forEach((eventNode: any) => {
-          const materialCombination: any = {
-            type: "material",
-            [keyMapping["Tracking Event"] || "Tracking Event"]: eventId++,
-          };
-
-          eventNode.material.nodes.forEach((materialNode: any) => {
-            const key = keyMapping[materialNode.key] || materialNode.key;
-
-            if (materialNode.value) {
-              materialCombination[key] = materialNode.value;
-            }
-          });
-
-          if (Object.keys(materialCombination).length > 2) {
-            const materialString = JSON.stringify(materialCombination);
-            if (!uniqueMaterialsSet.has(materialString)) {
-              uniqueMaterialsSet.add(materialString);
-              uniqueMaterials.push(materialCombination);
-            }
-          }
-        });
-
-        materialDetails.value = uniqueMaterials;
-
-        const getTableHeaders = () => {
-          const headers: Array<string> = [];
-          for (const detail of materialDetails.value) {
-            for (const key in detail) {
-              if (detail[key] && !headers.includes(key)) {
-                headers.push(key);
-              }
-            }
-          }
-          return headers;
-        };
-
-        currentHeaders.value = getTableHeaders();
-
-        primaryHeaders.value = currentHeaders.value.slice(1, 6);
-        if (currentHeaders.value.length >= 6) {
-          secondaryHeaders.value = currentHeaders.value.slice(6);
-        } else {
-          secondaryHeaders.value = [];
-        }
-        allData.value = [
-          ...mediaFileUrls.value,
-          ...binaryFilesUrls.value,
-          ...locations.value,
-          ...materialDetails.value,
-        ];
-
-        const plastciValuesSet = new Set(
-          eventDataNodes
-            .map((eventNode: any) =>
-              eventNode.material.nodes
-                .filter((material: any) => material.key == "plasticType")
-                .map((material: any) => material.value)
-            )
-            .flat()
-        );
-        plastciValuesString.value = Array.from(plastciValuesSet).join(", ");
-      }
-    }
-  });
+  if (result.value) {
+    processCreditCollectionsNode(result.value.creditCollections.nodes[0]);
+    processEventDataNode(
+      result.value.creditCollections.nodes[0].creditData.nodes[0].eventData
+        .nodes
+    );
+    processCreditDataNode(
+      result.value.creditCollections.nodes[0].creditData.nodes[0]
+    );
+    assignApplicantData(
+      result.value.creditCollections.nodes[0].creditData.nodes[0]
+    );
+    assignAllDataValue();
+  }
+  if (error.value) {
+    console.error("Error fetching credit offset certificate:", error.value);
+  }
+  preparePagesData();
   showSpinner.value = false;
 };
 
-const queryNow = () => {
-  showSpinner.value = true;
-  const query = gql`
-    query GetCreditOffsetCertificate($id: String!) {
-      creditOffsetCertificates(filter: { id: { equalTo: $id } }) {
-        nodes {
-          id
-          nodeId
-          denom
-          retiringEntityName
-          retiringEntityAdditionalData
-          walletId
-          amount
-        }
-      }
-    }
-  `;
-
-  const { result, loading, error } = useQuery(query, {
-    id: `${router.params?.id}`,
-  });
-
-  watchEffect(() => {
-    if (result.value) {
-      certificateData.value = result.value.creditOffsetCertificates.nodes[0];
-      if (certificateData.value.timestamp) {
-        retiredDate.value = certificateData.value.timestamp.substring(0, 10);
-      } else {
-        retiredDate.value = "N/A";
-      }
-
-      getCreditData(result.value.creditOffsetCertificates.nodes[0].denom);
-    }
-    if (error.value) {
-      console.error("Error fetching credit offset certificate:", error.value);
-    }
-  });
+const processCertificateDataNode = (certificateDataNode: any) => {
+  certificateData.value = certificateDataNode;
+  //Create string for retired date on second page, add timestamp to query when it's available in the index
+  if (certificateDataNode.timestamp) {
+    retiredDate.value = certificateDataNode.timestamp.substring(0, 10);
+  } else {
+    retiredDate.value = "N/A";
+  }
 };
 
+const processCreditCollectionsNode = (creditCollectionsNode: any) => {
+  //Create string for issuance date on second page
+  collectionAmount.value =
+    Number(creditCollectionsNode.activeAmount) +
+    Number(creditCollectionsNode.retiredAmount);
+  issuanceDate.value = creditCollectionsNode.issuanceDate.substring(0, 10);
+};
+
+const processEventDataNode = (eventDataNode: any) => {
+  //Create string for plastic type on first page
+  const plastciValuesSet = new Set(
+    eventDataNode
+      .map((eventNode: any) =>
+        eventNode.material.nodes
+          .filter((material: any) => material.key == "plasticType")
+          .map((material: any) => material.value)
+      )
+      .flat()
+  );
+  plastciValuesString.value = Array.from(plastciValuesSet).join(", ");
+
+  //Assign data to location table variables
+  locations.value = eventDataNode.reduce((unique: any, eventNode: any) => {
+    const duplicate = unique.find(
+      (location: any) =>
+        location.longitude === eventNode.longitude &&
+        location.latitude === eventNode.latitude
+    );
+
+    if (!duplicate) {
+      unique.push({
+        country: eventNode.country || "N/A",
+        longitude: eventNode.longitude != null ? eventNode.longitude : "N/A",
+        latitude: eventNode.latitude != null ? eventNode.latitude : "N/A",
+        type: "location",
+      });
+    }
+    return unique;
+  }, []);
+  if (eventDataNode.length) {
+    eventData.value = eventDataNode[0];
+    materialData.value = eventDataNode[0].material.nodes[0];
+
+    const uniqueMaterialsSet = new Set();
+    const uniqueMaterials: any = [];
+    let eventId = 1;
+
+    //Assign new keys to material table variables
+    const keyMapping: { [key: string]: string } = {
+      granularity: "Shape/Granularity",
+      "shape / granularity": "Shape/Granularity",
+      plasticType: "Plastic Type",
+      eventId: "Tracking Event",
+      color: "Color",
+      kilo: "Weight (kg)",
+      condition: "Condition",
+      brand: "Brand",
+      "material origin": "Material Origin",
+    };
+
+    //Assign data to material table variables
+    eventDataNode.forEach((eventNode: any) => {
+      const materialCombination: any = {
+        type: "material",
+        [keyMapping["Tracking Event"] || "Tracking Event"]: eventId++,
+      };
+
+      eventNode.material.nodes.forEach((materialNode: any) => {
+        const key = keyMapping[materialNode.key] || materialNode.key;
+
+        if (materialNode.value) {
+          materialCombination[key] = materialNode.value;
+        }
+      });
+
+      if (Object.keys(materialCombination).length > 2) {
+        const materialString = JSON.stringify(materialCombination);
+        if (!uniqueMaterialsSet.has(materialString)) {
+          uniqueMaterialsSet.add(materialString);
+          uniqueMaterials.push(materialCombination);
+        }
+      }
+    });
+
+    materialDetails.value = uniqueMaterials;
+
+    //create headers for material table
+    const getTableHeaders = () => {
+      const headers: Array<string> = [];
+      for (const detail of materialDetails.value) {
+        for (const key in detail) {
+          if (detail[key] && !headers.includes(key)) {
+            headers.push(key);
+          }
+        }
+      }
+      return headers;
+    };
+
+    currentHeaders.value = getTableHeaders();
+
+    //Assign data to material table one and material table two
+    primaryHeaders.value = currentHeaders.value.slice(1, 6);
+    if (currentHeaders.value.length >= 6) {
+      secondaryHeaders.value = currentHeaders.value.slice(6);
+    } else {
+      secondaryHeaders.value = [];
+    }
+  }
+};
+
+const processCreditDataNode = (creditDataNode: any) => {
+  creditData.value = creditDataNode;
+
+  //Assign data to binary table variables
+
+  binaryFilesUrls.value = creditDataNode.binaryFiles.nodes.map(
+    (binaryFileNode: any) => {
+      return {
+        name: binaryFileNode.name || "N/A",
+        url: binaryFileNode.url || "N/A",
+        type: "binary",
+        startIndex: 0,
+        endIndex: 0,
+      };
+    }
+  );
+  //Assign data to media table variables
+  mediaFileUrls.value = creditDataNode.mediaFiles.nodes.map(
+    (mediaFileNode: any) => {
+      return {
+        name: mediaFileNode.name || "N/A",
+        url: mediaFileNode.url || "N/A",
+        type: "media",
+      };
+    }
+  );
+};
+
+const assignApplicantData = (creditDataNode: any) => {
+  //Assign data to Organization in collection information table
+  applicantData.value =
+    creditDataNode.applicantDataByCreditDataId.nodes[0].name;
+
+  //Assign data to description in project description table
+  applicantDataDescription.value =
+    creditDataNode.applicantDataByCreditDataId.nodes[0].description;
+};
+
+const assignAllDataValue = () => {
+  allData.value = [
+    ...mediaFileUrls.value,
+    ...binaryFilesUrls.value,
+    ...locations.value,
+    ...materialDetails.value,
+  ];
+};
+
+//Calculate how many categories in total
 const calculateCategoryDistribution = () => {
   const categoryCounts = new Map();
 
@@ -320,6 +351,7 @@ const calculateCategoryDistribution = () => {
   return categoryCounts;
 };
 
+//Calculate how many rows in page one and page two
 const calculateMaxRows = () => {
   const categoryCounts = calculateCategoryDistribution();
   const descriptionRows = Math.ceil(applicantDataDescription.value.length / 90);
@@ -347,10 +379,7 @@ const calculateMaxRows = () => {
   }
 };
 
-watchEffect(() => {
-  calculateMaxRows();
-});
-
+//Organize the data for each page
 const preparePagesData = () => {
   let currentPageData: any = [];
   let currentRowCount = 0;
@@ -377,11 +406,11 @@ const preparePagesData = () => {
     if (currentRowCount > maxRowsPerPage) {
       pagesData.value.push(currentPageData);
       currentPageData = [];
-      currentRowCount = 0; 
+      currentRowCount = 0;
 
       if (isFirstPage) {
         isFirstPage = false;
-        isSecondPage = true; 
+        isSecondPage = true;
       } else if (isSecondPage) {
         isSecondPage = false;
       }
@@ -409,10 +438,6 @@ const preparePagesData = () => {
     pagesData.value.push(currentPageData);
   }
 };
-
-watchEffect(() => {
-  preparePagesData();
-});
 
 const onGeneratePDF = () => {
   try {

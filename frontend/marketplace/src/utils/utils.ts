@@ -81,11 +81,11 @@ export const addTextWithSpacing = (
   }
 };
 
-export function calculateTextProperties(
+export const calculateTextProperties = (
   name: string,
   baseXPos: number = 163,
   baseFontSize: number = 50
-): { xPos: number; fontSize: number } {
+): { xPos: number; fontSize: number } => {
   const nameLength = name.length;
 
   let stepSize = 0;
@@ -109,13 +109,13 @@ export function calculateTextProperties(
 
   return { xPos, fontSize };
 }
-export function calculateXPosition(
+export const calculateXPosition = (
   text: string,
   basePosition: number = 179,
   capitalStep: number = 1.5,
   otherStep: number = 1,
   numberStep: number = 1.4
-): number {
+): number => {
   let currentPosition = basePosition;
 
   for (let i = 0; i < text.length; i++) {
