@@ -3,7 +3,7 @@ import SearchBar from "@/components/SearchBar.vue";
 import AuctionResultsCard from "@/components/AuctionResultsCard.vue";
 import CustomAlert from "@/components/CustomAlert.vue";
 import CustomPagination from "@/components/CustomPagination.vue";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import CustomSpinner from "@/components/CustomSpinner.vue";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
@@ -18,6 +18,9 @@ const data = ref();
 const filterVal = ref();
 const showSpinner = ref(true);
 const queryBuilder = new ListingsQueryBuilder();
+const totalNrOfAuctions = computed<number>(() => {
+  return data?.value?.result?.marketplaceListings?.totalCount || 0;
+});
 
 const handlePageChange = (currentPage: number) => {
   pageNumber.value = currentPage;
@@ -123,9 +126,7 @@ const handleSearch = (filterValues: any) => {
     <template v-if="!showSpinner">
       <CustomAlert
         :visible="true"
-        :label="`${
-          data?.result?.marketplaceListings?.totalCount || 0
-        } auctions found`"
+        :label="`${totalNrOfAuctions} auctions found`"
       />
       <div
         v-for="auction in data?.result?.marketplaceListings?.nodes"
@@ -136,7 +137,7 @@ const handleSearch = (filterValues: any) => {
       <!--    <CustomAlert :visible="true" label="No more auctions found"/>-->
       <div class="flex justify-center md:justify-end my-10">
         <CustomPagination
-          :total="data?.result?.marketplaceListings?.totalCount"
+          :total="totalNrOfAuctions"
           :item-per-page="itemsPerPage"
           v-model:current-page="pageNumber"
           @page-change="handlePageChange"
