@@ -126,7 +126,7 @@ const getUserInfo = async () => {
 
         <div class="flex flex-row justify-end">
           <!--          User Profile Dropdown-->
-          <div class="dropdown dropdown-end">
+          <div class="dropdown dropdown-end z-10">
             <div
               class="avatar mb-3 cursor-pointer"
               tabindex="0"
