@@ -641,6 +641,136 @@ const addAllTables = (
       yPosition += 2;
     }
 
+    const addLocations = (locations: any) => {
+      if (addedLocations.value === false) {
+        const locationsData = locations.map((loc: any) => [
+          loc.country,
+          loc.longitude,
+          loc.latitude,
+        ]);
+        yPosition = addSimpleTable(
+          doc,
+          "Locations",
+          ["Country", "Longitude", "Latitude"],
+          locationsData,
+          yPosition + marginBetweenTables
+        );
+        addedLocations.value = true;
+      } else {
+        yPosition -= 10;
+        const locationsData = locations.map((loc: any) => [
+          loc.country,
+          loc.longitude,
+          loc.latitude,
+        ]);
+        yPosition = addSimpleTable(
+          doc,
+          "",
+          ["Country", "Longitude", "Latitude"],
+          locationsData,
+          yPosition + marginBetweenTables
+        );
+      }
+    };
+  
+    const addMediaFiles = (mediaFiles: any) => {
+      if (addedMediaFiles.value === false) {
+        const photosTableData = mediaFiles.map((mf: any) => ({
+          name: mf.name,
+          url: mf.url,
+        }));
+        yPosition = addTableWithLinks(
+          doc,
+          "Photos",
+          photosTableData,
+          yPosition + marginBetweenTables
+        );
+        addedMediaFiles.value = true;
+      } else {
+        yPosition -= 10;
+        const photosTableData = mediaFiles.map((mf: any) => ({
+          name: mf.name,
+          url: mf.url,
+        }));
+        yPosition = addTableWithLinks(
+          doc,
+          "",
+          photosTableData,
+          yPosition + marginBetweenTables
+        );
+      }
+    };
+  
+    const addMaterialData = (materialDetails: any) => {
+      if (addedMaterialData.value === false) {
+        yPosition = addMaterialTableToPdf(
+          doc,
+          materialDetails,
+          primaryHeaders,
+          yPosition,
+          "Materials"
+        );
+        yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
+        addedMaterialData.value = true;
+        if (secondaryHeaders.length > 0) {
+          yPosition = addSecondaryMaterialTableToPdf(
+            doc,
+            materialDetails,
+            secondaryHeaders,
+            yPosition
+          );
+          yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
+        }
+      } else {
+        yPosition -= 10;
+        yPosition = addMaterialTableToPdf(
+          doc,
+          materialDetails,
+          primaryHeaders,
+          yPosition,
+          ""
+        );
+        yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
+        if (secondaryHeaders.length > 0) {
+          yPosition = addSecondaryMaterialTableToPdf(
+            doc,
+            materialDetails,
+            secondaryHeaders,
+            yPosition
+          );
+          yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
+        }
+      }
+    };
+  
+    const addBinaryFiles = (binaryFiles: any) => {
+      if (addedBinaryFiles.value === false) {
+        const binaryFilesTableData = binaryFiles.map((bf: any) => ({
+          name: bf.name,
+          url: bf.url,
+        }));
+        yPosition = addTableWithLinks(
+          doc,
+          "Documents",
+          binaryFilesTableData,
+          yPosition + marginBetweenTables
+        );
+        addedBinaryFiles.value = true;
+      } else {
+        yPosition -= 10;
+        const binaryFilesTableData = binaryFiles.map((bf: any) => ({
+          name: bf.name,
+          url: bf.url,
+        }));
+        yPosition = addTableWithLinks(
+          doc,
+          "",
+          binaryFilesTableData,
+          yPosition + marginBetweenTables
+        );
+      }
+    };
+
     page.forEach((category: any) => {
       switch (category.type) {
         case "location":
@@ -662,135 +792,7 @@ const addAllTables = (
     }
   });
 
-  const addLocations = (locations: any) => {
-    if (addedLocations.value === false) {
-      const locationsData = locations.map((loc: any) => [
-        loc.country,
-        loc.longitude,
-        loc.latitude,
-      ]);
-      yPosition = addSimpleTable(
-        doc,
-        "Locations",
-        ["Country", "Longitude", "Latitude"],
-        locationsData,
-        yPosition + marginBetweenTables
-      );
-      addedLocations.value = true;
-    } else {
-      yPosition -= 10;
-      const locationsData = locations.map((loc: any) => [
-        loc.country,
-        loc.longitude,
-        loc.latitude,
-      ]);
-      yPosition = addSimpleTable(
-        doc,
-        "",
-        ["Country", "Longitude", "Latitude"],
-        locationsData,
-        yPosition + marginBetweenTables
-      );
-    }
-  };
-
-  const addMediaFiles = (mediaFiles: any) => {
-    if (addedMediaFiles.value === false) {
-      const photosTableData = mediaFiles.map((mf: any) => ({
-        name: mf.name,
-        url: mf.url,
-      }));
-      yPosition = addTableWithLinks(
-        doc,
-        "Photos",
-        photosTableData,
-        yPosition + marginBetweenTables
-      );
-      addedMediaFiles.value = true;
-    } else {
-      yPosition -= 10;
-      const photosTableData = mediaFiles.map((mf: any) => ({
-        name: mf.name,
-        url: mf.url,
-      }));
-      yPosition = addTableWithLinks(
-        doc,
-        "",
-        photosTableData,
-        yPosition + marginBetweenTables
-      );
-    }
-  };
-
-  const addMaterialData = (materialDetails: any) => {
-    if (addedMaterialData.value === false) {
-      yPosition = addMaterialTableToPdf(
-        doc,
-        materialDetails,
-        primaryHeaders,
-        yPosition,
-        "Materials"
-      );
-      yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
-      addedMaterialData.value = true;
-      if (secondaryHeaders.length > 0) {
-        yPosition = addSecondaryMaterialTableToPdf(
-          doc,
-          materialDetails,
-          secondaryHeaders,
-          yPosition
-        );
-        yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
-      }
-    } else {
-      yPosition -= 10;
-      yPosition = addMaterialTableToPdf(
-        doc,
-        materialDetails,
-        primaryHeaders,
-        yPosition,
-        ""
-      );
-      yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
-      if (secondaryHeaders.length > 0) {
-        yPosition = addSecondaryMaterialTableToPdf(
-          doc,
-          materialDetails,
-          secondaryHeaders,
-          yPosition
-        );
-        yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
-      }
-    }
-  };
-
-  const addBinaryFiles = (binaryFiles: any) => {
-    if (addedBinaryFiles.value === false) {
-      const binaryFilesTableData = binaryFiles.map((bf: any) => ({
-        name: bf.name,
-        url: bf.url,
-      }));
-      yPosition = addTableWithLinks(
-        doc,
-        "Documents",
-        binaryFilesTableData,
-        yPosition + marginBetweenTables
-      );
-      addedBinaryFiles.value = true;
-    } else {
-      yPosition -= 10;
-      const binaryFilesTableData = binaryFiles.map((bf: any) => ({
-        name: bf.name,
-        url: bf.url,
-      }));
-      yPosition = addTableWithLinks(
-        doc,
-        "",
-        binaryFilesTableData,
-        yPosition + marginBetweenTables
-      );
-    }
-  };
+  
 
   resetAddedValues();
 };
