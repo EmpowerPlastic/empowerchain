@@ -7,8 +7,7 @@ import SellectWalletModal from "@/components/SellectWalletModal.vue";
 import { getWalletFromType } from "@/utils/wallet-utils";
 import { useLogto } from "@logto/vue";
 
-const { signIn, isAuthenticated, signOut, fetchUserInfo, isLoading } =
-  useLogto();
+const { signIn, isAuthenticated, signOut, fetchUserInfo } = useLogto();
 const router = useRoute();
 const address = ref();
 const addressVisible = ref();
@@ -29,6 +28,7 @@ const openSelectWalletModal = () => {
 const closeSelectWalletModal = () => {
   selectWalletModal.value = false;
 };
+
 const connect = async () => {
   let addressLocal = localStorage.getItem("address");
   let wallet = localStorage.getItem("wallet");
@@ -82,8 +82,12 @@ const onClickSignIn = () => signIn("http://localhost:5173/callback");
 const onClickSignOut = () => signOut("http://localhost:5173");
 
 const getUserInfo = async () => {
-  const details = await fetchUserInfo();
-  userDetails.value = details;
+  try {
+    const details = await fetchUserInfo();
+    userDetails.value = details;
+  } catch (error) {
+    console.error("Error while fetching user info", error)
+  }
 };
 </script>
 
