@@ -11,6 +11,7 @@ import {
 import VueDatePicker from "@vuepic/vue-datepicker";
 import Vue3Toastify, { type ToastContainerOptions } from "vue3-toastify";
 import Rollbar from "rollbar";
+import { initGlobalProviders } from "./stores";
 import "vue-awesome-paginate/dist/style.css";
 import "@vuepic/vue-datepicker/dist/main.css";
 import "vue3-toastify/dist/index.css";
@@ -67,4 +68,5 @@ if (ENVIRONMENT && ENVIRONMENT !== "local") {
   app.config.globalProperties.$rollbar = rollbar;
 }
 app.mount("#app");
+initGlobalProviders(app);
 provideApolloClient(apolloClient);
