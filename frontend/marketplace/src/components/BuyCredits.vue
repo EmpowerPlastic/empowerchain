@@ -8,6 +8,7 @@ import { onMounted, ref, watch } from "vue";
 import { toast } from "vue3-toastify";
 import { getWallet, walletConnected } from "@/utils/wallet-utils";
 import { formatDenom, resolveSdkError } from "@/utils/wallet-utils";
+import BuyButton from "@/components/BuyButton.vue";
 
 export interface BuyCreditsProps {
   availableCredits: string;
@@ -159,6 +160,11 @@ const buyCredits = async () => {
       </p>
     </div>
     <div class="flex flex-row mt-8">
+      <BuyButton
+        :show-button-spinner="showButtonSpinner"
+        :insufficient-balance="insufficientBalance"
+        :coin-formatted="coinFormatted"
+      ></BuyButton>
       <button
         :disabled="showButtonSpinner || insufficientBalance"
         class="btn btn-ghost w-full rounded-r-none md:max-w-[80%] max-w-[85%] normal-case bg-greenPrimary text-title24 p-0 font-normal md:ml-4 disabled:bg-lightGray disabled:text-white"
