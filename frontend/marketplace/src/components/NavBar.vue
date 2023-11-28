@@ -5,20 +5,20 @@ import { toast } from "vue3-toastify";
 import { useRoute } from "vue-router";
 import SellectWalletModal from "@/components/SellectWalletModal.vue";
 import { getWalletFromType } from "@/utils/wallet-utils";
-import { useLogto } from "@logto/vue";
+import { useAuth } from '@/stores/auth'
 
-const { signIn, isAuthenticated, signOut, fetchUserInfo } = useLogto();
+const { handleSignIn, handleSignOut, isAuthenticated, user } = useAuth();
 const router = useRoute();
 const address = ref();
 const addressVisible = ref();
 const showNav = ref(false);
 const selectedWallet = ref();
 const selectWalletModal = ref(false);
-const userDetails = ref();
+const userDetails = ref(user);
 
 onMounted(() => {
   connect();
-  getUserInfo();
+  // getUserInfo();
 });
 
 const openSelectWalletModal = () => {
@@ -77,18 +77,14 @@ const copyAddress = async () => {
   toast.success("Address copied to clipboard");
 };
 
-const onClickSignIn = () => signIn("http://localhost:5173/callback");
-
-const onClickSignOut = () => signOut("http://localhost:5173");
-
-const getUserInfo = async () => {
-  try {
-    const details = await fetchUserInfo();
-    userDetails.value = details;
-  } catch (error) {
-    console.error("Error while fetching user info", error)
-  }
-};
+// const getUserInfo = async () => {
+//   try {
+//     const details = await fetchUserInfo();
+//     userDetails.value = details;
+//   } catch (error) {
+//     console.error("Error while fetching user info", error)
+//   }
+// };
 </script>
 
 <template>
@@ -104,6 +100,7 @@ const getUserInfo = async () => {
         );
       "
     >
+      Userdetails: {{ userDetails }}
       <SellectWalletModal
         v-model:show-modal="selectWalletModal"
         @on-wallet-select="onWalletSelect"
@@ -155,7 +152,7 @@ const getUserInfo = async () => {
                 >
                   Wallet
                 </button>
-                <button @click="onClickSignIn" class="btn nav-dropdown-button">
+                <button @click="handleSignIn" class="btn nav-dropdown-button">
                   Email
                 </button>
               </div>
@@ -205,7 +202,7 @@ const getUserInfo = async () => {
                 </button>
                 <button
                   v-if="isAuthenticated"
-                  @click="onClickSignOut"
+                  @click="handleSignOut"
                   class="btn nav-dropdown-button"
                 >
                   Logout
@@ -269,7 +266,7 @@ const getUserInfo = async () => {
                 >
                   Wallet
                 </button>
-                <button @click="onClickSignIn" class="btn nav-dropdown-button">
+                <button @click="handleSignIn" class="btn nav-dropdown-button">
                   Email
                 </button>
               </div>
@@ -329,7 +326,7 @@ const getUserInfo = async () => {
                   Disconnect
                 </button>
                 <button
-                  @click="onClickSignOut"
+                  @click="handleSignOut"
                   class="btn nav-dropdown-button"
                   v-if="isAuthenticated"
                 >
