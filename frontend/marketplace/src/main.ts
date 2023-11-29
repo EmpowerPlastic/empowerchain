@@ -68,4 +68,3 @@ if (ENVIRONMENT && ENVIRONMENT !== "local") {
 }
 app.mount("#app");
 provideApolloClient(apolloClient);
-// initGlobalStores(app);
