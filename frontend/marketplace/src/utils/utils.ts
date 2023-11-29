@@ -62,3 +62,72 @@ export const getDetailsList = (data: any) => {
     locationPointers: locationPointersArray,
   };
 };
+
+export const addTextWithSpacing = (
+  doc: any,
+  text: string,
+  x: number,
+  y: number,
+  spacing: number
+) => {
+  for (let i = 0; i < text.length; i++) {
+    const currentLetter = text[i];
+    const letterWidth =
+      (doc.getStringUnitWidth(currentLetter) * doc.internal.getFontSize()) /
+      doc.internal.scaleFactor;
+
+    doc.text(currentLetter, x, y);
+    x += letterWidth + spacing;
+  }
+};
+
+export const calculateTextProperties = (
+  name: string,
+  baseXPos: number = 163,
+  baseFontSize: number = 50
+): { xPos: number; fontSize: number } => {
+  const nameLength = name.length;
+
+  let stepSize = 0;
+  let charsPerStep = 1;
+  let fontSize = baseFontSize;
+  if (nameLength < 15) {
+    stepSize = 4;
+  } else if (nameLength >= 15 && nameLength < 20) {
+    fontSize = 40;
+    stepSize = 3;
+  } else if (nameLength >= 20 && nameLength <= 30) {
+    fontSize = 30;
+    stepSize = 2.1;
+  } else {
+    fontSize = 20;
+    stepSize = 1.4;
+  }
+  const steps = Math.floor((nameLength - 3) / charsPerStep);
+
+  let xPos = baseXPos - steps * stepSize;
+
+  return { xPos, fontSize };
+}
+export const calculateXPosition = (
+  text: string,
+  basePosition: number = 179,
+  capitalStep: number = 1.5,
+  otherStep: number = 1,
+  numberStep: number = 1.4
+): number => {
+  let currentPosition = basePosition;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (char === char.toUpperCase() && char.match(/[A-Z]/)) {
+      currentPosition -= capitalStep;
+    } else if (char.match(/[0-9]/)) {
+      currentPosition -= numberStep;
+    } else {
+      currentPosition -= otherStep;
+    }
+  }
+
+  return currentPosition;
+}
