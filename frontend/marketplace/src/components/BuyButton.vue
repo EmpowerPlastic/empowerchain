@@ -48,7 +48,7 @@ const buttonText = computed(() => {
     case BuyButtonState.ENABLED_CARD:
       return 'Pay with card';
     case BuyButtonState.ENABLED_WALLET:
-      return 'Pay with wallet';
+      return 'Pay with $USDC';
     case BuyButtonState.ENABLED_UNAUTHORIZED:
       return 'Log in to pay';
     case BuyButtonState.DISABLED:
