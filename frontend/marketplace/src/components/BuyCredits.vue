@@ -162,7 +162,7 @@ const handleCardPayment = async () => {
     const resultWithStripeLink = await post('/path/to/endpoint', body);
     window.location.href = resultWithStripeLink;
   } catch (error) {
-    notifyer.error("This API call is not implemented yet", error) // TODO: handle error
+    notifyer.error("This API call is not implemented yet") // TODO: handle error
   } finally {
     showButtonSpinner.value = false;
   }
