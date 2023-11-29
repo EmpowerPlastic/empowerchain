@@ -1,5 +1,4 @@
 import { ref, watch, type Ref } from 'vue';
-import { type ProviderFunction } from './index';
 import { useLogto, type UserInfoResponse } from "@logto/vue";
 
 export interface Auth {
@@ -11,7 +10,7 @@ export interface Auth {
   fetchUser: () => Promise<UserInfoResponse | undefined>,
 }
 
-export const useAuth: ProviderFunction = (): Auth => {
+export const useAuth = (): Auth => {
   const {
     signIn: logToSignIn,
     signOut: logToSignOut,
