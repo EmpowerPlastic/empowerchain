@@ -18,7 +18,6 @@ const userDetails = ref(user);
 
 onMounted(() => {
   connect();
-  // getUserInfo();
 });
 
 const openSelectWalletModal = () => {
@@ -76,15 +75,6 @@ const copyAddress = async () => {
   await navigator.clipboard.writeText(address.value);
   toast.success("Address copied to clipboard");
 };
-
-// const getUserInfo = async () => {
-//   try {
-//     const details = await fetchUserInfo();
-//     userDetails.value = details;
-//   } catch (error) {
-//     console.error("Error while fetching user info", error)
-//   }
-// };
 </script>
 
 <template>
@@ -100,7 +90,6 @@ const copyAddress = async () => {
         );
       "
     >
-      Userdetails: {{ userDetails }}
       <SellectWalletModal
         v-model:show-modal="selectWalletModal"
         @on-wallet-select="onWalletSelect"
