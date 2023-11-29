@@ -1,63 +1,101 @@
 <script setup lang="ts">
-import { useAuth } from '@/stores/auth'
+import { computed } from 'vue';
+import { useAuth } from '@/stores/auth';
 export interface BuyButtonProps {
   showButtonSpinner: boolean;
   insufficientBalance: boolean;
   coinFormatted: string;
   handleCardPayment: () => void;
+  handleBuyCredits: () => void;
+  walletConnected: () => boolean;
 }
-defineProps<BuyButtonProps>();
+const props = defineProps<BuyButtonProps>();
 
-const buyCredits = () => {
-  alert('Call API with transaction details to get a generated stripe link')
-}
 const { isAuthenticated, handleSignIn } = useAuth();
-const buttonsCssClasses = `btn btn-ghost w-full md:max-w-[80%] normal-case bg-greenPrimary text-title24 p-0 font-normal md:ml-4 disabled:bg-lightGray disabled:text-white`;
+
+enum BuyButtonState {
+  DISABLED = 'disabled',
+  ENABLED_UNAUTHORIZED = 'enabled_unauthorized',
+  ENABLED_CARD = 'enabled_card',
+  ENABLED_WALLET = 'enabled_wallet',
+  LOADING = 'loading',
+}
+
+const buttonState = computed<BuyButtonState>(() => {
+  if (props.showButtonSpinner) {
+    return BuyButtonState.LOADING;
+  }
+
+  if (isAuthenticated) {
+    return BuyButtonState.ENABLED_CARD;
+  }
+
+  if (props.insufficientBalance) {
+    return BuyButtonState.DISABLED;
+  }
+
+  if (props.walletConnected()) {
+    return BuyButtonState.ENABLED_WALLET;
+  }
+
+  return BuyButtonState.ENABLED_UNAUTHORIZED;
+});
+
+const buttonText = computed(() => {
+  switch (buttonState.value) {
+    case BuyButtonState.LOADING:
+      return 'Processing transaction';
+    case BuyButtonState.ENABLED_CARD:
+      return 'Pay with card';
+    case BuyButtonState.ENABLED_WALLET:
+      return 'Pay with wallet';
+    case BuyButtonState.ENABLED_UNAUTHORIZED:
+      return 'Log in to pay';
+    case BuyButtonState.DISABLED:
+      return 'Insufficient balance';
+    default:
+      return 'Unknown state';
+  }
+});
+
+const buttonHandler = computed<() => void>(() => {
+  switch (buttonState.value) {
+    case BuyButtonState.ENABLED_CARD:
+      return props.handleCardPayment;
+    case BuyButtonState.ENABLED_WALLET:
+      return props.handleBuyCredits;
+    case BuyButtonState.ENABLED_UNAUTHORIZED:
+      return handleSignIn;
+    default:
+      return null
+  }
+})
+
+const isDisabled = computed(() => buttonState.value === BuyButtonState.DISABLED || buttonState.value === BuyButtonState.LOADING);
+
+const buttonsCssClasses = `
+  btn
+  btn-ghost
+  btn-block
+  normal-case
+  bg-greenPrimary
+  hover:bg-greenDark
+  text-title24
+  lg:text-title32
+  lg:btn-lg
+  p-0
+  px-12
+  font-normal
+  disabled:bg-lightGray
+  disabled:text-white
+`;
 </script>
 <template>
   <button
-    v-if="isAuthenticated"
-    :disabled="showButtonSpinner || insufficientBalance"
+    :disabled="isDisabled"
     :class="buttonsCssClasses"
-    @click="handleCardPayment"
+    @click="buttonHandler"
   > <span v-if="showButtonSpinner" class="loading loading-spinner"></span>
-    {{
-      insufficientBalance
-        ? "Insufficient balance"
-        : showButtonSpinner
-        ? "Processing transaction"
-        // : "Buy with $" + coinFormatted
-        : "Pay with card"
-    }}
+    {{ buttonText }}
   </button>
-  <!-- <div class="dropdown dropdown-end">
-    <label
-      tabindex="0"
-      class="btn btn-ghost rounded-l-none bg-dropdownGreen !px-0 mr-5"
-    >
-      <img class="w-4 mx-5" src="../assets/dropdownIconButton.svg" />
-    </label>
-    <div
-      tabindex="0"
-      class="dropdown-content menu p-4 shadow bg-dropdownGray rounded-box w-52 !list-none"
-    >
-      <li
-        disabled
-        class="text-title12 font-semibold my-1 cursor-pointer"
-        v-for="coin in coinsArray"
-        :key="coin"
-      >
-        {{ coin }}
-      </li>
-    </div>
-  </div> -->
-
-  <button
-    v-else
-    :class="buttonsCssClasses"
-    @click="handleSignIn">Log in to pay
-  </button>
-  
-  
-
 </template>
