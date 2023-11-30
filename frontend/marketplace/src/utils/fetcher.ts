@@ -4,17 +4,28 @@ const defaultFetchHeaders = {
 
 export const useFetcher = () => {
   const fetcher = {
-    get: async (url: string, extraHeaders: HeadersInit) => {
+    get: async (url: string, options?: RequestInit) => {
+      const { headers: extraHeaders, ...optionsWithoutHeaders } = options ?? {};
       const headers = {
         ...defaultFetchHeaders,
-        ...extraHeaders,
+        ...(extraHeaders ?? {}),
       }
 
-      const response = await fetch(url);
+      const newOptions = {
+        ...optionsWithoutHeaders ?? {},
+        headers
+      }
+      const response = await fetch(url, {
+        ...newOptions,
+        method: 'GET',
+
+      });
       const data = await response.json();
       return data;
     },
-    post: async (url: string, body: any, extraHeaders?: HeadersInit) => {
+    post: async (url: string, body: any, options?: RequestInit) => {
+      const { headers: extraHeaders, ...optionsWithoutHeaders } = options ?? {};
+
       const defaultPostHeaders = {
         'Content-Type': 'application/json'
       };
@@ -22,12 +33,17 @@ export const useFetcher = () => {
       const headers = {
         ...defaultFetchHeaders,
         ...defaultPostHeaders,
-        ...extraHeaders,
+        ...(extraHeaders ?? {}),
       };
 
+      const newOptions = {
+        ...optionsWithoutHeaders ?? {},
+        headers
+      }
+
       const response = await fetch(url, {
-        method: "POST",
-        headers,
+        ...newOptions,
+        method: 'POST',
         body: JSON.stringify(body),
       });
 
