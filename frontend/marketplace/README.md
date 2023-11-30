@@ -23,7 +23,7 @@ See [Vite Configuration Reference](https://vitejs.dev/config/).
 
 ## Project requirements
 
-Node.js 20.10, npm 10.2.3
+Nodejs 20.10, npm 10.2.3
 
 ## Project Setup
 
