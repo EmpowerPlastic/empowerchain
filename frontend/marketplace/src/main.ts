@@ -1,5 +1,4 @@
 import { createApp } from "vue";
-import { createPinia } from "pinia";
 import App from "./App.vue";
 import router from "./router";
 import VueAwesomePaginate from "vue-awesome-paginate";
@@ -11,6 +10,7 @@ import {
 import VueDatePicker from "@vuepic/vue-datepicker";
 import Vue3Toastify, { type ToastContainerOptions } from "vue3-toastify";
 import Rollbar from "rollbar";
+// import { initGlobalStores } from "./stores";
 import "vue-awesome-paginate/dist/style.css";
 import "@vuepic/vue-datepicker/dist/main.css";
 import "vue3-toastify/dist/index.css";
@@ -41,7 +41,7 @@ const config = {
 };
 
 app.use(createLogto, config);
-app.use(createPinia());
+
 app.use(router as any);
 app.use(VueAwesomePaginate);
 

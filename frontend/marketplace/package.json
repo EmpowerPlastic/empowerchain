@@ -26,7 +26,6 @@
     "graphql-tag": "^2.12.6",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.7.1",
-    "pinia": "^2.1.7",
     "rollbar": "^2.26.2",
     "vue": "^3.3.2",
     "vue-awesome-paginate": "^1.1.46",

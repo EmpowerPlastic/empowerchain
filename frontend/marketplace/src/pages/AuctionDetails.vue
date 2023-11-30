@@ -217,7 +217,7 @@ onMounted(() => {
   <CustomSpinner :visible="showSpinner" />
   <div
     v-if="!showSpinner"
-    class="p-5 md:px-[10%] min-h-[60vh] text-white font-Inter"
+    class="p-5 min-h-[60vh] text-white font-Inter"
   >
     <!--  Title Section-->
     <p class="text-title18 mb-5">
@@ -242,7 +242,8 @@ onMounted(() => {
 
     <!--    Buy Credits-->
     <BuyCredits
-      :available-credits="`${data?.result?.marketplaceListings?.nodes[0].amount}/${data?.result?.marketplaceListings?.nodes[0].initialAmount}`"
+      :available-credits="data?.result?.marketplaceListings?.nodes[0].amount"
+      :initial-credits="data?.result?.marketplaceListings?.nodes[0].initialAmount"
       :selected-coin="`${pricePerCreditDenom}`"
       :price-per-credit="
         data?.result?.marketplaceListings?.nodes[0].pricePerCreditAmount /

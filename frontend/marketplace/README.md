@@ -21,6 +21,10 @@ If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has a
 
 See [Vite Configuration Reference](https://vitejs.dev/config/).
 
+## Project requirements
+
+Nodejs 20.10, npm 10.2.3
+
 ## Project Setup
 
 ```sh
