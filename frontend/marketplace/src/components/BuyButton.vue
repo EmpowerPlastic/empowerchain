@@ -26,7 +26,7 @@ const buttonState = computed<BuyButtonState>(() => {
     return BuyButtonState.LOADING;
   }
 
-  if (isAuthenticated) {
+  if (isAuthenticated.value) {
     return BuyButtonState.ENABLED_CARD;
   }
 
