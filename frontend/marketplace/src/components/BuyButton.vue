@@ -58,7 +58,7 @@ const buttonText = computed(() => {
   }
 });
 
-const buttonHandler = computed<() => void>(() => {
+const buttonHandler = computed<(() => void) | undefined>(() => {
   switch (buttonState.value) {
     case BuyButtonState.ENABLED_CARD:
       return props.handleCardPayment;
@@ -67,9 +67,9 @@ const buttonHandler = computed<() => void>(() => {
     case BuyButtonState.ENABLED_UNAUTHORIZED:
       return handleSignIn;
     default:
-      return null
+      return undefined
   }
-})
+});
 
 const isDisabled = computed(() => buttonState.value === BuyButtonState.DISABLED || buttonState.value === BuyButtonState.LOADING);
 
