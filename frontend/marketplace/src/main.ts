@@ -23,8 +23,9 @@ import {
   LOGTO_ENDPOINT,
   REVISION_ID,
   ROLLBAR_ACCESS_TOKEN,
+  PC_BACKEND_ENDPOINT,
 } from "@/config/config";
-import { createLogto } from "@logto/vue";
+import { createLogto, type LogtoConfig } from "@logto/vue";
 
 const cache = new InMemoryCache();
 const apolloClient = new ApolloClient({
@@ -33,14 +34,14 @@ const apolloClient = new ApolloClient({
 });
 
 const app = createApp(App);
-const config = {
+const logtoConfig: LogtoConfig = {
   endpoint: LOGTO_ENDPOINT,
   appId: LOGTO_APP_ID,
   scopes: ["email"],
-  resources: ["http://localhost:3000"],
+  resources: ["http://localhost:3000", PC_BACKEND_ENDPOINT],
 };
 
-app.use(createLogto, config);
+app.use(createLogto, logtoConfig);
 
 app.use(router as any);
 app.use(VueAwesomePaginate);
