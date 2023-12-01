@@ -7,6 +7,8 @@ import AuctionDetails from "@/pages/AuctionDetails.vue";
 import CertificatePage from "@/pages/CertificatePage.vue";
 import CallbackView from "@/pages/CallbackView.vue";
 import UserProfile from "@/pages/UserProfile.vue";
+import AuctionPayment from "@/pages/AuctionPayment.vue";
+// import AuctionPaymentCancelled from "@/pages/AuctionPaymentCancelled.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -53,7 +55,18 @@ const router = createRouter({
       name: "UserProfilePage",
       component: UserProfile,
     },
+    {
+      path: "/payment/:id",
+      name: "AuctionPayment",
+      component: AuctionPayment,
+    },
+    // {
+    //   path: "/payment-cancelled/:id",
+    //   name: "AuctionPaymentCancelled",
+    //   component: AuctionPaymentCancelled,
+    // },
   ],
 });
 
 export default router;
+export { useRoute, useRouter } from "vue-router";
