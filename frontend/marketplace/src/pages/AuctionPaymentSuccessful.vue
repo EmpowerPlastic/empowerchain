@@ -109,8 +109,8 @@ onMounted(async () => {
         <span class="font-Inter text-white text-title18">
           Transaction couldn't be completed. You will receive a refund shortly.
           Please contact us at
-          <a href="mailto:hi@empower.eco">hi@empower.eco</a> if you encounter
-          any issues.
+          <a href="mailto:marketplace@empower.eco">marketplace@empower.eco</a>
+          if you encounter any issues.
         </span>
 
         <a
@@ -127,7 +127,7 @@ onMounted(async () => {
           Something went wrong with a credit transfer and we're currently
           investigating it. We'll contact you within 2 business days. If you
           haven't heard from us, please send us a message at
-          <a href="mailto:hi@empower.eco">hi@empower.eco</a>.
+          <a href="mailto:marketplace@empower.eco">marketplace@empower.eco</a>.
         </span>
 
         <a

@@ -10,7 +10,9 @@
         class="bg-white/10 rounded-lg md:rounded-sm p-4 max-w-xl text-center"
       >
         <span class="font-Inter text-white text-title18">
-          Your purchase has been cancelled
+          Your payment has been cancelled. If you need assistance, don't
+          hesitate to contact us at
+          <a href="mailto:marketplace@empower.eco">marketplace@empower.eco</a>.
         </span>
 
         <a
