@@ -13,6 +13,8 @@ const ROLLBAR_ACCESS_TOKEN = import.meta.env.VITE_ROLLBAR_ACCESS_TOKEN;
 const LOGTO_ENDPOINT = import.meta.env.VITE_LOGTO_ENDPOINT;
 const LOGTO_APP_ID = import.meta.env.VITE_LOGTO_APP_ID;
 const PC_BACKEND_ENDPOINT = import.meta.env.VITE_PC_BACKEND_ENDPOINT;
+const PC_BACKEND_ENDPOINT_API =
+  PC_BACKEND_ENDPOINT + "/api/v1/pc-backend-public";
 export {
   API_ENDPOINT,
   HTTPS_FILE_URL,
@@ -29,4 +31,5 @@ export {
   LOGTO_ENDPOINT,
   LOGTO_APP_ID,
   PC_BACKEND_ENDPOINT,
+  PC_BACKEND_ENDPOINT_API,
 };

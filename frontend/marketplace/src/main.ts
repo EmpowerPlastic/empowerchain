@@ -38,7 +38,7 @@ const logtoConfig: LogtoConfig = {
   endpoint: LOGTO_ENDPOINT,
   appId: LOGTO_APP_ID,
   scopes: ["email"],
-  resources: ["http://localhost:3000", PC_BACKEND_ENDPOINT],
+  resources: [PC_BACKEND_ENDPOINT],
 };
 
 app.use(createLogto, logtoConfig);

@@ -19,8 +19,7 @@ export const useFetcher = () => {
         ...newOptions,
         method: "GET",
       });
-      const data = await response.json();
-      return data;
+      return response;
     },
     post: async (url: string, body: any, options?: RequestInit) => {
       const { headers: extraHeaders, ...optionsWithoutHeaders } = options ?? {};
@@ -47,20 +46,19 @@ export const useFetcher = () => {
       });
 
       // const data = await response.json();
-      const data = await response.text();
-      console.log( "data", data );
-      return data;
+      return response;
     },
   };
 
   return fetcher;
 };
 
-export const authHeader = (accessToken: string) => {
+export const authHeader = (
+  accessToken: string | undefined,
+): { Authorization: string } | {} => {
   if (accessToken) {
     return {
       Authorization: "Bearer " + accessToken,
-      "Expected-Role": "user",
     };
   } else {
     return {};

@@ -56,7 +56,7 @@ const router = createRouter({
       component: UserProfile,
     },
     {
-      path: "/payment/:id",
+      path: "/purchase-successful",
       name: "AuctionPayment",
       component: AuctionPayment,
     },

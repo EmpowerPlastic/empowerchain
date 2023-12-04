@@ -2,10 +2,10 @@ import { useFetcher } from "./fetcher";
 
 export async function fetchRepeater(
   url: string,
-  next: (responseText: string | undefined) => boolean, // TODO: See what api returns and update this logic
+  next: (response: Response | null) => Promise<boolean>, // TODO: See what api returns and update this logic
   maxAttempts: number = 5,
   timeout: number = 5000,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<Response | null> {
   const { get: getRequest } = useFetcher();
   const controller = new AbortController();
@@ -14,23 +14,21 @@ export async function fetchRepeater(
   let response: Response | null = null;
   let attempts = 0;
 
-  const shouldRepeaterAbort = async (response: Response | null) => {
-    const responseText = await response?.text();
-    return responseText !== null && next(responseText);
+  const shouldTryAgain = async (response: Response | null) => {
+    const shouldContinue = await next(response);
+    return shouldContinue;
   };
 
-  while (attempts < maxAttempts && !(await shouldRepeaterAbort(response))) {
+  while (attempts < maxAttempts) {
     attempts++;
     response = await getRequest(url, { ...(options ?? {}), signal });
+    if (!(await shouldTryAgain(response))) {
+      break;
+    }
     await new Promise((resolve) => setTimeout(resolve, timeout));
     if (!signal.aborted) {
-      controller.abort();
+      controller.abort("Timeout");
     }
   }
-
-  // if (response === null || response.status !== 200 || !(await response.text()).includes(expectedResponse)) {
-  //   throw new Error(`Failed to fetch the expected response within ${maxAttempts} attempts`)
-  // }
-
   return response;
 }
