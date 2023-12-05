@@ -1,15 +1,15 @@
 <script setup lang="ts">
+import BuyCredits from "@/components/BuyCredits.vue";
+import CustomGoogleMap from "@/components/CustomGoogleMap.vue";
+import CustomSpinner from "@/components/CustomSpinner.vue";
 import ImageCarousel from "@/components/ImageCarousel.vue";
 import ImageGallery from "@/components/ImageGallery.vue";
-import CustomGoogleMap from "@/components/CustomGoogleMap.vue";
-import BuyCredits from "@/components/BuyCredits.vue";
-import { onMounted, ref, watch } from "vue";
 import ProjectDetailContent from "@/components/ProjectDetailContent.vue";
 import { useRoute } from "@/router";
+import { convertIPFStoHTTPS } from "@/utils/utils";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
-import CustomSpinner from "@/components/CustomSpinner.vue";
-import { convertIPFStoHTTPS } from "@/utils/utils";
+import { onMounted, ref, watch } from "vue";
 import { toast } from "vue3-toastify";
 
 const router = useRoute();
@@ -32,7 +32,7 @@ const auctionDetails = ref({
 const pricePerCreditDenom = ref("");
 const plasticType = ref("");
 
-const getDetailsList = (data: any) => {
+const getDetailsList = (data: any, materialVolume: number) => {
   let applicantArray: string[] = [];
   let locationArray: string[] = [];
   let locationPointersArray: {
@@ -42,7 +42,7 @@ const getDetailsList = (data: any) => {
   let imageArray: string[] = [];
   let fileArray: { url: string; name: string }[] = [];
   let materialArray: { key: string; value: string }[] = [];
-  let volume: number = 0;
+  let volume = materialVolume;
   let registrationDateArray: string[] = [];
 
   data?.map((item: any) => {
@@ -51,7 +51,6 @@ const getDetailsList = (data: any) => {
     });
 
     item.eventData.nodes.map((node: any) => {
-      volume = volume + node.amount;
       locationArray.push(node.country);
       locationPointersArray.push({ lat: node.latitude, lng: node.longitude });
       materialArray.push(...node.material.nodes);
@@ -110,6 +109,8 @@ const getAuctionDetails = (id: string | string[]) => {
       pricePerCreditAmount
       pricePerCreditDenom
       creditCollection {
+        activeAmount
+        retiredAmount
         creditType
         creditData {
           nodes {
@@ -170,6 +171,8 @@ const getAuctionDetails = (id: string | string[]) => {
   watch(result, (value) => {
     auctionDetails.value = getDetailsList(
       value.marketplaceListings?.nodes[0].creditCollection.creditData.nodes,
+      value.marketplaceListings?.nodes[0].creditCollection.activeAmount +
+        value.marketplaceListings?.nodes[0].creditCollection.retiredAmount
     );
     pricePerCreditDenom.value =
       value.marketplaceListings?.nodes[0].pricePerCreditDenom;
