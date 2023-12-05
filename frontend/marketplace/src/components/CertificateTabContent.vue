@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import CustomSearchBar from "@/components/CustomSearchBar.vue";
+// import CustomSearchBar from "@/components/CustomSearchBar.vue";
 import CustomPagination from "@/components/CustomPagination.vue";
 import CertificateCard from "@/components/CertificateCard.vue";
 import { CHAIN_ID } from "@/config/config";
@@ -10,29 +10,27 @@ import CustomSpinner from "@/components/CustomSpinner.vue";
 import gql from "graphql-tag";
 import CustomAlert from "@/components/CustomAlert.vue";
 import { walletConnected, getWallet } from "@/utils/wallet-utils";
-import { useRouter } from 'vue-router';
+// import { useRouter } from "vue-router";
 
 const pageNumber = ref(1);
 const itemsPerPage = ref(5);
 const searchTerm = ref("");
 const data = ref();
 const showSpinner = ref(true);
-const router = useRouter();
+// const router = useRouter();
 
 const viewCertificate = (certificateId: string) => {
   const url = `${window.location.origin}/certificate/${certificateId}`;
-  window.open(url, '_blank');
+  window.open(url, "_blank");
 };
-
-
 
 const handlePageChange = () => {
   getCertificatesData();
 };
-const handleSearch = () => {
-  pageNumber.value = 1;
-  getCertificatesData();
-};
+// const handleSearch = () => {
+//   pageNumber.value = 1;
+//   getCertificatesData();
+// };
 
 const getCertificatesData = async () => {
   try {
@@ -43,8 +41,8 @@ const getCertificatesData = async () => {
       const query = `query {
     creditOffsetCertificates(
     first:${itemsPerPage.value},offset:${
-        (pageNumber.value - 1) * itemsPerPage.value
-      }
+      (pageNumber.value - 1) * itemsPerPage.value
+    }
     filter: {
       wallet: {
         address: { equalTo: "${walletAddress}" }
@@ -70,11 +68,9 @@ const getCertificatesData = async () => {
 
 const loadQueryData = (query: string) => {
   showSpinner.value = true;
-  const { result, loading, error } = useQuery(
-    gql`
-      ${query}
-    `
-  );
+  const { result, loading, error } = useQuery(gql`
+    ${query}
+  `);
   data.value = { result, loading, error };
   showSpinner.value = false;
 };
@@ -103,7 +99,10 @@ onMounted(() => {
         v-for="certificate in data?.result?.creditOffsetCertificates?.nodes"
         :key="certificate.id"
       >
-        <CertificateCard :card-data="certificate" @viewCertificate="viewCertificate" />
+        <CertificateCard
+          :card-data="certificate"
+          @viewCertificate="viewCertificate"
+        />
       </div>
       <div class="flex justify-center md:justify-end my-10">
         <CustomPagination
