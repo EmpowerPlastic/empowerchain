@@ -8,7 +8,7 @@ export interface ProjectDetailContentProps {
 defineProps<ProjectDetailContentProps>();
 </script>
 <template>
-  <di v>
+  <div>
     <p class="details-label">{{ label }}</p>
     <p class="details-content" v-if="!list">{{ value }}</p>
     <ul v-if="list">
@@ -16,5 +16,5 @@ defineProps<ProjectDetailContentProps>();
         {{ item }}
       </li>
     </ul>
-  </di>
+  </div>
 </template>
