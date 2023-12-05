@@ -2,24 +2,22 @@
 import { CHAIN_ID } from "@/config/config";
 import { onMounted, ref } from "vue";
 import { toast } from "vue3-toastify";
-import { useRoute } from "vue-router";
+import { useRoute } from "@/router";
 import SellectWalletModal from "@/components/SellectWalletModal.vue";
 import { getWalletFromType } from "@/utils/wallet-utils";
-import { useLogto } from "@logto/vue";
+import { useAuth } from '@/stores/auth'
 
-const { signIn, isAuthenticated, signOut, fetchUserInfo, isLoading } =
-  useLogto();
+const { handleSignIn, handleSignOut, isAuthenticated, user } = useAuth();
 const router = useRoute();
 const address = ref();
 const addressVisible = ref();
 const showNav = ref(false);
 const selectedWallet = ref();
 const selectWalletModal = ref(false);
-const userDetails = ref();
+const userDetails = ref(user);
 
 onMounted(() => {
   connect();
-  getUserInfo();
 });
 
 const openSelectWalletModal = () => {
@@ -29,6 +27,7 @@ const openSelectWalletModal = () => {
 const closeSelectWalletModal = () => {
   selectWalletModal.value = false;
 };
+
 const connect = async () => {
   let addressLocal = localStorage.getItem("address");
   let wallet = localStorage.getItem("wallet");
@@ -76,15 +75,6 @@ const copyAddress = async () => {
   await navigator.clipboard.writeText(address.value);
   toast.success("Address copied to clipboard");
 };
-
-const onClickSignIn = () => signIn("http://localhost:5173/callback");
-
-const onClickSignOut = () => signOut("http://localhost:5173");
-
-const getUserInfo = async () => {
-  const details = await fetchUserInfo();
-  userDetails.value = details;
-};
 </script>
 
 <template>
@@ -122,7 +112,7 @@ const getUserInfo = async () => {
 
         <div class="flex flex-row justify-end">
           <!--          User Profile Dropdown-->
-          <div class="dropdown dropdown-end">
+          <div class="dropdown dropdown-end z-10">
             <div
               class="avatar mb-3 cursor-pointer"
               tabindex="0"
@@ -151,7 +141,7 @@ const getUserInfo = async () => {
                 >
                   Wallet
                 </button>
-                <button @click="onClickSignIn" class="btn nav-dropdown-button">
+                <button @click="handleSignIn" class="btn nav-dropdown-button">
                   Email
                 </button>
               </div>
@@ -201,7 +191,7 @@ const getUserInfo = async () => {
                 </button>
                 <button
                   v-if="isAuthenticated"
-                  @click="onClickSignOut"
+                  @click="handleSignOut"
                   class="btn nav-dropdown-button"
                 >
                   Logout
@@ -265,7 +255,7 @@ const getUserInfo = async () => {
                 >
                   Wallet
                 </button>
-                <button @click="onClickSignIn" class="btn nav-dropdown-button">
+                <button @click="handleSignIn" class="btn nav-dropdown-button">
                   Email
                 </button>
               </div>
@@ -325,7 +315,7 @@ const getUserInfo = async () => {
                   Disconnect
                 </button>
                 <button
-                  @click="onClickSignOut"
+                  @click="handleSignOut"
                   class="btn nav-dropdown-button"
                   v-if="isAuthenticated"
                 >

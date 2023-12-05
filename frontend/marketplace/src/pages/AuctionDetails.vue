@@ -5,11 +5,11 @@ import CustomSpinner from "@/components/CustomSpinner.vue";
 import ImageCarousel from "@/components/ImageCarousel.vue";
 import ImageGallery from "@/components/ImageGallery.vue";
 import ProjectDetailContent from "@/components/ProjectDetailContent.vue";
+import { useRoute } from "@/router";
 import { convertIPFStoHTTPS } from "@/utils/utils";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { onMounted, ref, watch } from "vue";
-import { useRoute } from "vue-router";
 import { toast } from "vue3-toastify";
 
 const router = useRoute();
@@ -218,10 +218,7 @@ onMounted(() => {
 </script>
 <template>
   <CustomSpinner :visible="showSpinner" />
-  <div
-    v-if="!showSpinner"
-    class="p-5 md:px-[10%] min-h-[60vh] text-white font-Inter"
-  >
+  <div v-if="!showSpinner" class="p-5 min-h-[60vh] text-white font-Inter">
     <!--  Title Section-->
     <p class="text-title18 mb-5">
       <a href="/auction">Auctions</a
@@ -245,7 +242,10 @@ onMounted(() => {
 
     <!--    Buy Credits-->
     <BuyCredits
-      :available-credits="`${data?.result?.marketplaceListings?.nodes[0].amount}/${data?.result?.marketplaceListings?.nodes[0].initialAmount}`"
+      :available-credits="data?.result?.marketplaceListings?.nodes[0].amount"
+      :initial-credits="
+        data?.result?.marketplaceListings?.nodes[0].initialAmount
+      "
       :selected-coin="`${pricePerCreditDenom}`"
       :price-per-credit="
         data?.result?.marketplaceListings?.nodes[0].pricePerCreditAmount /
