@@ -1,40 +1,66 @@
 const defaultFetchHeaders = {
-  'Accept': 'application/json, text/plain, */*',
+  Accept: "application/json, text/plain, */*",
 };
 
 export const useFetcher = () => {
   const fetcher = {
-    get: async (url: string, extraHeaders: HeadersInit) => {
+    get: async (url: string, options?: RequestInit) => {
+      const { headers: extraHeaders, ...optionsWithoutHeaders } = options ?? {};
       const headers = {
         ...defaultFetchHeaders,
-        ...extraHeaders,
-      }
+        ...(extraHeaders ?? {}),
+      };
 
-      const response = await fetch(url);
-      const data = await response.json();
-      return data;
+      const newOptions = {
+        ...(optionsWithoutHeaders ?? {}),
+        headers,
+      };
+      const response = await fetch(url, {
+        ...newOptions,
+        method: "GET",
+      });
+      return response;
     },
-    post: async (url: string, body: any, extraHeaders?: HeadersInit) => {
+    post: async (url: string, body: any, options?: RequestInit) => {
+      const { headers: extraHeaders, ...optionsWithoutHeaders } = options ?? {};
+
       const defaultPostHeaders = {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       };
 
       const headers = {
         ...defaultFetchHeaders,
         ...defaultPostHeaders,
-        ...extraHeaders,
+        ...(extraHeaders ?? {}),
+      };
+
+      const newOptions = {
+        ...(optionsWithoutHeaders ?? {}),
+        headers,
       };
 
       const response = await fetch(url, {
+        ...newOptions,
         method: "POST",
-        headers,
         body: JSON.stringify(body),
       });
 
-      const data = await response.json();
-      return data;
-    }
-  }
+      // const data = await response.json();
+      return response;
+    },
+  };
 
   return fetcher;
-}
+};
+
+export const authHeader = (
+  accessToken: string | undefined,
+): { Authorization: string } | {} => {
+  if (accessToken) {
+    return {
+      Authorization: "Bearer " + accessToken,
+    };
+  } else {
+    return {};
+  }
+};

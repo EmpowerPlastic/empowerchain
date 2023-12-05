@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import { useHandleSignInCallback } from "@logto/vue";
-import router from "@/router";
+import router, { useRoute } from "@/router";
 import CustomSpinner from "@/components/CustomSpinner.vue";
+
+const route = useRoute();
 const { isLoading } = useHandleSignInCallback(() => {
+  const { referrer } = route.query;
+  if (referrer) {
+    router.push(referrer as string);
+    return;
+  }
   router.push("/");
 });
 </script>

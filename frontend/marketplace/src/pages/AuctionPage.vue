@@ -9,7 +9,7 @@ import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { ListingsQueryBuilder } from "@/utils/query-builder";
 import { DEFAULT_CREDIT_TYPE } from "@/config/config";
-import { useRoute } from "vue-router";
+import { useRoute } from "@/router";
 
 const router = useRoute();
 const pageNumber = ref(1);

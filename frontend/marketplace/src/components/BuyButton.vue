@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useAuth } from '@/stores/auth';
+import { computed } from "vue";
+import { useAuth } from "@/stores/auth";
 export interface BuyButtonProps {
   showButtonSpinner: boolean;
   insufficientBalance: boolean;
@@ -14,11 +14,11 @@ const props = defineProps<BuyButtonProps>();
 const { isAuthenticated, handleSignIn } = useAuth();
 
 enum BuyButtonState {
-  DISABLED = 'disabled',
-  ENABLED_UNAUTHORIZED = 'enabled_unauthorized',
-  ENABLED_CARD = 'enabled_card',
-  ENABLED_WALLET = 'enabled_wallet',
-  LOADING = 'loading',
+  DISABLED = "disabled",
+  ENABLED_UNAUTHORIZED = "enabled_unauthorized",
+  ENABLED_CARD = "enabled_card",
+  ENABLED_WALLET = "enabled_wallet",
+  LOADING = "loading",
 }
 
 const buttonState = computed<BuyButtonState>(() => {
@@ -44,17 +44,17 @@ const buttonState = computed<BuyButtonState>(() => {
 const buttonText = computed(() => {
   switch (buttonState.value) {
     case BuyButtonState.LOADING:
-      return 'Processing transaction';
+      return "Processing transaction";
     case BuyButtonState.ENABLED_CARD:
-      return 'Pay with card';
+      return "Pay with card";
     case BuyButtonState.ENABLED_WALLET:
-      return 'Pay with $USDC';
+      return "Pay with $USDC";
     case BuyButtonState.ENABLED_UNAUTHORIZED:
-      return 'Log in to pay';
+      return "Log in to pay";
     case BuyButtonState.DISABLED:
-      return 'Insufficient balance';
+      return "Insufficient balance";
     default:
-      return 'Unknown state';
+      return "Unknown state";
   }
 });
 
@@ -67,11 +67,15 @@ const buttonHandler = computed<(() => void) | undefined>(() => {
     case BuyButtonState.ENABLED_UNAUTHORIZED:
       return handleSignIn;
     default:
-      return undefined
+      return undefined;
   }
 });
 
-const isDisabled = computed(() => buttonState.value === BuyButtonState.DISABLED || buttonState.value === BuyButtonState.LOADING);
+const isDisabled = computed(
+  () =>
+    buttonState.value === BuyButtonState.DISABLED ||
+    buttonState.value === BuyButtonState.LOADING
+);
 
 const buttonsCssClasses = `
   btn
@@ -95,7 +99,8 @@ const buttonsCssClasses = `
     :disabled="isDisabled"
     :class="buttonsCssClasses"
     @click="buttonHandler"
-  > <span v-if="showButtonSpinner" class="loading loading-spinner"></span>
+  >
+    <span v-if="showButtonSpinner" class="loading loading-spinner"></span>
     {{ buttonText }}
   </button>
 </template>
