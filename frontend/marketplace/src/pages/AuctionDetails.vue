@@ -17,7 +17,6 @@ const router = useRoute();
 const data = ref();
 const orderHistory = ref();
 const showSpinner = ref(true);
-const amount = ref(0);
 const denom = ref("");
 const owner = ref("");
 const auctionDetails = ref({
@@ -56,7 +55,7 @@ const getDetailsList = (data: any, materialVolume: number) => {
       locationPointersArray.push({ lat: node.latitude, lng: node.longitude });
       materialArray.push(...node.material.nodes);
       registrationDateArray.push(
-        new Date(node.registrationDate).toLocaleDateString()
+        new Date(node.registrationDate).toLocaleDateString(),
       );
     });
 
@@ -74,7 +73,7 @@ const getDetailsList = (data: any, materialVolume: number) => {
   const uniqueMaterialArray = materialArray.filter(
     (obj, index, self) =>
       index ===
-      self.findIndex((o) => o.key === obj.key && o.value === obj.value)
+      self.findIndex((o) => o.key === obj.key && o.value === obj.value),
   );
   plasticType.value =
     materialArray.find((item) => item.key === "plasticType")?.value || "";
@@ -157,12 +156,14 @@ const getAuctionDetails = (id: string | string[]) => {
 }
 `;
 
-  const { result, loading, error, refetch } = useQuery(
-    gql`
-      ${query}
-    `
-  );
-  data.value = { result, loading, error };
+  const { result, loading, error, refetch } = useQuery(gql`
+    ${query}
+  `);
+  data.value = {
+    result,
+    loading,
+    error,
+  };
   setInterval(() => {
     refetch();
   }, 5000);
@@ -203,12 +204,17 @@ const getOrderHistory = (id: string | string[]) => {
   }
 }`;
 
-  const { result, loading, error } = useQuery(
-    gql`
-      ${query}
-    `
-  );
-  orderHistory.value = { result, loading, error };
+  const { result, loading, error, refetch } = useQuery(gql`
+    ${query}
+  `);
+
+  watch(result, () => {
+    orderHistory.value = { result, loading, error };
+  });
+
+  setInterval(() => {
+    refetch();
+  }, 5000);
 };
 
 onMounted(() => {
