@@ -2,7 +2,7 @@
 import { CHAIN_ID } from "@/config/config";
 import { onMounted, ref } from "vue";
 import { toast } from "vue3-toastify";
-import { useRoute } from "vue-router";
+import { useRoute } from "@/router";
 import SellectWalletModal from "@/components/SellectWalletModal.vue";
 import { getWalletFromType } from "@/utils/wallet-utils";
 import { useAuth } from '@/stores/auth'

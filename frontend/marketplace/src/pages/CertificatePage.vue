@@ -2,7 +2,7 @@
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute } from "@/router";
 import { toast } from "vue3-toastify";
 import { generatePDF } from "../pdfGenerator/pdfGenerator";
 import CustomSpinner from "@/components/CustomSpinner.vue";

@@ -10,7 +10,7 @@ import CustomSpinner from "@/components/CustomSpinner.vue";
 import gql from "graphql-tag";
 import CustomAlert from "@/components/CustomAlert.vue";
 import { walletConnected, getWallet } from "@/utils/wallet-utils";
-import { useRouter } from 'vue-router';
+import { useRouter } from "@/router";
 
 const pageNumber = ref(1);
 const itemsPerPage = ref(5);

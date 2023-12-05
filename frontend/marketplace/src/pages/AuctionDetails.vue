@@ -5,7 +5,7 @@ import CustomGoogleMap from "@/components/CustomGoogleMap.vue";
 import BuyCredits from "@/components/BuyCredits.vue";
 import { onMounted, ref, watch } from "vue";
 import ProjectDetailContent from "@/components/ProjectDetailContent.vue";
-import { useRoute } from "vue-router";
+import { useRoute } from "@/router";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import CustomSpinner from "@/components/CustomSpinner.vue";

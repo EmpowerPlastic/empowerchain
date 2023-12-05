@@ -3,25 +3,31 @@ import { contracts, empowerchain } from "@empower-plastic/empowerjs";
 import { GasPrice } from "@cosmjs/stargate";
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
-import { CHAIN_ID, MARKETPLACE_CONTRACT, RPC_ENDPOINT } from "@/config/config";
+import {
+  CHAIN_ID,
+  MARKETPLACE_CONTRACT,
+  PC_BACKEND_ENDPOINT,
+  PC_BACKEND_ENDPOINT_API,
+  RPC_ENDPOINT,
+} from "@/config/config";
 import { onMounted, ref, watch, computed } from "vue";
 import { getWallet, walletConnected } from "@/utils/wallet-utils";
 import { formatDenom, resolveSdkError } from "@/utils/wallet-utils";
 import BuyButton from "@/components/BuyButton.vue";
-import { useFetcher } from "@/utils/fetcher";
+import { useFetcher, authHeader } from "@/utils/fetcher";
 import { useAuth } from "@/stores/auth";
 import { useNotifyer } from "@/utils/notifyer";
 
 export interface BuyCreditsProps {
   availableCredits: number;
-  initialCredits: number
+  initialCredits: number;
   pricePerCredit: number;
   selectedCoin: string;
   denom: string;
   owner: string;
 }
 
-const { isAuthenticated, handleSignIn } = useAuth();
+const { isAuthenticated, getAccessToken } = useAuth();
 const { notifyer } = useNotifyer();
 const amount = ref<number>(1);
 const props = defineProps<BuyCreditsProps>();
@@ -30,8 +36,8 @@ const insufficientBalance = ref(false);
 const coinFormatted = ref("");
 const currentBalance = ref(Number.MAX_SAFE_INTEGER);
 const availableCreditsString = computed<string>(() => {
-  return `${props.availableCredits}/${props.initialCredits}`
-})
+  return `${props.availableCredits}/${props.initialCredits}`;
+});
 
 watch(amount, (newVal) => {
   checkBalanceForPurchase(newVal);
@@ -42,8 +48,6 @@ watch(props, async (newVal) => {
     coinFormatted.value = await formatDenom(newVal.selectedCoin);
   }
 });
-
-const coinsArray = ["Pay by invoice coming soon"];
 
 onMounted(async () => {
   if (props.selectedCoin) {
@@ -91,7 +95,7 @@ const handleBuyCredits = async () => {
       offlineSigner,
       {
         gasPrice: GasPrice.fromString("0.025umpwr"),
-      }
+      },
     );
     const fee = {
       amount: [{ amount: "100000", denom: "umpwr" }],
@@ -101,7 +105,7 @@ const handleBuyCredits = async () => {
       new contracts.PlasticCreditMarketplace.PlasticCreditMarketplaceClient(
         cosmWasmClient,
         accounts[0].address,
-        MARKETPLACE_CONTRACT
+        MARKETPLACE_CONTRACT,
       );
     const res = await contract.buyCredits(
       {
@@ -116,7 +120,7 @@ const handleBuyCredits = async () => {
           denom: props.selectedCoin,
           amount: (props.pricePerCredit * 1000000 * amount.value).toString(),
         },
-      ]
+      ],
     );
     if (res) {
       notifyer.success("Purchase was successful");
@@ -149,25 +153,32 @@ const handleCardPayment = async () => {
 
   showButtonSpinner.value = true; // Guard against multiple clicks
 
-  const { post } = useFetcher()
+  const { post } = useFetcher();
+
   const body = {
     amount: amount.value,
-    pricePerCredit: props.pricePerCredit,
-    selectedCoin: props.selectedCoin,
     denom: props.denom,
-    owner: props.owner
+    listingOwner: props.owner,
   };
-
   try {
-    const resultWithStripeLink = await post('/path/to/endpoint', body);
-    window.location.href = resultWithStripeLink;
+    const accessToken = await getAccessToken(PC_BACKEND_ENDPOINT);
+
+    const response = await post(
+      `${PC_BACKEND_ENDPOINT_API}/payments/create-checkout-session`,
+      body,
+      {
+        headers: authHeader(accessToken),
+      },
+    );
+    const paymentGatewayLink = await response.text();
+    window.location.href = paymentGatewayLink;
   } catch (error) {
-    notifyer.error("This API call is not implemented yet") // TODO: handle error
+    console.error(error);
+    notifyer.error("This API call is not implemented yet"); // TODO: handle error
   } finally {
     showButtonSpinner.value = false;
   }
 };
-
 </script>
 <template>
   <div
@@ -208,15 +219,14 @@ const handleCardPayment = async () => {
       </p>
     </div>
     <div class="flex flex-col w-full lg:w-auto lg:self-end">
-        <BuyButton
-          :show-button-spinner="showButtonSpinner"
-          :insufficient-balance="insufficientBalance"
-          :coin-formatted="coinFormatted"
-          :handle-buy-credits="handleBuyCredits"
-          :handle-card-payment="handleCardPayment"
-          :wallet-connected="walletConnected"
-        ></BuyButton>
+      <BuyButton
+        :show-button-spinner="showButtonSpinner"
+        :insufficient-balance="insufficientBalance"
+        :coin-formatted="coinFormatted"
+        :handle-buy-credits="handleBuyCredits"
+        :handle-card-payment="handleCardPayment"
+        :wallet-connected="walletConnected"
+      ></BuyButton>
     </div>
   </div>
 </template>
-
