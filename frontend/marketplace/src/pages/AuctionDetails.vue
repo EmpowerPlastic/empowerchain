@@ -17,7 +17,6 @@ const router = useRoute();
 const data = ref();
 const orderHistory = ref();
 const showSpinner = ref(true);
-const amount = ref(0);
 const denom = ref("");
 const owner = ref("");
 const auctionDetails = ref({
@@ -57,7 +56,7 @@ const getDetailsList = (data: any) => {
       locationPointersArray.push({ lat: node.latitude, lng: node.longitude });
       materialArray.push(...node.material.nodes);
       registrationDateArray.push(
-        new Date(node.registrationDate).toLocaleDateString()
+        new Date(node.registrationDate).toLocaleDateString(),
       );
     });
 
@@ -75,7 +74,7 @@ const getDetailsList = (data: any) => {
   const uniqueMaterialArray = materialArray.filter(
     (obj, index, self) =>
       index ===
-      self.findIndex((o) => o.key === obj.key && o.value === obj.value)
+      self.findIndex((o) => o.key === obj.key && o.value === obj.value),
   );
   plasticType.value =
     materialArray.find((item) => item.key === "plasticType")?.value || "";
@@ -156,19 +155,21 @@ const getAuctionDetails = (id: string | string[]) => {
 }
 `;
 
-  const { result, loading, error, refetch } = useQuery(
-    gql`
-      ${query}
-    `
-  );
-  data.value = { result, loading, error };
+  const { result, loading, error, refetch } = useQuery(gql`
+    ${query}
+  `);
+  data.value = {
+    result,
+    loading,
+    error,
+  };
   setInterval(() => {
     refetch();
   }, 5000);
 
   watch(result, (value) => {
     auctionDetails.value = getDetailsList(
-      value.marketplaceListings?.nodes[0].creditCollection.creditData.nodes
+      value.marketplaceListings?.nodes[0].creditCollection.creditData.nodes,
     );
     pricePerCreditDenom.value =
       value.marketplaceListings?.nodes[0].pricePerCreditDenom;
@@ -200,12 +201,17 @@ const getOrderHistory = (id: string | string[]) => {
   }
 }`;
 
-  const { result, loading, error } = useQuery(
-    gql`
-      ${query}
-    `
-  );
-  orderHistory.value = { result, loading, error };
+  const { result, loading, error, refetch } = useQuery(gql`
+    ${query}
+  `);
+
+  watch(result, () => {
+    orderHistory.value = { result, loading, error };
+  });
+
+  setInterval(() => {
+    refetch();
+  }, 5000);
 };
 
 onMounted(() => {
@@ -215,10 +221,7 @@ onMounted(() => {
 </script>
 <template>
   <CustomSpinner :visible="showSpinner" />
-  <div
-    v-if="!showSpinner"
-    class="p-5 min-h-[60vh] text-white font-Inter"
-  >
+  <div v-if="!showSpinner" class="p-5 min-h-[60vh] text-white font-Inter">
     <!--  Title Section-->
     <p class="text-title18 mb-5">
       <a href="/auction">Auctions</a
@@ -243,7 +246,9 @@ onMounted(() => {
     <!--    Buy Credits-->
     <BuyCredits
       :available-credits="data?.result?.marketplaceListings?.nodes[0].amount"
-      :initial-credits="data?.result?.marketplaceListings?.nodes[0].initialAmount"
+      :initial-credits="
+        data?.result?.marketplaceListings?.nodes[0].initialAmount
+      "
       :selected-coin="`${pricePerCreditDenom}`"
       :price-per-credit="
         data?.result?.marketplaceListings?.nodes[0].pricePerCreditAmount /
