@@ -8,3 +8,5 @@ declare global {
     enable: window & KeplrWindow;
   }
 }
+
+export * from "./Credits.ts";

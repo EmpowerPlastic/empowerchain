@@ -452,8 +452,8 @@ const onGeneratePDF = () => {
       issuanceDate.value,
       retiredDate.value,
       creditData.value,
-      ID,
-      applicantDataDescription.value
+      ID as string,
+      applicantDataDescription.value,
     );
     toast.success("Certificate downloaded successfully");
   } catch (e) {
