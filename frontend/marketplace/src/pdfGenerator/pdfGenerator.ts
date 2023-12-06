@@ -606,26 +606,28 @@ const addAllTables = (
         creditData.id,
         retiredDate,
       ];
-      yPosition = addSimpleTable(
-        doc,
-        "Credit Information",
-        ["Amount", "Credit ID", "Retired Date"],
-        [credit],
-        yPosition + marginBetweenTables,
-      );
+      yPosition =
+        addSimpleTable(
+          doc,
+          "Credit Information",
+          ["Amount", "Credit ID", "Retired Date"],
+          [credit],
+          yPosition + marginBetweenTables,
+        ) ?? 0;
 
       const collection = [
         collectionAmount + " KG",
         applicantData,
         issuanceDate,
       ];
-      yPosition = addSimpleTable(
-        doc,
-        "Collection Information",
-        ["Amount", "Organization", "Issuance Date"],
-        [collection],
-        yPosition + marginBetweenTables,
-      );
+      yPosition =
+        addSimpleTable(
+          doc,
+          "Collection Information",
+          ["Amount", "Organization", "Issuance Date"],
+          [collection],
+          yPosition + marginBetweenTables,
+        ) ?? 0;
 
       const title = "Project Information";
       const description = applicantDataDescription;
@@ -661,13 +663,14 @@ const addAllTables = (
           loc.longitude,
           loc.latitude,
         ]);
-        yPosition = addSimpleTable(
-          doc,
-          "Locations",
-          ["Country", "Longitude", "Latitude"],
-          locationsData,
-          yPosition + marginBetweenTables,
-        );
+        yPosition =
+          addSimpleTable(
+            doc,
+            "Locations",
+            ["Country", "Longitude", "Latitude"],
+            locationsData,
+            yPosition + marginBetweenTables,
+          ) ?? 0;
         addedLocations.value = true;
       } else {
         yPosition -= 10;
@@ -676,13 +679,14 @@ const addAllTables = (
           loc.longitude,
           loc.latitude,
         ]);
-        yPosition = addSimpleTable(
-          doc,
-          "",
-          ["Country", "Longitude", "Latitude"],
-          locationsData,
-          yPosition + marginBetweenTables,
-        );
+        yPosition =
+          addSimpleTable(
+            doc,
+            "",
+            ["Country", "Longitude", "Latitude"],
+            locationsData,
+            yPosition + marginBetweenTables,
+          ) ?? 0;
       }
     };
 
@@ -692,12 +696,13 @@ const addAllTables = (
           name: mf.name,
           url: mf.url,
         }));
-        yPosition = addTableWithLinks(
-          doc,
-          "Photos",
-          photosTableData,
-          yPosition + marginBetweenTables,
-        );
+        yPosition =
+          addTableWithLinks(
+            doc,
+            "Photos",
+            photosTableData,
+            yPosition + marginBetweenTables,
+          ) ?? 0;
         addedMediaFiles.value = true;
       } else {
         yPosition -= 10;
@@ -705,53 +710,58 @@ const addAllTables = (
           name: mf.name,
           url: mf.url,
         }));
-        yPosition = addTableWithLinks(
-          doc,
-          "",
-          photosTableData,
-          yPosition + marginBetweenTables,
-        );
+        yPosition =
+          addTableWithLinks(
+            doc,
+            "",
+            photosTableData,
+            yPosition + marginBetweenTables,
+          ) ?? 0;
       }
     };
 
     const addMaterialData = (materialDetails: any) => {
       if (addedMaterialData.value === false) {
-        yPosition = addMaterialTableToPdf(
-          doc,
-          materialDetails,
-          primaryHeaders,
-          yPosition,
-          "Materials",
-        );
-        yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
-        addedMaterialData.value = true;
-        if (secondaryHeaders.length > 0) {
-          yPosition = addSecondaryMaterialTableToPdf(
+        yPosition =
+          addMaterialTableToPdf(
             doc,
             materialDetails,
-            secondaryHeaders,
+            primaryHeaders,
             yPosition,
-          );
-          yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
+            "Materials",
+          ) ?? 0;
+        yPosition = (doc.lastAutoTable.finalY ?? 0) + marginBetweenTables;
+        addedMaterialData.value = true;
+        if (secondaryHeaders.length > 0) {
+          yPosition =
+            addSecondaryMaterialTableToPdf(
+              doc,
+              materialDetails,
+              secondaryHeaders,
+              yPosition,
+            ) ?? 0;
+          yPosition = (doc.lastAutoTable.finalY ?? 0) + marginBetweenTables;
         }
       } else {
         yPosition -= 10;
-        yPosition = addMaterialTableToPdf(
-          doc,
-          materialDetails,
-          primaryHeaders,
-          yPosition,
-          "",
-        );
-        yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
-        if (secondaryHeaders.length > 0) {
-          yPosition = addSecondaryMaterialTableToPdf(
+        yPosition =
+          addMaterialTableToPdf(
             doc,
             materialDetails,
-            secondaryHeaders,
+            primaryHeaders,
             yPosition,
-          );
-          yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
+            "",
+          ) ?? 0;
+        yPosition = (doc.lastAutoTable.finalY ?? 0) + marginBetweenTables;
+        if (secondaryHeaders.length > 0) {
+          yPosition =
+            addSecondaryMaterialTableToPdf(
+              doc,
+              materialDetails,
+              secondaryHeaders,
+              yPosition,
+            ) ?? 0;
+          yPosition = (doc.lastAutoTable.finalY ?? 0) + marginBetweenTables;
         }
       }
     };
@@ -762,12 +772,13 @@ const addAllTables = (
           name: bf.name,
           url: bf.url,
         }));
-        yPosition = addTableWithLinks(
-          doc,
-          "Documents",
-          binaryFilesTableData,
-          yPosition + marginBetweenTables,
-        );
+        yPosition =
+          addTableWithLinks(
+            doc,
+            "Documents",
+            binaryFilesTableData,
+            yPosition + marginBetweenTables,
+          ) ?? 0;
         addedBinaryFiles.value = true;
       } else {
         yPosition -= 10;
@@ -775,12 +786,13 @@ const addAllTables = (
           name: bf.name,
           url: bf.url,
         }));
-        yPosition = addTableWithLinks(
-          doc,
-          "",
-          binaryFilesTableData,
-          yPosition + marginBetweenTables,
-        );
+        yPosition =
+          addTableWithLinks(
+            doc,
+            "",
+            binaryFilesTableData,
+            yPosition + marginBetweenTables,
+          ) ?? 0;
       }
     };
 
