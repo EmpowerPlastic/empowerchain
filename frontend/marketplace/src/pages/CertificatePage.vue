@@ -504,13 +504,15 @@ const onGeneratePDF = () => {
         <div class="horizontal-line"></div>
 
         <div class="nameBox"></div>
-
         <h2 class="presented">PROUDLY PRESENTED TO</h2>
         <h1 class="namePage1" v-if="certificateData">
           {{ certificateData.retiringEntityName }}
         </h1>
         <div class="horizontal-line2"></div>
-        <h2 class="presented">FOR OFFSETTING</h2>
+        <h2 class="presented">
+          FOR MAKING AN IMPACT<br />
+          BY NEUTRALIZING AN IMPRESSIVE
+        </h2>
         <p class="weight" v-if="certificateData">
           {{ certificateData.amount + " KG" }}
         </p>
@@ -867,6 +869,7 @@ page {
   font-weight: 400;
   color: #231f20;
   letter-spacing: 3px;
+  text-align: center;
 }
 
 .weight {

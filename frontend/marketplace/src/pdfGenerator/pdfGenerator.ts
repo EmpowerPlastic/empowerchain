@@ -167,20 +167,21 @@ const addCertificateDetailsPage1 = (
   doc.setFontSize(15);
   doc.setTextColor(35, 31, 32);
   doc.setFont("inter", "normal");
-  addTextWithSpacing(doc, "FOR OFFSETTING", 154, 110, 0.5);
-
+  // addTextWithSpacing(doc, "FOR OFFSETTING", 154, 110, 0.5);
+  addTextWithSpacing(doc, "FOR MAKING AN IMPACT", 143, 110, 0.5);
+  addTextWithSpacing(doc, "BY NEUTRALIZING AN IMPRESSIVE", 128, 116, 0.5);
   const weightText = certificateData.amount + " KG" || "N/A";
   xPosition.value = calculateXPosition(weightText);
 
   doc.setFontSize(15);
   doc.setTextColor(35, 31, 32);
   doc.setFont("inter", "normal");
-  addTextWithSpacing(doc, "OF", 176, 130, 0.5);
+  addTextWithSpacing(doc, "OF", 176, 132, 0.5);
 
   doc.setFontSize(15);
   doc.setTextColor(32, 105, 72);
   doc.setFont("Open Sans", "bold");
-  doc.text(weightText, xPosition.value, 120);
+  doc.text(weightText, xPosition.value, 124);
 
   const plasticText = plastciValuesString || "N/A";
   xPosition.value = calculateXPosition(plasticText);
