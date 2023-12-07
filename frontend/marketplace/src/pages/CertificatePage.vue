@@ -6,6 +6,7 @@ import { useRoute } from "@/router";
 import { toast } from "vue3-toastify";
 import { generatePDF } from "../pdfGenerator/pdfGenerator";
 import CustomSpinner from "@/components/CustomSpinner.vue";
+import { ipfsToHttpsProtocol } from "@/utils/utils";
 
 interface CertificateDataNode {
   amount: string;
@@ -627,9 +628,11 @@ const onGeneratePDF = () => {
                   >
                     <td>{{ mediaFile.name }}</td>
                     <td>
-                      <a :href="mediaFile.url" target="_blank">{{
-                        mediaFile.url
-                      }}</a>
+                      <a
+                        :href="ipfsToHttpsProtocol(mediaFile.url)"
+                        target="_blank"
+                        >{{ mediaFile.url }}</a
+                      >
                     </td>
                   </tr>
                 </table>

@@ -15,6 +15,7 @@ import {
   calculateXPosition,
 } from "@/utils/utils";
 import { ref } from "vue";
+import { ipfsToHttpsProtocol } from "@/utils/utils";
 
 // https://github.com/simonbengtsson/jsPDF-AutoTable/issues/848
 interface IjsPDF extends jsPDF {
@@ -576,7 +577,7 @@ const addTableWithLinks = (
           const textPosY = data.cell.y + data.cell.height / 1.5;
           doc.text(url, textPosX, textPosY);
           doc.link(textPosX, data.cell.y, textWidth, data.cell.height, {
-            url: url,
+            url: ipfsToHttpsProtocol(url),
           });
         }
       }
