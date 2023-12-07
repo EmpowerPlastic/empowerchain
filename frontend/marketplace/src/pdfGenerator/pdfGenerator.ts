@@ -22,6 +22,15 @@ interface IjsPDF extends jsPDF {
     finalY?: number;
   };
 }
+
+interface MaterialDetails {
+  Condition: string;
+  "Material Origin": string;
+  "Plastic Type": string;
+  "Registration Date": string;
+  type: string;
+}
+
 const addedBinaryFiles = ref(false);
 const addedMediaFiles = ref(false);
 const addedMaterialData = ref(false);
@@ -233,7 +242,10 @@ const addTitle = (doc: IjsPDF, title: string, yPosition: number) => {
   return yPosition + 5;
 };
 
-const prepareMaterialDataForPdf = (materialDetails: [], primaryHeaders: []) => {
+const prepareMaterialDataForPdf = (
+  materialDetails: MaterialDetails[],
+  primaryHeaders: [],
+) => {
   const tableData = materialDetails.map((material) => {
     return primaryHeaders.map((header) => {
       return material[header] || "-";
@@ -244,7 +256,7 @@ const prepareMaterialDataForPdf = (materialDetails: [], primaryHeaders: []) => {
 };
 
 const prepareSecondaryMaterialDataForPdf = (
-  materialDetails: [],
+  materialDetails: MaterialDetails[],
   secondaryHeaders: [],
 ) => {
   const tableData = materialDetails.map((material: any) => {
@@ -258,13 +270,12 @@ const prepareSecondaryMaterialDataForPdf = (
 
 const addMaterialTableToPdf = (
   doc: IjsPDF,
-  materialDetails: [],
+  materialDetails: MaterialDetails[],
   primaryHeaders: [],
   startY: number,
   title: string,
 ) => {
   const tableData = prepareMaterialDataForPdf(materialDetails, primaryHeaders);
-  console.log(tableData);
 
   startY += 10;
   startY = addTitle(doc, title, startY);
@@ -336,7 +347,7 @@ const addMaterialTableToPdf = (
 
 const addSecondaryMaterialTableToPdf = (
   doc: IjsPDF,
-  materialDetails: [],
+  materialDetails: MaterialDetails[],
   secondaryHeaders: [],
   startY: number,
 ) => {
@@ -720,7 +731,7 @@ const addAllTables = (
       }
     };
 
-    const addMaterialData = (materialDetails: any) => {
+    const addMaterialData = (materialDetails: MaterialDetails[]) => {
       if (addedMaterialData.value === false) {
         yPosition =
           addMaterialTableToPdf(
@@ -728,7 +739,7 @@ const addAllTables = (
             materialDetails,
             primaryHeaders,
             yPosition,
-            "Materials",
+            "Material Tracking Events",
           ) ?? 0;
         yPosition = (doc.lastAutoTable.finalY ?? 0) + marginBetweenTables;
         addedMaterialData.value = true;

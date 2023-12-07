@@ -7,6 +7,17 @@ import { toast } from "vue3-toastify";
 import { generatePDF } from "../pdfGenerator/pdfGenerator";
 import CustomSpinner from "@/components/CustomSpinner.vue";
 
+interface CertificateDataNode {
+  amount: string;
+  denom: string;
+  id: string;
+  nodeId: string;
+  retiringEntityAdditionalData: string;
+  retiringEntityName: string;
+  walletId: string;
+  timestamp?: string;
+}
+
 const router = useRoute();
 const certificateData = ref();
 const creditData = ref();
@@ -72,7 +83,7 @@ const queryNow = () => {
   watchEffect(() => {
     if (result.value) {
       processCertificateDataNode(
-        result.value.creditOffsetCertificates.nodes[0]
+        result.value.creditOffsetCertificates.nodes[0],
       );
       getCreditData(result.value.creditOffsetCertificates.nodes[0].denom);
     }
@@ -145,23 +156,21 @@ const getCreditData = (denom: string) => {
     }
   }
 }`;
-  const { result, error } = useQuery(
-    gql`
-      ${query}
-    `
-  );
+  const { result, error } = useQuery(gql`
+    ${query}
+  `);
 
   if (result.value) {
     processCreditCollectionsNode(result.value.creditCollections.nodes[0]);
     processEventDataNode(
       result.value.creditCollections.nodes[0].creditData.nodes[0].eventData
-        .nodes
+        .nodes,
     );
     processCreditDataNode(
-      result.value.creditCollections.nodes[0].creditData.nodes[0]
+      result.value.creditCollections.nodes[0].creditData.nodes[0],
     );
     assignApplicantData(
-      result.value.creditCollections.nodes[0].creditData.nodes[0]
+      result.value.creditCollections.nodes[0].creditData.nodes[0],
     );
     assignAllDataValue();
   }
@@ -172,7 +181,9 @@ const getCreditData = (denom: string) => {
   showSpinner.value = false;
 };
 
-const processCertificateDataNode = (certificateDataNode: any) => {
+const processCertificateDataNode = (
+  certificateDataNode: CertificateDataNode,
+) => {
   certificateData.value = certificateDataNode;
   //Create string for retired date on second page, add timestamp to query when it's available in the index
   if (certificateDataNode.timestamp) {
@@ -197,9 +208,9 @@ const processEventDataNode = (eventDataNode: any) => {
       .map((eventNode: any) =>
         eventNode.material.nodes
           .filter((material: any) => material.key == "plasticType")
-          .map((material: any) => material.value)
+          .map((material: any) => material.value),
       )
-      .flat()
+      .flat(),
   );
   plastciValuesString.value = Array.from(plastciValuesSet).join(", ");
 
@@ -208,7 +219,7 @@ const processEventDataNode = (eventDataNode: any) => {
     const duplicate = unique.find(
       (location: any) =>
         location.longitude === eventNode.longitude &&
-        location.latitude === eventNode.latitude
+        location.latitude === eventNode.latitude,
     );
 
     if (!duplicate) {
@@ -227,14 +238,13 @@ const processEventDataNode = (eventDataNode: any) => {
 
     const uniqueMaterialsSet = new Set();
     const uniqueMaterials: any = [];
-    let eventId = 1;
 
     //Assign new keys to material table variables
     const keyMapping: { [key: string]: string } = {
       granularity: "Shape/Granularity",
       "shape / granularity": "Shape/Granularity",
       plasticType: "Plastic Type",
-      eventId: "Tracking Event",
+      registrationDate: "Registration Date",
       color: "Color",
       kilo: "Weight (kg)",
       condition: "Condition",
@@ -246,7 +256,10 @@ const processEventDataNode = (eventDataNode: any) => {
     eventDataNode.forEach((eventNode: any) => {
       const materialCombination: any = {
         type: "material",
-        [keyMapping["Tracking Event"] || "Tracking Event"]: eventId++,
+        [keyMapping["registrationDate"]]: eventNode.registrationDate.substring(
+          0,
+          10,
+        ),
       };
 
       eventNode.material.nodes.forEach((materialNode: any) => {
@@ -307,7 +320,7 @@ const processCreditDataNode = (creditDataNode: any) => {
         startIndex: 0,
         endIndex: 0,
       };
-    }
+    },
   );
   //Assign data to media table variables
   mediaFileUrls.value = creditDataNode.mediaFiles.nodes.map(
@@ -317,7 +330,7 @@ const processCreditDataNode = (creditDataNode: any) => {
         url: mediaFileNode.url || "N/A",
         type: "media",
       };
-    }
+    },
   );
 };
 
@@ -624,7 +637,7 @@ const onGeneratePDF = () => {
 
               <!-- Material Details Table -->
               <div v-if="category.type === 'material'">
-                <p class="certificateHodler">Material</p>
+                <p class="certificateHodler">Material tracking events</p>
                 <table class="certificateTable">
                   <tr class="tableTitle">
                     <th v-for="header in primaryHeaders" :key="header">
