@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useHandleSignInCallback } from "@logto/vue";
-import router, { useRoute } from "@/router";
+import router from "@/router";
 import CustomSpinner from "@/components/CustomSpinner.vue";
+import { useRedirectAfterLoginUrl } from '@/utils/redirectAfterLoginUrl'
 
-const route = useRoute();
 const { isLoading } = useHandleSignInCallback(() => {
-  const { referrer } = route.query;
-  if (referrer) {
-    router.push(referrer as string);
+  const redirectUrl = useRedirectAfterLoginUrl().get();
+  if (redirectUrl) {
+    router.push(redirectUrl);
     return;
   }
   router.push("/");
