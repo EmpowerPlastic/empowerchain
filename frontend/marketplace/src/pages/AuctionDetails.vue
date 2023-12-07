@@ -55,7 +55,7 @@ const getDetailsList = (data: any, materialVolume: number) => {
       locationPointersArray.push({ lat: node.latitude, lng: node.longitude });
       materialArray.push(...node.material.nodes);
       registrationDateArray.push(
-        new Date(node.registrationDate).toLocaleDateString(),
+        new Date(node.registrationDate).toLocaleDateString()
       );
     });
 
@@ -73,7 +73,7 @@ const getDetailsList = (data: any, materialVolume: number) => {
   const uniqueMaterialArray = materialArray.filter(
     (obj, index, self) =>
       index ===
-      self.findIndex((o) => o.key === obj.key && o.value === obj.value),
+      self.findIndex((o) => o.key === obj.key && o.value === obj.value)
   );
   plasticType.value =
     materialArray.find((item) => item.key === "plasticType")?.value || "";
@@ -171,8 +171,12 @@ const getAuctionDetails = (id: string | string[]) => {
   watch(result, (value) => {
     auctionDetails.value = getDetailsList(
       value.marketplaceListings?.nodes[0].creditCollection.creditData.nodes,
-      value.marketplaceListings?.nodes[0].creditCollection.activeAmount +
-        value.marketplaceListings?.nodes[0].creditCollection.retiredAmount
+      parseInt(
+        value.marketplaceListings?.nodes[0].creditCollection.activeAmount
+      ) +
+        parseInt(
+          value.marketplaceListings?.nodes[0].creditCollection.retiredAmount
+        )
     );
     pricePerCreditDenom.value =
       value.marketplaceListings?.nodes[0].pricePerCreditDenom;
