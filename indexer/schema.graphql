@@ -57,9 +57,9 @@ type CreditOffsetCertificate @entity {
   id: ID!
   denom: String!
   amount: BigInt!
-  retiringEntityAddress: String!
-  retiringEntityName: String!
-  retiringEntityAdditionalData: String!
+  retiringEntityAddress: String
+  retiringEntityName: String
+  retiringEntityAdditionalData: String
   wallet: Wallet!
 }
 
@@ -81,6 +81,7 @@ type TransferedCreditsEvent @entity {
   sender: String!
   recipient: String!
   amount: BigInt!
+  timestamp: Date!
 }
 
 type RetiredCreditsEvent @entity {
@@ -88,6 +89,7 @@ type RetiredCreditsEvent @entity {
   creditCollection: CreditCollection!
   owner: String!
   amount: BigInt!
+  timestamp: Date!
 }
 
 type CreateListingWasmEvent @entity {
