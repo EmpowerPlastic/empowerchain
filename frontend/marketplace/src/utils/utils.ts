@@ -131,3 +131,7 @@ export const calculateXPosition = (
 
   return currentPosition;
 }
+
+export const ipfsToHttpsProtocol = (url: string) => {
+  return url.replace("ipfs://", "https://ipfs.empowerchain.io/ipfs/");
+};
