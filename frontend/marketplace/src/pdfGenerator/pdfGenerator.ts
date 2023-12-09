@@ -51,6 +51,7 @@ export const generatePDF = (
   creditData: any,
   ID: string,
   applicantDataDescription: string,
+  qrCodeUrl: string | undefined,
 ) => {
   const doc = new jsPDF("landscape") as IjsPDF;
   addGrayPadding(doc);
@@ -61,7 +62,7 @@ export const generatePDF = (
   addCertificateHolderPage1(doc, certificateData);
   addHorizontalLongLinePage1(doc);
   addCertificateDetailsPage1(doc, certificateData, plastciValuesString);
-  addCirularImagePage1(doc, ID);
+  addCirularImagePage1(doc, ID, qrCodeUrl);
   addVerticalImagesPage2(doc);
   addHeaderPage2(doc);
   addCertificateHodlerPage2(doc, certificateData);
@@ -192,17 +193,21 @@ const addCertificateDetailsPage1 = (
   doc.text(plasticText, xPosition.value, 140);
 };
 
-const addCirularImagePage1 = (doc: IjsPDF, ID: string) => {
+const addCirularImagePage1 = (
+  doc: IjsPDF,
+  ID: string,
+  qrCodeUrl: string | undefined,
+) => {
   doc.addImage(circular, "png", 160, 155, 40, 40);
-  doc.addImage(greenLogo, "png", 176, 162, 7, 6);
   doc.setFontSize(15);
   doc.setTextColor(0, 0, 0);
   doc.setFont("Open Sans", "bold");
   doc.text(ID, 174, 175);
   doc.setTextColor(88, 185, 71);
   doc.setFontSize(12);
-  doc.text("check on", 171, 180);
-  doc.text("blockchain!", 169, 185);
+  if (qrCodeUrl) {
+    doc.addImage(qrCodeUrl, "svg", 168, 164, 23, 23);
+  }
 };
 
 const addVerticalImagesPage2 = (doc: IjsPDF) => {
