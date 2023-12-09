@@ -5,7 +5,6 @@ import {
   wastePick,
   circular,
   leaf1,
-  greenLogo,
   horizontalLeafs,
   verticalLeafs,
 } from "../pdfGenerator/AssetsBase64";

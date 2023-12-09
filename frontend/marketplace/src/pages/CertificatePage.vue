@@ -467,7 +467,7 @@ const generateQRCode = async () => {
 
   // Create a new image for the logo
   const logo = new Image();
-  logo.src = "http://localhost:5173/src/assets/greenlogo.svg"; // Replace with the path to your logo
+  logo.src = "/src/assets/greenlogo.svg"; // Replace with the path to your logo
   // Wait for both images to load
   await Promise.all([
     new Promise((resolve) => {
