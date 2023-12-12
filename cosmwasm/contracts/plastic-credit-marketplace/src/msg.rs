@@ -39,10 +39,10 @@ pub enum ExecuteMsg {
         buyer: Addr,
         timeout_unix_timestamp: u64,
     },
-    CancelFreezeCredits {
+    CancelFrozenCredits {
         owner: Addr,
         denom: String,
-        number_of_credits_to_cancel_freeze: u64, // 0 means all
+        number_of_frozen_credits_to_cancel: u64, // 0 means all
         buyer: Addr,
     },
     EditFeeSplitConfig {

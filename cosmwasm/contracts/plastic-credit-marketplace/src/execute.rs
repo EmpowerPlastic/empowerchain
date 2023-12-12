@@ -17,7 +17,7 @@ pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> R
         ExecuteMsg::UpdateListing { denom, number_of_credits, price_per_credit } => execute_update_listing(deps, env, info, denom, number_of_credits, price_per_credit),
         ExecuteMsg::CancelListing { denom } => execute_cancel_listing(deps, env, info, denom),
         ExecuteMsg::FreezeCredits { owner, denom, number_of_credits_to_freeze, buyer, timeout_unix_timestamp } => execute_freeze_credits(deps, env, info, owner, denom, number_of_credits_to_freeze, buyer, timeout_unix_timestamp),
-        ExecuteMsg::CancelFreezeCredits { owner, denom, number_of_credits_to_cancel_freeze, buyer } => execute_cancel_freeze_credits(deps, info, owner, denom, buyer, number_of_credits_to_cancel_freeze),
+        ExecuteMsg::CancelFrozenCredits { owner, denom, number_of_frozen_credits_to_cancel, buyer } => execute_cancel_frozen_credits(deps, info, owner, denom, buyer, number_of_frozen_credits_to_cancel),
         ExecuteMsg::EditFeeSplitConfig { fee_percentage, shares } => execute_edit_fee_split_config(deps, info, fee_percentage, shares),
     }
 }
@@ -300,13 +300,13 @@ fn execute_freeze_credits(
     )
 }
 
-fn execute_cancel_freeze_credits(
+fn execute_cancel_frozen_credits(
     deps: DepsMut,
     info: MessageInfo,
     owner: Addr,
     denom: String,
     buyer: Addr,
-    mut number_of_credits_to_cancel_from_freeze: u64,
+    mut number_of_frozen_credits_to_cancel: u64,
 ) -> Result<Response, ContractError> {
     let mut listing = LISTINGS.load(deps.storage, (Addr::unchecked(owner.clone()), denom.clone())).map_err(|_| ContractError::ListingNotFound {})?;
     let mut freeze = freezes().may_load(deps.storage, (Addr::unchecked(owner.clone()), denom.clone(), buyer.clone()))?.ok_or(ContractError::FreezeNotFound {})?;
@@ -316,23 +316,23 @@ fn execute_cancel_freeze_credits(
         return Err(ContractError::Unauthorized {});
     }
 
-    if freeze.number_of_credits < number_of_credits_to_cancel_from_freeze.into() {
+    if freeze.number_of_credits < number_of_frozen_credits_to_cancel.into() {
         return Err(ContractError::NotEnoughCredits {});
     }
 
     // 0 means all credits, so update the number_of_credits_to_cancel_from_freeze to the number of credits in the freeze
-    if number_of_credits_to_cancel_from_freeze == 0 {
-        number_of_credits_to_cancel_from_freeze = freeze.number_of_credits.u64();
+    if number_of_frozen_credits_to_cancel == 0 {
+        number_of_frozen_credits_to_cancel = freeze.number_of_credits.u64();
     }
 
-    freeze.number_of_credits = freeze.number_of_credits.checked_sub(number_of_credits_to_cancel_from_freeze.into()).unwrap();
+    freeze.number_of_credits = freeze.number_of_credits.checked_sub(number_of_frozen_credits_to_cancel.into()).unwrap();
     if freeze.number_of_credits.is_zero() {
         freezes().remove(deps.storage, (Addr::unchecked(owner.clone()), denom.clone(), buyer.clone()))?;
     } else {
         freezes().save(deps.storage, (Addr::unchecked(owner.clone()), denom.clone(), buyer.clone()), &freeze)?;
     }
 
-    listing.number_of_credits = listing.number_of_credits.checked_add(number_of_credits_to_cancel_from_freeze.into()).unwrap();
+    listing.number_of_credits = listing.number_of_credits.checked_add(number_of_frozen_credits_to_cancel.into()).unwrap();
     LISTINGS.save(deps.storage, (listing.owner.clone(), listing.denom.clone()), &listing)?;
 
     Ok(Response::new()
@@ -341,7 +341,7 @@ fn execute_cancel_freeze_credits(
         .add_attribute("listing_owner", owner)
         .add_attribute("denom", denom)
         .add_attribute("buyer", buyer)
-        .add_attribute("number_of_credits_canceled_from_freeze", number_of_credits_to_cancel_from_freeze.to_string())
+        .add_attribute("number_of_credits_cancelled_from_freeze", number_of_frozen_credits_to_cancel.to_string())
     )
 }
 
@@ -1785,7 +1785,7 @@ mod tests {
         // TODO: Test the update logic works (multiple freezes with same buyer address) and has correct number of freezes
     }
 
-    mod cancel_freeze_credits {
+    mod cancel_frozen_credits {
         use cosmwasm_std::{Addr, Coin, Decimal, Order, Uint128, Uint64};
         use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
         use crate::execute::execute;
@@ -1803,7 +1803,7 @@ mod tests {
         // TODO Test permission denied
 
         #[test]
-        fn test_cancel_freeze_credits_happy_path() {
+        fn test_cancel_frozen_credits_happy_path() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
             let operator_info = mock_info("operator", &[]);
@@ -1830,13 +1830,13 @@ mod tests {
             };
             execute(deps.as_mut(), mock_env(), operator_info.clone(), freeze_message).unwrap();
 
-            let cancel_freeze_message = ExecuteMsg::CancelFreezeCredits {
+            let cancel_frozen_message = ExecuteMsg::CancelFrozenCredits {
                 owner: creator_info.sender.clone(),
                 denom: "pcrd".to_string(),
-                number_of_credits_to_cancel_freeze: 10u64,
+                number_of_frozen_credits_to_cancel: 10u64,
                 buyer: Addr::unchecked("buyer"),
             };
-            let res = execute(deps.as_mut(), mock_env(), operator_info.clone(), cancel_freeze_message).unwrap();
+            let res = execute(deps.as_mut(), mock_env(), operator_info.clone(), cancel_frozen_message).unwrap();
             assert_eq!(res.attributes.len(), 6);
             assert_eq!(res.messages.len(), 0);
 
@@ -1848,7 +1848,7 @@ mod tests {
         }
 
         #[test]
-        fn test_cancel_freeze_credits_happy_path_all_credits() {
+        fn test_cancel_frozen_credits_happy_path_all_credits() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
             let operator_info = mock_info("operator", &[]);
@@ -1880,13 +1880,13 @@ mod tests {
                 .collect::<Vec<Freeze>>();
             assert_eq!(freezes_before.len(), 1); // Not deleted yet
 
-            let cancel_freeze_message = ExecuteMsg::CancelFreezeCredits {
+            let cancel_frozen_message = ExecuteMsg::CancelFrozenCredits {
                 owner: creator_info.sender.clone(),
                 denom: "pcrd".to_string(),
-                number_of_credits_to_cancel_freeze: 0u64,
+                number_of_frozen_credits_to_cancel: 0u64,
                 buyer: Addr::unchecked("buyer"),
             };
-            let res = execute(deps.as_mut(), mock_env(), operator_info.clone(), cancel_freeze_message).unwrap();
+            let res = execute(deps.as_mut(), mock_env(), operator_info.clone(), cancel_frozen_message).unwrap();
             assert_eq!(res.attributes.len(), 6);
             assert_eq!(res.messages.len(), 0);
 
