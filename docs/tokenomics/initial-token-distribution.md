@@ -39,7 +39,7 @@ Each section is explained in more detail below.
 The main goal is to incentivise and include global network of waste collection and recycling infrastructure as
 basis for both the physical and digital network- and infrastructure effects of the Empowerchain.
 
-The exact details of how this distribution will happen, and under which conditions, will be documented and announced later (before it start, naturally).
+The exact details of how this distribution will happen, and under which conditions, will be documented and announced later (before it starts, naturally).
 
 These usage incentives tokens are held by the Usage Incentives group (controlled by members of the team at launch).
 
@@ -73,13 +73,13 @@ Within these 20% there are also sub-initiatives for:
 - Testnet rewards (a total of 1% of the total supply, 0.5% of which for the first testnet and the rest for future testnets)
 - Bug and security bounty program (1% of the total supply)
 
-These two initatives are held by the Usage incentives group. The other 18% are held by the Impact group.
+These two initiatives are held by the Usage incentives group. The other 18% are held by the Impact group.
 
 ## 7.5% for Team Members
 7.5% of the total supply will be allocated to team members, with a minimum of 1 year lockup and 5 year vesting.
 
 To ensure members of the team are not being incentivized after they stop working on the project, we have placed all
-the tokens in the Empower group. From there they tokens will be distributed to team members as they vest.
+the tokens in the Empower group. From there the tokens will be distributed to team members as they vest.
 This also allows us to move any incentives over to new team members in the scenario of exchange of personnel.
 A smart contract to handle this will be developed and deployed after launch.
 
