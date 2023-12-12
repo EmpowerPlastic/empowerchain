@@ -40,9 +40,9 @@ Any spending will also be required to be done and documented on-chain as far as 
 Similar to the 25% from initial genesis distribution, 15% of the block rewards will go to usage incentives for waste
 collectors and recycler infrastructure as basis for both the physical and digital network- and infrastructure effects of the Empowerchain.
 
-1% of the total block rewards (take from these 15%) will be set aside for the Global Waste Lottery staking. Details TBA.
+1% of the total block rewards (taken from these 15%) will be set aside for the Global Waste Lottery staking. Details TBA.
 
-The exact details of how this distribution will happen, and under which conditions, will be documented and announced later (before it start, naturally).
+The exact details of how this distribution will happen, and under which conditions, will be documented and announced later (before it starts, naturally).
 
 ## 3% to impact and physical waste infrastructure grants
 3% of the block rewards will go to grants and support for physical network of waste collectors and recyclers.
