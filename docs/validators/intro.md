@@ -15,7 +15,7 @@ Another activity that involves validators is active participation in the governa
 Governance proposals are necessary for different key tasks in the network such as protocol updates, allocation of funds, and ultimately the development of the blockchain community.
 
 ## Staking and rewards
-Participation in the network as a validator is conditional on the staking of a certain number of native tokens. Through the prof of stake, validators demonstrate their commitment to the security of the network and in return receive incentives.
+Participation in the network as a validator is conditional on the staking of a certain number of native tokens. Through the proof of stake, validators demonstrate their commitment to the security of the network and in return receive incentives.
 
 ## Reputation and trust
 Interchain ecosystem validators gain trust within the community by building a reputation. It is essential to build a solid reputation to increase your chances of being selected by delegators and attract greater participation. To do so, they must maintain a proven track record of reliability, security, good intentions, and a commitment to the blockchain project.
