@@ -7,6 +7,7 @@ import { toast } from "vue3-toastify";
 import { generatePDF } from "../pdfGenerator/pdfGenerator";
 import CustomSpinner from "@/components/CustomSpinner.vue";
 import { ipfsToHttpsProtocol } from "@/utils/utils";
+import QRCode from "qrcode";
 
 interface CertificateDataNode {
   amount: string;
@@ -45,15 +46,16 @@ const showSpinner = ref(true);
 const firstPageMaxRows = ref(0);
 const secondPageMaxRows = ref(0);
 const otherPageMaxRows = ref(35);
-
+const qrCodeUrl = ref<string | undefined>(undefined);
 type RowData = {
   data?: any[];
   type: string;
 };
 
-onMounted(() => {
+onMounted(async () => {
   document.body.style.backgroundColor = "#ffff";
   queryNow();
+  qrCodeUrl.value = await generateQRCode();
 });
 onBeforeUnmount(() => {
   document.body.style.backgroundColor = "";
@@ -453,6 +455,51 @@ const preparePagesData = () => {
   }
 };
 
+const generateQRCode = async () => {
+  // const canvas = document.getElementById("qrCode") as HTMLCanvasElement;
+  const url = await QRCode.toDataURL(
+    `https://empower.market/registry/${ID as string}`,
+  );
+
+  // Create a new image for the QR code
+  const qrImage = new Image();
+  qrImage.src = url;
+
+  // Create a new image for the logo
+  const logo = new Image();
+  logo.src = "/src/assets/greenlogo.svg"; // Replace with the path to your logo
+  // Wait for both images to load
+  await Promise.all([
+    new Promise((resolve) => {
+      qrImage.onload = resolve;
+    }),
+    new Promise((resolve) => {
+      logo.onload = resolve;
+    }),
+  ]);
+
+  // Create a canvas and draw the QR code and logo on it
+  const qrDimensions = { width: qrImage.width, height: qrImage.height };
+  const canvas = document.createElement("canvas");
+  canvas.width = qrDimensions.width;
+  canvas.height = qrDimensions.height;
+  const context = canvas.getContext("2d");
+  if (context !== null) {
+    context.drawImage(qrImage, canvas.width / 2 - qrImage.width / 2, 0);
+
+    const logoX = canvas.width / 2 - logo.width / 2;
+    const logoY = canvas.height / 2 - logo.height / 2;
+
+    context.fillStyle = "white";
+    context.fillRect(logoX - 5, logoY - 5, logo.width + 10, logo.height + 10);
+
+    context.drawImage(logo, logoX, logoY);
+  }
+
+  // Get the data URL of the canvas
+  return canvas.toDataURL();
+};
+
 const onGeneratePDF = () => {
   try {
     generatePDF(
@@ -468,6 +515,7 @@ const onGeneratePDF = () => {
       creditData.value,
       ID as string,
       applicantDataDescription.value,
+      qrCodeUrl.value,
     );
     toast.success("Certificate downloaded successfully");
   } catch (e) {
@@ -520,14 +568,11 @@ const onGeneratePDF = () => {
         <p class="weight" v-if="plastciValuesString">
           {{ plastciValuesString }}
         </p>
-
         <div class="logoBox">
           <img src="../assets/circular.svg" alt="" />
-          <div class="idBox">{{ router.params.id }}</div>
-          <p class="checkBlockchain">
-            check on <br />
-            blockchain!
-          </p>
+          <div id="qrCode" class="qrCode" v-if="qrCodeUrl">
+            <img :src="qrCodeUrl" />
+          </div>
         </div>
       </div>
       <img src="../assets/leaf2.png" alt="" class="leaf2" />
@@ -535,7 +580,6 @@ const onGeneratePDF = () => {
       <img src="../assets/leaf3.png" alt="" class="leaf3" />
       <img src="../assets/leaf5.png" alt="" class="leaf5" />
       <img src="../assets/leaf6.png" alt="" class="leaf6" />
-      <img src="../assets/greenlogo.svg" alt="" class="greenLogo" />
     </page>
 
     <div v-for="(page, pageIndex) in pagesData" :key="pageIndex">
@@ -891,34 +935,11 @@ page {
   position: relative;
   margin-top: auto;
   height: 140px;
-  width: auto;
+  width: 140px;
 }
 .logoBox img {
   height: 100%;
   width: auto;
-}
-
-.idBox {
-  position: absolute;
-  font-family: "Open Sans";
-  font-weight: 700;
-  font-size: 18px;
-  bottom: 60px;
-  right: 46px;
-  height: 27px;
-  width: auto;
-}
-
-.checkBlockchain {
-  position: absolute;
-  font-family: "Open Sans";
-  text-align: center;
-  font-weight: 700;
-  font-size: 11px;
-  bottom: 30px;
-  right: 46px;
-  letter-spacing: -1px;
-  color: #58b947;
 }
 
 .page2[size="A4"] {
@@ -1089,13 +1110,11 @@ page {
   overflow: hidden;
 }
 
-.greenLogo {
+.qrCode {
   position: absolute;
-  bottom: 164px;
-  right: 411px;
-  height: 18px;
-  width: auto;
-  z-index: 2;
-  overflow: hidden;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 55%;
 }
 </style>
