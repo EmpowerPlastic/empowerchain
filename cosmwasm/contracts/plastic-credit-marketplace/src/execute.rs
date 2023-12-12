@@ -446,7 +446,7 @@ mod tests {
             state::{Listing, LISTINGS},
         };
         use crate::error::ContractError;
-        use crate::state::{Freeze, FreezeKey, freezes, ListingKey};
+        use crate::state::{Freeze, FreezeKey, freezes};
 
         #[test]
         fn test_create_listing() {
@@ -655,13 +655,13 @@ mod tests {
             traits::MessageExt,
             traits::Message,
         };
-        use cosmwasm_std::{Addr, Coin, CosmosMsg, Decimal, Order, Uint128, Uint64};
+        use cosmwasm_std::{Coin, CosmosMsg, Decimal, Order, Uint128, Uint64};
         use cosmwasm_std::testing::{MOCK_CONTRACT_ADDR, mock_dependencies, mock_env, mock_info};
         use crate::error::ContractError;
         use crate::execute::{execute, MsgTransferCredits};
         use crate::instantiate;
         use crate::msg::{ExecuteMsg, InstantiateMsg};
-        use crate::state::{Freeze, FreezeKey, freezes, ListingKey, LISTINGS};
+        use crate::state::{Freeze, FreezeKey, freezes, LISTINGS};
 
         #[test]
         fn test_update_listing_happy_path_increase_credits() {
@@ -1413,7 +1413,7 @@ mod tests {
         use crate::{instantiate};
         use crate::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
         use crate::query::query;
-        use crate::state::{Freeze, freezes, ListingKey, LISTINGS};
+        use crate::state::{Freeze, freezes, LISTINGS};
 
         #[test]
         fn test_freeze_credits_happy_path_by_seller() {
@@ -1786,19 +1786,17 @@ mod tests {
     }
 
     mod cancel_freeze_credits {
-        use cosmwasm_std::{Addr, Coin, Decimal, Uint128, Uint64};
+        use cosmwasm_std::{Addr, Coin, Decimal, Order, Uint128, Uint64};
         use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
         use crate::execute::execute;
         use crate::instantiate;
         use crate::msg::{ExecuteMsg, InstantiateMsg};
-        use crate::state::LISTINGS;
+        use crate::state::{Freeze, freezes, LISTINGS};
 
         // Functionality:
         // TODO Add permissionless cancel of timed out freezes
         // Tests:
-        // TODO Test happy path cancel non-timed-out freeze
         // TODO Test happy path cancel timed-out freeze
-        // TODO Test cancel all credits (0)
         // TODO Test cancel more credits than available
         // TODO Test not found credit
         // TODO Test not found freeze
@@ -1843,10 +1841,62 @@ mod tests {
             assert_eq!(res.messages.len(), 0);
 
             let listing = LISTINGS.load(deps.as_ref().storage, (creator_info.sender.clone(), "pcrd".to_string())).unwrap();
-            assert_eq!(listing.number_of_credits, Uint64::from(32u64)); // 10 less, not 15 anymore
+            assert_eq!(listing.number_of_credits, Uint64::from(37u64)); // 5 less, not 15 anymore
 
             let freeze = crate::state::freezes().load(deps.as_ref().storage, (creator_info.sender.clone(), "pcrd".to_string(), Addr::unchecked("buyer"))).unwrap();
-            assert_eq!(freeze.number_of_credits, Uint64::from(10u64)); // 10 in the freeze, not 15 anymore
+            assert_eq!(freeze.number_of_credits, Uint64::from(5u64)); // 5 in the freeze, not 15 anymore
+        }
+
+        #[test]
+        fn test_cancel_freeze_credits_happy_path_all_credits() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            let operator_info = mock_info("operator", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+                operator: Option::from(operator_info.clone().sender),
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let env = mock_env();
+            let freeze_message = ExecuteMsg::FreezeCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_freeze: 15u64,
+                buyer: Addr::unchecked("buyer"),
+                timeout_unix_timestamp: env.block.time.seconds() + 1000u64,
+            };
+            execute(deps.as_mut(), mock_env(), operator_info.clone(), freeze_message).unwrap();
+
+            let freezes_before = freezes().range(deps.as_ref().storage, None, None, Order::Ascending)
+                .map(|item| item.unwrap().1)
+                .collect::<Vec<Freeze>>();
+            assert_eq!(freezes_before.len(), 1); // Not deleted yet
+
+            let cancel_freeze_message = ExecuteMsg::CancelFreezeCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_cancel_freeze: 0u64,
+                buyer: Addr::unchecked("buyer"),
+            };
+            let res = execute(deps.as_mut(), mock_env(), operator_info.clone(), cancel_freeze_message).unwrap();
+            assert_eq!(res.attributes.len(), 6);
+            assert_eq!(res.messages.len(), 0);
+
+            let listing = LISTINGS.load(deps.as_ref().storage, (creator_info.sender.clone(), "pcrd".to_string())).unwrap();
+            assert_eq!(listing.number_of_credits, Uint64::from(42u64)); // All are back
+
+            let freezes_after = freezes().range(deps.as_ref().storage, None, None, Order::Ascending)
+                .map(|item| item.unwrap().1)
+                .collect::<Vec<Freeze>>();
+            assert_eq!(freezes_after.len(), 0); // It should have been deleted
         }
     }
 
