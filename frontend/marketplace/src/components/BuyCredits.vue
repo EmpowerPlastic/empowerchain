@@ -11,11 +11,12 @@ import {
   RPC_ENDPOINT,
 } from "@/config/config";
 import { onMounted, ref, watch, computed } from "vue";
-import { getWallet, walletConnected } from "@/utils/wallet-utils";
+import { getWallet } from "@/utils/wallet-utils";
 import { formatDenom, resolveSdkError } from "@/utils/wallet-utils";
 import BuyButton from "@/components/BuyButton.vue";
 import { useFetcher, authHeader } from "@/utils/fetcher";
 import { useAuth } from "@/stores/auth";
+import { useWallet } from "@/stores/wallet";
 import { useNotifyer } from "@/utils/notifyer";
 
 export interface BuyCreditsProps {
@@ -28,6 +29,7 @@ export interface BuyCreditsProps {
 }
 
 const { isAuthenticated, getAccessToken } = useAuth();
+const { isWalletConnected } = useWallet();
 const { notifyer } = useNotifyer();
 const amount = ref<number>(1);
 const props = defineProps<BuyCreditsProps>();
@@ -37,6 +39,12 @@ const coinFormatted = ref("");
 const currentBalance = ref(Number.MAX_SAFE_INTEGER);
 const availableCreditsString = computed<string>(() => {
   return `${props.availableCredits}/${props.initialCredits}`;
+});
+
+watch(isWalletConnected, async (newVal) => {
+  if (newVal === true) {
+    await initValues();
+  }
 });
 
 watch(amount, (newVal) => {
@@ -49,7 +57,7 @@ watch(props, async (newVal) => {
   }
 });
 
-onMounted(async () => {
+const initValues = async () => {
   if (props.selectedCoin) {
     coinFormatted.value = await formatDenom(props.selectedCoin);
   }
@@ -67,6 +75,10 @@ onMounted(async () => {
     }
   });
   checkBalanceForPurchase(amount.value);
+};
+
+onMounted(async () => {
+  await initValues();
 });
 
 const checkBalanceForPurchase = (amount: number) => {
@@ -78,7 +90,7 @@ const checkBalanceForPurchase = (amount: number) => {
 };
 
 const handleBuyCredits = async () => {
-  if (!walletConnected()) {
+  if (!isWalletConnected.value) {
     notifyer.error("Please connect to wallet");
     return;
   }
@@ -225,7 +237,7 @@ const handleCardPayment = async () => {
         :coin-formatted="coinFormatted"
         :handle-buy-credits="handleBuyCredits"
         :handle-card-payment="handleCardPayment"
-        :wallet-connected="walletConnected"
+        :is-wallet-connected="isWalletConnected"
       ></BuyButton>
     </div>
   </div>
