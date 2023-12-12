@@ -73,7 +73,7 @@ const disconnectWallet = () => {
 };
 
 const copyAddress = async () => {
-  await navigator.clipboard.writeText(address.value);
+  await navigator.clipboard.writeText(address.value ?? "");
   toast.success("Address copied to clipboard");
 };
 </script>
