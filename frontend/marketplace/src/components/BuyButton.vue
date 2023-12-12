@@ -7,7 +7,7 @@ export interface BuyButtonProps {
   coinFormatted: string;
   handleCardPayment: () => void;
   handleBuyCredits: () => void;
-  walletConnected: () => boolean;
+  isWalletConnected: boolean;
 }
 const props = defineProps<BuyButtonProps>();
 
@@ -34,7 +34,7 @@ const buttonState = computed<BuyButtonState>(() => {
     return BuyButtonState.DISABLED;
   }
 
-  if (props.walletConnected()) {
+  if (props.isWalletConnected) {
     return BuyButtonState.ENABLED_WALLET;
   }
 
@@ -74,7 +74,7 @@ const buttonHandler = computed<(() => void) | undefined>(() => {
 const isDisabled = computed(
   () =>
     buttonState.value === BuyButtonState.DISABLED ||
-    buttonState.value === BuyButtonState.LOADING
+    buttonState.value === BuyButtonState.LOADING,
 );
 
 const buttonsCssClasses = `

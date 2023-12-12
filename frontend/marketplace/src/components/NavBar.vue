@@ -5,11 +5,12 @@ import { toast } from "vue3-toastify";
 import { useRoute } from "@/router";
 import SellectWalletModal from "@/components/SellectWalletModal.vue";
 import { getWalletFromType } from "@/utils/wallet-utils";
-import { useAuth } from '@/stores/auth'
+import { useAuth } from "@/stores/auth";
+import { useWallet } from "@/stores/wallet";
 
 const { handleSignIn, handleSignOut, isAuthenticated, user } = useAuth();
+const { address } = useWallet();
 const router = useRoute();
-const address = ref();
 const addressVisible = ref();
 const showNav = ref(false);
 const selectedWallet = ref();
