@@ -37,6 +37,9 @@ pub enum ContractError {
     #[error("timeout over maximum, which is set to {max_timeout} seconds")]
     TimeoutTooLong {max_timeout: u64},
 
+    #[error("freeze not found")]
+    FreezeNotFound {},
+
     #[error("fee split error {0}")]
     FeeSplitError(#[from] FeeSplitterError),
 }

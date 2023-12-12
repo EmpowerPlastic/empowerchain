@@ -81,10 +81,8 @@ mod tests {
                 amount: Uint128::from(1337u128),
             });
             assert_eq!(res.listing.operator, None);
-            assert_eq!(res.listing.freezes.len(), 0);
         }
         #[test]
-
         fn test_query_listing_not_found() {
             let mut deps = mock_dependencies();
             let info = mock_info("creator", &coins(2, "token"));
@@ -154,7 +152,6 @@ mod tests {
                 });
                 // Every other listing has an operator
                 assert_eq!(res.listings[i].operator, if i % 2 == 0 { Some(Addr::unchecked("operator".to_string())) } else { None });
-                assert_eq!(res.listings[i].freezes.len(), 0);
             }
 
             // Query with limit 50 should return 50 listings
@@ -182,7 +179,6 @@ mod tests {
                 });
                 // Every other listing has an operator
                 assert_eq!(res.listings[i].operator, if (i + 50) % 2 == 0 { Some(Addr::unchecked("operator".to_string())) } else { None });
-                assert_eq!(res.listings[i].freezes.len(), 0);
             }
 
             // Query the next 50 listings, should return the last 4 listings
@@ -202,8 +198,7 @@ mod tests {
                 });
                 // Every other listing has an operator
                 assert_eq!(res.listings[i].operator, if (i + 100) % 2 == 0 { Some(Addr::unchecked("operator".to_string())) } else { None });
-                assert_eq!(res.listings[i].freezes.len(), 0);
-            }   
+            }
         }
     }
 
