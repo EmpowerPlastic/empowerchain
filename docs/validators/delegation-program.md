@@ -25,12 +25,12 @@ Any validator that might want to apply for the delegation program need to meet t
 - Keep secure infrastructure and decent up-time (minimum 95%)
 - Must vote on all proposals
 
-If a validator at any time fail to meet any of these criteria, they will be removed from the delegation program with
+If a validator at any time fails to meet any of these criteria, they will be removed from the delegation program with
 immediate effect.
 
 ## Delegation distribution
 
-The weight are very preliminary, and will be adjusted before mainnet launch.
+The weights are very preliminary, and will be adjusted before mainnet launch.
 
 | Activity                                                           | Notes                                                                                                             | Weight |
 |--------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|--------|
