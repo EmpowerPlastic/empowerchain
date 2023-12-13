@@ -1,9 +1,7 @@
 name: "Devnet depoly"
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   build:
