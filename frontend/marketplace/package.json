@@ -6,6 +6,7 @@
     "dev": "vite",
     "prepare": "cd ../.. && husky install frontend/marketplace/.husky",
     "build": "run-p type-check build-only",
+    "build:test": "run-p type-check \"build-only -- --mode test\"",
     "preview": "vite preview",
     "test:unit": "vitest",
     "build-only": "vite build",
