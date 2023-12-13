@@ -45,6 +45,12 @@ pub enum ExecuteMsg {
         number_of_frozen_credits_to_cancel: u64, // 0 means all
         buyer: Addr,
     },
+    ReleaseFrozenCredits {
+        owner: Addr,
+        denom: String,
+        number_of_credits_to_release: u64, // 0 means all
+        buyer: Addr,
+    },
     EditFeeSplitConfig {
         fee_percentage: Decimal,
         shares: Vec<Share>

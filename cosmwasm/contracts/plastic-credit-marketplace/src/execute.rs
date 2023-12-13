@@ -18,6 +18,7 @@ pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> R
         ExecuteMsg::CancelListing { denom } => execute_cancel_listing(deps, env, info, denom),
         ExecuteMsg::FreezeCredits { owner, denom, number_of_credits_to_freeze, buyer, timeout_unix_timestamp } => execute_freeze_credits(deps, env, info, owner, denom, number_of_credits_to_freeze, buyer, timeout_unix_timestamp),
         ExecuteMsg::CancelFrozenCredits { owner, denom, number_of_frozen_credits_to_cancel, buyer } => execute_cancel_frozen_credits(deps, info, owner, denom, buyer, number_of_frozen_credits_to_cancel),
+        ExecuteMsg::ReleaseFrozenCredits { owner, denom, number_of_credits_to_release, buyer } => execute_release_frozen_credits(deps, env, info, owner, denom, buyer, number_of_credits_to_release),
         ExecuteMsg::EditFeeSplitConfig { fee_percentage, shares } => execute_edit_fee_split_config(deps, info, fee_percentage, shares),
     }
 }
@@ -93,7 +94,7 @@ pub fn execute_buy_credits(
     if info.funds.len() != 1 || info.funds[0].denom != listing.price_per_credit.denom || info.funds[0].amount < total_price {
         return Err(ContractError::NotEnoughFunds {});
     }
-    if info.funds[0].amount > total_price {
+    if info.funds[0].amount > total_price { // We can skip the denom check here because it is triggered in the previous if statement
         return Err(ContractError::TooMuchFunds {});
     }
 
@@ -116,7 +117,7 @@ pub fn execute_buy_credits(
         denom: listing.price_per_credit.denom.clone(),
         amount: total_price,
     };
-    let (fee_split_msgs, funds_after_split) = get_fee_split(deps.storage, funds_before_fee_split).unwrap();
+    let (fee_split_msgs, funds_after_split, _) = get_fee_split(deps.storage, funds_before_fee_split).unwrap();
     let transfer_funds_to_seller_msg = CosmosMsg::Bank(BankMsg::Send {
         to_address: listing.owner.to_string(),
         amount: vec![funds_after_split],
@@ -311,6 +312,8 @@ fn execute_cancel_frozen_credits(
     let mut listing = LISTINGS.load(deps.storage, (Addr::unchecked(owner.clone()), denom.clone())).map_err(|_| ContractError::ListingNotFound {})?;
     let mut freeze = freezes().may_load(deps.storage, (Addr::unchecked(owner.clone()), denom.clone(), buyer.clone()))?.ok_or(ContractError::FreezeNotFound {})?;
 
+    // TODO Add permissionless cancel of timed out freezes
+
     // Check if the sender is either the owner or the operator
     if info.sender != listing.owner && info.sender != listing.operator.clone().unwrap_or(Addr::unchecked("".to_string())) {
         return Err(ContractError::Unauthorized {});
@@ -342,6 +345,72 @@ fn execute_cancel_frozen_credits(
         .add_attribute("denom", denom)
         .add_attribute("buyer", buyer)
         .add_attribute("number_of_credits_cancelled_from_freeze", number_of_frozen_credits_to_cancel.to_string())
+    )
+}
+
+fn execute_release_frozen_credits(
+    deps: DepsMut,
+    env: Env,
+    info: MessageInfo,
+    owner: Addr,
+    denom: String,
+    buyer: Addr,
+    number_of_credits_to_release: u64,
+) -> Result<Response, ContractError> {
+    if number_of_credits_to_release == 0 {
+        return Err(ContractError::ZeroCredits {});
+    }
+
+    let mut listing = LISTINGS.load(deps.storage, (Addr::unchecked(owner.clone()), denom.clone())).map_err(|_| ContractError::ListingNotFound {})?;
+    let mut freeze = freezes().may_load(deps.storage, (Addr::unchecked(owner.clone()), denom.clone(), buyer.clone()))?.ok_or(ContractError::FreezeNotFound {})?;
+
+    // Check if timed out
+    if freeze.timeout.seconds() <= env.block.time.seconds() {
+        return Err(ContractError::TimedOut {});
+    }
+
+    // Check if the sender is either the owner or the operator
+    if info.sender != listing.owner && info.sender != listing.operator.clone().unwrap_or(Addr::unchecked("".to_string())) {
+        return Err(ContractError::Unauthorized {});
+    }
+
+    if freeze.number_of_credits < number_of_credits_to_release.into() {
+        return Err(ContractError::NotEnoughCredits {});
+    }
+
+    // We need the original_price to calculate the fee split
+    let original_price = listing.price_per_credit.amount.checked_mul(number_of_credits_to_release.into()).unwrap();
+    let original_price_as_coin = Coin {
+        denom: listing.price_per_credit.denom.clone(),
+        amount: original_price,
+    };
+    let (fee_split_msgs, _, fee_amount) = get_fee_split(deps.storage, original_price_as_coin).unwrap();
+    if info.funds.len() != 1 || info.funds[0].denom != listing.price_per_credit.denom || info.funds[0].amount < fee_amount.amount {
+        return Err(ContractError::NotEnoughFunds {});
+    }
+    if info.funds[0].amount > fee_amount.amount { // We can skip the denom check here because it is triggered in the previous if statement
+        return Err(ContractError::TooMuchFunds {});
+    }
+
+    let transfer_credits_msg = create_transfer_credits_from_contract_msg(
+        env,
+        info.sender.to_string(),
+        listing.denom.clone(),
+        number_of_credits_to_release,
+    );
+    let mut msgs = vec![transfer_credits_msg];
+    if fee_split_msgs.len() > 0 {
+        msgs.extend(fee_split_msgs);
+    }
+
+    Ok(Response::new()
+        .add_attribute("action", "freeze_credits")
+        .add_attribute("releaser", info.sender)
+        .add_attribute("listing_owner", owner)
+        .add_attribute("denom", denom)
+        .add_attribute("buyer", buyer)
+        .add_attribute("number_of_credits_released", number_of_credits_to_release.to_string())
+        .add_messages(msgs)
     )
 }
 
@@ -1785,7 +1854,7 @@ mod tests {
         // TODO: Test the update logic works (multiple freezes with same buyer address) and has correct number of freezes
     }
 
-    mod cancel_frozen_credits {
+    mod cancel_frozen_credits_tests {
         use cosmwasm_std::{Addr, Coin, Decimal, Order, Uint128, Uint64};
         use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
         use crate::execute::execute;
@@ -1793,14 +1862,13 @@ mod tests {
         use crate::msg::{ExecuteMsg, InstantiateMsg};
         use crate::state::{Freeze, freezes, LISTINGS};
 
-        // Functionality:
-        // TODO Add permissionless cancel of timed out freezes
         // Tests:
         // TODO Test happy path cancel timed-out freeze
         // TODO Test cancel more credits than available
         // TODO Test not found credit
         // TODO Test not found freeze
         // TODO Test permission denied
+        // TODO Test permissionless cancel of timed out freeze
 
         #[test]
         fn test_cancel_frozen_credits_happy_path() {
@@ -1898,6 +1966,14 @@ mod tests {
                 .collect::<Vec<Freeze>>();
             assert_eq!(freezes_after.len(), 0); // It should have been deleted
         }
+    }
+
+    mod release_frozen_credits_test {
+        // TODO Test happy path release frozen credits (make sure fee is taken)
+        // TODO Test release all credits (should delete the freeze)
+        // TODO Test invalid params (number = 0, number > freeze)
+        // TODO Test release timed out credits (should fail)
+        // TODO Test release more credits than available (should fail)
     }
 
     mod edit_fee_split_config_tests {
