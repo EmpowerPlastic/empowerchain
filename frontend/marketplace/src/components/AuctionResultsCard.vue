@@ -9,7 +9,7 @@ import {
   findPlasticTypeInMaterial,
 } from "@/utils/utils";
 import { formatDenom } from "@/utils/wallet-utils";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 export interface AuctionResultsCardProps {
   cardData: MarketplaceListing & {
@@ -36,6 +36,9 @@ interface CardDetailsList {
 const props = defineProps<AuctionResultsCardProps>();
 const denom = ref("");
 const cardDetailsList = ref<CardDetailsList>();
+const applicant = computed<string>(() => {
+  return cardDetailsList.value?.applicant[0] ?? "";
+});
 
 onMounted(async () => {
   denom.value = await formatDenom(props.cardData?.pricePerCreditDenom);
@@ -114,12 +117,8 @@ onMounted(async () => {
         </ul>
       </div>
       <div class="col-span-1">
-        <p class="details-title">Applicant</p>
-        <ul class="list-disc ml-6">
-          <li v-for="applicant in cardDetailsList?.applicant" :key="applicant">
-            {{ applicant }}
-          </li>
-        </ul>
+        <p class="details-title">Collection Organisation</p>
+        <h3>{{ applicant }}</h3>
       </div>
       <div class="col-span-1">
         <p class="details-title">Volume</p>
