@@ -18,7 +18,7 @@ onMounted(async () => {
 <template>
   <div class="bg-lightBlack rounded-lg md:rounded-sm">
     <CustomImage
-      class="max-h-[250px] w-full rounded-lg"
+      image-class="max-h-[250px] w-full rounded-lg"
       :src="
         convertIPFStoHTTPS(
           auctionData?.creditCollection?.creditData?.nodes[0].mediaFiles

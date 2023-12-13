@@ -29,7 +29,7 @@ onMounted(async () => {
         getDetailsList(cardData.creditCollection.creditData.nodes)
           .thumbnailUrl || auctionCard
       "
-      class="max-h-[200px] w-full rounded-sm"
+      image-class="max-h-[200px] w-full rounded-sm"
     />
 
     <!--      Details for Mobile UI-->

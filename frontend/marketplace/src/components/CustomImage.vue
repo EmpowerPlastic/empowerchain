@@ -2,10 +2,7 @@
 import AuctionCard from "../assets/auctionCard.png";
 export interface CustomImageProps {
   src: string;
-  imageClass: {
-    type: String;
-    default: "rounded-sm h-[200px] w-[200px]";
-  };
+  imageClass: string;
   fallbackImageSrc?: string;
 }
 
@@ -28,7 +25,7 @@ const handleError = (event: Event) => {
 </script>
 <template>
   <img
-    :class="imageClass"
+    :class="imageClass || 'rounded-sm h-[200px] w-[200px]'"
     v-bind="props"
     @click="handleClick"
     @error="handleError"
