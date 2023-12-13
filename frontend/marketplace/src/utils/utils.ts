@@ -6,19 +6,36 @@ export const convertIPFStoHTTPS = (url: string) => {
   return HTTPS_URL;
 };
 
+const uniqueMaterials = (
+  materials: Array<Array<{ key: string; value: string }>>,
+): Array<Array<{ key: string; value: string }>> => {
+  // Convert each material to a string representation
+  const materialsStr = materials.map((material) =>
+    JSON.stringify(material.sort((a, b) => a.key.localeCompare(b.key))),
+  );
+  // Create a Set from the stringified materials to remove duplicates
+  const uniqueMaterialsStr = Array.from(new Set(materialsStr));
+
+  // Convert each unique material back to an object
+  const uniqueMaterials = uniqueMaterialsStr.map((materialStr) =>
+    JSON.parse(materialStr),
+  );
+
+  return uniqueMaterials;
+};
+
 // TODO run in only once on component init
 export const getDetailsList = (data: any) => {
   const applicantArray: string[] = [];
   const locationArray: string[] = [];
   const imageArray: string[] = [];
-  const materialArray: { key: string; value: string }[] = [];
+  const materialArray: { key: string; value: string }[][] = [];
   let volume: number = 0;
   let thumbnailUrl: string = "";
   const locationPointersArray: {
     lat: number;
     lng: number;
   }[] = [];
-
   data.map((item: any) => {
     if (item.applicantDataByCreditDataId) {
       item.applicantDataByCreditDataId.nodes.map((node: any) => {
@@ -35,7 +52,7 @@ export const getDetailsList = (data: any) => {
           lat: node?.latitude,
           lng: node?.longitude,
         });
-        materialArray.push(...node.material.nodes);
+        materialArray.push(node.material.nodes);
       });
     }
     if (item.mediaFiles) {
@@ -46,11 +63,7 @@ export const getDetailsList = (data: any) => {
     }
   });
 
-  const uniqueMaterialArray = materialArray.filter(
-    (obj, index, self) =>
-      index ===
-      self.findIndex((o) => o.key === obj.key && o.value === obj.value)
-  );
+  const uniqueMaterialArray = uniqueMaterials(materialArray);
 
   return {
     applicant: Array.from(new Set(applicantArray)),
@@ -68,7 +81,7 @@ export const addTextWithSpacing = (
   text: string,
   x: number,
   y: number,
-  spacing: number
+  spacing: number,
 ) => {
   for (let i = 0; i < text.length; i++) {
     const currentLetter = text[i];
@@ -84,12 +97,12 @@ export const addTextWithSpacing = (
 export const calculateTextProperties = (
   name: string,
   baseXPos: number = 163,
-  baseFontSize: number = 50
+  baseFontSize: number = 50,
 ): { xPos: number; fontSize: number } => {
   const nameLength = name.length;
 
   let stepSize = 0;
-  let charsPerStep = 1;
+  const charsPerStep = 1;
   let fontSize = baseFontSize;
   if (nameLength < 15) {
     stepSize = 4;
@@ -105,16 +118,16 @@ export const calculateTextProperties = (
   }
   const steps = Math.floor((nameLength - 3) / charsPerStep);
 
-  let xPos = baseXPos - steps * stepSize;
+  const xPos = baseXPos - steps * stepSize;
 
   return { xPos, fontSize };
-}
+};
 export const calculateXPosition = (
   text: string,
   basePosition: number = 179,
   capitalStep: number = 1.5,
   otherStep: number = 1,
-  numberStep: number = 1.4
+  numberStep: number = 1.4,
 ): number => {
   let currentPosition = basePosition;
 
@@ -130,8 +143,35 @@ export const calculateXPosition = (
   }
 
   return currentPosition;
-}
+};
 
 export const ipfsToHttpsProtocol = (url: string) => {
   return url.replace("ipfs://", "https://ipfs.empowerchain.io/ipfs/");
+};
+
+export const upperCaseFirstLetter = (string: string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+export const prettifyCardProperty = (property: {
+  key: string;
+  value: string;
+}): string => {
+  return property.value.toLowerCase() === "yes" ||
+    property.value.toLowerCase() === "no"
+    ? upperCaseFirstLetter(property.key) + ": " + property.value.toLowerCase()
+    : property.value;
+};
+
+interface Material {
+  key: string;
+  value: string;
+}
+
+export const stripPlasticTypeFromMaterial = (arrayOfProperties: Material[]) => {
+  return arrayOfProperties.filter((property) => property.key !== "plasticType");
+};
+
+export const findPlasticTypeInMaterial = (material: Material[]) => {
+  return material.find((property) => property.key === "plasticType");
 };

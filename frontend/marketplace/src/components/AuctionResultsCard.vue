@@ -2,7 +2,12 @@
 import type { MarketplaceListing } from "@/types/GraphqlSchema";
 import router from "@/router";
 import auctionCard from "@/assets/auctionCard.png";
-import { getDetailsList } from "@/utils/utils";
+import {
+  getDetailsList,
+  prettifyCardProperty,
+  stripPlasticTypeFromMaterial,
+  findPlasticTypeInMaterial,
+} from "@/utils/utils";
 import { formatDenom } from "@/utils/wallet-utils";
 import { onMounted, ref } from "vue";
 
@@ -12,11 +17,31 @@ export interface AuctionResultsCardProps {
   };
 }
 
+interface CardDetailsList {
+  applicant: string[];
+  location: string[];
+  material: {
+    key: string;
+    value: string;
+  }[][];
+  volume: number;
+  thumbnailUrl: string;
+  image: string[];
+  locationPointers: {
+    lat: number;
+    lng: number;
+  }[];
+}
+
 const props = defineProps<AuctionResultsCardProps>();
 const denom = ref("");
+const cardDetailsList = ref<CardDetailsList>();
 
 onMounted(async () => {
   denom.value = await formatDenom(props.cardData?.pricePerCreditDenom);
+  cardDetailsList.value = getDetailsList(
+    props.cardData.creditCollection.creditData.nodes,
+  );
 });
 </script>
 <template>
@@ -25,10 +50,7 @@ onMounted(async () => {
   >
     <img
       class="h-full col-span-1 rounded-sm"
-      :src="
-        getDetailsList(cardData.creditCollection.creditData.nodes)
-          .thumbnailUrl || auctionCard
-      "
+      :src="cardDetailsList?.thumbnailUrl || auctionCard"
     />
 
     <!--      Details for Mobile UI-->
@@ -40,11 +62,7 @@ onMounted(async () => {
         <p class="text-title15 font-light">Price per credit</p>
       </div>
       <div class="text-right">
-        <p class="text-title13 font-bold">
-          {{
-            getDetailsList(cardData.creditCollection.creditData.nodes).volume
-          }}kg
-        </p>
+        <p class="text-title13 font-bold">{{ cardDetailsList?.volume }}kg</p>
         <p class="text-title11 font-light">Volume</p>
       </div>
       <div>
@@ -70,27 +88,27 @@ onMounted(async () => {
     >
       <div class="col-span-1 ...">
         <p class="details-title">Material</p>
-        <ul class="list-disc ml-6">
-          <li
-            v-for="material in getDetailsList(
-              cardData.creditCollection.creditData.nodes
-            ).material"
-            :key="material.key"
-          >
-            {{ material.value }}
-          </li>
-        </ul>
+        <div
+          v-for="(material, index) in cardDetailsList?.material"
+          :key="`${cardData.id}-material-${index}`"
+        >
+          <h3>{{ findPlasticTypeInMaterial(material)?.value }}</h3>
+          <ul class="list-disc ml-6">
+            <li
+              v-for="property in stripPlasticTypeFromMaterial(material)"
+              :key="property.key"
+              class="text-title14"
+            >
+              {{ prettifyCardProperty(property) }}
+            </li>
+          </ul>
+        </div>
       </div>
       <div class="col-span-1">
         <p class="details-title">Location</p>
         <p>{{ cardData.creditCollection.nodes }}</p>
         <ul class="list-disc ml-6">
-          <li
-            v-for="location in getDetailsList(
-              cardData.creditCollection.creditData.nodes
-            ).location"
-            :key="location"
-          >
+          <li v-for="location in cardDetailsList?.location" :key="location">
             {{ location }}
           </li>
         </ul>
@@ -98,23 +116,14 @@ onMounted(async () => {
       <div class="col-span-1">
         <p class="details-title">Applicant</p>
         <ul class="list-disc ml-6">
-          <li
-            v-for="applicant in getDetailsList(
-              cardData.creditCollection.creditData.nodes
-            ).applicant"
-            :key="applicant"
-          >
+          <li v-for="applicant in cardDetailsList?.applicant" :key="applicant">
             {{ applicant }}
           </li>
         </ul>
       </div>
       <div class="col-span-1">
         <p class="details-title">Volume</p>
-        <p>
-          {{
-            getDetailsList(cardData.creditCollection.creditData.nodes).volume
-          }}kg
-        </p>
+        <p>{{ cardDetailsList?.volume }}kg</p>
       </div>
       <div class="col-span-1 text-right">
         <p class="text-title32 font-bold leading-7 mt-6">
