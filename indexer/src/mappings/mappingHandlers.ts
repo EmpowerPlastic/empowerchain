@@ -298,7 +298,7 @@ function findCertificateDataValueByKey(certificate: any[], key: string): string 
   return certificate.find(data => data.key === key).value;
 }
 
-async function handleOffsetCertificate(certificateId: string, owner: string, certificateData: string): Promise<void> {
+async function handleOffsetCertificate(certificateId: string, owner: string, certificateData: string, timestamp: string): Promise<void> {
   certificateData = certificateData.replace(/(?:\\\\)*\\(?!\\)/g, '');
   const certificate = JSON.parse(certificateData);
   const denom = findCertificateDataValueByKey(certificate, "denom");
@@ -315,6 +315,7 @@ async function handleOffsetCertificate(certificateId: string, owner: string, cer
     retiringEntityName: retiringEntityName,
     retiringEntityAdditionalData: retiringEntityAdditionalData,
     walletId: owner,
+    timestamp: timestamp,
   });
   await offsetCertificate.save();
 }
@@ -338,7 +339,7 @@ export async function handleCreateCertificate(event: CosmosEvent): Promise<void>
     await certificate.save();
 
     if (certificateType === "CREDIT_RETIREMENT") {
-      await handleOffsetCertificate(certificateId, owner, additionalData);
+      await handleOffsetCertificate(certificateId, owner, additionalData, event.block.header.time.toISOString());
     }
   } catch (e) {
     await logRollbarError(e, event.tx.hash, event.block.header.height);

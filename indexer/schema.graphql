@@ -57,10 +57,11 @@ type CreditOffsetCertificate @entity {
   id: ID!
   denom: String!
   amount: BigInt!
-  retiringEntityAddress: String
-  retiringEntityName: String
-  retiringEntityAdditionalData: String
+  retiringEntityAddress: String!
+  retiringEntityName: String!
+  retiringEntityAdditionalData: String!
   wallet: Wallet!
+  timestamp: Date!
 }
 
 type MarketplaceListing @entity {
@@ -81,7 +82,6 @@ type TransferedCreditsEvent @entity {
   sender: String!
   recipient: String!
   amount: BigInt!
-  timestamp: Date!
 }
 
 type RetiredCreditsEvent @entity {
