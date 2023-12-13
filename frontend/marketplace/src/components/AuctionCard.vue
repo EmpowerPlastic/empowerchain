@@ -4,6 +4,7 @@ import { convertIPFStoHTTPS } from "@/utils/utils";
 import auctionCard from "@/assets/auctionCard.png";
 import { formatDenom } from "@/utils/wallet-utils";
 import { onMounted, ref } from "vue";
+import CustomImage from "@/components/CustomImage.vue";
 export interface AuctionCardProps {
   auctionData: any;
 }
@@ -16,12 +17,12 @@ onMounted(async () => {
 </script>
 <template>
   <div class="bg-lightBlack rounded-lg md:rounded-sm">
-    <img
+    <CustomImage
       class="max-h-[250px] w-full rounded-lg"
       :src="
         convertIPFStoHTTPS(
           auctionData?.creditCollection?.creditData?.nodes[0].mediaFiles
-            ?.nodes[0].url
+            ?.nodes[0].url,
         ) || auctionCard
       "
     />
