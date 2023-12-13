@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useAuth } from "@/stores/auth";
+import { isValidCreditAmount } from "@/utils/utils";
 export interface BuyButtonProps {
   showButtonSpinner: boolean;
   insufficientBalance: boolean;
@@ -8,6 +9,8 @@ export interface BuyButtonProps {
   handleCardPayment: () => void;
   handleBuyCredits: () => void;
   walletConnected: () => boolean;
+  availableCredits: number;
+  buyingCreditAmount: number;
 }
 const props = defineProps<BuyButtonProps>();
 
@@ -19,11 +22,16 @@ enum BuyButtonState {
   ENABLED_CARD = "enabled_card",
   ENABLED_WALLET = "enabled_wallet",
   LOADING = "loading",
+  INVALID_CREDIT = "invalid_credit",
 }
 
 const buttonState = computed<BuyButtonState>(() => {
   if (props.showButtonSpinner) {
     return BuyButtonState.LOADING;
+  }
+
+  if (!isValidCreditAmount(props.buyingCreditAmount, props.availableCredits)) {
+    return BuyButtonState.INVALID_CREDIT;
   }
 
   if (isAuthenticated.value) {
@@ -53,6 +61,8 @@ const buttonText = computed(() => {
       return "Log in to pay";
     case BuyButtonState.DISABLED:
       return "Insufficient balance";
+    case BuyButtonState.INVALID_CREDIT:
+      return "Invalid credit";
     default:
       return "Unknown state";
   }
@@ -74,7 +84,8 @@ const buttonHandler = computed<(() => void) | undefined>(() => {
 const isDisabled = computed(
   () =>
     buttonState.value === BuyButtonState.DISABLED ||
-    buttonState.value === BuyButtonState.LOADING
+    buttonState.value === BuyButtonState.LOADING ||
+    buttonState.value === BuyButtonState.INVALID_CREDIT,
 );
 
 const buttonsCssClasses = `

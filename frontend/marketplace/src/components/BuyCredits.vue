@@ -226,6 +226,8 @@ const handleCardPayment = async () => {
         :handle-buy-credits="handleBuyCredits"
         :handle-card-payment="handleCardPayment"
         :wallet-connected="walletConnected"
+        :available-credits="availableCredits"
+        :buying-credit-amount="amount"
       ></BuyButton>
     </div>
   </div>
