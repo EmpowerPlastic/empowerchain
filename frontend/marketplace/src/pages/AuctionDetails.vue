@@ -293,7 +293,7 @@ onMounted(() => {
           list
         />
         <ProjectDetailContent
-          label="Collection organization"
+          label="Collection organisation"
           :value="auctionDetails?.applicant"
         />
         <ProjectDetailContent
