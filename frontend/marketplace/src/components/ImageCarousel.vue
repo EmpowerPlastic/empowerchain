@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Carousel, Slide, Navigation } from "vue3-carousel";
 import "vue3-carousel/dist/carousel.css";
+import CustomImage from "@/components/CustomImage.vue";
 
 export interface ImageCarouselProps {
   imageArray: string[];
@@ -11,7 +12,10 @@ defineProps<ImageCarouselProps>();
 <template>
   <Carousel>
     <Slide v-for="url in imageArray" :key="url">
-      <img class="min-h-48 max-h-[200px] w-full rounded-lg" :src="url" />
+      <CustomImage
+        :src="url"
+        image-class="min-h-48 max-h-[200px] w-full rounded-lg"
+      />
     </Slide>
     <template #addons>
       <Navigation />

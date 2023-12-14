@@ -10,6 +10,7 @@ import {
 } from "@/utils/utils";
 import { formatDenom } from "@/utils/wallet-utils";
 import { computed, onMounted, ref } from "vue";
+import CustomImage from "@/components/CustomImage.vue";
 
 export interface AuctionResultsCardProps {
   cardData: MarketplaceListing & {
@@ -51,9 +52,9 @@ onMounted(async () => {
   <div
     class="bg-auctionBackground md:bg-lightBlack rounded-lg font-Inter text-white my-5 md:p-3 md:grid md:grid-cols-5 min-h-[180px]"
   >
-    <img
-      class="h-full col-span-1 rounded-sm"
+    <CustomImage
       :src="cardDetailsList?.thumbnailUrl || auctionCard"
+      image-class="max-h-[200px] w-full rounded-sm"
     />
 
     <!--      Details for Mobile UI-->

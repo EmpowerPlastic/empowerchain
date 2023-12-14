@@ -175,3 +175,10 @@ export const stripPlasticTypeFromMaterial = (arrayOfProperties: Material[]) => {
 export const findPlasticTypeInMaterial = (material: Material[]) => {
   return material.find((property) => property.key === "plasticType");
 };
+
+export const isValidCreditAmount = (
+  amount: number,
+  available: number,
+): boolean => {
+  return amount > 0 && Number.isInteger(amount) && amount <= available;
+};
