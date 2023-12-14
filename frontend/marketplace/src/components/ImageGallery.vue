@@ -38,9 +38,9 @@ const handleActiveImage = (url: string) => {
       </button>
       <div class="grid grid-cols-2 gap-5">
         <CustomImage
-          @on-image-click="handleActiveImage(url)"
+          @click="handleActiveImage(url)"
           :src="url"
-          image-class="rounded-sm h-[150px] w-[200px] cursor-pointer"
+          image-class="rounded-sm h-[150px] w-full cursor-pointer"
           v-for="url in imageArray"
           :id="url"
           :key="url"
