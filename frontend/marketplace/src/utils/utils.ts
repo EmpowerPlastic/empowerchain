@@ -1,3 +1,4 @@
+import type { MaterialProperty } from "@/types/GraphqlSchema";
 import { HTTPS_FILE_URL } from "@/config/config";
 
 export const convertIPFStoHTTPS = (url: string) => {
@@ -6,7 +7,7 @@ export const convertIPFStoHTTPS = (url: string) => {
   return HTTPS_URL;
 };
 
-const uniqueMaterials = (
+export const uniqueMaterials = (
   materials: Array<Array<{ key: string; value: string }>>,
 ): Array<Array<{ key: string; value: string }>> => {
   // Convert each material to a string representation
@@ -29,7 +30,7 @@ export const getDetailsList = (data: any) => {
   const applicantArray: string[] = [];
   const locationArray: string[] = [];
   const imageArray: string[] = [];
-  const materialArray: { key: string; value: string }[][] = [];
+  const materialArray: MaterialProperty[][] = [];
   let volume: number = 0;
   let thumbnailUrl: string = "";
   const locationPointersArray: {
@@ -153,26 +154,20 @@ export const upperCaseFirstLetter = (string: string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
-export const prettifyCardProperty = (property: {
-  key: string;
-  value: string;
-}): string => {
+export const prettifyCardProperty = (property: MaterialProperty): string => {
   return property.value.toLowerCase() === "yes" ||
     property.value.toLowerCase() === "no"
     ? upperCaseFirstLetter(property.key) + ": " + property.value.toLowerCase()
     : property.value;
 };
 
-interface Material {
-  key: string;
-  value: string;
-}
-
-export const stripPlasticTypeFromMaterial = (arrayOfProperties: Material[]) => {
+export const stripPlasticTypeFromMaterial = (
+  arrayOfProperties: MaterialProperty[],
+) => {
   return arrayOfProperties.filter((property) => property.key !== "plasticType");
 };
 
-export const findPlasticTypeInMaterial = (material: Material[]) => {
+export const findPlasticTypeInMaterial = (material: MaterialProperty[]) => {
   return material.find((property) => property.key === "plasticType");
 };
 
