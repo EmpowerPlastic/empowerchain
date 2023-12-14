@@ -49,7 +49,7 @@ export const getDetailsList = (data: any) => {
   const uniqueMaterialArray = materialArray.filter(
     (obj, index, self) =>
       index ===
-      self.findIndex((o) => o.key === obj.key && o.value === obj.value)
+      self.findIndex((o) => o.key === obj.key && o.value === obj.value),
   );
 
   return {
@@ -68,7 +68,7 @@ export const addTextWithSpacing = (
   text: string,
   x: number,
   y: number,
-  spacing: number
+  spacing: number,
 ) => {
   for (let i = 0; i < text.length; i++) {
     const currentLetter = text[i];
@@ -84,12 +84,12 @@ export const addTextWithSpacing = (
 export const calculateTextProperties = (
   name: string,
   baseXPos: number = 163,
-  baseFontSize: number = 50
+  baseFontSize: number = 50,
 ): { xPos: number; fontSize: number } => {
   const nameLength = name.length;
 
   let stepSize = 0;
-  let charsPerStep = 1;
+  const charsPerStep = 1;
   let fontSize = baseFontSize;
   if (nameLength < 15) {
     stepSize = 4;
@@ -105,16 +105,16 @@ export const calculateTextProperties = (
   }
   const steps = Math.floor((nameLength - 3) / charsPerStep);
 
-  let xPos = baseXPos - steps * stepSize;
+  const xPos = baseXPos - steps * stepSize;
 
   return { xPos, fontSize };
-}
+};
 export const calculateXPosition = (
   text: string,
   basePosition: number = 179,
   capitalStep: number = 1.5,
   otherStep: number = 1,
-  numberStep: number = 1.4
+  numberStep: number = 1.4,
 ): number => {
   let currentPosition = basePosition;
 
@@ -130,8 +130,15 @@ export const calculateXPosition = (
   }
 
   return currentPosition;
-}
+};
 
 export const ipfsToHttpsProtocol = (url: string) => {
   return url.replace("ipfs://", "https://ipfs.empowerchain.io/ipfs/");
+};
+
+export const isValidCreditAmount = (
+  amount: number,
+  available: number,
+): boolean => {
+  return amount > 0 && Number.isInteger(amount) && amount <= available;
 };

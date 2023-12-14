@@ -5,6 +5,7 @@ import auctionCard from "@/assets/auctionCard.png";
 import { getDetailsList } from "@/utils/utils";
 import { formatDenom } from "@/utils/wallet-utils";
 import { onMounted, ref } from "vue";
+import CustomImage from "@/components/CustomImage.vue";
 
 export interface AuctionResultsCardProps {
   cardData: MarketplaceListing & {
@@ -23,12 +24,12 @@ onMounted(async () => {
   <div
     class="bg-auctionBackground md:bg-lightBlack rounded-lg font-Inter text-white my-5 md:p-3 md:grid md:grid-cols-5 min-h-[180px]"
   >
-    <img
-      class="h-full col-span-1 rounded-sm"
+    <CustomImage
       :src="
         getDetailsList(cardData.creditCollection.creditData.nodes)
           .thumbnailUrl || auctionCard
       "
+      image-class="max-h-[200px] w-full rounded-sm"
     />
 
     <!--      Details for Mobile UI-->
@@ -73,7 +74,7 @@ onMounted(async () => {
         <ul class="list-disc ml-6">
           <li
             v-for="material in getDetailsList(
-              cardData.creditCollection.creditData.nodes
+              cardData.creditCollection.creditData.nodes,
             ).material"
             :key="material.key"
           >
@@ -87,7 +88,7 @@ onMounted(async () => {
         <ul class="list-disc ml-6">
           <li
             v-for="location in getDetailsList(
-              cardData.creditCollection.creditData.nodes
+              cardData.creditCollection.creditData.nodes,
             ).location"
             :key="location"
           >
@@ -100,7 +101,7 @@ onMounted(async () => {
         <ul class="list-disc ml-6">
           <li
             v-for="applicant in getDetailsList(
-              cardData.creditCollection.creditData.nodes
+              cardData.creditCollection.creditData.nodes,
             ).applicant"
             :key="applicant"
           >
