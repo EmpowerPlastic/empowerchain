@@ -12,7 +12,6 @@ const defaultImage = AuctionCard;
 const handleClick = () => {
   emits("click");
 };
-//Verify checking
 const handleError = (event: Event) => {
   const img = event.target as HTMLImageElement;
 
