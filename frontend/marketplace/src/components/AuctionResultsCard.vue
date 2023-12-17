@@ -2,6 +2,7 @@
 import type { MarketplaceListing } from "@/types/GraphqlSchema";
 import router from "@/router";
 import auctionCard from "@/assets/auctionCard.png";
+import type { MaterialProperty } from "@/types/GraphqlSchema";
 import {
   getDetailsList,
   prettifyCardProperty,
@@ -21,10 +22,7 @@ export interface AuctionResultsCardProps {
 interface CardDetailsList {
   applicant: string[];
   location: string[];
-  material: {
-    key: string;
-    value: string;
-  }[][];
+  material: MaterialProperty[][];
   volume: number;
   thumbnailUrl: string;
   image: string[];
