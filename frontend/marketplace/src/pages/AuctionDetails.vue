@@ -1,16 +1,39 @@
 <script setup lang="ts">
+import type { MaterialProperty } from "@/types/GraphqlSchema";
 import BuyCredits from "@/components/BuyCredits.vue";
 import CustomGoogleMap from "@/components/CustomGoogleMap.vue";
 import CustomSpinner from "@/components/CustomSpinner.vue";
 import ImageCarousel from "@/components/ImageCarousel.vue";
 import ImageGallery from "@/components/ImageGallery.vue";
 import ProjectDetailContent from "@/components/ProjectDetailContent.vue";
+import ProjectDetailMaterial from "@/components/ProjectDetailMaterial.vue";
 import { useRoute } from "@/router";
-import { convertIPFStoHTTPS } from "@/utils/utils";
+import {
+  convertIPFStoHTTPS,
+  uniqueMaterials,
+  findPlasticTypeInMaterial,
+} from "@/utils/utils";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { onMounted, ref, watch } from "vue";
 import { toast } from "vue3-toastify";
+
+interface AuctionDetails {
+  applicant: string;
+  location: string[];
+  material: MaterialProperty[][];
+  volume: number;
+  image: string[];
+  file: {
+    url: string;
+    name: string;
+  }[];
+  locationPointers: {
+    lat: number;
+    lng: number;
+  }[];
+  registrationDate: string;
+}
 
 const router = useRoute();
 
@@ -19,10 +42,10 @@ const orderHistory = ref();
 const showSpinner = ref(true);
 const denom = ref("");
 const owner = ref("");
-const auctionDetails = ref({
+const auctionDetails = ref<AuctionDetails>({
   applicant: "",
   location: [""],
-  material: [""],
+  material: [],
   volume: 0,
   image: [""],
   file: [{ url: "", name: "" }],
@@ -33,17 +56,17 @@ const pricePerCreditDenom = ref("");
 const plasticType = ref("");
 
 const getDetailsList = (data: any, materialVolume: number) => {
-  let applicantArray: string[] = [];
-  let locationArray: string[] = [];
-  let locationPointersArray: {
+  const applicantArray: string[] = [];
+  const locationArray: string[] = [];
+  const locationPointersArray: {
     lat: number;
     lng: number;
   }[] = [];
-  let imageArray: string[] = [];
-  let fileArray: { url: string; name: string }[] = [];
-  let materialArray: { key: string; value: string }[] = [];
-  let volume = materialVolume;
-  let registrationDateArray: string[] = [];
+  const imageArray: string[] = [];
+  const fileArray: { url: string; name: string }[] = [];
+  const materialArray: MaterialProperty[][] = [];
+  const volume = materialVolume;
+  const registrationDateArray: string[] = [];
 
   data?.map((item: any) => {
     item.applicantDataByCreditDataId.nodes.map((node: any) => {
@@ -53,9 +76,9 @@ const getDetailsList = (data: any, materialVolume: number) => {
     item.eventData.nodes.map((node: any) => {
       locationArray.push(node.country);
       locationPointersArray.push({ lat: node.latitude, lng: node.longitude });
-      materialArray.push(...node.material.nodes);
+      materialArray.push(node.material.nodes);
       registrationDateArray.push(
-        new Date(node.registrationDate).toLocaleDateString()
+        new Date(node.registrationDate).toLocaleDateString(),
       );
     });
 
@@ -69,18 +92,14 @@ const getDetailsList = (data: any, materialVolume: number) => {
       });
     });
   });
-
-  const uniqueMaterialArray = materialArray.filter(
-    (obj, index, self) =>
-      index ===
-      self.findIndex((o) => o.key === obj.key && o.value === obj.value)
-  );
+  const uniqueMaterialArray = uniqueMaterials(materialArray);
   plasticType.value =
-    materialArray.find((item) => item.key === "plasticType")?.value || "";
+    findPlasticTypeInMaterial(uniqueMaterialArray[0])?.value ?? "";
+
   return {
     applicant: applicantArray[0],
     location: Array.from(new Set(locationArray)),
-    material: uniqueMaterialArray.map((item) => item.value),
+    material: uniqueMaterialArray,
     volume: volume,
     image: imageArray,
     file: fileArray,
@@ -172,11 +191,11 @@ const getAuctionDetails = (id: string | string[]) => {
     auctionDetails.value = getDetailsList(
       value.marketplaceListings?.nodes[0].creditCollection.creditData.nodes,
       parseInt(
-        value.marketplaceListings?.nodes[0].creditCollection.activeAmount
+        value.marketplaceListings?.nodes[0].creditCollection.activeAmount,
       ) +
         parseInt(
-          value.marketplaceListings?.nodes[0].creditCollection.retiredAmount
-        )
+          value.marketplaceListings?.nodes[0].creditCollection.retiredAmount,
+        ),
     );
     pricePerCreditDenom.value =
       value.marketplaceListings?.nodes[0].pricePerCreditDenom;
@@ -277,10 +296,9 @@ onMounted(() => {
               .creditType
           "
         />
-        <ProjectDetailContent
+        <ProjectDetailMaterial
           label="Material"
-          :value="auctionDetails?.material"
-          list
+          :materials="auctionDetails?.material"
         />
         <ProjectDetailContent label="Kgs per credit" value="1" />
         <ProjectDetailContent

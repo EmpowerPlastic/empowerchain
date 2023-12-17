@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CustomSpinner from "@/components/CustomSpinner.vue";
 import AuctionSection from "@/components/AuctionSection.vue";
 import HomePageHeroBanner from "@/components/HomePageHeroBanner.vue";
 import { DEFAULT_CREDIT_TYPE } from "@/config/config";
@@ -73,7 +74,7 @@ const handleSearch = (filterValues: any) => {
     <CustomSpinner :visible="showSpinner" />
     <template v-if="!showSpinner">
       <AuctionSection
-        :auction-array="data?.result?.marketplaceListings?.nodes"
+        :auction-array="data?.result?.marketplaceListings?.nodes ?? []"
         :filter-values="filter"
       />
     </template>
