@@ -48,7 +48,7 @@ pub enum ExecuteMsg {
     ReleaseFrozenCredits {
         owner: Addr,
         denom: String,
-        number_of_credits_to_release: u64, // 0 means all
+        number_of_credits_to_release: u64,
         buyer: Addr,
     },
     EditFeeSplitConfig {

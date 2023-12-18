@@ -1,7 +1,7 @@
 use cosmos_sdk_proto::cosmos::authz::v1beta1::MsgExec;
 use cosmos_sdk_proto::traits::{Message, TypeUrl};
 use cosmos_sdk_proto::traits::MessageExt;
-use cosmwasm_std::{entry_point, Binary, DepsMut, Env, MessageInfo, Response, Uint64, Coin, CosmosMsg, BankMsg, Addr, Decimal, Timestamp, StdError};
+use cosmwasm_std::{entry_point, Binary, DepsMut, Env, MessageInfo, Response, Uint64, Coin, CosmosMsg, BankMsg, Addr, Decimal, Timestamp, StdError, Uint128};
 use fee_splitter::{edit_fee_split_config, get_fee_split, Share};
 use crate::{msg::ExecuteMsg, error::ContractError, state::{LISTINGS, Listing}};
 use crate::error::ContractError::FeeSplitError;
@@ -361,7 +361,7 @@ fn execute_release_frozen_credits(
         return Err(ContractError::ZeroCredits {});
     }
 
-    let mut listing = LISTINGS.load(deps.storage, (Addr::unchecked(owner.clone()), denom.clone())).map_err(|_| ContractError::ListingNotFound {})?;
+    let listing = LISTINGS.load(deps.storage, (Addr::unchecked(owner.clone()), denom.clone())).map_err(|_| ContractError::ListingNotFound {})?;
     let mut freeze = freezes().may_load(deps.storage, (Addr::unchecked(owner.clone()), denom.clone(), buyer.clone()))?.ok_or(ContractError::FreezeNotFound {})?;
 
     // Check if timed out
@@ -378,6 +378,13 @@ fn execute_release_frozen_credits(
         return Err(ContractError::NotEnoughCredits {});
     }
 
+    freeze.number_of_credits = freeze.number_of_credits.checked_sub(number_of_credits_to_release.into()).unwrap();
+    if freeze.number_of_credits.is_zero() {
+        freezes().remove(deps.storage, (Addr::unchecked(owner.clone()), denom.clone(), buyer.clone()))?;
+    } else {
+        freezes().save(deps.storage, (Addr::unchecked(owner.clone()), denom.clone(), buyer.clone()), &freeze)?;
+    }
+
     // We need the original_price to calculate the fee split
     let original_price = listing.price_per_credit.amount.checked_mul(number_of_credits_to_release.into()).unwrap();
     let original_price_as_coin = Coin {
@@ -385,16 +392,19 @@ fn execute_release_frozen_credits(
         amount: original_price,
     };
     let (fee_split_msgs, _, fee_amount) = get_fee_split(deps.storage, original_price_as_coin).unwrap();
-    if info.funds.len() != 1 || info.funds[0].denom != listing.price_per_credit.denom || info.funds[0].amount < fee_amount.amount {
-        return Err(ContractError::NotEnoughFunds {});
+    if fee_amount.amount > Uint128::from(0u128) {
+        if info.funds.len() != 1 || info.funds[0].denom != listing.price_per_credit.denom || info.funds[0].amount < fee_amount.amount {
+            return Err(ContractError::NotEnoughFunds {});
+        }
     }
-    if info.funds[0].amount > fee_amount.amount { // We can skip the denom check here because it is triggered in the previous if statement
+
+    if info.funds.len() > 0 && info.funds[0].amount > fee_amount.amount { // We can skip the denom check here because it is triggered in the previous if statement
         return Err(ContractError::TooMuchFunds {});
     }
 
     let transfer_credits_msg = create_transfer_credits_from_contract_msg(
         env,
-        info.sender.to_string(),
+        freeze.buyer.to_string(),
         listing.denom.clone(),
         number_of_credits_to_release,
     );
@@ -1969,11 +1979,192 @@ mod tests {
     }
 
     mod release_frozen_credits_test {
-        // TODO Test happy path release frozen credits (make sure fee is taken)
-        // TODO Test release all credits (should delete the freeze)
+        use cosmos_sdk_proto::traits::TypeUrl;
+        use cosmwasm_std::{Addr, BankMsg, Coin, coins, CosmosMsg, Decimal, Order, Uint128, Uint64};
+        use cosmwasm_std::testing::{MOCK_CONTRACT_ADDR, mock_dependencies, mock_env, mock_info};
+        use prost::Message;
+        use fee_splitter::Share;
+        use crate::execute::{execute, MsgTransferCredits};
+        use crate::instantiate;
+        use crate::msg::{ExecuteMsg, InstantiateMsg};
+        use crate::state::{Freeze, freezes};
+
         // TODO Test invalid params (number = 0, number > freeze)
         // TODO Test release timed out credits (should fail)
         // TODO Test release more credits than available (should fail)
+
+        #[test]
+        fn test_release_frozen_credits_happy_path() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            let operator_info = mock_info("operator", &[]);
+            let buyer_info = mock_info("buyer", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+                operator: Option::from(operator_info.clone().sender),
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let env = mock_env();
+            let freeze_message = ExecuteMsg::FreezeCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_freeze: 15u64,
+                buyer: buyer_info.sender.clone(),
+                timeout_unix_timestamp: env.block.time.seconds() + 1000u64,
+            };
+            execute(deps.as_mut(), mock_env(), operator_info.clone(), freeze_message).unwrap();
+
+            let release_message = ExecuteMsg::ReleaseFrozenCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_release: 10u64,
+                buyer: buyer_info.sender.clone(),
+            };
+            let res = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_message).unwrap();
+            assert_eq!(res.attributes.len(), 6);
+            assert_eq!(res.messages.len(), 1);
+
+            if let CosmosMsg::Stargate { type_url, value } = &res.messages[0].msg {
+                assert_eq!(type_url, MsgTransferCredits::TYPE_URL);
+
+                let transfer_msg = MsgTransferCredits::decode(value.as_slice()).unwrap();
+                assert_eq!(transfer_msg.from, MOCK_CONTRACT_ADDR.to_string());
+                assert_eq!(transfer_msg.to, buyer_info.sender.to_string());
+                assert_eq!(transfer_msg.denom, "pcrd");
+                assert_eq!(transfer_msg.amount, 10);
+                assert_eq!(transfer_msg.retire, false);
+            } else {
+                panic!("Expected Stargate message");
+            }
+
+            let listing = crate::state::LISTINGS.load(deps.as_ref().storage, (creator_info.sender.clone(), "pcrd".to_string())).unwrap();
+            assert_eq!(listing.number_of_credits, Uint64::from(27u64)); // 10 less, still
+
+            let freeze = crate::state::freezes().load(deps.as_ref().storage, (creator_info.sender.clone(), "pcrd".to_string(), Addr::unchecked("buyer"))).unwrap();
+            assert_eq!(freeze.number_of_credits, Uint64::from(5u64)); // 5 less now
+        }
+
+        #[test]
+        fn test_release_frozen_credits_happy_path_all_credits() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            let operator_info = mock_info("operator", &[]);
+            let buyer_info = mock_info("buyer", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+                operator: Option::from(operator_info.clone().sender),
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let env = mock_env();
+            let freeze_message = ExecuteMsg::FreezeCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_freeze: 15u64,
+                buyer: buyer_info.sender.clone(),
+                timeout_unix_timestamp: env.block.time.seconds() + 1000u64,
+            };
+            execute(deps.as_mut(), mock_env(), operator_info.clone(), freeze_message).unwrap();
+
+            let release_message = ExecuteMsg::ReleaseFrozenCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_release: 15u64,
+                buyer: buyer_info.sender.clone(),
+            };
+            let res = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_message).unwrap();
+            assert_eq!(res.attributes.len(), 6);
+            assert_eq!(res.messages.len(), 1);
+
+            let freezes_after = freezes().range(deps.as_ref().storage, None, None, Order::Ascending)
+                .map(|item| item.unwrap().1)
+                .collect::<Vec<Freeze>>();
+            assert_eq!(freezes_after.len(), 0); // It should have been deleted
+        }
+
+        #[test]
+        fn test_release_frozen_credits_happy_path_with_fee_split() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            let operator_info = mock_info("operator", &[]);
+            let buyer_info = mock_info("buyer", &[]);
+            let dev_share = Share {
+                address: "dev".to_string(),
+                percentage: Decimal::percent(90),
+            };
+            let user_share = Share {
+                address: "user".to_string(),
+                percentage: Decimal::percent(10),
+            };
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::permille(5), shares: vec![dev_share, user_share] }).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+                operator: Option::from(operator_info.clone().sender),
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let env = mock_env();
+            let freeze_message = ExecuteMsg::FreezeCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_freeze: 15u64,
+                buyer: buyer_info.sender.clone(),
+                timeout_unix_timestamp: env.block.time.seconds() + 1000u64,
+            };
+            execute(deps.as_mut(), mock_env(), operator_info.clone(), freeze_message).unwrap();
+
+            let release_message = ExecuteMsg::ReleaseFrozenCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_release: 10u64,
+                buyer: buyer_info.sender.clone(),
+            };
+            let operator_info = mock_info("operator", &coins(66, "token"));
+            let res = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_message).unwrap();
+            assert_eq!(res.attributes.len(), 6);
+            assert_eq!(res.messages.len(), 3);
+
+
+            if let CosmosMsg::Bank(BankMsg::Send { to_address, amount }) = &res.messages[1].msg {
+                assert_eq!(to_address, &Addr::unchecked("dev".to_string()));
+                assert_eq!(amount.len(), 1);
+                assert_eq!(amount[0].denom, "token");
+                assert_eq!(amount[0].amount, Uint128::from(60u128));
+            } else {
+                panic!("Expected Bank message");
+            }
+
+            if let CosmosMsg::Bank(BankMsg::Send { to_address, amount }) = &res.messages[2].msg {
+                assert_eq!(to_address, &Addr::unchecked("user".to_string()));
+                assert_eq!(amount.len(), 1);
+                assert_eq!(amount[0].denom, "token");
+                assert_eq!(amount[0].amount, Uint128::from(6u128));
+            } else {
+                panic!("Expected Bank message");
+            }
+        }
+
     }
 
     mod edit_fee_split_config_tests {
