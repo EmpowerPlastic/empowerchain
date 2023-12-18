@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { GOOGLE_MAPS_API_KEY } from "@/config/config";
-import { GoogleMap, Marker } from "vue3-google-map";
+import { GoogleMap, Marker, MarkerCluster } from "vue3-google-map";
 import { ref, watch } from "vue";
 
 export interface CustomGoogleMapProps {
@@ -48,7 +48,7 @@ watch(
   () => props.locations,
   () => {
     getMapCenter();
-  }
+  },
 );
 </script>
 <template>

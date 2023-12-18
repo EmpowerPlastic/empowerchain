@@ -1,3 +1,4 @@
+const WEB_ENDPOINT = import.meta.env.VITE_WEB_ENDPOINT;
 const API_ENDPOINT = import.meta.env.VITE_API_ENDPOINT;
 const HTTPS_FILE_URL = import.meta.env.VITE_HTTPS_FILE_URL;
 const RPC_ENDPOINT = import.meta.env.VITE_RPC_ENDPOINT;
@@ -12,7 +13,11 @@ const ENVIRONMENT = import.meta.env.VITE_ENVIRONMENT;
 const ROLLBAR_ACCESS_TOKEN = import.meta.env.VITE_ROLLBAR_ACCESS_TOKEN;
 const LOGTO_ENDPOINT = import.meta.env.VITE_LOGTO_ENDPOINT;
 const LOGTO_APP_ID = import.meta.env.VITE_LOGTO_APP_ID;
+const PC_BACKEND_ENDPOINT = import.meta.env.VITE_PC_BACKEND_ENDPOINT;
+const PC_BACKEND_ENDPOINT_API =
+  PC_BACKEND_ENDPOINT + "/api/v1/pc-backend-public";
 export {
+  WEB_ENDPOINT,
   API_ENDPOINT,
   HTTPS_FILE_URL,
   RPC_ENDPOINT,
@@ -27,4 +32,6 @@ export {
   ROLLBAR_ACCESS_TOKEN,
   LOGTO_ENDPOINT,
   LOGTO_APP_ID,
+  PC_BACKEND_ENDPOINT,
+  PC_BACKEND_ENDPOINT_API,
 };

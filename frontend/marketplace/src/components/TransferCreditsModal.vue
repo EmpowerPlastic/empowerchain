@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import InputWithLabel from "@/components/InputWithLabel.vue";
+import { CHAIN_ID, RPC_ENDPOINT } from "@/config/config";
+import { getWallet, resolveSdkError } from "@/utils/wallet-utils";
 import {
   empowerchain,
   getSigningTM37EmpowerchainClient,
 } from "@empower-plastic/empowerjs";
-import { CHAIN_ID, RPC_ENDPOINT } from "@/config/config";
+import { ref } from "vue";
 import { toast } from "vue3-toastify";
-import { getWallet } from "@/utils/wallet-utils";
-import { resolveSdkError } from "@/utils/wallet-utils";
 
 const { transferCredits } =
   empowerchain.plasticcredit.MessageComposer.withTypeUrl;
@@ -56,7 +55,7 @@ const handleTransferCredits = async () => {
     const response = await chainClient.signAndBroadcast(
       props.address,
       [transferCreditsMsg],
-      fee
+      fee,
     );
     if (response && !response.code) {
       loading.value = false;

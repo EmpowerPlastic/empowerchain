@@ -189,6 +189,11 @@ interface Message {
   txHash: string;
 }
 
+interface MaterialProperty {
+  key: string;
+  value: string;
+}
+
 export type {
   Block,
   Transaction,
@@ -210,4 +215,5 @@ export type {
   MaterialData,
   MetadataUri,
   Message,
+  MaterialProperty,
 };

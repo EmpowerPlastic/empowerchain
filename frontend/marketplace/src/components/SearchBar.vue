@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, watchEffect } from "vue";
+import { ref, watch } from "vue";
 import SearchFilterSelect from "@/components/SearchFilterSelect.vue";
 import SearchFilterRange from "@/components/SearchFilterRange.vue";
 import { useQuery } from "@vue/apollo-composable";
@@ -7,7 +7,7 @@ import gql from "graphql-tag";
 import { DEFAULT_CREDIT_TYPE } from "@/config/config";
 
 export interface SearchBarProps {
-  filterValues?: {
+  filterValuesProps?: {
     volume: any[];
     location: string[];
     registrationDate: any[];
@@ -30,8 +30,8 @@ const filterValues = ref({
 });
 
 watch(props, () => {
-  if (Object.keys(props?.filterValues as any).length !== 0) {
-    filterValues.value = props.filterValues as any;
+  if (Object.keys(props?.filterValuesProps as any).length !== 0) {
+    filterValues.value = props.filterValuesProps as any;
   }
 });
 
@@ -87,7 +87,15 @@ const applicantData: any = useQuery(gql`
           <p class="text-title14 text-dropDownText">Location</p>
           <SearchFilterSelect
             select
-            :options="Array.from(new Set(locationData?.result.value?.countries?.nodes.map((item: any) => item.id)))"
+            :options="
+              Array.from(
+                new Set(
+                  locationData?.result.value?.countries?.nodes.map(
+                    (item: any) => item.id,
+                  ),
+                ),
+              )
+            "
             v-model="filterValues.location"
             placeholder="Select Location"
           />
@@ -110,9 +118,17 @@ const applicantData: any = useQuery(gql`
           />
         </div>
         <div>
-          <p class="filter-subtitle">COLLECTOR ORGANISATION</p>
+          <p class="filter-subtitle">COLLECTION ORGANISATION</p>
           <SearchFilterSelect
-            :options="Array.from(new Set(applicantData?.result.value?.applicantData?.nodes.map((item: any)=>item.name)))"
+            :options="
+              Array.from(
+                new Set(
+                  applicantData?.result.value?.applicantData?.nodes.map(
+                    (item: any) => item.name,
+                  ),
+                ),
+              )
+            "
             v-model="filterValues.organization"
             placeholder="Select collector"
           />
@@ -170,7 +186,15 @@ const applicantData: any = useQuery(gql`
       <div class="filter-box">
         <p class="filter-subtitle">LOCATION</p>
         <SearchFilterSelect
-          :options="Array.from(new Set(locationData?.result.value?.countries?.nodes.map((item: any)=>item.id)))"
+          :options="
+            Array.from(
+              new Set(
+                locationData?.result.value?.countries?.nodes.map(
+                  (item: any) => item.id,
+                ),
+              ),
+            )
+          "
           v-model="filterValues.location"
           placeholder="Select Location"
         />
@@ -194,9 +218,17 @@ const applicantData: any = useQuery(gql`
         />
       </div>
       <div class="filter-box">
-        <p class="filter-subtitle">COLLECTOR ORGANISATION</p>
+        <p class="filter-subtitle">COLLECTION ORGANISATION</p>
         <SearchFilterSelect
-          :options="Array.from(new Set(applicantData?.result.value?.applicantData?.nodes.map((item: any)=>item.name)))"
+          :options="
+            Array.from(
+              new Set(
+                applicantData?.result.value?.applicantData?.nodes.map(
+                  (item: any) => item.name,
+                ),
+              ),
+            )
+          "
           v-model="filterValues.organization"
           placeholder="Select collector"
         />

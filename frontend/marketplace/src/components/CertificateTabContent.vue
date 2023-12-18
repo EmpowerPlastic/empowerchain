@@ -6,23 +6,31 @@ import CertificateCard from "@/components/CertificateCard.vue";
 import { CHAIN_ID } from "@/config/config";
 import { toast } from "vue3-toastify";
 import { useQuery } from "@vue/apollo-composable";
+import CustomSpinner from "@/components/CustomSpinner.vue";
 import gql from "graphql-tag";
 import CustomAlert from "@/components/CustomAlert.vue";
 import { walletConnected, getWallet } from "@/utils/wallet-utils";
+import { useRouter } from "@/router";
 
 const pageNumber = ref(1);
 const itemsPerPage = ref(5);
 const searchTerm = ref("");
 const data = ref();
 const showSpinner = ref(true);
+const router = useRouter();
+
+const viewCertificate = (certificateId: string) => {
+  const url = `${window.location.origin}/certificate/${certificateId}`;
+  window.open(url, "_blank");
+};
 
 const handlePageChange = () => {
   getCertificatesData();
 };
-const handleSearch = () => {
-  pageNumber.value = 1;
-  getCertificatesData();
-};
+// const handleSearch = () => {
+//   pageNumber.value = 1;
+//   getCertificatesData();
+// };
 
 const getCertificatesData = async () => {
   try {
@@ -33,8 +41,8 @@ const getCertificatesData = async () => {
       const query = `query {
     creditOffsetCertificates(
     first:${itemsPerPage.value},offset:${
-        (pageNumber.value - 1) * itemsPerPage.value
-      }
+      (pageNumber.value - 1) * itemsPerPage.value
+    }
     filter: {
       wallet: {
         address: { equalTo: "${walletAddress}" }
@@ -46,6 +54,7 @@ const getCertificatesData = async () => {
     nodes {
       amount
       denom
+      id
     }
   }
   }
@@ -59,11 +68,9 @@ const getCertificatesData = async () => {
 
 const loadQueryData = (query: string) => {
   showSpinner.value = true;
-  const { result, loading, error } = useQuery(
-    gql`
-      ${query}
-    `
-  );
+  const { result, loading, error } = useQuery(gql`
+    ${query}
+  `);
   data.value = { result, loading, error };
   showSpinner.value = false;
 };
@@ -92,7 +99,10 @@ onMounted(() => {
         v-for="certificate in data?.result?.creditOffsetCertificates?.nodes"
         :key="certificate.id"
       >
-        <CertificateCard :card-data="certificate" />
+        <CertificateCard
+          :card-data="certificate"
+          @viewCertificate="viewCertificate"
+        />
       </div>
       <div class="flex justify-center md:justify-end my-10">
         <CustomPagination
