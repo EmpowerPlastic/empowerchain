@@ -1980,7 +1980,7 @@ mod tests {
 
     mod release_frozen_credits_test {
         use cosmos_sdk_proto::traits::TypeUrl;
-        use cosmwasm_std::{Addr, BankMsg, Coin, coins, CosmosMsg, Decimal, Order, Uint128, Uint64};
+        use cosmwasm_std::{Addr, BankMsg, Coin, coins, CosmosMsg, Decimal, Order, Timestamp, Uint128, Uint64};
         use cosmwasm_std::testing::{MOCK_CONTRACT_ADDR, mock_dependencies, mock_env, mock_info};
         use prost::Message;
         use fee_splitter::Share;
@@ -1988,10 +1988,6 @@ mod tests {
         use crate::instantiate;
         use crate::msg::{ExecuteMsg, InstantiateMsg};
         use crate::state::{Freeze, freezes};
-
-        // TODO Test invalid params (number = 0, number > freeze)
-        // TODO Test release timed out credits (should fail)
-        // TODO Test release more credits than available (should fail)
 
         #[test]
         fn test_release_frozen_credits_happy_path() {
@@ -2165,6 +2161,248 @@ mod tests {
             }
         }
 
+        #[test]
+        fn test_release_credits_with_not_enough_funds() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            let operator_info = mock_info("operator", &[]);
+            let buyer_info = mock_info("buyer", &[]);
+            let dev_share = Share {
+                address: "dev".to_string(),
+                percentage: Decimal::percent(90),
+            };
+            let user_share = Share {
+                address: "user".to_string(),
+                percentage: Decimal::percent(10),
+            };
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::permille(5), shares: vec![dev_share, user_share] }).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+                operator: Option::from(operator_info.clone().sender),
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let env = mock_env();
+            let freeze_message = ExecuteMsg::FreezeCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_freeze: 15u64,
+                buyer: buyer_info.sender.clone(),
+                timeout_unix_timestamp: env.block.time.seconds() + 1000u64,
+            };
+            execute(deps.as_mut(), mock_env(), operator_info.clone(), freeze_message).unwrap();
+
+            let release_message = ExecuteMsg::ReleaseFrozenCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_release: 10u64,
+                buyer: buyer_info.sender.clone(),
+            };
+            let operator_info = mock_info("operator", &coins(65, "token"));
+            let err = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_message).unwrap_err();
+            assert_eq!(err, crate::error::ContractError::NotEnoughFunds {});
+        }
+
+        #[test]
+        fn test_release_credits_with_too_much_funds() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            let operator_info = mock_info("operator", &[]);
+            let buyer_info = mock_info("buyer", &[]);
+            let dev_share = Share {
+                address: "dev".to_string(),
+                percentage: Decimal::percent(90),
+            };
+            let user_share = Share {
+                address: "user".to_string(),
+                percentage: Decimal::percent(10),
+            };
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::permille(5), shares: vec![dev_share, user_share] }).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+                operator: Option::from(operator_info.clone().sender),
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let env = mock_env();
+            let freeze_message = ExecuteMsg::FreezeCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_freeze: 15u64,
+                buyer: buyer_info.sender.clone(),
+                timeout_unix_timestamp: env.block.time.seconds() + 1000u64,
+            };
+            execute(deps.as_mut(), mock_env(), operator_info.clone(), freeze_message).unwrap();
+
+            let release_message = ExecuteMsg::ReleaseFrozenCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_release: 10u64,
+                buyer: buyer_info.sender.clone(),
+            };
+            let operator_info = mock_info("operator", &coins(67, "token"));
+            let err = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_message).unwrap_err();
+            assert_eq!(err, crate::error::ContractError::TooMuchFunds {});
+        }
+
+
+        #[test]
+        fn test_invalid_params() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            let operator_info = mock_info("operator", &[]);
+            let buyer_info = mock_info("buyer", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+                operator: Option::from(operator_info.clone().sender),
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let env = mock_env();
+            let freeze_message = ExecuteMsg::FreezeCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_freeze: 15u64,
+                buyer: buyer_info.sender.clone(),
+                timeout_unix_timestamp: env.block.time.seconds() + 1000u64,
+            };
+            execute(deps.as_mut(), mock_env(), operator_info.clone(), freeze_message).unwrap();
+
+            let release_message_zero = ExecuteMsg::ReleaseFrozenCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_release: 0u64,
+                buyer: buyer_info.sender.clone(),
+            };
+            let err = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_message_zero).unwrap_err();
+            assert_eq!(err, crate::error::ContractError::ZeroCredits {});
+
+            let release_message_too_many = ExecuteMsg::ReleaseFrozenCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_release: 16u64,
+                buyer: buyer_info.sender.clone(),
+            };
+            let err = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_message_too_many).unwrap_err();
+            assert_eq!(err, crate::error::ContractError::NotEnoughCredits {});
+
+            let release_freeze_not_found = ExecuteMsg::ReleaseFrozenCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_release: 10u64,
+                buyer: Addr::unchecked("not_found"),
+            };
+            let err = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_freeze_not_found).unwrap_err();
+            assert_eq!(err, crate::error::ContractError::FreezeNotFound {});
+
+            let release_listing_not_found = ExecuteMsg::ReleaseFrozenCredits {
+                owner: creator_info.sender.clone(),
+                denom: "not_found".to_string(),
+                number_of_credits_to_release: 10u64,
+                buyer: buyer_info.sender.clone(),
+            };
+            let err = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_listing_not_found).unwrap_err();
+            assert_eq!(err, crate::error::ContractError::ListingNotFound {});
+        }
+
+        #[test]
+        fn test_release_credits_unauthorized() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            let operator_info = mock_info("operator", &[]);
+            let buyer_info = mock_info("buyer", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+                operator: Option::from(operator_info.clone().sender),
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let env = mock_env();
+            let freeze_message = ExecuteMsg::FreezeCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_freeze: 15u64,
+                buyer: buyer_info.sender.clone(),
+                timeout_unix_timestamp: env.block.time.seconds() + 1000u64,
+            };
+            execute(deps.as_mut(), mock_env(), operator_info.clone(), freeze_message).unwrap();
+
+            let release_message = ExecuteMsg::ReleaseFrozenCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_release: 10u64,
+                buyer: buyer_info.sender.clone(),
+            };
+            let non_operator_info = mock_info("non_operator", &[]);
+            let err = execute(deps.as_mut(), mock_env(), non_operator_info.clone(), release_message).unwrap_err();
+            assert_eq!(err, crate::error::ContractError::Unauthorized {});
+        }
+
+        #[test]
+        fn test_release_timed_out_freeze() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            let operator_info = mock_info("operator", &[]);
+            let buyer_info = mock_info("buyer", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+                operator: Option::from(operator_info.clone().sender),
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let mut env = mock_env();
+            let freeze_message = ExecuteMsg::FreezeCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_freeze: 15u64,
+                buyer: buyer_info.sender.clone(),
+                timeout_unix_timestamp: env.block.time.seconds() + 1000u64,
+            };
+            execute(deps.as_mut(), mock_env(), operator_info.clone(), freeze_message).unwrap();
+
+            env.block.time = Timestamp::from_seconds(env.block.time.seconds() + 1001u64); // Set the block time to a future timestamp
+            let release_message = ExecuteMsg::ReleaseFrozenCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_release: 10u64,
+                buyer: buyer_info.sender.clone(),
+            };
+            let err = execute(deps.as_mut(), env, operator_info.clone(), release_message).unwrap_err();
+            assert_eq!(err, crate::error::ContractError::TimedOut {});
+        }
     }
 
     mod edit_fee_split_config_tests {
