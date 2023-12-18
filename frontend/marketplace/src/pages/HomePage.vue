@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import SearchBar from "@/components/SearchBar.vue";
+import CustomSpinner from "@/components/CustomSpinner.vue";
 import AuctionSection from "@/components/AuctionSection.vue";
 import HomePageHeroBanner from "@/components/HomePageHeroBanner.vue";
+import { DEFAULT_CREDIT_TYPE } from "@/config/config";
+import { ListingsQueryBuilder } from "@/utils/query-builder";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { onMounted, ref } from "vue";
-import { ListingsQueryBuilder } from "@/utils/query-builder";
-import { DEFAULT_CREDIT_TYPE } from "@/config/config";
 
 const queryBuilder = new ListingsQueryBuilder();
 const data = ref();
@@ -22,11 +22,9 @@ onMounted(() => {
 
 const loadQueryData = (query: string) => {
   showSpinner.value = true;
-  const { result, loading, error } = useQuery(
-    gql`
-      ${query}
-    `
-  );
+  const { result, loading, error } = useQuery(gql`
+    ${query}
+  `);
   data.value = { result, loading, error };
   showSpinner.value = false;
 };
@@ -49,7 +47,7 @@ const handleSearch = (filterValues: any) => {
   ) {
     queryBuilder.addRegistrationDate(
       filterValues.registrationDate[0],
-      filterValues.registrationDate[1]
+      filterValues.registrationDate[1],
     );
   }
   if (filterValues.organization.length > 0) {
@@ -59,7 +57,7 @@ const handleSearch = (filterValues: any) => {
   if (filterValues.price && (filterValues.price[0] || filterValues.price[1])) {
     queryBuilder.addPricePerCredit(
       filterValues.price[0],
-      filterValues.price[1]
+      filterValues.price[1],
     );
   }
   queryBuilder.addPagination(5, 0);
@@ -71,12 +69,12 @@ const handleSearch = (filterValues: any) => {
 </script>
 <template>
   <div class="p-5 md:px-[10%]">
-    <SearchBar @search-click="handleSearch" />
+    <!-- <SearchBar @search-click="handleSearch" /> -->
     <HomePageHeroBanner />
     <CustomSpinner :visible="showSpinner" />
     <template v-if="!showSpinner">
       <AuctionSection
-        :auction-array="data?.result?.marketplaceListings?.nodes"
+        :auction-array="data?.result?.marketplaceListings?.nodes ?? []"
         :filter-values="filter"
       />
     </template>

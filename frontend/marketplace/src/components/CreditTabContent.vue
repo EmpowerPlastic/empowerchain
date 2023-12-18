@@ -35,8 +35,8 @@ const getCreditsData = async () => {
     query {
     creditBalances(
     first:${itemsPerPage.value},offset:${
-        (pageNumber.value - 1) * itemsPerPage.value
-      }
+      (pageNumber.value - 1) * itemsPerPage.value
+    }
     filter:{
       wallet:{
         address:{equalTo:"${walletAddress}"}
@@ -93,11 +93,9 @@ const getCreditsData = async () => {
 
 const loadQueryData = (query: string) => {
   showSpinner.value = true;
-  const { result, loading, error, refetch } = useQuery(
-    gql`
-      ${query}
-    `
-  );
+  const { result, loading, error, refetch } = useQuery(gql`
+    ${query}
+  `);
   data.value = { result, loading, error };
   showSpinner.value = false;
   setInterval(() => {

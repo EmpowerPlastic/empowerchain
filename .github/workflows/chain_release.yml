@@ -1,9 +1,11 @@
 name: Create EmpowerChain release
 
-on:
-  push:
-    tags:
-      - "v*" # Push events to matching v*
+on: 
+  workflow_dispatch:
+    inputs:
+      upgradeDir:
+        description: 'Upgrade directory name (e.g. v2)'   
+        required: true
 
 jobs:
   release:
@@ -26,4 +28,4 @@ jobs:
       - uses: "ncipollo/release-action@v1"
         with:
           artifacts: ./chain/build/*
-          bodyFile: "./chain/app/upgrades/$GITHUB_REF_NAME/RELEASE_NOTES.md"
+          bodyFile: "./chain/app/upgrades/${{ inputs.upgradeDir }}/RELEASE_NOTES.md"

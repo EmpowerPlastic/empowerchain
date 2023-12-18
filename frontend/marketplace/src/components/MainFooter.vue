@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { toast } from "vue3-toastify";
-import { useRoute } from "vue-router";
+import { useRoute } from "@/router";
 
 const router = useRoute();
 </script>

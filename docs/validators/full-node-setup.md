@@ -204,7 +204,7 @@ There are three main ways to sync a node on Empowerchain: from scratch, state sy
 
 | Method            	| Benefits                                          	| Drawbacks                                                                                           	| Restrictions                              	|
 |-------------------	|---------------------------------------------------	|-----------------------------------------------------------------------------------------------------	|-------------------------------------------	|
-| Sync from genesis 	| - Full network history is processed during the sync 	| - Slow<br>- Requires the most disk space<br>- Upgrades must be handled at their apprioriate block heights 	| - Required for Archive nodes                	|
+| Sync from genesis 	| - Full network history is processed during the sync 	| - Slow<br>- Requires the most disk space<br>- Upgrades must be handled at their appropriate block heights 	| - Required for Archive nodes                	|
 | State Sync        	| - Very Fast<br>- Low Disk Usage                       	| - May be reliable than snapshots                                                                        	| - Must be using the latest empowerd version 	|
 | Snapshot          	| - Reliable<br>- Moderately Fast                       	| - Slower than state sync<br>- May require more disk space than state sync                               	|                                           	|
 

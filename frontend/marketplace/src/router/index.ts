@@ -7,8 +7,14 @@ import AuctionDetails from "@/pages/AuctionDetails.vue";
 import CertificatePage from "@/pages/CertificatePage.vue";
 import CallbackView from "@/pages/CallbackView.vue";
 import UserProfile from "@/pages/UserProfile.vue";
+import AuctionPaymentSuccessful from "@/pages/AuctionPaymentSuccessful.vue";
+import AuctionPaymentCancelled from "@/pages/AuctionPaymentCancelled.vue";
 
 const router = createRouter({
+  scrollBehavior: () => {
+    // always scroll to top after navigation
+    return { top: 0 };
+  },
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
@@ -53,7 +59,23 @@ const router = createRouter({
       name: "UserProfilePage",
       component: UserProfile,
     },
+    {
+      path: "/purchase-successful",
+      name: "AuctionPaymentSuccessful",
+      component: AuctionPaymentSuccessful,
+    },
+    {
+      path: "/purchase-cancelled",
+      name: "AuctionPaymentCancelled",
+      component: AuctionPaymentCancelled,
+    },
+    // {
+    //   path: "/payment-cancelled/:id",
+    //   name: "AuctionPaymentCancelled",
+    //   component: AuctionPaymentCancelled,
+    // },
   ],
 });
 
 export default router;
+export { useRoute, useRouter } from "vue-router";

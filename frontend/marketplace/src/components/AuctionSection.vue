@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import AuctionCard from "@/components/AuctionCard.vue";
-import router from "@/router";
-
+import { computed } from "vue";
 export interface AuctionSectionProps {
   auctionArray: any[];
   filterValues: any;
@@ -9,9 +8,12 @@ export interface AuctionSectionProps {
 
 const props = defineProps<AuctionSectionProps>();
 
-const handleViewAll = () => {
+const viewAllAuctionsUrl = computed(() => {
   const params = new URLSearchParams();
   const objectOfArrays = props.filterValues;
+  if (!objectOfArrays) {
+    return "/auction";
+  }
   for (const key in objectOfArrays) {
     if (Object.prototype.hasOwnProperty.call(objectOfArrays, key)) {
       params.append(key, JSON.stringify(objectOfArrays[key]));
@@ -19,12 +21,8 @@ const handleViewAll = () => {
   }
   const queryString = params.toString();
   const url = `/auction?${queryString}`;
-  if (props.filterValues) {
-    router.push(url);
-  } else {
-    router.push("/auction");
-  }
-};
+  return url;
+});
 </script>
 <template>
   <!--Auctions section-->
@@ -38,9 +36,9 @@ const handleViewAll = () => {
         :key="auction"
         :auction-data="auction"
       />
-      <div
+      <a
         class="grid grid-rows-3 p-4 bg-greenPrimary h-[346px] md: md:min-h-[346px] md:h-full w-full rounded-sm font-Inter text-title32 text-white font-bold cursor-pointer"
-        @click="handleViewAll"
+        :href="viewAllAuctionsUrl"
       >
         <div class="row-start-2 flex flex-row justify-center items-center">
           View all auctions
@@ -48,7 +46,7 @@ const handleViewAll = () => {
         <div class="row-start-3 flex flex-row justify-end">
           <img class="h-14 self-end" src="../assets/viewAllIcon.svg" />
         </div>
-      </div>
+      </a>
     </div>
   </div>
 </template>
