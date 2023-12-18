@@ -17,7 +17,7 @@ pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> R
         ExecuteMsg::UpdateListing { denom, number_of_credits, price_per_credit } => execute_update_listing(deps, env, info, denom, number_of_credits, price_per_credit),
         ExecuteMsg::CancelListing { denom } => execute_cancel_listing(deps, env, info, denom),
         ExecuteMsg::FreezeCredits { owner, denom, number_of_credits_to_freeze, buyer, timeout_unix_timestamp } => execute_freeze_credits(deps, env, info, owner, denom, number_of_credits_to_freeze, buyer, timeout_unix_timestamp),
-        ExecuteMsg::CancelFrozenCredits { owner, denom, number_of_frozen_credits_to_cancel, buyer } => execute_cancel_frozen_credits(deps, info, owner, denom, buyer, number_of_frozen_credits_to_cancel),
+        ExecuteMsg::CancelFrozenCredits { owner, denom, number_of_frozen_credits_to_cancel, buyer } => execute_cancel_frozen_credits(deps, env, info, owner, denom, buyer, number_of_frozen_credits_to_cancel),
         ExecuteMsg::ReleaseFrozenCredits { owner, denom, number_of_credits_to_release, buyer } => execute_release_frozen_credits(deps, env, info, owner, denom, buyer, number_of_credits_to_release),
         ExecuteMsg::EditFeeSplitConfig { fee_percentage, shares } => execute_edit_fee_split_config(deps, info, fee_percentage, shares),
     }
@@ -265,7 +265,6 @@ fn execute_freeze_credits(
     }
 
     // Create or update the freeze (if it already exists we add the new ones + update the timeout)
-    // TODO: Make sure this is the logic we want. We could also consider just updating the number_of_credits to the new one (overwriting the old one)
     freezes().update(deps.storage, (Addr::unchecked(owner.clone()), denom.clone(), buyer.clone()), |freeze| -> Result<Freeze, StdError> {
         let mut number_of_credits: Uint64 = number_of_credits_to_freeze.into();
         let mut existing_timeout = 0u64;
@@ -303,6 +302,7 @@ fn execute_freeze_credits(
 
 fn execute_cancel_frozen_credits(
     deps: DepsMut,
+    env: Env,
     info: MessageInfo,
     owner: Addr,
     denom: String,
@@ -312,11 +312,12 @@ fn execute_cancel_frozen_credits(
     let mut listing = LISTINGS.load(deps.storage, (Addr::unchecked(owner.clone()), denom.clone())).map_err(|_| ContractError::ListingNotFound {})?;
     let mut freeze = freezes().may_load(deps.storage, (Addr::unchecked(owner.clone()), denom.clone(), buyer.clone()))?.ok_or(ContractError::FreezeNotFound {})?;
 
-    // TODO Add permissionless cancel of timed out freezes
-
-    // Check if the sender is either the owner or the operator
-    if info.sender != listing.owner && info.sender != listing.operator.clone().unwrap_or(Addr::unchecked("".to_string())) {
-        return Err(ContractError::Unauthorized {});
+    // Check if timed out, if not, we need to check permissions
+    if freeze.timeout.seconds() > env.block.time.seconds() {
+        // Check if the sender is either the owner or the operator
+        if info.sender != listing.owner && info.sender != listing.operator.clone().unwrap_or(Addr::unchecked("".to_string())) {
+            return Err(ContractError::Unauthorized {});
+        }
     }
 
     if freeze.number_of_credits < number_of_frozen_credits_to_cancel.into() {
@@ -1582,6 +1583,75 @@ mod tests {
         }
 
         #[test]
+        fn test_freeze_multiple_times_happy_path() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            let operator_info = mock_info("operator", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+                operator: Option::from(operator_info.clone().sender),
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let env = mock_env();
+            let freeze_message = ExecuteMsg::FreezeCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_freeze: 15u64,
+                buyer: Addr::unchecked("buyer1"),
+                timeout_unix_timestamp: env.block.time.seconds() + 1000u64,
+            };
+            let res = execute(deps.as_mut(), mock_env(), operator_info.clone(), freeze_message).unwrap();
+            assert_eq!(res.attributes.len(), 7);
+            assert_eq!(res.messages.len(), 0);
+
+            let freeze_message = ExecuteMsg::FreezeCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_freeze: 10u64,
+                buyer: Addr::unchecked("buyer1"),
+                timeout_unix_timestamp: env.block.time.seconds() + 1000u64,
+            };
+            let res = execute(deps.as_mut(), mock_env(), operator_info.clone(), freeze_message).unwrap();
+            assert_eq!(res.attributes.len(), 7);
+            assert_eq!(res.messages.len(), 0);
+
+            let freeze_message = ExecuteMsg::FreezeCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_freeze: 1u64,
+                buyer: Addr::unchecked("buyer2"),
+                timeout_unix_timestamp: env.block.time.seconds() + 1001u64,
+            };
+            let res = execute(deps.as_mut(), mock_env(), operator_info.clone(), freeze_message).unwrap();
+            assert_eq!(res.attributes.len(), 7);
+            assert_eq!(res.messages.len(), 0);
+
+            let freezes = freezes().range(deps.as_ref().storage, None, None, Order::Ascending)
+                .map(|item| item.unwrap().1)
+                .collect::<Vec<Freeze>>();
+            assert_eq!(freezes.len(), 2);
+            assert_eq!(freezes[0].buyer, Addr::unchecked("buyer1"));
+            assert_eq!(freezes[0].number_of_credits, Uint64::from(25u64));
+            assert_eq!(freezes[0].timeout, Timestamp::from_seconds(env.block.time.seconds() + 1000u64));
+
+            assert_eq!(freezes[1].buyer, Addr::unchecked("buyer2"));
+            assert_eq!(freezes[1].number_of_credits, Uint64::from(1u64));
+            assert_eq!(freezes[1].timeout, Timestamp::from_seconds(env.block.time.seconds() + 1001u64));
+
+            let listing = LISTINGS.load(deps.as_ref().storage, (creator_info.sender.clone(), "pcrd".to_string())).unwrap();
+
+            assert_eq!(listing.number_of_credits, Uint64::from(16u64)); // 26 less
+        }
+
+        #[test]
         fn test_freeze_message_with_invalid_values() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
@@ -1859,9 +1929,6 @@ mod tests {
             let err = execute(deps.as_mut(), mock_env(), operator_info.clone(), freeze_message).unwrap_err();
             assert_eq!(err, ContractError::NotEnoughCredits {});
         }
-
-        // TODO: Test update listing amount relative to freeze amounts etc
-        // TODO: Test the update logic works (multiple freezes with same buyer address) and has correct number of freezes
     }
 
     mod cancel_frozen_credits_tests {
@@ -2018,6 +2085,56 @@ mod tests {
         }
 
         #[test]
+        fn test_cancel_frozen_credits_happy_path_permissionless() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            let operator_info = mock_info("operator", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+                operator: Option::from(operator_info.clone().sender),
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let env = mock_env();
+            let freeze_message = ExecuteMsg::FreezeCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_freeze: 15u64,
+                buyer: Addr::unchecked("buyer"),
+                timeout_unix_timestamp: env.block.time.seconds() + 1000u64,
+            };
+            execute(deps.as_mut(), mock_env(), operator_info.clone(), freeze_message).unwrap();
+
+            let cancel_frozen_message = ExecuteMsg::CancelFrozenCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_frozen_credits_to_cancel: 10u64,
+                buyer: Addr::unchecked("buyer"),
+            };
+            let mut timed_out_env = mock_env();
+            timed_out_env.block.time = Timestamp::from_seconds(env.block.time.seconds() + 1001u64);
+            let permissionless_sender = mock_info("permissionless_sender", &[]);
+
+            let res = execute(deps.as_mut(), timed_out_env, permissionless_sender.clone(), cancel_frozen_message).unwrap();
+            assert_eq!(res.attributes.len(), 6);
+            assert_eq!(res.messages.len(), 0);
+
+            let listing = LISTINGS.load(deps.as_ref().storage, (creator_info.sender.clone(), "pcrd".to_string())).unwrap();
+            assert_eq!(listing.number_of_credits, Uint64::from(37u64)); // 5 less, not 15 anymore
+
+            let freeze = crate::state::freezes().load(deps.as_ref().storage, (creator_info.sender.clone(), "pcrd".to_string(), Addr::unchecked("buyer"))).unwrap();
+            assert_eq!(freeze.number_of_credits, Uint64::from(5u64)); // 5 in the freeze, not 15 anymore
+        }
+
+
+        #[test]
         fn test_cancel_frozen_credits_with_invalid_params() {
             let mut deps = mock_dependencies();
             let creator_info = mock_info("creator", &[]);
@@ -2111,8 +2228,6 @@ mod tests {
             let err = execute(deps.as_mut(), mock_env(), unauthorized_info.clone(), cancel_frozen_message).unwrap_err();
             assert_eq!(err, ContractError::Unauthorized {});
         }
-
-        // TODO: Add test for cancel timed out permissionless (when implemented)
     }
 
     mod release_frozen_credits_test {
