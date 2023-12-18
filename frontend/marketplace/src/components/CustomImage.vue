@@ -7,11 +7,8 @@ export interface CustomImageProps {
 }
 
 const props = defineProps<CustomImageProps>();
-const emits = defineEmits(["click"]);
 const defaultImage = AuctionCard;
-const handleClick = () => {
-  emits("click");
-};
+
 const handleError = (event: Event) => {
   const img = event.target as HTMLImageElement;
 
@@ -23,11 +20,9 @@ const handleError = (event: Event) => {
 };
 </script>
 <template>
-  <button @click="handleClick" class="h-full w-full p-0 bg-transparent m-0">
-    <img
-      :class="imageClass || 'rounded-sm h-[200px] w-[200px]'"
-      v-bind="props"
-      @error="handleError"
-    />
-  </button>
+  <img
+    :class="imageClass || 'rounded-sm h-[200px] w-[200px]'"
+    v-bind="props"
+    @error="handleError"
+  />
 </template>
