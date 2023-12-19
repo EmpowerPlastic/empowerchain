@@ -61,7 +61,7 @@ if (ENVIRONMENT && ENVIRONMENT !== "local") {
       code_version: REVISION_ID,
     },
   });
-  app.config.errorHandler = (err: Error) => {
+  app.config.errorHandler = (err: any) => {
     rollbar.error(err as any);
     throw err;
   };
