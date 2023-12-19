@@ -67,5 +67,8 @@
   "engines": {
     "npm": ">=10.2.3",
     "node": ">=20.10.0"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.9.1"
   }
 }
