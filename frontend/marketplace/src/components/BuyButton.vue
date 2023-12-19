@@ -123,6 +123,5 @@ const buttonsCssClasses = `
     <span v-if="showButtonSpinner" class="loading loading-spinner"></span>
     {{ buttonText }}
   </button>
-  <!-- <button class="btn" @click="handleOpenModal">open modal</button> -->
   <CertificateHolderModal ref="modalEl" @continue="continueHandler" />
 </template>
