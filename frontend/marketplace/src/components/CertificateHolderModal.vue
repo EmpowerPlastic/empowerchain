@@ -32,8 +32,8 @@ defineExpose({
     <template v-slot:body>
       <p class="py-4">
         Provide an individual or company name that is going to be used for the
-        Plastic Credit Offset Certificate. Mind that this cannot be changed
-        later.
+        Plastic Credit Offset Certificate.
+        <b>Mind that this cannot be changed later.</b>
       </p>
       <div>
         <input
