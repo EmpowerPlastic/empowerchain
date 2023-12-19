@@ -1,8 +1,8 @@
-import { CreditCollection, EventData, MaterialData, MetadataUri, MediaFile, BinaryFile, ApplicantData, WebReference, CreditData, CreateListingWasmEvent, MarketplaceListing, BuyCreditsWasmEvent, UpdateListingWasmEvent, CancelListingWasmEvent, Country, Organization, Wallet, CreditBalance, TransferedCreditsEvent, RetiredCreditsEvent, Certificate, CreditOffsetCertificate } from "../types";
 import {
   CosmosEvent,
 } from "@subql/types-cosmos";
 import fetch from "node-fetch";
+import { ApplicantData, BinaryFile, BuyCreditsWasmEvent, CancelListingWasmEvent, Certificate, Country, CreateListingWasmEvent, CreditBalance, CreditCollection, CreditData, CreditOffsetCertificate, EventData, MarketplaceListing, MaterialData, MediaFile, MetadataUri, Organization, RetiredCreditsEvent, TransferedCreditsEvent, UpdateListingWasmEvent, Wallet, WebReference } from "../types";
 
 async function logRollbarError(error: Error, txHash: string, blockHeight: number): Promise<void> {
   const request = await fetch("https://api.rollbar.com/api/1/item/", {
@@ -220,6 +220,7 @@ export async function handleTransferCredits(event: CosmosEvent): Promise<void> {
       recipient: recipient,
       amount: amount,
       creditCollectionId: denom,
+      timestamp: new Date(event.block.header.time.toISOString()),
     });
     await transferedCreditsEvent.save();
 
@@ -274,6 +275,7 @@ export async function handleRetiredCredits(event: CosmosEvent): Promise<void> {
       owner: owner,
       amount: amount,
       creditCollectionId: denom,
+      timestamp: new Date(event.block.header.time.toISOString()),
     });
     await retiredCreditsEvent.save();
 
@@ -296,7 +298,7 @@ function findCertificateDataValueByKey(certificate: any[], key: string): string 
   return certificate.find(data => data.key === key).value;
 }
 
-async function handleOffsetCertificate(certificateId: string, owner: string, certificateData: string): Promise<void> {
+async function handleOffsetCertificate(certificateId: string, owner: string, certificateData: string, timestamp: string): Promise<void> {
   certificateData = certificateData.replace(/(?:\\\\)*\\(?!\\)/g, '');
   const certificate = JSON.parse(certificateData);
   const denom = findCertificateDataValueByKey(certificate, "denom");
@@ -313,6 +315,7 @@ async function handleOffsetCertificate(certificateId: string, owner: string, cer
     retiringEntityName: retiringEntityName,
     retiringEntityAdditionalData: retiringEntityAdditionalData,
     walletId: owner,
+    timestamp: timestamp,
   });
   await offsetCertificate.save();
 }
@@ -336,7 +339,7 @@ export async function handleCreateCertificate(event: CosmosEvent): Promise<void>
     await certificate.save();
 
     if (certificateType === "CREDIT_RETIREMENT") {
-      await handleOffsetCertificate(certificateId, owner, additionalData);
+      await handleOffsetCertificate(certificateId, owner, additionalData, event.block.header.time.toISOString());
     }
   } catch (e) {
     await logRollbarError(e, event.tx.hash, event.block.header.height);
