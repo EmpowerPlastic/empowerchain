@@ -61,6 +61,7 @@ type CreditOffsetCertificate @entity {
   retiringEntityName: String!
   retiringEntityAdditionalData: String!
   wallet: Wallet!
+  timestamp: Date!
 }
 
 type MarketplaceListing @entity {
@@ -88,6 +89,7 @@ type RetiredCreditsEvent @entity {
   creditCollection: CreditCollection!
   owner: String!
   amount: BigInt!
+  timestamp: Date!
 }
 
 type CreateListingWasmEvent @entity {
