@@ -89,7 +89,7 @@ const checkBalanceForPurchase = (amount: number) => {
   }
 };
 
-const handleBuyCredits = async () => {
+const handleBuyCredits = async (retirererName: string) => {
   if (!isWalletConnected.value) {
     notifyer.error("Please connect to wallet");
     return;
@@ -124,6 +124,7 @@ const handleBuyCredits = async () => {
         denom: props.denom,
         owner: props.owner,
         numberOfCreditsToBuy: amount.value,
+        // retirererName: retirererName, // TODO!
       },
       fee,
       "",
@@ -153,7 +154,7 @@ const checkIfCreditsAvailable = () => {
   return true;
 };
 
-const handleCardPayment = async () => {
+const handleCardPayment = async (retirererName: string) => {
   if (!checkIfCreditsAvailable()) {
     return;
   }
@@ -171,6 +172,7 @@ const handleCardPayment = async () => {
     amount: amount.value,
     denom: props.denom,
     listingOwner: props.owner,
+    retirererName: retirererName,
   };
   try {
     const accessToken = await getAccessToken(PC_BACKEND_ENDPOINT);
