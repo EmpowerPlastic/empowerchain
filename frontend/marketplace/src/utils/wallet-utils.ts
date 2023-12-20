@@ -56,3 +56,9 @@ export async function formatDenom(denom: string): Promise<string> {
   denom = denom.slice(1);
   return denom.toUpperCase();
 }
+
+export const disconnectWallet = () => {
+  localStorage.removeItem("address");
+  localStorage.removeItem("wallet");
+  location.reload();
+};

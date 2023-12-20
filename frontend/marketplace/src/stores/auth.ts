@@ -1,6 +1,6 @@
-import { ref, watch, type Ref } from "vue";
+import { type Ref, ref, watch, computed } from "vue";
 import { WEB_ENDPOINT } from "@/config/config";
-import { useLogto, type UserInfoResponse } from "@logto/vue";
+import { type UserInfoResponse, useLogto } from "@logto/vue";
 import { useRedirectAfterLoginUrl } from "@/utils/redirectAfterLoginUrl";
 
 interface AuthCustomData {
@@ -24,6 +24,7 @@ export interface Auth {
   handleSignOut: () => void;
   fetchUser: () => Promise<CustomUserInfoResponse | undefined>;
   getAccessToken: (resource?: string) => Promise<string | undefined>;
+  walletAddress: Ref<string | undefined>;
 }
 
 export const useAuth = (): Auth => {
@@ -40,6 +41,16 @@ export const useAuth = (): Auth => {
   const user = ref<CustomUserInfoResponse | undefined>(undefined);
   const isAuthenticated = ref(logtoIsAuthenticated);
   const getAccessToken = logtoGetAccessToken;
+  const walletAddress = computed<string | undefined>(() => {
+    if (user.value) {
+      try {
+        return user.value.custom_data.walletAddress;
+      } catch (error) {
+        throw new Error("User does not have wallet address");
+      }
+    }
+    return undefined;
+  });
 
   watch(
     isAuthenticated,
@@ -74,5 +85,6 @@ export const useAuth = (): Auth => {
     handleSignOut,
     fetchUser,
     getAccessToken,
+    walletAddress,
   };
 };
