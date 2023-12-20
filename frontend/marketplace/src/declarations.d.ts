@@ -1,1 +1,1 @@
-declare module 'vue-awesome-paginate';
+declare module "vue-awesome-paginate";

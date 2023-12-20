@@ -21,18 +21,16 @@ const router = useRouter();
 
 const viewCertificate = (certificateId: string) => {
   const url = `${window.location.origin}/certificate/${certificateId}`;
-  window.open(url, '_blank');
+  window.open(url, "_blank");
 };
-
-
 
 const handlePageChange = () => {
   getCertificatesData();
 };
-const handleSearch = () => {
-  pageNumber.value = 1;
-  getCertificatesData();
-};
+// const handleSearch = () => {
+//   pageNumber.value = 1;
+//   getCertificatesData();
+// };
 
 const getCertificatesData = async () => {
   try {
@@ -43,8 +41,8 @@ const getCertificatesData = async () => {
       const query = `query {
     creditOffsetCertificates(
     first:${itemsPerPage.value},offset:${
-        (pageNumber.value - 1) * itemsPerPage.value
-      }
+      (pageNumber.value - 1) * itemsPerPage.value
+    }
     filter: {
       wallet: {
         address: { equalTo: "${walletAddress}" }
@@ -70,11 +68,9 @@ const getCertificatesData = async () => {
 
 const loadQueryData = (query: string) => {
   showSpinner.value = true;
-  const { result, loading, error } = useQuery(
-    gql`
-      ${query}
-    `
-  );
+  const { result, loading, error } = useQuery(gql`
+    ${query}
+  `);
   data.value = { result, loading, error };
   showSpinner.value = false;
 };
@@ -103,7 +99,10 @@ onMounted(() => {
         v-for="certificate in data?.result?.creditOffsetCertificates?.nodes"
         :key="certificate.id"
       >
-        <CertificateCard :card-data="certificate" @viewCertificate="viewCertificate" />
+        <CertificateCard
+          :card-data="certificate"
+          @viewCertificate="viewCertificate"
+        />
       </div>
       <div class="flex justify-center md:justify-end my-10">
         <CustomPagination

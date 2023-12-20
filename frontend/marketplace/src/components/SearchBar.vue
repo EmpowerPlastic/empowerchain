@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, watchEffect } from "vue";
+import { ref, watch } from "vue";
 import SearchFilterSelect from "@/components/SearchFilterSelect.vue";
 import SearchFilterRange from "@/components/SearchFilterRange.vue";
 import { useQuery } from "@vue/apollo-composable";
@@ -7,7 +7,7 @@ import gql from "graphql-tag";
 import { DEFAULT_CREDIT_TYPE } from "@/config/config";
 
 export interface SearchBarProps {
-  filterValues?: {
+  filterValuesProps?: {
     volume: any[];
     location: string[];
     registrationDate: any[];
@@ -30,8 +30,8 @@ const filterValues = ref({
 });
 
 watch(props, () => {
-  if (Object.keys(props?.filterValues as any).length !== 0) {
-    filterValues.value = props.filterValues as any;
+  if (Object.keys(props?.filterValuesProps as any).length !== 0) {
+    filterValues.value = props.filterValuesProps as any;
   }
 });
 

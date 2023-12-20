@@ -48,7 +48,7 @@ watch(
   () => props.locations,
   () => {
     getMapCenter();
-  }
+  },
 );
 </script>
 <template>

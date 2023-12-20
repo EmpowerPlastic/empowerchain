@@ -5,6 +5,8 @@ import CertificatesAndCreditsPage from "@/pages/CertificatesAndCreditsPage.vue";
 import AuctionPage from "@/pages/AuctionPage.vue";
 import AuctionDetails from "@/pages/AuctionDetails.vue";
 import CertificatePage from "@/pages/CertificatePage.vue";
+import PlasticCreditRegistry from "@/pages/PlasticCreditRegistry.vue";
+import RegistryDetailsPage from "@/pages/RegistryDetailsPage.vue";
 import CallbackView from "@/pages/CallbackView.vue";
 import UserProfile from "@/pages/UserProfile.vue";
 import AuctionPaymentSuccessful from "@/pages/AuctionPaymentSuccessful.vue";
@@ -47,6 +49,16 @@ const router = createRouter({
       name: "CertificatePage",
       component: CertificatePage,
       meta: { hideNavFooter: true }, //To hide nav and footer on this page
+    },
+    {
+      path: "/registry",
+      name: "PlasticCreditRegistry",
+      component: PlasticCreditRegistry,
+    },
+    {
+      path: "/registry/:id",
+      name: "RegistryDetails",
+      component: RegistryDetailsPage,
     },
     {
       path: "/callback",

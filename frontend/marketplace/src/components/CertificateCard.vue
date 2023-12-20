@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { toast } from "vue3-toastify";
-import { defineEmits } from 'vue';
+import { defineEmits } from "vue";
 
 export interface CreditCardProps {
   cardData: any;
@@ -10,14 +10,14 @@ export interface CreditCardProps {
 const props = defineProps<CreditCardProps>();
 
 // Define the events that this component can emit
-const emit = defineEmits(['viewCertificate']);
+const emit = defineEmits(["viewCertificate"]);
 
 // Function to emit the 'viewCertificate' event
 const viewCertificate = () => {
   if (props.cardData?.id) {
-    emit('viewCertificate', props.cardData.id);
+    emit("viewCertificate", props.cardData.id);
   } else {
-    toast.error('Certificate ID not found');
+    toast.error("Certificate ID not found");
   }
 };
 </script>

@@ -3,8 +3,8 @@ import InputWithLabel from "@/components/InputWithLabel.vue";
 import { CHAIN_ID, RPC_ENDPOINT } from "@/config/config";
 import { getWallet, resolveSdkError } from "@/utils/wallet-utils";
 import {
-empowerchain,
-getSigningTM37EmpowerchainClient,
+  empowerchain,
+  getSigningTM37EmpowerchainClient,
 } from "@empower-plastic/empowerjs";
 import { ref } from "vue";
 import { toast } from "vue3-toastify";
