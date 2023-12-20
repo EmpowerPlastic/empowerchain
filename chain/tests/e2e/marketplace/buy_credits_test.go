@@ -59,7 +59,7 @@ func (s *E2ETestSuite) TestBuyCreditsWithoutFeeSplit() {
 	// Buy some credits
 	out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
 		marketplaceAddress,
-		fmt.Sprintf(`{"buy_credits": {"owner": "%s", "denom": "PTEST/00001", "number_of_credits_to_buy": 2}}`, creditOwnerAddress.String()),
+		fmt.Sprintf(`{"buy_credits": {"owner": "%s", "denom": "PTEST/00001", "number_of_credits_to_buy": 2, "retire": false}}`, creditOwnerAddress.String()),
 		fmt.Sprintf("--amount=%s%s", "3000000", sdk.DefaultBondDenom),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, buyerKey.Name),
 	}, s.CommonFlags...))
@@ -146,7 +146,7 @@ func (s *E2ETestSuite) TestBuyCreditsWithFeeSplit() {
 	// Buy some credits
 	out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
 		marketplaceAddress,
-		fmt.Sprintf(`{"buy_credits": {"owner": "%s", "denom": "PTEST/00001", "number_of_credits_to_buy": 2}}`, creditOwnerAddress.String()),
+		fmt.Sprintf(`{"buy_credits": {"owner": "%s", "denom": "PTEST/00001", "number_of_credits_to_buy": 2, "retire": false}}`, creditOwnerAddress.String()),
 		fmt.Sprintf("--amount=%s%s", "3000000", sdk.DefaultBondDenom),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, buyerKey.Name),
 		fmt.Sprintf("--%s=%s", flags.FlagGas, "300000"),
