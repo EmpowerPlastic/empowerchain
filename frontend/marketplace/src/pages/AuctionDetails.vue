@@ -1,29 +1,51 @@
 <script setup lang="ts">
+import type { MaterialProperty } from "@/types/GraphqlSchema";
+import BuyCredits from "@/components/BuyCredits.vue";
+import CustomGoogleMap from "@/components/CustomGoogleMap.vue";
+import CustomSpinner from "@/components/CustomSpinner.vue";
 import ImageCarousel from "@/components/ImageCarousel.vue";
 import ImageGallery from "@/components/ImageGallery.vue";
-import CustomGoogleMap from "@/components/CustomGoogleMap.vue";
-import BuyCredits from "@/components/BuyCredits.vue";
-import { onMounted, ref, watch } from "vue";
 import ProjectDetailContent from "@/components/ProjectDetailContent.vue";
+import ProjectDetailMaterial from "@/components/ProjectDetailMaterial.vue";
 import { useRoute } from "@/router";
+import {
+  convertIPFStoHTTPS,
+  uniqueMaterials,
+  findPlasticTypeInMaterial,
+} from "@/utils/utils";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
-import CustomSpinner from "@/components/CustomSpinner.vue";
-import { convertIPFStoHTTPS } from "@/utils/utils";
+import { onMounted, ref, watch } from "vue";
 import { toast } from "vue3-toastify";
+
+interface AuctionDetails {
+  applicant: string;
+  location: string[];
+  material: MaterialProperty[][];
+  volume: number;
+  image: string[];
+  file: {
+    url: string;
+    name: string;
+  }[];
+  locationPointers: {
+    lat: number;
+    lng: number;
+  }[];
+  registrationDate: string;
+}
 
 const router = useRoute();
 
 const data = ref();
 const orderHistory = ref();
 const showSpinner = ref(true);
-const amount = ref(0);
 const denom = ref("");
 const owner = ref("");
-const auctionDetails = ref({
+const auctionDetails = ref<AuctionDetails>({
   applicant: "",
   location: [""],
-  material: [""],
+  material: [],
   volume: 0,
   image: [""],
   file: [{ url: "", name: "" }],
@@ -33,18 +55,18 @@ const auctionDetails = ref({
 const pricePerCreditDenom = ref("");
 const plasticType = ref("");
 
-const getDetailsList = (data: any) => {
-  let applicantArray: string[] = [];
-  let locationArray: string[] = [];
-  let locationPointersArray: {
+const getDetailsList = (data: any, materialVolume: number) => {
+  const applicantArray: string[] = [];
+  const locationArray: string[] = [];
+  const locationPointersArray: {
     lat: number;
     lng: number;
   }[] = [];
-  let imageArray: string[] = [];
-  let fileArray: { url: string; name: string }[] = [];
-  let materialArray: { key: string; value: string }[] = [];
-  let volume: number = 0;
-  let registrationDateArray: string[] = [];
+  const imageArray: string[] = [];
+  const fileArray: { url: string; name: string }[] = [];
+  const materialArray: MaterialProperty[][] = [];
+  const volume = materialVolume;
+  const registrationDateArray: string[] = [];
 
   data?.map((item: any) => {
     item.applicantDataByCreditDataId.nodes.map((node: any) => {
@@ -52,12 +74,11 @@ const getDetailsList = (data: any) => {
     });
 
     item.eventData.nodes.map((node: any) => {
-      volume = volume + node.amount;
       locationArray.push(node.country);
       locationPointersArray.push({ lat: node.latitude, lng: node.longitude });
-      materialArray.push(...node.material.nodes);
+      materialArray.push(node.material.nodes);
       registrationDateArray.push(
-        new Date(node.registrationDate).toLocaleDateString()
+        new Date(node.registrationDate).toLocaleDateString(),
       );
     });
 
@@ -71,18 +92,14 @@ const getDetailsList = (data: any) => {
       });
     });
   });
-
-  const uniqueMaterialArray = materialArray.filter(
-    (obj, index, self) =>
-      index ===
-      self.findIndex((o) => o.key === obj.key && o.value === obj.value)
-  );
+  const uniqueMaterialArray = uniqueMaterials(materialArray);
   plasticType.value =
-    materialArray.find((item) => item.key === "plasticType")?.value || "";
+    findPlasticTypeInMaterial(uniqueMaterialArray[0])?.value ?? "";
+
   return {
     applicant: applicantArray[0],
     location: Array.from(new Set(locationArray)),
-    material: uniqueMaterialArray.map((item) => item.value),
+    material: uniqueMaterialArray,
     volume: volume,
     image: imageArray,
     file: fileArray,
@@ -111,6 +128,8 @@ const getAuctionDetails = (id: string | string[]) => {
       pricePerCreditAmount
       pricePerCreditDenom
       creditCollection {
+        activeAmount
+        retiredAmount
         creditType
         creditData {
           nodes {
@@ -156,19 +175,27 @@ const getAuctionDetails = (id: string | string[]) => {
 }
 `;
 
-  const { result, loading, error, refetch } = useQuery(
-    gql`
-      ${query}
-    `
-  );
-  data.value = { result, loading, error };
+  const { result, loading, error, refetch } = useQuery(gql`
+    ${query}
+  `);
+  data.value = {
+    result,
+    loading,
+    error,
+  };
   setInterval(() => {
     refetch();
   }, 5000);
 
   watch(result, (value) => {
     auctionDetails.value = getDetailsList(
-      value.marketplaceListings?.nodes[0].creditCollection.creditData.nodes
+      value.marketplaceListings?.nodes[0].creditCollection.creditData.nodes,
+      parseInt(
+        value.marketplaceListings?.nodes[0].creditCollection.activeAmount,
+      ) +
+        parseInt(
+          value.marketplaceListings?.nodes[0].creditCollection.retiredAmount,
+        ),
     );
     pricePerCreditDenom.value =
       value.marketplaceListings?.nodes[0].pricePerCreditDenom;
@@ -200,12 +227,17 @@ const getOrderHistory = (id: string | string[]) => {
   }
 }`;
 
-  const { result, loading, error } = useQuery(
-    gql`
-      ${query}
-    `
-  );
-  orderHistory.value = { result, loading, error };
+  const { result, loading, error, refetch } = useQuery(gql`
+    ${query}
+  `);
+
+  watch(result, () => {
+    orderHistory.value = { result, loading, error };
+  });
+
+  setInterval(() => {
+    refetch();
+  }, 5000);
 };
 
 onMounted(() => {
@@ -215,10 +247,7 @@ onMounted(() => {
 </script>
 <template>
   <CustomSpinner :visible="showSpinner" />
-  <div
-    v-if="!showSpinner"
-    class="p-5 min-h-[60vh] text-white font-Inter"
-  >
+  <div v-if="!showSpinner" class="p-5 min-h-[60vh] text-white font-Inter">
     <!--  Title Section-->
     <p class="text-title18 mb-5">
       <a href="/auction">Auctions</a
@@ -243,7 +272,9 @@ onMounted(() => {
     <!--    Buy Credits-->
     <BuyCredits
       :available-credits="data?.result?.marketplaceListings?.nodes[0].amount"
-      :initial-credits="data?.result?.marketplaceListings?.nodes[0].initialAmount"
+      :initial-credits="
+        data?.result?.marketplaceListings?.nodes[0].initialAmount
+      "
       :selected-coin="`${pricePerCreditDenom}`"
       :price-per-credit="
         data?.result?.marketplaceListings?.nodes[0].pricePerCreditAmount /
@@ -265,10 +296,9 @@ onMounted(() => {
               .creditType
           "
         />
-        <ProjectDetailContent
+        <ProjectDetailMaterial
           label="Material"
-          :value="auctionDetails?.material"
-          list
+          :materials="auctionDetails?.material"
         />
         <ProjectDetailContent label="Kgs per credit" value="1" />
         <ProjectDetailContent
@@ -281,7 +311,7 @@ onMounted(() => {
           list
         />
         <ProjectDetailContent
-          label="Collection organization"
+          label="Collection organisation"
           :value="auctionDetails?.applicant"
         />
         <ProjectDetailContent

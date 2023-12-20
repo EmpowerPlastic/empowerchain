@@ -50,12 +50,12 @@ const showTransferCreditsModal = ref(false);
           <ul class="list-disc ml-6">
             <li
               class="text-title18"
-              v-for="material in getDetailsList(
-                cardData.creditCollection.creditData.nodes
+              v-for="(material, index) in getDetailsList(
+                cardData.creditCollection.creditData.nodes,
               ).material"
-              :key="material.key"
+              :key="`${material[0].key}-index-${index}`"
             >
-              {{ material.value }}
+              {{ material[0].value }}
             </li>
           </ul>
         </div>
@@ -104,12 +104,12 @@ const showTransferCreditsModal = ref(false);
           <ul class="list-disc ml-6">
             <li
               class="text-title14 font-bold"
-              v-for="material in getDetailsList(
-                cardData.creditCollection.creditData.nodes
+              v-for="(material, index) in getDetailsList(
+                cardData.creditCollection.creditData.nodes,
               ).material"
-              :key="material.key"
+              :key="`${material[0].key}-index-${index}`"
             >
-              {{ material.value }}
+              {{ material[0].value }}
             </li>
           </ul>
         </div>

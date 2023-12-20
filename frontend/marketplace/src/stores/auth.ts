@@ -1,5 +1,7 @@
 import { ref, watch, type Ref } from "vue";
+import { WEB_ENDPOINT } from "@/config/config";
 import { useLogto, type UserInfoResponse } from "@logto/vue";
+import { useRedirectAfterLoginUrl } from "@/utils/redirectAfterLoginUrl";
 
 export interface Auth {
   user: Ref<UserInfoResponse | undefined>;
@@ -35,15 +37,16 @@ export const useAuth = (): Auth => {
         user.value = undefined;
       }
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   const handleSignIn = () => {
-    logToSignIn("http://localhost:5173/callback");
+    useRedirectAfterLoginUrl().set();
+    logToSignIn(`${WEB_ENDPOINT}/callback`);
   };
 
   const handleSignOut = () => {
-    logToSignOut("http://localhost:5173");
+    logToSignOut(WEB_ENDPOINT);
   };
 
   const fetchUser = async (): Promise<UserInfoResponse | undefined> => {

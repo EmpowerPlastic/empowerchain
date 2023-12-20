@@ -6,6 +6,19 @@ import { useRoute } from "@/router";
 import { toast } from "vue3-toastify";
 import { generatePDF } from "../pdfGenerator/pdfGenerator";
 import CustomSpinner from "@/components/CustomSpinner.vue";
+import { ipfsToHttpsProtocol } from "@/utils/utils";
+import QRCode from "qrcode";
+
+interface CertificateDataNode {
+  amount: string;
+  denom: string;
+  id: string;
+  nodeId: string;
+  retiringEntityAdditionalData: string;
+  retiringEntityName: string;
+  walletId: string;
+  timestamp?: string;
+}
 
 const router = useRoute();
 const certificateData = ref();
@@ -33,15 +46,16 @@ const showSpinner = ref(true);
 const firstPageMaxRows = ref(0);
 const secondPageMaxRows = ref(0);
 const otherPageMaxRows = ref(35);
-
+const qrCodeUrl = ref<string | undefined>(undefined);
 type RowData = {
   data?: any[];
   type: string;
 };
 
-onMounted(() => {
+onMounted(async () => {
   document.body.style.backgroundColor = "#ffff";
   queryNow();
+  qrCodeUrl.value = await generateQRCode();
 });
 onBeforeUnmount(() => {
   document.body.style.backgroundColor = "";
@@ -72,7 +86,7 @@ const queryNow = () => {
   watchEffect(() => {
     if (result.value) {
       processCertificateDataNode(
-        result.value.creditOffsetCertificates.nodes[0]
+        result.value.creditOffsetCertificates.nodes[0],
       );
       getCreditData(result.value.creditOffsetCertificates.nodes[0].denom);
     }
@@ -145,23 +159,21 @@ const getCreditData = (denom: string) => {
     }
   }
 }`;
-  const { result, error } = useQuery(
-    gql`
-      ${query}
-    `
-  );
+  const { result, error } = useQuery(gql`
+    ${query}
+  `);
 
   if (result.value) {
     processCreditCollectionsNode(result.value.creditCollections.nodes[0]);
     processEventDataNode(
       result.value.creditCollections.nodes[0].creditData.nodes[0].eventData
-        .nodes
+        .nodes,
     );
     processCreditDataNode(
-      result.value.creditCollections.nodes[0].creditData.nodes[0]
+      result.value.creditCollections.nodes[0].creditData.nodes[0],
     );
     assignApplicantData(
-      result.value.creditCollections.nodes[0].creditData.nodes[0]
+      result.value.creditCollections.nodes[0].creditData.nodes[0],
     );
     assignAllDataValue();
   }
@@ -172,7 +184,9 @@ const getCreditData = (denom: string) => {
   showSpinner.value = false;
 };
 
-const processCertificateDataNode = (certificateDataNode: any) => {
+const processCertificateDataNode = (
+  certificateDataNode: CertificateDataNode,
+) => {
   certificateData.value = certificateDataNode;
   //Create string for retired date on second page, add timestamp to query when it's available in the index
   if (certificateDataNode.timestamp) {
@@ -197,9 +211,9 @@ const processEventDataNode = (eventDataNode: any) => {
       .map((eventNode: any) =>
         eventNode.material.nodes
           .filter((material: any) => material.key == "plasticType")
-          .map((material: any) => material.value)
+          .map((material: any) => material.value),
       )
-      .flat()
+      .flat(),
   );
   plastciValuesString.value = Array.from(plastciValuesSet).join(", ");
 
@@ -208,7 +222,7 @@ const processEventDataNode = (eventDataNode: any) => {
     const duplicate = unique.find(
       (location: any) =>
         location.longitude === eventNode.longitude &&
-        location.latitude === eventNode.latitude
+        location.latitude === eventNode.latitude,
     );
 
     if (!duplicate) {
@@ -227,14 +241,13 @@ const processEventDataNode = (eventDataNode: any) => {
 
     const uniqueMaterialsSet = new Set();
     const uniqueMaterials: any = [];
-    let eventId = 1;
 
     //Assign new keys to material table variables
     const keyMapping: { [key: string]: string } = {
       granularity: "Shape/Granularity",
       "shape / granularity": "Shape/Granularity",
       plasticType: "Plastic Type",
-      eventId: "Tracking Event",
+      registrationDate: "Registration Date",
       color: "Color",
       kilo: "Weight (kg)",
       condition: "Condition",
@@ -246,7 +259,10 @@ const processEventDataNode = (eventDataNode: any) => {
     eventDataNode.forEach((eventNode: any) => {
       const materialCombination: any = {
         type: "material",
-        [keyMapping["Tracking Event"] || "Tracking Event"]: eventId++,
+        [keyMapping["registrationDate"]]: eventNode.registrationDate.substring(
+          0,
+          10,
+        ),
       };
 
       eventNode.material.nodes.forEach((materialNode: any) => {
@@ -307,7 +323,7 @@ const processCreditDataNode = (creditDataNode: any) => {
         startIndex: 0,
         endIndex: 0,
       };
-    }
+    },
   );
   //Assign data to media table variables
   mediaFileUrls.value = creditDataNode.mediaFiles.nodes.map(
@@ -317,7 +333,7 @@ const processCreditDataNode = (creditDataNode: any) => {
         url: mediaFileNode.url || "N/A",
         type: "media",
       };
-    }
+    },
   );
 };
 
@@ -439,6 +455,51 @@ const preparePagesData = () => {
   }
 };
 
+const generateQRCode = async () => {
+  // const canvas = document.getElementById("qrCode") as HTMLCanvasElement;
+  const url = await QRCode.toDataURL(
+    `https://empower.market/registry/${ID as string}`,
+  );
+
+  // Create a new image for the QR code
+  const qrImage = new Image();
+  qrImage.src = url;
+
+  // Create a new image for the logo
+  const logo = new Image();
+  logo.src = "/src/assets/greenlogo.svg"; // Replace with the path to your logo
+  // Wait for both images to load
+  await Promise.all([
+    new Promise((resolve) => {
+      qrImage.onload = resolve;
+    }),
+    new Promise((resolve) => {
+      logo.onload = resolve;
+    }),
+  ]);
+
+  // Create a canvas and draw the QR code and logo on it
+  const qrDimensions = { width: qrImage.width, height: qrImage.height };
+  const canvas = document.createElement("canvas");
+  canvas.width = qrDimensions.width;
+  canvas.height = qrDimensions.height;
+  const context = canvas.getContext("2d");
+  if (context !== null) {
+    context.drawImage(qrImage, canvas.width / 2 - qrImage.width / 2, 0);
+
+    const logoX = canvas.width / 2 - logo.width / 2;
+    const logoY = canvas.height / 2 - logo.height / 2;
+
+    context.fillStyle = "white";
+    context.fillRect(logoX - 5, logoY - 5, logo.width + 10, logo.height + 10);
+
+    context.drawImage(logo, logoX, logoY);
+  }
+
+  // Get the data URL of the canvas
+  return canvas.toDataURL();
+};
+
 const onGeneratePDF = () => {
   try {
     generatePDF(
@@ -452,8 +513,9 @@ const onGeneratePDF = () => {
       issuanceDate.value,
       retiredDate.value,
       creditData.value,
-      ID,
-      applicantDataDescription.value
+      ID as string,
+      applicantDataDescription.value,
+      qrCodeUrl.value,
     );
     toast.success("Certificate downloaded successfully");
   } catch (e) {
@@ -490,13 +552,15 @@ const onGeneratePDF = () => {
         <div class="horizontal-line"></div>
 
         <div class="nameBox"></div>
-
         <h2 class="presented">PROUDLY PRESENTED TO</h2>
         <h1 class="namePage1" v-if="certificateData">
           {{ certificateData.retiringEntityName }}
         </h1>
         <div class="horizontal-line2"></div>
-        <h2 class="presented">FOR OFFSETTING</h2>
+        <h2 class="presented">
+          FOR MAKING AN IMPACT<br />
+          BY NEUTRALIZING AN IMPRESSIVE
+        </h2>
         <p class="weight" v-if="certificateData">
           {{ certificateData.amount + " KG" }}
         </p>
@@ -504,14 +568,11 @@ const onGeneratePDF = () => {
         <p class="weight" v-if="plastciValuesString">
           {{ plastciValuesString }}
         </p>
-
         <div class="logoBox">
           <img src="../assets/circular.svg" alt="" />
-          <div class="idBox">{{ router.params.id }}</div>
-          <p class="checkBlockchain">
-            check on <br />
-            blockchain!
-          </p>
+          <div id="qrCode" class="qrCode" v-if="qrCodeUrl">
+            <img :src="qrCodeUrl" />
+          </div>
         </div>
       </div>
       <img src="../assets/leaf2.png" alt="" class="leaf2" />
@@ -519,7 +580,6 @@ const onGeneratePDF = () => {
       <img src="../assets/leaf3.png" alt="" class="leaf3" />
       <img src="../assets/leaf5.png" alt="" class="leaf5" />
       <img src="../assets/leaf6.png" alt="" class="leaf6" />
-      <img src="../assets/greenlogo.svg" alt="" class="greenLogo" />
     </page>
 
     <div v-for="(page, pageIndex) in pagesData" :key="pageIndex">
@@ -614,9 +674,11 @@ const onGeneratePDF = () => {
                   >
                     <td>{{ mediaFile.name }}</td>
                     <td>
-                      <a :href="mediaFile.url" target="_blank">{{
-                        mediaFile.url
-                      }}</a>
+                      <a
+                        :href="ipfsToHttpsProtocol(mediaFile.url)"
+                        target="_blank"
+                        >{{ mediaFile.url }}</a
+                      >
                     </td>
                   </tr>
                 </table>
@@ -624,7 +686,7 @@ const onGeneratePDF = () => {
 
               <!-- Material Details Table -->
               <div v-if="category.type === 'material'">
-                <p class="certificateHodler">Material</p>
+                <p class="certificateHodler">Material tracking events</p>
                 <table class="certificateTable">
                   <tr class="tableTitle">
                     <th v-for="header in primaryHeaders" :key="header">
@@ -851,6 +913,7 @@ page {
   font-weight: 400;
   color: #231f20;
   letter-spacing: 3px;
+  text-align: center;
 }
 
 .weight {
@@ -872,34 +935,11 @@ page {
   position: relative;
   margin-top: auto;
   height: 140px;
-  width: auto;
+  width: 140px;
 }
 .logoBox img {
   height: 100%;
   width: auto;
-}
-
-.idBox {
-  position: absolute;
-  font-family: "Open Sans";
-  font-weight: 700;
-  font-size: 18px;
-  bottom: 60px;
-  right: 46px;
-  height: 27px;
-  width: auto;
-}
-
-.checkBlockchain {
-  position: absolute;
-  font-family: "Open Sans";
-  text-align: center;
-  font-weight: 700;
-  font-size: 11px;
-  bottom: 30px;
-  right: 46px;
-  letter-spacing: -1px;
-  color: #58b947;
 }
 
 .page2[size="A4"] {
@@ -1070,13 +1110,11 @@ page {
   overflow: hidden;
 }
 
-.greenLogo {
+.qrCode {
   position: absolute;
-  bottom: 164px;
-  right: 411px;
-  height: 18px;
-  width: auto;
-  z-index: 2;
-  overflow: hidden;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 55%;
 }
 </style>

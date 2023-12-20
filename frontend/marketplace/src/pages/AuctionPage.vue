@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import SearchBar from "@/components/SearchBar.vue";
 import AuctionResultsCard from "@/components/AuctionResultsCard.vue";
 import CustomAlert from "@/components/CustomAlert.vue";
 import CustomPagination from "@/components/CustomPagination.vue";
-import { onMounted, ref, computed } from "vue";
 import CustomSpinner from "@/components/CustomSpinner.vue";
-import { useQuery } from "@vue/apollo-composable";
-import gql from "graphql-tag";
-import { ListingsQueryBuilder } from "@/utils/query-builder";
 import { DEFAULT_CREDIT_TYPE } from "@/config/config";
 import { useRoute } from "@/router";
+import { ListingsQueryBuilder } from "@/utils/query-builder";
+import { useQuery } from "@vue/apollo-composable";
+import gql from "graphql-tag";
+import { computed, onMounted, ref } from "vue";
 
 const router = useRoute();
 const pageNumber = ref(1);
@@ -26,7 +25,7 @@ const handlePageChange = (currentPage: number) => {
   pageNumber.value = currentPage;
   queryBuilder.addPagination(
     itemsPerPage.value,
-    (pageNumber.value - 1) * itemsPerPage.value
+    (pageNumber.value - 1) * itemsPerPage.value,
   );
   let query = queryBuilder.build();
   loadQueryData(query);
@@ -43,7 +42,7 @@ const handleQueryParam = () => {
           filter[key] = JSON.parse(queryValue);
         } else if (Array.isArray(queryValue)) {
           filter[key] = queryValue.map((value) =>
-            typeof value === "string" ? JSON.parse(value) : null
+            typeof value === "string" ? JSON.parse(value) : null,
           );
         } else {
           filter[key] = null;
@@ -56,7 +55,7 @@ const handleQueryParam = () => {
     queryBuilder.addCreditTypes([DEFAULT_CREDIT_TYPE]);
     queryBuilder.addPagination(
       itemsPerPage.value,
-      (pageNumber.value - 1) * itemsPerPage.value
+      (pageNumber.value - 1) * itemsPerPage.value,
     );
     let query = queryBuilder.build();
     loadQueryData(query);
@@ -69,11 +68,9 @@ onMounted(() => {
 
 const loadQueryData = (query: string) => {
   showSpinner.value = true;
-  const { result, loading, error } = useQuery(
-    gql`
-      ${query}
-    `
-  );
+  const { result, loading, error } = useQuery(gql`
+    ${query}
+  `);
   data.value = { result, loading, error };
   showSpinner.value = false;
 };
@@ -96,7 +93,7 @@ const handleSearch = (filterValues: any) => {
   ) {
     queryBuilder.addRegistrationDate(
       new Date(filterValues.registrationDate[0]),
-      new Date(filterValues.registrationDate[1])
+      new Date(filterValues.registrationDate[1]),
     );
   }
   if (filterValues?.organization?.length > 0) {
@@ -105,12 +102,12 @@ const handleSearch = (filterValues: any) => {
   if (filterValues?.price && (filterValues.price[0] || filterValues.price[1])) {
     queryBuilder.addPricePerCredit(
       filterValues.price[0],
-      filterValues.price[1]
+      filterValues.price[1],
     );
   }
   queryBuilder.addPagination(
     itemsPerPage.value,
-    (pageNumber.value - 1) * itemsPerPage.value
+    (pageNumber.value - 1) * itemsPerPage.value,
   );
   queryBuilder.addTextSearch(filterValues.searchTerm);
 
@@ -121,7 +118,7 @@ const handleSearch = (filterValues: any) => {
 <template>
   <div class="p-5 md:px-[10%] min-h-[50vh] font-Inter">
     <h1 class="text-title24 md:text-title38 text-white mb-5">Auctions</h1>
-    <SearchBar @search-click="handleSearch" :filter-values="filterVal" />
+    <!-- <SearchBar @search-click="handleSearch" :filter-values="filterVal" /> -->
     <CustomSpinner :visible="showSpinner" />
     <template v-if="!showSpinner">
       <CustomAlert

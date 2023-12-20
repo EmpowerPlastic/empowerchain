@@ -1,10 +1,10 @@
+import type { CreditOffsetCertificate } from "@/types";
 import { jsPDF } from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import {
   wastePick,
   circular,
   leaf1,
-  greenLogo,
   horizontalLeafs,
   verticalLeafs,
 } from "../pdfGenerator/AssetsBase64";
@@ -14,6 +14,22 @@ import {
   calculateXPosition,
 } from "@/utils/utils";
 import { ref } from "vue";
+import { ipfsToHttpsProtocol } from "@/utils/utils";
+
+// https://github.com/simonbengtsson/jsPDF-AutoTable/issues/848
+interface IjsPDF extends jsPDF {
+  lastAutoTable: {
+    finalY?: number;
+  };
+}
+
+interface MaterialDetails {
+  Condition: string;
+  "Material Origin": string;
+  "Plastic Type": string;
+  "Registration Date": string;
+  type: string;
+}
 
 const addedBinaryFiles = ref(false);
 const addedMediaFiles = ref(false);
@@ -22,7 +38,7 @@ const addedLocations = ref(false);
 const xPosition = ref(0);
 
 export const generatePDF = (
-  certificateData: any,
+  certificateData: CreditOffsetCertificate,
   pagesData: any,
   primaryHeaders: any,
   secondaryHeaders: any,
@@ -32,10 +48,11 @@ export const generatePDF = (
   issuanceDate: string,
   retiredDate: string,
   creditData: any,
-  ID: any,
-  applicantDataDescription: string
+  ID: string,
+  applicantDataDescription: string,
+  qrCodeUrl: string | undefined,
 ) => {
-  const doc = new jsPDF("landscape");
+  const doc = new jsPDF("landscape") as IjsPDF;
   addGrayPadding(doc);
   addGreenRectanglePage1(doc);
   addImagesPage1(doc);
@@ -44,7 +61,7 @@ export const generatePDF = (
   addCertificateHolderPage1(doc, certificateData);
   addHorizontalLongLinePage1(doc);
   addCertificateDetailsPage1(doc, certificateData, plastciValuesString);
-  addCirularImagePage1(doc, ID);
+  addCirularImagePage1(doc, ID, qrCodeUrl);
   addVerticalImagesPage2(doc);
   addHeaderPage2(doc);
   addCertificateHodlerPage2(doc, certificateData);
@@ -59,12 +76,12 @@ export const generatePDF = (
     issuanceDate,
     retiredDate,
     creditData,
-    applicantDataDescription
+    applicantDataDescription,
   );
   doc.save("certificate.pdf");
 };
 
-const addGrayPadding = (doc: any) => {
+const addGrayPadding = (doc: IjsPDF) => {
   const paddingInMM = 10.58;
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -76,7 +93,7 @@ const addGrayPadding = (doc: any) => {
   doc.rect(pageWidth - paddingInMM, 0, paddingInMM, pageHeight, "F");
 };
 
-const addGreenRectanglePage1 = (doc: any) => {
+const addGreenRectanglePage1 = (doc: IjsPDF) => {
   const pageWidth = doc.internal.pageSize.getWidth();
 
   doc.setFillColor(219, 231, 214);
@@ -90,14 +107,14 @@ const addGreenRectanglePage1 = (doc: any) => {
   doc.rect(x, y, rectWidth, rectHeight, "F");
 };
 
-const addImagesPage1 = (doc: any) => {
+const addImagesPage1 = (doc: IjsPDF) => {
   doc.addImage(wastePick, "PNG", 10.58, 0, 70, 220);
   doc.addImage(horizontalLeafs, "png", 0, 0, 297, 210);
 
   doc.addImage(leaf1, "png", 137, 20, 10, 8);
 };
 
-const addHeaderPage1 = (doc: any) => {
+const addHeaderPage1 = (doc: IjsPDF) => {
   doc.setFontSize(28);
   doc.setTextColor(32, 105, 72);
   doc.setFont("Open Sans", "bold");
@@ -108,14 +125,17 @@ const addHeaderPage1 = (doc: any) => {
   doc.text("certificate", 142, 44);
 };
 
-const addHorizontalLinePage1 = (doc: any) => {
+const addHorizontalLinePage1 = (doc: IjsPDF) => {
   const pageWidth = doc.internal.pageSize.getWidth();
   doc.setDrawColor(0, 0, 0);
   doc.setLineWidth(1.5);
   doc.line(170, 50, pageWidth - 110, 50);
 };
 
-const addCertificateHolderPage1 = (doc: any, certificateData: any) => {
+const addCertificateHolderPage1 = (
+  doc: IjsPDF,
+  certificateData: CreditOffsetCertificate,
+) => {
   doc.setFontSize(15);
   doc.setTextColor(35, 31, 32);
   doc.setFont("inter", "normal");
@@ -132,7 +152,7 @@ const addCertificateHolderPage1 = (doc: any, certificateData: any) => {
   doc.text(name, xPos, yPos);
 };
 
-const addHorizontalLongLinePage1 = (doc: any) => {
+const addHorizontalLongLinePage1 = (doc: IjsPDF) => {
   const pageWidth = doc.internal.pageSize.getWidth();
   doc.setDrawColor(0, 0, 0);
   doc.setLineWidth(0.5);
@@ -140,27 +160,28 @@ const addHorizontalLongLinePage1 = (doc: any) => {
 };
 
 const addCertificateDetailsPage1 = (
-  doc: any,
-  certificateData: any,
-  plastciValuesString: any
+  doc: IjsPDF,
+  certificateData: CreditOffsetCertificate,
+  plastciValuesString: any,
 ) => {
   doc.setFontSize(15);
   doc.setTextColor(35, 31, 32);
   doc.setFont("inter", "normal");
-  addTextWithSpacing(doc, "FOR OFFSETTING", 154, 110, 0.5);
-
+  // addTextWithSpacing(doc, "FOR OFFSETTING", 154, 110, 0.5);
+  addTextWithSpacing(doc, "FOR MAKING AN IMPACT", 143, 110, 0.5);
+  addTextWithSpacing(doc, "BY NEUTRALIZING AN IMPRESSIVE", 128, 116, 0.5);
   const weightText = certificateData.amount + " KG" || "N/A";
   xPosition.value = calculateXPosition(weightText);
 
   doc.setFontSize(15);
   doc.setTextColor(35, 31, 32);
   doc.setFont("inter", "normal");
-  addTextWithSpacing(doc, "OF", 176, 130, 0.5);
+  addTextWithSpacing(doc, "OF", 176, 132, 0.5);
 
   doc.setFontSize(15);
   doc.setTextColor(32, 105, 72);
   doc.setFont("Open Sans", "bold");
-  doc.text(weightText, xPosition.value, 120);
+  doc.text(weightText, xPosition.value, 124);
 
   const plasticText = plastciValuesString || "N/A";
   xPosition.value = calculateXPosition(plasticText);
@@ -171,27 +192,31 @@ const addCertificateDetailsPage1 = (
   doc.text(plasticText, xPosition.value, 140);
 };
 
-const addCirularImagePage1 = (doc: any, ID: number) => {
+const addCirularImagePage1 = (
+  doc: IjsPDF,
+  ID: string,
+  qrCodeUrl: string | undefined,
+) => {
   doc.addImage(circular, "png", 160, 155, 40, 40);
-  doc.addImage(greenLogo, "png", 176, 162, 7, 6);
   doc.setFontSize(15);
   doc.setTextColor(0, 0, 0);
   doc.setFont("Open Sans", "bold");
   doc.text(ID, 174, 175);
   doc.setTextColor(88, 185, 71);
   doc.setFontSize(12);
-  doc.text("check on", 171, 180);
-  doc.text("blockchain!", 169, 185);
+  if (qrCodeUrl) {
+    doc.addImage(qrCodeUrl, "svg", 168, 164, 23, 23);
+  }
 };
 
-const addVerticalImagesPage2 = (doc: any) => {
+const addVerticalImagesPage2 = (doc: IjsPDF) => {
   doc.addPage("a4", "portrait");
   addGrayPadding(doc);
   doc.addImage(verticalLeafs, "png", 0, 0, 210, 297);
   doc.addImage(leaf1, "png", 30, 23, 10, 8);
 };
 
-const addHeaderPage2 = (doc: any) => {
+const addHeaderPage2 = (doc: IjsPDF) => {
   doc.setFontSize(25);
   doc.setTextColor(32, 105, 72);
   doc.setFont("Open Sans", "normal");
@@ -203,7 +228,10 @@ const addHeaderPage2 = (doc: any) => {
   doc.text("details", 133, 30);
 };
 
-const addCertificateHodlerPage2 = (doc: any, certificateData: any) => {
+const addCertificateHodlerPage2 = (
+  doc: IjsPDF,
+  certificateData: CreditOffsetCertificate,
+) => {
   doc.setFontSize(15);
   doc.setTextColor(32, 105, 72);
   doc.setFont("Open Sans", "bold");
@@ -212,7 +240,7 @@ const addCertificateHodlerPage2 = (doc: any, certificateData: any) => {
   doc.text(certificateData.retiringEntityName, 84, 44);
 };
 
-const addTitle = (doc: any, title: string, yPosition: number) => {
+const addTitle = (doc: IjsPDF, title: string, yPosition: number) => {
   doc.setFontSize(15);
   doc.setTextColor(32, 105, 72);
   doc.setFont("Open Sans", "bold");
@@ -220,7 +248,10 @@ const addTitle = (doc: any, title: string, yPosition: number) => {
   return yPosition + 5;
 };
 
-const prepareMaterialDataForPdf = (materialDetails: [], primaryHeaders: []) => {
+const prepareMaterialDataForPdf = (
+  materialDetails: MaterialDetails[],
+  primaryHeaders: [],
+) => {
   const tableData = materialDetails.map((material) => {
     return primaryHeaders.map((header) => {
       return material[header] || "-";
@@ -231,8 +262,8 @@ const prepareMaterialDataForPdf = (materialDetails: [], primaryHeaders: []) => {
 };
 
 const prepareSecondaryMaterialDataForPdf = (
-  materialDetails: [],
-  secondaryHeaders: []
+  materialDetails: MaterialDetails[],
+  secondaryHeaders: [],
 ) => {
   const tableData = materialDetails.map((material: any) => {
     return secondaryHeaders.map((header: any) => {
@@ -244,18 +275,17 @@ const prepareSecondaryMaterialDataForPdf = (
 };
 
 const addMaterialTableToPdf = (
-  doc: any,
-  materialDetails: [],
+  doc: IjsPDF,
+  materialDetails: MaterialDetails[],
   primaryHeaders: [],
   startY: number,
-  title: string
+  title: string,
 ) => {
   const tableData = prepareMaterialDataForPdf(materialDetails, primaryHeaders);
-  console.log(tableData);
 
   startY += 10;
   startY = addTitle(doc, title, startY);
-  doc.autoTable({
+  autoTable(doc, {
     startY: startY,
     head: [primaryHeaders],
     body: tableData,
@@ -269,7 +299,7 @@ const addMaterialTableToPdf = (
           data.cell.x,
           data.cell.y + data.cell.height,
           data.cell.x + data.cell.width,
-          data.cell.y + data.cell.height
+          data.cell.y + data.cell.height,
         );
       }
       if (data.row.index === 0 && data.cell.section === "head") {
@@ -277,7 +307,7 @@ const addMaterialTableToPdf = (
           data.cell.x,
           data.cell.y,
           data.cell.x + data.cell.width,
-          data.cell.y
+          data.cell.y,
         );
       }
       if (
@@ -288,7 +318,7 @@ const addMaterialTableToPdf = (
           data.cell.x,
           data.cell.y + data.cell.height,
           data.cell.x + data.cell.width,
-          data.cell.y + data.cell.height
+          data.cell.y + data.cell.height,
         );
       }
     },
@@ -296,25 +326,25 @@ const addMaterialTableToPdf = (
       cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
       fontSize: 11,
       lineWidth: 0,
-      align: "center",
+      // align: "center",
       fillColor: false,
       halign: "center",
       textColor: [0, 0, 0],
-      fontFamily: "Inter",
+      // fontFamily: "Inter",
     },
     headStyles: {
       cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
       fillColor: false,
       textColor: [0, 0, 0],
       fontStyle: "bold",
-      align: "center",
+      // align: "center",
       fontSize: 12,
     },
     columnStyles: {
       0: { cellWidth: "auto" },
       1: { cellWidth: "auto" },
-      halign: "center",
-      fillColor: false,
+      // halign: "center",
+      // fillColor: false,
     },
   });
 
@@ -322,17 +352,17 @@ const addMaterialTableToPdf = (
 };
 
 const addSecondaryMaterialTableToPdf = (
-  doc: any,
-  materialDetails: [],
+  doc: IjsPDF,
+  materialDetails: MaterialDetails[],
   secondaryHeaders: [],
-  startY: number
+  startY: number,
 ) => {
   const tableData = prepareSecondaryMaterialDataForPdf(
     materialDetails,
-    secondaryHeaders
+    secondaryHeaders,
   );
   startY -= 10;
-  doc.autoTable({
+  autoTable(doc, {
     startY: startY,
     head: [secondaryHeaders],
     body: tableData,
@@ -346,7 +376,7 @@ const addSecondaryMaterialTableToPdf = (
           data.cell.x,
           data.cell.y + data.cell.height,
           data.cell.x + data.cell.width,
-          data.cell.y + data.cell.height
+          data.cell.y + data.cell.height,
         );
       }
       if (data.row.index === 0 && data.cell.section === "head") {
@@ -354,7 +384,7 @@ const addSecondaryMaterialTableToPdf = (
           data.cell.x,
           data.cell.y,
           data.cell.x + data.cell.width,
-          data.cell.y
+          data.cell.y,
         );
       }
       if (
@@ -365,7 +395,7 @@ const addSecondaryMaterialTableToPdf = (
           data.cell.x,
           data.cell.y + data.cell.height,
           data.cell.x + data.cell.width,
-          data.cell.y + data.cell.height
+          data.cell.y + data.cell.height,
         );
       }
     },
@@ -375,7 +405,7 @@ const addSecondaryMaterialTableToPdf = (
       lineWidth: 0,
       halign: "center",
       textColor: [0, 0, 0],
-      fontFamily: "Inter",
+      // fontFamily: "Inter",
       fontSize: 11,
     },
     headStyles: {
@@ -387,10 +417,10 @@ const addSecondaryMaterialTableToPdf = (
       fontSize: 12,
     },
     columnStyles: {
-      fillColor: false,
+      // fillColor: false,
       0: { cellWidth: "auto" },
       1: { cellWidth: "auto" },
-      halign: "center",
+      // halign: "center",
     },
   });
 
@@ -398,15 +428,15 @@ const addSecondaryMaterialTableToPdf = (
 };
 
 const addSimpleTable = (
-  doc: any,
+  doc: IjsPDF,
   title: string,
   headers: any,
   data: any,
-  startY: number
+  startY: number,
 ) => {
   startY = addTitle(doc, title, startY);
 
-  doc.autoTable({
+  autoTable(doc, {
     startY: startY,
     head: [headers],
     body: data,
@@ -420,7 +450,7 @@ const addSimpleTable = (
           data.cell.x,
           data.cell.y + data.cell.height,
           data.cell.x + data.cell.width,
-          data.cell.y + data.cell.height
+          data.cell.y + data.cell.height,
         );
       }
       if (data.row.index === 0 && data.cell.section === "head") {
@@ -428,7 +458,7 @@ const addSimpleTable = (
           data.cell.x,
           data.cell.y,
           data.cell.x + data.cell.width,
-          data.cell.y
+          data.cell.y,
         );
       }
       if (
@@ -439,7 +469,7 @@ const addSimpleTable = (
           data.cell.x,
           data.cell.y + data.cell.height,
           data.cell.x + data.cell.width,
-          data.cell.y + data.cell.height
+          data.cell.y + data.cell.height,
         );
       }
     },
@@ -450,7 +480,7 @@ const addSimpleTable = (
       halign: "center",
       fillColor: false,
       textColor: [0, 0, 0],
-      fontFamily: "Inter",
+      // fontFamily: "Inter",
     },
     headStyles: {
       cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
@@ -463,8 +493,8 @@ const addSimpleTable = (
     columnStyles: {
       0: { cellWidth: "auto" },
       1: { cellWidth: "auto" },
-      halign: "center",
-      fillColor: false,
+      // halign: "center",
+      // fillColor: false,
     },
   });
 
@@ -472,13 +502,13 @@ const addSimpleTable = (
 };
 
 const addTableWithLinks = (
-  doc: any,
+  doc: IjsPDF,
   title: string,
   data: any,
-  startY: number
+  startY: number,
 ) => {
   startY = addTitle(doc, title, startY);
-  doc.autoTable({
+  autoTable(doc, {
     startY: startY,
     theme: "grid",
     head: [["Name", "URL"]],
@@ -489,7 +519,7 @@ const addTableWithLinks = (
       halign: "center",
       fillColor: false,
       textColor: [0, 0, 0],
-      fontFamily: "Inter",
+      // fontFamily: "Inter",
     },
     headStyles: {
       fillColor: false,
@@ -502,8 +532,8 @@ const addTableWithLinks = (
     columnStyles: {
       0: { cellWidth: "auto" },
       1: { cellWidth: "auto" },
-      halign: "center",
-      fillColor: false,
+      // halign: "center",
+      // fillColor: false,
     },
     willDrawCell: (data: any) => {
       if (data.column.index === 1 && data.cell.section === "body") {
@@ -519,7 +549,7 @@ const addTableWithLinks = (
           data.cell.x,
           data.cell.y + data.cell.height,
           data.cell.x + data.cell.width,
-          data.cell.y + data.cell.height
+          data.cell.y + data.cell.height,
         );
       }
       if (data.row.index === 0 && data.cell.section === "head") {
@@ -527,7 +557,7 @@ const addTableWithLinks = (
           data.cell.x,
           data.cell.y,
           data.cell.x + data.cell.width,
-          data.cell.y
+          data.cell.y,
         );
       }
       if (
@@ -538,7 +568,7 @@ const addTableWithLinks = (
           data.cell.x,
           data.cell.y + data.cell.height,
           data.cell.x + data.cell.width,
-          data.cell.y + data.cell.height
+          data.cell.y + data.cell.height,
         );
       }
       if (data.column.index === 1 && data.cell.section === "body") {
@@ -552,7 +582,7 @@ const addTableWithLinks = (
           const textPosY = data.cell.y + data.cell.height / 1.5;
           doc.text(url, textPosX, textPosY);
           doc.link(textPosX, data.cell.y, textWidth, data.cell.height, {
-            url: url,
+            url: ipfsToHttpsProtocol(url),
           });
         }
       }
@@ -563,20 +593,20 @@ const addTableWithLinks = (
 };
 
 const addAllTables = (
-  doc: any,
+  doc: IjsPDF,
   pagesData: any,
   primaryHeaders: any,
   secondaryHeaders: any,
-  certificateData: any,
+  certificateData: CreditOffsetCertificate,
   collectionAmount: number,
   applicantData: string,
   issuanceDate: string,
   retiredDate: string,
   creditData: any,
-  applicantDataDescription: string
+  applicantDataDescription: string,
 ) => {
   let yPosition = 0;
-  let marginBetweenTables = 10;
+  const marginBetweenTables = 10;
   const pageWidth = doc.internal.pageSize.getWidth();
 
   pagesData.forEach((page: any, pageIndex: number) => {
@@ -593,26 +623,28 @@ const addAllTables = (
         creditData.id,
         retiredDate,
       ];
-      yPosition = addSimpleTable(
-        doc,
-        "Credit Information",
-        ["Amount", "Credit ID", "Retired Date"],
-        [credit],
-        yPosition + marginBetweenTables
-      );
+      yPosition =
+        addSimpleTable(
+          doc,
+          "Credit Information",
+          ["Amount", "Credit ID", "Retired Date"],
+          [credit],
+          yPosition + marginBetweenTables,
+        ) ?? 0;
 
       const collection = [
         collectionAmount + " KG",
         applicantData,
         issuanceDate,
       ];
-      yPosition = addSimpleTable(
-        doc,
-        "Collection Information",
-        ["Amount", "Organization", "Issuance Date"],
-        [collection],
-        yPosition + marginBetweenTables
-      );
+      yPosition =
+        addSimpleTable(
+          doc,
+          "Collection Information",
+          ["Amount", "Organization", "Issuance Date"],
+          [collection],
+          yPosition + marginBetweenTables,
+        ) ?? 0;
 
       const title = "Project Information";
       const description = applicantDataDescription;
@@ -648,13 +680,14 @@ const addAllTables = (
           loc.longitude,
           loc.latitude,
         ]);
-        yPosition = addSimpleTable(
-          doc,
-          "Locations",
-          ["Country", "Longitude", "Latitude"],
-          locationsData,
-          yPosition + marginBetweenTables
-        );
+        yPosition =
+          addSimpleTable(
+            doc,
+            "Locations",
+            ["Country", "Longitude", "Latitude"],
+            locationsData,
+            yPosition + marginBetweenTables,
+          ) ?? 0;
         addedLocations.value = true;
       } else {
         yPosition -= 10;
@@ -663,28 +696,30 @@ const addAllTables = (
           loc.longitude,
           loc.latitude,
         ]);
-        yPosition = addSimpleTable(
-          doc,
-          "",
-          ["Country", "Longitude", "Latitude"],
-          locationsData,
-          yPosition + marginBetweenTables
-        );
+        yPosition =
+          addSimpleTable(
+            doc,
+            "",
+            ["Country", "Longitude", "Latitude"],
+            locationsData,
+            yPosition + marginBetweenTables,
+          ) ?? 0;
       }
     };
-  
+
     const addMediaFiles = (mediaFiles: any) => {
       if (addedMediaFiles.value === false) {
         const photosTableData = mediaFiles.map((mf: any) => ({
           name: mf.name,
           url: mf.url,
         }));
-        yPosition = addTableWithLinks(
-          doc,
-          "Photos",
-          photosTableData,
-          yPosition + marginBetweenTables
-        );
+        yPosition =
+          addTableWithLinks(
+            doc,
+            "Photos",
+            photosTableData,
+            yPosition + marginBetweenTables,
+          ) ?? 0;
         addedMediaFiles.value = true;
       } else {
         yPosition -= 10;
@@ -692,69 +727,75 @@ const addAllTables = (
           name: mf.name,
           url: mf.url,
         }));
-        yPosition = addTableWithLinks(
-          doc,
-          "",
-          photosTableData,
-          yPosition + marginBetweenTables
-        );
+        yPosition =
+          addTableWithLinks(
+            doc,
+            "",
+            photosTableData,
+            yPosition + marginBetweenTables,
+          ) ?? 0;
       }
     };
-  
-    const addMaterialData = (materialDetails: any) => {
+
+    const addMaterialData = (materialDetails: MaterialDetails[]) => {
       if (addedMaterialData.value === false) {
-        yPosition = addMaterialTableToPdf(
-          doc,
-          materialDetails,
-          primaryHeaders,
-          yPosition,
-          "Materials"
-        );
-        yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
-        addedMaterialData.value = true;
-        if (secondaryHeaders.length > 0) {
-          yPosition = addSecondaryMaterialTableToPdf(
+        yPosition =
+          addMaterialTableToPdf(
             doc,
             materialDetails,
-            secondaryHeaders,
-            yPosition
-          );
-          yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
+            primaryHeaders,
+            yPosition,
+            "Material Tracking Events",
+          ) ?? 0;
+        yPosition = (doc.lastAutoTable.finalY ?? 0) + marginBetweenTables;
+        addedMaterialData.value = true;
+        if (secondaryHeaders.length > 0) {
+          yPosition =
+            addSecondaryMaterialTableToPdf(
+              doc,
+              materialDetails,
+              secondaryHeaders,
+              yPosition,
+            ) ?? 0;
+          yPosition = (doc.lastAutoTable.finalY ?? 0) + marginBetweenTables;
         }
       } else {
         yPosition -= 10;
-        yPosition = addMaterialTableToPdf(
-          doc,
-          materialDetails,
-          primaryHeaders,
-          yPosition,
-          ""
-        );
-        yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
-        if (secondaryHeaders.length > 0) {
-          yPosition = addSecondaryMaterialTableToPdf(
+        yPosition =
+          addMaterialTableToPdf(
             doc,
             materialDetails,
-            secondaryHeaders,
-            yPosition
-          );
-          yPosition = doc.lastAutoTable.finalY + marginBetweenTables;
+            primaryHeaders,
+            yPosition,
+            "",
+          ) ?? 0;
+        yPosition = (doc.lastAutoTable.finalY ?? 0) + marginBetweenTables;
+        if (secondaryHeaders.length > 0) {
+          yPosition =
+            addSecondaryMaterialTableToPdf(
+              doc,
+              materialDetails,
+              secondaryHeaders,
+              yPosition,
+            ) ?? 0;
+          yPosition = (doc.lastAutoTable.finalY ?? 0) + marginBetweenTables;
         }
       }
     };
-  
+
     const addBinaryFiles = (binaryFiles: any) => {
       if (addedBinaryFiles.value === false) {
         const binaryFilesTableData = binaryFiles.map((bf: any) => ({
           name: bf.name,
           url: bf.url,
         }));
-        yPosition = addTableWithLinks(
-          doc,
-          "Documents",
-          binaryFilesTableData,
-          yPosition + marginBetweenTables
-        );
+        yPosition =
+          addTableWithLinks(
+            doc,
+            "Documents",
+            binaryFilesTableData,
+            yPosition + marginBetweenTables,
+          ) ?? 0;
         addedBinaryFiles.value = true;
       } else {
         yPosition -= 10;
@@ -762,12 +803,13 @@ const addAllTables = (
           name: bf.name,
           url: bf.url,
         }));
-        yPosition = addTableWithLinks(
-          doc,
-          "",
-          binaryFilesTableData,
-          yPosition + marginBetweenTables
-        );
+        yPosition =
+          addTableWithLinks(
+            doc,
+            "",
+            binaryFilesTableData,
+            yPosition + marginBetweenTables,
+          ) ?? 0;
       }
     };
 
@@ -791,8 +833,6 @@ const addAllTables = (
       doc.addImage(verticalLeafs, "png", 0, 0, 210, 297);
     }
   });
-
-  
 
   resetAddedValues();
 };
