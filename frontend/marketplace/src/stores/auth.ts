@@ -1,38 +1,62 @@
-import { ref, watch, type Ref } from "vue";
+import { type Ref, ref, watch, computed } from "vue";
 import { WEB_ENDPOINT } from "@/config/config";
-import { useLogto, type UserInfoResponse } from "@logto/vue";
+import { type UserInfoResponse, useLogto } from "@logto/vue";
 import { useRedirectAfterLoginUrl } from "@/utils/redirectAfterLoginUrl";
 
+interface AuthCustomData {
+  walletAddress: string;
+}
+
+interface CustomUserInfoResponse extends UserInfoResponse {
+  custom_data: AuthCustomData;
+}
+
+type Logto = ReturnType<typeof useLogto>;
+interface CustomLogto extends Logto {
+  fetchUserInfo: () => Promise<CustomUserInfoResponse | undefined>;
+}
+
 export interface Auth {
-  user: Ref<UserInfoResponse | undefined>;
+  user: Ref<CustomUserInfoResponse | undefined>;
   error: Ref<Error | undefined>;
   isAuthenticated: Ref<boolean>;
   handleSignIn: () => void;
   handleSignOut: () => void;
-  fetchUser: () => Promise<UserInfoResponse | undefined>;
+  fetchUser: () => Promise<CustomUserInfoResponse | undefined>;
   getAccessToken: (resource?: string) => Promise<string | undefined>;
+  walletAddress: Ref<string | undefined>;
 }
 
 export const useAuth = (): Auth => {
   const {
-    signIn: logToSignIn,
-    signOut: logToSignOut,
-    isAuthenticated: logToIsAuthenticated,
-    fetchUserInfo: logToFetchUserInfo,
-    error: logToError,
-    getAccessToken: logToGetAccessToken,
-  } = useLogto();
+    signIn: logtoSignIn,
+    signOut: logtoSignOut,
+    isAuthenticated: logtoIsAuthenticated,
+    fetchUserInfo: logtoFetchUserInfo,
+    error: logtoError,
+    getAccessToken: logtoGetAccessToken,
+  } = useLogto() as CustomLogto;
 
-  const error = ref<Ref<Error | undefined>>(logToError);
-  const user = ref<UserInfoResponse | undefined>(undefined);
-  const isAuthenticated = ref(logToIsAuthenticated);
-  const getAccessToken = logToGetAccessToken;
+  const error = ref<Ref<Error | undefined>>(logtoError);
+  const user = ref<CustomUserInfoResponse | undefined>(undefined);
+  const isAuthenticated = ref(logtoIsAuthenticated);
+  const getAccessToken = logtoGetAccessToken;
+  const walletAddress = computed<string | undefined>(() => {
+    if (user.value) {
+      try {
+        return user.value.custom_data.walletAddress;
+      } catch (error) {
+        throw new Error("User does not have wallet address");
+      }
+    }
+    return undefined;
+  });
 
   watch(
     isAuthenticated,
     async (newValue) => {
       if (newValue) {
-        user.value = await logToFetchUserInfo();
+        user.value = await logtoFetchUserInfo();
       } else {
         user.value = undefined;
       }
@@ -42,15 +66,15 @@ export const useAuth = (): Auth => {
 
   const handleSignIn = () => {
     useRedirectAfterLoginUrl().set();
-    logToSignIn(`${WEB_ENDPOINT}/callback`);
+    logtoSignIn(`${WEB_ENDPOINT}/callback`);
   };
 
   const handleSignOut = () => {
-    logToSignOut(WEB_ENDPOINT);
+    logtoSignOut(WEB_ENDPOINT);
   };
 
-  const fetchUser = async (): Promise<UserInfoResponse | undefined> => {
-    return await logToFetchUserInfo();
+  const fetchUser = async (): Promise<CustomUserInfoResponse | undefined> => {
+    return await logtoFetchUserInfo();
   };
 
   return {
@@ -61,5 +85,6 @@ export const useAuth = (): Auth => {
     handleSignOut,
     fetchUser,
     getAccessToken,
+    walletAddress,
   };
 };

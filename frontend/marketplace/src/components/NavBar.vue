@@ -4,7 +4,7 @@ import { onMounted, ref } from "vue";
 import { toast } from "vue3-toastify";
 import { useRoute } from "@/router";
 import SellectWalletModal from "@/components/SellectWalletModal.vue";
-import { getWalletFromType } from "@/utils/wallet-utils";
+import { getWalletFromType, disconnectWallet } from "@/utils/wallet-utils";
 import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
 
@@ -64,12 +64,6 @@ const handleSelectWallet = async (walletType: string) => {
     localStorage.setItem("wallet", walletType);
   }
   closeSelectWalletModal();
-};
-
-const disconnectWallet = () => {
-  localStorage.removeItem("address");
-  localStorage.removeItem("wallet");
-  location.reload();
 };
 
 const copyAddress = async () => {
