@@ -32,6 +32,16 @@
               "number_of_credits": {
                 "$ref": "#/definitions/Uint64"
               },
+              "operator": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/Addr"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "price_per_credit": {
                 "$ref": "#/definitions/Coin"
               }
@@ -115,6 +125,117 @@
             "properties": {
               "denom": {
                 "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "required": [
+          "freeze_credits"
+        ],
+        "properties": {
+          "freeze_credits": {
+            "type": "object",
+            "required": [
+              "buyer",
+              "denom",
+              "number_of_credits_to_freeze",
+              "owner",
+              "timeout_unix_timestamp"
+            ],
+            "properties": {
+              "buyer": {
+                "$ref": "#/definitions/Addr"
+              },
+              "denom": {
+                "type": "string"
+              },
+              "number_of_credits_to_freeze": {
+                "type": "integer",
+                "format": "uint64",
+                "minimum": 0.0
+              },
+              "owner": {
+                "$ref": "#/definitions/Addr"
+              },
+              "timeout_unix_timestamp": {
+                "type": "integer",
+                "format": "uint64",
+                "minimum": 0.0
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "required": [
+          "cancel_frozen_credits"
+        ],
+        "properties": {
+          "cancel_frozen_credits": {
+            "type": "object",
+            "required": [
+              "buyer",
+              "denom",
+              "number_of_frozen_credits_to_cancel",
+              "owner"
+            ],
+            "properties": {
+              "buyer": {
+                "$ref": "#/definitions/Addr"
+              },
+              "denom": {
+                "type": "string"
+              },
+              "number_of_frozen_credits_to_cancel": {
+                "type": "integer",
+                "format": "uint64",
+                "minimum": 0.0
+              },
+              "owner": {
+                "$ref": "#/definitions/Addr"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      {
+        "type": "object",
+        "required": [
+          "release_frozen_credits"
+        ],
+        "properties": {
+          "release_frozen_credits": {
+            "type": "object",
+            "required": [
+              "buyer",
+              "denom",
+              "number_of_credits_to_release",
+              "owner"
+            ],
+            "properties": {
+              "buyer": {
+                "$ref": "#/definitions/Addr"
+              },
+              "denom": {
+                "type": "string"
+              },
+              "number_of_credits_to_release": {
+                "type": "integer",
+                "format": "uint64",
+                "minimum": 0.0
+              },
+              "owner": {
+                "$ref": "#/definitions/Addr"
               }
             },
             "additionalProperties": false
@@ -386,6 +507,16 @@
             "number_of_credits": {
               "$ref": "#/definitions/Uint64"
             },
+            "operator": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Addr"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
             "owner": {
               "$ref": "#/definitions/Addr"
             },
@@ -455,6 +586,16 @@
             },
             "number_of_credits": {
               "$ref": "#/definitions/Uint64"
+            },
+            "operator": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Addr"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "owner": {
               "$ref": "#/definitions/Addr"
