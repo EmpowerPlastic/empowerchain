@@ -13,12 +13,12 @@ const MAX_TIMEOUT_SECONDS : u64 = 2419200; // 4 weeks
 pub fn execute(deps: DepsMut, env: Env, info: MessageInfo, msg: ExecuteMsg) -> Result<Response, ContractError> {
     match msg {
         ExecuteMsg::CreateListing { denom, number_of_credits, price_per_credit, operator } => execute_create_listing(deps, env, info, denom, number_of_credits, price_per_credit, operator),
-        ExecuteMsg::BuyCredits { owner, denom, number_of_credits_to_buy } => execute_buy_credits(deps, env, info, owner, denom, number_of_credits_to_buy),
+        ExecuteMsg::BuyCredits { owner, denom, number_of_credits_to_buy, retire, retiring_entity_name, retiring_entity_additional_data } => execute_buy_credits(deps, env, info, owner, denom, number_of_credits_to_buy, retire, retiring_entity_name, retiring_entity_additional_data),
         ExecuteMsg::UpdateListing { denom, number_of_credits, price_per_credit } => execute_update_listing(deps, env, info, denom, number_of_credits, price_per_credit),
         ExecuteMsg::CancelListing { denom } => execute_cancel_listing(deps, env, info, denom),
         ExecuteMsg::FreezeCredits { owner, denom, number_of_credits_to_freeze, buyer, timeout_unix_timestamp } => execute_freeze_credits(deps, env, info, owner, denom, number_of_credits_to_freeze, buyer, timeout_unix_timestamp),
         ExecuteMsg::CancelFrozenCredits { owner, denom, number_of_frozen_credits_to_cancel, buyer } => execute_cancel_frozen_credits(deps, env, info, owner, denom, buyer, number_of_frozen_credits_to_cancel),
-        ExecuteMsg::ReleaseFrozenCredits { owner, denom, number_of_credits_to_release, buyer } => execute_release_frozen_credits(deps, env, info, owner, denom, buyer, number_of_credits_to_release),
+        ExecuteMsg::ReleaseFrozenCredits { owner, denom, number_of_credits_to_release, buyer, retire, retiring_entity_name, retiring_entity_additional_data } => execute_release_frozen_credits(deps, env, info, owner, denom, buyer, number_of_credits_to_release, retire, retiring_entity_name, retiring_entity_additional_data),
         ExecuteMsg::EditFeeSplitConfig { fee_percentage, shares } => execute_edit_fee_split_config(deps, info, fee_percentage, shares),
     }
 }
@@ -79,6 +79,9 @@ pub fn execute_buy_credits(
     owner: Addr,
     denom: String,
     number_of_credits_to_buy: u64,
+    retire: bool,
+    retiring_entity_name: Option<String>,
+    retiring_entity_additional_data: Option<String>,
 ) -> Result<Response, ContractError> {
     if number_of_credits_to_buy == 0 {
         return Err(ContractError::ZeroCredits {});
@@ -111,6 +114,9 @@ pub fn execute_buy_credits(
         info.sender.to_string(),
         listing.denom.clone(),
         number_of_credits_to_buy,
+        retire,
+        retiring_entity_name,
+        retiring_entity_additional_data,
     );
 
     let funds_before_fee_split = Coin {
@@ -170,6 +176,9 @@ fn execute_update_listing(
             info.sender.to_string(),
             listing.denom.clone(),
             number_of_credits_to_transfer.into(),
+            false,
+            None,
+            None,
         ));
     } else if number_of_credits > listing.number_of_credits {
         // If the number of credits is increasing, we need to transfer the difference from the owner
@@ -218,6 +227,9 @@ fn execute_cancel_listing(
         info.sender.to_string(),
         listing.denom.clone(),
         listing.number_of_credits.into(),
+        false,
+        None,
+        None,
     );
 
     LISTINGS.remove(deps.storage, (listing.owner.clone(), listing.denom.clone()));
@@ -357,6 +369,9 @@ fn execute_release_frozen_credits(
     denom: String,
     buyer: Addr,
     number_of_credits_to_release: u64,
+    retire: bool,
+    retiring_entity_name: Option<String>,
+    retiring_entity_additional_data: Option<String>,
 ) -> Result<Response, ContractError> {
     if number_of_credits_to_release == 0 {
         return Err(ContractError::ZeroCredits {});
@@ -408,6 +423,9 @@ fn execute_release_frozen_credits(
         freeze.buyer.to_string(),
         listing.denom.clone(),
         number_of_credits_to_release,
+        retire,
+        retiring_entity_name,
+        retiring_entity_additional_data,
     );
     let mut msgs = vec![transfer_credits_msg];
     if fee_split_msgs.len() > 0 {
@@ -464,6 +482,8 @@ fn create_transfer_credits_to_contract_msg(from: String, to: String, denom: Stri
         denom,
         amount,
         retire: false,
+        retiring_entity_name: "".to_string(),
+        retiring_entity_additional_data: "".to_string(),
     };
     let exec_msg = MsgExec {
         msgs: vec![transfer_msg.to_any().unwrap()],
@@ -475,13 +495,15 @@ fn create_transfer_credits_to_contract_msg(from: String, to: String, denom: Stri
     }
 }
 
-fn create_transfer_credits_from_contract_msg(env: Env, to: String, denom: String, number_of_credits: u64) -> CosmosMsg {
+fn create_transfer_credits_from_contract_msg(env: Env, to: String, denom: String, number_of_credits: u64, retire: bool, retiring_entity_name: Option<String>, retiring_entity_additional_data: Option<String>,) -> CosmosMsg {
     let transfer_to_buyer_msg = MsgTransferCredits {
         from: env.contract.address.to_string(),
         to,
         denom,
         amount: number_of_credits,
-        retire: false,
+        retire,
+        retiring_entity_name: retiring_entity_name.unwrap_or("".to_string()),
+        retiring_entity_additional_data: retiring_entity_additional_data.unwrap_or("".to_string()),
     };
     CosmosMsg::Stargate {
         type_url: MsgTransferCredits::TYPE_URL.to_string(),
@@ -502,6 +524,10 @@ pub struct MsgTransferCredits {
     pub amount: u64,
     #[prost(bool, tag = "5")]
     pub retire: bool,
+    #[prost(string, tag = "6")]
+    pub retiring_entity_name: ::prost::alloc::string::String,
+    #[prost(string, tag = "7")]
+    pub retiring_entity_additional_data: ::prost::alloc::string::String,
 }
 
 impl TypeUrl for MsgTransferCredits {
@@ -784,6 +810,8 @@ mod tests {
                 assert_eq!(transfer_msg.denom, "pcrd");
                 assert_eq!(transfer_msg.amount, 58);
                 assert_eq!(transfer_msg.retire, false);
+                assert_eq!(transfer_msg.retiring_entity_name, "");
+                assert_eq!(transfer_msg.retiring_entity_additional_data, "");
             } else {
                 panic!("Expected Stargate message");
             }
@@ -1073,6 +1101,9 @@ mod tests {
                 owner: creator_info.sender.clone(),
                 denom: "pcrd".to_string(),
                 number_of_credits_to_buy: 10u64,
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let res = execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg).unwrap();
             assert_eq!(res.attributes.len(), 7);
@@ -1090,6 +1121,8 @@ mod tests {
                 assert_eq!(transfer_msg.denom, "pcrd");
                 assert_eq!(transfer_msg.amount, 10);
                 assert_eq!(transfer_msg.retire, false);
+                assert_eq!(transfer_msg.retiring_entity_name, "");
+                assert_eq!(transfer_msg.retiring_entity_additional_data, "");
             } else {
                 panic!("Expected Stargate message");
             }
@@ -1134,6 +1167,9 @@ mod tests {
                 owner: creator_info.sender.clone(),
                 denom: "pcrd".to_string(),
                 number_of_credits_to_buy: 10u64,
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let res = execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg).unwrap();
             assert_eq!(res.attributes.len(), 7);
@@ -1151,6 +1187,8 @@ mod tests {
                 assert_eq!(transfer_msg.denom, "pcrd");
                 assert_eq!(transfer_msg.amount, 10);
                 assert_eq!(transfer_msg.retire, false);
+                assert_eq!(transfer_msg.retiring_entity_name, "");
+                assert_eq!(transfer_msg.retiring_entity_additional_data, "");
             } else {
                 panic!("Expected Stargate message");
             }
@@ -1205,6 +1243,9 @@ mod tests {
                 owner: creator_info.sender.clone(),
                 denom: "pcrd".to_string(),
                 number_of_credits_to_buy: 10u64,
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg.clone()).unwrap();
             execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg.clone()).unwrap();
@@ -1212,6 +1253,74 @@ mod tests {
 
             let listing = LISTINGS.load(deps.as_ref().storage, (creator_info.sender.clone(), "pcrd".to_string())).map_err(|_| ContractError::ListingNotFound {});
             assert_eq!(listing.unwrap_err(), ContractError::ListingNotFound {});
+        }
+
+        #[test]
+        fn test_buy_credits_with_retire() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(30u64),
+                price_per_credit: Coin {
+                    denom: "umpwr".to_string(),
+                    amount: Uint128::from(3u128),
+                },
+                operator: None,
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let buyer_info = mock_info("buyer", &coins(30, "umpwr"));
+            let buy_credits_msg_1 = ExecuteMsg::BuyCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_buy: 10u64,
+                retire: true,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
+            };
+            let res1 = execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg_1.clone()).unwrap();
+            let buy_credits_msg_2 = ExecuteMsg::BuyCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_buy: 10u64,
+                retire: true,
+                retiring_entity_name: "with_name".to_string().into(),
+                retiring_entity_additional_data: "with_additional_data".to_string().into(),
+            };
+            let res2 = execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg_2.clone()).unwrap();
+
+            if let CosmosMsg::Stargate { type_url, value } = &res1.messages[0].msg {
+                assert_eq!(type_url, MsgTransferCredits::TYPE_URL);
+
+                let transfer_msg = MsgTransferCredits::decode(value.as_slice()).unwrap();
+                assert_eq!(transfer_msg.from, MOCK_CONTRACT_ADDR.to_string());
+                assert_eq!(transfer_msg.to, buyer_info.sender.to_string());
+                assert_eq!(transfer_msg.denom, "pcrd");
+                assert_eq!(transfer_msg.amount, 10);
+                assert_eq!(transfer_msg.retire, true);
+                assert_eq!(transfer_msg.retiring_entity_name, "");
+                assert_eq!(transfer_msg.retiring_entity_additional_data, "");
+            } else {
+                panic!("Expected Stargate message");
+            }
+
+            if let CosmosMsg::Stargate { type_url, value } = &res2.messages[0].msg {
+                assert_eq!(type_url, MsgTransferCredits::TYPE_URL);
+
+                let transfer_msg = MsgTransferCredits::decode(value.as_slice()).unwrap();
+                assert_eq!(transfer_msg.from, MOCK_CONTRACT_ADDR.to_string());
+                assert_eq!(transfer_msg.to, buyer_info.sender.to_string());
+                assert_eq!(transfer_msg.denom, "pcrd");
+                assert_eq!(transfer_msg.amount, 10);
+                assert_eq!(transfer_msg.retire, true);
+                assert_eq!(transfer_msg.retiring_entity_name, "with_name");
+                assert_eq!(transfer_msg.retiring_entity_additional_data, "with_additional_data");
+            } else {
+                panic!("Expected Stargate message");
+            }
         }
 
         #[test]
@@ -1225,6 +1334,9 @@ mod tests {
                 owner: creator_info.sender,
                 denom: "pcrd".to_string(),
                 number_of_credits_to_buy: 10u64,
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let err = execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg).unwrap_err();
             assert_eq!(err, ContractError::ListingNotFound {});
@@ -1252,6 +1364,9 @@ mod tests {
                 owner: creator_info.sender,
                 denom: "pcrd".to_string(),
                 number_of_credits_to_buy: 0u64,
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let err = execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg).unwrap_err();
             assert_eq!(err, ContractError::ZeroCredits {});
@@ -1279,6 +1394,9 @@ mod tests {
                 owner: creator_info.sender,
                 denom: "pcrd".to_string(),
                 number_of_credits_to_buy: 1u64,
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let err = execute(deps.as_mut(), mock_env(), buyer_info_with_not_enough_umpwr.clone(), buy_credits_msg).unwrap_err();
             assert_eq!(err, ContractError::NotEnoughFunds {});
@@ -1306,6 +1424,9 @@ mod tests {
                 owner: creator_info.sender,
                 denom: "pcrd".to_string(),
                 number_of_credits_to_buy: 1u64,
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let err = execute(deps.as_mut(), mock_env(), buyer_info_with_too_much_umpwr.clone(), buy_credits_msg).unwrap_err();
             assert_eq!(err, ContractError::TooMuchFunds {});
@@ -1333,6 +1454,9 @@ mod tests {
                 owner: creator_info.sender,
                 denom: "pcrd".to_string(),
                 number_of_credits_to_buy: 43u64,
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let err = execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg).unwrap_err();
             assert_eq!(err, ContractError::NotEnoughCredits {});
@@ -1384,6 +1508,8 @@ mod tests {
                 assert_eq!(transfer_msg.denom, "pcrd");
                 assert_eq!(transfer_msg.amount, 42);
                 assert_eq!(transfer_msg.retire, false);
+                assert_eq!(transfer_msg.retiring_entity_name, "");
+                assert_eq!(transfer_msg.retiring_entity_additional_data, "");
             } else {
                 panic!("Expected Stargate message");
             }
@@ -1782,6 +1908,9 @@ mod tests {
                 owner: creator_info.sender.clone(),
                 denom: "pcrd".to_string(),
                 number_of_credits_to_buy: 9u64,
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg).unwrap();
 
@@ -1830,6 +1959,9 @@ mod tests {
                 owner: creator_info.sender.clone(),
                 denom: "pcrd".to_string(),
                 number_of_credits_to_buy: 10u64,
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let err = execute(deps.as_mut(), mock_env(), buyer_info.clone(), buy_credits_msg).unwrap_err();
             assert_eq!(err, ContractError::NotEnoughCredits {});
@@ -2275,6 +2407,9 @@ mod tests {
                 denom: "pcrd".to_string(),
                 number_of_credits_to_release: 10u64,
                 buyer: buyer_info.sender.clone(),
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let res = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_message).unwrap();
             assert_eq!(res.attributes.len(), 6);
@@ -2289,6 +2424,72 @@ mod tests {
                 assert_eq!(transfer_msg.denom, "pcrd");
                 assert_eq!(transfer_msg.amount, 10);
                 assert_eq!(transfer_msg.retire, false);
+                assert_eq!(transfer_msg.retiring_entity_name, "");
+                assert_eq!(transfer_msg.retiring_entity_additional_data, "");
+            } else {
+                panic!("Expected Stargate message");
+            }
+
+            let listing = crate::state::LISTINGS.load(deps.as_ref().storage, (creator_info.sender.clone(), "pcrd".to_string())).unwrap();
+            assert_eq!(listing.number_of_credits, Uint64::from(27u64)); // 10 less, still
+
+            let freeze = crate::state::freezes().load(deps.as_ref().storage, (creator_info.sender.clone(), "pcrd".to_string(), Addr::unchecked("buyer"))).unwrap();
+            assert_eq!(freeze.number_of_credits, Uint64::from(5u64)); // 5 less now
+        }
+
+        #[test]
+        fn test_release_frozen_credits_happy_path_with_retire() {
+            let mut deps = mock_dependencies();
+            let creator_info = mock_info("creator", &[]);
+            let operator_info = mock_info("operator", &[]);
+            let buyer_info = mock_info("buyer", &[]);
+            instantiate(deps.as_mut(), mock_env(), creator_info.clone(), InstantiateMsg { admin: creator_info.sender.to_string(), fee_percentage: Decimal::percent(0), shares: vec![] }).unwrap();
+
+            let create_listing_msg = ExecuteMsg::CreateListing {
+                denom: "pcrd".to_string(),
+                number_of_credits: Uint64::from(42u64),
+                price_per_credit: Coin {
+                    denom: "token".to_string(),
+                    amount: Uint128::from(1337u128),
+                },
+                operator: Option::from(operator_info.clone().sender),
+            };
+            execute(deps.as_mut(), mock_env(), creator_info.clone(), create_listing_msg).unwrap();
+
+            let env = mock_env();
+            let freeze_message = ExecuteMsg::FreezeCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_freeze: 15u64,
+                buyer: buyer_info.sender.clone(),
+                timeout_unix_timestamp: env.block.time.seconds() + 1000u64,
+            };
+            execute(deps.as_mut(), mock_env(), operator_info.clone(), freeze_message).unwrap();
+
+            let release_message = ExecuteMsg::ReleaseFrozenCredits {
+                owner: creator_info.sender.clone(),
+                denom: "pcrd".to_string(),
+                number_of_credits_to_release: 10u64,
+                buyer: buyer_info.sender.clone(),
+                retire: true,
+                retiring_entity_name: "retire_name".to_string().into(),
+                retiring_entity_additional_data: "retire_data".to_string().into(),
+            };
+            let res = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_message).unwrap();
+            assert_eq!(res.attributes.len(), 6);
+            assert_eq!(res.messages.len(), 1);
+
+            if let CosmosMsg::Stargate { type_url, value } = &res.messages[0].msg {
+                assert_eq!(type_url, MsgTransferCredits::TYPE_URL);
+
+                let transfer_msg = MsgTransferCredits::decode(value.as_slice()).unwrap();
+                assert_eq!(transfer_msg.from, MOCK_CONTRACT_ADDR.to_string());
+                assert_eq!(transfer_msg.to, buyer_info.sender.to_string());
+                assert_eq!(transfer_msg.denom, "pcrd");
+                assert_eq!(transfer_msg.amount, 10);
+                assert_eq!(transfer_msg.retire, true);
+                assert_eq!(transfer_msg.retiring_entity_name, "retire_name");
+                assert_eq!(transfer_msg.retiring_entity_additional_data, "retire_data");
             } else {
                 panic!("Expected Stargate message");
             }
@@ -2334,6 +2535,9 @@ mod tests {
                 denom: "pcrd".to_string(),
                 number_of_credits_to_release: 15u64,
                 buyer: buyer_info.sender.clone(),
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let res = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_message).unwrap();
             assert_eq!(res.attributes.len(), 6);
@@ -2387,6 +2591,9 @@ mod tests {
                 denom: "pcrd".to_string(),
                 number_of_credits_to_release: 10u64,
                 buyer: buyer_info.sender.clone(),
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let operator_info = mock_info("operator", &coins(66, "token"));
             let res = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_message).unwrap();
@@ -2455,6 +2662,9 @@ mod tests {
                 denom: "pcrd".to_string(),
                 number_of_credits_to_release: 10u64,
                 buyer: buyer_info.sender.clone(),
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let operator_info = mock_info("operator", &coins(65, "token"));
             let err = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_message).unwrap_err();
@@ -2503,6 +2713,9 @@ mod tests {
                 denom: "pcrd".to_string(),
                 number_of_credits_to_release: 10u64,
                 buyer: buyer_info.sender.clone(),
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let operator_info = mock_info("operator", &coins(67, "token"));
             let err = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_message).unwrap_err();
@@ -2544,6 +2757,9 @@ mod tests {
                 denom: "pcrd".to_string(),
                 number_of_credits_to_release: 0u64,
                 buyer: buyer_info.sender.clone(),
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let err = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_message_zero).unwrap_err();
             assert_eq!(err, crate::error::ContractError::ZeroCredits {});
@@ -2553,6 +2769,9 @@ mod tests {
                 denom: "pcrd".to_string(),
                 number_of_credits_to_release: 16u64,
                 buyer: buyer_info.sender.clone(),
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let err = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_message_too_many).unwrap_err();
             assert_eq!(err, crate::error::ContractError::NotEnoughCredits {});
@@ -2562,6 +2781,9 @@ mod tests {
                 denom: "pcrd".to_string(),
                 number_of_credits_to_release: 10u64,
                 buyer: Addr::unchecked("not_found"),
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let err = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_freeze_not_found).unwrap_err();
             assert_eq!(err, crate::error::ContractError::FreezeNotFound {});
@@ -2571,6 +2793,9 @@ mod tests {
                 denom: "not_found".to_string(),
                 number_of_credits_to_release: 10u64,
                 buyer: buyer_info.sender.clone(),
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let err = execute(deps.as_mut(), mock_env(), operator_info.clone(), release_listing_not_found).unwrap_err();
             assert_eq!(err, crate::error::ContractError::ListingNotFound {});
@@ -2610,6 +2835,9 @@ mod tests {
                 denom: "pcrd".to_string(),
                 number_of_credits_to_release: 10u64,
                 buyer: buyer_info.sender.clone(),
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let non_operator_info = mock_info("non_operator", &[]);
             let err = execute(deps.as_mut(), mock_env(), non_operator_info.clone(), release_message).unwrap_err();
@@ -2651,6 +2879,9 @@ mod tests {
                 denom: "pcrd".to_string(),
                 number_of_credits_to_release: 10u64,
                 buyer: buyer_info.sender.clone(),
+                retire: false,
+                retiring_entity_name: None,
+                retiring_entity_additional_data: None,
             };
             let err = execute(deps.as_mut(), env, operator_info.clone(), release_message).unwrap_err();
             assert_eq!(err, crate::error::ContractError::TimedOut {});

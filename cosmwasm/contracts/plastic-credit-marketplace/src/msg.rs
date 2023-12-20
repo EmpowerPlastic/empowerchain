@@ -28,6 +28,9 @@ pub enum ExecuteMsg {
         owner: Addr,
         denom: String,
         number_of_credits_to_buy: u64,
+        retire: bool,
+        retiring_entity_name: Option<String>,
+        retiring_entity_additional_data: Option<String>,
     },
     CancelListing {
         denom: String,
@@ -50,6 +53,9 @@ pub enum ExecuteMsg {
         denom: String,
         number_of_credits_to_release: u64,
         buyer: Addr,
+        retire: bool,
+        retiring_entity_name: Option<String>,
+        retiring_entity_additional_data: Option<String>,
     },
     EditFeeSplitConfig {
         fee_percentage: Decimal,
