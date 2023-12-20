@@ -37,7 +37,7 @@ const app = createApp(App);
 const logtoConfig: LogtoConfig = {
   endpoint: LOGTO_ENDPOINT,
   appId: LOGTO_APP_ID,
-  scopes: ["email"],
+  scopes: ["email", "custom_data"],
   resources: [PC_BACKEND_ENDPOINT],
 };
 
