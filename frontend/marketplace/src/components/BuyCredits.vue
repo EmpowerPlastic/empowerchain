@@ -30,7 +30,7 @@ export interface BuyCreditsProps {
 }
 
 const { isAuthenticated, getAccessToken } = useAuth();
-const { isWalletConnected } = useWallet();
+const { isWalletConnected, address: walletAddress } = useWallet();
 const { notifyer } = useNotifyer();
 const amount = ref<number>(1);
 const props = defineProps<BuyCreditsProps>();
@@ -92,7 +92,7 @@ const checkBalanceForPurchase = (amount: number) => {
 };
 
 const handleBuyCredits = async (retirererName: string) => {
-  if (!isWalletConnected.value) {
+  if (!isWalletConnected.value || !walletAddress.value) {
     notifyer.error("Please connect to wallet");
     return;
   }
@@ -149,7 +149,7 @@ const handleBuyCredits = async (retirererName: string) => {
   try {
     await retireCredits.handleRetireCredits(
       amount.value,
-      props.owner,
+      walletAddress.value,
       props.denom,
       retirererName,
       () => {
