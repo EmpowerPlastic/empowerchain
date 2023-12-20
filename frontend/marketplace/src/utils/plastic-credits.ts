@@ -46,14 +46,12 @@ export const useRetireCredits = () => {
       );
       if (response && !response.code) {
         loading.value = false;
-        toast.success("Retire credits successfully");
-        closeModal();
+        onSuccess();
       } else {
         throw new Error("Retire credits failed " + response.rawLog);
       }
     } catch (error) {
       loading.value = false;
-      toast.error("Retire credits failed: " + resolveSdkError(error));
       throw error;
     }
   };
