@@ -2,13 +2,15 @@ package marketplace_test
 
 import (
 	"fmt"
+	"time"
+
 	wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"
-	"github.com/EmpowerPlastic/empowerchain/tests/e2e"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"time"
+
+	"github.com/EmpowerPlastic/empowerchain/tests/e2e"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *E2ETestSuite) TestFreezeCancelCredits() {
@@ -25,6 +27,7 @@ func (s *E2ETestSuite) TestFreezeCancelCredits() {
 	buyerKey, err := val.ClientCtx.Keyring.Key(e2e.RandomKeyName)
 	s.Require().NoError(err)
 	buyerAddress, err := buyerKey.GetAddress()
+	s.Require().NoError(err)
 
 	grantCmd := cli.MsgGrantTransferAuthorizationCmd()
 	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, grantCmd, append([]string{

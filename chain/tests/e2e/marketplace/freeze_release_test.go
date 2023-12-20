@@ -2,16 +2,18 @@ package marketplace_test
 
 import (
 	"fmt"
+	"time"
+
 	wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"
-	"github.com/EmpowerPlastic/empowerchain/tests/e2e"
-	"github.com/EmpowerPlastic/empowerchain/x/certificates"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 	"github.com/cometbft/cometbft/crypto/secp256k1"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"time"
+
+	"github.com/EmpowerPlastic/empowerchain/tests/e2e"
+	"github.com/EmpowerPlastic/empowerchain/x/certificates"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
+	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *E2ETestSuite) TestFreezeReleaseCreditsWithoutFeeSplit() {

@@ -2,7 +2,6 @@ package marketplace_test
 
 import (
 	"fmt"
-	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 
 	wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -10,6 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/EmpowerPlastic/empowerchain/tests/e2e"
+	"github.com/EmpowerPlastic/empowerchain/x/certificates"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
