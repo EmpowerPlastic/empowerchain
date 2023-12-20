@@ -18,6 +18,7 @@ import { useFetcher, authHeader } from "@/utils/fetcher";
 import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
 import { useNotifyer } from "@/utils/notifyer";
+import { useRetireCredits } from "@/utils/plastic-credits";
 
 export interface BuyCreditsProps {
   availableCredits: number;
@@ -29,7 +30,7 @@ export interface BuyCreditsProps {
 }
 
 const { isAuthenticated, getAccessToken } = useAuth();
-const { isWalletConnected } = useWallet();
+const { isWalletConnected, address: walletAddress } = useWallet();
 const { notifyer } = useNotifyer();
 const amount = ref<number>(1);
 const props = defineProps<BuyCreditsProps>();
@@ -40,6 +41,7 @@ const currentBalance = ref(Number.MAX_SAFE_INTEGER);
 const availableCreditsString = computed<string>(() => {
   return `${props.availableCredits}/${props.initialCredits}`;
 });
+const retireCredits = useRetireCredits();
 
 watch(isWalletConnected, async (newVal) => {
   if (newVal === true) {
@@ -89,8 +91,8 @@ const checkBalanceForPurchase = (amount: number) => {
   }
 };
 
-const handleBuyCredits = async () => {
-  if (!isWalletConnected.value) {
+const handleBuyCredits = async (retirererName: string) => {
+  if (!isWalletConnected.value || !walletAddress.value) {
     notifyer.error("Please connect to wallet");
     return;
   }
@@ -143,6 +145,24 @@ const handleBuyCredits = async () => {
   } finally {
     showButtonSpinner.value = false;
   }
+
+  try {
+    await retireCredits.handleRetireCredits(
+      amount.value,
+      walletAddress.value,
+      props.denom,
+      retirererName,
+      () => {
+        notifyer.success(
+          "Retired credits successfully and generated a certificate",
+        );
+      },
+    );
+    notifyer.success("Retire credits successfully");
+  } catch (error) {
+    notifyer.error("Retire credits failed: " + resolveSdkError(error));
+    throw new Error("Error retiring credits, " + error);
+  }
 };
 
 const checkIfCreditsAvailable = () => {
@@ -153,7 +173,7 @@ const checkIfCreditsAvailable = () => {
   return true;
 };
 
-const handleCardPayment = async () => {
+const handleCardPayment = async (retirererName: string) => {
   if (!checkIfCreditsAvailable()) {
     return;
   }
@@ -171,6 +191,7 @@ const handleCardPayment = async () => {
     amount: amount.value,
     denom: props.denom,
     listingOwner: props.owner,
+    retirererName: retirererName,
   };
   try {
     const accessToken = await getAccessToken(PC_BACKEND_ENDPOINT);

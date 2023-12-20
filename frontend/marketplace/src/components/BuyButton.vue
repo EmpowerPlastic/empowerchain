@@ -1,20 +1,22 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useAuth } from "@/stores/auth";
 import { isValidCreditAmount } from "@/utils/utils";
+import CertificateHolderModal from "@/components/CertificateHolderModal.vue";
 export interface BuyButtonProps {
   showButtonSpinner: boolean;
   insufficientBalance: boolean;
   coinFormatted: string;
-  handleCardPayment: () => void;
-  handleBuyCredits: () => void;
+  handleCardPayment: (name: string) => void;
+  handleBuyCredits: (name: string) => void;
   isWalletConnected: boolean;
   availableCredits: number;
   buyingCreditAmount: number;
 }
 const props = defineProps<BuyButtonProps>();
-
 const { isAuthenticated, handleSignIn } = useAuth();
+const modalEl = ref<HTMLDialogElement | null>(null);
+const continueHandler = ref<((name: string) => void) | undefined>(undefined);
 
 enum BuyButtonState {
   DISABLED = "disabled",
@@ -68,12 +70,19 @@ const buttonText = computed(() => {
   }
 });
 
+const addModalToHandler = (newContinueHandler: (name: string) => void) => {
+  return () => {
+    continueHandler.value = newContinueHandler;
+    modalEl.value?.show();
+  };
+};
+
 const buttonHandler = computed<(() => void) | undefined>(() => {
   switch (buttonState.value) {
     case BuyButtonState.ENABLED_CARD:
-      return props.handleCardPayment;
+      return addModalToHandler(props.handleCardPayment);
     case BuyButtonState.ENABLED_WALLET:
-      return props.handleBuyCredits;
+      return addModalToHandler(props.handleBuyCredits);
     case BuyButtonState.ENABLED_UNAUTHORIZED:
       return handleSignIn;
     default:
@@ -114,4 +123,5 @@ const buttonsCssClasses = `
     <span v-if="showButtonSpinner" class="loading loading-spinner"></span>
     {{ buttonText }}
   </button>
+  <CertificateHolderModal ref="modalEl" @continue="continueHandler" />
 </template>
