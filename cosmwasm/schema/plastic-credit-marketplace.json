@@ -91,7 +91,8 @@
             "required": [
               "denom",
               "number_of_credits_to_buy",
-              "owner"
+              "owner",
+              "retire"
             ],
             "properties": {
               "denom": {
@@ -104,6 +105,21 @@
               },
               "owner": {
                 "$ref": "#/definitions/Addr"
+              },
+              "retire": {
+                "type": "boolean"
+              },
+              "retiring_entity_additional_data": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "retiring_entity_name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
               }
             },
             "additionalProperties": false
@@ -220,7 +236,8 @@
               "buyer",
               "denom",
               "number_of_credits_to_release",
-              "owner"
+              "owner",
+              "retire"
             ],
             "properties": {
               "buyer": {
@@ -236,6 +253,21 @@
               },
               "owner": {
                 "$ref": "#/definitions/Addr"
+              },
+              "retire": {
+                "type": "boolean"
+              },
+              "retiring_entity_additional_data": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "retiring_entity_name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
               }
             },
             "additionalProperties": false

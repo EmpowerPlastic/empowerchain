@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint64, Uint128, Addr, Decimal, Coin, Share, QueryMsg, Config, ListingResponse, Listing, ListingsResponse } from "./PlasticCreditMarketplace.types";
+import { InstantiateMsg, ExecuteMsg, Uint64, Addr, Uint128, Decimal, Coin, Share, QueryMsg, Config, ListingResponse, Listing, ListingsResponse } from "./PlasticCreditMarketplace.types";
 export interface PlasticCreditMarketplaceReadOnlyInterface {
   contractAddress: string;
   listings: ({
@@ -77,10 +77,12 @@ export interface PlasticCreditMarketplaceInterface extends PlasticCreditMarketpl
   createListing: ({
     denom,
     numberOfCredits,
+    operator,
     pricePerCredit
   }: {
     denom: string;
     numberOfCredits: Uint64;
+    operator?: Addr;
     pricePerCredit: Coin;
   }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
   updateListing: ({
@@ -95,16 +97,63 @@ export interface PlasticCreditMarketplaceInterface extends PlasticCreditMarketpl
   buyCredits: ({
     denom,
     numberOfCreditsToBuy,
-    owner
+    owner,
+    retire,
+    retiringEntityAdditionalData,
+    retiringEntityName
   }: {
     denom: string;
     numberOfCreditsToBuy: number;
     owner: Addr;
+    retire: boolean;
+    retiringEntityAdditionalData?: string;
+    retiringEntityName?: string;
   }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
   cancelListing: ({
     denom
   }: {
     denom: string;
+  }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
+  freezeCredits: ({
+    buyer,
+    denom,
+    numberOfCreditsToFreeze,
+    owner,
+    timeoutUnixTimestamp
+  }: {
+    buyer: Addr;
+    denom: string;
+    numberOfCreditsToFreeze: number;
+    owner: Addr;
+    timeoutUnixTimestamp: number;
+  }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
+  cancelFrozenCredits: ({
+    buyer,
+    denom,
+    numberOfFrozenCreditsToCancel,
+    owner
+  }: {
+    buyer: Addr;
+    denom: string;
+    numberOfFrozenCreditsToCancel: number;
+    owner: Addr;
+  }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
+  releaseFrozenCredits: ({
+    buyer,
+    denom,
+    numberOfCreditsToRelease,
+    owner,
+    retire,
+    retiringEntityAdditionalData,
+    retiringEntityName
+  }: {
+    buyer: Addr;
+    denom: string;
+    numberOfCreditsToRelease: number;
+    owner: Addr;
+    retire: boolean;
+    retiringEntityAdditionalData?: string;
+    retiringEntityName?: string;
   }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
   editFeeSplitConfig: ({
     feePercentage,
@@ -128,22 +177,28 @@ export class PlasticCreditMarketplaceClient extends PlasticCreditMarketplaceQuer
     this.updateListing = this.updateListing.bind(this);
     this.buyCredits = this.buyCredits.bind(this);
     this.cancelListing = this.cancelListing.bind(this);
+    this.freezeCredits = this.freezeCredits.bind(this);
+    this.cancelFrozenCredits = this.cancelFrozenCredits.bind(this);
+    this.releaseFrozenCredits = this.releaseFrozenCredits.bind(this);
     this.editFeeSplitConfig = this.editFeeSplitConfig.bind(this);
   }
 
   createListing = async ({
     denom,
     numberOfCredits,
+    operator,
     pricePerCredit
   }: {
     denom: string;
     numberOfCredits: Uint64;
+    operator?: Addr;
     pricePerCredit: Coin;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       create_listing: {
         denom,
         number_of_credits: numberOfCredits,
+        operator,
         price_per_credit: pricePerCredit
       }
     }, fee, memo, funds);
@@ -168,17 +223,26 @@ export class PlasticCreditMarketplaceClient extends PlasticCreditMarketplaceQuer
   buyCredits = async ({
     denom,
     numberOfCreditsToBuy,
-    owner
+    owner,
+    retire,
+    retiringEntityAdditionalData,
+    retiringEntityName
   }: {
     denom: string;
     numberOfCreditsToBuy: number;
     owner: Addr;
+    retire: boolean;
+    retiringEntityAdditionalData?: string;
+    retiringEntityName?: string;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       buy_credits: {
         denom,
         number_of_credits_to_buy: numberOfCreditsToBuy,
-        owner
+        owner,
+        retire,
+        retiring_entity_additional_data: retiringEntityAdditionalData,
+        retiring_entity_name: retiringEntityName
       }
     }, fee, memo, funds);
   };
@@ -190,6 +254,78 @@ export class PlasticCreditMarketplaceClient extends PlasticCreditMarketplaceQuer
     return await this.client.execute(this.sender, this.contractAddress, {
       cancel_listing: {
         denom
+      }
+    }, fee, memo, funds);
+  };
+  freezeCredits = async ({
+    buyer,
+    denom,
+    numberOfCreditsToFreeze,
+    owner,
+    timeoutUnixTimestamp
+  }: {
+    buyer: Addr;
+    denom: string;
+    numberOfCreditsToFreeze: number;
+    owner: Addr;
+    timeoutUnixTimestamp: number;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      freeze_credits: {
+        buyer,
+        denom,
+        number_of_credits_to_freeze: numberOfCreditsToFreeze,
+        owner,
+        timeout_unix_timestamp: timeoutUnixTimestamp
+      }
+    }, fee, memo, funds);
+  };
+  cancelFrozenCredits = async ({
+    buyer,
+    denom,
+    numberOfFrozenCreditsToCancel,
+    owner
+  }: {
+    buyer: Addr;
+    denom: string;
+    numberOfFrozenCreditsToCancel: number;
+    owner: Addr;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      cancel_frozen_credits: {
+        buyer,
+        denom,
+        number_of_frozen_credits_to_cancel: numberOfFrozenCreditsToCancel,
+        owner
+      }
+    }, fee, memo, funds);
+  };
+  releaseFrozenCredits = async ({
+    buyer,
+    denom,
+    numberOfCreditsToRelease,
+    owner,
+    retire,
+    retiringEntityAdditionalData,
+    retiringEntityName
+  }: {
+    buyer: Addr;
+    denom: string;
+    numberOfCreditsToRelease: number;
+    owner: Addr;
+    retire: boolean;
+    retiringEntityAdditionalData?: string;
+    retiringEntityName?: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      release_frozen_credits: {
+        buyer,
+        denom,
+        number_of_credits_to_release: numberOfCreditsToRelease,
+        owner,
+        retire,
+        retiring_entity_additional_data: retiringEntityAdditionalData,
+        retiring_entity_name: retiringEntityName
       }
     }, fee, memo, funds);
   };
