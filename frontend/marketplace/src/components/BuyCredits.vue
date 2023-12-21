@@ -18,7 +18,6 @@ import { useFetcher, authHeader } from "@/utils/fetcher";
 import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
 import { useNotifyer } from "@/utils/notifyer";
-import { useRetireCredits } from "@/utils/plastic-credits";
 
 export interface BuyCreditsProps {
   availableCredits: number;
@@ -41,7 +40,6 @@ const currentBalance = ref(Number.MAX_SAFE_INTEGER);
 const availableCreditsString = computed<string>(() => {
   return `${props.availableCredits}/${props.initialCredits}`;
 });
-const retireCredits = useRetireCredits();
 
 watch(isWalletConnected, async (newVal) => {
   if (newVal === true) {
@@ -126,6 +124,8 @@ const handleBuyCredits = async (retirererName: string) => {
         denom: props.denom,
         owner: props.owner,
         numberOfCreditsToBuy: amount.value,
+        retire: true,
+        retiring_entity_name: retirererName,
       },
       fee,
       "",
@@ -137,31 +137,15 @@ const handleBuyCredits = async (retirererName: string) => {
       ],
     );
     if (res) {
-      notifyer.success("Purchase was successful");
+      notifyer.success(
+        "Retired credits successfully and generated a certificate",
+      );
     }
   } catch (error) {
     console.error(error);
     notifyer.error("Purchase failed: " + resolveSdkError(error));
   } finally {
     showButtonSpinner.value = false;
-  }
-
-  try {
-    await retireCredits.handleRetireCredits(
-      amount.value,
-      walletAddress.value,
-      props.denom,
-      retirererName,
-      () => {
-        notifyer.success(
-          "Retired credits successfully and generated a certificate",
-        );
-      },
-    );
-    notifyer.success("Retire credits successfully");
-  } catch (error) {
-    notifyer.error("Retire credits failed: " + resolveSdkError(error));
-    throw new Error("Error retiring credits, " + error);
   }
 };
 
@@ -206,7 +190,7 @@ const handleCardPayment = async (retirererName: string) => {
     const paymentGatewayLink = await response.text();
     window.location.href = paymentGatewayLink;
   } catch (error) {
-    console.error(error);
+    console.error("Custom error", error);
     notifyer.error("This API call is not implemented yet"); // TODO: handle error
   } finally {
     showButtonSpinner.value = false;
