@@ -168,7 +168,7 @@ const copyAddress = async () => {
               </div>
               <div class="menu py-2 items-center w-full">
                 <a href="/certificate" class="btn nav-dropdown-button">
-                  My Credits
+                  My Certificates
                 </a>
                 <a
                   href="/profile"
@@ -293,7 +293,7 @@ const copyAddress = async () => {
 
               <div class="menu py-2 items-center w-full">
                 <a href="/certificate" class="btn nav-dropdown-button">
-                  My Credits
+                  My Certificates
                 </a>
                 <a
                   href="/profile"

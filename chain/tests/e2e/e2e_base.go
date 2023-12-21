@@ -34,6 +34,7 @@ const (
 	RandomKeyName             = "randomKey"
 	ContractAdminKeyName      = "contractAdmin"
 	NoCoinsIssuerAdminKeyName = "nocoins"
+	OperatorKeyName           = "operator"
 	Val1KeyName               = "node0"
 	Val2KeyName               = "node1"
 	Val3KeyName               = "node2"
@@ -44,6 +45,7 @@ const (
 	RandomAddress             = "empower15hxwswcmmkasaar65n3vkmp6skurvtas3xzl7s"
 	ContractAdminAddress      = "empower1reurz37gn2sk3vgr3fupcultkagzverqczer0l"
 	NoCoinsIssuerAdminAddress = "empower1xgsaene8aqfknmldemvl5q0mtgcgjv9svupqwu"
+	OperatorAddress           = "empower1sqlanjwywjq84u29xvgfq7uv2d3p26u26d9c5t"
 	DevAddress                = "empower1egyu4d0zn38cs7fsynf2zq6ckppe9ecn0eh5zh"
 	SomeOtherRandomAddress    = "empower1skasndc8qy35zwymj62h4m6vl423vrf34de6xz"
 )
@@ -173,6 +175,15 @@ func (s *TestSuite) SetupSuite() {
 	_, err = kb.NewAccount(
 		NoCoinsIssuerAdminKeyName,
 		"venture strong firm clap primary sample record ahead spin inherit skull daughter cherry relief estate maid squeeze charge hair produce animal discover margin edit",
+		keyring.DefaultBIP39Passphrase,
+		sdk.FullFundraiserPath,
+		hd.Secp256k1,
+	)
+	s.Require().NoError(err)
+
+	_, err = kb.NewAccount(
+		OperatorKeyName,
+		"expect guilt like ritual shrimp virtual panda plate pull dawn little retire bachelor weasel liquid remain diamond pitch mask sauce chest emotion aspect project",
 		keyring.DefaultBIP39Passphrase,
 		sdk.FullFundraiserPath,
 		hd.Secp256k1,
@@ -414,4 +425,5 @@ func AddGenesisE2ETestData(cdc codec.Codec, genesisState *genesistools.GenesisSt
 	genesistools.AddGenesisBaseAccountAndBalance(cdc, genesisState, sdk.MustAccAddressFromBech32(RandomAddress), balances)
 	genesistools.AddGenesisBaseAccountAndBalance(cdc, genesisState, sdk.MustAccAddressFromBech32(ContractAdminAddress), balances)
 	genesistools.AddGenesisBaseAccountAndBalance(cdc, genesisState, sdk.MustAccAddressFromBech32(NoCoinsIssuerAdminAddress), sdk.NewCoins(sdk.NewCoin(bondDenom, sdk.NewInt(10))))
+	genesistools.AddGenesisBaseAccountAndBalance(cdc, genesisState, sdk.MustAccAddressFromBech32(OperatorAddress), balances)
 }
