@@ -2,8 +2,10 @@ package marketplace_test
 
 import (
 	"fmt"
+	"time"
 
 	wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"
+	"github.com/cometbft/cometbft/crypto/secp256k1"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,7 +16,7 @@ import (
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
-func (s *E2ETestSuite) TestBuyCreditsWithoutFeeSplit() {
+func (s *E2ETestSuite) TestFreezeReleaseCreditsWithoutFeeSplit() {
 	val := s.Network.Validators[0]
 	marketplaceAddress := s.instantiateMarketplace(MarketplaceInstantiateMessage{
 		Admin:         e2e.ContractAdminAddress,
@@ -25,8 +27,9 @@ func (s *E2ETestSuite) TestBuyCreditsWithoutFeeSplit() {
 	s.Require().NoError(err)
 	creditOwnerAddress, err := creditOwnerKey.GetAddress()
 	s.Require().NoError(err)
-	buyerKey, err := val.ClientCtx.Keyring.Key(e2e.RandomKeyName)
-	s.Require().NoError(err)
+	randomPrivKey := secp256k1.GenPrivKeySecp256k1([]byte("random string 0"))
+	randomPubKey := randomPrivKey.PubKey()
+	randomBuyerAddress := sdk.AccAddress(randomPubKey.Address().Bytes())
 
 	grantCmd := cli.MsgGrantTransferAuthorizationCmd()
 	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, grantCmd, append([]string{
@@ -44,7 +47,7 @@ func (s *E2ETestSuite) TestBuyCreditsWithoutFeeSplit() {
 	executeContractCmd := wasmcli.ExecuteContractCmd()
 	out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
 		marketplaceAddress,
-		fmt.Sprintf(`{"create_listing": {"denom": "PTEST/00001", "number_of_credits": "5", "price_per_credit": {"denom": "%s", "amount": "1500000"}}}`, sdk.DefaultBondDenom),
+		fmt.Sprintf(`{"create_listing": {"denom": "PTEST/00001", "number_of_credits": "5", "price_per_credit": {"denom": "%s", "amount": "1500000"}, "operator": "%s"}}`, sdk.DefaultBondDenom, e2e.OperatorAddress),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, creditOwnerKey.Name),
 	}, s.CommonFlags...))
 	s.Require().NoError(err, out.String())
@@ -52,33 +55,34 @@ func (s *E2ETestSuite) TestBuyCreditsWithoutFeeSplit() {
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
-	// Get balances before the transaction
-	creditOwnerBalanceBefore := s.GetBankBalance(e2e.ApplicantAddress, sdk.DefaultBondDenom)
-	buyerBalanceBefore := s.GetBankBalance(e2e.RandomAddress, sdk.DefaultBondDenom)
-	buyerCreditBalanceBefore := s.GetCreditBalance(e2e.RandomAddress, "PTEST/00001")
-
-	// Buy some credits
+	// Freeze credits
+	timeoutUnixTimestamp := time.Now().Unix() + 1000 // 1000 seconds into the future
 	out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
 		marketplaceAddress,
-		fmt.Sprintf(`{"buy_credits": {"owner": "%s", "denom": "PTEST/00001", "number_of_credits_to_buy": 2, "retire": false}}`, creditOwnerAddress.String()),
-		fmt.Sprintf("--amount=%s%s", "3000000", sdk.DefaultBondDenom),
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, buyerKey.Name),
+		fmt.Sprintf(`{"freeze_credits": {"owner": "%s", "denom": "PTEST/00001", "number_of_credits_to_freeze": 5, "buyer": "%s", "timeout_unix_timestamp": %d}}`, creditOwnerAddress, randomBuyerAddress, timeoutUnixTimestamp),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, e2e.OperatorKeyName),
 	}, s.CommonFlags...))
 	s.Require().NoError(err, out.String())
 	cliResponse, err = s.GetCliResponse(val.ClientCtx, out.Bytes())
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
-	// Get balances after the transaction
-	creditOwnerBalanceAfter := s.GetBankBalance(e2e.ApplicantAddress, sdk.DefaultBondDenom)
-	buyerBalanceAfter := s.GetBankBalance(e2e.RandomAddress, sdk.DefaultBondDenom)
+	// Get balances before the transaction
+	buyerCreditBalanceBefore := s.GetCreditBalance(randomBuyerAddress.String(), "PTEST/00001")
 
-	// Check that the coin balances are correct
-	s.Require().Equal(creditOwnerBalanceBefore+3000000, creditOwnerBalanceAfter)
-	s.Require().Equal(buyerBalanceBefore-3000000-e2e.DefaultFee.Amount.Uint64(), buyerBalanceAfter)
+	// Release freeze
+	out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
+		marketplaceAddress,
+		fmt.Sprintf(`{"release_frozen_credits": {"owner": "%s", "denom": "PTEST/00001", "number_of_credits_to_release": 2, "buyer": "%s", "retire": false}}`, creditOwnerAddress, randomBuyerAddress),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, e2e.OperatorKeyName),
+	}, s.CommonFlags...))
+	s.Require().NoError(err, out.String())
+	cliResponse, err = s.GetCliResponse(val.ClientCtx, out.Bytes())
+	s.Require().NoError(err)
+	s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 	// Check that the credits were transferred
-	buyerCreditBalance := s.GetCreditBalance(e2e.RandomAddress, "PTEST/00001")
+	buyerCreditBalance := s.GetCreditBalance(randomBuyerAddress.String(), "PTEST/00001")
 	s.Require().Equal(plasticcredit.CreditAmount{
 		Active:  buyerCreditBalanceBefore.Active + 2,
 		Retired: buyerCreditBalanceBefore.Retired,
@@ -90,7 +94,7 @@ func (s *E2ETestSuite) TestBuyCreditsWithoutFeeSplit() {
 	}, contractCreditBalance)
 }
 
-func (s *E2ETestSuite) TestBuyCreditsWithFeeSplit() {
+func (s *E2ETestSuite) TestFreezeReleaseCreditsWithFeeShare() {
 	val := s.Network.Validators[0]
 	marketplaceAddress := s.instantiateMarketplace(MarketplaceInstantiateMessage{
 		Admin:         e2e.ContractAdminAddress,
@@ -110,8 +114,9 @@ func (s *E2ETestSuite) TestBuyCreditsWithFeeSplit() {
 	s.Require().NoError(err)
 	creditOwnerAddress, err := creditOwnerKey.GetAddress()
 	s.Require().NoError(err)
-	buyerKey, err := val.ClientCtx.Keyring.Key(e2e.RandomKeyName)
-	s.Require().NoError(err)
+	randomPrivKey := secp256k1.GenPrivKeySecp256k1([]byte("random string 1"))
+	randomPubKey := randomPrivKey.PubKey()
+	randomBuyerAddress := sdk.AccAddress(randomPubKey.Address().Bytes())
 
 	grantCmd := cli.MsgGrantTransferAuthorizationCmd()
 	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, grantCmd, append([]string{
@@ -129,7 +134,7 @@ func (s *E2ETestSuite) TestBuyCreditsWithFeeSplit() {
 	executeContractCmd := wasmcli.ExecuteContractCmd()
 	out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
 		marketplaceAddress,
-		fmt.Sprintf(`{"create_listing": {"denom": "PTEST/00001", "number_of_credits": "5", "price_per_credit": {"denom": "%s", "amount": "1500000"}}}`, sdk.DefaultBondDenom),
+		fmt.Sprintf(`{"create_listing": {"denom": "PTEST/00001", "number_of_credits": "5", "price_per_credit": {"denom": "%s", "amount": "1500000"}, "operator": "%s"}}`, sdk.DefaultBondDenom, e2e.OperatorAddress),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, creditOwnerKey.Name),
 	}, s.CommonFlags...))
 	s.Require().NoError(err, out.String())
@@ -137,20 +142,33 @@ func (s *E2ETestSuite) TestBuyCreditsWithFeeSplit() {
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
-	// Get balances before the transaction
-	creditOwnerBalanceBefore := s.GetBankBalance(e2e.ApplicantAddress, sdk.DefaultBondDenom)
-	buyerBalanceBefore := s.GetBankBalance(e2e.RandomAddress, sdk.DefaultBondDenom)
-	devBalanceBefore := s.GetBankBalance(e2e.DevAddress, sdk.DefaultBondDenom)
-	someOtherRandomBalanceBefore := s.GetBankBalance(e2e.SomeOtherRandomAddress, sdk.DefaultBondDenom)
-	buyerCreditBalanceBefore := s.GetCreditBalance(e2e.RandomAddress, "PTEST/00001")
-
-	// Buy some credits
+	// Freeze credits
+	timeoutUnixTimestamp := time.Now().Unix() + 1000 // 1000 seconds into the future
 	out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
 		marketplaceAddress,
-		fmt.Sprintf(`{"buy_credits": {"owner": "%s", "denom": "PTEST/00001", "number_of_credits_to_buy": 2, "retire": false}}`, creditOwnerAddress.String()),
-		fmt.Sprintf("--amount=%s%s", "3000000", sdk.DefaultBondDenom),
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, buyerKey.Name),
+		fmt.Sprintf(`{"freeze_credits": {"owner": "%s", "denom": "PTEST/00001", "number_of_credits_to_freeze": 5, "buyer": "%s", "timeout_unix_timestamp": %d}}`, creditOwnerAddress, randomBuyerAddress, timeoutUnixTimestamp),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, e2e.OperatorKeyName),
+	}, s.CommonFlags...))
+	s.Require().NoError(err, out.String())
+	cliResponse, err = s.GetCliResponse(val.ClientCtx, out.Bytes())
+	s.Require().NoError(err)
+	s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
+
+	// Get balances before the transaction
+	operatorBalanceBefore := s.GetBankBalance(e2e.OperatorAddress, sdk.DefaultBondDenom)
+	creditOwnerBalanceBefore := s.GetBankBalance(e2e.ApplicantAddress, sdk.DefaultBondDenom)
+	buyerBalanceBefore := s.GetBankBalance(randomBuyerAddress.String(), sdk.DefaultBondDenom)
+	devBalanceBefore := s.GetBankBalance(e2e.DevAddress, sdk.DefaultBondDenom)
+	someOtherRandomBalanceBefore := s.GetBankBalance(e2e.SomeOtherRandomAddress, sdk.DefaultBondDenom)
+	buyerCreditBalanceBefore := s.GetCreditBalance(randomBuyerAddress.String(), "PTEST/00001")
+
+	// Release freeze
+	out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
+		marketplaceAddress,
+		fmt.Sprintf(`{"release_frozen_credits": {"owner": "%s", "denom": "PTEST/00001", "number_of_credits_to_release": 2, "buyer": "%s", "retire": false}}`, creditOwnerAddress, randomBuyerAddress),
+		fmt.Sprintf("--amount=%s%s", "15000", sdk.DefaultBondDenom),
 		fmt.Sprintf("--%s=%s", flags.FlagGas, "300000"),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, e2e.OperatorKeyName),
 	}, s.CommonFlags...))
 	s.Require().NoError(err, out.String())
 	cliResponse, err = s.GetCliResponse(val.ClientCtx, out.Bytes())
@@ -158,19 +176,21 @@ func (s *E2ETestSuite) TestBuyCreditsWithFeeSplit() {
 	s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 	// Get balances after the transaction
+	operatorBalanceAfter := s.GetBankBalance(e2e.OperatorAddress, sdk.DefaultBondDenom)
 	creditOwnerBalanceAfter := s.GetBankBalance(e2e.ApplicantAddress, sdk.DefaultBondDenom)
-	buyerBalanceAfter := s.GetBankBalance(e2e.RandomAddress, sdk.DefaultBondDenom)
+	buyerBalanceAfter := s.GetBankBalance(randomBuyerAddress.String(), sdk.DefaultBondDenom)
 	devBalanceAfter := s.GetBankBalance(e2e.DevAddress, sdk.DefaultBondDenom)
 	someOtherRandomBalanceAfter := s.GetBankBalance(e2e.SomeOtherRandomAddress, sdk.DefaultBondDenom)
 
 	// Check that the coin balances are correct
-	s.Require().Equal(creditOwnerBalanceBefore+2985000, creditOwnerBalanceAfter)
-	s.Require().Equal(buyerBalanceBefore-3000000-e2e.DefaultFee.Amount.Uint64(), buyerBalanceAfter)
+	s.Require().Equal(operatorBalanceBefore-15000-e2e.DefaultFee.Amount.Uint64(), operatorBalanceAfter)
+	s.Require().Equal(creditOwnerBalanceBefore, creditOwnerBalanceAfter) // Payment is happening off-chain in this scenario
+	s.Require().Equal(buyerBalanceBefore, buyerBalanceAfter)             // Payment is happening off-chain in this scenario
 	s.Require().Equal(devBalanceBefore+10500, devBalanceAfter)
 	s.Require().Equal(someOtherRandomBalanceBefore+4500, someOtherRandomBalanceAfter)
 
 	// Check that the credits were transferred
-	buyerCreditBalance := s.GetCreditBalance(e2e.RandomAddress, "PTEST/00001")
+	buyerCreditBalance := s.GetCreditBalance(randomBuyerAddress.String(), "PTEST/00001")
 	s.Require().Equal(plasticcredit.CreditAmount{
 		Active:  buyerCreditBalanceBefore.Active + 2,
 		Retired: buyerCreditBalanceBefore.Retired,
@@ -182,7 +202,7 @@ func (s *E2ETestSuite) TestBuyCreditsWithFeeSplit() {
 	}, contractCreditBalance)
 }
 
-func (s *E2ETestSuite) TestBuyCreditsWithRetire() {
+func (s *E2ETestSuite) TestFreezeReleaseCreditsWithRetire() {
 	val := s.Network.Validators[0]
 	marketplaceAddress := s.instantiateMarketplace(MarketplaceInstantiateMessage{
 		Admin:         e2e.ContractAdminAddress,
@@ -193,8 +213,9 @@ func (s *E2ETestSuite) TestBuyCreditsWithRetire() {
 	s.Require().NoError(err)
 	creditOwnerAddress, err := creditOwnerKey.GetAddress()
 	s.Require().NoError(err)
-	buyerKey, err := val.ClientCtx.Keyring.Key(e2e.RandomKeyName)
-	s.Require().NoError(err)
+	randomPrivKey := secp256k1.GenPrivKeySecp256k1([]byte("random string 2"))
+	randomPubKey := randomPrivKey.PubKey()
+	randomBuyerAddress := sdk.AccAddress(randomPubKey.Address().Bytes())
 
 	grantCmd := cli.MsgGrantTransferAuthorizationCmd()
 	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, grantCmd, append([]string{
@@ -212,7 +233,7 @@ func (s *E2ETestSuite) TestBuyCreditsWithRetire() {
 	executeContractCmd := wasmcli.ExecuteContractCmd()
 	out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
 		marketplaceAddress,
-		fmt.Sprintf(`{"create_listing": {"denom": "PTEST/00001", "number_of_credits": "5", "price_per_credit": {"denom": "%s", "amount": "1500000"}}}`, sdk.DefaultBondDenom),
+		fmt.Sprintf(`{"create_listing": {"denom": "PTEST/00001", "number_of_credits": "5", "price_per_credit": {"denom": "%s", "amount": "1500000"}, "operator": "%s"}}`, sdk.DefaultBondDenom, e2e.OperatorAddress),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, creditOwnerKey.Name),
 	}, s.CommonFlags...))
 	s.Require().NoError(err, out.String())
@@ -220,35 +241,34 @@ func (s *E2ETestSuite) TestBuyCreditsWithRetire() {
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
-	// Get balances before the transaction
-	creditOwnerBalanceBefore := s.GetBankBalance(e2e.ApplicantAddress, sdk.DefaultBondDenom)
-	buyerBalanceBefore := s.GetBankBalance(e2e.RandomAddress, sdk.DefaultBondDenom)
-	buyerCreditBalanceBefore := s.GetCreditBalance(e2e.RandomAddress, "PTEST/00001")
-	certsBefore := s.GetCertificates(e2e.RandomAddress)
-
-	// Buy some credits
+	// Freeze credits
+	timeoutUnixTimestamp := time.Now().Unix() + 1000 // 1000 seconds into the future
 	out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
 		marketplaceAddress,
-		fmt.Sprintf(`{"buy_credits": {"owner": "%s", "denom": "PTEST/00001", "number_of_credits_to_buy": 2, "retire": true, "retiring_entity_name": "retire_name", "retiring_entity_additional_data": "additional_retire_date"}}`, creditOwnerAddress.String()),
-		fmt.Sprintf("--amount=%s%s", "3000000", sdk.DefaultBondDenom),
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, buyerKey.Name),
-		fmt.Sprintf("--%s=%s", flags.FlagGas, "300000"),
+		fmt.Sprintf(`{"freeze_credits": {"owner": "%s", "denom": "PTEST/00001", "number_of_credits_to_freeze": 5, "buyer": "%s", "timeout_unix_timestamp": %d}}`, creditOwnerAddress, randomBuyerAddress, timeoutUnixTimestamp),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, e2e.OperatorKeyName),
 	}, s.CommonFlags...))
 	s.Require().NoError(err, out.String())
 	cliResponse, err = s.GetCliResponse(val.ClientCtx, out.Bytes())
 	s.Require().NoError(err)
 	s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
-	// Get balances after the transaction
-	creditOwnerBalanceAfter := s.GetBankBalance(e2e.ApplicantAddress, sdk.DefaultBondDenom)
-	buyerBalanceAfter := s.GetBankBalance(e2e.RandomAddress, sdk.DefaultBondDenom)
+	// Get balances before the transaction
+	buyerCreditBalanceBefore := s.GetCreditBalance(randomBuyerAddress.String(), "PTEST/00001")
 
-	// Check that the coin balances are correct
-	s.Require().Equal(creditOwnerBalanceBefore+3000000, creditOwnerBalanceAfter)
-	s.Require().Equal(buyerBalanceBefore-3000000-e2e.DefaultFee.Amount.Uint64(), buyerBalanceAfter)
+	// Release freeze
+	out, err = clitestutil.ExecTestCLICmd(val.ClientCtx, executeContractCmd, append([]string{
+		marketplaceAddress,
+		fmt.Sprintf(`{"release_frozen_credits": {"owner": "%s", "denom": "PTEST/00001", "number_of_credits_to_release": 2, "buyer": "%s", "retire": true, "retiring_entity_name": "test_retire_name", "retiring_entity_additional_data": "test_retire_data"}}`, creditOwnerAddress, randomBuyerAddress),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, e2e.OperatorKeyName),
+	}, s.CommonFlags...))
+	s.Require().NoError(err, out.String())
+	cliResponse, err = s.GetCliResponse(val.ClientCtx, out.Bytes())
+	s.Require().NoError(err)
+	s.Require().Equal(uint32(0), cliResponse.Code, cliResponse.RawLog)
 
 	// Check that the credits were transferred
-	buyerCreditBalance := s.GetCreditBalance(e2e.RandomAddress, "PTEST/00001")
+	buyerCreditBalance := s.GetCreditBalance(randomBuyerAddress.String(), "PTEST/00001")
 	s.Require().Equal(plasticcredit.CreditAmount{
 		Active:  buyerCreditBalanceBefore.Active,
 		Retired: buyerCreditBalanceBefore.Retired + 2,
@@ -260,19 +280,19 @@ func (s *E2ETestSuite) TestBuyCreditsWithRetire() {
 	}, contractCreditBalance)
 
 	// Check that the certificate was created
-	certs := s.GetCertificates(e2e.RandomAddress)
-	s.Require().Len(certs, len(certsBefore)+1)
-	s.Require().Equal(certs[len(certs)-1].Owner, e2e.RandomAddress)
-	s.Require().Equal(certs[len(certs)-1].Type, certificates.CertificateType_CREDIT_RETIREMENT)
-	s.Require().Equal(certs[len(certs)-1].Issuer, e2e.IssuerAddress)
-	s.Require().Equal(certs[len(certs)-1].AdditionalData[0].Key, "denom")
-	s.Require().Equal(certs[len(certs)-1].AdditionalData[0].Value, "PTEST/00001")
-	s.Require().Equal(certs[len(certs)-1].AdditionalData[1].Key, "amount")
-	s.Require().Equal(certs[len(certs)-1].AdditionalData[1].Value, "2")
-	s.Require().Equal(certs[len(certs)-1].AdditionalData[2].Key, "retiring_entity_address")
-	s.Require().Equal(certs[len(certs)-1].AdditionalData[2].Value, e2e.RandomAddress)
-	s.Require().Equal(certs[len(certs)-1].AdditionalData[3].Key, "retiring_entity_name")
-	s.Require().Equal(certs[len(certs)-1].AdditionalData[3].Value, "retire_name")
-	s.Require().Equal(certs[len(certs)-1].AdditionalData[4].Key, "retiring_entity_additional_data")
-	s.Require().Equal(certs[len(certs)-1].AdditionalData[4].Value, "additional_retire_date")
+	certs := s.GetCertificates(randomBuyerAddress.String())
+	s.Require().Len(certs, 1)
+	s.Require().Equal(certs[0].Owner, randomBuyerAddress.String())
+	s.Require().Equal(certs[0].Type, certificates.CertificateType_CREDIT_RETIREMENT)
+	s.Require().Equal(certs[0].Issuer, e2e.IssuerAddress)
+	s.Require().Equal(certs[0].AdditionalData[0].Key, "denom")
+	s.Require().Equal(certs[0].AdditionalData[0].Value, "PTEST/00001")
+	s.Require().Equal(certs[0].AdditionalData[1].Key, "amount")
+	s.Require().Equal(certs[0].AdditionalData[1].Value, "2")
+	s.Require().Equal(certs[0].AdditionalData[2].Key, "retiring_entity_address")
+	s.Require().Equal(certs[0].AdditionalData[2].Value, randomBuyerAddress.String())
+	s.Require().Equal(certs[0].AdditionalData[3].Key, "retiring_entity_name")
+	s.Require().Equal(certs[0].AdditionalData[3].Value, "test_retire_name")
+	s.Require().Equal(certs[0].AdditionalData[4].Key, "retiring_entity_additional_data")
+	s.Require().Equal(certs[0].AdditionalData[4].Value, "test_retire_data")
 }

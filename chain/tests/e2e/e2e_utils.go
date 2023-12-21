@@ -12,8 +12,10 @@ import (
 	govcli "github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 
+	"github.com/EmpowerPlastic/empowerchain/x/certificates"
+	certificatescli "github.com/EmpowerPlastic/empowerchain/x/certificates/client/cli"
 	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit"
-	"github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
+	plasticcreditcli "github.com/EmpowerPlastic/empowerchain/x/plasticcredit/client/cli"
 )
 
 func (s *TestSuite) GetBankBalance(address, denom string) uint64 {
@@ -35,7 +37,7 @@ func (s *TestSuite) GetBankBalance(address, denom string) uint64 {
 func (s *TestSuite) GetCreditBalance(address, denom string) plasticcredit.CreditAmount {
 	val := s.Network.Validators[0]
 
-	cmdQueryBalance := cli.CmdQueryCreditBalance()
+	cmdQueryBalance := plasticcreditcli.CmdQueryCreditBalance()
 	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmdQueryBalance, []string{address, denom, fmt.Sprintf("--%s=json", flags.FlagOutput)})
 	if err != nil && strings.Contains(err.Error(), "credit balance not found") {
 		return plasticcredit.CreditAmount{}
@@ -46,6 +48,19 @@ func (s *TestSuite) GetCreditBalance(address, denom string) plasticcredit.Credit
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &creditBalanceResponse))
 
 	return creditBalanceResponse.Balance.Balance
+}
+
+func (s *TestSuite) GetCertificates(address string) []certificates.Certificate {
+	val := s.Network.Validators[0]
+
+	cmdQueryCertificates := certificatescli.CmdQueryCertificatesByOwner()
+	out, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cmdQueryCertificates, []string{address, fmt.Sprintf("--%s=json", flags.FlagOutput)})
+	s.Require().NoError(err)
+
+	var certificatesResponse certificates.QueryCertificatesResponse
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &certificatesResponse))
+
+	return certificatesResponse.Certificates
 }
 
 // MakeSuccessfulProposal creates a proposal, votes yes on it, and waits for it to pass
