@@ -125,7 +125,7 @@ const handleBuyCredits = async (retirererName: string) => {
         owner: props.owner,
         numberOfCreditsToBuy: amount.value,
         retire: true,
-        retiring_entity_name: retirererName,
+        retiringEntityName: retirererName,
       },
       fee,
       "",

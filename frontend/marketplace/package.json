@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.8.7",
-    "@empower-plastic/empowerjs": "0.0.18",
+    "@empower-plastic/empowerjs": "0.0.19",
     "@keplr-wallet/types": "^0.12.44",
     "@logto/vue": "^2.1.1",
     "@vue/apollo-composable": "^4.0.0-beta.5",
