@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CHAIN_ID } from "@/config/config";
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import { toast } from "vue3-toastify";
 import { useRoute } from "@/router";
 import SellectWalletModal from "@/components/SellectWalletModal.vue";
@@ -17,24 +17,12 @@ const selectedWallet = ref();
 const selectWalletModal = ref(false);
 const userDetails = ref(user);
 
-onMounted(() => {
-  connect();
-});
-
 const openSelectWalletModal = () => {
   selectWalletModal.value = true;
 };
 
 const closeSelectWalletModal = () => {
   selectWalletModal.value = false;
-};
-
-const connect = async () => {
-  let addressLocal = localStorage.getItem("address");
-  let wallet = localStorage.getItem("wallet");
-  if (addressLocal && wallet) {
-    await handleSelectWallet(wallet);
-  }
 };
 
 const onWalletSelect = (wallet: string) => {
