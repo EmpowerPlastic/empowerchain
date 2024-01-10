@@ -9,6 +9,7 @@ import CallbackView from "@/pages/CallbackView.vue";
 import UserProfile from "@/pages/UserProfile.vue";
 import AuctionPaymentSuccessful from "@/pages/AuctionPaymentSuccessful.vue";
 import AuctionPaymentCancelled from "@/pages/AuctionPaymentCancelled.vue";
+import CreditCollectionPage from "@/pages/CreditCollectionPage.vue";
 
 const router = createRouter({
   scrollBehavior: () => {
@@ -68,6 +69,11 @@ const router = createRouter({
       path: "/purchase-cancelled",
       name: "AuctionPaymentCancelled",
       component: AuctionPaymentCancelled,
+    },
+    {
+      path: "/registry/:denom",
+      name: "CreditCollectionPage",
+      component: CreditCollectionPage,
     },
     // {
     //   path: "/payment-cancelled/:id",
