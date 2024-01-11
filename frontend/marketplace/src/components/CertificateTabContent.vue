@@ -15,10 +15,8 @@ import {
 
 const pageNumber = ref(1);
 const itemsPerPage = ref(5);
-// const searchTerm = ref("");
 const certificatesData = ref();
 const creditCollectionsData = ref();
-// const showSpinner = ref(false);
 const showSpinner = computed(() => {
   return (
     certificatesData.value?.loading?.value === true ||
