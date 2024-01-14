@@ -10,10 +10,13 @@ export const convertIPFStoHTTPS = (url: string) => {
 export const uniqueMaterials = (
   materials: Array<Array<{ key: string; value: string }>>,
 ): Array<Array<{ key: string; value: string }>> => {
+  // Create a copy of the materials array so we dont mutate the original
+  const materialsCopy = materials.map((material) => [...material]);
+
   // Convert each material to a string representation
-  const materialsStr = materials.map((material) =>
-    JSON.stringify(material.sort((a, b) => a.key.localeCompare(b.key))),
-  );
+  const materialsStr = materialsCopy.map((material) => {
+    return JSON.stringify(material.sort((a, b) => a.key.localeCompare(b.key)));
+  });
   // Create a Set from the stringified materials to remove duplicates
   const uniqueMaterialsStr = Array.from(new Set(materialsStr));
 
