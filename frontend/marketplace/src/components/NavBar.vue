@@ -18,7 +18,9 @@ const selectWalletModal = ref(false);
 const userDetails = ref(user);
 
 onMounted(() => {
-  connect();
+  if (!isAuthenticated.value) {
+    connect();
+  }
 });
 
 const openSelectWalletModal = () => {
