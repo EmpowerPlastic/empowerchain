@@ -142,7 +142,6 @@ onUnmounted(() => {
   <!-- TODO disabling search here for now. Not sure how it should work -->
   <!-- <CustomSearchBar v-model="searchTerm" placeholder="Search Certificates" @search-click="handleSearch"/> -->
   <div class="my-3">
-    {{ showSpinner }}
     <CustomSpinner :visible="showSpinner" />
     <template v-if="!showSpinner">
       <CustomAlert
