@@ -1,23 +1,30 @@
 <script setup lang="ts">
 import { toast } from "vue3-toastify";
-import { defineEmits } from 'vue';
-
+import { defineEmits, computed } from "vue";
+import CustomImage from "@/components/CustomImage.vue";
+import { convertIPFStoHTTPS } from "@/utils/utils";
+import auctionCard from "@/assets/auctionCard.png";
 export interface CreditCardProps {
   cardData: any;
 }
 
 // Define the expected properties from the parent component
 const props = defineProps<CreditCardProps>();
-
+const certificate = computed(() => {
+  return props.cardData[0];
+});
+const image = computed(() => {
+  return props.cardData[1];
+});
 // Define the events that this component can emit
-const emit = defineEmits(['viewCertificate']);
+const emit = defineEmits(["viewCertificate"]);
 
 // Function to emit the 'viewCertificate' event
 const viewCertificate = () => {
-  if (props.cardData?.id) {
-    emit('viewCertificate', props.cardData.id);
+  if (certificate.value.id) {
+    emit("viewCertificate", certificate.value.id);
   } else {
-    toast.error('Certificate ID not found');
+    toast.error("Certificate ID not found");
   }
 };
 </script>
@@ -25,25 +32,22 @@ const viewCertificate = () => {
   <div
     class="w-full rounded-lg bg-borderGray md:grid md:grid-cols-3 md:p-2 md:bg-lightBlack my-3"
   >
-    <img
-      class="h-48 w-full rounded-lg max-w-sm"
-      src="../assets/auctionCard.png"
+    <CustomImage
+      v-if="image?.url"
+      image-class="h-48 w-full rounded-lg max-w-sm"
+      :src="convertIPFStoHTTPS(image?.url) || auctionCard"
     />
     <!--        Desktop UI-->
     <div class="hidden md:grid md:col-span-2">
-      <div class="grid-cols-4 grid gap-3 p-5">
+      <div class="grid-cols-3 grid gap-3 p-5">
         <div class="col-span-1">
           <p class="text-title14 font-light text-textGray">CREDIT type</p>
           <p class="text-title18 font-bold">PCRD</p>
         </div>
-        <div class="col-span-1">
-          <!--          <p class="text-title14 font-light text-textGray">Material</p>-->
-          <!--          <p class="text-title18 font-bold">{{cardData?.material}}</p>-->
-        </div>
         <div class="col-span-2 flex flex-col justify-between text-right">
-          <p class="text-title32 font-bold">{{ cardData?.amount }} kg</p>
-          <p class="text-title24 text-subTextGray mb-1">
-            {{ cardData?.denom }}
+          <p class="text-title32 font-bold">{{ certificate?.amount }} kg</p>
+          <p class="text-title14 text-subTextGray mb-1">
+            {{ certificate?.denom }}
           </p>
           <div>
             <button class="btn certificate-button" @click="viewCertificate">
@@ -61,8 +65,8 @@ const viewCertificate = () => {
           <p class="text-title14 font-bold">PCRD</p>
         </div>
         <div class="text-right">
-          <p class="text-title24 font-bold">{{ cardData?.amount }}</p>
-          <p class="text-title14 font-light">{{ cardData?.denom }}</p>
+          <p class="text-title24 font-bold">{{ certificate?.amount }}</p>
+          <p class="text-title14 font-light">{{ certificate?.denom }}</p>
         </div>
         <!--        <div>-->
         <!--          <p class="text-title14 font-light">Material</p>-->
