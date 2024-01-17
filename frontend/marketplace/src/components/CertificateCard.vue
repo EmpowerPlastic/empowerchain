@@ -40,12 +40,10 @@ const image = computed(() => {
   return props.cardData[1];
 });
 
-const router = useRoute();
 const { notifyer } = useNotifyer();
 
 const certificateData = ref();
 const creditData = ref();
-const loading = ref(true);
 const materialData = ref<Array<{ type: string; [key: string]: any }>>([]);
 const eventData = ref();
 const plasticValuesString = ref("");
