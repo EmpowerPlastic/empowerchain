@@ -1,5 +1,5 @@
 use cosmwasm_std::{
-    entry_point, DepsMut, Env, MessageInfo, Response,
+    entry_point, DepsMut, Env, MessageInfo, Response, Empty,
 };
 use fee_splitter::instantiate_fee_splitter;
 use msg::InstantiateMsg;
@@ -26,6 +26,11 @@ pub fn instantiate(
 	ADMIN.save(deps.storage, &admin).unwrap();
 
 	Ok(Response::new())
+}
+
+#[entry_point]
+pub fn migrate(_deps: DepsMut, _env: Env, _msg: Empty) -> Result<Response, ContractError> {
+	Ok(Response::default())
 }
 
 #[cfg(test)]

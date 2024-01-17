@@ -5,22 +5,66 @@ import CertificateCard from "@/components/CertificateCard.vue";
 import { useNotifyer } from "@/utils/notifyer";
 import { useQuery } from "@vue/apollo-composable";
 import CustomSpinner from "@/components/CustomSpinner.vue";
-import gql from "graphql-tag";
 import CustomAlert from "@/components/CustomAlert.vue";
 import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
+import {
+  GET_CREDIT_OFFSET_CERTIFICATES,
+  GET_CREDIT_COLLECTIONS,
+} from "@/graphql/queries";
 
 const pageNumber = ref(1);
 const itemsPerPage = ref(5);
-const searchTerm = ref("");
-const data = ref();
-const showSpinner = ref(true);
+const certificatesData = ref();
+const creditCollectionsData = ref();
+const showSpinner = computed(() => {
+  return (
+    certificatesData.value?.loading?.value === true ||
+    creditCollectionsData.value?.loading?.value === true
+  );
+});
 const { notifyer } = useNotifyer();
 const auth = useAuth();
 const wallet = useWallet();
 const viewCertificate = (certificateId: string) => {
   const url = `${window.location.origin}/certificate/${certificateId}`;
   window.open(url, "_blank");
+};
+
+const creditOffsetCertificates = computed(() => {
+  return certificatesData.value?.result?.creditOffsetCertificates ?? undefined;
+});
+
+// Looks complicated, but it returns an array where it merges the
+// certificate data with the media files from the credit collection
+const creditOffsetCertificatesAndCreditCollections = computed(() => {
+  const creditOffsetCertificates =
+    certificatesData.value?.result?.creditOffsetCertificates?.nodes ?? [];
+  if (certificatesData.value) {
+    return creditOffsetCertificates?.map((creditOffsetCertificate: any) => {
+      return [
+        creditOffsetCertificate,
+        getCreditCollectionMediaFiles(creditOffsetCertificate.denom)[0],
+      ];
+    });
+  }
+  return [];
+});
+
+const getCreditCollection = (id: string) => {
+  const nodes =
+    creditCollectionsData.value?.result?.creditCollections?.nodes ?? [];
+  return nodes.find((creditCollection: any) => creditCollection.id === id);
+};
+
+const getCreditCollectionMediaFiles = (id: string) => {
+  const collection = getCreditCollection(id);
+  if (collection) {
+    console.log("collection", collection);
+    const collectionNodes = collection.creditData?.nodes ?? [];
+    return collectionNodes[0]?.mediaFiles?.nodes;
+  }
+  return [];
 };
 
 const hasEmailAddressOrWalletConnectedAddress = computed(() => {
@@ -33,7 +77,22 @@ const handlePageChange = () => {
   getCertificatesData();
 };
 
-const getCertificatesData = async () => {
+const getCreditCollectionData = async () => {
+  const nodes = creditOffsetCertificates.value?.nodes;
+  const denoms = nodes?.map((node: any) => node.denom);
+  const uniqueDenoms = [...new Set(denoms)];
+  if (uniqueDenoms.length < 1) {
+    return;
+  }
+
+  const { result, loading, error } = useQuery(GET_CREDIT_COLLECTIONS, {
+    denoms: uniqueDenoms,
+  });
+
+  creditCollectionsData.value = { result, loading, error };
+};
+
+const getCertificatesData = () => {
   let walletAddress: string | undefined;
   if (auth.walletAddress.value) {
     walletAddress = auth.walletAddress.value;
@@ -46,47 +105,28 @@ const getCertificatesData = async () => {
   }
 
   try {
-    const query = `query {
-      creditOffsetCertificates(
-      first:${itemsPerPage.value},offset:${
-        (pageNumber.value - 1) * itemsPerPage.value
-      }
-      filter: {
-        wallet: {
-          address: { equalTo: "${walletAddress}" }
-        }
-          ${searchTerm.value && `denom: { equalTo: "${searchTerm.value}" }`}
-        }
-      ) {
-        totalCount
-        nodes {
-          amount
-          denom
-          id
-        }
-      }
-    }
-    `;
-    loadQueryData(query);
+    const { result, loading, error, onResult } = useQuery(
+      GET_CREDIT_OFFSET_CERTIFICATES,
+      {
+        walletAddress,
+        first: itemsPerPage.value,
+        offset: (pageNumber.value - 1) * itemsPerPage.value,
+      },
+    );
+    certificatesData.value = { result, loading, error };
+
+    onResult(() => {
+      getCreditCollectionData();
+    });
   } catch (error) {
     notifyer.error("Error fetching your certificates, error has been logged");
     throw new Error("Error fetching certificates: " + error);
   }
 };
 
-const loadQueryData = (query: string) => {
-  showSpinner.value = true;
-  const { result, loading, error } = useQuery(gql`
-    ${query}
-  `);
-  data.value = { result, loading, error };
-  showSpinner.value = false;
-};
-
-let stopWatch: () => void;
-
+let stopWatcher: () => void;
 onMounted(() => {
-  stopWatch = watch(
+  stopWatcher = watch(
     hasEmailAddressOrWalletConnectedAddress,
     () => {
       if (hasEmailAddressOrWalletConnectedAddress.value) {
@@ -98,23 +138,26 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  stopWatch();
+  if (stopWatcher) {
+    stopWatcher();
+  }
 });
 </script>
 <template>
   <!-- TODO disabling search here for now. Not sure how it should work -->
   <!-- <CustomSearchBar v-model="searchTerm" placeholder="Search Certificates" @search-click="handleSearch"/> -->
   <div class="my-3">
+    {{ showSpinner }}
     <CustomSpinner :visible="showSpinner" />
     <template v-if="!showSpinner">
       <CustomAlert
         :visible="true"
         :label="`${
-          data?.result?.creditOffsetCertificates?.totalCount || 0
+          creditOffsetCertificates?.totalCount || 0
         } certificates found`"
       />
       <div
-        v-for="certificate in data?.result?.creditOffsetCertificates?.nodes"
+        v-for="certificate in creditOffsetCertificatesAndCreditCollections"
         :key="certificate.id"
       >
         <CertificateCard
@@ -124,8 +167,8 @@ onUnmounted(() => {
       </div>
       <div class="flex justify-center md:justify-end my-10">
         <CustomPagination
-          v-if="data?.result?.creditOffsetCertificates?.totalCount > 0"
-          :total="data?.result?.creditOffsetCertificates?.totalCount"
+          v-if="creditOffsetCertificates?.totalCount > 0"
+          :total="creditOffsetCertificates?.totalCount"
           :item-per-page="itemsPerPage"
           v-model:current-page="pageNumber"
           @page-change="handlePageChange"
