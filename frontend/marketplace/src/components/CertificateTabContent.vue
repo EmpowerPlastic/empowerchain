@@ -26,10 +26,6 @@ const showSpinner = computed(() => {
 const { notifyer } = useNotifyer();
 const auth = useAuth();
 const wallet = useWallet();
-const viewCertificate = (certificateId: string) => {
-  const url = `${window.location.origin}/certificate/${certificateId}`;
-  window.open(url, "_blank");
-};
 
 const creditOffsetCertificates = computed(() => {
   return certificatesData.value?.result?.creditOffsetCertificates ?? undefined;
@@ -60,7 +56,6 @@ const getCreditCollection = (id: string) => {
 const getCreditCollectionMediaFiles = (id: string) => {
   const collection = getCreditCollection(id);
   if (collection) {
-    console.log("collection", collection);
     const collectionNodes = collection.creditData?.nodes ?? [];
     return collectionNodes[0]?.mediaFiles?.nodes;
   }
@@ -160,10 +155,7 @@ onUnmounted(() => {
         v-for="certificate in creditOffsetCertificatesAndCreditCollections"
         :key="certificate.id"
       >
-        <CertificateCard
-          :card-data="certificate"
-          @viewCertificate="viewCertificate"
-        />
+        <CertificateCard :card-data="certificate" />
       </div>
       <div class="flex justify-center md:justify-end my-10">
         <CustomPagination
