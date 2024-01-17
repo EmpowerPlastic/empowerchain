@@ -2,9 +2,10 @@ use cosmos_sdk_proto::cosmos::authz::v1beta1::MsgExec;
 use cosmos_sdk_proto::traits::{Message, TypeUrl};
 use cosmos_sdk_proto::traits::MessageExt;
 use cosmwasm_std::{entry_point, Binary, DepsMut, Env, MessageInfo, Response, Uint64, Coin, CosmosMsg, BankMsg, Addr, Decimal, Timestamp, StdError, Uint128};
-use fee_splitter::{edit_fee_split_config, get_fee_split, Share};
+use fee_splitter::{edit_fee_split_config, Share};
 use crate::{msg::ExecuteMsg, error::ContractError, state::{LISTINGS, Listing}};
 use crate::error::ContractError::FeeSplitError;
+use crate::query::get_price_and_fee;
 use crate::state::{ADMIN, Freeze, freezes};
 
 const MAX_TIMEOUT_SECONDS : u64 = 2419200; // 4 weeks
@@ -93,11 +94,11 @@ pub fn execute_buy_credits(
         return Err(ContractError::NotEnoughCredits {});
     }
 
-    let total_price = listing.price_per_credit.amount.checked_mul(number_of_credits_to_buy.into()).unwrap();
-    if info.funds.len() != 1 || info.funds[0].denom != listing.price_per_credit.denom || info.funds[0].amount < total_price {
+    let (total_price, fee, fee_split_msgs) = get_price_and_fee(deps.as_ref(), listing.clone(), number_of_credits_to_buy);
+    if info.funds.len() != 1 || info.funds[0].denom != listing.price_per_credit.denom || info.funds[0].amount < total_price.amount {
         return Err(ContractError::NotEnoughFunds {});
     }
-    if info.funds[0].amount > total_price { // We can skip the denom check here because it is triggered in the previous if statement
+    if info.funds[0].amount > total_price.amount { // We can skip the denom check here because it is triggered in the previous if statement
         return Err(ContractError::TooMuchFunds {});
     }
 
@@ -119,11 +120,11 @@ pub fn execute_buy_credits(
         retiring_entity_additional_data,
     );
 
-    let funds_before_fee_split = Coin {
+    let remaining_amount = total_price.amount.checked_sub(fee.amount).unwrap();
+    let funds_after_split = Coin {
         denom: listing.price_per_credit.denom.clone(),
-        amount: total_price,
+        amount: remaining_amount,
     };
-    let (fee_split_msgs, funds_after_split, _) = get_fee_split(deps.storage, funds_before_fee_split).unwrap();
     let transfer_funds_to_seller_msg = CosmosMsg::Bank(BankMsg::Send {
         to_address: listing.owner.to_string(),
         amount: vec![funds_after_split],
@@ -401,20 +402,15 @@ fn execute_release_frozen_credits(
         freezes().save(deps.storage, (Addr::unchecked(owner.clone()), denom.clone(), buyer.clone()), &freeze)?;
     }
 
-    // We need the original_price to calculate the fee split
-    let original_price = listing.price_per_credit.amount.checked_mul(number_of_credits_to_release.into()).unwrap();
-    let original_price_as_coin = Coin {
-        denom: listing.price_per_credit.denom.clone(),
-        amount: original_price,
-    };
-    let (fee_split_msgs, _, fee_amount) = get_fee_split(deps.storage, original_price_as_coin).unwrap();
-    if fee_amount.amount > Uint128::from(0u128) {
-        if info.funds.len() != 1 || info.funds[0].denom != listing.price_per_credit.denom || info.funds[0].amount < fee_amount.amount {
+    let (_, fee, fee_split_msgs) = get_price_and_fee(deps.as_ref(), listing.clone(), number_of_credits_to_release);
+
+    if fee.amount > Uint128::from(0u128) {
+        if info.funds.len() != 1 || info.funds[0].denom != listing.price_per_credit.denom || info.funds[0].amount < fee.amount {
             return Err(ContractError::NotEnoughFunds {});
         }
     }
 
-    if info.funds.len() > 0 && info.funds[0].amount > fee_amount.amount { // We can skip the denom check here because it is triggered in the previous if statement
+    if info.funds.len() > 0 && info.funds[0].amount > fee.amount { // We can skip the denom check here because it is triggered in the previous if statement
         return Err(ContractError::TooMuchFunds {});
     }
 
