@@ -16,7 +16,6 @@ import {
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { onMounted, ref, watch } from "vue";
-import { toast } from "vue3-toastify";
 
 interface AuctionDetails {
   applicant: string;
@@ -38,7 +37,6 @@ interface AuctionDetails {
 const router = useRoute();
 
 const data = ref();
-const orderHistory = ref();
 const showSpinner = ref(true);
 const denom = ref("");
 const owner = ref("");
@@ -106,11 +104,6 @@ const getDetailsList = (data: any, materialVolume: number) => {
     locationPointers: locationPointersArray,
     registrationDate: registrationDateArray[0],
   };
-};
-
-const copyToken = async (text: string) => {
-  await navigator.clipboard.writeText(text);
-  toast.success("Copied to clipboard");
 };
 
 const getAuctionDetails = (id: string | string[]) => {
@@ -206,43 +199,8 @@ const getAuctionDetails = (id: string | string[]) => {
   owner.value = result.value?.marketplaceListings?.nodes[0].owner;
 };
 
-const getOrderHistory = (id: string | string[]) => {
-  let owner = id.toString().split("-")[0];
-  let denom = id.toString().split("-")[1];
-
-  let query = `query {
-  buyCreditsWasmEvents(filter:{
-    denom:{equalTo:"${denom}"},
-    listingOwner:{equalTo:"${owner}"}
-  }){
-    nodes{
-      totalPriceAmount
-      totalPriceDenom
-      listingOwner
-      denom
-      buyer
-      numberOfCreditsBought
-      saleDate
-    }
-  }
-}`;
-
-  const { result, loading, error, refetch } = useQuery(gql`
-    ${query}
-  `);
-
-  watch(result, () => {
-    orderHistory.value = { result, loading, error };
-  });
-
-  setInterval(() => {
-    refetch();
-  }, 5000);
-};
-
 onMounted(() => {
   getAuctionDetails(router.params.id);
-  getOrderHistory(router.params.id);
 });
 </script>
 <template>
@@ -354,51 +312,6 @@ onMounted(() => {
           <a target="_blank" :href="file.url">{{ file.name }}</a>
         </li>
       </ul>
-    </div>
-
-    <!--    Order Buy History-->
-    <div class="bg-lightBlack p-6 mt-5 rounded-sm">
-      <p class="text-title18 font-semibold mb-3">Order buy history</p>
-
-      <div class="divide-y md:divide-none divide-dividerGray">
-        <div
-          class="md:p-2 py-2 md:flex md:justify-between flex-wrap"
-          :class="index % 2 === 0 ? 'md:bg-lightBlack' : null"
-          v-for="(data, index) in orderHistory?.result?.buyCreditsWasmEvents
-            ?.nodes"
-          :key="data"
-        >
-          <div class="flex flex-row justify-between flex-wrap">
-            <div
-              class="flex flex-col md:flex-row text-title12 md:text-title14 flex-wrap break-words max-w-[70%] md:max-w-fit"
-            >
-              <p class="text-textInfoGray whitespace-nowrap overflow-hidden">
-                {{ new Date(data?.saleDate).toLocaleString() }}
-              </p>
-              <p
-                class="text-greenPrimary md:ml-16 text-ellipsis whitespace-nowrap overflow-hidden max-w-full cursor-pointer"
-                @click="copyToken(data.buyer)"
-              >
-                {{ data.buyer }}
-              </p>
-            </div>
-            <div class="flex">
-              <button
-                class="btn btn-ghost bg-transparent p-0 md:hidden"
-                @click="copyToken(data.buyer)"
-              >
-                <img src="../assets/copyIcon.svg" />
-              </button>
-            </div>
-          </div>
-          <div class="flex justify-between text-title14 text-textInfoGray">
-            <p>{{ data.numberOfCreditsBought }} {{ data.denom }}</p>
-            <p class="md:ml-16">
-              {{ data.totalPriceAmount }} {{ data.totalPriceDenom }}
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
