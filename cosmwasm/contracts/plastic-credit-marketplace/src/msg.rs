@@ -84,6 +84,12 @@ pub enum QueryMsg {
     },
     #[returns(fee_splitter::Config)]
     FeeSplitConfig {},
+    #[returns(PriceResponse)]
+    Price {
+        owner: Addr,
+        denom: String,
+        number_of_credits_to_buy: u64,
+    },
 }
 
 #[cw_serde]
@@ -94,4 +100,10 @@ pub struct ListingsResponse {
 #[cw_serde]
 pub struct ListingResponse {
     pub listing: Listing,
+}
+
+#[cw_serde]
+pub struct PriceResponse {
+    pub total_price: Coin,
+    pub fee: Coin,
 }
