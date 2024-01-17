@@ -61,11 +61,11 @@ pub fn edit_fee_split_config(storage: &mut dyn Storage, fee_percentage: Decimal,
 }
 
 // Returns a tuple of (msgs, remaining_amount_as_coin, fee_amount_as_coin)
-pub fn get_fee_split(storage: &dyn Storage, full_price: Coin) -> Result<(Vec<CosmosMsg>, Coin, Coin), FeeSplitterError> {
+pub fn get_fee_split(storage: &dyn Storage, full_price: Coin) -> Result<(Vec<CosmosMsg>, Coin), FeeSplitterError> {
     let config = CONFIG.load(storage).unwrap();
     let denom = full_price.denom.clone();
     if Decimal::is_zero(&config.fee_percentage) || config.shares.is_empty() {
-        return Ok((vec![], full_price, Coin {
+        return Ok((vec![], Coin {
             denom: denom.clone(),
             amount: 0u128.into(),
         }));
@@ -89,16 +89,11 @@ pub fn get_fee_split(storage: &dyn Storage, full_price: Coin) -> Result<(Vec<Cos
     }
 
     let fee_as_u128 = fee.numerator().checked_div(fee.denominator()).unwrap();
-    let remaining_amount = full_price.amount.checked_sub(fee_as_u128).unwrap();
-    let remaining_as_coin = Coin {
-        denom: denom.clone(),
-        amount: remaining_amount,
-    };
     let fee_amount_as_coin = Coin {
         denom: denom.clone(),
         amount: fee_as_u128,
     };
-    Ok((msgs, remaining_as_coin, fee_amount_as_coin))
+    Ok((msgs, fee_amount_as_coin))
 }
 
 pub fn get_config(storage: &dyn Storage) -> Result<Config, StdError> {
@@ -370,13 +365,11 @@ mod tests {
             instantiate_fee_splitter(deps.as_mut().storage, Decimal::permille(5), vec![dev_share.clone(), stakers_share.clone()]).unwrap();
 
             // 1000 umpwr fee
-            let (fee_split_msgs, remaining_amount, fee_amount) = get_fee_split(deps.as_mut().storage, Coin {
+            let (fee_split_msgs, fee_amount) = get_fee_split(deps.as_mut().storage, Coin {
                 denom: "umpwr".to_string(),
                 amount: Uint128::new(1000),
             }).unwrap();
             assert_eq!(fee_split_msgs.len(), 2);
-            assert_eq!(remaining_amount.denom, "umpwr");
-            assert_eq!(remaining_amount.amount, Uint128::new(995));
             assert_eq!(fee_amount.denom, "umpwr");
             assert_eq!(fee_amount.amount, Uint128::new(5));
 
@@ -414,13 +407,11 @@ mod tests {
 
             // 500 umpwr fee, with 0.5% fee and 80/20 split means that dev gets 2 umpwr and stakers get 0 (rounded down)
             // and the remaining 498 umpwr is returned
-            let (fee_split_msgs, remaining_amount, fee_amount) = get_fee_split(deps.as_mut().storage, Coin {
+            let (fee_split_msgs, fee_amount) = get_fee_split(deps.as_mut().storage, Coin {
                 denom: "umpwr".to_string(),
                 amount: Uint128::new(500),
             }).unwrap();
             assert_eq!(fee_split_msgs.len(), 2);
-            assert_eq!(remaining_amount.denom, "umpwr");
-            assert_eq!(remaining_amount.amount, Uint128::new(498));
             assert_eq!(fee_amount.denom, "umpwr");
             assert_eq!(fee_amount.amount, Uint128::new(2));
 
@@ -449,13 +440,11 @@ mod tests {
             let mut deps = mock_dependencies();
             instantiate_fee_splitter(deps.as_mut().storage, Decimal::zero(), vec![]).unwrap();
 
-            let (fee_split_msgs, remaining_amount, fee_amount) = get_fee_split(deps.as_mut().storage, Coin {
+            let (fee_split_msgs, fee_amount) = get_fee_split(deps.as_mut().storage, Coin {
                 denom: "umpwr".to_string(),
                 amount: Uint128::new(100),
             }).unwrap();
             assert_eq!(fee_split_msgs.len(), 0);
-            assert_eq!(remaining_amount.denom, "umpwr");
-            assert_eq!(remaining_amount.amount, Uint128::new(100));
             assert_eq!(fee_amount.denom, "umpwr");
             assert_eq!(fee_amount.amount, Uint128::new(0));
         }
