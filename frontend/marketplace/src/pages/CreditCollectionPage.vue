@@ -7,14 +7,10 @@ import ProjectDetailMaterial from "@/components/ProjectDetailMaterial.vue";
 import CustomGoogleMap from "@/components/CustomGoogleMap.vue";
 import ImageGallery from "@/components/ImageGallery.vue";
 import { useRoute } from "@/router";
-import {
-  convertIPFStoHTTPS,
-  uniqueMaterials,
-  findPlasticTypeInMaterial,
-} from "@/utils/utils";
 import { useQuery } from "@vue/apollo-composable";
-import gql from "graphql-tag";
 import { onMounted, ref, watch } from "vue";
+import { GET_COLLECTION_DETAIL } from "@/graphql/queries";
+import { formatAuctionDetails } from "@/utils/formatAuctionDetails";
 
 interface AuctionDetails {
   applicant: string;
@@ -31,14 +27,13 @@ interface AuctionDetails {
     lng: number;
   }[];
   registrationDate: string;
+  plasticType: string;
 }
 
 const router = useRoute();
 
 const data = ref();
 const showSpinner = ref(true);
-const denom = ref("");
-const owner = ref("");
 const auctionDetails = ref<AuctionDetails>({
   applicant: "",
   location: [""],
@@ -48,158 +43,46 @@ const auctionDetails = ref<AuctionDetails>({
   file: [{ url: "", name: "" }],
   locationPointers: [{ lat: 0, lng: 0 }],
   registrationDate: "",
+  plasticType: "",
 });
-const pricePerCreditDenom = ref("");
-const plasticType = ref("");
-
-const getDetailsList = (data: any, materialVolume: number) => {
-  const applicantArray: string[] = [];
-  const locationArray: string[] = [];
-  const locationPointersArray: {
-    lat: number;
-    lng: number;
-  }[] = [];
-  const imageArray: string[] = [];
-  const fileArray: { url: string; name: string }[] = [];
-  const materialArray: MaterialProperty[][] = [];
-  const volume = materialVolume;
-  const registrationDateArray: string[] = [];
-
-  data?.map((item: any) => {
-    item.applicantDataByCreditDataId.nodes.map((node: any) => {
-      applicantArray.push(node.name);
-    });
-
-    item.eventData.nodes.map((node: any) => {
-      locationArray.push(node.country);
-      locationPointersArray.push({ lat: node.latitude, lng: node.longitude });
-      materialArray.push(node.material.nodes);
-      registrationDateArray.push(
-        new Date(node.registrationDate).toLocaleDateString(),
-      );
-    });
-
-    item.mediaFiles.nodes.map((node: any) => {
-      imageArray.push(convertIPFStoHTTPS(node.url));
-    });
-    item.binaryFiles.nodes.map((node: any) => {
-      fileArray.push({
-        url: convertIPFStoHTTPS(node.url),
-        name: node.name,
-      });
-    });
-  });
-  const uniqueMaterialArray = uniqueMaterials(materialArray);
-  plasticType.value =
-    findPlasticTypeInMaterial(uniqueMaterialArray[0])?.value ?? "";
-
-  return {
-    applicant: applicantArray[0],
-    location: Array.from(new Set(locationArray)),
-    material: uniqueMaterialArray,
-    volume: volume,
-    image: imageArray,
-    file: fileArray,
-    locationPointers: locationPointersArray,
-    registrationDate: registrationDateArray[0],
-  };
-};
 
 const getAuctionDetails = (id: string | string[]) => {
-  let query = `query {
-  marketplaceListings(
-    filter: { id:{equalTo:"${id}"} }
-  ) {
-    totalCount
-    nodes {
-      id
-      amount
-      initialAmount
-      denom
-      owner
-      pricePerCreditAmount
-      pricePerCreditDenom
-      creditCollection {
-        activeAmount
-        retiredAmount
-        creditType
-        creditData {
-          nodes {
-            mediaFiles{
-              nodes{
-                name
-                url
-              }
-            }
-            binaryFiles{
-              nodes{
-                name
-                url
-              }
-            }
-            eventData {
-              nodes {
-                magnitude
-                registrationDate
-                amount
-                country
-                latitude
-                longitude
-                material {
-                  nodes {
-                    key
-                    value
-                  }
-                }
-              }
-            }
-            applicantDataByCreditDataId {
-              nodes {
-                name
-                description
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-`;
-
-  const { result, loading, error, refetch } = useQuery(gql`
-    ${query}
-  `);
-  data.value = {
-    result,
-    loading,
-    error,
-  };
-  setInterval(() => {
-    refetch();
-  }, 5000);
-
-  watch(result, (value) => {
-    auctionDetails.value = getDetailsList(
-      value.marketplaceListings?.nodes[0].creditCollection.creditData.nodes,
-      parseInt(
-        value.marketplaceListings?.nodes[0].creditCollection.activeAmount,
-      ) +
-        parseInt(
-          value.marketplaceListings?.nodes[0].creditCollection.retiredAmount,
-        ),
+  try {
+    const { result, loading, error, onResult } = useQuery(
+      GET_COLLECTION_DETAIL,
+      {
+        id: id,
+      },
     );
-    pricePerCreditDenom.value =
-      value.marketplaceListings?.nodes[0].pricePerCreditDenom;
-  });
 
-  showSpinner.value = false;
-  denom.value = result.value?.marketplaceListings?.nodes[0].denom;
-  owner.value = result.value?.marketplaceListings?.nodes[0].owner;
+    onResult(() => {
+      if (result.value) {
+        data.value = {
+          result,
+          loading,
+          error,
+        };
+        auctionDetails.value = formatAuctionDetails(
+          result.value.marketplaceListings?.nodes[0].creditCollection.creditData
+            .nodes,
+          parseInt(
+            result.value.marketplaceListings?.nodes[0].creditCollection
+              .activeAmount,
+          ) +
+            parseInt(
+              result.value.marketplaceListings?.nodes[0].creditCollection
+                .retiredAmount,
+            ),
+        );
+      }
+    });
+    showSpinner.value = false;
+  } catch (error) {
+    console.log("Error in getAuctionDetails", error);
+  }
 };
 
 onMounted(() => {
-  console.log(router.params.denom, "router.params.denom");
   getAuctionDetails(router.params.denom);
 });
 </script>
@@ -215,7 +98,7 @@ onMounted(() => {
         data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData
           ?.nodes[0].applicantDataByCreditDataId.nodes[0].name
       }}
-      - {{ plasticType }}
+      - {{ auctionDetails.plasticType }}
     </h1>
 
     <!--    Gallery-->
@@ -288,7 +171,7 @@ onMounted(() => {
       </p>
       <ul class="pl-5">
         <li
-          class="text-title14 text-greenPrimary underline"
+          class="text-title14 text-greenPrimary underline truncate"
           v-for="file in auctionDetails?.file"
           :key="file.name"
         >
