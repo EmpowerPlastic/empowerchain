@@ -4,7 +4,6 @@ import FAQPage from "@/pages/FAQPage.vue";
 import CertificatesAndCreditsPage from "@/pages/CertificatesAndCreditsPage.vue";
 import AuctionPage from "@/pages/AuctionPage.vue";
 import AuctionDetails from "@/pages/AuctionDetails.vue";
-import CertificatePage from "@/pages/CertificatePage.vue";
 import CallbackView from "@/pages/CallbackView.vue";
 import UserProfile from "@/pages/UserProfile.vue";
 import AuctionPaymentSuccessful from "@/pages/AuctionPaymentSuccessful.vue";
@@ -42,12 +41,6 @@ const router = createRouter({
       path: "/auction/:id",
       name: "AuctionDetails",
       component: AuctionDetails,
-    },
-    {
-      path: "/certificate/:id",
-      name: "CertificatePage",
-      component: CertificatePage,
-      meta: { hideNavFooter: true }, //To hide nav and footer on this page
     },
     {
       path: "/callback",
