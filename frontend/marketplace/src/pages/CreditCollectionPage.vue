@@ -9,7 +9,7 @@ import ImageGallery from "@/components/ImageGallery.vue";
 import { useRoute } from "@/router";
 import { useQuery } from "@vue/apollo-composable";
 import { onMounted, ref, watch } from "vue";
-import { GET_COLLECTION_DETAIL } from "@/graphql/queries";
+import { GET_MARKETPLACE_LISTING } from "@/graphql/queries";
 import { formatAuctionDetails } from "@/utils/formatAuctionDetails";
 
 interface AuctionDetails {
@@ -49,7 +49,7 @@ const auctionDetails = ref<AuctionDetails>({
 const getAuctionDetails = (id: string | string[]) => {
   try {
     const { result, loading, error, onResult } = useQuery(
-      GET_COLLECTION_DETAIL,
+      GET_MARKETPLACE_LISTING,
       {
         id: id,
       },

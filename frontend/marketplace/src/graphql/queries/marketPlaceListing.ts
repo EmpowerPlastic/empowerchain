@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
-export const GET_COLLECTION_DETAIL = gql`
-  query GetCollectionDetail($id: String!) {
+export const GET_MARKETPLACE_LISTING = gql`
+  query GetMarketplaceListing($id: String!) {
     marketplaceListings(filter: { id: { equalTo: $id } }) {
       totalCount
       nodes {
