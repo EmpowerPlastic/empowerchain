@@ -388,7 +388,7 @@ async function handleOffsetCertificate(
     retiringEntityName: retiringEntityName,
     retiringEntityAdditionalData: retiringEntityAdditionalData,
     walletId: owner,
-    timestamp: timestamp,
+    timestamp: new Date(timestamp),
   });
   await offsetCertificate.save();
 }
