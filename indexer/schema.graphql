@@ -33,7 +33,8 @@ type Wallet @entity {
   applicantId: Int
   creditBalances: [CreditBalance!] @derivedFrom(field: "wallet")
   certificates: [Certificate!] @derivedFrom(field: "wallet")
-  creditOffsetCertificates: [CreditOffsetCertificate!] @derivedFrom(field: "wallet")
+  creditOffsetCertificates: [CreditOffsetCertificate!]
+    @derivedFrom(field: "wallet")
 }
 
 type CreditBalance @entity {
@@ -82,6 +83,7 @@ type TransferedCreditsEvent @entity {
   sender: String!
   recipient: String!
   amount: BigInt!
+  timestamp: Date!
 }
 
 type RetiredCreditsEvent @entity {
@@ -149,7 +151,8 @@ type CreditCollection @entity {
   creditType: String!
   metadataUris: [MetadataUri!] @derivedFrom(field: "creditCollection")
   creditData: [CreditData!] @derivedFrom(field: "creditCollection")
-  marketplaceListings: [MarketplaceListing!] @derivedFrom(field: "creditCollection")
+  marketplaceListings: [MarketplaceListing!]
+    @derivedFrom(field: "creditCollection")
 }
 
 type CreditData @entity {
