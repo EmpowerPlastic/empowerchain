@@ -52,7 +52,8 @@ export const generatePDF = (
   applicantDataDescription: string,
   qrCodeUrl: string | undefined,
 ) => {
-  const doc = new jsPDF("landscape") as IjsPDF;
+  //To compress the PDF size
+  const doc = new jsPDF("landscape", undefined, undefined, true) as IjsPDF;
   addGrayPadding(doc);
   addGreenRectanglePage1(doc);
   addImagesPage1(doc);
