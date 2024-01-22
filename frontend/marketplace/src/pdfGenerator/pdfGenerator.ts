@@ -7,6 +7,7 @@ import {
   leaf1,
   horizontalLeafs,
   verticalLeafs,
+  greenLogo,
 } from "../pdfGenerator/AssetsBase64";
 import {
   addTextWithSpacing,
@@ -79,7 +80,46 @@ export const generatePDF = (
     creditData,
     applicantDataDescription,
   );
+  addFinalPage(doc);
   doc.save("certificate.pdf");
+};
+
+const addFinalPage = (doc: IjsPDF) => {
+  doc.addPage("a4", "portrait");
+  addGrayPadding(doc);
+  doc.addImage(verticalLeafs, "png", 0, 0, 210, 297);
+  doc.addImage(leaf1, "png", 30, 23, 10, 8);
+
+  doc.setFontSize(12);
+  doc.setTextColor(35, 31, 32);
+  doc.setFont("Open Sans", "normal");
+
+  doc.text(
+    `
+    This certificate is issued by Empower.
+
+    Blockchain technology ensures the transparency and integrity of this certificate.
+    Each transaction is recorded on a decentralized and immutable ledger, providing a
+    clear audit trail. This guarantees that each credit is unique, cannot be
+    double-counted, and its environmental impact is accurately represented.
+
+    Read more at https://www.empower.eco
+  `,
+    doc.internal.pageSize.width / 2,
+    doc.internal.pageSize.height / 2 - 72,
+    {
+      align: "center",
+    },
+  );
+
+  doc.addImage(
+    greenLogo,
+    "png",
+    doc.internal.pageSize.width / 2 - 5,
+    60,
+    10,
+    10,
+  );
 };
 
 const addGrayPadding = (doc: IjsPDF) => {
@@ -99,10 +139,12 @@ const addGreenRectanglePage1 = (doc: IjsPDF) => {
 
   doc.setFillColor(219, 231, 214);
 
-  const x = 40;
-  const y = 60;
+  const x = 80.58;
+  const y = 56;
+  const paddingToTheLeft = 80.58;
+  const paddingToTheRight = 10.58;
 
-  const rectWidth = pageWidth;
+  const rectWidth = pageWidth - paddingToTheLeft - paddingToTheRight;
   const rectHeight = 90;
 
   doc.rect(x, y, rectWidth, rectHeight, "F");
@@ -143,14 +185,34 @@ const addCertificateHolderPage1 = (
   addTextWithSpacing(doc, "PROUDLY PRESENTED TO", 142, 75, 0.5);
 
   const name = certificateData.retiringEntityName || "N/A";
-  const yPos = 95;
+  const yPos = 91;
 
   const { xPos, fontSize } = calculateTextProperties(name);
 
   doc.setFontSize(fontSize);
   doc.setTextColor(88, 185, 71);
-  doc.setFont("Open Sans", "bold");
+  doc.setFont("Open Sans", "normal");
   doc.text(name, xPos, yPos);
+
+  doc.setFontSize(10);
+  doc.setTextColor(35, 31, 32);
+  const logoWidth = 5;
+  doc.text(
+    "Certificate issued by Empower",
+    doc.internal.pageSize.width / 2 + 35 - logoWidth - 4,
+    doc.internal.pageSize.height - 12,
+    {
+      align: "center",
+    },
+  );
+  doc.addImage(
+    greenLogo,
+    "png",
+    doc.internal.pageSize.width / 2 + 35 + 10 + logoWidth,
+    doc.internal.pageSize.height - 17,
+    logoWidth,
+    logoWidth,
+  );
 };
 
 const addHorizontalLongLinePage1 = (doc: IjsPDF) => {
@@ -198,15 +260,19 @@ const addCirularImagePage1 = (
   ID: string,
   qrCodeUrl: string | undefined,
 ) => {
-  doc.addImage(circular, "png", 160, 155, 40, 40);
+  const startY = 151;
+  const textY = startY + 20;
+  const qrY = startY + 9;
+
+  doc.addImage(circular, "png", 160, startY, 40, 40);
   doc.setFontSize(15);
   doc.setTextColor(0, 0, 0);
   doc.setFont("Open Sans", "bold");
-  doc.text(ID, 174, 175);
+  doc.text(ID, 174, textY);
   doc.setTextColor(88, 185, 71);
   doc.setFontSize(12);
   if (qrCodeUrl) {
-    doc.addImage(qrCodeUrl, "svg", 168, 164, 23, 23);
+    doc.addImage(qrCodeUrl, "svg", 168, qrY, 23, 23);
   }
 };
 
