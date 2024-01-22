@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint64, Addr, Uint128, Decimal, Coin, Share, QueryMsg, Config, ListingResponse, Listing, ListingsResponse } from "./PlasticCreditMarketplace.types";
+import { InstantiateMsg, ExecuteMsg, Uint64, Addr, Uint128, Decimal, Coin, Share, QueryMsg, Config, ListingResponse, Listing, ListingsResponse, PriceResponse } from "./PlasticCreditMarketplace.types";
 export interface PlasticCreditMarketplaceReadOnlyInterface {
   contractAddress: string;
   listings: ({
@@ -24,6 +24,15 @@ export interface PlasticCreditMarketplaceReadOnlyInterface {
     owner: Addr;
   }) => Promise<ListingResponse>;
   feeSplitConfig: () => Promise<Config>;
+  price: ({
+    denom,
+    numberOfCreditsToBuy,
+    owner
+  }: {
+    denom: string;
+    numberOfCreditsToBuy: number;
+    owner: Addr;
+  }) => Promise<PriceResponse>;
 }
 export class PlasticCreditMarketplaceQueryClient implements PlasticCreditMarketplaceReadOnlyInterface {
   client: CosmWasmClient;
@@ -35,6 +44,7 @@ export class PlasticCreditMarketplaceQueryClient implements PlasticCreditMarketp
     this.listings = this.listings.bind(this);
     this.listing = this.listing.bind(this);
     this.feeSplitConfig = this.feeSplitConfig.bind(this);
+    this.price = this.price.bind(this);
   }
 
   listings = async ({
@@ -68,6 +78,23 @@ export class PlasticCreditMarketplaceQueryClient implements PlasticCreditMarketp
   feeSplitConfig = async (): Promise<Config> => {
     return this.client.queryContractSmart(this.contractAddress, {
       fee_split_config: {}
+    });
+  };
+  price = async ({
+    denom,
+    numberOfCreditsToBuy,
+    owner
+  }: {
+    denom: string;
+    numberOfCreditsToBuy: number;
+    owner: Addr;
+  }): Promise<PriceResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      price: {
+        denom,
+        number_of_credits_to_buy: numberOfCreditsToBuy,
+        owner
+      }
     });
   };
 }
