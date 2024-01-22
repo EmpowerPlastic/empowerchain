@@ -89,6 +89,12 @@ export type QueryMsg = {
   };
 } | {
   fee_split_config: {};
+} | {
+  price: {
+    denom: string;
+    number_of_credits_to_buy: number;
+    owner: Addr;
+  };
 };
 export interface Config {
   fee_percentage: Decimal;
@@ -106,4 +112,8 @@ export interface Listing {
 }
 export interface ListingsResponse {
   listings: Listing[];
+}
+export interface PriceResponse {
+  fee: Coin;
+  total_price: Coin;
 }
