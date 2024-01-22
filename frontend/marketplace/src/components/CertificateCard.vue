@@ -8,10 +8,10 @@ import {
   GET_CREDIT_COLLECTIONS,
   GET_CREDIT_OFFSET_CERTIFICATE,
 } from "@/graphql/queries";
-import { useRoute } from "@/router";
 import QRCode from "qrcode";
 import { generatePDF } from "@/pdfGenerator/pdfGenerator";
 import { useNotifyer } from "@/utils/notifyer";
+import greenLogo from "@/assets/greenlogo.svg";
 
 export interface CreditCardProps {
   cardData: any;
@@ -426,7 +426,7 @@ const generateQRCode = async () => {
 
   // Create a new image for the logo
   const logo = new Image();
-  logo.src = "/src/assets/greenlogo.svg"; // Replace with the path to your logo
+  logo.src = greenLogo;
   // Wait for both images to load
   await Promise.all([
     new Promise((resolve) => {
