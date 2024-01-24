@@ -229,7 +229,7 @@ const addCertificateHolderPage1 = (
   doc.addImage(
     greenLogo,
     "png",
-    doc.internal.pageSize.width / 2 + 35 + 10 + logoWidth,
+    doc.internal.pageSize.width / 2 + 35 + 13 + logoWidth,
     doc.internal.pageSize.height - 17,
     logoWidth,
     logoWidth,
@@ -305,15 +305,15 @@ const addVerticalImagesPage2 = (doc: IjsPDF) => {
 };
 
 const addHeaderPage2 = (doc: IjsPDF) => {
-  doc.setFontSize(25);
+  doc.setFontSize(23);
   doc.setTextColor(32, 105, 72);
   doc.setFont(fontOpenSans, "regular");
   doc.text("plastic credit", 45, 30);
   doc.setTextColor(0, 0, 0);
   doc.setFont(fontOpenSans, "bold");
-  doc.text("certificate", 93, 30);
+  doc.text("certificate", 95, 30);
   doc.setFont(fontOpenSans, "regular");
-  doc.text("details", 133, 30);
+  doc.text("details", 135, 30);
 };
 
 const addCertificateHodlerPage2 = (
@@ -325,7 +325,7 @@ const addCertificateHodlerPage2 = (
   doc.setFont(fontOpenSans, "bold");
   doc.text("Name of Certificate Holder:", 20, 44);
   doc.setTextColor(0, 0, 0);
-  doc.text(certificateData.retiringEntityName, 84, 44);
+  doc.text(certificateData.retiringEntityName, 90, 44);
 };
 
 const addTitle = (doc: IjsPDF, title: string, yPosition: number) => {
