@@ -8,6 +8,9 @@ import {
   horizontalLeafs,
   verticalLeafs,
   greenLogo,
+  openSans,
+  openSansBold,
+  interRegular,
 } from "../pdfGenerator/AssetsBase64";
 import {
   addTextWithSpacing,
@@ -37,6 +40,8 @@ const addedMediaFiles = ref(false);
 const addedMaterialData = ref(false);
 const addedLocations = ref(false);
 const xPosition = ref(0);
+const fontOpenSans = "Open Sans";
+const fontInter = "Inter";
 
 export const generatePDF = (
   certificateData: CreditOffsetCertificate,
@@ -55,6 +60,7 @@ export const generatePDF = (
 ) => {
   //To compress the PDF size
   const doc = new jsPDF("landscape", undefined, undefined, true) as IjsPDF;
+  addFonts(doc);
   addGrayPadding(doc);
   addGreenRectanglePage1(doc);
   addImagesPage1(doc);
@@ -84,6 +90,21 @@ export const generatePDF = (
   doc.save("certificate.pdf");
 };
 
+const addFonts = (doc: IjsPDF) => {
+  if (openSans) {
+    doc.addFileToVFS("OpenSans-Regular.ttf", openSans);
+  }
+  if (openSansBold) {
+    doc.addFileToVFS("OpenSans-Bold.ttf", openSans);
+  }
+  if (interRegular) {
+    doc.addFileToVFS("Inter-Regular.ttf", interRegular);
+  }
+  doc.addFont("OpenSans-Regular.ttf", fontOpenSans, "regular");
+  doc.addFont("OpenSans-Bold.ttf", fontOpenSans, "bold");
+  doc.addFont("Inter-Regular.ttf", fontInter, "regular");
+};
+
 const addFinalPage = (doc: IjsPDF) => {
   doc.addPage("a4", "portrait");
   addGrayPadding(doc);
@@ -92,7 +113,7 @@ const addFinalPage = (doc: IjsPDF) => {
 
   doc.setFontSize(12);
   doc.setTextColor(35, 31, 32);
-  doc.setFont("Open Sans", "normal");
+  doc.setFont(fontOpenSans, "regular");
 
   doc.text(
     `
@@ -160,7 +181,7 @@ const addImagesPage1 = (doc: IjsPDF) => {
 const addHeaderPage1 = (doc: IjsPDF) => {
   doc.setFontSize(28);
   doc.setTextColor(32, 105, 72);
-  doc.setFont("Open Sans", "bold");
+  doc.setFont(fontOpenSans, "bold");
   doc.text("plastic credit", 152, 28);
 
   doc.setTextColor(0, 0, 0);
@@ -181,7 +202,7 @@ const addCertificateHolderPage1 = (
 ) => {
   doc.setFontSize(15);
   doc.setTextColor(35, 31, 32);
-  doc.setFont("inter", "normal");
+  doc.setFont(fontInter, "regular");
   addTextWithSpacing(doc, "PROUDLY PRESENTED TO", 142, 75, 0.5);
 
   const name = certificateData.retiringEntityName || "N/A";
@@ -191,7 +212,7 @@ const addCertificateHolderPage1 = (
 
   doc.setFontSize(fontSize);
   doc.setTextColor(88, 185, 71);
-  doc.setFont("Open Sans", "normal");
+  doc.setFont(fontOpenSans, "regular");
   doc.text(name, xPos, yPos);
 
   doc.setFontSize(10);
@@ -208,7 +229,7 @@ const addCertificateHolderPage1 = (
   doc.addImage(
     greenLogo,
     "png",
-    doc.internal.pageSize.width / 2 + 35 + 10 + logoWidth,
+    doc.internal.pageSize.width / 2 + 35 + 13 + logoWidth,
     doc.internal.pageSize.height - 17,
     logoWidth,
     logoWidth,
@@ -229,7 +250,7 @@ const addCertificateDetailsPage1 = (
 ) => {
   doc.setFontSize(15);
   doc.setTextColor(35, 31, 32);
-  doc.setFont("inter", "normal");
+  doc.setFont(fontInter, "regular");
   // addTextWithSpacing(doc, "FOR OFFSETTING", 154, 110, 0.5);
   addTextWithSpacing(doc, "FOR MAKING AN IMPACT", 143, 110, 0.5);
   addTextWithSpacing(doc, "BY NEUTRALIZING AN IMPRESSIVE", 128, 116, 0.5);
@@ -238,12 +259,12 @@ const addCertificateDetailsPage1 = (
 
   doc.setFontSize(15);
   doc.setTextColor(35, 31, 32);
-  doc.setFont("inter", "normal");
+  doc.setFont(fontInter, "regular");
   addTextWithSpacing(doc, "OF", 176, 132, 0.5);
 
   doc.setFontSize(15);
   doc.setTextColor(32, 105, 72);
-  doc.setFont("Open Sans", "bold");
+  doc.setFont(fontOpenSans, "bold");
   doc.text(weightText, xPosition.value, 124);
 
   const plasticText = plastciValuesString || "N/A";
@@ -251,7 +272,7 @@ const addCertificateDetailsPage1 = (
 
   doc.setFontSize(15);
   doc.setTextColor(32, 105, 72);
-  doc.setFont("Open Sans", "bold");
+  doc.setFont(fontOpenSans, "bold");
   doc.text(plasticText, xPosition.value, 140);
 };
 
@@ -267,7 +288,7 @@ const addCirularImagePage1 = (
   doc.addImage(circular, "png", 160, startY, 40, 40);
   doc.setFontSize(15);
   doc.setTextColor(0, 0, 0);
-  doc.setFont("Open Sans", "bold");
+  doc.setFont(fontOpenSans, "bold");
   doc.text(ID, 174, textY);
   doc.setTextColor(88, 185, 71);
   doc.setFontSize(12);
@@ -284,15 +305,15 @@ const addVerticalImagesPage2 = (doc: IjsPDF) => {
 };
 
 const addHeaderPage2 = (doc: IjsPDF) => {
-  doc.setFontSize(25);
+  doc.setFontSize(23);
   doc.setTextColor(32, 105, 72);
-  doc.setFont("Open Sans", "normal");
+  doc.setFont(fontOpenSans, "regular");
   doc.text("plastic credit", 45, 30);
   doc.setTextColor(0, 0, 0);
-  doc.setFont("Open Sans", "bold");
-  doc.text("certificate", 93, 30);
-  doc.setFont("Open Sans", "normal");
-  doc.text("details", 133, 30);
+  doc.setFont(fontOpenSans, "bold");
+  doc.text("certificate", 95, 30);
+  doc.setFont(fontOpenSans, "regular");
+  doc.text("details", 135, 30);
 };
 
 const addCertificateHodlerPage2 = (
@@ -301,16 +322,16 @@ const addCertificateHodlerPage2 = (
 ) => {
   doc.setFontSize(15);
   doc.setTextColor(32, 105, 72);
-  doc.setFont("Open Sans", "bold");
+  doc.setFont(fontOpenSans, "bold");
   doc.text("Name of Certificate Holder:", 20, 44);
   doc.setTextColor(0, 0, 0);
-  doc.text(certificateData.retiringEntityName, 84, 44);
+  doc.text(certificateData.retiringEntityName, 90, 44);
 };
 
 const addTitle = (doc: IjsPDF, title: string, yPosition: number) => {
   doc.setFontSize(15);
   doc.setTextColor(32, 105, 72);
-  doc.setFont("Open Sans", "bold");
+  doc.setFont(fontOpenSans, "bold");
   doc.text(title, 20, yPosition);
   return yPosition + 5;
 };
@@ -643,7 +664,7 @@ const addTableWithLinks = (
         if (url) {
           doc.setTextColor(0, 0, 0);
           doc.setFontSize(11);
-          doc.setFont("Inter", "normal");
+          doc.setFont(fontInter, "regular");
           const textWidth = doc.getTextWidth(url);
           const textPosX = data.cell.x + (data.cell.width - textWidth) / 2;
           const textPosY = data.cell.y + data.cell.height / 1.5;
@@ -722,7 +743,7 @@ const addAllTables = (
 
       doc.text(title, 20, yPosition);
       doc.setFontSize(12);
-      doc.setFont("Inter", "normal");
+      doc.setFont(fontInter, "regular");
       doc.setTextColor(0, 0, 0);
 
       // Prepare for Description
