@@ -2,6 +2,7 @@
 import { GOOGLE_MAPS_API_KEY } from "@/config/config";
 import { GoogleMap, Marker, MarkerCluster } from "vue3-google-map";
 import { ref, watch, computed } from "vue";
+import { isValidLatLngObject } from "@/utils/location";
 
 export interface CustomGoogleMapProps {
   locations:
@@ -16,23 +17,6 @@ const props = defineProps<CustomGoogleMapProps>();
 
 const center = ref();
 const zoomLevel = ref();
-const isValidLatLngObject = (obj: any): obj is { lat: number; lng: number } => {
-  // Check if obj is an object and has exactly two properties
-  if (
-    typeof obj !== "object" ||
-    obj === null ||
-    Object.keys(obj).length !== 2
-  ) {
-    return false;
-  }
-
-  // Check if the properties 'lat' and 'lng' exist
-  if ("lat" in obj && "lng" in obj) {
-    return true;
-  }
-
-  return false;
-};
 
 const areAllLocationsValid = computed(() => {
   const { locations } = props;
