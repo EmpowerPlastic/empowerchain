@@ -132,6 +132,37 @@ type BuyCreditsWasmEvent @entity {
   saleDate: Date!
 }
 
+type FreezeCreditsWasmEvent @entity {
+  id: ID!
+  freezer: String!
+  listingOwner: String!
+  denom: String!
+  buyer: String!
+  numberOfCreditsFrozen: BigInt!
+  timeout: String!
+  timestamp: Date!
+}
+
+type CancelFreezeCreditsWasmEvent @entity {
+  id: ID!
+  canceler: String!
+  listingOwner: String!
+  denom: String!
+  buyer: String!
+  numberOfCreditsCancelledFromFreeze: BigInt!
+  timestamp: Date!
+}
+
+type ReleaseFreezeCreditsWasmEvent @entity {
+  id: ID!
+  releaser: String!
+  listingOwner: String!
+  denom: String!
+  buyer: String!
+  numberOfCreditsReleased: BigInt!
+  timestamp: Date!
+}
+
 type CreateListing @entity {
   id: ID!
   owner: String!
