@@ -4,10 +4,12 @@ import { GoogleMap, Marker, MarkerCluster } from "vue3-google-map";
 import { ref, watch, computed } from "vue";
 
 export interface CustomGoogleMapProps {
-  locations: {
-    lat: number;
-    lng: number;
-  }[];
+  locations:
+    | null
+    | {
+        lat: number;
+        lng: number;
+      }[];
 }
 
 const props = defineProps<CustomGoogleMapProps>();
@@ -24,8 +26,8 @@ const isValidLatLngObject = (obj: any): obj is { lat: number; lng: number } => {
     return false;
   }
 
-  // Check if the properties 'lat' and 'lng' exist and are not 0
-  if ("lat" in obj && "lng" in obj && obj.lat !== 0 && obj.lng !== 0) {
+  // Check if the properties 'lat' and 'lng' exist
+  if ("lat" in obj && "lng" in obj) {
     return true;
   }
 
@@ -34,11 +36,14 @@ const isValidLatLngObject = (obj: any): obj is { lat: number; lng: number } => {
 
 const areAllLocationsValid = computed(() => {
   const { locations } = props;
-  return locations.every((location) => isValidLatLngObject(location));
+  return (
+    locations !== null &&
+    locations.every((location) => isValidLatLngObject(location))
+  );
 });
 
 const getMapCenter = () => {
-  const locations = [...props.locations];
+  const locations = props.locations ? [...props.locations] : [];
 
   // Find the minimum and maximum latitude and longitude values
   const minLat = Math.min(...locations.map((location) => location.lat));

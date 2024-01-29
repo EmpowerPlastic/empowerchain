@@ -27,7 +27,7 @@ interface AuctionDetails {
     url: string;
     name: string;
   }[];
-  locationPointers: {
+  locationPointers: null |{
     lat: number;
     lng: number;
   }[];
@@ -47,7 +47,8 @@ const auctionDetails = ref<AuctionDetails>({
   volume: 0,
   image: [""],
   file: [{ url: "", name: "" }],
-  locationPointers: [{ lat: 0, lng: 0 }],
+  // locationPointers: [{ lat: 0, lng: 0 }],
+  locationPointers: null,
   registrationDate: "",
 });
 const pricePerCreditDenom = ref("");
