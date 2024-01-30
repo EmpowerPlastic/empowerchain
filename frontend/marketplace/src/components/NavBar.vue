@@ -13,7 +13,7 @@ import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
 
 const { handleSignIn, handleSignOut, isAuthenticated, user } = useAuth();
-const { address, isWalletConnected } = useWallet();
+const { address } = useWallet();
 const router = useRoute();
 const addressVisible = ref();
 const showNav = ref(false);
