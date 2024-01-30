@@ -26,6 +26,7 @@ import {
   PC_BACKEND_ENDPOINT,
 } from "@/config/config";
 import { createLogto, type LogtoConfig } from "@logto/vue";
+import Vue3Lottie from "vue3-lottie";
 
 const cache = new InMemoryCache();
 const apolloClient = new ApolloClient({
@@ -51,6 +52,8 @@ app.provide(DefaultApolloClient, apolloClient);
 app.use(Vue3Toastify, {
   autoClose: 3000,
 } as ToastContainerOptions);
+app.use(Vue3Lottie);
+
 if (ENVIRONMENT && ENVIRONMENT !== "local") {
   const rollbar = new Rollbar({
     accessToken: ROLLBAR_ACCESS_TOKEN,

@@ -5,6 +5,7 @@ import { useAuth } from "@/stores/auth";
 import { authHeader } from "@/utils/fetcher";
 import { fetchRepeater } from "@/utils/fetchRepeater";
 import { PC_BACKEND_ENDPOINT, PC_BACKEND_ENDPOINT_API } from "@/config/config";
+import FireworksAnimation from "@/assets/animationJSON/fireWorksAnimation.json";
 
 // Ported from prisma schema in the backend
 enum PaymentStatus {
@@ -72,6 +73,12 @@ onMounted(async () => {
 </script>
 
 <template>
+  <Vue3Lottie
+    v-if="auctionStatus === PaymentStatus.COMPLETE"
+    :animation-data="FireworksAnimation"
+    class="absolute"
+    :loop="false"
+  />
   <div class="p-5 md:px-[10%] min-h-[50vh] font-Inter">
     <h1 class="text-white text-title38 md:mt-10 mb-10 text-center">
       Payment confirmation
