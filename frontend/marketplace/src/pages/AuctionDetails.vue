@@ -14,8 +14,8 @@ import {
   findPlasticTypeInMaterial,
 } from "@/utils/utils";
 import { useQuery } from "@vue/apollo-composable";
-import gql from "graphql-tag";
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref } from "vue";
+import { GET_MARKETPLACE_LISTING } from "@/graphql/queries";
 
 interface AuctionDetails {
   applicant: string;
@@ -27,10 +27,12 @@ interface AuctionDetails {
     url: string;
     name: string;
   }[];
-  locationPointers: {
-    lat: number;
-    lng: number;
-  }[];
+  locationPointers:
+    | null
+    | {
+        lat: number;
+        lng: number;
+      }[];
   registrationDate: string;
 }
 
@@ -47,7 +49,7 @@ const auctionDetails = ref<AuctionDetails>({
   volume: 0,
   image: [""],
   file: [{ url: "", name: "" }],
-  locationPointers: [{ lat: 0, lng: 0 }],
+  locationPointers: null,
   registrationDate: "",
 });
 const pricePerCreditDenom = ref("");
@@ -107,91 +109,34 @@ const getDetailsList = (data: any, materialVolume: number) => {
 };
 
 const getAuctionDetails = (id: string | string[]) => {
-  let query = `query {
-  marketplaceListings(
-    filter: { id:{equalTo:"${id}"} }
-  ) {
-    totalCount
-    nodes {
-      id
-      amount
-      initialAmount
-      denom
-      owner
-      pricePerCreditAmount
-      pricePerCreditDenom
-      creditCollection {
-        activeAmount
-        retiredAmount
-        creditType
-        creditData {
-          nodes {
-            mediaFiles{
-              nodes{
-                name
-                url
-              }
-            }
-            binaryFiles{
-              nodes{
-                name
-                url
-              }
-            }
-            eventData {
-              nodes {
-                magnitude
-                registrationDate
-                amount
-                country
-                latitude
-                longitude
-                material {
-                  nodes {
-                    key
-                    value
-                  }
-                }
-              }
-            }
-            applicantDataByCreditDataId {
-              nodes {
-                name
-                description
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-`;
-
-  const { result, loading, error, refetch } = useQuery(gql`
-    ${query}
-  `);
+  const { result, loading, error, onResult } = useQuery(
+    GET_MARKETPLACE_LISTING,
+    {
+      id: id,
+    },
+    {
+      pollInterval: 5000,
+      fetchPolicy: "no-cache",
+    },
+  );
   data.value = {
     result,
     loading,
     error,
   };
-  setInterval(() => {
-    refetch();
-  }, 5000);
 
-  watch(result, (value) => {
+  onResult(({ data }) => {
     auctionDetails.value = getDetailsList(
-      value.marketplaceListings?.nodes[0].creditCollection.creditData.nodes,
+      data.marketplaceListings?.nodes[0].creditCollection.creditData.nodes,
       parseInt(
-        value.marketplaceListings?.nodes[0].creditCollection.activeAmount,
+        data.marketplaceListings?.nodes[0].creditCollection.activeAmount,
       ) +
         parseInt(
-          value.marketplaceListings?.nodes[0].creditCollection.retiredAmount,
+          data.marketplaceListings?.nodes[0].creditCollection.retiredAmount,
         ),
     );
     pricePerCreditDenom.value =
-      value.marketplaceListings?.nodes[0].pricePerCreditDenom;
+      data.marketplaceListings?.nodes[0].pricePerCreditDenom;
   });
 
   showSpinner.value = false;

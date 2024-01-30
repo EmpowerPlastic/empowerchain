@@ -21,10 +21,18 @@ export async function fetchRepeater(
 
   while (attempts < maxAttempts) {
     attempts++;
-    response = await getRequest(url, { ...(options ?? {}), signal });
-    if (!(await shouldTryAgain(response))) {
-      break;
+    try {
+      response = await getRequest(url, { ...(options ?? {}), signal });
+      if (!(await shouldTryAgain(response))) {
+        break;
+      }
+    } catch (error) {
+      console.log("fetchRepeater Error", error);
+      if (attempts === maxAttempts) {
+        throw error;
+      }
     }
+
     await new Promise((resolve) => setTimeout(resolve, timeout));
     if (!signal.aborted) {
       controller.abort("Timeout");
