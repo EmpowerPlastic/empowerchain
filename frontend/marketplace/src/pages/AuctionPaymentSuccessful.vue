@@ -46,7 +46,10 @@ const handleFetchResponse = async (response: Response | null) => {
 const checkAuctionStatus = async () => {
   const { getAccessToken } = useAuth();
   const accessToken = await getAccessToken(PC_BACKEND_ENDPOINT);
-
+  const paymentId = route.query.paymentId as string;
+  if (!paymentId) {
+    throw new Error("Payment ID is missing");
+  }
   isCheckingStatus.value = true;
   try {
     await fetchRepeater(
