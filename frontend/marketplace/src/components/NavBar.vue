@@ -4,7 +4,11 @@ import { onMounted, ref } from "vue";
 import { toast } from "vue3-toastify";
 import { useRoute } from "@/router";
 import SellectWalletModal from "@/components/SellectWalletModal.vue";
-import { getWalletFromType, disconnectWallet } from "@/utils/wallet-utils";
+import {
+  getWalletFromType,
+  disconnectWallet,
+  walletConnected,
+} from "@/utils/wallet-utils";
 import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
 
@@ -18,7 +22,8 @@ const selectWalletModal = ref(false);
 const userDetails = ref(user);
 
 onMounted(() => {
-  if (!isAuthenticated.value) {
+  //Disable wallet connection for email login
+  if (!isAuthenticated.value && walletConnected()) {
     connect();
   }
 });
@@ -115,8 +120,8 @@ const copyAddress = async () => {
               tabindex="0"
               v-if="isAuthenticated || address"
             >
-              <div class="w-[55px] rounded-full bg-lightBlack">
-                <img class="p-4" src="../assets/walletAvatar.png" />
+              <div class="w-[70px]">
+                <img class="p-3" src="../assets/avatar.svg" />
               </div>
             </div>
             <button
@@ -150,8 +155,8 @@ const copyAddress = async () => {
             >
               <div class="menu py-5 items-center mx-6 min-w-[180px]">
                 <div class="avatar mb-3">
-                  <div class="w-[62px] rounded-full bg-lightBlack">
-                    <img class="p-4" src="../assets/walletAvatar.png" />
+                  <div class="w-[70px] h-[65px]">
+                    <img class="p-4" src="../assets/greenlogo.svg" />
                   </div>
                 </div>
                 <div

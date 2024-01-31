@@ -2,10 +2,41 @@ const defaultFetchHeaders = {
   Accept: "application/json, text/plain, */*",
 };
 
+const handleResponse = (response: Response) => {
+  if (!response.ok) {
+    return response.text().then((text) => {
+      let errorMessage = response.statusText || response.status.toString();
+      try {
+        const errorData = JSON.parse(text);
+        errorMessage = errorData.message || errorMessage;
+      } catch (error) {
+        // The response text could not be parsed as JSON, use the default error message
+      }
+      return Promise.reject(errorMessage);
+    });
+  }
+  return response;
+};
+
+const useAbortController = (timeout: number) => {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  const cancel = () => {
+    clearTimeout(id);
+  };
+  return { signal: controller.signal, cancel };
+};
+
+type RequestInitWithTimeout = RequestInit & { timeout?: number };
+
 export const useFetcher = () => {
   const fetcher = {
-    get: async (url: string, options?: RequestInit) => {
-      const { headers: extraHeaders, ...optionsWithoutHeaders } = options ?? {};
+    get: (url: string, options?: RequestInitWithTimeout): Promise<any> => {
+      const {
+        timeout = 5000,
+        headers: extraHeaders,
+        ...optionsWithoutHeaders
+      } = options ?? {};
       const headers = {
         ...defaultFetchHeaders,
         ...(extraHeaders ?? {}),
@@ -15,14 +46,30 @@ export const useFetcher = () => {
         ...(optionsWithoutHeaders ?? {}),
         headers,
       };
-      const response = await fetch(url, {
+
+      const { cancel, signal } = useAbortController(timeout);
+
+      return fetch(url, {
         ...newOptions,
         method: "GET",
-      });
-      return response;
+        signal: signal,
+      })
+        .then(handleResponse)
+        .catch((error) => {
+          throw new Error(error);
+        })
+        .finally(cancel);
     },
-    post: async (url: string, body: any, options?: RequestInit) => {
-      const { headers: extraHeaders, ...optionsWithoutHeaders } = options ?? {};
+    post: (
+      url: string,
+      body: any,
+      options?: RequestInitWithTimeout,
+    ): Promise<any> => {
+      const {
+        timeout = 5000,
+        headers: extraHeaders,
+        ...optionsWithoutHeaders
+      } = options ?? {};
 
       const defaultPostHeaders = {
         "Content-Type": "application/json",
@@ -39,14 +86,19 @@ export const useFetcher = () => {
         headers,
       };
 
-      const response = await fetch(url, {
+      const { cancel, signal } = useAbortController(timeout);
+
+      return fetch(url, {
         ...newOptions,
         method: "POST",
         body: JSON.stringify(body),
-      });
-
-      // const data = await response.json();
-      return response;
+        signal: signal,
+      })
+        .then(handleResponse)
+        .catch((error) => {
+          throw new Error(error);
+        })
+        .finally(cancel);
     },
   };
 
