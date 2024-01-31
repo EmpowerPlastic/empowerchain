@@ -15,14 +15,7 @@ const handleResponse = (response: Response) => {
       return Promise.reject(errorMessage);
     });
   }
-
-  return response.text().then((text) => {
-    try {
-      return JSON.parse(text);
-    } catch (error) {
-      return Promise.reject("Invalid JSON in response");
-    }
-  });
+  return response;
 };
 
 const useAbortController = (timeout: number) => {
