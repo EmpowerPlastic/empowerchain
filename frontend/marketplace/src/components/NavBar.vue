@@ -4,7 +4,11 @@ import { onMounted, ref } from "vue";
 import { toast } from "vue3-toastify";
 import { useRoute } from "@/router";
 import SellectWalletModal from "@/components/SellectWalletModal.vue";
-import { getWalletFromType, disconnectWallet } from "@/utils/wallet-utils";
+import {
+  getWalletFromType,
+  disconnectWallet,
+  walletConnected,
+} from "@/utils/wallet-utils";
 import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
 
@@ -18,7 +22,8 @@ const selectWalletModal = ref(false);
 const userDetails = ref(user);
 
 onMounted(() => {
-  if (!isAuthenticated.value) {
+  //Disable wallet connection for email login
+  if (!isAuthenticated.value && walletConnected()) {
     connect();
   }
 });
