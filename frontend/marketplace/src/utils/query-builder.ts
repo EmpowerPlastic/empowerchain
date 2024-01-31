@@ -19,12 +19,12 @@ export class ListingsQueryBuilder {
     const creditCollection = creditData || this.creditTypes;
     const query = `
             {
+             amount:{greaterThan:"0"},
                 ${this.pricePerCredit}
                 ${
                   creditCollection
                     ? `creditCollection:
                     {
-                     activeAmount:{greaterThan:"0"},
                         ${
                           creditData
                             ? `creditData:
