@@ -29,7 +29,7 @@ defineExpose({
 </script>
 <template>
   <Modal ref="baseModal" title="Certificate holder">
-    <template v-slot:body class="border-2 border-red-300 rounded-lg">
+    <template v-slot:body >
       <p class="py-4">
         Provide an individual or company name that is going to be used for the
         Plastic Credit Offset Certificate.
