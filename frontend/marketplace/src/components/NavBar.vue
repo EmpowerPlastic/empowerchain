@@ -265,10 +265,10 @@ const copyAddress = async () => {
           </div>
 
           <!--          User Profile Dropdown-->
-          <div class="dropdown dropdown-start w-full">
+      <!--     <div class="hidden dropdown dropdown-start w-full">
             <template v-if="isAuthenticated || address">
               <button
-                class="bg-buttonGray border px-5 border-greenPrimary w-full h-11 rounded-xl text-ellipsis overflow-hidden"
+                class="bg-buttonGray border px-5 border-greenPrimary w-full h-11 rounded-xl text-ellipsis overflow-hidden text-[70%] sm:text-[100%]"
               >
                 {{ addressVisible || userDetails?.email }}
               </button>
@@ -325,7 +325,51 @@ const copyAddress = async () => {
                 </button>
               </div>
             </div>
-          </div>
+          </div> -->
+        </div>
+
+        <!-- Navbar Items-->
+        <div class="text-center">
+          <template v-if="isAuthenticated || address">
+            <div
+              class="flex flex-row justify-center cursor-pointer text-center"
+              @click="copyAddress"
+              v-if="address"
+            >
+              <p class="text-title18 text-white">
+                {{ addressVisible || "Connect wallet" }}
+              </p>
+              <img class="w-4 mx-3" src="../assets/copyIcon.svg" />
+            </div>
+            <p class="text-title18 text-white">
+                  {{ userDetails?.email }}
+                </p>
+            <a href="/certificate" class="btn nav-dropdown-button-mobile">
+              My Certificates
+            </a>
+            <a
+              href="/profile"
+              class="btn nav-dropdown-button-mobile"
+              v-if="isAuthenticated"
+            >
+              Profile
+            </a>
+            <button
+              v-if="address"
+              @click="disconnectWallet"
+              class="btn nav-dropdown-button-mobile"
+            >
+              Disconnect
+            </button>
+            <br />
+            <button
+              @click="handleSignOut"
+              class="btn nav-dropdown-button-mobile"
+              v-if="isAuthenticated"
+            >
+              Logout
+            </button>
+          </template>
         </div>
         <ul class="flex flex-col items-center gap-4">
           <li>
@@ -352,5 +396,8 @@ const copyAddress = async () => {
 <style scoped>
 .nav-dropdown-button {
   @apply btn-ghost rounded-sm text-greenPrimary font-bold text-title14 normal-case border-none;
+}
+.nav-dropdown-button-mobile {
+  @apply btn-ghost rounded-sm text-greenPrimary font-bold text-title18 normal-case border-none;
 }
 </style>

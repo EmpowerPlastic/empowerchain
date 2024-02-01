@@ -17,6 +17,11 @@ const props = defineProps<BuyButtonProps>();
 const { isAuthenticated, handleSignIn } = useAuth();
 const modalEl = ref<HTMLDialogElement | null>(null);
 const continueHandler = ref<((name: string) => void) | undefined>(undefined);
+const isMobile = ref(window.innerWidth <= 640); // Tailwind's 'md' breakpoint
+
+window.addEventListener("resize", () => {
+  isMobile.value = window.innerWidth <= 640;
+});
 
 enum BuyButtonState {
   DISABLED = "disabled",
@@ -120,8 +125,13 @@ const buttonsCssClasses = `
     :class="buttonsCssClasses"
     @click="buttonHandler"
   >
-    <span v-if="showButtonSpinner" class="loading loading-spinner"></span>
-    {{ buttonText }}
+    <span
+      v-if="showButtonSpinner && !isMobile"
+      class="loading loading-spinner"
+    ></span>
+    <template v-if="!showButtonSpinner || !isMobile">
+      {{ buttonText }}
+    </template>
   </button>
   <CertificateHolderModal ref="modalEl" @continue="continueHandler" />
 </template>

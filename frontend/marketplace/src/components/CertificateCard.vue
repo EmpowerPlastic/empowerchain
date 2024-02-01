@@ -497,8 +497,8 @@ const generateQRCode = async () => {
           <p class="text-title14 font-bold">PCRD</p>
         </div>
         <div class="text-right">
-          <p class="text-title24 font-bold">{{ certificate?.amount }}</p>
-          <p class="text-title14 font-light truncate">
+          <p class="text-title24 font-bold">{{ certificate?.amount }} kg</p>
+          <p class="text-title12 font-light break-words">
             {{ certificate?.denom }}
           </p>
         </div>
