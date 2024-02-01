@@ -12,6 +12,7 @@ import {
   CreditBalance,
   CreditCollection,
   CreditData,
+  CreditFreeze,
   CreditOffsetCertificate,
   EventData,
   FreezeCreditsWasmEvent,
@@ -224,6 +225,27 @@ export async function handleFreezeCredits(event: CosmosEvent): Promise<void> {
           timestamp: new Date(event.block.header.time.toISOString()),
         });
       await releaseFreezeCreditsWasmEvent.save();
+      const creditFreeze = await CreditFreeze.get(
+        `${listingOwner}-${denom}-${buyer}`
+      );
+      const buyCreditsWasmEvent = BuyCreditsWasmEvent.create({
+        id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
+        listingOwner: listingOwner,
+        denom: denom,
+        buyer: buyer,
+        numberOfCreditsBought: numberOfCredits,
+        totalPriceAmount: creditFreeze.totalPriceAmount,
+        totalPriceDenom: creditFreeze.totalPriceDenom,
+        saleDate: new Date(event.block.header.time.toISOString()),
+      });
+      await buyCreditsWasmEvent.save();
+      if (creditFreeze.numberOfCreditsFrozen === numberOfCredits) {
+        await CreditFreeze.remove(`${listingOwner}-${denom}-${buyer}`);
+      } else {
+        creditFreeze.numberOfCreditsFrozen =
+          creditFreeze.numberOfCreditsFrozen - numberOfCredits;
+        await creditFreeze.save();
+      }
     } catch (e) {
       await logRollbarError(e, event.tx.hash, event.block.header.height);
       throw new Error("Error in handleReleaseFreeze: " + e.message);
@@ -263,6 +285,16 @@ export async function handleFreezeCredits(event: CosmosEvent): Promise<void> {
       );
       marketplaceListing.amount = marketplaceListing.amount + numberOfCredits;
       await marketplaceListing.save();
+      const creditFreeze = await CreditFreeze.get(
+        `${listingOwner}-${denom}-${buyer}`
+      );
+      if (creditFreeze.numberOfCreditsFrozen === numberOfCredits) {
+        await CreditFreeze.remove(`${listingOwner}-${denom}-${buyer}`);
+      } else {
+        creditFreeze.numberOfCreditsFrozen =
+          creditFreeze.numberOfCreditsFrozen - numberOfCredits;
+        await creditFreeze.save();
+      }
     } catch (e) {
       await logRollbarError(e, event.tx.hash, event.block.header.height);
       throw new Error("Error in handleCancelFreeze: " + e.message);
@@ -299,11 +331,37 @@ export async function handleFreezeCredits(event: CosmosEvent): Promise<void> {
         timestamp: new Date(event.block.header.time.toISOString()),
       });
       await freezeCreditsWasmEvent.save();
+
       const marketplaceListing = await MarketplaceListing.get(
         `${listingOwner}-${denom}`
       );
       marketplaceListing.amount = marketplaceListing.amount - numberOfCredits;
       await marketplaceListing.save();
+
+      let creditFreeze = await CreditFreeze.get(
+        `${listingOwner}-${denom}-${buyer}`
+      );
+      if (creditFreeze) {
+        creditFreeze.numberOfCreditsFrozen =
+          creditFreeze.numberOfCreditsFrozen + numberOfCredits;
+        creditFreeze.timeout = timeout;
+        await creditFreeze.save();
+      } else {
+        creditFreeze = CreditFreeze.create({
+          id: `${listingOwner}-${denom}-${buyer}`,
+          creditCollectionId: denom,
+          freezer: freezer,
+          listingOwner: listingOwner,
+          denom: denom,
+          buyer: buyer,
+          numberOfCreditsFrozen: numberOfCredits,
+          totalPriceAmount: marketplaceListing.pricePerCreditAmount,
+          totalPriceDenom: marketplaceListing.pricePerCreditDenom,
+          timeout: timeout,
+          timestamp: new Date(event.block.header.time.toISOString()),
+        });
+        await creditFreeze.save();
+      }
     } catch (e) {
       await logRollbarError(e, event.tx.hash, event.block.header.height);
       throw new Error("Error in handleFreeze: " + e.message);
