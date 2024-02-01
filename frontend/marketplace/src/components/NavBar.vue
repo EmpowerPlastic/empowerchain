@@ -177,13 +177,13 @@ const copyAddress = async () => {
                 <a href="/certificate" class="btn nav-dropdown-button">
                   My Certificates
                 </a>
-                <a
-                  href="/profile"
-                  class="btn nav-dropdown-button"
-                  v-if="isAuthenticated"
-                >
-                  Profile
-                </a>
+                <!--                <a-->
+                <!--                  href="/profile"-->
+                <!--                  class="btn nav-dropdown-button"-->
+                <!--                  v-if="isAuthenticated"-->
+                <!--                >-->
+                <!--                  Profile-->
+                <!--                </a>-->
                 <button
                   v-if="address"
                   @click="disconnectWallet"
@@ -302,13 +302,13 @@ const copyAddress = async () => {
                 <a href="/certificate" class="btn nav-dropdown-button">
                   My Certificates
                 </a>
-                <a
-                  href="/profile"
-                  class="btn nav-dropdown-button"
-                  v-if="isAuthenticated"
-                >
-                  Profile
-                </a>
+                <!--                <a-->
+                <!--                  href="/profile"-->
+                <!--                  class="btn nav-dropdown-button"-->
+                <!--                  v-if="isAuthenticated"-->
+                <!--                >-->
+                <!--                  Profile-->
+                <!--                </a>-->
                 <button
                   v-if="address"
                   @click="disconnectWallet"

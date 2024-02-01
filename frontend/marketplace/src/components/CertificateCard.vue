@@ -416,9 +416,7 @@ const preparePagesData = () => {
 
 const generateQRCode = async () => {
   // const canvas = document.getElementById("qrCode") as HTMLCanvasElement;
-  const url = await QRCode.toDataURL(
-    `https://empower.market/registry/${ID as string}`,
-  );
+  const url = await QRCode.toDataURL(`https://www.empowerchain.io/`);
 
   // Create a new image for the QR code
   const qrImage = new Image();
