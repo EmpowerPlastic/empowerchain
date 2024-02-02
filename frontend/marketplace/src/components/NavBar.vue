@@ -263,69 +263,6 @@ const copyAddress = async () => {
               </div>
             </div>
           </div>
-
-          <!--          User Profile Dropdown-->
-      <!--     <div class="hidden dropdown dropdown-start w-full">
-            <template v-if="isAuthenticated || address">
-              <button
-                class="bg-buttonGray border px-5 border-greenPrimary w-full h-11 rounded-xl text-ellipsis overflow-hidden text-[70%] sm:text-[100%]"
-              >
-                {{ addressVisible || userDetails?.email }}
-              </button>
-            </template>
-            <div
-              tabindex="0"
-              class="dropdown-content menu font-Inter divide-y divide-lightGray bg-avatarBlack rounded-sm items-center border-avatarBorder border-[1.5px] w-full mt-2"
-            >
-              <div class="menu py-5 items-center mx-4 min-w-[120px]">
-                <div class="avatar mb-3">
-                  <div class="w-[82px] rounded-full bg-lightBlack">
-                    <img class="p-4" src="../assets/walletAvatar.png" />
-                  </div>
-                </div>
-                <div
-                  class="flex flex-row cursor-pointer"
-                  @click="copyAddress"
-                  v-if="address"
-                >
-                  <p class="text-title14 text-white">
-                    {{ addressVisible || "Connect wallet" }}
-                  </p>
-                  <img class="w-4 mx-3" src="../assets/copyIcon.svg" />
-                </div>
-                <p class="text-title14 text-white">
-                  {{ userDetails?.email }}
-                </p>
-              </div>
-
-              <div class="menu py-2 items-center w-full">
-                <a href="/certificate" class="btn nav-dropdown-button">
-                  My Certificates
-                </a>
-                <a
-                  href="/profile"
-                  class="btn nav-dropdown-button"
-                  v-if="isAuthenticated"
-                >
-                  Profile
-                </a>
-                <button
-                  v-if="address"
-                  @click="disconnectWallet"
-                  class="btn nav-dropdown-button"
-                >
-                  Disconnect
-                </button>
-                <button
-                  @click="handleSignOut"
-                  class="btn nav-dropdown-button"
-                  v-if="isAuthenticated"
-                >
-                  Logout
-                </button>
-              </div>
-            </div>
-          </div> -->
         </div>
 
         <!-- Navbar Items-->
