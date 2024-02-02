@@ -37,11 +37,6 @@ const showButtonSpinner = ref(false);
 const insufficientBalance = ref(false);
 const coinFormatted = ref("");
 const currentBalance = ref(Number.MAX_SAFE_INTEGER);
-const isMobile = ref(window.innerWidth <= 640); // Tailwind's 'md' breakpoint
-
-window.addEventListener("resize", () => {
-  isMobile.value = window.innerWidth <= 640;
-});
 
 const availableCreditsString = computed<string>(() => {
   return `${props.availableCredits}/${props.initialCredits}`;
@@ -205,8 +200,8 @@ const handleCardPayment = async (retirererName: string) => {
 </script>
 <template>
   <div
-    v-if="showButtonSpinner && isMobile"
-    class="fixed inset-0 flex items-center justify-center z-50 bg-black opacity-80"
+    v-if="showButtonSpinner"
+    class="fixed inset-0 flex items-center justify-center z-50 bg-black opacity-80 md:hidden"
   >
     <div class="text-center">
       <span class="loading loading-spinner"></span>

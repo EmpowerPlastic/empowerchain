@@ -17,11 +17,6 @@ const props = defineProps<BuyButtonProps>();
 const { isAuthenticated, handleSignIn } = useAuth();
 const modalEl = ref<HTMLDialogElement | null>(null);
 const continueHandler = ref<((name: string) => void) | undefined>(undefined);
-const isMobile = ref(window.innerWidth <= 640); // Tailwind's 'md' breakpoint
-
-window.addEventListener("resize", () => {
-  isMobile.value = window.innerWidth <= 640;
-});
 
 enum BuyButtonState {
   DISABLED = "disabled",
@@ -120,18 +115,13 @@ const buttonsCssClasses = `
 `;
 </script>
 <template>
-  <button
-    :disabled="isDisabled"
-    :class="buttonsCssClasses"
-    @click="buttonHandler"
-  >
-    <span
-      v-if="showButtonSpinner && !isMobile"
-      class="loading loading-spinner"
-    ></span>
-    <template v-if="!showButtonSpinner || !isMobile">
+  <button :disabled="isDisabled" :class="buttonsCssClasses" @click="buttonHandler">
+    <span v-if="showButtonSpinner" class="hidden md:loading loading-spinner"></span>
+    <!-- Always render the text container, but control visibility with classes -->
+    <span :class="{'hidden md:block': showButtonSpinner, 'block': !showButtonSpinner}">
       {{ buttonText }}
-    </template>
+    </span>
   </button>
   <CertificateHolderModal ref="modalEl" @continue="continueHandler" />
 </template>
+
