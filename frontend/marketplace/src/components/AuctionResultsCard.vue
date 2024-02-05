@@ -49,7 +49,7 @@ onMounted(async () => {
 
 const handleViewDetailsClick = () => {
   tracking.trackEvent(TrackEvents.CLICKED_VIEW_DETAILS, {
-    id: props.auctionData.id,
+    id: props.cardData.id,
     context: "start page",
   });
   router.push(`/auction/${encodeURIComponent(props.cardData.id)}`);
@@ -85,7 +85,7 @@ const handleViewDetailsClick = () => {
       <div>
         <button
           class="btn bg-greenPrimary w-full h-full rounded-sm text-title15 px-2 normal-case font-normal"
-          @click="router.push(`/auction/${encodeURIComponent(cardData.id)}`)"
+          @click="handleViewDetailsClick"
         >
           View details
         </button>
@@ -95,7 +95,7 @@ const handleViewDetailsClick = () => {
     <!--      Details for Desktop UI-->
     <div
       class="hidden md:grid grid-cols-5 gap-5 w-full col-span-4 py-2 px-6 ml-2 cursor-pointer"
-      @click="router.push(`/auction/${encodeURIComponent(cardData.id)}`)"
+      @click="handleViewDetailsClick"
     >
       <div class="col-span-1 ...">
         <p class="details-title">Material</p>
