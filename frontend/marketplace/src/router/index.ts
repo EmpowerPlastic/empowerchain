@@ -1,14 +1,17 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomePage from "@/pages/HomePage.vue";
-import FAQPage from "@/pages/FAQPage.vue";
-import CertificatesAndCreditsPage from "@/pages/CertificatesAndCreditsPage.vue";
-import AuctionPage from "@/pages/AuctionPage.vue";
-import AuctionDetails from "@/pages/AuctionDetails.vue";
-import CallbackView from "@/pages/CallbackView.vue";
-import UserProfile from "@/pages/UserProfile.vue";
-import AuctionPaymentSuccessful from "@/pages/AuctionPaymentSuccessful.vue";
-import AuctionPaymentCancelled from "@/pages/AuctionPaymentCancelled.vue";
-import CreditCollectionPage from "@/pages/CreditCollectionPage.vue";
+const HomePage = () => import("@/pages/HomePage.vue");
+const FAQPage = () => import("@/pages/FAQPage.vue");
+const CertificatesAndCreditsPage = () =>
+  import("@/pages/CertificatesAndCreditsPage.vue");
+const AuctionPage = () => import("@/pages/AuctionPage.vue");
+const AuctionDetails = () => import("@/pages/AuctionDetails.vue");
+const CallbackView = () => import("@/pages/CallbackView.vue");
+const UserProfile = () => import("@/pages/UserProfile.vue");
+const AuctionPaymentSuccessful = () =>
+  import("@/pages/AuctionPaymentSuccessful.vue");
+const AuctionPaymentCancelled = () =>
+  import("@/pages/AuctionPaymentCancelled.vue");
+const CreditCollectionPage = () => import("@/pages/CreditCollectionPage.vue");
 
 const router = createRouter({
   scrollBehavior: () => {
