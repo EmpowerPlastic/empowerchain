@@ -12,6 +12,7 @@ import {
 import { formatDenom } from "@/utils/wallet-utils";
 import { computed, onMounted, ref } from "vue";
 import CustomImage from "@/components/CustomImage.vue";
+import tracking, { TrackEvents } from "@/utils/analytics";
 
 export interface AuctionResultsCardProps {
   cardData: MarketplaceListing & {
@@ -45,6 +46,14 @@ onMounted(async () => {
     props.cardData.creditCollection.creditData.nodes,
   );
 });
+
+const handleViewDetailsClick = () => {
+  tracking.trackEvent(TrackEvents.CLICKED_VIEW_DETAILS, {
+    id: props.auctionData.id,
+    context: "start page",
+  });
+  router.push(`/auction/${encodeURIComponent(props.cardData.id)}`);
+};
 </script>
 <template>
   <div

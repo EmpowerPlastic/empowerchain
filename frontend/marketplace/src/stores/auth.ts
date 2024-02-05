@@ -2,6 +2,7 @@ import { type Ref, ref, watch, computed } from "vue";
 import { WEB_ENDPOINT } from "@/config/config";
 import { type UserInfoResponse, useLogto } from "@logto/vue";
 import { useRedirectAfterLoginUrl } from "@/utils/redirectAfterLoginUrl";
+import tracking from "@/utils/analytics";
 
 interface AuthCustomData {
   walletAddress: string;
@@ -52,10 +53,20 @@ export const useAuth = (): Auth => {
     return undefined;
   });
 
+  watch(user, (newUser, oldUser) => {
+    if (newUser?.sub && newUser?.sub !== oldUser?.sub) {
+      const { sub: userId, ...restProps } = newUser;
+      tracking.identify(newUser.sub, {
+        id: userId,
+        ...restProps,
+      });
+    }
+  });
+
   watch(
     isAuthenticated,
-    async (newValue) => {
-      if (newValue) {
+    async (newValue, oldValue) => {
+      if (newValue && newValue !== oldValue) {
         user.value = await logtoFetchUserInfo();
       } else {
         user.value = undefined;
