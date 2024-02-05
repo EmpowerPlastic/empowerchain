@@ -48,11 +48,11 @@ const router = createRouter({
       component: CallbackView,
       meta: { hideNavFooter: true }, //To hide nav and footer on this page
     },
-    {
-      path: "/profile",
-      name: "UserProfilePage",
-      component: UserProfile,
-    },
+    // {
+    //   path: "/profile",
+    //   name: "UserProfilePage",
+    //   component: UserProfile,
+    // },
     {
       path: "/purchase-successful",
       name: "AuctionPaymentSuccessful",

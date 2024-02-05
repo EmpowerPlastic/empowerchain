@@ -295,6 +295,10 @@ const addCirularImagePage1 = (
   if (qrCodeUrl) {
     doc.addImage(qrCodeUrl, "svg", 168, qrY, 23, 23);
   }
+  //Hyperlink the QR
+  doc.link(168, qrY, 20, 20, {
+    url: "https://www.empowerchain.io/",
+  });
 };
 
 const addVerticalImagesPage2 = (doc: IjsPDF) => {
