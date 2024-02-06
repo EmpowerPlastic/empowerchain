@@ -5,9 +5,9 @@ import {
   type EventProperties,
 } from "@segment/analytics-next";
 
-interface EventsOptions {
-  trackEvents: EventProperties;
-  pageViewEvents: EventProperties;
+interface EventNames {
+  trackEvents: Record<string, string>;
+  pageViewEvents: Record<string, string>;
 }
 
 /**
@@ -16,9 +16,9 @@ interface EventsOptions {
  */
 export const initTracking = (
   writeKey: string,
-  eventsArg: Partial<EventsOptions>,
+  eventsArg: Partial<EventNames>,
 ) => {
-  const events: EventsOptions = {
+  const events: EventNames = {
     trackEvents: eventsArg.trackEvents ? { ...eventsArg.trackEvents } : {},
     pageViewEvents: eventsArg.pageViewEvents
       ? { ...eventsArg.pageViewEvents }
@@ -33,8 +33,11 @@ export const initTracking = (
    * @param eventEnum
    * @returns boolean
    */
-  const isValidEvent = <T>(value: T, eventEnum: object): value is T => {
-    return Object.values(eventEnum).includes(value);
+  const isValidEvent = (
+    eventName: string,
+    eventNames: typeof events.trackEvents | typeof events.pageViewEvents,
+  ): boolean => {
+    return Object.values(eventNames).includes(eventName);
   };
 
   /**
@@ -64,7 +67,7 @@ export const initTracking = (
     eventProperties?: EventProperties,
   ) => {
     if (!isValidEvent(eventName, events.trackEvents)) {
-      console.log("Not a valid page view event");
+      console.log("Not a valid tracking event");
       return;
     }
     try {
@@ -92,7 +95,7 @@ export const initTracking = (
     try {
       analytics.page(eventName, eventProperties);
     } catch (error) {
-      console.error("Error logging event", error);
+      console.error("Error tracking page view event", error);
     }
   };
 
