@@ -4,6 +4,7 @@ import {
   ApplicantData,
   BinaryFile,
   BuyCreditsWasmEvent,
+  CancelFreezeCreditsWasmEvent,
   CancelListingWasmEvent,
   Certificate,
   Country,
@@ -11,13 +12,16 @@ import {
   CreditBalance,
   CreditCollection,
   CreditData,
+  CreditFreeze,
   CreditOffsetCertificate,
   EventData,
+  FreezeCreditsWasmEvent,
   MarketplaceListing,
   MaterialData,
   MediaFile,
   MetadataUri,
   Organization,
+  ReleaseFreezeCreditsWasmEvent,
   RetiredCreditsEvent,
   TransferedCreditsEvent,
   UpdateListingWasmEvent,
@@ -175,6 +179,196 @@ export async function handleCancelListing(event: CosmosEvent): Promise<void> {
   }
 }
 
+export async function handleFreezeCredits(event: CosmosEvent): Promise<void> {
+  const freezer = fetchPropertyFromEvent(event, "freezer");
+  if (freezer) {
+    await handleFreeze(event);
+    return;
+  }
+  const canceler = fetchPropertyFromEvent(event, "canceler");
+  if (canceler) {
+    await handleCancelFreeze(event);
+    return;
+  }
+  const releaser = fetchPropertyFromEvent(event, "releaser");
+  if (releaser) {
+    await handleReleaseFreeze(event);
+    return;
+  }
+
+  async function handleReleaseFreeze(event: CosmosEvent): Promise<void> {
+    try {
+      const releaser = fetchPropertyFromEvent(event, "releaser");
+      const listingOwner = fetchPropertyFromEvent(event, "listing_owner");
+      const denom = fetchPropertyFromEvent(event, "denom");
+      const buyer = fetchPropertyFromEvent(event, "buyer");
+      const numberOfCredits = BigInt(
+        fetchPropertyFromEvent(event, "number_of_credits_released")
+      );
+      // this is because there is a bug in SubQuery, which causes event to be processed multiple times
+      // for every transaction in the same block, therefore we're skipping processing
+      // of events that are already present in the database
+      const eventAlreadyProcessed = await ReleaseFreezeCreditsWasmEvent.get(
+        `${event.tx.hash}-${event.msg.idx}-${event.idx}`
+      );
+      if (eventAlreadyProcessed) {
+        return;
+      }
+      const releaseFreezeCreditsWasmEvent =
+        ReleaseFreezeCreditsWasmEvent.create({
+          id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
+          releaser: releaser,
+          listingOwner: listingOwner,
+          denom: denom,
+          buyer: buyer,
+          numberOfCreditsReleased: numberOfCredits,
+          timestamp: new Date(event.block.header.time.toISOString()),
+        });
+      await releaseFreezeCreditsWasmEvent.save();
+      const creditFreeze = await CreditFreeze.get(
+        `${listingOwner}-${denom}-${buyer}`
+      );
+      const buyCreditsWasmEvent = BuyCreditsWasmEvent.create({
+        id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
+        listingOwner: listingOwner,
+        denom: denom,
+        buyer: buyer,
+        numberOfCreditsBought: numberOfCredits,
+        totalPriceAmount: creditFreeze.totalPriceAmount,
+        totalPriceDenom: creditFreeze.totalPriceDenom,
+        saleDate: new Date(event.block.header.time.toISOString()),
+      });
+      await buyCreditsWasmEvent.save();
+      if (creditFreeze.numberOfCreditsFrozen === numberOfCredits) {
+        await CreditFreeze.remove(`${listingOwner}-${denom}-${buyer}`);
+      } else {
+        creditFreeze.numberOfCreditsFrozen =
+          creditFreeze.numberOfCreditsFrozen - numberOfCredits;
+        await creditFreeze.save();
+      }
+    } catch (e) {
+      await logRollbarError(e, event.tx.hash, event.block.header.height);
+      throw new Error("Error in handleReleaseFreeze: " + e.message);
+    }
+  }
+
+  async function handleCancelFreeze(event: CosmosEvent): Promise<void> {
+    try {
+      const canceler = fetchPropertyFromEvent(event, "canceler");
+      const listingOwner = fetchPropertyFromEvent(event, "listing_owner");
+      const denom = fetchPropertyFromEvent(event, "denom");
+      const buyer = fetchPropertyFromEvent(event, "buyer");
+      const numberOfCredits = BigInt(
+        fetchPropertyFromEvent(event, "number_of_credits_cancelled_from_freeze")
+      );
+      // this is because there is a bug in SubQuery, which causes event to be processed multiple times
+      // for every transaction in the same block, therefore we're skipping processing
+      // of events that are already present in the database
+      const eventAlreadyProcessed = await CancelFreezeCreditsWasmEvent.get(
+        `${event.tx.hash}-${event.msg.idx}-${event.idx}`
+      );
+      if (eventAlreadyProcessed) {
+        return;
+      }
+      const cancelFreezeCreditsWasmEvent = CancelFreezeCreditsWasmEvent.create({
+        id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
+        canceler: canceler,
+        listingOwner: listingOwner,
+        denom: denom,
+        buyer: buyer,
+        numberOfCreditsCancelledFromFreeze: numberOfCredits,
+        timestamp: new Date(event.block.header.time.toISOString()),
+      });
+      await cancelFreezeCreditsWasmEvent.save();
+      const marketplaceListing = await MarketplaceListing.get(
+        `${listingOwner}-${denom}`
+      );
+      marketplaceListing.amount = marketplaceListing.amount + numberOfCredits;
+      await marketplaceListing.save();
+      const creditFreeze = await CreditFreeze.get(
+        `${listingOwner}-${denom}-${buyer}`
+      );
+      if (creditFreeze.numberOfCreditsFrozen === numberOfCredits) {
+        await CreditFreeze.remove(`${listingOwner}-${denom}-${buyer}`);
+      } else {
+        creditFreeze.numberOfCreditsFrozen =
+          creditFreeze.numberOfCreditsFrozen - numberOfCredits;
+        await creditFreeze.save();
+      }
+    } catch (e) {
+      await logRollbarError(e, event.tx.hash, event.block.header.height);
+      throw new Error("Error in handleCancelFreeze: " + e.message);
+    }
+  }
+
+  async function handleFreeze(event: CosmosEvent): Promise<void> {
+    try {
+      const freezer = fetchPropertyFromEvent(event, "freezer");
+      const listingOwner = fetchPropertyFromEvent(event, "listing_owner");
+      const denom = fetchPropertyFromEvent(event, "denom");
+      const buyer = fetchPropertyFromEvent(event, "buyer");
+      const numberOfCredits = BigInt(
+        fetchPropertyFromEvent(event, "number_of_credits_frozen")
+      );
+      const timeout = fetchPropertyFromEvent(event, "timeout_unix_timestamp");
+      // this is because there is a bug in SubQuery, which causes event to be processed multiple times
+      // for every transaction in the same block, therefore we're skipping processing
+      // of events that are already present in the database
+      const eventAlreadyProcessed = await FreezeCreditsWasmEvent.get(
+        `${event.tx.hash}-${event.msg.idx}-${event.idx}`
+      );
+      if (eventAlreadyProcessed) {
+        return;
+      }
+      const freezeCreditsWasmEvent = FreezeCreditsWasmEvent.create({
+        id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
+        freezer: freezer,
+        listingOwner: listingOwner,
+        denom: denom,
+        buyer: buyer,
+        numberOfCreditsFrozen: numberOfCredits,
+        timeout: timeout,
+        timestamp: new Date(event.block.header.time.toISOString()),
+      });
+      await freezeCreditsWasmEvent.save();
+
+      const marketplaceListing = await MarketplaceListing.get(
+        `${listingOwner}-${denom}`
+      );
+      marketplaceListing.amount = marketplaceListing.amount - numberOfCredits;
+      await marketplaceListing.save();
+
+      let creditFreeze = await CreditFreeze.get(
+        `${listingOwner}-${denom}-${buyer}`
+      );
+      if (creditFreeze) {
+        creditFreeze.numberOfCreditsFrozen =
+          creditFreeze.numberOfCreditsFrozen + numberOfCredits;
+        creditFreeze.timeout = timeout;
+        await creditFreeze.save();
+      } else {
+        creditFreeze = CreditFreeze.create({
+          id: `${listingOwner}-${denom}-${buyer}`,
+          creditCollectionId: denom,
+          freezer: freezer,
+          listingOwner: listingOwner,
+          denom: denom,
+          buyer: buyer,
+          numberOfCreditsFrozen: numberOfCredits,
+          totalPriceAmount: marketplaceListing.pricePerCreditAmount,
+          totalPriceDenom: marketplaceListing.pricePerCreditDenom,
+          timeout: timeout,
+          timestamp: new Date(event.block.header.time.toISOString()),
+        });
+        await creditFreeze.save();
+      }
+    } catch (e) {
+      await logRollbarError(e, event.tx.hash, event.block.header.height);
+      throw new Error("Error in handleFreeze: " + e.message);
+    }
+  }
+}
+
 export async function handleBuyCredits(event: CosmosEvent): Promise<void> {
   try {
     const listingOwner = fetchPropertyFromEvent(event, "listing_owner");
@@ -215,11 +409,7 @@ export async function handleBuyCredits(event: CosmosEvent): Promise<void> {
     );
     marketplaceListing.amount =
       marketplaceListing.amount - numberOfCreditsBought;
-    if (marketplaceListing.amount === BigInt(0)) {
-      await MarketplaceListing.remove(`${listingOwner}-${denom}`);
-    } else {
-      await marketplaceListing.save();
-    }
+    await marketplaceListing.save();
   } catch (e) {
     await logRollbarError(e, event.tx.hash, event.block.header.height);
     throw new Error("Error in handleBuyCredits: " + e.message);
@@ -242,6 +432,8 @@ export async function handleWasmEvents(event: CosmosEvent): Promise<void> {
       case "buy_credits":
         await handleBuyCredits(event);
         break;
+      case "freeze_credits":
+        await handleFreezeCredits(event);
       default:
         break;
     }
@@ -500,6 +692,9 @@ function fetchPropertyFromEvent(event: CosmosEvent, property: string): string {
   const prop = event.event.attributes.find(
     (attr) => attr.key === property
   )?.value;
+  if (!prop) {
+    return "";
+  }
   return removeDoubleQuotes(prop);
 }
 

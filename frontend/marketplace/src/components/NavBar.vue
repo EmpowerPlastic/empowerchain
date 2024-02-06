@@ -169,7 +169,7 @@ const copyAddress = async () => {
                   </p>
                   <img class="w-4 mx-3" src="../assets/copyIcon.svg" />
                 </div>
-                <p class="text-title14 text-white" v-if="userDetails?.username">
+                <p class="text-title14 text-white" v-if="userDetails?.email">
                   {{ userDetails?.email }}
                 </p>
               </div>
@@ -284,13 +284,13 @@ const copyAddress = async () => {
             <a href="/certificate" class="btn nav-dropdown-button-mobile">
               My Certificates
             </a>
-            <a
+            <!-- <a
               href="/profile"
               class="btn nav-dropdown-button-mobile"
               v-if="isAuthenticated"
             >
               Profile
-            </a>
+            </a> -->
             <button
               v-if="address"
               @click="disconnectWallet"
