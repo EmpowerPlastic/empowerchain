@@ -92,10 +92,35 @@ const onGeneratePDF = () => {
       qrCodeUrl.value,
     );
     notifyer.success("Certificate downloaded successfully");
+    showSpinner.value = false;
+    resetValues();
   } catch (e) {
     console.error(e);
     notifyer.error("Something went wrong");
   }
+};
+
+const resetValues = () => {
+  certificateData.value = null;
+  creditData.value = null;
+  materialData.value = [];
+  eventData.value = null;
+  plasticValuesString.value = "";
+  locations.value = [];
+  mediaFileUrls.value = [];
+  binaryFilesUrls.value = [];
+  collectionAmount.value = 0;
+  issuanceDate.value = "";
+  applicantData.value = "";
+  applicantDataDescription.value = "";
+  materialDetails.value = [];
+  currentHeaders.value = [];
+  primaryHeaders.value = [];
+  secondaryHeaders.value = [];
+  retiredDate.value = "";
+  allData.value = [];
+  pagesData.value = [];
+  qrCodeUrl.value = undefined;
 };
 
 const queryCertificateData = () => {
