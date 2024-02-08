@@ -12,6 +12,7 @@ import {
 import { formatDenom } from "@/utils/wallet-utils";
 import { computed, onMounted, ref } from "vue";
 import CustomImage from "@/components/CustomImage.vue";
+import tracking, { TrackEvents } from "@/utils/analytics";
 import CustomSpinner from "./CustomSpinner.vue";
 
 export interface AuctionResultsCardProps {
@@ -51,6 +52,14 @@ onMounted(async () => {
   );
     showSpinner.value = false;
 });
+
+const handleViewDetailsClick = () => {
+  tracking.trackEvent(TrackEvents.CLICKED_VIEW_DETAILS, {
+    id: props.cardData.id,
+    context: "start page",
+  });
+  router.push(`/auction/${encodeURIComponent(props.cardData.id)}`);
+};
 </script>
 <template>
   <div
@@ -87,7 +96,7 @@ onMounted(async () => {
       <div>
         <button
           class="btn bg-greenPrimary w-full h-full rounded-sm text-title15 px-2 normal-case font-normal"
-          @click="router.push(`/auction/${encodeURIComponent(cardData.id)}`)"
+          @click="handleViewDetailsClick"
         >
           View details
         </button>
@@ -97,7 +106,7 @@ onMounted(async () => {
     <!--      Details for Desktop UI-->
     <div
       class="hidden md:grid grid-cols-5 gap-5 w-full col-span-4 py-2 px-6 ml-2 cursor-pointer"
-      @click="router.push(`/auction/${encodeURIComponent(cardData.id)}`)"
+      @click="handleViewDetailsClick"
     >
       <div class="col-span-1 ...">
         <p class="details-title">Material</p>
