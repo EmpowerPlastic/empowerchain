@@ -35,7 +35,9 @@ interface CardDetailsList {
 
 const props = defineProps<AuctionResultsCardProps>();
 const denom = ref("");
-const volume = ref(0);
+const volume = computed(() => { 
+  return Number(props.cardData.creditCollection.retiredAmount) + Number(props.cardData.creditCollection.activeAmount)
+ })
 const cardDetailsList = ref<CardDetailsList>();
 const showSpinner = ref(true);
 const applicant = computed<string>(() => {
@@ -47,11 +49,6 @@ onMounted(async () => {
   cardDetailsList.value = getDetailsList(
     props.cardData.creditCollection.creditData.nodes,
   );
-  volume.value = props.cardData.creditCollection.retiredAmount + props.cardData.creditCollection.availableAmount;
-  console.log(props.cardData.creditCollection.creditData.nodes);
-  console.log(props.cardData.creditCollection);
-  
-  
     showSpinner.value = false;
 });
 </script>
@@ -135,7 +132,7 @@ onMounted(async () => {
       </div>
       <div class="col-span-1">
         <p class="details-title">Volume</p>
-        <p>{{ cardDetailsList?.volume }}kg</p>
+        <p>{{ volume }}kg</p>
       </div>
       <div class="col-span-1 text-right">
         <p class="text-title32 font-bold leading-7 mt-6">

@@ -194,6 +194,8 @@ export class ListingsQueryBuilder {
                     pricePerCreditDenom
                     creditCollection{
                         creditType
+                        retiredAmount
+                        activeAmount
                         creditData{
                             nodes{
                                 eventData{
