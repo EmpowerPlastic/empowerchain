@@ -11,7 +11,7 @@ import {
   RPC_ENDPOINT,
 } from "@/config/config";
 import { onMounted, ref, watch, computed } from "vue";
-import { getWallet } from "@/utils/wallet-utils";
+import { getWallet, walletConnected } from "@/utils/wallet-utils";
 import { formatDenom, resolveSdkError } from "@/utils/wallet-utils";
 import BuyButton from "@/components/BuyButton.vue";
 import { useFetcher, authHeader } from "@/utils/fetcher";
@@ -59,23 +59,32 @@ watch(props, async (newVal) => {
 });
 
 const initValues = async () => {
-  if (props.selectedCoin) {
-    coinFormatted.value = await formatDenom(props.selectedCoin);
-  }
-  const { createRPCQueryClient } = empowerchain.ClientFactory;
-  const rpcQueryClient = await createRPCQueryClient({
-    rpcEndpoint: RPC_ENDPOINT,
-  });
-  const balance = await rpcQueryClient.cosmos.bank.v1beta1.allBalances({
-    address: (await getWallet().getKey(CHAIN_ID)).bech32Address,
-  });
-  currentBalance.value = 0;
-  balance.balances.forEach((b) => {
-    if (b.denom === props.selectedCoin) {
-      currentBalance.value = parseInt(b.amount);
+  try {
+    if (props.selectedCoin) {
+      coinFormatted.value = await formatDenom(props.selectedCoin);
     }
-  });
-  checkBalanceForPurchase(amount.value);
+
+    if (walletConnected()) {
+      const wallet = getWallet();
+      console.log("initValues");
+      const { createRPCQueryClient } = empowerchain.ClientFactory;
+      const rpcQueryClient = await createRPCQueryClient({
+        rpcEndpoint: RPC_ENDPOINT,
+      });
+      const balance = await rpcQueryClient.cosmos.bank.v1beta1.allBalances({
+        address: (await wallet.getKey(CHAIN_ID)).bech32Address,
+      });
+      currentBalance.value = 0;
+      balance.balances.forEach((b) => {
+        if (b.denom === props.selectedCoin) {
+          currentBalance.value = parseInt(b.amount);
+        }
+      });
+      checkBalanceForPurchase(amount.value);
+    }
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 onMounted(async () => {
