@@ -5,6 +5,7 @@ import auctionCard from "@/assets/auctionCard.png";
 import { formatDenom } from "@/utils/wallet-utils";
 import { onMounted, ref } from "vue";
 import CustomImage from "@/components/CustomImage.vue";
+import tracking, { TrackEvents } from "@/utils/analytics";
 export interface AuctionCardProps {
   auctionData: any;
 }
@@ -14,6 +15,14 @@ const denom = ref("");
 onMounted(async () => {
   denom.value = await formatDenom(props.auctionData?.pricePerCreditDenom);
 });
+
+const handleViewDetailsClick = () => {
+  tracking.trackEvent(TrackEvents.CLICKED_VIEW_DETAILS, {
+    id: props.auctionData.id,
+    context: "collection list",
+  });
+  router.push(`/auction/${encodeURIComponent(props.auctionData.id)}`);
+};
 </script>
 <template>
   <div class="bg-lightBlack rounded-lg md:rounded-sm">
@@ -63,7 +72,7 @@ onMounted(async () => {
         <button
           type="button"
           class="bg-greenPrimary w-full h-full rounded-sm font-Inter text-white md:text-title18 px-2"
-          @click="router.push(`/auction/${encodeURIComponent(auctionData.id)}`)"
+          @click="handleViewDetailsClick"
         >
           View details
         </button>

@@ -16,6 +16,8 @@ const LOGTO_APP_ID = import.meta.env.VITE_LOGTO_APP_ID;
 const PC_BACKEND_ENDPOINT = import.meta.env.VITE_PC_BACKEND_ENDPOINT;
 const PC_BACKEND_ENDPOINT_API =
   PC_BACKEND_ENDPOINT + "/api/v1/pc-backend-public";
+const SEGMENT_WRITE_KEY = import.meta.env.VITE_SEGMENT_WRITE_KEY;
+
 export {
   WEB_ENDPOINT,
   API_ENDPOINT,
@@ -34,4 +36,5 @@ export {
   LOGTO_APP_ID,
   PC_BACKEND_ENDPOINT,
   PC_BACKEND_ENDPOINT_API,
+  SEGMENT_WRITE_KEY,
 };

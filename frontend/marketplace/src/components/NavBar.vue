@@ -11,6 +11,7 @@ import {
 } from "@/utils/wallet-utils";
 import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
+import tracking, { TrackEvents } from "@/utils/analytics";
 
 const { handleSignIn, handleSignOut, isAuthenticated, user } = useAuth();
 const { address } = useWallet();
@@ -29,6 +30,7 @@ onMounted(() => {
 });
 
 const openSelectWalletModal = () => {
+  handleLoginClick("wallet");
   selectWalletModal.value = true;
 };
 
@@ -67,6 +69,10 @@ const handleSelectWallet = async (walletType: string) => {
     "..." +
     walletAddress?.substring(walletAddress?.length - 4);
   if (walletAddress && walletType) {
+    tracking.identify(walletAddress, {
+      walletType,
+      loginType: "wallet",
+    });
     localStorage.setItem("address", walletAddress);
     localStorage.setItem("wallet", walletType);
   }
@@ -76,6 +82,17 @@ const handleSelectWallet = async (walletType: string) => {
 const copyAddress = async () => {
   await navigator.clipboard.writeText(address.value ?? "");
   toast.success("Address copied to clipboard");
+};
+
+const handleLoginClick = (variant: "open menu" | "wallet" | "email") => {
+  tracking.trackEvent(TrackEvents.CLICKED_LOGIN, {
+    variant,
+  });
+};
+
+const handleSignInClick = () => {
+  handleLoginClick("email");
+  handleSignIn();
 };
 </script>
 
@@ -128,6 +145,7 @@ const copyAddress = async () => {
               v-if="!(isAuthenticated || address)"
               tabindex="0"
               class="min-w-[150px] bg-lightBlack border border-borderBlack text-white text-title18 w-full rounded-xl h-full px-5 py-1"
+              @click="() => handleLoginClick('open menu')"
             >
               Login
             </button>
@@ -143,7 +161,10 @@ const copyAddress = async () => {
                 >
                   Wallet
                 </button>
-                <button @click="handleSignIn" class="btn nav-dropdown-button">
+                <button
+                  @click="handleSignInClick"
+                  class="btn nav-dropdown-button"
+                >
                   Email
                 </button>
               </div>
@@ -257,7 +278,10 @@ const copyAddress = async () => {
                 >
                   Wallet
                 </button>
-                <button @click="handleSignIn" class="btn nav-dropdown-button">
+                <button
+                  @click="handleSignInClick"
+                  class="btn nav-dropdown-button"
+                >
                   Email
                 </button>
               </div>
