@@ -416,9 +416,7 @@ const preparePagesData = () => {
 
 const generateQRCode = async () => {
   // const canvas = document.getElementById("qrCode") as HTMLCanvasElement;
-  const url = await QRCode.toDataURL(
-    `https://empower.market/registry/${ID as string}`,
-  );
+  const url = await QRCode.toDataURL(`https://www.empowerchain.io/`);
 
   // Create a new image for the QR code
   const qrImage = new Image();
@@ -497,8 +495,8 @@ const generateQRCode = async () => {
           <p class="text-title14 font-bold">PCRD</p>
         </div>
         <div class="text-right">
-          <p class="text-title24 font-bold">{{ certificate?.amount }}</p>
-          <p class="text-title14 font-light truncate">
+          <p class="text-title24 font-bold">{{ certificate?.amount }} kg</p>
+          <p class="text-title12 font-light break-words">
             {{ certificate?.denom }}
           </p>
         </div>
