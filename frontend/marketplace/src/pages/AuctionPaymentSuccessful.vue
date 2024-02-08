@@ -72,12 +72,16 @@ const checkAuctionStatus = async () => {
 onMounted(async () => {
   await checkAuctionStatus();
 });
+
 </script>
 
 <template>
   <div class="p-5 md:px-[10%] min-h-[50vh] font-Inter">
-    <h1 class="text-white text-title38 md:mt-10 mb-10 text-center">
+    <h1 v-if="auctionStatus === PaymentStatus.COMPLETE" class="text-white text-title38 md:mt-10 mb-10 text-center" >
       Payment confirmation
+    </h1>
+    <h1 v-else class="text-white text-title38 md:mt-10 mb-10 text-center">
+      Purchase failed
     </h1>
     <div v-if="isCheckingStatus">
       <div>
@@ -106,19 +110,24 @@ onMounted(async () => {
         >
           Transaction couldn't be completed. You will receive a refund shortly.
           Please contact us at
-          <a href="mailto:marketplace@empower.eco">marketplace@empower.eco</a>
+          <a href="mailto:marketplace@empower.eco" class="underline">marketplace@empower.eco</a>
           if you encounter any issues.
         </span>
         <span v-else class="font-Inter text-white text-title18">
           Something went wrong with a credit transfer and we're currently
           investigating it. We'll contact you within 2 business days. If you
           haven't heard from us, please send us a message at
-          <a href="mailto:marketplace@empower.eco">marketplace@empower.eco</a>.
+          <a href="mailto:marketplace@empower.eco" class="underline">marketplace@empower.eco</a>.
         </span>
-        <a
+        <a v-if="auctionStatus === PaymentStatus.COMPLETE"
           class="mt-5 text-white btn btn-ghost btn-block normal-case bg-greenPrimary hover:bg-greenDark text-title24 lg:text-title32 lg:btn-lg p-0 px-12 font-normal md:max-w-lg"
           href="/certificate"
           >See your certificates</a
+        >
+        <a v-else
+          class="mt-5 text-white btn btn-ghost btn-block normal-case bg-greenPrimary hover:bg-greenDark text-title24 lg:text-title32 lg:btn-lg p-0 px-12 font-normal md:max-w-lg"
+          href="/"
+          >Go to Home Page</a
         >
       </div>
     </div>
