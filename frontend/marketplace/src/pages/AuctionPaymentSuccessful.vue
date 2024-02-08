@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { PC_BACKEND_ENDPOINT, PC_BACKEND_ENDPOINT_API } from "@/config/config";
 import { useRoute } from "@/router";
 import { useAuth } from "@/stores/auth";
-import { authHeader } from "@/utils/fetcher";
 import { fetchRepeater } from "@/utils/fetchRepeater";
-import { PC_BACKEND_ENDPOINT, PC_BACKEND_ENDPOINT_API } from "@/config/config";
+import { authHeader } from "@/utils/fetcher";
+import { onMounted, ref } from "vue";
 
 // Ported from prisma schema in the backend
 enum PaymentStatus {
@@ -55,7 +55,7 @@ const checkAuctionStatus = async () => {
     await fetchRepeater(
       `${PC_BACKEND_ENDPOINT_API}/payments/${route.query.paymentId}`,
       handleFetchResponse,
-      5,
+      8,
       5000,
       {
         headers: authHeader(accessToken),
