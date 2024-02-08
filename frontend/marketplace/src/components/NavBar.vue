@@ -190,7 +190,7 @@ const handleSignInClick = () => {
                   </p>
                   <img class="w-4 mx-3" src="../assets/copyIcon.svg" />
                 </div>
-                <p class="text-title14 text-white" v-if="userDetails?.username">
+                <p class="text-title14 text-white" v-if="userDetails?.email">
                   {{ userDetails?.email }}
                 </p>
               </div>
@@ -198,13 +198,13 @@ const handleSignInClick = () => {
                 <a href="/certificate" class="btn nav-dropdown-button">
                   My Certificates
                 </a>
-                <a
-                  href="/profile"
-                  class="btn nav-dropdown-button"
-                  v-if="isAuthenticated"
-                >
-                  Profile
-                </a>
+                <!--                <a-->
+                <!--                  href="/profile"-->
+                <!--                  class="btn nav-dropdown-button"-->
+                <!--                  v-if="isAuthenticated"-->
+                <!--                >-->
+                <!--                  Profile-->
+                <!--                </a>-->
                 <button
                   v-if="address"
                   @click="disconnectWallet"
@@ -287,69 +287,50 @@ const handleSignInClick = () => {
               </div>
             </div>
           </div>
+        </div>
 
-          <!--          User Profile Dropdown-->
-          <div class="dropdown dropdown-start w-full">
-            <template v-if="isAuthenticated || address">
-              <button
-                class="bg-buttonGray border px-5 border-greenPrimary w-full h-11 rounded-xl text-ellipsis overflow-hidden"
-              >
-                {{ addressVisible || userDetails?.email }}
-              </button>
-            </template>
+        <!-- Navbar Items-->
+        <div class="text-center">
+          <template v-if="isAuthenticated || address">
             <div
-              tabindex="0"
-              class="dropdown-content menu font-Inter divide-y divide-lightGray bg-avatarBlack rounded-sm items-center border-avatarBorder border-[1.5px] w-full mt-2"
+              class="flex flex-row justify-center cursor-pointer text-center"
+              @click="copyAddress"
+              v-if="address"
             >
-              <div class="menu py-5 items-center mx-4 min-w-[120px]">
-                <div class="avatar mb-3">
-                  <div class="w-[82px] rounded-full bg-lightBlack">
-                    <img class="p-4" src="../assets/walletAvatar.png" />
-                  </div>
-                </div>
-                <div
-                  class="flex flex-row cursor-pointer"
-                  @click="copyAddress"
-                  v-if="address"
-                >
-                  <p class="text-title14 text-white">
-                    {{ addressVisible || "Connect wallet" }}
-                  </p>
-                  <img class="w-4 mx-3" src="../assets/copyIcon.svg" />
-                </div>
-                <p class="text-title14 text-white">
+              <p class="text-title18 text-white">
+                {{ addressVisible || "Connect wallet" }}
+              </p>
+              <img class="w-4 mx-3" src="../assets/copyIcon.svg" />
+            </div>
+            <p class="text-title18 text-white">
                   {{ userDetails?.email }}
                 </p>
-              </div>
-
-              <div class="menu py-2 items-center w-full">
-                <a href="/certificate" class="btn nav-dropdown-button">
-                  My Certificates
-                </a>
-                <a
-                  href="/profile"
-                  class="btn nav-dropdown-button"
-                  v-if="isAuthenticated"
-                >
-                  Profile
-                </a>
-                <button
-                  v-if="address"
-                  @click="disconnectWallet"
-                  class="btn nav-dropdown-button"
-                >
-                  Disconnect
-                </button>
-                <button
-                  @click="handleSignOut"
-                  class="btn nav-dropdown-button"
-                  v-if="isAuthenticated"
-                >
-                  Logout
-                </button>
-              </div>
-            </div>
-          </div>
+            <a href="/certificate" class="btn nav-dropdown-button-mobile">
+              My Certificates
+            </a>
+            <!-- <a
+              href="/profile"
+              class="btn nav-dropdown-button-mobile"
+              v-if="isAuthenticated"
+            >
+              Profile
+            </a> -->
+            <button
+              v-if="address"
+              @click="disconnectWallet"
+              class="btn nav-dropdown-button-mobile"
+            >
+              Disconnect
+            </button>
+            <br />
+            <button
+              @click="handleSignOut"
+              class="btn nav-dropdown-button-mobile"
+              v-if="isAuthenticated"
+            >
+              Logout
+            </button>
+          </template>
         </div>
         <ul class="flex flex-col items-center gap-4">
           <li>
@@ -376,5 +357,8 @@ const handleSignInClick = () => {
 <style scoped>
 .nav-dropdown-button {
   @apply btn-ghost rounded-sm text-greenPrimary font-bold text-title14 normal-case border-none;
+}
+.nav-dropdown-button-mobile {
+  @apply btn-ghost rounded-sm text-greenPrimary font-bold text-title18 normal-case border-none;
 }
 </style>

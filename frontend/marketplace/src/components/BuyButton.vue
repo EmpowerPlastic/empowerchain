@@ -125,13 +125,13 @@ const buttonsCssClasses = `
 `;
 </script>
 <template>
-  <button
-    :disabled="isDisabled"
-    :class="buttonsCssClasses"
-    @click="buttonHandler"
-  >
-    <span v-if="showButtonSpinner" class="loading loading-spinner"></span>
-    {{ buttonText }}
+  <button :disabled="isDisabled" :class="buttonsCssClasses" @click="buttonHandler">
+    <span v-if="showButtonSpinner" class="hidden md:loading loading-spinner"></span>
+    <!-- Always render the text container, but control visibility with classes -->
+    <span :class="{'hidden md:block': showButtonSpinner, 'block': !showButtonSpinner}">
+      {{ buttonText }}
+    </span>
   </button>
   <CertificateHolderModal ref="modalEl" @continue="continueHandler" />
 </template>
+
