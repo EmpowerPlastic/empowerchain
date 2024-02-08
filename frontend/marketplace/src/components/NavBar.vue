@@ -13,6 +13,7 @@ import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
 import tracking, { PageViewEvents, TrackEvents } from "@/utils/analytics";
 
+
 const { handleSignIn, handleSignOut, isAuthenticated, user } = useAuth();
 const { address } = useWallet();
 const route = useRoute();
