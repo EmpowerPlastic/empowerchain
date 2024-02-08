@@ -226,9 +226,15 @@ const handleCardPayment = async (retirererName: string) => {
     <div class="flex flex-col mb-6 lg:mb-0">
       <div class="flex">
         <div class="flex flex-col mb-0 mt-7">
-          <p class="text-title18 text-subLabel text-right hidden md:block mr-3">
-            Cost
-          </p>
+          <div class="md:flex flex-row items-center hidden mr-3">
+            <p class="text-title18 text-subLabel text-right mr-2">Cost</p>
+            <p
+              class="tooltip tooltip:bg-red-100"
+              data-tip="The seller will be charged a 3% service fee + 0-5% payment processing fee"
+            >
+              <img class="w-[40px] h-[40px]" src="../assets/questionIcon.svg" />
+            </p>
+          </div>
           <p class="text-title18 text-subLabel text-right hidden md:block mr-3">
             {{ amount >= 0 ? pricePerCredit * amount : "0" }}
           </p>
@@ -243,9 +249,16 @@ const handleCardPayment = async (retirererName: string) => {
           />
         </div>
       </div>
-      <p class="text-title18 text-subLabel md:hidden">
-        Cost {{ pricePerCredit * amount }} ${{ coinFormatted }}
-      </p>
+      <div class="flex items-center text-title18 text-subLabel mt-2 md:hidden">
+        Cost
+        {{ pricePerCredit * amount }} ${{ coinFormatted }}
+        <p
+          class="tooltip tooltip:bg-red-100 ml-3"
+          data-tip="The seller will be charged a 3% service fee + 0-5% payment processing fee"
+        >
+          <img class="w-[20px] h-[20px]" src="../assets/questionIcon.svg" />
+        </p>
+      </div>
     </div>
     <div class="flex flex-col w-full lg:w-auto lg:self-end">
       <BuyButton
