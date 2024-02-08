@@ -1,4 +1,8 @@
-import { createRouter, createWebHistory } from "vue-router";
+import {
+  createRouter,
+  createWebHistory,
+  type RouteLocationNormalized,
+} from "vue-router";
 import HomePage from "@/pages/HomePage.vue";
 import FAQPage from "@/pages/FAQPage.vue";
 import CertificatesAndCreditsPage from "@/pages/CertificatesAndCreditsPage.vue";
@@ -9,6 +13,22 @@ import UserProfile from "@/pages/UserProfile.vue";
 import AuctionPaymentSuccessful from "@/pages/AuctionPaymentSuccessful.vue";
 import AuctionPaymentCancelled from "@/pages/AuctionPaymentCancelled.vue";
 import CreditCollectionPage from "@/pages/CreditCollectionPage.vue";
+import tracking, {
+  PageViewEvents,
+  type EventProperties,
+} from "@/utils/analytics";
+
+type PageViewEventWithProperties = (
+  to: RouteLocationNormalized,
+) => [PageViewEvents, EventProperties];
+export {};
+
+declare module "vue-router" {
+  interface RouteMeta {
+    pageViewEvent?: PageViewEvents | PageViewEventWithProperties;
+    hideNavFooter?: boolean;
+  }
+}
 
 const router = createRouter({
   scrollBehavior: () => {
@@ -21,59 +41,115 @@ const router = createRouter({
       path: "/",
       name: "home",
       component: HomePage,
+      meta: {
+        pageViewEvent: PageViewEvents.START_PAGE,
+      },
     },
     {
       path: "/certificate",
       name: "certificatesAndCredits",
       component: CertificatesAndCreditsPage,
+      meta: {
+        pageViewEvent: PageViewEvents.CERTIFICATES,
+      },
     },
     {
       path: "/faq",
       name: "FAQPage",
       component: FAQPage,
+      meta: {
+        pageViewEvent: PageViewEvents.FAQ,
+      },
     },
     {
       path: "/auction",
       name: "Auction",
       component: AuctionPage,
+      meta: {
+        pageViewEvent: PageViewEvents.PLASTIC_CREDIT_LISTINGS,
+      },
     },
     {
       path: "/auction/:id",
       name: "AuctionDetails",
       component: AuctionDetails,
+      meta: {
+        pageViewEvent: (to: RouteLocationNormalized) => {
+          const trackProps = {
+            id: to.params.id,
+          };
+          return [PageViewEvents.PLASTIC_CREDIT_LISTING, trackProps];
+        },
+      },
     },
     {
       path: "/callback",
       name: "CallbackPage",
       component: CallbackView,
-      meta: { hideNavFooter: true }, //To hide nav and footer on this page
+      meta: {
+        hideNavFooter: true, //To hide nav and footer on this page
+        pageViewEvent: PageViewEvents.LOGIN_CALLBACK,
+      },
     },
     {
       path: "/profile",
       name: "UserProfilePage",
       component: UserProfile,
+      meta: {
+        pageViewEvent: PageViewEvents.USER_PROFILE,
+      },
     },
     {
       path: "/purchase-successful",
       name: "AuctionPaymentSuccessful",
       component: AuctionPaymentSuccessful,
+      meta: {
+        pageViewEvent: PageViewEvents.PAYMENT_SUCCESSFUL,
+      },
     },
     {
       path: "/purchase-cancelled",
       name: "AuctionPaymentCancelled",
       component: AuctionPaymentCancelled,
+      meta: {
+        pageViewEvent: PageViewEvents.PAYMENT_CANCELLED,
+      },
     },
     {
       path: "/registry/:denom",
       name: "CreditCollectionPage",
       component: CreditCollectionPage,
+      meta: {
+        pageViewEvent: (to: RouteLocationNormalized) => {
+          const trackProps = {
+            denom: to.params.denom,
+          };
+          return [PageViewEvents.REGISTRY, trackProps];
+        },
+      },
     },
-    // {
-    //   path: "/payment-cancelled/:id",
-    //   name: "AuctionPaymentCancelled",
-    //   component: AuctionPaymentCancelled,
-    // },
   ],
+});
+
+const trackPageView = (
+  pageViewEvent: PageViewEvents | PageViewEventWithProperties,
+  to: RouteLocationNormalized,
+) => {
+  if (pageViewEvent && typeof pageViewEvent === "string") {
+    tracking.pageViewEvent(pageViewEvent as PageViewEvents);
+  } else if (pageViewEvent && typeof pageViewEvent === "function") {
+    const [eventName, eventProperties] = pageViewEvent(to);
+    tracking.pageViewEvent(eventName, eventProperties);
+  }
+};
+
+router.afterEach((to) => {
+  const meta = to.meta;
+  if (meta.pageViewEvent) {
+    trackPageView(meta.pageViewEvent, to);
+  } else {
+    tracking.pageViewEvent(PageViewEvents.UNKNOWN);
+  }
 });
 
 export default router;

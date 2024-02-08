@@ -4,7 +4,6 @@ import {
   type UserTraits,
   type EventProperties,
 } from "@segment/analytics-next";
-
 interface EventNames {
   trackEvents: Record<string, string>;
   pageViewEvents: Record<string, string>;
@@ -123,7 +122,17 @@ export enum TrackEvents {
 }
 
 export enum PageViewEvents {
-  PLASTIC_CREDIT_COLLECTION = "plastic credit collection",
+  START_PAGE = "start page",
+  CERTIFICATES = "certificates",
+  FAQ = "faq",
+  PLASTIC_CREDIT_LISTINGS = "plastic credit listings",
+  PLASTIC_CREDIT_LISTING = "plastic credit listing",
+  LOGIN_CALLBACK = "login callback",
+  USER_PROFILE = "user profile",
+  PAYMENT_SUCCESSFUL = "payment successful",
+  PAYMENT_CANCELLED = "payment cancelled",
+  REGISTRY = "registry",
+  UNKNOWN = "unknown",
 }
 
 const tracking = initTracking(SEGMENT_WRITE_KEY, {
@@ -132,3 +141,4 @@ const tracking = initTracking(SEGMENT_WRITE_KEY, {
 });
 
 export default tracking;
+export type { EventProperties };
