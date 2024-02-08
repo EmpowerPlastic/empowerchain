@@ -150,9 +150,6 @@ const getAuctionDetails = (id: string | string[]) => {
 
 const handlePageLoadAndCollectionIdChange = (newId: string, oldId?: string) => {
   if (newId && newId !== oldId) {
-    tracking.pageViewEvent(PageViewEvents.PLASTIC_CREDIT_COLLECTION, {
-      id: newId,
-    });
     getAuctionDetails(newId);
   }
 };
