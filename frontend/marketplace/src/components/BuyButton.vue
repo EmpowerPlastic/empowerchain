@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import { useAuth } from "@/stores/auth";
 import { isValidCreditAmount } from "@/utils/utils";
+import tracking, { TrackEvents } from "@/utils/analytics";
 import CertificateHolderModal from "@/components/CertificateHolderModal.vue";
 export interface BuyButtonProps {
   showButtonSpinner: boolean;
@@ -80,10 +81,19 @@ const addModalToHandler = (newContinueHandler: (name: string) => void) => {
 const buttonHandler = computed<(() => void) | undefined>(() => {
   switch (buttonState.value) {
     case BuyButtonState.ENABLED_CARD:
+      tracking.trackEvent(TrackEvents.CLICKED_PAYMENT_BUTTON, {
+        status: "pay with card",
+      });
       return addModalToHandler(props.handleCardPayment);
     case BuyButtonState.ENABLED_WALLET:
+      tracking.trackEvent(TrackEvents.CLICKED_PAYMENT_BUTTON, {
+        status: "pay with crypto",
+      });
       return addModalToHandler(props.handleBuyCredits);
     case BuyButtonState.ENABLED_UNAUTHORIZED:
+      tracking.trackEvent(TrackEvents.CLICKED_PAYMENT_BUTTON, {
+        status: "unauthorized",
+      });
       return handleSignIn;
     default:
       return undefined;

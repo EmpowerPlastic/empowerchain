@@ -12,6 +12,8 @@ import {
 import { formatDenom } from "@/utils/wallet-utils";
 import { computed, onMounted, ref } from "vue";
 import CustomImage from "@/components/CustomImage.vue";
+import tracking, { TrackEvents } from "@/utils/analytics";
+import CustomSpinner from "./CustomSpinner.vue";
 
 export interface AuctionResultsCardProps {
   cardData: MarketplaceListing & {
@@ -34,7 +36,14 @@ interface CardDetailsList {
 
 const props = defineProps<AuctionResultsCardProps>();
 const denom = ref("");
+const volume = computed(() => {
+  return (
+    parseInt(props.cardData.creditCollection.retiredAmount) +
+    parseInt(props.cardData.creditCollection.activeAmount)
+  );
+});
 const cardDetailsList = ref<CardDetailsList>();
+const showSpinner = ref(true);
 const applicant = computed<string>(() => {
   return cardDetailsList.value?.applicant[0] ?? "";
 });
@@ -44,16 +53,30 @@ onMounted(async () => {
   cardDetailsList.value = getDetailsList(
     props.cardData.creditCollection.creditData.nodes,
   );
+  showSpinner.value = false;
 });
+
+const handleViewDetailsClick = () => {
+  tracking.trackEvent(TrackEvents.CLICKED_VIEW_DETAILS, {
+    id: props.cardData.id,
+    context: "start page",
+  });
+  router.push(`/auction/${encodeURIComponent(props.cardData.id)}`);
+};
 </script>
 <template>
   <div
     class="bg-auctionBackground md:bg-lightBlack rounded-lg font-Inter text-white my-5 md:p-3 md:grid md:grid-cols-5 min-h-[180px]"
   >
-    <CustomImage
-      :src="cardDetailsList?.thumbnailUrl || auctionCard"
-      image-class="max-h-[200px] w-full rounded-sm"
-    />
+    <div v-if="showSpinner">
+      <CustomSpinner :visible="showSpinner" />
+    </div>
+    <div v-else="!showSpinner">
+      <CustomImage
+        :src="cardDetailsList?.thumbnailUrl || auctionCard"
+        image-class="max-h-[200px] w-full rounded-sm"
+      />
+    </div>
 
     <!--      Details for Mobile UI-->
     <div class="grid grid-cols-2 p-5 gap-4 md:hidden">
@@ -76,7 +99,7 @@ onMounted(async () => {
       <div>
         <button
           class="btn bg-greenPrimary w-full h-full rounded-sm text-title15 px-2 normal-case font-normal"
-          @click="router.push(`/auction/${encodeURIComponent(cardData.id)}`)"
+          @click="handleViewDetailsClick"
         >
           View details
         </button>
@@ -86,7 +109,7 @@ onMounted(async () => {
     <!--      Details for Desktop UI-->
     <div
       class="hidden md:grid grid-cols-5 gap-5 w-full col-span-4 py-2 px-6 ml-2 cursor-pointer"
-      @click="router.push(`/auction/${encodeURIComponent(cardData.id)}`)"
+      @click="handleViewDetailsClick"
     >
       <div class="col-span-1 ...">
         <p class="details-title">Material</p>
@@ -121,7 +144,7 @@ onMounted(async () => {
       </div>
       <div class="col-span-1">
         <p class="details-title">Volume</p>
-        <p>{{ cardDetailsList?.volume }}kg</p>
+        <p>{{ volume }}kg</p>
       </div>
       <div class="col-span-1 text-right">
         <p class="text-title32 font-bold leading-7 mt-6">
