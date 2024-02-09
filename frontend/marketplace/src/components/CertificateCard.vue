@@ -120,7 +120,6 @@ const resetValues = () => {
   retiredDate.value = "";
   allData.value = [];
   pagesData.value = [];
-  qrCodeUrl.value = undefined;
 };
 
 const queryCertificateData = () => {
