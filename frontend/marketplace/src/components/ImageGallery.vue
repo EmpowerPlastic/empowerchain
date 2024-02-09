@@ -22,7 +22,6 @@ watch(
 
 const handleActiveImage = (url: string) => {
   activeImageURL.value = url;
-  showSpinner.value = false;
 };
 </script>
 <template>
