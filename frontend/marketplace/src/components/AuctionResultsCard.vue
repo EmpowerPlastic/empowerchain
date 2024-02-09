@@ -68,7 +68,7 @@ const handleViewDetailsClick = () => {
     <div v-if="showSpinner">
       <CustomSpinner :visible="showSpinner" />
     </div>
-    <div v-if="showSpinner === false">
+    <div v-else="!showSpinner">
       <CustomImage
         :src="cardDetailsList?.thumbnailUrl || auctionCard"
         image-class="max-h-[200px] w-full rounded-sm"

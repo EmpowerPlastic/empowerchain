@@ -31,7 +31,7 @@ const handleActiveImage = (url: string) => {
       <div v-if="showSpinner" class="rounded-sm h-[500px] w-full object-none"> 
         <CustomSpinner :visible="showSpinner" />
       </div>
-      <div v-if="showSpinner === false">
+      <div v-else="!showSpinner">
         <CustomImage
           :src="activeImageURL"
           image-class="rounded-sm h-[500px] w-full object-none"
