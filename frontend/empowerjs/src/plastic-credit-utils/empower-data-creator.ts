@@ -1,5 +1,5 @@
-import { CreditProp, EmpowerDataFormat } from "./empower-data-format";
 import jsonschema from "jsonschema";
+import { CreditProp, EmpowerDataFormat } from "./empower-data-format";
 
 
 interface CreditPropBuilder {
@@ -133,6 +133,7 @@ export class EventBuilder implements CreditPropBuilder {
     private magnitude: string;
     private material: Property[];
     private registrationDate: Date;
+    private type: EventType;
 
     constructor() {
         this.reset();
@@ -163,6 +164,11 @@ export class EventBuilder implements CreditPropBuilder {
         return this;
     }
 
+    setType(type: EventType): EventBuilder {
+        this.type = type;
+        return this;
+    }
+
     build(): CreditProp {
         if (!this.location.latitude || !this.location.longitude) {
             throw new Error("Location is required");
@@ -178,6 +184,9 @@ export class EventBuilder implements CreditPropBuilder {
         }
         if (!this.registrationDate) {
             throw new Error("Registration date is required");
+        }
+        if (!this.type) {
+            throw new Error("Type is required");
         }
         return {
             id: "event_data",
@@ -210,6 +219,11 @@ export class EventBuilder implements CreditPropBuilder {
                     id: "registration_date",
                     type: "date",
                     content: this.registrationDate.toISOString(),
+                },
+                {
+                    id: "type",
+                    type: "text",
+                    content: this.type,
                 }
             ]
         };
@@ -339,4 +353,9 @@ interface Property {
 interface File {
     name: string;
     url: string;
+}
+
+enum EventType {
+    RECEPTION = "reception",
+    DELIVERY = "delivery"
 }
