@@ -795,6 +795,7 @@ async function handleEventData(
     magnitude: findPropById("magnitude", eventDataJson)?.content,
     registrationDate: findPropById("registration_date", eventDataJson)?.content,
     creditDataId: creditDataId,
+    type: findPropById("type", eventDataJson)?.content,
   });
   await eventData.save();
   for (let [i, material] of findPropById(

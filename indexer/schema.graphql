@@ -252,6 +252,7 @@ type EventData @entity {
   material: [MaterialData!]! @derivedFrom(field: "eventData")
   registrationDate: Date!
   creditData: CreditData!
+  type: String
 }
 
 type MaterialData @entity {
