@@ -721,8 +721,6 @@ async function handleCreditData(
     issuanceDate: findPropById("issuance_date", metadata["credit_props"])
       ?.content,
     creditType: findPropById("credit_type", metadata["credit_props"])?.content,
-    // For now, we take only amount from first event
-    // amount: findPropById("amount", findPropById("credit_events_data", metadata["credit_props"])?.content[0].content)?.content,
     aggregationLatitude:
       findPropById("aggregation_location", metadata["credit_props"])?.content
         .latitude || 0,
