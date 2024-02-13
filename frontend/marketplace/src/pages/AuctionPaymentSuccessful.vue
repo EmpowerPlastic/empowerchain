@@ -139,7 +139,7 @@ onMounted(async () => {
           v-else
           class="mt-5 text-white btn btn-ghost btn-block normal-case bg-greenPrimary hover:bg-greenDark text-title24 lg:text-title32 lg:btn-lg p-0 px-12 font-normal md:max-w-lg"
           href="/"
-          >Go to Home Page</a
+          >Go to homepage</a
         >
       </div>
     </div>
