@@ -252,7 +252,7 @@ type EventData @entity {
   material: [MaterialData!]! @derivedFrom(field: "eventData")
   registrationDate: Date!
   creditData: CreditData!
-  type: String
+  type: EventType
 }
 
 type MaterialData @entity {
@@ -272,4 +272,9 @@ type Message @entity {
   id: ID!
   blockHeight: BigInt!
   txHash: String!
+}
+
+enum EventType {
+  RECEPTION
+  DELIVERY
 }
