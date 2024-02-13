@@ -9,6 +9,7 @@ export const GET_CREDIT_OFFSET_CERTIFICATE = gql`
         denom
         retiringEntityName
         retiringEntityAdditionalData
+        timestamp
         walletId
         amount
       }
