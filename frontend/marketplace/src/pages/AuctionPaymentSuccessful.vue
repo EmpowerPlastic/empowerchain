@@ -82,6 +82,15 @@ onMounted(async () => {
     >
       Payment confirmation
     </h1>
+    <h1
+      v-else-if="auctionStatus === PaymentStatus.ERROR"
+      class="text-white text-title38 md:mt-10 mb-10 text-center"
+    >
+      Transaction error
+    </h1>
+    <h1 v-else class="text-white text-title38 md:mt-10 mb-10 text-center">
+      Credit Transfer Issue
+    </h1>
 
     <div v-if="isCheckingStatus">
       <div>
@@ -108,9 +117,6 @@ onMounted(async () => {
           v-else-if="auctionStatus === PaymentStatus.ERROR"
           class="font-Inter text-white text-title18"
         >
-          <h1 class="text-white text-title38 md:mt-10 mb-10 text-center">
-            Transaction error
-          </h1>
           Transaction couldn't be completed. You will receive a refund shortly.
           Please contact us at
           <a href="mailto:marketplace@empower.eco" class="underline"
@@ -119,9 +125,6 @@ onMounted(async () => {
           if you encounter any issues.
         </span>
         <span v-else class="font-Inter text-white text-title18">
-          <h1 class="text-white text-title38 md:mt-10 mb-10 text-center">
-            Credit Transfer Issue
-          </h1>
           Something went wrong with a credit transfer and we're currently
           investigating it. We'll contact you within 2 business days. If you
           haven't heard from us, please send us a message at
