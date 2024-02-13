@@ -119,6 +119,7 @@ export enum TrackEvents {
   CLICKED_SEE_CERTIFICATES = "Clicked see certificates",
   CLICKED_VIEW_DETAILS = "Clicked view details",
   CLICKED_LOGIN = "Clicked login",
+  CLICKED_GET_MPWR = "Clicked get mpwr",
 }
 
 export enum PageViewEvents {
