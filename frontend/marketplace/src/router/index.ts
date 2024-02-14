@@ -34,6 +34,21 @@ declare module "vue-router" {
   }
 }
 
+// TODO: This is very similar to PageViewEvents - merge them
+export enum PageNames {
+  START_PAGE = "start page",
+  CERTIFICATES = "certificates",
+  FAQ = "faq",
+  LISTINGS = "listings",
+  LISTING = "listing",
+  LOGIN_CALLBACK = "login callback",
+  USER_PROFILE = "user profile",
+  PAYMENT_SUCCESSFUL = "payment successful",
+  PAYMENT_CANCELLED = "payment cancelled",
+  REGISTRY = "registry",
+  UNKNOWN = "unknown",
+}
+
 const router = createRouter({
   scrollBehavior: () => {
     // always scroll to top after navigation
@@ -43,7 +58,7 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "home",
+      name: PageNames.START_PAGE,
       component: HomePage,
       meta: {
         pageViewEvent: PageViewEvents.START_PAGE,
@@ -51,7 +66,7 @@ const router = createRouter({
     },
     {
       path: "/certificate",
-      name: "certificatesAndCredits",
+      name: PageNames.CERTIFICATES,
       component: CertificatesAndCreditsPage,
       meta: {
         pageViewEvent: PageViewEvents.CERTIFICATES,
@@ -59,7 +74,7 @@ const router = createRouter({
     },
     {
       path: "/faq",
-      name: "FAQPage",
+      name: PageNames.FAQ,
       component: FAQPage,
       meta: {
         pageViewEvent: PageViewEvents.FAQ,
@@ -67,7 +82,7 @@ const router = createRouter({
     },
     {
       path: "/auction",
-      name: "Auction",
+      name: PageNames.LISTINGS,
       component: AuctionPage,
       meta: {
         pageViewEvent: PageViewEvents.PLASTIC_CREDIT_LISTINGS,
@@ -75,7 +90,7 @@ const router = createRouter({
     },
     {
       path: "/auction/:id",
-      name: "AuctionDetails",
+      name: PageNames.LISTING,
       component: AuctionDetails,
       meta: {
         pageViewEvent: (to: RouteLocationNormalized) => {
@@ -88,7 +103,7 @@ const router = createRouter({
     },
     {
       path: "/callback",
-      name: "CallbackPage",
+      name: PageNames.LOGIN_CALLBACK,
       component: CallbackView,
       meta: {
         hideNavFooter: true, //To hide nav and footer on this page
@@ -97,7 +112,7 @@ const router = createRouter({
     },
     {
       path: "/profile",
-      name: "UserProfilePage",
+      name: PageNames.USER_PROFILE,
       component: UserProfile,
       meta: {
         pageViewEvent: PageViewEvents.USER_PROFILE,
@@ -105,7 +120,7 @@ const router = createRouter({
     },
     {
       path: "/purchase-successful",
-      name: "AuctionPaymentSuccessful",
+      name: PageNames.PAYMENT_SUCCESSFUL,
       component: AuctionPaymentSuccessful,
       meta: {
         pageViewEvent: PageViewEvents.PAYMENT_SUCCESSFUL,
@@ -113,7 +128,7 @@ const router = createRouter({
     },
     {
       path: "/purchase-cancelled",
-      name: "AuctionPaymentCancelled",
+      name: PageNames.PAYMENT_CANCELLED,
       component: AuctionPaymentCancelled,
       meta: {
         pageViewEvent: PageViewEvents.PAYMENT_CANCELLED,
@@ -121,7 +136,7 @@ const router = createRouter({
     },
     {
       path: "/registry/:denom",
-      name: "CreditCollectionPage",
+      name: PageNames.REGISTRY,
       component: CreditCollectionPage,
       meta: {
         pageViewEvent: (to: RouteLocationNormalized) => {
