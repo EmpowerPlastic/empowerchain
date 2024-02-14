@@ -127,7 +127,7 @@ const handleGetMPWR = () => {
         @on-wallet-select="onWalletSelect"
       />
       <!-- Desktop Navbar-->
-      <div class="hidden md:grid grid-cols-3 md:px-[10%] items-center">
+      <div class="hidden md:grid grid-cols-3 items-center">
         <div>
           <router-link :to="{ name: PageNames.START_PAGE }">
             <img

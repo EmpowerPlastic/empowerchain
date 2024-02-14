@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="p-5 md:px-[10%] min-h-[50vh] font-Inter">
+  <div class="p-5 min-h-[50vh] font-Inter">
     <h1 class="text-white text-title38 md:mt-10 mb-10 text-center">
       Payment cancelled
     </h1>

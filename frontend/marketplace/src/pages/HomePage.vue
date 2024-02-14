@@ -29,43 +29,43 @@ const loadQueryData = (query: string) => {
   showSpinner.value = false;
 };
 
-const handleSearch = (filterValues: any) => {
-  filter.value = filterValues;
-  queryBuilder.reset();
-  if (filterValues.location.length > 0) {
-    queryBuilder.addLocations(filterValues.location);
-  }
-  if (
-    filterValues.volume &&
-    (filterValues.volume[0] || filterValues.volume[1])
-  ) {
-    queryBuilder.addVolume(filterValues.volume[0], filterValues.volume[1]);
-  }
-  if (
-    filterValues.registrationDate &&
-    (filterValues.registrationDate[0] || filterValues.registrationDate[1])
-  ) {
-    queryBuilder.addRegistrationDate(
-      filterValues.registrationDate[0],
-      filterValues.registrationDate[1],
-    );
-  }
-  if (filterValues.organization.length > 0) {
-    queryBuilder.addOrganizations(filterValues.organization);
-  }
-  queryBuilder.addCreditTypes(["PCRD"]);
-  if (filterValues.price && (filterValues.price[0] || filterValues.price[1])) {
-    queryBuilder.addPricePerCredit(
-      filterValues.price[0],
-      filterValues.price[1],
-    );
-  }
-  queryBuilder.addPagination(5, 0);
-  queryBuilder.addTextSearch(filterValues.searchTerm);
+// const handleSearch = (filterValues: any) => {
+//   filter.value = filterValues;
+//   queryBuilder.reset();
+//   if (filterValues.location.length > 0) {
+//     queryBuilder.addLocations(filterValues.location);
+//   }
+//   if (
+//     filterValues.volume &&
+//     (filterValues.volume[0] || filterValues.volume[1])
+//   ) {
+//     queryBuilder.addVolume(filterValues.volume[0], filterValues.volume[1]);
+//   }
+//   if (
+//     filterValues.registrationDate &&
+//     (filterValues.registrationDate[0] || filterValues.registrationDate[1])
+//   ) {
+//     queryBuilder.addRegistrationDate(
+//       filterValues.registrationDate[0],
+//       filterValues.registrationDate[1],
+//     );
+//   }
+//   if (filterValues.organization.length > 0) {
+//     queryBuilder.addOrganizations(filterValues.organization);
+//   }
+//   queryBuilder.addCreditTypes(["PCRD"]);
+//   if (filterValues.price && (filterValues.price[0] || filterValues.price[1])) {
+//     queryBuilder.addPricePerCredit(
+//       filterValues.price[0],
+//       filterValues.price[1],
+//     );
+//   }
+//   queryBuilder.addPagination(5, 0);
+//   queryBuilder.addTextSearch(filterValues.searchTerm);
 
-  let query = queryBuilder.build();
-  loadQueryData(query);
-};
+//   let query = queryBuilder.build();
+//   loadQueryData(query);
+// };
 </script>
 <template>
   <div class="p-5">
