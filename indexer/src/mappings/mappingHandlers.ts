@@ -721,8 +721,6 @@ async function handleCreditData(
     issuanceDate: findPropById("issuance_date", metadata["credit_props"])
       ?.content,
     creditType: findPropById("credit_type", metadata["credit_props"])?.content,
-    // For now, we take only amount from first event
-    // amount: findPropById("amount", findPropById("credit_events_data", metadata["credit_props"])?.content[0].content)?.content,
     aggregationLatitude:
       findPropById("aggregation_location", metadata["credit_props"])?.content
         .latitude || 0,
@@ -795,6 +793,7 @@ async function handleEventData(
     magnitude: findPropById("magnitude", eventDataJson)?.content,
     registrationDate: findPropById("registration_date", eventDataJson)?.content,
     creditDataId: creditDataId,
+    type: findPropById("type", eventDataJson)?.content,
   });
   await eventData.save();
   for (let [i, material] of findPropById(
