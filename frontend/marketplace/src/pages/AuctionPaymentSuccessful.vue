@@ -6,6 +6,7 @@ import { authHeader } from "@/utils/fetcher";
 import { fetchRepeater } from "@/utils/fetchRepeater";
 import { PC_BACKEND_ENDPOINT, PC_BACKEND_ENDPOINT_API } from "@/config/config";
 import FireworksAnimation from "@/assets/animationJSON/fireWorksAnimation.json";
+import { Vue3Lottie } from "vue3-lottie";
 
 // Ported from prisma schema in the backend
 enum PaymentStatus {
