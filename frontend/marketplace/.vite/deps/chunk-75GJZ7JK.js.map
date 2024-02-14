@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../node_modules/@segment/analytics-next/src/core/query-string/gracefulDecodeURIComponent.ts"],
-  "sourcesContent": ["/**\n * Tries to gets the unencoded version of an encoded component of a\n * Uniform Resource Identifier (URI). If input string is malformed,\n * returns it back as-is.\n *\n * Note: All occurences of the `+` character become ` ` (spaces).\n **/\nexport function gracefulDecodeURIComponent(\n  encodedURIComponent: string\n): string {\n  try {\n    return decodeURIComponent(encodedURIComponent.replace(/\\+/g, ' '))\n  } catch {\n    return encodedURIComponent\n  }\n}\n"],
-  "mappings": ";AAOM,SAAU,2BACd,qBAA2B;AAE3B,MAAI;AACF,WAAO,mBAAmB,oBAAoB,QAAQ,OAAO,GAAG,CAAC;WACjE,IAAM;AACN,WAAO;;AAEX;",
-  "names": []
-}
