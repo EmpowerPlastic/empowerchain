@@ -5,6 +5,8 @@ import { useAuth } from "@/stores/auth";
 import { fetchRepeater } from "@/utils/fetchRepeater";
 import { authHeader } from "@/utils/fetcher";
 import { onMounted, ref } from "vue";
+import FireworksAnimation from "@/assets/animationJSON/fireWorksAnimation.json";
+import { Vue3Lottie } from "vue3-lottie";
 
 // Ported from prisma schema in the backend
 enum PaymentStatus {
@@ -75,6 +77,12 @@ onMounted(async () => {
 </script>
 
 <template>
+  <Vue3Lottie
+    v-if="auctionStatus === PaymentStatus.COMPLETE"
+    :animation-data="FireworksAnimation"
+    class="absolute"
+    :loop="false"
+  />
   <div class="p-5 md:px-[10%] min-h-[50vh] font-Inter">
     <h1
       v-if="auctionStatus === PaymentStatus.COMPLETE"
