@@ -36,6 +36,7 @@
     "vue-router": "4.2.5",
     "vue3-carousel": "0.3.1",
     "vue3-google-map": "0.19.0",
+    "vue3-lottie": "^3.2.0",
     "vue3-toastify": "0.2.1"
   },
   "devDependencies": {

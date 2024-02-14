@@ -52,6 +52,7 @@ app.provide(DefaultApolloClient, apolloClient);
 app.use(Vue3Toastify, {
   autoClose: 3000,
 } as ToastContainerOptions);
+
 if (ENVIRONMENT && ENVIRONMENT !== "local") {
   const rollbar = new Rollbar({
     accessToken: ROLLBAR_ACCESS_TOKEN,
