@@ -11,11 +11,11 @@ import {
 } from "@/utils/wallet-utils";
 import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
-import tracking, { TrackEvents } from "@/utils/analytics";
+import tracking, { PageViewEvents, TrackEvents } from "@/utils/analytics";
 
 const { handleSignIn, handleSignOut, isAuthenticated, user } = useAuth();
 const { address } = useWallet();
-const router = useRoute();
+const route = useRoute();
 const addressVisible = ref();
 const showNav = ref(false);
 const selectedWallet = ref();
@@ -94,11 +94,23 @@ const handleSignInClick = () => {
   handleLoginClick("email");
   handleSignIn();
 };
+
+const handleGetMPWR = () => {
+  const pageContext =
+    typeof route.meta?.pageViewEvent === "function"
+      ? route.meta?.pageViewEvent(route)[0]
+      : route.meta?.pageViewEvent;
+
+  toast.info("Coming soon!");
+  tracking.trackEvent(TrackEvents.CLICKED_GET_MPWR, {
+    context: pageContext ?? PageViewEvents.UNKNOWN,
+  });
+};
 </script>
 
 <template>
   <!--  To hide on certificate page-->
-  <template v-if="!router.meta?.hideNavFooter">
+  <template v-if="!route.meta?.hideNavFooter">
     <nav
       class="bg-gradient-radial bg-opacity-40 px-5 py-4"
       style="
@@ -123,9 +135,7 @@ const handleSignInClick = () => {
 
         <div class="flex flex-row justify-around text-white text-title18">
           <a href="/">Home</a>
-          <button type="button" @click="toast.info('Coming soon!')">
-            Get <b>$MPWR</b>
-          </button>
+          <button type="button" @click="handleGetMPWR">Get <b>$MPWR</b></button>
           <button type="button" @click="toast.info('Coming soon!')">FAQ</button>
         </div>
 
@@ -303,8 +313,8 @@ const handleSignInClick = () => {
               <img class="w-4 mx-3" src="../assets/copyIcon.svg" />
             </div>
             <p class="text-title18 text-white">
-                  {{ userDetails?.email }}
-                </p>
+              {{ userDetails?.email }}
+            </p>
             <a href="/certificate" class="btn nav-dropdown-button-mobile">
               My Certificates
             </a>
@@ -338,7 +348,7 @@ const handleSignInClick = () => {
           </li>
           <li>
             <!--          <a>Get MPWR</a>-->
-            <button type="button" @click="toast.info('Coming soon!')">
+            <button type="button" @click="handleGetMPWR">
               Get <b>$MPWR</b>
             </button>
           </li>

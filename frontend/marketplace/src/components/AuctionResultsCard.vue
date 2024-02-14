@@ -36,9 +36,12 @@ interface CardDetailsList {
 
 const props = defineProps<AuctionResultsCardProps>();
 const denom = ref("");
-const volume = computed(() => { 
-  return Number(props.cardData.creditCollection.retiredAmount) + Number(props.cardData.creditCollection.activeAmount)
- })
+const volume = computed(() => {
+  return (
+    parseInt(props.cardData.creditCollection.retiredAmount) +
+    parseInt(props.cardData.creditCollection.activeAmount)
+  );
+});
 const cardDetailsList = ref<CardDetailsList>();
 const showSpinner = ref(true);
 const applicant = computed<string>(() => {
@@ -50,7 +53,7 @@ onMounted(async () => {
   cardDetailsList.value = getDetailsList(
     props.cardData.creditCollection.creditData.nodes,
   );
-    showSpinner.value = false;
+  showSpinner.value = false;
 });
 
 const handleViewDetailsClick = () => {
@@ -68,7 +71,7 @@ const handleViewDetailsClick = () => {
     <div v-if="showSpinner">
       <CustomSpinner :visible="showSpinner" />
     </div>
-    <div v-if="showSpinner === false">
+    <div v-else="!showSpinner">
       <CustomImage
         :src="cardDetailsList?.thumbnailUrl || auctionCard"
         image-class="max-h-[200px] w-full rounded-sm"
