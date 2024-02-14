@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { CHAIN_ID } from "@/config/config";
 import { onMounted, ref } from "vue";
+import { RouterLink, PageNames } from "@/router";
 import { toast } from "vue3-toastify";
 import { useRoute } from "@/router";
 import SellectWalletModal from "@/components/SellectWalletModal.vue";
@@ -116,13 +117,17 @@ const handleSignInClick = () => {
       <!-- Desktop Navbar-->
       <div class="hidden md:grid grid-cols-3 md:px-[10%] items-center">
         <div>
-          <a href="/">
-            <img src="../assets/logo.png" class="h-8" alt="Logo" />
-          </a>
+          <router-link :to="{ name: PageNames.START_PAGE }">
+            <img
+              src="../assets/logo.png"
+              class="h-8"
+              alt="Empower Marketplace"
+            />
+          </router-link>
         </div>
 
         <div class="flex flex-row justify-around text-white text-title18">
-          <a href="/">Home</a>
+          <router-link :to="{ name: PageNames.START_PAGE }">Home</router-link>
           <button type="button" @click="toast.info('Coming soon!')">
             Get <b>$MPWR</b>
           </button>
@@ -195,9 +200,12 @@ const handleSignInClick = () => {
                 </p>
               </div>
               <div class="menu py-2 items-center w-full">
-                <a href="/certificate" class="btn nav-dropdown-button">
+                <router-link
+                  :to="{ name: PageNames.CERTIFICATES }"
+                  class="btn nav-dropdown-button"
+                >
                   My Certificates
-                </a>
+                </router-link>
                 <!--                <a-->
                 <!--                  href="/profile"-->
                 <!--                  class="btn nav-dropdown-button"-->
@@ -227,9 +235,16 @@ const handleSignInClick = () => {
     </nav>
     <!-- Mobile Navbar-->
     <div class="px-5 flex flex-row justify-between w-full md:hidden">
-      <a href="/" class="flex items-center">
-        <img src="../assets/logo.png" class="h-6 mr-3" alt="Logo" />
-      </a>
+      <router-link
+        :to="{ name: PageNames.START_PAGE }"
+        class="flex items-center"
+      >
+        <img
+          src="../assets/logo.png"
+          class="h-6 mr-3"
+          alt="Empower Marketplace"
+        />
+      </router-link>
       <button
         type="button"
         @click="showNav = true"
@@ -303,11 +318,14 @@ const handleSignInClick = () => {
               <img class="w-4 mx-3" src="../assets/copyIcon.svg" />
             </div>
             <p class="text-title18 text-white">
-                  {{ userDetails?.email }}
-                </p>
-            <a href="/certificate" class="btn nav-dropdown-button-mobile">
+              {{ userDetails?.email }}
+            </p>
+            <router-link
+              :to="{ name: PageNames.CERTIFICATES }"
+              class="btn nav-dropdown-button-mobile"
+            >
               My Certificates
-            </a>
+            </router-link>
             <!-- <a
               href="/profile"
               class="btn nav-dropdown-button-mobile"
@@ -334,7 +352,7 @@ const handleSignInClick = () => {
         </div>
         <ul class="flex flex-col items-center gap-4">
           <li>
-            <a href="/">Home</a>
+            <router-link :to="{ name: PageNames.START_PAGE }">Home</router-link>
           </li>
           <li>
             <!--          <a>Get MPWR</a>-->

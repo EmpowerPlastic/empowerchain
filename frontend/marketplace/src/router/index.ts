@@ -172,4 +172,4 @@ router.afterEach((to) => {
 });
 
 export default router;
-export { useRoute, useRouter } from "vue-router";
+export { useRoute, useRouter, RouterLink } from "vue-router";
