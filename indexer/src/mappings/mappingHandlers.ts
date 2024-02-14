@@ -706,7 +706,7 @@ function decodeUriArrayFromEvent(eventUris: string): string[] {
 }
 
 async function fetchMetadataFromIpfs(url: string): Promise<any> {
-  const reqUri = "http://51.159.197.8:8080/ipfs/" + url.substring(7);
+  const reqUri = "https://empowerchain.mypinata.cloud/ipfs/" + url.substring(7);
   const res = await fetch(reqUri);
   return res.json();
 }
