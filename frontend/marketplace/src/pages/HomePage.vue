@@ -68,7 +68,7 @@ const handleSearch = (filterValues: any) => {
 };
 </script>
 <template>
-  <div class="p-5 md:px-[10%]">
+  <div class="p-5">
     <!-- <SearchBar @search-click="handleSearch" /> -->
     <HomePageHeroBanner />
     <CustomSpinner :visible="showSpinner" />
