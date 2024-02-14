@@ -231,7 +231,7 @@ const handleCardPayment = async (retirererName: string) => {
             <p class="text-title18 text-subLabel text-right mr-2">Cost</p>
             <Tooltip
               label="The seller will be charged a 3% service fee + 0-5% payment processing fee"
-              icon-style="w-[40px] h-[40px]"
+              icon-class="w-[40px] h-[40px]"
             />
           </div>
           <p class="text-title18 text-subLabel text-right hidden md:block mr-3">
@@ -253,7 +253,7 @@ const handleCardPayment = async (retirererName: string) => {
         {{ pricePerCredit * amount }} ${{ coinFormatted }}
         <Tooltip
           label="The seller will be charged a 3% service fee + 0-5% payment processing fee"
-          icon-style="w-[20px] h-[20px]"
+          icon-class="w-[20px] h-[20px]"
           class="ml-2"
         />
       </div>
