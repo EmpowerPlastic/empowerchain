@@ -89,10 +89,10 @@ const handleViewDetailsClick = () => {
           Available credits
         </p>
       </div>
-      <div class="flex flex-col justify-end">
+      <div class="grid justify-end">
         <button
           type="button"
-          class="btn bg-greenPrimary border-greenPrimary w-full rounded-sm font-Inter text-white md:text-title18 px-2 max-h-10 hover:bg-greenMedium hover:border-greenMedium font-light"
+          class="btn w-fit self-end bg-greenPrimary border-greenPrimary rounded-sm font-Inter text-white md:text-title18 px-5 max-h-10 hover:bg-greenMedium hover:border-greenMedium font-light"
           @click="handleViewDetailsClick"
         >
           View details
