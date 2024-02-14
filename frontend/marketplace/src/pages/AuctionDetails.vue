@@ -14,8 +14,9 @@ import {
   findPlasticTypeInMaterial,
 } from "@/utils/utils";
 import { useQuery } from "@vue/apollo-composable";
-import { onMounted, ref } from "vue";
+import { ref, watch, computed } from "vue";
 import { GET_MARKETPLACE_LISTING } from "@/graphql/queries";
+import tracking, { PageViewEvents } from "@/utils/analytics";
 
 interface AuctionDetails {
   applicant: string;
@@ -36,7 +37,7 @@ interface AuctionDetails {
   registrationDate: string;
 }
 
-const router = useRoute();
+const route = useRoute();
 
 const data = ref();
 const showSpinner = ref(true);
@@ -54,6 +55,9 @@ const auctionDetails = ref<AuctionDetails>({
 });
 const pricePerCreditDenom = ref("");
 const plasticType = ref("");
+const currentId = computed(() => {
+  return route.params.id as string;
+});
 
 const getDetailsList = (data: any, materialVolume: number) => {
   const applicantArray: string[] = [];
@@ -144,9 +148,13 @@ const getAuctionDetails = (id: string | string[]) => {
   owner.value = result.value?.marketplaceListings?.nodes[0].owner;
 };
 
-onMounted(() => {
-  getAuctionDetails(router.params.id);
-});
+const handlePageLoadAndCollectionIdChange = (newId: string, oldId?: string) => {
+  if (newId && newId !== oldId) {
+    getAuctionDetails(newId);
+  }
+};
+
+watch(currentId, handlePageLoadAndCollectionIdChange, { immediate: true });
 </script>
 <template>
   <CustomSpinner :visible="showSpinner" />

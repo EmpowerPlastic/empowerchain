@@ -11,10 +11,11 @@ import {
 } from "@/utils/wallet-utils";
 import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
+import tracking, { PageViewEvents, TrackEvents } from "@/utils/analytics";
 
 const { handleSignIn, handleSignOut, isAuthenticated, user } = useAuth();
 const { address } = useWallet();
-const router = useRoute();
+const route = useRoute();
 const addressVisible = ref();
 const showNav = ref(false);
 const selectedWallet = ref();
@@ -29,6 +30,7 @@ onMounted(() => {
 });
 
 const openSelectWalletModal = () => {
+  handleLoginClick("wallet");
   selectWalletModal.value = true;
 };
 
@@ -68,7 +70,10 @@ const handleSelectWallet = async (walletType: string) => {
       "..." +
       walletAddress?.substring(walletAddress?.length - 4);
     if (walletAddress && walletType) {
-      localStorage.setItem("address", walletAddress);
+      tracking.identify(walletAddress, {
+      walletType,
+      loginType: "wallet",
+    });localStorage.setItem("address", walletAddress);
       localStorage.setItem("wallet", walletType);
     }
     closeSelectWalletModal();
@@ -82,11 +87,34 @@ const copyAddress = async () => {
   await navigator.clipboard.writeText(address.value ?? "");
   toast.success("Address copied to clipboard");
 };
+
+const handleLoginClick = (variant: "open menu" | "wallet" | "email") => {
+  tracking.trackEvent(TrackEvents.CLICKED_LOGIN, {
+    variant,
+  });
+};
+
+const handleSignInClick = () => {
+  handleLoginClick("email");
+  handleSignIn();
+};
+
+const handleGetMPWR = () => {
+  const pageContext =
+    typeof route.meta?.pageViewEvent === "function"
+      ? route.meta?.pageViewEvent(route)[0]
+      : route.meta?.pageViewEvent;
+
+  toast.info("Coming soon!");
+  tracking.trackEvent(TrackEvents.CLICKED_GET_MPWR, {
+    context: pageContext ?? PageViewEvents.UNKNOWN,
+  });
+};
 </script>
 
 <template>
   <!--  To hide on certificate page-->
-  <template v-if="!router.meta?.hideNavFooter">
+  <template v-if="!route.meta?.hideNavFooter">
     <nav
       class="bg-gradient-radial bg-opacity-40 px-5 py-4"
       style="
@@ -111,9 +139,7 @@ const copyAddress = async () => {
 
         <div class="flex flex-row justify-around text-white text-title18">
           <a href="/">Home</a>
-          <button type="button" @click="toast.info('Coming soon!')">
-            Get <b>$MPWR</b>
-          </button>
+          <button type="button" @click="handleGetMPWR">Get <b>$MPWR</b></button>
           <button type="button" @click="toast.info('Coming soon!')">FAQ</button>
         </div>
 
@@ -133,6 +159,7 @@ const copyAddress = async () => {
               v-if="!(isAuthenticated || address)"
               tabindex="0"
               class="min-w-[150px] bg-lightBlack border border-borderBlack text-white text-title18 w-full rounded-xl h-full px-5 py-1"
+              @click="() => handleLoginClick('open menu')"
             >
               Login
             </button>
@@ -148,7 +175,10 @@ const copyAddress = async () => {
                 >
                   Wallet
                 </button>
-                <button @click="handleSignIn" class="btn nav-dropdown-button">
+                <button
+                  @click="handleSignInClick"
+                  class="btn nav-dropdown-button"
+                >
                   Email
                 </button>
               </div>
@@ -262,7 +292,10 @@ const copyAddress = async () => {
                 >
                   Wallet
                 </button>
-                <button @click="handleSignIn" class="btn nav-dropdown-button">
+                <button
+                  @click="handleSignInClick"
+                  class="btn nav-dropdown-button"
+                >
                   Email
                 </button>
               </div>
@@ -319,7 +352,7 @@ const copyAddress = async () => {
           </li>
           <li>
             <!--          <a>Get MPWR</a>-->
-            <button type="button" @click="toast.info('Coming soon!')">
+            <button type="button" @click="handleGetMPWR">
               Get <b>$MPWR</b>
             </button>
           </li>
