@@ -25,7 +25,7 @@ defineExpose({
 
 <template>
   <dialog ref="dialog" id="modal_dialog" class="modal">
-    <div class="modal-box bg-modalBackground">
+    <div class="modal-box bg-modalBackground border border-white">
       <form method="dialog">
         <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
           ✕

@@ -4,13 +4,18 @@ import { onMounted, ref } from "vue";
 import { toast } from "vue3-toastify";
 import { useRoute } from "@/router";
 import SellectWalletModal from "@/components/SellectWalletModal.vue";
-import { getWalletFromType, disconnectWallet } from "@/utils/wallet-utils";
+import {
+  getWalletFromType,
+  disconnectWallet,
+  walletConnected,
+} from "@/utils/wallet-utils";
 import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
+import tracking, { PageViewEvents, TrackEvents } from "@/utils/analytics";
 
 const { handleSignIn, handleSignOut, isAuthenticated, user } = useAuth();
 const { address } = useWallet();
-const router = useRoute();
+const route = useRoute();
 const addressVisible = ref();
 const showNav = ref(false);
 const selectedWallet = ref();
@@ -18,12 +23,14 @@ const selectWalletModal = ref(false);
 const userDetails = ref(user);
 
 onMounted(() => {
-  if (!isAuthenticated.value) {
+  //Disable wallet connection for email login
+  if (!isAuthenticated.value && walletConnected()) {
     connect();
   }
 });
 
 const openSelectWalletModal = () => {
+  handleLoginClick("wallet");
   selectWalletModal.value = true;
 };
 
@@ -62,6 +69,10 @@ const handleSelectWallet = async (walletType: string) => {
     "..." +
     walletAddress?.substring(walletAddress?.length - 4);
   if (walletAddress && walletType) {
+    tracking.identify(walletAddress, {
+      walletType,
+      loginType: "wallet",
+    });
     localStorage.setItem("address", walletAddress);
     localStorage.setItem("wallet", walletType);
   }
@@ -72,11 +83,34 @@ const copyAddress = async () => {
   await navigator.clipboard.writeText(address.value ?? "");
   toast.success("Address copied to clipboard");
 };
+
+const handleLoginClick = (variant: "open menu" | "wallet" | "email") => {
+  tracking.trackEvent(TrackEvents.CLICKED_LOGIN, {
+    variant,
+  });
+};
+
+const handleSignInClick = () => {
+  handleLoginClick("email");
+  handleSignIn();
+};
+
+const handleGetMPWR = () => {
+  const pageContext =
+    typeof route.meta?.pageViewEvent === "function"
+      ? route.meta?.pageViewEvent(route)[0]
+      : route.meta?.pageViewEvent;
+
+  toast.info("Coming soon!");
+  tracking.trackEvent(TrackEvents.CLICKED_GET_MPWR, {
+    context: pageContext ?? PageViewEvents.UNKNOWN,
+  });
+};
 </script>
 
 <template>
   <!--  To hide on certificate page-->
-  <template v-if="!router.meta?.hideNavFooter">
+  <template v-if="!route.meta?.hideNavFooter">
     <nav
       class="bg-gradient-radial bg-opacity-40 px-5 py-4"
       style="
@@ -101,9 +135,7 @@ const copyAddress = async () => {
 
         <div class="flex flex-row justify-around text-white text-title18">
           <a href="/">Home</a>
-          <button type="button" @click="toast.info('Coming soon!')">
-            Get <b>$MPWR</b>
-          </button>
+          <button type="button" @click="handleGetMPWR">Get <b>$MPWR</b></button>
           <button type="button" @click="toast.info('Coming soon!')">FAQ</button>
         </div>
 
@@ -115,14 +147,15 @@ const copyAddress = async () => {
               tabindex="0"
               v-if="isAuthenticated || address"
             >
-              <div class="w-[55px] rounded-full bg-lightBlack">
-                <img class="p-4" src="../assets/walletAvatar.png" />
+              <div class="w-[70px]">
+                <img class="p-3" src="../assets/avatar.svg" />
               </div>
             </div>
             <button
               v-if="!(isAuthenticated || address)"
               tabindex="0"
               class="min-w-[150px] bg-lightBlack border border-borderBlack text-white text-title18 w-full rounded-xl h-full px-5 py-1"
+              @click="() => handleLoginClick('open menu')"
             >
               Login
             </button>
@@ -138,7 +171,10 @@ const copyAddress = async () => {
                 >
                   Wallet
                 </button>
-                <button @click="handleSignIn" class="btn nav-dropdown-button">
+                <button
+                  @click="handleSignInClick"
+                  class="btn nav-dropdown-button"
+                >
                   Email
                 </button>
               </div>
@@ -150,8 +186,8 @@ const copyAddress = async () => {
             >
               <div class="menu py-5 items-center mx-6 min-w-[180px]">
                 <div class="avatar mb-3">
-                  <div class="w-[62px] rounded-full bg-lightBlack">
-                    <img class="p-4" src="../assets/walletAvatar.png" />
+                  <div class="w-[70px] h-[65px]">
+                    <img class="p-4" src="../assets/greenlogo.svg" />
                   </div>
                 </div>
                 <div
@@ -164,7 +200,7 @@ const copyAddress = async () => {
                   </p>
                   <img class="w-4 mx-3" src="../assets/copyIcon.svg" />
                 </div>
-                <p class="text-title14 text-white" v-if="userDetails?.username">
+                <p class="text-title14 text-white" v-if="userDetails?.email">
                   {{ userDetails?.email }}
                 </p>
               </div>
@@ -172,13 +208,13 @@ const copyAddress = async () => {
                 <a href="/certificate" class="btn nav-dropdown-button">
                   My Certificates
                 </a>
-                <a
-                  href="/profile"
-                  class="btn nav-dropdown-button"
-                  v-if="isAuthenticated"
-                >
-                  Profile
-                </a>
+                <!--                <a-->
+                <!--                  href="/profile"-->
+                <!--                  class="btn nav-dropdown-button"-->
+                <!--                  v-if="isAuthenticated"-->
+                <!--                >-->
+                <!--                  Profile-->
+                <!--                </a>-->
                 <button
                   v-if="address"
                   @click="disconnectWallet"
@@ -252,75 +288,59 @@ const copyAddress = async () => {
                 >
                   Wallet
                 </button>
-                <button @click="handleSignIn" class="btn nav-dropdown-button">
+                <button
+                  @click="handleSignInClick"
+                  class="btn nav-dropdown-button"
+                >
                   Email
                 </button>
               </div>
             </div>
           </div>
+        </div>
 
-          <!--          User Profile Dropdown-->
-          <div class="dropdown dropdown-start w-full">
-            <template v-if="isAuthenticated || address">
-              <button
-                class="bg-buttonGray border px-5 border-greenPrimary w-full h-11 rounded-xl text-ellipsis overflow-hidden"
-              >
-                {{ addressVisible || userDetails?.email }}
-              </button>
-            </template>
+        <!-- Navbar Items-->
+        <div class="text-center">
+          <template v-if="isAuthenticated || address">
             <div
-              tabindex="0"
-              class="dropdown-content menu font-Inter divide-y divide-lightGray bg-avatarBlack rounded-sm items-center border-avatarBorder border-[1.5px] w-full mt-2"
+              class="flex flex-row justify-center cursor-pointer text-center"
+              @click="copyAddress"
+              v-if="address"
             >
-              <div class="menu py-5 items-center mx-4 min-w-[120px]">
-                <div class="avatar mb-3">
-                  <div class="w-[82px] rounded-full bg-lightBlack">
-                    <img class="p-4" src="../assets/walletAvatar.png" />
-                  </div>
-                </div>
-                <div
-                  class="flex flex-row cursor-pointer"
-                  @click="copyAddress"
-                  v-if="address"
-                >
-                  <p class="text-title14 text-white">
-                    {{ addressVisible || "Connect wallet" }}
-                  </p>
-                  <img class="w-4 mx-3" src="../assets/copyIcon.svg" />
-                </div>
-                <p class="text-title14 text-white">
-                  {{ userDetails?.email }}
-                </p>
-              </div>
-
-              <div class="menu py-2 items-center w-full">
-                <a href="/certificate" class="btn nav-dropdown-button">
-                  My Certificates
-                </a>
-                <a
-                  href="/profile"
-                  class="btn nav-dropdown-button"
-                  v-if="isAuthenticated"
-                >
-                  Profile
-                </a>
-                <button
-                  v-if="address"
-                  @click="disconnectWallet"
-                  class="btn nav-dropdown-button"
-                >
-                  Disconnect
-                </button>
-                <button
-                  @click="handleSignOut"
-                  class="btn nav-dropdown-button"
-                  v-if="isAuthenticated"
-                >
-                  Logout
-                </button>
-              </div>
+              <p class="text-title18 text-white">
+                {{ addressVisible || "Connect wallet" }}
+              </p>
+              <img class="w-4 mx-3" src="../assets/copyIcon.svg" />
             </div>
-          </div>
+            <p class="text-title18 text-white">
+              {{ userDetails?.email }}
+            </p>
+            <a href="/certificate" class="btn nav-dropdown-button-mobile">
+              My Certificates
+            </a>
+            <!-- <a
+              href="/profile"
+              class="btn nav-dropdown-button-mobile"
+              v-if="isAuthenticated"
+            >
+              Profile
+            </a> -->
+            <button
+              v-if="address"
+              @click="disconnectWallet"
+              class="btn nav-dropdown-button-mobile"
+            >
+              Disconnect
+            </button>
+            <br />
+            <button
+              @click="handleSignOut"
+              class="btn nav-dropdown-button-mobile"
+              v-if="isAuthenticated"
+            >
+              Logout
+            </button>
+          </template>
         </div>
         <ul class="flex flex-col items-center gap-4">
           <li>
@@ -328,7 +348,7 @@ const copyAddress = async () => {
           </li>
           <li>
             <!--          <a>Get MPWR</a>-->
-            <button type="button" @click="toast.info('Coming soon!')">
+            <button type="button" @click="handleGetMPWR">
               Get <b>$MPWR</b>
             </button>
           </li>
@@ -347,5 +367,8 @@ const copyAddress = async () => {
 <style scoped>
 .nav-dropdown-button {
   @apply btn-ghost rounded-sm text-greenPrimary font-bold text-title14 normal-case border-none;
+}
+.nav-dropdown-button-mobile {
+  @apply btn-ghost rounded-sm text-greenPrimary font-bold text-title18 normal-case border-none;
 }
 </style>

@@ -92,10 +92,34 @@ const onGeneratePDF = () => {
       qrCodeUrl.value,
     );
     notifyer.success("Certificate downloaded successfully");
+    showSpinner.value = false;
+    resetValues();
   } catch (e) {
     console.error(e);
     notifyer.error("Something went wrong");
   }
+};
+
+const resetValues = () => {
+  certificateData.value = null;
+  creditData.value = null;
+  materialData.value = [];
+  eventData.value = null;
+  plasticValuesString.value = "";
+  locations.value = [];
+  mediaFileUrls.value = [];
+  binaryFilesUrls.value = [];
+  collectionAmount.value = 0;
+  issuanceDate.value = "";
+  applicantData.value = "";
+  applicantDataDescription.value = "";
+  materialDetails.value = [];
+  currentHeaders.value = [];
+  primaryHeaders.value = [];
+  secondaryHeaders.value = [];
+  retiredDate.value = "";
+  allData.value = [];
+  pagesData.value = [];
 };
 
 const queryCertificateData = () => {
@@ -416,9 +440,7 @@ const preparePagesData = () => {
 
 const generateQRCode = async () => {
   // const canvas = document.getElementById("qrCode") as HTMLCanvasElement;
-  const url = await QRCode.toDataURL(
-    `https://empower.market/registry/${ID as string}`,
-  );
+  const url = await QRCode.toDataURL(`https://www.empowerchain.io/`);
 
   // Create a new image for the QR code
   const qrImage = new Image();
@@ -497,8 +519,8 @@ const generateQRCode = async () => {
           <p class="text-title14 font-bold">PCRD</p>
         </div>
         <div class="text-right">
-          <p class="text-title24 font-bold">{{ certificate?.amount }}</p>
-          <p class="text-title14 font-light truncate">
+          <p class="text-title24 font-bold">{{ certificate?.amount }} kg</p>
+          <p class="text-title12 font-light break-words">
             {{ certificate?.denom }}
           </p>
         </div>

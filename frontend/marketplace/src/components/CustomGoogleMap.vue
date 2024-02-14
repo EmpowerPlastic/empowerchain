@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { GOOGLE_MAPS_API_KEY } from "@/config/config";
 import { GoogleMap, Marker, MarkerCluster } from "vue3-google-map";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
+import { isValidLatLngObject } from "@/utils/location";
 
 export interface CustomGoogleMapProps {
-  locations: {
-    lat: number;
-    lng: number;
-  }[];
+  locations:
+    | null
+    | {
+        lat: number;
+        lng: number;
+      }[];
 }
 
 const props = defineProps<CustomGoogleMapProps>();
@@ -15,8 +18,16 @@ const props = defineProps<CustomGoogleMapProps>();
 const center = ref();
 const zoomLevel = ref();
 
+const areAllLocationsValid = computed(() => {
+  const { locations } = props;
+  return (
+    locations !== null &&
+    locations.every((location) => isValidLatLngObject(location))
+  );
+});
+
 const getMapCenter = () => {
-  const locations = [...props.locations];
+  const locations = props.locations ? [...props.locations] : [];
 
   // Find the minimum and maximum latitude and longitude values
   const minLat = Math.min(...locations.map((location) => location.lat));
@@ -48,11 +59,12 @@ watch(
   () => props.locations,
   () => {
     getMapCenter();
-  }
+  },
 );
 </script>
 <template>
   <GoogleMap
+    v-if="areAllLocationsValid"
     class="google-map"
     :api-key="GOOGLE_MAPS_API_KEY"
     style="width: 100%; height: 100%; overflow: hidden"

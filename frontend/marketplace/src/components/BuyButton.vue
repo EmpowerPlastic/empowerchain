@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import { useAuth } from "@/stores/auth";
 import { isValidCreditAmount } from "@/utils/utils";
+import tracking, { TrackEvents } from "@/utils/analytics";
 import CertificateHolderModal from "@/components/CertificateHolderModal.vue";
 export interface BuyButtonProps {
   showButtonSpinner: boolean;
@@ -80,10 +81,19 @@ const addModalToHandler = (newContinueHandler: (name: string) => void) => {
 const buttonHandler = computed<(() => void) | undefined>(() => {
   switch (buttonState.value) {
     case BuyButtonState.ENABLED_CARD:
+      tracking.trackEvent(TrackEvents.CLICKED_PAYMENT_BUTTON, {
+        status: "pay with card",
+      });
       return addModalToHandler(props.handleCardPayment);
     case BuyButtonState.ENABLED_WALLET:
+      tracking.trackEvent(TrackEvents.CLICKED_PAYMENT_BUTTON, {
+        status: "pay with crypto",
+      });
       return addModalToHandler(props.handleBuyCredits);
     case BuyButtonState.ENABLED_UNAUTHORIZED:
+      tracking.trackEvent(TrackEvents.CLICKED_PAYMENT_BUTTON, {
+        status: "unauthorized",
+      });
       return handleSignIn;
     default:
       return undefined;
@@ -115,13 +125,13 @@ const buttonsCssClasses = `
 `;
 </script>
 <template>
-  <button
-    :disabled="isDisabled"
-    :class="buttonsCssClasses"
-    @click="buttonHandler"
-  >
-    <span v-if="showButtonSpinner" class="loading loading-spinner"></span>
-    {{ buttonText }}
+  <button :disabled="isDisabled" :class="buttonsCssClasses" @click="buttonHandler">
+    <span v-if="showButtonSpinner" class="hidden md:loading loading-spinner"></span>
+    <!-- Always render the text container, but control visibility with classes -->
+    <span :class="{'hidden md:block': showButtonSpinner, 'block': !showButtonSpinner}">
+      {{ buttonText }}
+    </span>
   </button>
   <CertificateHolderModal ref="modalEl" @continue="continueHandler" />
 </template>
+

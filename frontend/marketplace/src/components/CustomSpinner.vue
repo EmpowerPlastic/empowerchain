@@ -5,7 +5,7 @@ export interface CustomSpinner {
 defineProps<CustomSpinner>();
 </script>
 <template>
-  <div v-if="visible" class="w-full flex justify-center">
-    <img src="../assets/spinner.svg" />
+  <div v-if="visible" class="w-full flex justify-center p-10">
+    <span class="loading loading-spinner loading-lg text-greenPrimary"></span>
   </div>
 </template>

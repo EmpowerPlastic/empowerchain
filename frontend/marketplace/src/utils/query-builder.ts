@@ -19,6 +19,7 @@ export class ListingsQueryBuilder {
     const creditCollection = creditData || this.creditTypes;
     const query = `
             {
+             amount:{greaterThan:"0"},
                 ${this.pricePerCredit}
                 ${
                   creditCollection
@@ -56,8 +57,8 @@ export class ListingsQueryBuilder {
             }`;
     return `query {
                     marketplaceListings(filter: ${query}, ${
-      this.first ? `first: ${this.first},` : ""
-    } ${this.offset ? `offset: ${this.offset},` : ""}) {
+                      this.first ? `first: ${this.first},` : ""
+                    } ${this.offset ? `offset: ${this.offset},` : ""}) {
                        totalCount ${this.resultsQuery()}
                     }
                 }`;
@@ -77,24 +78,24 @@ export class ListingsQueryBuilder {
 
   public addPricePerCredit(
     pricePerCreditFrom?: string,
-    pricePerCreditTo?: string
+    pricePerCreditTo?: string,
   ) {
     if (!pricePerCreditFrom && !pricePerCreditTo) {
       throw new Error(
-        "Price per credit filter requires at least one of pricePerCreditFrom or pricePerCreditTo"
+        "Price per credit filter requires at least one of pricePerCreditFrom or pricePerCreditTo",
       );
     }
     this.pricePerCredit = this.bigIntRangeFilter(
       "pricePerCreditAmount",
       pricePerCreditFrom,
-      pricePerCreditTo
+      pricePerCreditTo,
     );
   }
 
   public addVolume(volumeFrom?: number, volumeTo?: number) {
     if (!volumeFrom && !volumeTo) {
       throw new Error(
-        "Volume filter requires at least one of volumeFrom or volumeTo"
+        "Volume filter requires at least one of volumeFrom or volumeTo",
       );
     }
     this.volume = this.numberRangeFilter("amount", volumeFrom, volumeTo);
@@ -106,17 +107,17 @@ export class ListingsQueryBuilder {
 
   public addRegistrationDate(
     registrationDateFrom?: Date,
-    registrationDateTo?: Date
+    registrationDateTo?: Date,
   ) {
     if (!registrationDateFrom && !registrationDateTo) {
       throw new Error(
-        "Registration date filter requires at least one of registrationDateFrom or registrationDateTo"
+        "Registration date filter requires at least one of registrationDateFrom or registrationDateTo",
       );
     }
     this.registrationDate = this.dateRangeFilter(
       "registrationDate",
       registrationDateFrom,
-      registrationDateTo
+      registrationDateTo,
     );
   }
 
@@ -150,7 +151,7 @@ export class ListingsQueryBuilder {
   private numberRangeFilter(
     filterName: string,
     from?: number,
-    to?: number
+    to?: number,
   ): string {
     return this.rangeFilter(filterName, from?.toString(), to?.toString());
   }
@@ -158,7 +159,7 @@ export class ListingsQueryBuilder {
   private bigIntRangeFilter(
     filterName: string,
     from?: string,
-    to?: string
+    to?: string,
   ): string {
     return this.rangeFilter(filterName, `"${from}"`, `"${to}"`);
   }
@@ -167,7 +168,7 @@ export class ListingsQueryBuilder {
     return this.rangeFilter(
       filterName,
       `"${from?.toISOString()}"`,
-      `"${to?.toISOString()}"`
+      `"${to?.toISOString()}"`,
     );
   }
 
@@ -193,6 +194,8 @@ export class ListingsQueryBuilder {
                     pricePerCreditDenom
                     creditCollection{
                         creditType
+                        retiredAmount
+                        activeAmount
                         creditData{
                             nodes{
                                 eventData{

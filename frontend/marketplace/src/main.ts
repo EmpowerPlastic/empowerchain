@@ -26,6 +26,7 @@ import {
   PC_BACKEND_ENDPOINT,
 } from "@/config/config";
 import { createLogto, type LogtoConfig } from "@logto/vue";
+import "@/utils/analytics";
 
 const cache = new InMemoryCache();
 const apolloClient = new ApolloClient({

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../node_modules/@segment/analytics-next/src/lib/is-plan-event-enabled.ts"],
+  "sourcesContent": ["import { PlanEvent, TrackPlan } from '../core/events/interfaces'\n\n/**\n * Determines whether a track event is allowed to be sent based on the\n * user's tracking plan.\n * If the user does not have a tracking plan or the event is allowed based\n * on the tracking plan configuration, returns true.\n */\nexport function isPlanEventEnabled(\n  plan: TrackPlan | undefined,\n  planEvent: PlanEvent | undefined\n): boolean {\n  // Always prioritize the event's `enabled` status\n  if (typeof planEvent?.enabled === 'boolean') {\n    return planEvent.enabled\n  }\n\n  // Assume absence of a tracking plan means events are enabled\n  return plan?.__default?.enabled ?? true\n}\n"],
+  "mappings": ";AAQM,SAAU,mBACd,MACA,WAAgC;;AAGhC,MAAI,QAAO,cAAS,QAAT,cAAS,SAAA,SAAT,UAAW,aAAY,WAAW;AAC3C,WAAO,UAAU;;AAInB,UAAO,MAAA,KAAA,SAAI,QAAJ,SAAI,SAAA,SAAJ,KAAM,eAAS,QAAA,OAAA,SAAA,SAAA,GAAE,aAAO,QAAA,OAAA,SAAA,KAAI;AACrC;",
+  "names": []
+}
