@@ -18,6 +18,7 @@ import { useFetcher, authHeader } from "@/utils/fetcher";
 import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
 import { useNotifyer } from "@/utils/notifyer";
+import Tooltip from "@/components/ui/Tooltip.vue";
 
 export interface BuyCreditsProps {
   availableCredits: number;
@@ -228,12 +229,10 @@ const handleCardPayment = async (retirererName: string) => {
         <div class="flex flex-col mb-0 mt-7">
           <div class="md:flex flex-row items-center hidden mr-3">
             <p class="text-title18 text-subLabel text-right mr-2">Cost</p>
-            <p
-              class="tooltip tooltip:bg-red-100"
-              data-tip="The seller will be charged a 3% service fee + 0-5% payment processing fee"
-            >
-              <img class="w-[40px] h-[40px]" src="../assets/questionIcon.svg" />
-            </p>
+            <Tooltip
+              label="The seller will be charged a 3% service fee + 0-5% payment processing fee"
+              icon-style="w-[40px] h-[40px]"
+            />
           </div>
           <p class="text-title18 text-subLabel text-right hidden md:block mr-3">
             {{ amount >= 0 ? pricePerCredit * amount : "0" }}
@@ -252,12 +251,11 @@ const handleCardPayment = async (retirererName: string) => {
       <div class="flex items-center text-title18 text-subLabel mt-2 md:hidden">
         Cost
         {{ pricePerCredit * amount }} ${{ coinFormatted }}
-        <p
-          class="tooltip tooltip:bg-red-100 ml-3"
-          data-tip="The seller will be charged a 3% service fee + 0-5% payment processing fee"
-        >
-          <img class="w-[20px] h-[20px]" src="../assets/questionIcon.svg" />
-        </p>
+        <Tooltip
+          label="The seller will be charged a 3% service fee + 0-5% payment processing fee"
+          icon-style="w-[20px] h-[20px]"
+          class="ml-2"
+        />
       </div>
     </div>
     <div class="flex flex-col w-full lg:w-auto lg:self-end">
