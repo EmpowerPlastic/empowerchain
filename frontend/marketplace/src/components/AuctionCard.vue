@@ -6,14 +6,19 @@ import { formatDenom } from "@/utils/wallet-utils";
 import { onMounted, ref } from "vue";
 import CustomImage from "@/components/CustomImage.vue";
 import tracking, { TrackEvents } from "@/utils/analytics";
+import CustomSpinner from "./CustomSpinner.vue";
 export interface AuctionCardProps {
   auctionData: any;
 }
 const props = defineProps<AuctionCardProps>();
 const denom = ref("");
+const showSpinner = ref(true);
 
 onMounted(async () => {
   denom.value = await formatDenom(props.auctionData?.pricePerCreditDenom);
+  if (props.auctionData?.creditCollection?.creditData?.nodes[0].mediaFiles?.nodes[0].url !== "") {
+    showSpinner.value = false;
+  }
 });
 
 const handleViewDetailsClick = () => {
@@ -26,15 +31,20 @@ const handleViewDetailsClick = () => {
 </script>
 <template>
   <div class="bg-lightBlack rounded-lg md:rounded-sm">
-    <CustomImage
-      image-class="h-[250px] w-full rounded-lg"
-      :src="
-        convertIPFStoHTTPS(
-          auctionData?.creditCollection?.creditData?.nodes[0].mediaFiles
-            ?.nodes[0].url,
-        ) || auctionCard
-      "
-    />
+    <div v-if="showSpinner">
+      <CustomSpinner :visible="showSpinner" />
+    </div>
+    <div v-else="!showSpinner">
+      <CustomImage
+        image-class="h-[250px] w-full rounded-lg"
+        :src="
+          convertIPFStoHTTPS(
+            auctionData?.creditCollection?.creditData?.nodes[0].mediaFiles
+              ?.nodes[0].url,
+          ) || auctionCard
+        "
+      />
+    </div>
     <div class="grid grid-cols-2 p-3 gap-4">
       <div>
         <div>

@@ -13,6 +13,7 @@ import { formatDenom } from "@/utils/wallet-utils";
 import { computed, onMounted, ref } from "vue";
 import CustomImage from "@/components/CustomImage.vue";
 import tracking, { TrackEvents } from "@/utils/analytics";
+import CustomSpinner from "./CustomSpinner.vue";
 
 export interface AuctionResultsCardProps {
   cardData: MarketplaceListing & {
@@ -35,7 +36,14 @@ interface CardDetailsList {
 
 const props = defineProps<AuctionResultsCardProps>();
 const denom = ref("");
+const volume = computed(() => {
+  return (
+    parseInt(props.cardData.creditCollection.retiredAmount) +
+    parseInt(props.cardData.creditCollection.activeAmount)
+  );
+});
 const cardDetailsList = ref<CardDetailsList>();
+const showSpinner = ref(true);
 const applicant = computed<string>(() => {
   return cardDetailsList.value?.applicant[0] ?? "";
 });
@@ -45,6 +53,7 @@ onMounted(async () => {
   cardDetailsList.value = getDetailsList(
     props.cardData.creditCollection.creditData.nodes,
   );
+  showSpinner.value = false;
 });
 
 const handleViewDetailsClick = () => {
@@ -59,10 +68,15 @@ const handleViewDetailsClick = () => {
   <div
     class="bg-auctionBackground md:bg-lightBlack rounded-lg font-Inter text-white my-5 md:p-3 md:grid md:grid-cols-5 min-h-[180px]"
   >
-    <CustomImage
-      :src="cardDetailsList?.thumbnailUrl || auctionCard"
-      image-class="max-h-[200px] w-full rounded-sm"
-    />
+    <div v-if="showSpinner">
+      <CustomSpinner :visible="showSpinner" />
+    </div>
+    <div v-else="!showSpinner">
+      <CustomImage
+        :src="cardDetailsList?.thumbnailUrl || auctionCard"
+        image-class="max-h-[200px] w-full rounded-sm"
+      />
+    </div>
 
     <!--      Details for Mobile UI-->
     <div class="grid grid-cols-2 p-5 gap-4 md:hidden">
@@ -130,7 +144,7 @@ const handleViewDetailsClick = () => {
       </div>
       <div class="col-span-1">
         <p class="details-title">Volume</p>
-        <p>{{ cardDetailsList?.volume }}kg</p>
+        <p>{{ volume }}kg</p>
       </div>
       <div class="col-span-1 text-right">
         <p class="text-title32 font-bold leading-7 mt-6">
