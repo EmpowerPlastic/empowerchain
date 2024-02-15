@@ -18,6 +18,7 @@ import { useFetcher, authHeader } from "@/utils/fetcher";
 import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
 import { useNotifyer } from "@/utils/notifyer";
+import { log } from "@/utils/logger";
 
 export interface BuyCreditsProps {
   availableCredits: number;
@@ -66,7 +67,6 @@ const initValues = async () => {
 
     if (walletConnected()) {
       const wallet = getWallet();
-      console.log("initValues");
       const { createRPCQueryClient } = empowerchain.ClientFactory;
       const rpcQueryClient = await createRPCQueryClient({
         rpcEndpoint: RPC_ENDPOINT,
@@ -83,7 +83,7 @@ const initValues = async () => {
       checkBalanceForPurchase(amount.value);
     }
   } catch (error) {
-    console.log(error);
+    log(error);
   }
 };
 

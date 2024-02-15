@@ -12,6 +12,7 @@ import {
 import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
 import tracking, { PageViewEvents, TrackEvents } from "@/utils/analytics";
+import { log } from "@/utils/logger";
 
 const { handleSignIn, handleSignOut, isAuthenticated, user } = useAuth();
 const { address } = useWallet();
@@ -71,15 +72,16 @@ const handleSelectWallet = async (walletType: string) => {
       walletAddress?.substring(walletAddress?.length - 4);
     if (walletAddress && walletType) {
       tracking.identify(walletAddress, {
-      walletType,
-      loginType: "wallet",
-    });localStorage.setItem("address", walletAddress);
+        walletType,
+        loginType: "wallet",
+      });
+      localStorage.setItem("address", walletAddress);
       localStorage.setItem("wallet", walletType);
     }
     closeSelectWalletModal();
   } catch (error) {
-    console.log(error);
     disconnectWallet();
+    log(error);
   }
 };
 
