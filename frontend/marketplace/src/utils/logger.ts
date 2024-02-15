@@ -60,12 +60,8 @@ export const log = (
 export const createAppLogger = (): VuePlugin => {
   return {
     install: (app) => {
-      app.config.errorHandler = (
-        error: Error,
-        instance: ComponentPublicInstance,
-        info: string,
-      ) => {
-        log(error, "error", { info });
+      app.config.errorHandler = (err, instance, info) => {
+        log(err, "error", { info });
       };
     },
   };
