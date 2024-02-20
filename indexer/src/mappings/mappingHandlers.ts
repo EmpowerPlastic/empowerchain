@@ -721,6 +721,8 @@ async function handleCreditData(
     issuanceDate: findPropById("issuance_date", metadata["credit_props"])
       ?.content,
     creditType: findPropById("credit_type", metadata["credit_props"])?.content,
+    projectName: findPropById("project_name", metadata["credit_props"])
+      ?.content,
     aggregationLatitude:
       findPropById("aggregation_location", metadata["credit_props"])?.content
         .latitude || 0,
