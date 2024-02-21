@@ -204,6 +204,7 @@ type CreditData @entity {
   id: ID!
   issuanceDate: Date!
   creditType: String!
+  projectName: String!
   aggregationLatitude: Float!
   aggregationLongitude: Float!
   rawJsonData: String!

@@ -180,3 +180,7 @@ export const isValidCreditAmount = (
 ): boolean => {
   return amount > 0 && Number.isInteger(amount) && amount <= available;
 };
+
+export const isTruthy = (value: unknown): boolean => {
+  return Boolean(value);
+};

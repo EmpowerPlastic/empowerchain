@@ -12,6 +12,7 @@ import {
 import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
 import tracking, { PageViewEvents, TrackEvents } from "@/utils/analytics";
+import { log } from "@/utils/logger";
 
 const { handleSignIn, handleSignOut, isAuthenticated, user } = useAuth();
 const { address } = useWallet();
@@ -52,31 +53,36 @@ const onWalletSelect = (wallet: string) => {
 };
 
 const handleSelectWallet = async (walletType: string) => {
-  if (!walletType) {
-    localStorage.removeItem("address");
-    localStorage.removeItem("wallet");
-    openSelectWalletModal();
-    return;
-  }
+  try {
+    if (!walletType) {
+      localStorage.removeItem("address");
+      localStorage.removeItem("wallet");
+      openSelectWalletModal();
+      return;
+    }
 
-  const wallet = getWalletFromType(walletType);
-  const account = await wallet.getKey(CHAIN_ID);
-  const walletAddress = account.bech32Address;
+    const wallet = getWalletFromType(walletType);
+    const account = await wallet.getKey(CHAIN_ID);
+    const walletAddress = account.bech32Address;
 
-  address.value = walletAddress;
-  addressVisible.value =
-    walletAddress?.substring(0, 20) +
-    "..." +
-    walletAddress?.substring(walletAddress?.length - 4);
-  if (walletAddress && walletType) {
-    tracking.identify(walletAddress, {
-      walletType,
-      loginType: "wallet",
-    });
-    localStorage.setItem("address", walletAddress);
-    localStorage.setItem("wallet", walletType);
+    address.value = walletAddress;
+    addressVisible.value =
+      walletAddress?.substring(0, 20) +
+      "..." +
+      walletAddress?.substring(walletAddress?.length - 4);
+    if (walletAddress && walletType) {
+      tracking.identify(walletAddress, {
+        walletType,
+        loginType: "wallet",
+      });
+      localStorage.setItem("address", walletAddress);
+      localStorage.setItem("wallet", walletType);
+    }
+    closeSelectWalletModal();
+  } catch (error) {
+    disconnectWallet();
+    log(error);
   }
-  closeSelectWalletModal();
 };
 
 const copyAddress = async () => {

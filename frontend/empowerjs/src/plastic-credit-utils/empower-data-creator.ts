@@ -12,6 +12,7 @@ export class PlasticCreditBuilder {
   private creditFilesData: CreditProp;
   private issuanceDate: Date;
   private creditType: string;
+  private projectName: string;
   private applicantData: CreditProp;
 
   constructor() {
@@ -43,6 +44,11 @@ export class PlasticCreditBuilder {
     return this;
   }
 
+  setProjectName(projectName: string): PlasticCreditBuilder {
+    this.projectName = projectName;
+    return this;
+  }
+
   setApplicantData(applicantData: CreditProp): PlasticCreditBuilder {
     this.applicantData = applicantData;
     return this;
@@ -64,6 +70,9 @@ export class PlasticCreditBuilder {
     if (!this.creditType) {
       throw new Error("Credit type is required");
     }
+    if (!this.projectName) {
+      throw new Error("Project name is required");
+    }
     if (!this.applicantData) {
       throw new Error("Applicant data is required");
     }
@@ -83,6 +92,11 @@ export class PlasticCreditBuilder {
           id: "credit_type",
           type: "text",
           content: this.creditType,
+        },
+        {
+          id: "project_name",
+          type: "text",
+          content: this.projectName,
         },
         this.applicantData,
       ],

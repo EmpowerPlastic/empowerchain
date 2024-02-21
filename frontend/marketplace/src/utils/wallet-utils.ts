@@ -1,6 +1,6 @@
 import type { Keplr } from "@keplr-wallet/types";
 import { Wallet } from "@/types/WalletEnums";
-import { empowerchain, ibc } from "@empower-plastic/empowerjs";
+import { ibc } from "@empower-plastic/empowerjs";
 import { RPC_ENDPOINT } from "@/config/config";
 
 export function getWalletFromType(wallet: string): Keplr {
@@ -18,7 +18,7 @@ export function getWalletFromType(wallet: string): Keplr {
 
 export const getWallet = () => {
   const selectedWallet = localStorage.getItem("wallet");
-  if (selectedWallet) {
+  if (selectedWallet && walletConnected()) {
     return getWalletFromType(selectedWallet);
   } else {
     throw new Error("Please connect wallet");

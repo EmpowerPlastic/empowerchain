@@ -268,6 +268,7 @@ describe("Empower Data Creator", () => {
     const plasticCredit = plasticCreditBuilder
       .setIssuanceDate(new Date(550000000000))
       .setCreditType("type")
+      .setProjectName("Project")
       .setApplicantData(applicant)
       .addCreditEventData(event)
       .addCreditEventData(event2)
@@ -411,6 +412,11 @@ describe("Empower Data Creator", () => {
           content: "type",
         },
         {
+          id: "project_name",
+          type: "text",
+          content: "Project",
+        },
+        {
           id: "applicant_data",
           type: "empower_applicant_data",
           content: {
@@ -447,6 +453,7 @@ describe("Empower Data Creator", () => {
       plasticCreditBuilder
         .setIssuanceDate(new Date(550000000000))
         .setCreditType("type")
+        .setProjectName("Project")
         .setApplicantData(applicant)
         .addCreditEventData({
           id: "event_data",
