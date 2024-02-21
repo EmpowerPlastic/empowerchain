@@ -39,8 +39,11 @@ declare module "vue-router" {
 }
 
 const router = createRouter({
-  scrollBehavior: () => {
+  scrollBehavior: (to, from) => {
     // always scroll to top after navigation
+    if (to.name === "FAQPage" && to.name === from.name) {
+      return undefined;
+    }
     return { top: 0 };
   },
   history: createWebHistory(import.meta.env.BASE_URL),
