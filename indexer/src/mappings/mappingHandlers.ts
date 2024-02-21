@@ -706,7 +706,7 @@ function decodeUriArrayFromEvent(eventUris: string): string[] {
 }
 
 async function fetchMetadataFromIpfs(url: string): Promise<any> {
-  const reqUri = "http://51.159.197.8:8080/ipfs/" + url.substring(7);
+  const reqUri = "https://empowerchain.mypinata.cloud/ipfs/" + url.substring(7);
   const res = await fetch(reqUri);
   return res.json();
 }
@@ -721,6 +721,8 @@ async function handleCreditData(
     issuanceDate: findPropById("issuance_date", metadata["credit_props"])
       ?.content,
     creditType: findPropById("credit_type", metadata["credit_props"])?.content,
+    projectName: findPropById("project_name", metadata["credit_props"])
+      ?.content,
     aggregationLatitude:
       findPropById("aggregation_location", metadata["credit_props"])?.content
         .latitude || 0,
