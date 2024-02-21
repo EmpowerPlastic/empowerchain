@@ -2,7 +2,7 @@
 import "vue3-carousel/dist/carousel.css";
 import { ref, watch } from "vue";
 import CustomImage from "@/components/CustomImage.vue";
-import CustomSpinner from "./CustomSpinner.vue";
+import CustomSpinner from "@/components/CustomSpinner.vue";
 
 export interface ImageGalleryProps {
   imageArray: string[];

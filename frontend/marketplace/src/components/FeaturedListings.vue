@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import AuctionCard from "@/components/AuctionCard.vue";
+import ListingCard from "@/components/ListingCard.vue";
 import { computed } from "vue";
-export interface AuctionSectionProps {
-  auctionArray: any[];
+export interface FeaturedListingsProps {
+  listings: any[];
   filterValues: any;
 }
 
-const props = defineProps<AuctionSectionProps>();
+const props = defineProps<FeaturedListingsProps>();
 
-const viewAllAuctionsUrl = computed(() => {
+const viewAllListingsUrl = computed(() => {
   const params = new URLSearchParams();
   const objectOfArrays = props.filterValues;
   if (!objectOfArrays) {
@@ -28,20 +28,20 @@ const viewAllAuctionsUrl = computed(() => {
   <!--Auctions section-->
   <div class="mt-5">
     <p class="font-Inter text-white text-title24 mb-3 md:text-title38">
-      Feature Auctions
+      Feature projects
     </p>
     <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
-      <AuctionCard
-        v-for="auction in auctionArray"
-        :key="auction"
-        :auction-data="auction"
+      <ListingCard
+        v-for="listing in listings"
+        :key="listing"
+        :listing-data="listing"
       />
       <a
         class="grid grid-rows-3 p-4 bg-greenPrimary h-[346px] md: md:min-h-[346px] md:h-full w-full rounded-sm font-Inter text-title32 text-white font-bold cursor-pointer"
-        :href="viewAllAuctionsUrl"
+        :href="viewAllListingsUrl"
       >
         <div class="row-start-2 flex flex-row justify-center items-center">
-          View all auctions
+          View all projects
         </div>
         <div class="row-start-3 flex flex-row justify-end">
           <img class="h-14 self-end" src="../assets/viewAllIcon.svg" />
