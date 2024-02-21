@@ -20,9 +20,10 @@ const handleError = (event: Event) => {
 };
 </script>
 <template>
-  <img
+  <div
     :class="imageClass || 'rounded-sm h-[200px] w-[200px]'"
-    v-bind="props"
-    @error="handleError"
-  />
+    class="flex items-center justify-center bg-lightBlack"
+  >
+    <img v-bind="props" @error="handleError" />
+  </div>
 </template>
