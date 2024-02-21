@@ -2,7 +2,6 @@ import { computed, type Ref, toRefs, type ComputedRef } from "vue";
 import { type CreditCollection } from "@/types/GraphqlSchema";
 
 const isInteger = (value: number) => {
-  console.log("value", value, Math.round(value), Math.round(value) === value);
   return value == Math.round(value);
 };
 
