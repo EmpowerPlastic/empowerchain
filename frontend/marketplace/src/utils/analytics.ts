@@ -4,7 +4,6 @@ import {
   type UserTraits,
   type EventProperties,
 } from "@segment/analytics-next";
-import { RouteNames } from "@/router/RouteNames";
 interface EventNames {
   trackEvents: Record<string, string>;
   pageViewEvents: Record<string, string>;
@@ -85,7 +84,7 @@ export const initTracking = (
    * @example pageViewEvent("Listing Viewed", { listingId: "1234" });
    */
   const pageViewEvent = (
-    eventName: string,
+    eventName: PageViewEvents,
     eventProperties?: EventProperties,
   ) => {
     if (!isValidEvent(eventName, events.pageViewEvents)) {
@@ -123,7 +122,19 @@ export enum TrackEvents {
   CLICKED_GET_MPWR = "Clicked get mpwr",
 }
 
-export const PageViewEvents = RouteNames.toOriginalCase();
+export enum PageViewEvents {
+  START_PAGE = "start page",
+  CERTIFICATES = "certificates",
+  FAQ = "faq",
+  PLASTIC_CREDIT_LISTINGS = "plastic credit listings",
+  PLASTIC_CREDIT_LISTING = "plastic credit listing",
+  LOGIN_CALLBACK = "login callback",
+  USER_PROFILE = "user profile",
+  PAYMENT_SUCCESSFUL = "payment successful",
+  PAYMENT_CANCELLED = "payment cancelled",
+  REGISTRY = "registry",
+  UNKNOWN = "unknown",
+}
 
 const tracking = initTracking(SEGMENT_WRITE_KEY, {
   pageViewEvents: PageViewEvents,

@@ -3,12 +3,6 @@ import {
   createWebHistory,
   type RouteLocationNormalized,
 } from "vue-router";
-import tracking, {
-  PageViewEvents,
-  type EventProperties,
-} from "@/utils/analytics";
-import { RouteNames } from "./RouteNames";
-
 const HomePage = () => import("@/pages/HomePage.vue");
 const FAQPage = () => import("@/pages/FAQPage.vue");
 const CertificatesAndCreditsPage = () =>
@@ -23,19 +17,36 @@ const AuctionPaymentCancelled = () =>
   import("@/pages/AuctionPaymentCancelled.vue");
 const CreditCollectionPage = () => import("@/pages/CreditCollectionPage.vue");
 
-export const PageNames = RouteNames.toSnakeCase();
-type PageNamesValues = (typeof PageNames)[keyof typeof PageNames];
+import tracking, {
+  PageViewEvents,
+  type EventProperties,
+} from "@/utils/analytics";
 
 type PageViewEventWithProperties = (
   to: RouteLocationNormalized,
-) => [PageNamesValues, EventProperties];
+) => [PageViewEvents, EventProperties];
 export {};
 
 declare module "vue-router" {
   interface RouteMeta {
-    pageViewEvent?: string | PageViewEventWithProperties;
+    pageViewEvent?: PageViewEvents | PageViewEventWithProperties;
     hideNavFooter?: boolean;
   }
+}
+
+// TODO: This is very similar to PageViewEvents - merge them
+export enum PageNames {
+  START_PAGE = "start page",
+  CERTIFICATES = "certificates",
+  FAQ = "faq",
+  LISTINGS = "listings",
+  LISTING = "listing",
+  LOGIN_CALLBACK = "login callback",
+  USER_PROFILE = "user profile",
+  PAYMENT_SUCCESSFUL = "payment successful",
+  PAYMENT_CANCELLED = "payment cancelled",
+  REGISTRY = "registry",
+  UNKNOWN = "unknown",
 }
 
 const router = createRouter({
@@ -74,7 +85,7 @@ const router = createRouter({
       name: PageNames.LISTINGS,
       component: AuctionPage,
       meta: {
-        pageViewEvent: PageViewEvents.LISTINGS,
+        pageViewEvent: PageViewEvents.PLASTIC_CREDIT_LISTINGS,
       },
     },
     {
@@ -86,7 +97,7 @@ const router = createRouter({
           const trackProps = {
             id: to.params.id,
           };
-          return [PageViewEvents.LISTING, trackProps];
+          return [PageViewEvents.PLASTIC_CREDIT_LISTING, trackProps];
         },
       },
     },
@@ -140,11 +151,11 @@ const router = createRouter({
 });
 
 const trackPageView = (
-  pageViewEvent: string | PageViewEventWithProperties,
+  pageViewEvent: PageViewEvents | PageViewEventWithProperties,
   to: RouteLocationNormalized,
 ) => {
   if (pageViewEvent && typeof pageViewEvent === "string") {
-    tracking.pageViewEvent(pageViewEvent);
+    tracking.pageViewEvent(pageViewEvent as PageViewEvents);
   } else if (pageViewEvent && typeof pageViewEvent === "function") {
     const [eventName, eventProperties] = pageViewEvent(to);
     tracking.pageViewEvent(eventName, eventProperties);
