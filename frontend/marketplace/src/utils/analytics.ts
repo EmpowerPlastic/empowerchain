@@ -4,9 +4,16 @@ import {
   type UserTraits,
   type EventProperties,
 } from "@segment/analytics-next";
+import { PageNames } from "@/router";
+import { snakeToReadable } from "@/utils/string";
 interface EventNames {
   trackEvents: Record<string, string>;
   pageViewEvents: Record<string, string>;
+}
+interface TrackingOptions {
+  debug?: boolean;
+  trackEventNameModifier?: (name: string) => string;
+  pageViewEventNameModifier?: (name: string) => string;
 }
 
 /**
@@ -16,6 +23,7 @@ interface EventNames {
 export const initTracking = (
   writeKey: string,
   eventsArg: Partial<EventNames>,
+  options?: TrackingOptions,
 ) => {
   const events: EventNames = {
     trackEvents: eventsArg.trackEvents ? { ...eventsArg.trackEvents } : {},
@@ -69,8 +77,13 @@ export const initTracking = (
       console.log("Not a valid tracking event");
       return;
     }
+
+    const analyticsEventName = options?.trackEventNameModifier
+      ? options.trackEventNameModifier(eventName)
+      : eventName;
+
     try {
-      analytics.track(eventName, eventProperties);
+      analytics.track(analyticsEventName, eventProperties);
     } catch (error) {
       console.error("Error tracking event", error);
     }
@@ -84,15 +97,20 @@ export const initTracking = (
    * @example pageViewEvent("Listing Viewed", { listingId: "1234" });
    */
   const pageViewEvent = (
-    eventName: PageViewEvents,
+    eventName: PageNames,
     eventProperties?: EventProperties,
   ) => {
     if (!isValidEvent(eventName, events.pageViewEvents)) {
       console.log("Not a valid page view event");
       return;
     }
+
+    const analyticsEventName = options?.pageViewEventNameModifier
+      ? options.pageViewEventNameModifier(eventName)
+      : eventName;
+
     try {
-      analytics.page(eventName, eventProperties);
+      analytics.page(analyticsEventName, eventProperties);
     } catch (error) {
       console.error("Error tracking page view event", error);
     }
@@ -122,24 +140,16 @@ export enum TrackEvents {
   CLICKED_GET_MPWR = "Clicked get mpwr",
 }
 
-export enum PageViewEvents {
-  START_PAGE = "start page",
-  CERTIFICATES = "certificates",
-  FAQ = "faq",
-  PLASTIC_CREDIT_LISTINGS = "plastic credit listings",
-  PLASTIC_CREDIT_LISTING = "plastic credit listing",
-  LOGIN_CALLBACK = "login callback",
-  USER_PROFILE = "user profile",
-  PAYMENT_SUCCESSFUL = "payment successful",
-  PAYMENT_CANCELLED = "payment cancelled",
-  REGISTRY = "registry",
-  UNKNOWN = "unknown",
-}
-
-const tracking = initTracking(SEGMENT_WRITE_KEY, {
-  pageViewEvents: PageViewEvents,
-  trackEvents: TrackEvents,
-});
+const tracking = initTracking(
+  SEGMENT_WRITE_KEY,
+  {
+    pageViewEvents: PageNames,
+    trackEvents: TrackEvents,
+  },
+  {
+    pageViewEventNameModifier: snakeToReadable,
+  },
+);
 
 export default tracking;
 export type { EventProperties };

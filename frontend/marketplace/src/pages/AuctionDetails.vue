@@ -16,7 +16,6 @@ import {
 import { useQuery } from "@vue/apollo-composable";
 import { ref, watch, computed } from "vue";
 import { GET_MARKETPLACE_LISTING } from "@/graphql/queries";
-import tracking, { PageViewEvents } from "@/utils/analytics";
 
 interface AuctionDetails {
   applicant: string;

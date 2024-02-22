@@ -12,7 +12,7 @@ import {
 } from "@/utils/wallet-utils";
 import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
-import tracking, { PageViewEvents, TrackEvents } from "@/utils/analytics";
+import tracking, { TrackEvents } from "@/utils/analytics";
 import { log } from "@/utils/logger";
 
 const { handleSignIn, handleSignOut, isAuthenticated, user } = useAuth();
@@ -110,7 +110,7 @@ const handleGetMPWR = () => {
 
   toast.info("Coming soon!");
   tracking.trackEvent(TrackEvents.CLICKED_GET_MPWR, {
-    context: pageContext ?? PageViewEvents.UNKNOWN,
+    context: pageContext ?? PageNames.UNKNOWN,
   });
 };
 </script>
