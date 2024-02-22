@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { CHAIN_ID } from "@/config/config";
 import { onMounted, ref } from "vue";
+import { RouterLink, PageNames } from "@/router";
 import { toast } from "vue3-toastify";
 import { useRoute } from "@/router";
 import SellectWalletModal from "@/components/SellectWalletModal.vue";
@@ -11,7 +12,8 @@ import {
 } from "@/utils/wallet-utils";
 import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
-import tracking, { PageViewEvents, TrackEvents } from "@/utils/analytics";
+import tracking, { TrackEvents } from "@/utils/analytics";
+import { log } from "@/utils/logger";
 
 const { handleSignIn, handleSignOut, isAuthenticated, user } = useAuth();
 const { address } = useWallet();
@@ -52,31 +54,36 @@ const onWalletSelect = (wallet: string) => {
 };
 
 const handleSelectWallet = async (walletType: string) => {
-  if (!walletType) {
-    localStorage.removeItem("address");
-    localStorage.removeItem("wallet");
-    openSelectWalletModal();
-    return;
-  }
+  try {
+    if (!walletType) {
+      localStorage.removeItem("address");
+      localStorage.removeItem("wallet");
+      openSelectWalletModal();
+      return;
+    }
 
-  const wallet = getWalletFromType(walletType);
-  const account = await wallet.getKey(CHAIN_ID);
-  const walletAddress = account.bech32Address;
+    const wallet = getWalletFromType(walletType);
+    const account = await wallet.getKey(CHAIN_ID);
+    const walletAddress = account.bech32Address;
 
-  address.value = walletAddress;
-  addressVisible.value =
-    walletAddress?.substring(0, 20) +
-    "..." +
-    walletAddress?.substring(walletAddress?.length - 4);
-  if (walletAddress && walletType) {
-    tracking.identify(walletAddress, {
-      walletType,
-      loginType: "wallet",
-    });
-    localStorage.setItem("address", walletAddress);
-    localStorage.setItem("wallet", walletType);
+    address.value = walletAddress;
+    addressVisible.value =
+      walletAddress?.substring(0, 20) +
+      "..." +
+      walletAddress?.substring(walletAddress?.length - 4);
+    if (walletAddress && walletType) {
+      tracking.identify(walletAddress, {
+        walletType,
+        loginType: "wallet",
+      });
+      localStorage.setItem("address", walletAddress);
+      localStorage.setItem("wallet", walletType);
+    }
+    closeSelectWalletModal();
+  } catch (error) {
+    disconnectWallet();
+    log(error);
   }
-  closeSelectWalletModal();
 };
 
 const copyAddress = async () => {
@@ -103,7 +110,7 @@ const handleGetMPWR = () => {
 
   toast.info("Coming soon!");
   tracking.trackEvent(TrackEvents.CLICKED_GET_MPWR, {
-    context: pageContext ?? PageViewEvents.UNKNOWN,
+    context: pageContext ?? PageNames.UNKNOWN,
   });
 };
 </script>
@@ -126,15 +133,19 @@ const handleGetMPWR = () => {
         @on-wallet-select="onWalletSelect"
       />
       <!-- Desktop Navbar-->
-      <div class="hidden md:grid grid-cols-3 md:px-[10%] items-center">
+      <div class="hidden md:grid grid-cols-3 items-center">
         <div>
-          <a href="/">
-            <img src="../assets/logo.png" class="h-8" alt="Logo" />
-          </a>
+          <router-link :to="{ name: PageNames.START_PAGE }">
+            <img
+              src="../assets/logo.png"
+              class="h-8"
+              alt="Empower Marketplace"
+            />
+          </router-link>
         </div>
 
         <div class="flex flex-row justify-around text-white text-title18">
-          <a href="/">Home</a>
+          <router-link :to="{ name: PageNames.START_PAGE }">Home</router-link>
           <button type="button" @click="handleGetMPWR">Get <b>$MPWR</b></button>
           <button type="button" @click="toast.info('Coming soon!')">FAQ</button>
         </div>
@@ -205,9 +216,12 @@ const handleGetMPWR = () => {
                 </p>
               </div>
               <div class="menu py-2 items-center w-full">
-                <a href="/certificate" class="btn nav-dropdown-button">
+                <router-link
+                  :to="{ name: PageNames.CERTIFICATES }"
+                  class="btn nav-dropdown-button"
+                >
                   My Certificates
-                </a>
+                </router-link>
                 <!--                <a-->
                 <!--                  href="/profile"-->
                 <!--                  class="btn nav-dropdown-button"-->
@@ -237,9 +251,16 @@ const handleGetMPWR = () => {
     </nav>
     <!-- Mobile Navbar-->
     <div class="px-5 flex flex-row justify-between w-full md:hidden">
-      <a href="/" class="flex items-center">
-        <img src="../assets/logo.png" class="h-6 mr-3" alt="Logo" />
-      </a>
+      <router-link
+        :to="{ name: PageNames.START_PAGE }"
+        class="flex items-center"
+      >
+        <img
+          src="../assets/logo.png"
+          class="h-6 mr-3"
+          alt="Empower Marketplace"
+        />
+      </router-link>
       <button
         type="button"
         @click="showNav = true"
@@ -315,9 +336,12 @@ const handleGetMPWR = () => {
             <p class="text-title18 text-white">
               {{ userDetails?.email }}
             </p>
-            <a href="/certificate" class="btn nav-dropdown-button-mobile">
+            <router-link
+              :to="{ name: PageNames.CERTIFICATES }"
+              class="btn nav-dropdown-button-mobile"
+            >
               My Certificates
-            </a>
+            </router-link>
             <!-- <a
               href="/profile"
               class="btn nav-dropdown-button-mobile"
@@ -344,7 +368,7 @@ const handleGetMPWR = () => {
         </div>
         <ul class="flex flex-col items-center gap-4">
           <li>
-            <a href="/">Home</a>
+            <router-link :to="{ name: PageNames.START_PAGE }">Home</router-link>
           </li>
           <li>
             <!--          <a>Get MPWR</a>-->

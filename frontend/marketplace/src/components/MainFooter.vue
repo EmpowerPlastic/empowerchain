@@ -8,7 +8,7 @@ const router = useRoute();
   <!--  To hide on certificate page-->
   <template v-if="!router.meta?.hideNavFooter">
     <footer
-      class="font-Inter text-white p-5 md:px-[10%] md:grid md:grid-cols-2 md:gap-16 w-full md:mt-10"
+      class="font-Inter text-white p-5 md:grid md:grid-cols-2 md:gap-16 w-full md:mt-10"
     >
       <div
         class="grid grid-rows-3 gap-6 mb-14 text-center md:text-left md:gap-1"

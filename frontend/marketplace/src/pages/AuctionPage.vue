@@ -116,7 +116,7 @@ const handleSearch = (filterValues: any) => {
 };
 </script>
 <template>
-  <div class="p-5 md:px-[10%] min-h-[50vh] font-Inter">
+  <div class="p-5 min-h-[50vh] font-Inter">
     <h1 class="text-title24 md:text-title38 text-white mb-5">Auctions</h1>
     <!-- <SearchBar @search-click="handleSearch" :filter-values="filterVal" /> -->
     <CustomSpinner :visible="showSpinner" />
