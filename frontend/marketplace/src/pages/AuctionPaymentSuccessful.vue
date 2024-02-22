@@ -83,7 +83,7 @@ onMounted(async () => {
     class="absolute"
     :loop="false"
   />
-  <div class="p-5 md:px-[10%] min-h-[50vh] font-Inter">
+  <div class="p-5 min-h-[50vh] font-Inter">
     <h1
       v-if="auctionStatus === PaymentStatus.COMPLETE"
       class="text-white text-title38 md:mt-10 mb-10 text-center"

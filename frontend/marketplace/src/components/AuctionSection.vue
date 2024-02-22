@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import AuctionCard from "@/components/AuctionCard.vue";
 import { computed } from "vue";
+import { RouterLink } from "vue-router";
+import { PageNames } from "@/router";
+import viewAllIcon from "@/assets/viewAllIcon.svg";
 export interface AuctionSectionProps {
   auctionArray: any[];
   filterValues: any;
@@ -36,17 +39,18 @@ const viewAllAuctionsUrl = computed(() => {
         :key="auction"
         :auction-data="auction"
       />
-      <a
+      <router-link
         class="grid grid-rows-3 p-4 bg-greenPrimary h-[346px] md: md:min-h-[346px] md:h-full w-full rounded-sm font-Inter text-title32 text-white font-bold cursor-pointer"
+        :to="{ name: PageNames.LISTINGS }"
         :href="viewAllAuctionsUrl"
       >
         <div class="row-start-2 flex flex-row justify-center items-center">
           View all auctions
         </div>
         <div class="row-start-3 flex flex-row justify-end">
-          <img class="h-14 self-end" src="../assets/viewAllIcon.svg" />
+          <img class="h-14 self-end" :src="viewAllIcon" />
         </div>
-      </a>
+      </router-link>
     </div>
   </div>
 </template>

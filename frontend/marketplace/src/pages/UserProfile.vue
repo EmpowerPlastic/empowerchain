@@ -15,7 +15,7 @@ const getUserInfo = async () => {
 };
 </script>
 <template>
-  <div class="p-5 md:px-[10%] min-h-[50vh] font-Inter">
+  <div class="p-5 min-h-[50vh] font-Inter">
     <h1 class="text-title18 md:text-title24 text-white mb-5">User Profile</h1>
     <label class="label" for="email">
       <span class="label-text text-white">Email</span>
