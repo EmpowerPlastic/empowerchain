@@ -140,7 +140,6 @@ export enum TrackEvents {
   CLICKED_GET_MPWR = "Clicked get mpwr",
 }
 
-
 const tracking = initTracking(
   SEGMENT_WRITE_KEY,
   {
