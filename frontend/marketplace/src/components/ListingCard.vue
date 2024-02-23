@@ -1,66 +1,85 @@
 <script setup lang="ts">
-import router from "@/router";
+import { PageNames } from "@/router";
 import { convertIPFStoHTTPS } from "@/utils/utils";
 import auctionCard from "@/assets/auctionCard.png";
-import { formatDenom } from "@/utils/wallet-utils";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import CustomImage from "@/components/CustomImage.vue";
 import tracking, { TrackEvents } from "@/utils/analytics";
 import CustomSpinner from "@/components/CustomSpinner.vue";
+import { findPlasticTypeInMaterial } from "@/utils/utils";
 export interface ListingCardProps {
   listingData: any;
+  class?: string;
 }
 const props = defineProps<ListingCardProps>();
-const denom = ref("");
 const showSpinner = ref(true);
 
+const data = ref({
+  id: props.listingData?.id,
+  ipfsImage:
+    props.listingData?.creditCollection?.creditData?.nodes[0].mediaFiles
+      ?.nodes[0].url,
+  pricePerCreditAmount: props.listingData?.pricePerCreditAmount,
+  projectName:
+    props.listingData?.creditCollection?.creditData?.nodes[0].projectName,
+});
+
+const subheader = computed(() => {
+  const materials =
+    props.listingData.creditCollection.creditData.nodes[0].eventData.nodes[0]
+      .material;
+  const applicant =
+    props.listingData.creditCollection.creditData.nodes[0]
+      .applicantDataByCreditDataId.nodes[0].name;
+  const material = findPlasticTypeInMaterial(materials.nodes)?.value;
+  const country =
+    props.listingData.creditCollection.creditData.nodes[0].eventData.nodes[0]
+      .country;
+  return `${material} from ${country} by ${applicant}`;
+});
+
 onMounted(async () => {
-  denom.value = await formatDenom(props.listingData?.pricePerCreditDenom);
   if (
     props.listingData?.creditCollection?.creditData?.nodes[0].mediaFiles
       ?.nodes[0].url !== ""
   ) {
     showSpinner.value = false;
   }
-  console.log(props);
 });
 
-const handleViewDetailsClick = () => {
+const handleClick = () => {
   tracking.trackEvent(TrackEvents.CLICKED_VIEW_DETAILS, {
     id: props.listingData.id,
     context: "collection list",
   });
-  router.push(`/auction/${encodeURIComponent(props.listingData.id)}`);
 };
 </script>
 <template>
-  <div>
+  <div :class="props.class">
     <router-link
-      :to="`/auction/${encodeURIComponent(props.listingData.id)}`"
-      class="card bg-lightGray border-lightGray card-bordered hover:border-greenPrimary cursor-pointer text-white font-Inter card-compact"
+      :to="{ name: PageNames.LISTING, params: { id: props.listingData.id } }"
+      class="h-full card bg-lightGray border-lightGray card-bordered hover:border-greenPrimary cursor-pointer text-white font-Inter card-compact"
+      @click="handleClick"
     >
       <figure>
         <CustomSpinner v-if="showSpinner" :visible="showSpinner" />
         <CustomImage
           v-else
           image-class="h-[250px] w-full"
-          :src="
-            convertIPFStoHTTPS(
-              listingData?.creditCollection?.creditData?.nodes[0].mediaFiles
-                ?.nodes[0].url,
-            ) || auctionCard
-          "
+          :src="convertIPFStoHTTPS(data.ipfsImage) || auctionCard"
         />
       </figure>
       <div class="card-body">
-        <h2 class="card-title font-bold text-title32">Project clean oceans</h2>
+        <h2 class="card-title font-bold text-title32">
+          {{ data.projectName }}
+        </h2>
         <p class="font-light text-title15 md:text-title18">
-          PET from Sri Lanka by Verra
+          {{ subheader }}
         </p>
         <div class="card-actions justify-between mt-4">
           <dl>
             <dd class="text-title26 font-bold">
-              {{ listingData?.pricePerCreditAmount / 1000000 }} {{ denom }}
+              {{ listingData?.pricePerCreditAmount / 1000000 }} USD
             </dd>
             <dt class="text-title11 md:text-title12 font-light">
               per kilo removed
@@ -79,64 +98,5 @@ const handleViewDetailsClick = () => {
       </div>
     </router-link>
 
-    <div class="bg-lightBlack rounded-lg md:rounded-sm">
-      <div v-if="showSpinner">
-        <CustomSpinner :visible="showSpinner" />
-      </div>
-      <div v-else>
-        <CustomImage
-          image-class="h-[250px] w-full rounded-lg"
-          :src="
-            convertIPFStoHTTPS(
-              listingData?.creditCollection?.creditData?.nodes[0].mediaFiles
-                ?.nodes[0].url,
-            ) || auctionCard
-          "
-        />
-      </div>
-      <div class="grid grid-cols-2 p-3 gap-4">
-        <div>
-          <div>
-            <p
-              class="font-Inter text-white text-title24 md:text-title32 font-bold"
-            >
-              {{ listingData?.pricePerCreditAmount / 1000000 }} ${{ denom }}
-            </p>
-            <p class="font-Inter text-white text-title15 md:text-title18">
-              Price per credit
-            </p>
-          </div>
-        </div>
-        <div>
-          <div class="text-right">
-            <p
-              class="font-Inter text-white text-title13 md:text-title14 font-bold"
-            >
-              <!--            300kg-->
-            </p>
-            <p class="font-Inter text-white text-title11 md:text-title12">
-              <!--            Volume-->
-            </p>
-          </div>
-        </div>
-        <div>
-          <div>
-            <p class="font-Inter text-white text-title14 font-bold">
-              {{ listingData?.amount }}/{{ listingData?.initialAmount }}
-            </p>
-            <p class="font-Inter text-white text-title12">Available credits</p>
-          </div>
-        </div>
-        <div>
-          <button
-            type="button"
-            class="bg-greenPrimary w-full h-full rounded-sm font-Inter text-white md:text-title18 px-2"
-            @click="handleViewDetailsClick"
-          >
-            View details
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import AuctionResultsCard from "@/components/AuctionResultsCard.vue";
 import CustomAlert from "@/components/CustomAlert.vue";
 import CustomPagination from "@/components/CustomPagination.vue";
 import CustomSpinner from "@/components/CustomSpinner.vue";
@@ -9,6 +8,8 @@ import { ListingsQueryBuilder } from "@/utils/query-builder";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { computed, onMounted, ref } from "vue";
+import ListingCard from "@/components/ListingCard.vue";
+import ListingCardTable from "@/components/ListingCardTable.vue";
 
 const router = useRoute();
 const pageNumber = ref(1);
@@ -17,7 +18,7 @@ const data = ref();
 const filterVal = ref();
 const showSpinner = ref(true);
 const queryBuilder = new ListingsQueryBuilder();
-const totalNrOfAuctions = computed<number>(() => {
+const totalNrOfListings = computed<number>(() => {
   return data?.value?.result?.marketplaceListings?.totalCount || 0;
 });
 
@@ -117,24 +118,31 @@ const handleSearch = (filterValues: any) => {
 </script>
 <template>
   <div class="p-5 min-h-[50vh] font-Inter">
-    <h1 class="text-title24 md:text-title38 text-white mb-5">Auctions</h1>
+    <h1 class="text-title24 md:text-title38 text-white mb-5">Projects</h1>
     <!-- <SearchBar @search-click="handleSearch" :filter-values="filterVal" /> -->
     <CustomSpinner :visible="showSpinner" />
     <template v-if="!showSpinner">
       <CustomAlert
         :visible="true"
-        :label="`${totalNrOfAuctions} auctions found`"
+        :label="`${totalNrOfListings} projects found`"
       />
-      <div
-        v-for="auction in data?.result?.marketplaceListings?.nodes"
-        :key="auction.id"
-      >
-        <AuctionResultsCard :card-data="auction" />
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 mt-4">
+        <div
+          v-for="listing in data?.result?.marketplaceListings?.nodes"
+          :key="listing.id"
+        >
+          <div class="h-full lg:hidden">
+            <ListingCard class="h-full" :listing-data="listing" />
+          </div>
+          <div class="hidden lg:block">
+            <ListingCardTable :listing-data="listing" />
+          </div>
+        </div>
       </div>
       <!--    <CustomAlert :visible="true" label="No more auctions found"/>-->
       <div class="flex justify-center md:justify-end my-10">
         <CustomPagination
-          :total="totalNrOfAuctions"
+          :total="totalNrOfListings"
           :item-per-page="itemsPerPage"
           v-model:current-page="pageNumber"
           @page-change="handlePageChange"

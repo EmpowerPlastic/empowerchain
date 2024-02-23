@@ -198,6 +198,7 @@ export class ListingsQueryBuilder {
                         activeAmount
                         creditData{
                             nodes{
+                                projectName
                                 eventData{
                                     nodes{
                                         magnitude
