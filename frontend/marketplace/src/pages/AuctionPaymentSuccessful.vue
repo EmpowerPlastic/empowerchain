@@ -133,12 +133,9 @@ onMounted(async () => {
           if you encounter any issues.
         </span>
         <span v-else class="font-Inter text-white text-title18">
-          Something went wrong with a credit transfer and we're currently
-          investigating it. We'll contact you within 2 business days. If you
-          haven't heard from us, please send us a message at
-          <a href="mailto:marketplace@empower.eco" class="underline"
-            >marketplace@empower.eco</a
-          >.
+          Transaction processing takes longer than usual due to blockchain
+          traffic. You will receive an email shortly, confirming the status of
+          your transaction.
         </span>
         <a
           v-if="auctionStatus === PaymentStatus.COMPLETE"

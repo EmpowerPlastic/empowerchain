@@ -74,7 +74,7 @@ const handleViewDetailsClick = () => {
     <div v-else="!showSpinner">
       <CustomImage
         :src="cardDetailsList?.thumbnailUrl || auctionCard"
-        image-class="max-h-[200px] w-full rounded-sm"
+        image-class="h-[150px] rounded-sm"
       />
     </div>
 
