@@ -62,7 +62,7 @@ const handleClick = () => {
     </div>
     <div class="collapse-content bg-lightBlack">
       <p
-        class="text-textWhite px-10 pt-5 pb-2 whitespace-pre-line"
+        class="text-textWhite md:px-10 px-3 pt-5 pb-2 whitespace-pre-line"
         v-html="content"
       />
     </div>
