@@ -120,6 +120,7 @@ interface CreditData {
   id: string;
   issuanceDate: Date;
   creditType: string;
+  projectName: string;
   aggregationLatitude: number;
   aggregationLongitude: number;
   rawJsonData: string;

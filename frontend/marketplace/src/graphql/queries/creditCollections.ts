@@ -23,6 +23,7 @@ export const GET_CREDIT_COLLECTIONS = gql`
         creditData {
           nodes {
             id
+            projectName
             mediaFiles {
               nodes {
                 name

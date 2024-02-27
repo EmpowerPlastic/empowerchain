@@ -4,7 +4,7 @@ import {
   type UserTraits,
   type EventProperties,
 } from "@segment/analytics-next";
-import { PageNames } from "@/router";
+import { PageNames } from "@/router/pageNames";
 import { snakeToReadable } from "@/utils/string";
 interface EventNames {
   trackEvents: Record<string, string>;
@@ -74,7 +74,7 @@ export const initTracking = (
     eventProperties?: EventProperties,
   ) => {
     if (!isValidEvent(eventName, events.trackEvents)) {
-      console.log("Not a valid tracking event");
+      console.log("Not a valid tracking event", eventName);
       return;
     }
 
@@ -101,7 +101,7 @@ export const initTracking = (
     eventProperties?: EventProperties,
   ) => {
     if (!isValidEvent(eventName, events.pageViewEvents)) {
-      console.log("Not a valid page view event");
+      console.log("Not a valid page view event: ", eventName, events);
       return;
     }
 

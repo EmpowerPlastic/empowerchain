@@ -13,7 +13,7 @@ import { formatDenom } from "@/utils/wallet-utils";
 import { computed, onMounted, ref } from "vue";
 import CustomImage from "@/components/CustomImage.vue";
 import tracking, { TrackEvents } from "@/utils/analytics";
-import CustomSpinner from "./CustomSpinner.vue";
+import CustomSpinner from "@/components/CustomSpinner.vue";
 
 export interface AuctionResultsCardProps {
   cardData: MarketplaceListing & {

@@ -18,6 +18,7 @@ export const GET_MARKETPLACE_LISTING = gql`
           creditType
           creditData {
             nodes {
+              projectName
               mediaFiles {
                 nodes {
                   name

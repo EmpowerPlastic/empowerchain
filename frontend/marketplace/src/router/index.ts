@@ -4,17 +4,11 @@ import {
   type RouteLocationNormalized,
 } from "vue-router";
 import tracking, { type EventProperties } from "@/utils/analytics";
+import { PageNames } from "./pageNames";
 
 type PageViewEventWithProperties = (
   to: RouteLocationNormalized,
 ) => [PageNames, EventProperties];
-
-declare module "vue-router" {
-  interface RouteMeta {
-    pageViewEvent?: PageNames | PageViewEventWithProperties;
-    hideNavFooter?: boolean;
-  }
-}
 
 const HomePage = () => import("@/pages/HomePage.vue");
 const FAQPage = () => import("@/pages/FAQPage.vue");
@@ -30,19 +24,7 @@ const AuctionPaymentCancelled = () =>
   import("@/pages/AuctionPaymentCancelled.vue");
 const CreditCollectionPage = () => import("@/pages/CreditCollectionPage.vue");
 
-export enum PageNames {
-  START_PAGE = "start_page",
-  CERTIFICATES = "certificates",
-  FAQ = "faq",
-  LISTINGS = "listings",
-  LISTING = "listing",
-  LOGIN_CALLBACK = "login_callback",
-  USER_PROFILE = "user_profile",
-  PAYMENT_SUCCESSFUL = "payment_successful",
-  PAYMENT_CANCELLED = "payment_cancelled",
-  REGISTRY = "registry",
-  UNKNOWN = "unknown",
-}
+export { PageNames };
 
 const router = createRouter({
   scrollBehavior: (to, from) => {
