@@ -47,7 +47,7 @@ export enum PageNames {
 const router = createRouter({
   scrollBehavior: (to, from) => {
     // always scroll to top after navigation
-    if (to.name === "FAQPage" && to.name === from.name) {
+    if (to.name === PageNames.FAQ && to.name === from.name) {
       return undefined;
     }
     return { top: 0 };
@@ -66,6 +66,7 @@ const router = createRouter({
     },
     {
       path: "/faq",
+      name: PageNames.FAQ,
       component: FAQPage,
     },
     {
