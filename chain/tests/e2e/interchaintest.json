@@ -4,7 +4,7 @@
   "ChainSets": [
     [
       {
-        "Name": "gaia",
+        "Name": "osmosis",
         "Version": "latest"
       },
       {
