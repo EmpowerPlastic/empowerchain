@@ -147,7 +147,7 @@ const handleGetMPWR = () => {
         <div class="flex flex-row justify-around text-white text-title18">
           <router-link :to="{ name: PageNames.START_PAGE }">Home</router-link>
           <button type="button" @click="handleGetMPWR">Get <b>$MPWR</b></button>
-          <button type="button" @click="toast.info('Coming soon!')">FAQ</button>
+          <router-link :to="{ name: PageNames.FAQ }">FAQ</router-link>
         </div>
 
         <div class="flex flex-row justify-end">
@@ -377,10 +377,7 @@ const handleGetMPWR = () => {
             </button>
           </li>
           <li>
-            <!-- <a href="/faq">FAQ</a> -->
-            <button type="button" @click="toast.info('Coming soon!')">
-              FAQ
-            </button>
+            <router-link :to="{ name: PageNames.FAQ }">FAQ</router-link>
           </li>
         </ul>
       </div>

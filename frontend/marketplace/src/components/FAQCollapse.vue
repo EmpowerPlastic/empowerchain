@@ -42,7 +42,7 @@ const handleClick = () => {
   <div
     :id="props.id"
     ref="rootElRef"
-    class="collapse group collapse-arrow mb-1"
+    class="collapse group collapse-arrow mb-3"
   >
     <input
       type="radio"
@@ -51,17 +51,20 @@ const handleClick = () => {
       :onClick="handleClick"
     />
     <div
-      class="flex collapse-title text-white bg-mediumGray"
+      class="flex flex-row items-center collapse-title text-white bg-mediumGray"
       :onClick="handleClick"
     >
       <div
-        class="w-7 h-7 border-2 border-white rounded-full mr-3"
+        class="min-w-[20px] h-[20px] border-2 border-white rounded-full mr-3"
         :class="{ 'bg-greenPrimary': isChecked }"
       />
-      {{ title }}
+      <p>{{ title }}</p>
     </div>
     <div class="collapse-content bg-lightBlack">
-      <p class="text-textWhite px-10 py-3">{{ content }}</p>
+      <p
+        class="text-textWhite md:px-10 px-3 pt-5 pb-2 whitespace-pre-line"
+        v-html="content"
+      />
     </div>
   </div>
 </template>
