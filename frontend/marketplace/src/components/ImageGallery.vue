@@ -51,7 +51,7 @@ const handleActiveImage = (url: string) => {
             image-class="rounded-sm h-full w-full object-contain"
             :id="url"
             :key="url"
-            :loading="showSpinner"
+            :showSpinner="showSpinner"
           />
         </div>
       </div>
