@@ -138,10 +138,6 @@ const handleBuyCredits = async (retirererName: string) => {
         gasPrice: GasPrice.fromString("0.025umpwr"),
       },
     );
-    const fee = {
-      amount: [{ amount: "100000", denom: "umpwr" }],
-      gas: "250000",
-    };
     const contract =
       new contracts.PlasticCreditMarketplace.PlasticCreditMarketplaceClient(
         cosmWasmClient,
