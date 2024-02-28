@@ -62,9 +62,8 @@ const handleClick = () => {
       @click="handleClick"
     >
       <figure>
-        <CustomSpinner v-if="showSpinner" :visible="showSpinner" />
         <CustomImage
-          v-else
+          :showSpinner="showSpinner"
           image-class="h-[250px] w-full"
           :src="convertIPFStoHTTPS(data.ipfsImage) || auctionCard"
         />
@@ -97,6 +96,5 @@ const handleClick = () => {
         </div>
       </div>
     </router-link>
-
   </div>
 </template>

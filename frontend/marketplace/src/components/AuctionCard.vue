@@ -8,7 +8,6 @@ import { RouterLink } from "vue-router";
 import { PageNames } from "@/router";
 import CustomImage from "@/components/CustomImage.vue";
 import tracking, { TrackEvents } from "@/utils/analytics";
-import CustomSpinner from "./CustomSpinner.vue";
 import { useListingVolume } from "@/utils/useListingVolume";
 export interface AuctionCardProps {
   auctionData: any;
@@ -42,20 +41,16 @@ const handleViewDetailsClick = () => {
     :to="{ name: PageNames.LISTING, params: { id: props.auctionData.id } }"
     class="bg-lightBlack rounded-lg md:rounded-sm flex flex-col"
   >
-    <div v-if="showSpinner">
-      <CustomSpinner :visible="showSpinner" />
-    </div>
-    <div v-else="!showSpinner">
-      <CustomImage
-        image-class="h-[250px] w-full rounded-lg"
-        :src="
-          convertIPFStoHTTPS(
-            auctionData?.creditCollection?.creditData?.nodes[0].mediaFiles
-              ?.nodes[0].url,
-          ) || auctionCard
-        "
-      />
-    </div>
+    <CustomImage
+      image-class="h-[250px] w-full rounded-lg"
+      :showSpinner="showSpinner"
+      :src="
+        convertIPFStoHTTPS(
+          auctionData?.creditCollection?.creditData?.nodes[0].mediaFiles
+            ?.nodes[0].url,
+        ) || auctionCard
+      "
+    />
     <div class="grid grid-cols-2 p-3 gap-4 grow">
       <div>
         <div>

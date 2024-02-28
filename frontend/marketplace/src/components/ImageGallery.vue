@@ -25,37 +25,33 @@ const handleActiveImage = (url: string) => {
 };
 </script>
 <template>
-  <div class="grid grid-cols-6 gap-5 max-h-[500px] my-5 w-full">
-    <div class="col-span-4 w-full">
-      <div v-if="showSpinner" class="rounded-sm h-[500px] w-full object-none"> 
-        <CustomSpinner :visible="showSpinner" />
-      </div>
-      <div v-else="!showSpinner">
+  <div class="flex flex-row h-[520px] my-5">
+    <div class="flex w-[75%] mr-5">
+      <div class="flex-auto bg-dividerGray rounded-sm">
         <CustomImage
           :src="activeImageURL"
-          image-class="rounded-sm h-[500px] w-full object-none"
+          image-class="rounded-sm h-full w-full object-contain"
+          :showSpinner="showSpinner"
         />
       </div>
     </div>
-    <div class="max-h-[500px] px-3 col-span-2 overflow-auto">
-      <button class="btn btn-circle scroll-button">
-        <img src="../assets/scrollTopIcon.svg" />
-      </button>
-      <button class="btn absolute btn btn-circle scroll-button mt-[455px]">
-        <img src="../assets/scrollBottomIcon.svg" />
-      </button>
-      <div class="grid grid-cols-2 gap-5">
-        <div v-if="showSpinner" class="rounded-sm h-[150px] w-full cursor-pointer">
-          <CustomSpinner :visible="showSpinner" />
-        </div>
-        <div v-if="showSpinner === false">
+
+    <div class="flex w-[25%] bg-dividerGray rounded-sm p-2">
+      <div
+        class="flex-auto grid auto-rows-min grid-cols-2 gap-4 h-full overflow-auto"
+      >
+        <div
+          v-for="url in [...imageArray]"
+          class="h-[160px] overflow-hidden bg-darkGray rounded-sm cursor-pointer"
+          :key="url"
+        >
           <CustomImage
             @click="handleActiveImage(url)"
             :src="url"
-            image-class="rounded-sm h-[150px] w-full cursor-pointer"
-            v-for="url in imageArray"
+            image-class="rounded-sm h-full w-full object-contain"
             :id="url"
             :key="url"
+            :loading="showSpinner"
           />
         </div>
       </div>

@@ -13,7 +13,6 @@ import { formatDenom } from "@/utils/wallet-utils";
 import { computed, onMounted, ref } from "vue";
 import CustomImage from "@/components/CustomImage.vue";
 import tracking, { TrackEvents } from "@/utils/analytics";
-import CustomSpinner from "@/components/CustomSpinner.vue";
 
 export interface AuctionResultsCardProps {
   cardData: MarketplaceListing & {
@@ -68,15 +67,11 @@ const handleViewDetailsClick = () => {
   <div
     class="bg-auctionBackground md:bg-lightBlack rounded-lg font-Inter text-white my-5 md:p-3 md:grid md:grid-cols-5 min-h-[180px]"
   >
-    <div v-if="showSpinner">
-      <CustomSpinner :visible="showSpinner" />
-    </div>
-    <div v-else="!showSpinner">
-      <CustomImage
-        :src="cardDetailsList?.thumbnailUrl || auctionCard"
-        image-class="max-h-[200px] w-full rounded-sm"
-      />
-    </div>
+    <CustomImage
+      :src="cardDetailsList?.thumbnailUrl || auctionCard"
+      image-class="max-h-[200px] w-full rounded-sm"
+      :showSpinner="showSpinner"
+    />
 
     <!--      Details for Mobile UI-->
     <div class="grid grid-cols-2 p-5 gap-4 md:hidden">

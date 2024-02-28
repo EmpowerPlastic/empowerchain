@@ -486,7 +486,7 @@ const generateQRCode = async () => {
     class="w-full rounded-lg bg-borderGray md:grid md:grid-cols-3 md:p-2 md:bg-lightBlack my-3"
   >
     <CustomImage
-      v-if="image?.url"
+      :showSpinner="!image?.url"
       image-class="h-48 w-full rounded-lg max-w-sm"
       :src="convertIPFStoHTTPS(image?.url) || auctionCard"
     />
