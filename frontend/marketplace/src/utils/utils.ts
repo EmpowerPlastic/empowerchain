@@ -1,5 +1,5 @@
-import type { MaterialProperty } from "@/types/GraphqlSchema";
 import { HTTPS_FILE_URL } from "@/config/config";
+import type { MaterialProperty } from "@/types/GraphqlSchema";
 
 export const convertIPFStoHTTPS = (url: string) => {
   const IPFS_URL = url.split("//")[1];
@@ -150,7 +150,7 @@ export const calculateXPosition = (
 };
 
 export const ipfsToHttpsProtocol = (url: string) => {
-  return url.replace("ipfs://", "https://ipfs.empowerchain.io/ipfs/");
+  return url.replace("ipfs://", "https://empowerchain.mypinata.cloud/ipfs/");
 };
 
 export const upperCaseFirstLetter = (string: string) => {
