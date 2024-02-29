@@ -39,7 +39,7 @@ defineExpose({
         <input
           type="text"
           placeholder="Certificate holder name"
-          class="input input-bordered w-full text-white"
+          class="input input-bordered w-full text-white bg-lightGray"
           v-model="certificateHolder"
         />
         <div class="label" v-if="isCertificateHolderTooLong">
