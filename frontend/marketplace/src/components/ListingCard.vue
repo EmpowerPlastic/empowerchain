@@ -7,12 +7,14 @@ import CustomImage from "@/components/CustomImage.vue";
 import tracking, { TrackEvents } from "@/utils/analytics";
 import CustomSpinner from "@/components/CustomSpinner.vue";
 import { findPlasticTypeInMaterial } from "@/utils/utils";
+import { formatDenom } from "@/utils/wallet-utils";
 export interface ListingCardProps {
   listingData: any;
   class?: string;
 }
 const props = defineProps<ListingCardProps>();
 const showSpinner = ref(true);
+const denom = ref("");
 
 const data = ref({
   id: props.listingData?.id,
@@ -39,6 +41,7 @@ const subheader = computed(() => {
 });
 
 onMounted(async () => {
+  denom.value = await formatDenom(props.listingData?.pricePerCreditDenom);
   if (
     props.listingData?.creditCollection?.creditData?.nodes[0].mediaFiles
       ?.nodes[0].url !== ""
@@ -79,7 +82,7 @@ const handleClick = () => {
         <div class="card-actions justify-between mt-4">
           <dl>
             <dd class="text-title26 font-bold">
-              {{ listingData?.pricePerCreditAmount / 1000000 }} USD
+              {{ listingData?.pricePerCreditAmount / 1000000 }} {{ denom }}
             </dd>
             <dt class="text-title11 md:text-title12 font-light">
               per kilo removed
@@ -97,6 +100,5 @@ const handleClick = () => {
         </div>
       </div>
     </router-link>
-
   </div>
 </template>

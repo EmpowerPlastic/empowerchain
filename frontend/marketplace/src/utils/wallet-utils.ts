@@ -54,6 +54,9 @@ export async function formatDenom(denom: string): Promise<string> {
     }
   }
   denom = denom.slice(1);
+  if (denom === "USDC") {
+    denom = "USD";
+  }
   return denom.toUpperCase();
 }
 
