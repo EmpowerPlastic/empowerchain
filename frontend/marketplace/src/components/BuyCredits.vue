@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { contracts, empowerchain } from "@empower-plastic/empowerjs";
-import { GasPrice } from "@cosmjs/stargate";
-import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
+import BuyButton from "@/components/BuyButton.vue";
+import Tooltip from "@/components/ui/Tooltip.vue";
 import {
   CHAIN_ID,
   MARKETPLACE_CONTRACT,
@@ -10,16 +8,23 @@ import {
   PC_BACKEND_ENDPOINT_API,
   RPC_ENDPOINT,
 } from "@/config/config";
-import { onMounted, ref, watch, computed } from "vue";
-import { getWallet, walletConnected } from "@/utils/wallet-utils";
-import { formatDenom, resolveSdkError } from "@/utils/wallet-utils";
-import BuyButton from "@/components/BuyButton.vue";
-import { useFetcher, authHeader } from "@/utils/fetcher";
 import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
-import { useNotifyer } from "@/utils/notifyer";
-import Tooltip from "@/components/ui/Tooltip.vue";
+import { authHeader, useFetcher } from "@/utils/fetcher";
 import { log } from "@/utils/logger";
+import { useNotifyer } from "@/utils/notifyer";
+import {
+  formatDenom,
+  getWallet,
+  resolveSdkError,
+  walletConnected,
+} from "@/utils/wallet-utils";
+import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { GasPrice } from "@cosmjs/stargate";
+import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
+import { contracts, empowerchain } from "@empower-plastic/empowerjs";
+import BigNumber from "bignumber.js";
+import { computed, onMounted, ref, watch } from "vue";
 
 export interface BuyCreditsProps {
   availableCredits: number;
@@ -39,6 +44,7 @@ const showButtonSpinner = ref(false);
 const insufficientBalance = ref(false);
 const coinFormatted = ref("");
 const currentBalance = ref(Number.MAX_SAFE_INTEGER);
+const currentPrice = ref(0);
 
 const availableCreditsString = computed<string>(() => {
   return `${props.availableCredits}/${props.initialCredits}`;
@@ -51,12 +57,14 @@ watch(isWalletConnected, async (newVal) => {
 });
 
 watch(amount, (newVal) => {
+  currentPrice.value = calculatePrice(newVal);
   checkBalanceForPurchase(newVal);
 });
 
 watch(props, async (newVal) => {
   if (newVal.selectedCoin) {
     coinFormatted.value = await formatDenom(newVal.selectedCoin);
+    currentPrice.value = calculatePrice(amount.value);
   }
 });
 
@@ -93,11 +101,21 @@ onMounted(async () => {
 });
 
 const checkBalanceForPurchase = (amount: number) => {
-  if (amount * props.pricePerCredit * 1000000 > currentBalance.value) {
+  if (
+    new BigNumber(currentPrice.value).times(1000000).toNumber() >
+    currentBalance.value
+  ) {
     insufficientBalance.value = true;
   } else {
     insufficientBalance.value = false;
   }
+};
+
+const calculatePrice = (amount: number) => {
+  if (!amount) {
+    return 0;
+  }
+  return new BigNumber(amount).times(props.pricePerCredit).toNumber();
 };
 
 const handleBuyCredits = async (retirererName: string) => {
@@ -109,7 +127,7 @@ const handleBuyCredits = async (retirererName: string) => {
   showButtonSpinner.value = true;
   try {
     const wallet = getWallet();
-    const offlineSigner = wallet.getOfflineSigner(CHAIN_ID);
+    const offlineSigner = await wallet.getOfflineSignerAuto(CHAIN_ID);
     const accounts = await offlineSigner.getAccounts();
     const tmClient = await Tendermint37Client.connect(RPC_ENDPOINT);
     // TODO replace with empowerjs getter when path registry issue is solved
@@ -120,10 +138,6 @@ const handleBuyCredits = async (retirererName: string) => {
         gasPrice: GasPrice.fromString("0.025umpwr"),
       },
     );
-    const fee = {
-      amount: [{ amount: "100000", denom: "umpwr" }],
-      gas: "250000",
-    };
     const contract =
       new contracts.PlasticCreditMarketplace.PlasticCreditMarketplaceClient(
         cosmWasmClient,
@@ -138,7 +152,7 @@ const handleBuyCredits = async (retirererName: string) => {
         retire: true,
         retiringEntityName: retirererName,
       },
-      fee,
+      "auto",
       "",
       [
         {
@@ -244,7 +258,7 @@ const handleCardPayment = async (retirererName: string) => {
             />
           </div>
           <p class="text-title18 text-subLabel text-right hidden md:block mr-3">
-            {{ amount >= 0 ? pricePerCredit * amount : "0" }}
+            {{ currentPrice }}
           </p>
         </div>
         <div class="flex flex-col flex-wrap w-full">

@@ -23,6 +23,7 @@
     "@vue/apollo-composable": "4.0.1",
     "@vue/apollo-option": "4.0.0",
     "@vuepic/vue-datepicker": "7.4.1",
+    "bignumber.js": "^9.1.2",
     "daisyui": "4.6.0",
     "graphql": "16.8.1",
     "graphql-tag": "2.12.6",
