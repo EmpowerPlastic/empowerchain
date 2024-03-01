@@ -141,7 +141,8 @@ const handleClick = () => {
           <dt class="details-title mb-5">Price per kg removed</dt>
           <dd class="grow grid content-between">
             <span class="text-title32 font-bold"
-              >{{ listingData?.pricePerCreditAmount / 1000000 }} USD</span
+              >{{ listingData?.pricePerCreditAmount / 1000000 }}
+              {{ denom }}</span
             >
             <dl class="flex flex-col">
               <dd class="text-title26 font-bold">
