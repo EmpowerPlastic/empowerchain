@@ -10,7 +10,7 @@ import { useRoute } from "@/router";
 import { useQuery } from "@vue/apollo-composable";
 import { onMounted, ref, watch } from "vue";
 import { GET_MARKETPLACE_LISTING } from "@/graphql/queries";
-import { formatAuctionDetails } from "@/utils/formatAuctionDetails";
+import { formatListingDetails } from "@/utils/formatListingDetails";
 
 interface AuctionDetails {
   applicant: string;
@@ -62,7 +62,7 @@ const getAuctionDetails = (id: string | string[]) => {
           loading,
           error,
         };
-        auctionDetails.value = formatAuctionDetails(
+        auctionDetails.value = formatListingDetails(
           result.value.marketplaceListings?.nodes[0].creditCollection.creditData
             .nodes,
           parseInt(
@@ -191,3 +191,4 @@ ul li::before {
   margin-left: -1em;
 }
 </style>
+@/utils/formatListingDetails
