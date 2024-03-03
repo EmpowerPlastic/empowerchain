@@ -8,7 +8,7 @@ import CustomGoogleMap from "@/components/CustomGoogleMap.vue";
 import ImageGallery from "@/components/ImageGallery.vue";
 import { useRoute } from "@/router";
 import { useQuery } from "@vue/apollo-composable";
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref } from "vue";
 import { GET_MARKETPLACE_LISTING } from "@/graphql/queries";
 import { formatListingDetails } from "@/utils/formatListingDetails";
 

@@ -65,7 +65,7 @@ const applicantData: any = useQuery(gql`
 `);
 </script>
 <template>
-  <!--    Search Auction Mobile-->
+  <!--    Search Listings Mobile-->
   <div
     class="md:hidden input-group w-full mb-5 bg-white rounded-full !rounded-lg px-1 border-none font-Inter"
   >
@@ -170,7 +170,7 @@ const applicantData: any = useQuery(gql`
     <div class="flex flex-row bg-darkGray w-full p-4 rounded-t-sm">
       <input
         class="w-full rounded-sm bg-darkGray px-3 h-12 text-lightGray text-title24"
-        placeholder="Search auctions"
+        placeholder="Search projects"
         v-model="filterValues.searchTerm"
       />
       <button
