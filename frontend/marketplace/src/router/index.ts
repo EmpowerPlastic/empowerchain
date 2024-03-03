@@ -50,12 +50,12 @@ const router = createRouter({
       component: FAQPage,
     },
     {
-      path: "/listings",
+      path: "/projects",
       name: PageNames.LISTINGS,
       component: Listings,
     },
     {
-      path: "/listings/:id",
+      path: "/projects/:id",
       name: PageNames.LISTING,
       component: Listing,
       meta: {
