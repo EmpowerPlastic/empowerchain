@@ -14,14 +14,12 @@ const HomePage = () => import("@/pages/HomePage.vue");
 const FAQPage = () => import("@/pages/FAQPage.vue");
 const CertificatesAndCreditsPage = () =>
   import("@/pages/CertificatesAndCreditsPage.vue");
-const AuctionPage = () => import("@/pages/AuctionPage.vue");
-const AuctionDetails = () => import("@/pages/AuctionDetails.vue");
-const CallbackView = () => import("@/pages/CallbackView.vue");
-const UserProfile = () => import("@/pages/UserProfile.vue");
-const AuctionPaymentSuccessful = () =>
-  import("@/pages/AuctionPaymentSuccessful.vue");
-const AuctionPaymentCancelled = () =>
-  import("@/pages/AuctionPaymentCancelled.vue");
+const Listings = () => import("@/pages/ListingsPage.vue");
+const Listing = () => import("@/pages/ListingPage.vue");
+const CallbackView = () => import("@/pages/LoginCallbackPage.vue");
+const UserProfile = () => import("@/pages/UserProfilePage.vue");
+const PaymentSuccessful = () => import("@/pages/PaymentSuccessfulPage.vue");
+const PaymentCancelled = () => import("@/pages/PaymentCancelledPage.vue");
 const CreditCollectionPage = () => import("@/pages/CreditCollectionPage.vue");
 
 export { PageNames };
@@ -52,14 +50,14 @@ const router = createRouter({
       component: FAQPage,
     },
     {
-      path: "/auction",
+      path: "/listings",
       name: PageNames.LISTINGS,
-      component: AuctionPage,
+      component: Listings,
     },
     {
-      path: "/auction/:id",
+      path: "/listings/:id",
       name: PageNames.LISTING,
-      component: AuctionDetails,
+      component: Listing,
       meta: {
         pageViewEvent: (to: RouteLocationNormalized) => {
           const trackProps = {
@@ -85,12 +83,12 @@ const router = createRouter({
     {
       path: "/purchase-successful",
       name: PageNames.PAYMENT_SUCCESSFUL,
-      component: AuctionPaymentSuccessful,
+      component: PaymentSuccessful,
     },
     {
       path: "/purchase-cancelled",
       name: PageNames.PAYMENT_CANCELLED,
-      component: AuctionPaymentCancelled,
+      component: PaymentCancelled,
     },
     {
       path: "/registry/:denom",

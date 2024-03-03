@@ -7,7 +7,8 @@ import ImageCarousel from "@/components/ImageCarousel.vue";
 import ImageGallery from "@/components/ImageGallery.vue";
 import ProjectDetailContent from "@/components/ProjectDetailContent.vue";
 import ProjectDetailMaterial from "@/components/ProjectDetailMaterial.vue";
-import { useRoute } from "@/router";
+import { useRoute, RouterLink } from "@/router";
+import { PageNames } from "@/router/pageNames";
 import {
   convertIPFStoHTTPS,
   uniqueMaterials,
@@ -160,8 +161,8 @@ watch(currentId, handlePageLoadAndCollectionIdChange, { immediate: true });
   <div v-if="!showSpinner" class="p-5 min-h-[60vh] text-white font-Inter">
     <!--  Title Section-->
     <p class="text-title18 mb-5">
-      <a href="/auction">Auctions</a
-      ><span class="text-subTextGray">/ Auction Details</span>
+      <router-link :to="{ name: PageNames.LISTINGS }">Projects</router-link>
+      <span class="text-subTextGray">/ Project details</span>
     </p>
     <h1 class="text-title38">
       {{
