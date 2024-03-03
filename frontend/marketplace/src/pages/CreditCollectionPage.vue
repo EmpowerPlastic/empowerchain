@@ -12,7 +12,7 @@ import { onMounted, ref } from "vue";
 import { GET_MARKETPLACE_LISTING } from "@/graphql/queries";
 import { formatListingDetails } from "@/utils/formatListingDetails";
 
-interface AuctionDetails {
+interface ListingDetails {
   applicant: string;
   location: string[];
   material: MaterialProperty[][];
@@ -34,7 +34,7 @@ const router = useRoute();
 
 const data = ref();
 const showSpinner = ref(true);
-const auctionDetails = ref<AuctionDetails>({
+const listingDetails = ref<ListingDetails>({
   applicant: "",
   location: [""],
   material: [],
@@ -46,7 +46,7 @@ const auctionDetails = ref<AuctionDetails>({
   plasticType: "",
 });
 
-const getAuctionDetails = (id: string | string[]) => {
+const getListingDetails = (id: string | string[]) => {
   try {
     const { result, loading, error, onResult } = useQuery(
       GET_MARKETPLACE_LISTING,
@@ -62,7 +62,7 @@ const getAuctionDetails = (id: string | string[]) => {
           loading,
           error,
         };
-        auctionDetails.value = formatListingDetails(
+        listingDetails.value = formatListingDetails(
           result.value.marketplaceListings?.nodes[0].creditCollection.creditData
             .nodes,
           parseInt(
@@ -78,12 +78,12 @@ const getAuctionDetails = (id: string | string[]) => {
     });
     showSpinner.value = false;
   } catch (error) {
-    console.log("Error in getAuctionDetails", error);
+    console.log("Error in getListingDetails", error);
   }
 };
 
 onMounted(() => {
-  getAuctionDetails(router.params.denom);
+  getListingDetails(router.params.denom);
 });
 </script>
 <template>
@@ -98,15 +98,15 @@ onMounted(() => {
         data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData
           ?.nodes[0].applicantDataByCreditDataId.nodes[0].name
       }}
-      - {{ auctionDetails.plasticType }}
+      - {{ listingDetails.plasticType }}
     </h1>
 
     <!--    Gallery-->
     <ImageCarousel
       class="md:hidden my-5"
-      :image-array="auctionDetails?.image"
+      :image-array="listingDetails?.image"
     />
-    <ImageGallery class="hidden md:flex" :image-array="auctionDetails?.image" />
+    <ImageGallery class="hidden md:flex" :image-array="listingDetails?.image" />
 
     <!--    Project Details-->
     <div class="flex flex-col md:flex-row w-full mt-5 justify-between">
@@ -122,25 +122,25 @@ onMounted(() => {
         />
         <ProjectDetailMaterial
           label="Material"
-          :materials="auctionDetails?.material"
+          :materials="listingDetails?.material"
         />
         <ProjectDetailContent label="Kgs per credit" value="1" />
         <ProjectDetailContent
           label="Registration date"
-          :value="auctionDetails?.registrationDate"
+          :value="listingDetails?.registrationDate"
         />
         <ProjectDetailContent
           label="Location"
-          :value="auctionDetails?.location"
+          :value="listingDetails?.location"
           list
         />
         <ProjectDetailContent
           label="Collection organisation"
-          :value="auctionDetails?.applicant"
+          :value="listingDetails?.applicant"
         />
         <ProjectDetailContent
           label="Volume"
-          :value="auctionDetails?.volume + 'kg'"
+          :value="listingDetails?.volume + 'kg'"
         />
       </div>
 
@@ -148,7 +148,7 @@ onMounted(() => {
       <div
         class="mt-5 md:mt-0 md:w-[60%] md:ml-5 h-[330px] md:h-auto rounded-lg relative"
       >
-        <CustomGoogleMap :locations="auctionDetails?.locationPointers" />
+        <CustomGoogleMap :locations="listingDetails?.locationPointers" />
       </div>
     </div>
 
@@ -172,7 +172,7 @@ onMounted(() => {
       <ul class="pl-5">
         <li
           class="text-title14 text-greenPrimary underline truncate"
-          v-for="file in auctionDetails?.file"
+          v-for="file in listingDetails?.file"
           :key="file.name"
         >
           <a target="_blank" :href="file.url">{{ file.name }}</a>

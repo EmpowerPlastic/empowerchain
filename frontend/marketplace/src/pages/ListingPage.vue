@@ -18,7 +18,7 @@ import { useQuery } from "@vue/apollo-composable";
 import { ref, watch, computed } from "vue";
 import { GET_MARKETPLACE_LISTING } from "@/graphql/queries";
 
-interface AuctionDetails {
+interface ListingDetails {
   applicant: string;
   location: string[];
   material: MaterialProperty[][];
@@ -43,7 +43,7 @@ const data = ref();
 const showSpinner = ref(true);
 const denom = ref("");
 const owner = ref("");
-const auctionDetails = ref<AuctionDetails>({
+const listingDetails = ref<ListingDetails>({
   applicant: "",
   location: [""],
   material: [],
@@ -112,7 +112,7 @@ const getDetailsList = (data: any, materialVolume: number) => {
   };
 };
 
-const getAuctionDetails = (id: string | string[]) => {
+const getListingDetails = (id: string | string[]) => {
   const { result, loading, error, onResult } = useQuery(
     GET_MARKETPLACE_LISTING,
     {
@@ -130,7 +130,7 @@ const getAuctionDetails = (id: string | string[]) => {
   };
 
   onResult(({ data }) => {
-    auctionDetails.value = getDetailsList(
+    listingDetails.value = getDetailsList(
       data.marketplaceListings?.nodes[0].creditCollection.creditData.nodes,
       parseInt(
         data.marketplaceListings?.nodes[0].creditCollection.activeAmount,
@@ -150,7 +150,7 @@ const getAuctionDetails = (id: string | string[]) => {
 
 const handlePageLoadAndCollectionIdChange = (newId: string, oldId?: string) => {
   if (newId && newId !== oldId) {
-    getAuctionDetails(newId);
+    getListingDetails(newId);
   }
 };
 
@@ -176,9 +176,9 @@ watch(currentId, handlePageLoadAndCollectionIdChange, { immediate: true });
     <!--    Gallery-->
     <ImageCarousel
       class="md:hidden my-5"
-      :image-array="auctionDetails?.image"
+      :image-array="listingDetails?.image"
     />
-    <ImageGallery class="hidden md:flex" :image-array="auctionDetails?.image" />
+    <ImageGallery class="hidden md:flex" :image-array="listingDetails?.image" />
 
     <!--    Buy Credits-->
     <BuyCredits
@@ -209,25 +209,25 @@ watch(currentId, handlePageLoadAndCollectionIdChange, { immediate: true });
         />
         <ProjectDetailMaterial
           label="Material"
-          :materials="auctionDetails?.material"
+          :materials="listingDetails?.material"
         />
         <ProjectDetailContent label="Kgs per credit" value="1" />
         <ProjectDetailContent
           label="Registration date"
-          :value="auctionDetails?.registrationDate"
+          :value="listingDetails?.registrationDate"
         />
         <ProjectDetailContent
           label="Location"
-          :value="auctionDetails?.location"
+          :value="listingDetails?.location"
           list
         />
         <ProjectDetailContent
           label="Collection organisation"
-          :value="auctionDetails?.applicant"
+          :value="listingDetails?.applicant"
         />
         <ProjectDetailContent
           label="Volume"
-          :value="auctionDetails?.volume + 'kg'"
+          :value="listingDetails?.volume + 'kg'"
         />
       </div>
 
@@ -235,7 +235,7 @@ watch(currentId, handlePageLoadAndCollectionIdChange, { immediate: true });
       <div
         class="mt-5 md:mt-0 md:w-[60%] md:ml-5 h-[330px] md:h-auto rounded-lg relative"
       >
-        <CustomGoogleMap :locations="auctionDetails?.locationPointers" />
+        <CustomGoogleMap :locations="listingDetails?.locationPointers" />
       </div>
     </div>
 
@@ -259,7 +259,7 @@ watch(currentId, handlePageLoadAndCollectionIdChange, { immediate: true });
       <ul class="pl-5">
         <li
           class="text-title14 text-greenPrimary underline"
-          v-for="file in auctionDetails?.file"
+          v-for="file in listingDetails?.file"
           :key="file.name"
         >
           <a target="_blank" :href="file.url">{{ file.name }}</a>

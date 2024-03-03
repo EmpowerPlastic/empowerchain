@@ -22,7 +22,7 @@ interface AuctionStatusResponse {
   id: string;
 }
 
-const auctionStatus = ref<PaymentStatus | undefined>(undefined);
+const paymentStatus = ref<PaymentStatus | undefined>(undefined);
 const isCheckingStatus = ref(false);
 const route = useRoute();
 
@@ -34,7 +34,7 @@ const handleFetchResponse = async (response: Response | null) => {
 
   try {
     const body = (await response.json()) as AuctionStatusResponse;
-    auctionStatus.value = body.status;
+    paymentStatus.value = body.status;
     if (body.status === PaymentStatus.COMPLETE) {
       return false;
     }
@@ -45,7 +45,7 @@ const handleFetchResponse = async (response: Response | null) => {
   return true;
 };
 
-const checkAuctionStatus = async () => {
+const checkPaymentStatus = async () => {
   const { getAccessToken } = useAuth();
   const accessToken = await getAccessToken(PC_BACKEND_ENDPOINT);
   const paymentId = route.query.paymentId as string;
@@ -65,14 +65,14 @@ const checkAuctionStatus = async () => {
     );
   } catch (e) {
     console.log("e", e);
-    auctionStatus.value = PaymentStatus.ERROR;
+    paymentStatus.value = PaymentStatus.ERROR;
   } finally {
     isCheckingStatus.value = false;
   }
 };
 
 onMounted(async () => {
-  await checkAuctionStatus();
+  await checkPaymentStatus();
 });
 </script>
 
@@ -85,13 +85,13 @@ onMounted(async () => {
       Processing...
     </h1>
     <h1
-      v-if="auctionStatus === PaymentStatus.COMPLETE"
+      v-if="paymentStatus === PaymentStatus.COMPLETE"
       class="text-white text-title38 md:mt-10 mb-10 text-center"
     >
       Payment confirmation
     </h1>
     <h1
-      v-else-if="auctionStatus === PaymentStatus.ERROR"
+      v-else-if="paymentStatus === PaymentStatus.ERROR"
       class="text-white text-title38 md:mt-10 mb-10 text-center"
     >
       Transaction error
@@ -104,7 +104,7 @@ onMounted(async () => {
     </h1>
     <div class="pointer-events-none">
       <Vue3Lottie
-        v-if="auctionStatus === PaymentStatus.COMPLETE"
+        v-if="paymentStatus === PaymentStatus.COMPLETE"
         class="absolute top-0"
         :animation-data="FireworksAnimation"
         :loop="false"
@@ -125,14 +125,14 @@ onMounted(async () => {
             class="bg-white/10 rounded-lg md:rounded-sm p-4 max-w-xl text-center"
           >
             <span
-              v-if="auctionStatus === PaymentStatus.COMPLETE"
+              v-if="paymentStatus === PaymentStatus.COMPLETE"
               class="font-Inter text-white text-title18"
             >
               Your plastic credit purchase was successful and a Plastic Credit
               Offset Certificate has been generated for you.
             </span>
             <span
-              v-else-if="auctionStatus === PaymentStatus.ERROR"
+              v-else-if="paymentStatus === PaymentStatus.ERROR"
               class="font-Inter text-white text-title18"
             >
               Transaction couldn't be completed. You will receive a refund
@@ -148,7 +148,7 @@ onMounted(async () => {
               of your transaction.
             </span>
             <a
-              v-if="auctionStatus === PaymentStatus.COMPLETE"
+              v-if="paymentStatus === PaymentStatus.COMPLETE"
               class="mt-5 text-white btn btn-ghost btn-block normal-case bg-greenPrimary hover:bg-greenDark text-title24 lg:text-title32 lg:btn-lg p-0 px-12 font-normal md:max-w-lg"
               href="/certificate"
               >See your certificates</a
