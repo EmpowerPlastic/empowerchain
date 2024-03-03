@@ -17,7 +17,7 @@ import {
 import { useQuery } from "@vue/apollo-composable";
 import { ref, watch, computed } from "vue";
 import { GET_MARKETPLACE_LISTING } from "@/graphql/queries";
-
+import { useHead } from "@/utils/useHead";
 interface ListingDetails {
   applicant: string;
   location: string[];
@@ -155,6 +155,22 @@ const handlePageLoadAndCollectionIdChange = (newId: string, oldId?: string) => {
 };
 
 watch(currentId, handlePageLoadAndCollectionIdChange, { immediate: true });
+
+const getProjectName = () =>
+  data.value?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData
+    ?.nodes[0].projectName;
+const projectName = computed(getProjectName);
+useHead({
+  title: projectName,
+  meta: [
+    {
+      name: "description",
+      content: () =>
+        "Support environmental sustainability by buying plastic credits from " +
+        projectName.value,
+    },
+  ],
+});
 </script>
 <template>
   <CustomSpinner :visible="showSpinner" />
@@ -162,14 +178,10 @@ watch(currentId, handlePageLoadAndCollectionIdChange, { immediate: true });
     <!--  Title Section-->
     <p class="text-title18 mb-5">
       <router-link :to="{ name: PageNames.LISTINGS }">Projects</router-link>
-      <span class="text-subTextGray">/ Project details</span>
+      <span class="text-subTextGray"> / Project details</span>
     </p>
     <h1 class="text-title38">
-      {{
-        data?.result?.marketplaceListings?.nodes[0].creditCollection?.creditData
-          ?.nodes[0].applicantDataByCreditDataId.nodes[0].name
-      }}
-      - {{ plasticType }}
+      {{ projectName }}
     </h1>
     <!--    <p class="text-title18 text-subTextGray">Sri Lanka</p>-->
 
