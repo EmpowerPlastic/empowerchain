@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import router from "@/router";
 import { convertIPFStoHTTPS } from "@/utils/utils";
-import auctionCard from "@/assets/auctionCard.png";
+import defaultListingImage from "@/assets/defaultListingImage.png";
 import { formatDenom } from "@/utils/wallet-utils";
 import { onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
@@ -45,14 +45,14 @@ const handleViewDetailsClick = () => {
     <div v-if="showSpinner">
       <CustomSpinner :visible="showSpinner" />
     </div>
-    <div v-else="!showSpinner">
+    <div v-else>
       <CustomImage
         image-class="h-[250px] w-full rounded-lg"
         :src="
           convertIPFStoHTTPS(
             auctionData?.creditCollection?.creditData?.nodes[0].mediaFiles
               ?.nodes[0].url,
-          ) || auctionCard
+          ) || defaultListingImage
         "
       />
     </div>

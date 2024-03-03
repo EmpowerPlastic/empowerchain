@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { MarketplaceListing } from "@/types/GraphqlSchema";
 import router from "@/router";
-import auctionCard from "@/assets/auctionCard.png";
+import defaultListingImage from "@/assets/defaultListingImage.png";
 import type { MaterialProperty } from "@/types/GraphqlSchema";
 import {
   getDetailsList,
@@ -71,9 +71,9 @@ const handleViewDetailsClick = () => {
     <div v-if="showSpinner">
       <CustomSpinner :visible="showSpinner" />
     </div>
-    <div v-else="!showSpinner">
+    <div v-else>
       <CustomImage
-        :src="cardDetailsList?.thumbnailUrl || auctionCard"
+        :src="cardDetailsList?.thumbnailUrl || defaultListingImage"
         image-class="max-h-[200px] w-full rounded-sm"
       />
     </div>

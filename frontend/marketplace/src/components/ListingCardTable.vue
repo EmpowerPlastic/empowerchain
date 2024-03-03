@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { PageNames } from "@/router";
 import { convertIPFStoHTTPS } from "@/utils/utils";
-import auctionCard from "@/assets/auctionCard.png";
+import defaultListingImage from "@/assets/defaultListingImage.png";
 import { formatDenom } from "@/utils/wallet-utils";
 import { onMounted, ref } from "vue";
 import CustomImage from "@/components/CustomImage.vue";
@@ -94,7 +94,7 @@ const handleClick = () => {
         <CustomImage
           v-else
           image-class="max-h-32 max-w-56"
-          :src="convertIPFStoHTTPS(data.ipfsImage) || auctionCard"
+          :src="convertIPFStoHTTPS(data.ipfsImage) || defaultListingImage"
         />
       </figure>
       <div class="card-body flex-row justify-between">
