@@ -5,7 +5,7 @@ import {
   uniqueMaterials,
 } from "@/utils/utils";
 
-export const formatAuctionDetails = (data: any, materialVolume: number) => {
+export const formatListingDetails = (data: any, materialVolume: number) => {
   const applicantArray: string[] = [];
   const locationArray: string[] = [];
   const locationPointersArray: {

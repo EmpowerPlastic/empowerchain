@@ -1,5 +1,17 @@
 <script setup lang="ts">
 import FAQCollapse from "@/components/FAQCollapse.vue";
+import { useHead } from "@/utils/useHead";
+useHead({
+  title: "FAQs: Learn More About Buying Plastic Credits",
+  meta: [
+    {
+      name: "description",
+      content:
+        "Have questions about buying plastic credits? Our FAQ page provides answers to common questions about our eco-friendly projects and how you can contribute to a sustainable future with Empower Market.",
+    },
+  ],
+});
+
 const faqData = [
   {
     id: "what_are_plastic_credits",

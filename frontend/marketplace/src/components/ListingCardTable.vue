@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { PageNames } from "@/router";
 import { convertIPFStoHTTPS } from "@/utils/utils";
-import auctionCard from "@/assets/auctionCard.png";
+import defaultListingImage from "@/assets/defaultListingImage.png";
 import { formatDenom } from "@/utils/wallet-utils";
 import { onMounted, ref } from "vue";
 import CustomImage from "@/components/CustomImage.vue";
@@ -91,8 +91,8 @@ const handleClick = () => {
       <figure class="max-h-32 min-h-32 w-56 m-2 mb-10 rounded-sm">
         <CustomImage
           image-class="max-h-32 max-w-56"
-          :src="convertIPFStoHTTPS(data.ipfsImage) || auctionCard"
           :showSpinner="showSpinner"
+          :src="convertIPFStoHTTPS(data.ipfsImage) || defaultListingImage"
         />
       </figure>
       <div class="card-body flex-row justify-between">
@@ -139,7 +139,8 @@ const handleClick = () => {
           <dt class="details-title mb-5">Price per kg removed</dt>
           <dd class="grow grid content-between">
             <span class="text-title32 font-bold"
-              >{{ listingData?.pricePerCreditAmount / 1000000 }} USD</span
+              >{{ listingData?.pricePerCreditAmount / 1000000 }}
+              {{ denom }}</span
             >
             <dl class="flex flex-col">
               <dd class="text-title26 font-bold">

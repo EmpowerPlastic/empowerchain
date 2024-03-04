@@ -10,6 +10,17 @@ import gql from "graphql-tag";
 import { computed, onMounted, ref } from "vue";
 import ListingCard from "@/components/ListingCard.vue";
 import ListingCardTable from "@/components/ListingCardTable.vue";
+import { useHead } from "@/utils/useHead";
+useHead({
+  title: "Buy Plastic Credits: List of Eco-Friendly Projects",
+  meta: [
+    {
+      name: "description",
+      content:
+        "Explore our curated list of eco-friendly projects selling plastic credits. Invest in a sustainable future and offset your plastic footprint today with Empower Market.",
+    },
+  ],
+});
 
 const router = useRoute();
 const pageNumber = ref(1);
@@ -139,7 +150,7 @@ const handleSearch = (filterValues: any) => {
           </div>
         </div>
       </div>
-      <!--    <CustomAlert :visible="true" label="No more auctions found"/>-->
+      <!--    <CustomAlert :visible="true" label="No more projects found"/>-->
       <div class="flex justify-center md:justify-end my-10">
         <CustomPagination
           :total="totalNrOfListings"

@@ -23,6 +23,7 @@ import {
 import { createLogto, type LogtoConfig } from "@logto/vue";
 import "@/utils/analytics";
 import { createAppLogger } from "@/utils/logger";
+import { createHead } from "@unhead/vue";
 
 const cache = new InMemoryCache();
 const apolloClient = new ApolloClient({
@@ -31,6 +32,9 @@ const apolloClient = new ApolloClient({
 });
 
 const app = createApp(App);
+const head = createHead();
+app.use(head);
+
 const logtoConfig: LogtoConfig = {
   endpoint: LOGTO_ENDPOINT,
   appId: LOGTO_APP_ID,

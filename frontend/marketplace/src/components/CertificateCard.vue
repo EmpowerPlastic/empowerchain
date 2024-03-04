@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import CustomImage from "@/components/CustomImage.vue";
 import { convertIPFStoHTTPS } from "@/utils/utils";
-import auctionCard from "@/assets/auctionCard.png";
+import defaultListingImage from "@/assets/defaultListingImage.png";
 import { useQuery } from "@vue/apollo-composable";
 import {
   GET_CREDIT_COLLECTIONS,
@@ -488,7 +488,7 @@ const generateQRCode = async () => {
     <CustomImage
       :showSpinner="!image?.url"
       image-class="h-48 w-full rounded-lg max-w-sm"
-      :src="convertIPFStoHTTPS(image?.url) || auctionCard"
+      :src="convertIPFStoHTTPS(image?.url) || defaultListingImage"
     />
     <!--        Desktop UI-->
     <div class="hidden md:grid md:col-span-2">

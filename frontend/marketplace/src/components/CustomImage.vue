@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AuctionCard from "../assets/auctionCard.png";
 import CustomSpinner from "@/components/CustomSpinner.vue";
+import defaultListingImage from "../assets/defaultListingImage.png";
 export interface CustomImageProps {
   src: string;
   imageClass: string;
@@ -9,7 +9,6 @@ export interface CustomImageProps {
 }
 
 const props = defineProps<CustomImageProps>();
-const defaultImage = AuctionCard;
 
 const handleError = (event: Event) => {
   const img = event.target as HTMLImageElement;
@@ -17,7 +16,7 @@ const handleError = (event: Event) => {
   if (props.fallbackImageSrc) {
     img.src = props.fallbackImageSrc;
   } else {
-    img.src = defaultImage;
+    img.src = defaultListingImage;
   }
 };
 </script>
