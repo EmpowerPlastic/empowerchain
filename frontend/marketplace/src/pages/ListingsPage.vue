@@ -139,7 +139,7 @@ const handleSearch = (filterValues: any) => {
           </div>
         </div>
       </div>
-      <!--    <CustomAlert :visible="true" label="No more auctions found"/>-->
+      <!--    <CustomAlert :visible="true" label="No more projects found"/>-->
       <div class="flex justify-center md:justify-end my-10">
         <CustomPagination
           :total="totalNrOfListings"
