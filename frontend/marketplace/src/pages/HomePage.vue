@@ -7,6 +7,18 @@ import { ListingsQueryBuilder } from "@/utils/query-builder";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { onMounted, ref } from "vue";
+import { useHead } from "@/utils/useHead";
+useHead({
+  // Your Marketplace for Buying and Selling Plastic Credits
+  title: "Your Marketplace for Buying Plastic Credits",
+  meta: [
+    {
+      name: "description",
+      content:
+        "Welcome to Empower Market, your go-to marketplace for buying plastic credits. Explore eco-friendly projects, offset your plastic footprint, and contribute to a sustainable future today.",
+    },
+  ],
+});
 
 const queryBuilder = new ListingsQueryBuilder();
 const data = ref();
