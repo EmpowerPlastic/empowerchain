@@ -6,7 +6,6 @@ import { formatDenom } from "@/utils/wallet-utils";
 import { onMounted, ref } from "vue";
 import CustomImage from "@/components/CustomImage.vue";
 import tracking, { TrackEvents } from "@/utils/analytics";
-import CustomSpinner from "@/components/CustomSpinner.vue";
 import {
   getDetailsList,
   findPlasticTypeInMaterial,
@@ -90,10 +89,9 @@ const handleClick = () => {
       @click="handleClick"
     >
       <figure class="max-h-32 min-h-32 w-56 m-2 mb-10 rounded-sm">
-        <CustomSpinner v-if="showSpinner" :visible="showSpinner" />
         <CustomImage
-          v-else
           image-class="max-h-32 max-w-56"
+          :showSpinner="showSpinner"
           :src="convertIPFStoHTTPS(data.ipfsImage) || defaultListingImage"
         />
       </figure>

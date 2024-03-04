@@ -59,11 +59,6 @@
   border-radius: 15px;
 }
 
-/*Image Gallery*/
-.scroll-button {
-  @apply absolute ml-[130px] btn-ghost bg-scrollButtonBackground;
-}
-
 /*Toast*/
 .Toastify__toast {
   @apply bg-tabGray text-white;

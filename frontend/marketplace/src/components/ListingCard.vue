@@ -5,7 +5,6 @@ import defaultListingImage from "@/assets/defaultListingImage.png";
 import { onMounted, ref, computed } from "vue";
 import CustomImage from "@/components/CustomImage.vue";
 import tracking, { TrackEvents } from "@/utils/analytics";
-import CustomSpinner from "@/components/CustomSpinner.vue";
 import { findPlasticTypeInMaterial } from "@/utils/utils";
 import { formatDenom } from "@/utils/wallet-utils";
 export interface ListingCardProps {
@@ -65,9 +64,8 @@ const handleClick = () => {
       @click="handleClick"
     >
       <figure>
-        <CustomSpinner v-if="showSpinner" :visible="showSpinner" />
         <CustomImage
-          v-else
+          :showSpinner="showSpinner"
           image-class="h-[250px] w-full"
           :src="convertIPFStoHTTPS(data.ipfsImage) || defaultListingImage"
         />
