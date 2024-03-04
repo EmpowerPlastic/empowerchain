@@ -18,6 +18,7 @@ import { useQuery } from "@vue/apollo-composable";
 import { ref, watch, computed } from "vue";
 import { GET_MARKETPLACE_LISTING } from "@/graphql/queries";
 import { useHead } from "@/utils/useHead";
+
 interface ListingDetails {
   applicant: string;
   location: string[];

@@ -14,12 +14,12 @@ const HomePage = () => import("@/pages/HomePage.vue");
 const FAQPage = () => import("@/pages/FAQPage.vue");
 const CertificatesAndCreditsPage = () =>
   import("@/pages/CertificatesAndCreditsPage.vue");
-const Listings = () => import("@/pages/ListingsPage.vue");
-const Listing = () => import("@/pages/ListingPage.vue");
-const CallbackView = () => import("@/pages/LoginCallbackPage.vue");
-const UserProfile = () => import("@/pages/UserProfilePage.vue");
-const PaymentSuccessful = () => import("@/pages/PaymentSuccessfulPage.vue");
-const PaymentCancelled = () => import("@/pages/PaymentCancelledPage.vue");
+const ListingsPage = () => import("@/pages/ListingsPage.vue");
+const ListingPage = () => import("@/pages/ListingPage.vue");
+const LoginCallbackPage = () => import("@/pages/LoginCallbackPage.vue");
+const UserProfilePage = () => import("@/pages/UserProfilePage.vue");
+const PaymentSuccessfulPage = () => import("@/pages/PaymentSuccessfulPage.vue");
+const PaymentCancelledPage = () => import("@/pages/PaymentCancelledPage.vue");
 const CreditCollectionPage = () => import("@/pages/CreditCollectionPage.vue");
 
 export { PageNames };
@@ -52,12 +52,12 @@ const router = createRouter({
     {
       path: "/projects",
       name: PageNames.LISTINGS,
-      component: Listings,
+      component: ListingsPage,
     },
     {
       path: "/projects/:id",
       name: PageNames.LISTING,
-      component: Listing,
+      component: ListingPage,
       meta: {
         pageViewEvent: (to: RouteLocationNormalized) => {
           const trackProps = {
@@ -70,7 +70,7 @@ const router = createRouter({
     {
       path: "/callback",
       name: PageNames.LOGIN_CALLBACK,
-      component: CallbackView,
+      component: LoginCallbackPage,
       meta: {
         hideNavFooter: true, //To hide nav and footer on this page
       },
@@ -78,17 +78,17 @@ const router = createRouter({
     {
       path: "/profile",
       name: PageNames.USER_PROFILE,
-      component: UserProfile,
+      component: UserProfilePage,
     },
     {
       path: "/purchase-successful",
       name: PageNames.PAYMENT_SUCCESSFUL,
-      component: PaymentSuccessful,
+      component: PaymentSuccessfulPage,
     },
     {
       path: "/purchase-cancelled",
       name: PageNames.PAYMENT_CANCELLED,
-      component: PaymentCancelled,
+      component: PaymentCancelledPage,
     },
     {
       path: "/registry/:denom",
