@@ -228,6 +228,9 @@ export async function handleFreezeCredits(event: CosmosEvent): Promise<void> {
       const creditFreeze = await CreditFreeze.get(
         `${listingOwner}-${denom}-${buyer}`
       );
+      if (!creditFreeze) {
+        return;
+      }
       const buyCreditsWasmEvent = BuyCreditsWasmEvent.create({
         id: `${event.tx.hash}-${event.msg.idx}-${event.idx}`,
         listingOwner: listingOwner,
@@ -578,7 +581,7 @@ async function handleOffsetCertificate(
     amount: amount,
     retiringEntityAddress: retiringEntityAddress,
     retiringEntityName: retiringEntityName,
-    retiringEntityAdditionalData: retiringEntityAdditionalData,
+    retiringEntityAdditionalData: retiringEntityAdditionalData ?? "",
     walletId: owner,
     timestamp: new Date(timestamp),
   });
@@ -721,8 +724,9 @@ async function handleCreditData(
     issuanceDate: findPropById("issuance_date", metadata["credit_props"])
       ?.content,
     creditType: findPropById("credit_type", metadata["credit_props"])?.content,
-    projectName: findPropById("project_name", metadata["credit_props"])
-      ?.content,
+    projectName:
+      findPropById("project_name", metadata["credit_props"])?.content ||
+      "Cleanup project",
     aggregationLatitude:
       findPropById("aggregation_location", metadata["credit_props"])?.content
         .latitude || 0,
@@ -767,7 +771,7 @@ async function handleEventData(
       latitude +
       "," +
       longitude +
-      "&key=$GOOGLE_MAPS_API_KEY";
+      "&key=AIzaSyCyt4DSQBhkjIfrT_0l62auMMCIw9284xM";
     const response = await fetch(reqUri);
     const result = await response.json();
 

@@ -60,7 +60,7 @@ type CreditOffsetCertificate @entity {
   amount: BigInt!
   retiringEntityAddress: String!
   retiringEntityName: String!
-  retiringEntityAdditionalData: String!
+  retiringEntityAdditionalData: String
   wallet: Wallet!
   timestamp: Date!
 }
