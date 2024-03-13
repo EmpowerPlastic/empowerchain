@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import CustomSearchBar from "@/components/CustomSearchBar.vue";
 import CreditCard from "@/components/CreditCard.vue";
+import CustomAlert from "@/components/CustomAlert.vue";
 import CustomPagination from "@/components/CustomPagination.vue";
+import CustomSearchBar from "@/components/CustomSearchBar.vue";
+import CustomSpinner from "@/components/CustomSpinner.vue";
+import { CHAIN_ID } from "@/config/config";
+import { getWallet, walletConnected } from "@/utils/wallet-utils";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
-import { CHAIN_ID } from "@/config/config";
-import CustomSpinner from "@/components/CustomSpinner.vue";
-import CustomAlert from "@/components/CustomAlert.vue";
+import { onMounted, ref } from "vue";
 import { toast } from "vue3-toastify";
-import { getWallet, walletConnected } from "@/utils/wallet-utils";
 
 const pageNumber = ref(1);
 const itemsPerPage = ref(5);
@@ -58,7 +58,7 @@ const getCreditsData = async () => {
           creditType
           creditData{
             nodes{
-            mediaFiles{
+            mediaFiles(orderBy: ID_ASC){
               nodes{
                 name
                 url
