@@ -212,7 +212,7 @@ export class ListingsQueryBuilder {
                                         }
                                     }
                                 }
-                                mediaFiles{
+                                mediaFiles(orderBy: ID_ASC){
                                     nodes{
                                         url
                                     }
