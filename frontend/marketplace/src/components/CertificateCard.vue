@@ -2,7 +2,6 @@
 import { computed, ref } from "vue";
 import CustomImage from "@/components/CustomImage.vue";
 import { convertIPFStoHTTPS } from "@/utils/utils";
-import defaultListingImage from "@/assets/defaultListingImage.png";
 import { useQuery } from "@vue/apollo-composable";
 import {
   GET_CREDIT_COLLECTIONS,
@@ -488,7 +487,7 @@ const generateQRCode = async () => {
     <CustomImage
       :showSpinner="!image?.url"
       image-class="h-48 w-full rounded-lg max-w-sm"
-      :src="convertIPFStoHTTPS(image?.url) || defaultListingImage"
+      :src="convertIPFStoHTTPS(image?.url)"
     />
     <!--        Desktop UI-->
     <div class="hidden md:grid md:col-span-2">

@@ -1,10 +1,15 @@
 import { HTTPS_FILE_URL } from "@/config/config";
 import type { MaterialProperty } from "@/types/GraphqlSchema";
+import defaultListingImage from "@/assets/defaultListingImage.png";
 
 export const convertIPFStoHTTPS = (url: string) => {
-  const IPFS_URL = url.split("//")[1];
-  const HTTPS_URL = `${HTTPS_FILE_URL}${IPFS_URL}`;
-  return HTTPS_URL;
+  if (url) {
+    const IPFS_URL = url.split("//")[1];
+    const HTTPS_URL = `${HTTPS_FILE_URL}${IPFS_URL}`;
+    return HTTPS_URL;
+  } else {
+    return defaultListingImage;
+  }
 };
 
 export const uniqueMaterials = (
