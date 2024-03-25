@@ -107,29 +107,29 @@ export const calculateTextProperties = (
   name: string,
   baseXPos: number = 163,
   baseFontSize: number = 50,
-): { xPos: number; fontSize: number } => {
+): { xPos: number; fontSize2: number } => {
   const nameLength = name.length;
 
   let stepSize = 0;
   const charsPerStep = 1;
-  let fontSize = baseFontSize;
+  let fontSize2 = baseFontSize;
   if (nameLength < 15) {
     stepSize = 4;
   } else if (nameLength >= 15 && nameLength < 20) {
-    fontSize = 40;
+    fontSize2 = 40;
     stepSize = 3;
   } else if (nameLength >= 20 && nameLength <= 30) {
-    fontSize = 30;
+    fontSize2 = 30;
     stepSize = 2.1;
   } else {
-    fontSize = 20;
+    fontSize2 = 20;
     stepSize = 1.4;
   }
   const steps = Math.floor((nameLength - 3) / charsPerStep);
 
   const xPos = baseXPos - steps * stepSize;
 
-  return { xPos, fontSize };
+  return { xPos, fontSize2 };
 };
 export const calculateXPosition = (
   text: string,
@@ -153,6 +153,19 @@ export const calculateXPosition = (
 
   return currentPosition;
 };
+
+export function fontSize(size: "small" | "medium" | "large"): number {
+  switch (size) {
+    case "small":
+      return 12;
+    case "medium":
+      return 15;
+    case "large":
+      return 20;
+    default:
+      return 15; // Default to medium if an invalid size is provided
+  }
+}
 
 export const ipfsToHttpsProtocol = (url: string) => {
   return url.replace("ipfs://", "https://empowerchain.mypinata.cloud/ipfs/");

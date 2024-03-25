@@ -16,9 +16,10 @@ import {
   addTextWithSpacing,
   calculateTextProperties,
   calculateXPosition,
+  ipfsToHttpsProtocol,
+  fontSize
 } from "@/utils/utils";
 import { ref } from "vue";
-import { ipfsToHttpsProtocol } from "@/utils/utils";
 
 // https://github.com/simonbengtsson/jsPDF-AutoTable/issues/848
 interface IjsPDF extends jsPDF {
@@ -110,7 +111,7 @@ const addFinalPage = (doc: IjsPDF) => {
   addGrayPadding(doc);
   doc.addImage(verticalLeafs, "png", 0, 0, 210, 297);
 
-  doc.setFontSize(12);
+  doc.setFontSize(fontSize("small"));
   doc.setTextColor(35, 31, 32);
   doc.setFont(fontOpenSans, "regular");
 
@@ -199,7 +200,7 @@ const addCertificateHolderPage1 = (
   doc: IjsPDF,
   certificateData: CreditOffsetCertificate,
 ) => {
-  doc.setFontSize(15);
+  doc.setFontSize(fontSize("medium"));
   doc.setTextColor(35, 31, 32);
   doc.setFont(fontInter, "regular");
   addTextWithSpacing(doc, "PROUDLY PRESENTED TO", 142, 75, 0.5);
@@ -207,9 +208,9 @@ const addCertificateHolderPage1 = (
   const name = certificateData.retiringEntityName || "N/A";
   const yPos = 91;
 
-  const { xPos, fontSize } = calculateTextProperties(name);
+  const { xPos, fontSize2 } = calculateTextProperties(name);
 
-  doc.setFontSize(fontSize);
+  doc.setFontSize(fontSize2);
   doc.setTextColor(88, 185, 71);
   doc.setFont(fontOpenSans, "regular");
   doc.text(name, xPos, yPos);
@@ -247,7 +248,7 @@ const addCertificateDetailsPage1 = (
   certificateData: CreditOffsetCertificate,
   plastciValuesString: any,
 ) => {
-  doc.setFontSize(15);
+  doc.setFontSize(fontSize("medium"));
   doc.setTextColor(35, 31, 32);
   doc.setFont(fontInter, "regular");
   // addTextWithSpacing(doc, "FOR OFFSETTING", 154, 110, 0.5);
@@ -256,12 +257,12 @@ const addCertificateDetailsPage1 = (
   const weightText = certificateData.amount + " KG" || "N/A";
   xPosition.value = calculateXPosition(weightText);
 
-  doc.setFontSize(15);
+  doc.setFontSize(fontSize("medium"));
   doc.setTextColor(35, 31, 32);
   doc.setFont(fontInter, "regular");
   addTextWithSpacing(doc, "OF", 176, 132, 0.5);
 
-  doc.setFontSize(15);
+  doc.setFontSize(fontSize("medium"));
   doc.setTextColor(32, 105, 72);
   doc.setFont(fontOpenSans, "bold");
   doc.text(weightText, xPosition.value, 124);
@@ -269,7 +270,7 @@ const addCertificateDetailsPage1 = (
   const plasticText = plastciValuesString || "N/A";
   xPosition.value = calculateXPosition(plasticText);
 
-  doc.setFontSize(15);
+  doc.setFontSize(fontSize("medium"));
   doc.setTextColor(32, 105, 72);
   doc.setFont(fontOpenSans, "bold");
   doc.text(plasticText, xPosition.value, 140);
@@ -285,12 +286,12 @@ const addCirularImagePage1 = (
   const qrY = startY + 9;
 
   doc.addImage(circular, "png", 160, startY, 40, 40);
-  doc.setFontSize(15);
+  doc.setFontSize(fontSize("medium"));
   doc.setTextColor(0, 0, 0);
   doc.setFont(fontOpenSans, "bold");
   doc.text(ID, 174, textY);
   doc.setTextColor(88, 185, 71);
-  doc.setFontSize(12);
+  doc.setFontSize(fontSize("small"));
   if (qrCodeUrl) {
     doc.addImage(qrCodeUrl, "svg", 168, qrY, 23, 23);
   }
@@ -323,7 +324,7 @@ const addCertificateHodlerPage2 = (
   doc: IjsPDF,
   certificateData: CreditOffsetCertificate,
 ) => {
-  doc.setFontSize(15);
+  doc.setFontSize(fontSize("medium"));
   doc.setTextColor(32, 105, 72);
   doc.setFont(fontOpenSans, "bold");
   doc.text("Name of Certificate Holder:", 20, 44);
@@ -332,7 +333,7 @@ const addCertificateHodlerPage2 = (
 };
 
 const addTitle = (doc: IjsPDF, title: string, yPosition: number) => {
-  doc.setFontSize(15);
+  doc.setFontSize(fontSize("medium"));
   doc.setTextColor(32, 105, 72);
   doc.setFont(fontOpenSans, "bold");
   doc.text(title, 20, yPosition);
@@ -745,7 +746,7 @@ const addAllTables = (
       doc.setLineWidth(0.3);
 
       doc.text(title, 20, yPosition);
-      doc.setFontSize(12);
+      doc.setFontSize(fontSize("small"));
       doc.setFont(fontInter, "regular");
       doc.setTextColor(0, 0, 0);
 
