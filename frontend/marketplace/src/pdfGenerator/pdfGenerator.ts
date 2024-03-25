@@ -17,7 +17,7 @@ import {
   calculateTextProperties,
   calculateXPosition,
   ipfsToHttpsProtocol,
-  fontSize
+  fontSize,
 } from "@/utils/utils";
 import { ref } from "vue";
 
@@ -91,6 +91,14 @@ export const generatePDF = (
   doc.save("certificate.pdf");
 };
 
+const bold = (): string => "bold";
+
+type Color = [number, number, number];
+const black: Color = [0, 0, 0];
+const lightBlack: Color = [35, 31, 32];
+const darkGreen: Color = [32, 105, 72];
+const lightGreen: Color = [88, 185, 71];
+
 const addFonts = (doc: IjsPDF) => {
   if (openSans) {
     doc.addFileToVFS("OpenSans-Regular.ttf", openSans);
@@ -102,7 +110,7 @@ const addFonts = (doc: IjsPDF) => {
     doc.addFileToVFS("Inter-Regular.ttf", interRegular);
   }
   doc.addFont("OpenSans-Regular.ttf", fontOpenSans, "regular");
-  doc.addFont("OpenSans-Bold.ttf", fontOpenSans, "bold");
+  doc.addFont("OpenSans-Bold.ttf", fontOpenSans, bold());
   doc.addFont("Inter-Regular.ttf", fontInter, "regular");
 };
 
@@ -112,7 +120,7 @@ const addFinalPage = (doc: IjsPDF) => {
   doc.addImage(verticalLeafs, "png", 0, 0, 210, 297);
 
   doc.setFontSize(fontSize("small"));
-  doc.setTextColor(35, 31, 32);
+  doc.setTextColor(...lightBlack);
   doc.setFont(fontOpenSans, "regular");
 
   doc.text(
@@ -180,18 +188,18 @@ const addImagesPage1 = (doc: IjsPDF) => {
 
 const addHeaderPage1 = (doc: IjsPDF) => {
   doc.setFontSize(28);
-  doc.setTextColor(32, 105, 72);
-  doc.setFont(fontOpenSans, "bold");
+  doc.setTextColor(...darkGreen);
+  doc.setFont(fontOpenSans, bold());
   doc.text("plastic credit", 152, 28);
 
-  doc.setTextColor(0, 0, 0);
+  doc.setTextColor(...black);
   doc.setFontSize(50);
   doc.text("certificate", 142, 44);
 };
 
 const addHorizontalLinePage1 = (doc: IjsPDF) => {
   const pageWidth = doc.internal.pageSize.getWidth();
-  doc.setDrawColor(0, 0, 0);
+  doc.setDrawColor(...black);
   doc.setLineWidth(1.5);
   doc.line(170, 50, pageWidth - 110, 50);
 };
@@ -201,7 +209,7 @@ const addCertificateHolderPage1 = (
   certificateData: CreditOffsetCertificate,
 ) => {
   doc.setFontSize(fontSize("medium"));
-  doc.setTextColor(35, 31, 32);
+  doc.setTextColor(...lightBlack);
   doc.setFont(fontInter, "regular");
   addTextWithSpacing(doc, "PROUDLY PRESENTED TO", 142, 75, 0.5);
 
@@ -211,12 +219,12 @@ const addCertificateHolderPage1 = (
   const { xPos, fontSize2 } = calculateTextProperties(name);
 
   doc.setFontSize(fontSize2);
-  doc.setTextColor(88, 185, 71);
+  doc.setTextColor(...lightGreen);
   doc.setFont(fontOpenSans, "regular");
   doc.text(name, xPos, yPos);
 
   doc.setFontSize(10);
-  doc.setTextColor(35, 31, 32);
+  doc.setTextColor(...lightBlack);
   const logoWidth = 5;
   doc.text(
     "Certificate issued by Empower",
@@ -238,7 +246,7 @@ const addCertificateHolderPage1 = (
 
 const addHorizontalLongLinePage1 = (doc: IjsPDF) => {
   const pageWidth = doc.internal.pageSize.getWidth();
-  doc.setDrawColor(0, 0, 0);
+  doc.setDrawColor(...black);
   doc.setLineWidth(0.5);
   doc.line(110, 100, pageWidth - 50, 100);
 };
@@ -249,7 +257,7 @@ const addCertificateDetailsPage1 = (
   plastciValuesString: any,
 ) => {
   doc.setFontSize(fontSize("medium"));
-  doc.setTextColor(35, 31, 32);
+  doc.setTextColor(...lightBlack);
   doc.setFont(fontInter, "regular");
   // addTextWithSpacing(doc, "FOR OFFSETTING", 154, 110, 0.5);
   addTextWithSpacing(doc, "FOR MAKING AN IMPACT", 143, 110, 0.5);
@@ -258,21 +266,21 @@ const addCertificateDetailsPage1 = (
   xPosition.value = calculateXPosition(weightText);
 
   doc.setFontSize(fontSize("medium"));
-  doc.setTextColor(35, 31, 32);
+  doc.setTextColor(...lightBlack);
   doc.setFont(fontInter, "regular");
   addTextWithSpacing(doc, "OF", 176, 132, 0.5);
 
   doc.setFontSize(fontSize("medium"));
-  doc.setTextColor(32, 105, 72);
-  doc.setFont(fontOpenSans, "bold");
+  doc.setTextColor(...darkGreen);
+  doc.setFont(fontOpenSans, bold());
   doc.text(weightText, xPosition.value, 124);
 
   const plasticText = plastciValuesString || "N/A";
   xPosition.value = calculateXPosition(plasticText);
 
   doc.setFontSize(fontSize("medium"));
-  doc.setTextColor(32, 105, 72);
-  doc.setFont(fontOpenSans, "bold");
+  doc.setTextColor(...darkGreen);
+  doc.setFont(fontOpenSans, bold());
   doc.text(plasticText, xPosition.value, 140);
 };
 
@@ -287,10 +295,10 @@ const addCirularImagePage1 = (
 
   doc.addImage(circular, "png", 160, startY, 40, 40);
   doc.setFontSize(fontSize("medium"));
-  doc.setTextColor(0, 0, 0);
-  doc.setFont(fontOpenSans, "bold");
+  doc.setTextColor(...black);
+  doc.setFont(fontOpenSans, bold());
   doc.text(ID, 174, textY);
-  doc.setTextColor(88, 185, 71);
+  doc.setTextColor(...lightGreen);
   doc.setFontSize(fontSize("small"));
   if (qrCodeUrl) {
     doc.addImage(qrCodeUrl, "svg", 168, qrY, 23, 23);
@@ -310,11 +318,11 @@ const addVerticalImagesPage2 = (doc: IjsPDF) => {
 
 const addHeaderPage2 = (doc: IjsPDF) => {
   doc.setFontSize(23);
-  doc.setTextColor(32, 105, 72);
+  doc.setTextColor(...darkGreen);
   doc.setFont(fontOpenSans, "regular");
   doc.text("plastic credit", 45, 30);
-  doc.setTextColor(0, 0, 0);
-  doc.setFont(fontOpenSans, "bold");
+  doc.setTextColor(...black);
+  doc.setFont(fontOpenSans, bold());
   doc.text("certificate", 95, 30);
   doc.setFont(fontOpenSans, "regular");
   doc.text("details", 135, 30);
@@ -325,17 +333,17 @@ const addCertificateHodlerPage2 = (
   certificateData: CreditOffsetCertificate,
 ) => {
   doc.setFontSize(fontSize("medium"));
-  doc.setTextColor(32, 105, 72);
-  doc.setFont(fontOpenSans, "bold");
+  doc.setTextColor(...darkGreen);
+  doc.setFont(fontOpenSans, bold());
   doc.text("Name of Certificate Holder:", 20, 44);
-  doc.setTextColor(0, 0, 0);
+  doc.setTextColor(...black);
   doc.text(certificateData.retiringEntityName, 90, 44);
 };
 
 const addTitle = (doc: IjsPDF, title: string, yPosition: number) => {
   doc.setFontSize(fontSize("medium"));
-  doc.setTextColor(32, 105, 72);
-  doc.setFont(fontOpenSans, "bold");
+  doc.setTextColor(...darkGreen);
+  doc.setFont(fontOpenSans, bold());
   doc.text(title, 20, yPosition);
   return yPosition + 5;
 };
@@ -418,25 +426,20 @@ const addMaterialTableToPdf = (
       cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
       fontSize: 11,
       lineWidth: 0,
-      // align: "center",
       fillColor: false,
       halign: "center",
-      textColor: [0, 0, 0],
-      // fontFamily: "Inter",
+      textColor: [...black],
     },
     headStyles: {
       cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
       fillColor: false,
-      textColor: [0, 0, 0],
+      textColor: [...black],
       fontStyle: "bold",
-      // align: "center",
       fontSize: 12,
     },
     columnStyles: {
       0: { cellWidth: "auto" },
       1: { cellWidth: "auto" },
-      // halign: "center",
-      // fillColor: false,
     },
   });
 
@@ -496,23 +499,20 @@ const addSecondaryMaterialTableToPdf = (
       cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
       lineWidth: 0,
       halign: "center",
-      textColor: [0, 0, 0],
-      // fontFamily: "Inter",
+      textColor: [...black],
       fontSize: 11,
     },
     headStyles: {
       fillColor: false,
       cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
-      textColor: [0, 0, 0],
+      textColor: [...black],
       fontStyle: "bold",
       halign: "center",
       fontSize: 12,
     },
     columnStyles: {
-      // fillColor: false,
       0: { cellWidth: "auto" },
       1: { cellWidth: "auto" },
-      // halign: "center",
     },
   });
 
@@ -571,13 +571,12 @@ const addSimpleTable = (
       lineWidth: 0,
       halign: "center",
       fillColor: false,
-      textColor: [0, 0, 0],
-      // fontFamily: "Inter",
+      textColor: [...black],
     },
     headStyles: {
       cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
       halign: "center",
-      textColor: [0, 0, 0],
+      textColor: [...black],
       fontStyle: "bold",
       fontSize: 12,
       fillColor: false,
@@ -585,8 +584,6 @@ const addSimpleTable = (
     columnStyles: {
       0: { cellWidth: "auto" },
       1: { cellWidth: "auto" },
-      // halign: "center",
-      // fillColor: false,
     },
   });
 
@@ -610,22 +607,19 @@ const addTableWithLinks = (
       lineWidth: 0,
       halign: "center",
       fillColor: false,
-      textColor: [0, 0, 0],
-      // fontFamily: "Inter",
+      textColor: [...black],
     },
     headStyles: {
       fillColor: false,
       cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
       halign: "center",
-      textColor: [0, 0, 0],
+      textColor: [...black],
       fontStyle: "bold",
       fontSize: 12,
     },
     columnStyles: {
       0: { cellWidth: "auto" },
       1: { cellWidth: "auto" },
-      // halign: "center",
-      // fillColor: false,
     },
     willDrawCell: (data: any) => {
       if (data.column.index === 1 && data.cell.section === "body") {
@@ -666,7 +660,7 @@ const addTableWithLinks = (
       if (data.column.index === 1 && data.cell.section === "body") {
         const url = data.cell.raw;
         if (url) {
-          doc.setTextColor(0, 0, 0);
+          doc.setTextColor(...black);
           doc.setFontSize(11);
           doc.setFont(fontInter, "regular");
           const textWidth = doc.getTextWidth(url);
@@ -742,13 +736,13 @@ const addAllTables = (
       const description = applicantDataDescription;
 
       yPosition += 10;
-      doc.setDrawColor(0, 0, 0);
+      doc.setDrawColor(...black);
       doc.setLineWidth(0.3);
 
       doc.text(title, 20, yPosition);
       doc.setFontSize(fontSize("small"));
       doc.setFont(fontInter, "regular");
-      doc.setTextColor(0, 0, 0);
+      doc.setTextColor(...black);
 
       // Prepare for Description
       yPosition += 5;
