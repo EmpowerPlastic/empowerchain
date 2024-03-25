@@ -109,7 +109,6 @@ const addFinalPage = (doc: IjsPDF) => {
   doc.addPage("a4", "portrait");
   addGrayPadding(doc);
   doc.addImage(verticalLeafs, "png", 0, 0, 210, 297);
-  doc.addImage(leaf1, "png", 30, 23, 10, 8);
 
   doc.setFontSize(12);
   doc.setTextColor(35, 31, 32);
