@@ -187,13 +187,13 @@ const addImagesPage1 = (doc: IjsPDF) => {
 };
 
 const addHeaderPage1 = (doc: IjsPDF) => {
-  doc.setFontSize(28);
+  doc.setFontSize(fontSize("header1Page1"));
   doc.setTextColor(...darkGreen);
   doc.setFont(fontOpenSans, bold());
   doc.text("plastic credit", 152, 28);
 
   doc.setTextColor(...black);
-  doc.setFontSize(50);
+  doc.setFontSize(fontSize("header2Page1"));
   doc.text("certificate", 142, 44);
 };
 
@@ -223,7 +223,7 @@ const addCertificateHolderPage1 = (
   doc.setFont(fontOpenSans, "regular");
   doc.text(name, xPos, yPos);
 
-  doc.setFontSize(10);
+  doc.setFontSize(fontSize("x-small"));
   doc.setTextColor(...lightBlack);
   const logoWidth = 5;
   doc.text(
@@ -317,7 +317,7 @@ const addVerticalImagesPage2 = (doc: IjsPDF) => {
 };
 
 const addHeaderPage2 = (doc: IjsPDF) => {
-  doc.setFontSize(23);
+  doc.setFontSize(fontSize("headerPage2"));
   doc.setTextColor(...darkGreen);
   doc.setFont(fontOpenSans, "regular");
   doc.text("plastic credit", 45, 30);
@@ -661,7 +661,7 @@ const addTableWithLinks = (
         const url = data.cell.raw;
         if (url) {
           doc.setTextColor(...black);
-          doc.setFontSize(11);
+          doc.setFontSize(fontSize("table"));
           doc.setFont(fontInter, "regular");
           const textWidth = doc.getTextWidth(url);
           const textPosX = data.cell.x + (data.cell.width - textWidth) / 2;

@@ -154,16 +154,33 @@ export const calculateXPosition = (
   return currentPosition;
 };
 
-export function fontSize(size: "small" | "medium" | "large"): number {
+export function fontSize(
+  size:
+    | "x-small"
+    | "small"
+    | "medium"
+    | "table"
+    | "header1Page1"
+    | "header2Page1"
+    | "headerPage2",
+): number {
   switch (size) {
+    case "x-small":
+      return 10;
     case "small":
       return 12;
     case "medium":
       return 15;
-    case "large":
-      return 20;
+    case "table":
+      return 11;
+    case "header1Page1":
+      return 28;
+    case "header2Page1":
+      return 50;
+    case "headerPage2":
+      return 23;
     default:
-      return 15; // Default to medium if an invalid size is provided
+      return 15;
   }
 }
 
