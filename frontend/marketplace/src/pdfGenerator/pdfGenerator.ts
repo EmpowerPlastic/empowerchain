@@ -1,6 +1,6 @@
 import type { CreditOffsetCertificate } from "@/types";
 import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
+import autoTable, { type FontStyle } from "jspdf-autotable";
 import {
   wastePick,
   circular,
@@ -434,7 +434,7 @@ const addMaterialTableToPdf = (
       cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
       fillColor: false,
       textColor: [...black],
-      fontStyle: "bold",
+      fontStyle: bold() as FontStyle,
       fontSize: 12,
     },
     columnStyles: {
@@ -506,7 +506,7 @@ const addSecondaryMaterialTableToPdf = (
       fillColor: false,
       cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
       textColor: [...black],
-      fontStyle: "bold",
+      fontStyle: bold() as FontStyle,
       halign: "center",
       fontSize: 12,
     },
@@ -577,7 +577,7 @@ const addSimpleTable = (
       cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
       halign: "center",
       textColor: [...black],
-      fontStyle: "bold",
+      fontStyle: bold() as FontStyle,
       fontSize: 12,
       fillColor: false,
     },
@@ -614,7 +614,7 @@ const addTableWithLinks = (
       cellPadding: { top: 1, right: 0.5, bottom: 1, left: 0.5 },
       halign: "center",
       textColor: [...black],
-      fontStyle: "bold",
+      fontStyle: bold() as FontStyle,
       fontSize: 12,
     },
     columnStyles: {
