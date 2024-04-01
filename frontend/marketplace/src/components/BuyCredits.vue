@@ -221,6 +221,41 @@ const handleCardPayment = async (retirererName: string) => {
     showButtonSpinner.value = false;
   }
 };
+
+const handleUnauthorizedUserPayment = async (
+  retirererName: string,
+  retirererEmail: string,
+) => {
+  console.log("handleUnauthorizedUserPayment");
+  if (!checkIfCreditsAvailable()) {
+    return;
+  }
+
+  showButtonSpinner.value = true; // Guard against multiple clicks
+
+  const { post } = useFetcher();
+
+  const body = {
+    amount: amount.value,
+    denom: props.denom,
+    listingOwner: props.owner,
+    retirererName: retirererName,
+    retirererEmail: retirererEmail,
+  };
+  try {
+    const response = await post(
+      `${PC_BACKEND_ENDPOINT_API}/payments/create-checkout-session`,
+      body,
+    );
+    const paymentGatewayLink = await response.text();
+    window.location.href = paymentGatewayLink;
+  } catch (error) {
+    console.error("Custom error", error);
+    notifyer.error("This API call is not implemented yet"); // TODO: handle error
+  } finally {
+    showButtonSpinner.value = false;
+  }
+};
 </script>
 <template>
   <div
@@ -288,6 +323,7 @@ const handleCardPayment = async (retirererName: string) => {
         :coin-formatted="coinFormatted"
         :handle-buy-credits="handleBuyCredits"
         :handle-card-payment="handleCardPayment"
+        :handle-unauthorized-user-payment="handleUnauthorizedUserPayment"
         :is-wallet-connected="isWalletConnected"
         :available-credits="availableCredits"
         :buying-credit-amount="amount"

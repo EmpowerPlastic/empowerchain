@@ -1,11 +1,19 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed, ref } from "vue";
 import Modal from "@/components/ui/Modal.vue";
 import PrimaryButton from "@/components/ui/PrimaryButton.vue";
+import { CertificateHolderModalTypeEnums } from "@/types/CertificateHolderModalTypeEnums";
 
+export interface BuyCreditsModalProps {
+  modalType: CertificateHolderModalTypeEnums;
+}
+
+const props = defineProps<BuyCreditsModalProps>();
 const emit = defineEmits(["continue"]);
 const baseModal = ref<HTMLDialogElement | null>(null);
 const certificateHolder = ref<string>("");
+const certificateHolderEmail = ref<string>("");
+
 const isCertificateHolderValid = computed<boolean>(() => {
   return (
     certificateHolder.value.length > 0 && certificateHolder.value.length < 31
@@ -14,12 +22,30 @@ const isCertificateHolderValid = computed<boolean>(() => {
 const isCertificateHolderTooLong = computed<boolean>(() => {
   return certificateHolder.value.length > 30;
 });
+const isCertificateHolderEmailValid = computed<boolean>(() => {
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailPattern.test(certificateHolderEmail.value);
+});
+
+const isButtonDisabled = () => {
+  if (
+    (props.modalType === CertificateHolderModalTypeEnums.UNAUTHORIZED_USER &&
+      isCertificateHolderValid.value &&
+      isCertificateHolderEmailValid.value) ||
+    (props.modalType === CertificateHolderModalTypeEnums.AUTHORIZED_USER &&
+      isCertificateHolderValid.value)
+  ) {
+    return false;
+  }
+  return true;
+};
+
 const handleOpenModal = () => {
   baseModal.value?.show();
 };
 
 const handleContinue = () => {
-  emit("continue", certificateHolder.value);
+  emit("continue", certificateHolder.value, certificateHolderEmail.value);
   baseModal.value?.close();
 };
 
@@ -47,12 +73,19 @@ defineExpose({
             >Name can not be more than 30 characters.</span
           >
         </div>
+        <input
+          v-if="modalType === CertificateHolderModalTypeEnums.UNAUTHORIZED_USER"
+          type="email"
+          placeholder="Certificate holder email"
+          class="input input-bordered w-full text-white bg-lightGray mt-5"
+          v-model="certificateHolderEmail"
+        />
       </div>
     </template>
     <template v-slot:actions>
       <PrimaryButton
         @click.prevent="handleContinue"
-        :disabled="!isCertificateHolderValid"
+        :disabled="isButtonDisabled()"
         >Continue</PrimaryButton
       >
     </template>

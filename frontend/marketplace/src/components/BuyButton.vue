@@ -4,12 +4,15 @@ import { useAuth } from "@/stores/auth";
 import { isValidCreditAmount } from "@/utils/utils";
 import tracking, { TrackEvents } from "@/utils/analytics";
 import CertificateHolderModal from "@/components/CertificateHolderModal.vue";
+import { CertificateHolderModalTypeEnums } from "@/types/CertificateHolderModalTypeEnums";
+
 export interface BuyButtonProps {
   showButtonSpinner: boolean;
   insufficientBalance: boolean;
   coinFormatted: string;
   handleCardPayment: (name: string) => void;
   handleBuyCredits: (name: string) => void;
+  handleUnauthorizedUserPayment: (name: string) => void;
   isWalletConnected: boolean;
   availableCredits: number;
   buyingCreditAmount: number;
@@ -18,6 +21,7 @@ const props = defineProps<BuyButtonProps>();
 const { isAuthenticated, handleSignIn } = useAuth();
 const modalEl = ref<HTMLDialogElement | null>(null);
 const continueHandler = ref<((name: string) => void) | undefined>(undefined);
+const modalType = ref<CertificateHolderModalTypeEnums>();
 
 enum BuyButtonState {
   DISABLED = "disabled",
@@ -61,7 +65,7 @@ const buttonText = computed(() => {
     case BuyButtonState.ENABLED_WALLET:
       return "Pay with $USDC";
     case BuyButtonState.ENABLED_UNAUTHORIZED:
-      return "Log in to pay";
+      return "Buy credits";
     case BuyButtonState.DISABLED:
       return "Insufficient balance";
     case BuyButtonState.INVALID_CREDIT:
@@ -78,9 +82,14 @@ const addModalToHandler = (newContinueHandler: (name: string) => void) => {
   };
 };
 
+const handleModalType = (type: CertificateHolderModalTypeEnums) => {
+  modalType.value = type;
+};
+
 const buttonHandler = computed<(() => void) | undefined>(() => {
   switch (buttonState.value) {
     case BuyButtonState.ENABLED_CARD:
+      handleModalType(CertificateHolderModalTypeEnums.AUTHORIZED_USER);
       tracking.trackEvent(TrackEvents.CLICKED_PAYMENT_BUTTON, {
         status: "pay with card",
       });
@@ -91,10 +100,11 @@ const buttonHandler = computed<(() => void) | undefined>(() => {
       });
       return addModalToHandler(props.handleBuyCredits);
     case BuyButtonState.ENABLED_UNAUTHORIZED:
+      handleModalType(CertificateHolderModalTypeEnums.UNAUTHORIZED_USER);
       tracking.trackEvent(TrackEvents.CLICKED_PAYMENT_BUTTON, {
         status: "unauthorized",
       });
-      return handleSignIn;
+      return addModalToHandler(props.handleUnauthorizedUserPayment);
     default:
       return undefined;
   }
@@ -125,13 +135,28 @@ const buttonsCssClasses = `
 `;
 </script>
 <template>
-  <button :disabled="isDisabled" :class="buttonsCssClasses" @click="buttonHandler">
-    <span v-if="showButtonSpinner" class="hidden md:loading loading-spinner"></span>
+  <button
+    :disabled="isDisabled"
+    :class="buttonsCssClasses"
+    @click="buttonHandler"
+  >
+    <span
+      v-if="showButtonSpinner"
+      class="hidden md:loading loading-spinner"
+    ></span>
     <!-- Always render the text container, but control visibility with classes -->
-    <span :class="{'hidden md:block': showButtonSpinner, 'block': !showButtonSpinner}">
+    <span
+      :class="{
+        'hidden md:block': showButtonSpinner,
+        block: !showButtonSpinner,
+      }"
+    >
       {{ buttonText }}
     </span>
   </button>
-  <CertificateHolderModal ref="modalEl" @continue="continueHandler" />
+  <CertificateHolderModal
+    ref="modalEl"
+    @continue="continueHandler"
+    :modal-type="modalType"
+  />
 </template>
-
