@@ -12,7 +12,7 @@ export interface BuyButtonProps {
   coinFormatted: string;
   handleCardPayment: (name: string) => void;
   handleBuyCredits: (name: string) => void;
-  handleUnauthorizedUserPayment: (name: string) => void;
+  handleUnauthorizedUserPayment: (name: string, email: string) => void;
   isWalletConnected: boolean;
   availableCredits: number;
   buyingCreditAmount: number;
