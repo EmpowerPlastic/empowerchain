@@ -21,7 +21,10 @@ const props = defineProps<BuyButtonProps>();
 const { isAuthenticated, handleSignIn } = useAuth();
 const modalEl = ref<HTMLDialogElement | null>(null);
 const continueHandler = ref<((name: string) => void) | undefined>(undefined);
-const modalType = ref<CertificateHolderModalTypeEnums>();
+const continueUnauthorizedPaymentHandler = ref<
+  ((name: string, email: string) => void) | undefined
+>(undefined);
+const modalType = ref<CertificateHolderModalTypeEnums | null>(null);
 
 enum BuyButtonState {
   DISABLED = "disabled",
@@ -82,6 +85,15 @@ const addModalToHandler = (newContinueHandler: (name: string) => void) => {
   };
 };
 
+const addUnauthorizedPaymentModalToHandler = (
+  newContinueHandler: (name: string, email: string) => void,
+) => {
+  return () => {
+    continueUnauthorizedPaymentHandler.value = newContinueHandler;
+    modalEl.value?.show();
+  };
+};
+
 const handleModalType = (type: CertificateHolderModalTypeEnums) => {
   modalType.value = type;
 };
@@ -104,7 +116,9 @@ const buttonHandler = computed<(() => void) | undefined>(() => {
       tracking.trackEvent(TrackEvents.CLICKED_PAYMENT_BUTTON, {
         status: "unauthorized",
       });
-      return addModalToHandler(props.handleUnauthorizedUserPayment);
+      return addUnauthorizedPaymentModalToHandler(
+        props.handleUnauthorizedUserPayment,
+      );
     default:
       return undefined;
   }
@@ -116,6 +130,17 @@ const isDisabled = computed(
     buttonState.value === BuyButtonState.LOADING ||
     buttonState.value === BuyButtonState.INVALID_CREDIT,
 );
+
+const handleContinue = (name: string, email?: string) => {
+  if (
+    modalType.value === CertificateHolderModalTypeEnums.UNAUTHORIZED_USER &&
+    continueUnauthorizedPaymentHandler.value
+  ) {
+    return continueUnauthorizedPaymentHandler.value(name, email || "");
+  } else if (continueHandler.value) {
+    return continueHandler.value(name);
+  }
+};
 
 const buttonsCssClasses = `
   btn
@@ -156,7 +181,7 @@ const buttonsCssClasses = `
   </button>
   <CertificateHolderModal
     ref="modalEl"
-    @continue="continueHandler"
+    @continue="handleContinue"
     :modal-type="modalType"
   />
 </template>

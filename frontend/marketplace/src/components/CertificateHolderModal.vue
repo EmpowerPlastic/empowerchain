@@ -5,7 +5,7 @@ import PrimaryButton from "@/components/ui/PrimaryButton.vue";
 import { CertificateHolderModalTypeEnums } from "@/types/CertificateHolderModalTypeEnums";
 
 export interface BuyCreditsModalProps {
-  modalType: CertificateHolderModalTypeEnums;
+  modalType: CertificateHolderModalTypeEnums | null;
 }
 
 const props = defineProps<BuyCreditsModalProps>();

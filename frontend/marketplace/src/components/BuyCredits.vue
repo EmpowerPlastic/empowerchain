@@ -226,7 +226,6 @@ const handleUnauthorizedUserPayment = async (
   retirererName: string,
   retirererEmail: string,
 ) => {
-  console.log("handleUnauthorizedUserPayment");
   if (!checkIfCreditsAvailable()) {
     return;
   }
