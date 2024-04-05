@@ -101,19 +101,21 @@ const handleModalType = (type: CertificateHolderModalTypeEnums) => {
 const buttonHandler = computed<(() => void) | undefined>(() => {
   switch (buttonState.value) {
     case BuyButtonState.ENABLED_CARD:
-      handleModalType(CertificateHolderModalTypeEnums.AUTHORIZED_USER);
+      handleModalType(CertificateHolderModalTypeEnums.EMAIL_AUTHORIZED_USER);
       tracking.trackEvent(TrackEvents.CLICKED_PAYMENT_BUTTON, {
         status: "pay with card",
       });
       return addModalToHandler(props.handleCardPayment);
     case BuyButtonState.ENABLED_WALLET:
-      handleModalType(CertificateHolderModalTypeEnums.CRYPTO_WALLET_USER);
+      handleModalType(
+        CertificateHolderModalTypeEnums.CRYPTO_WALLET_AUTHORIZED_USER,
+      );
       tracking.trackEvent(TrackEvents.CLICKED_PAYMENT_BUTTON, {
         status: "pay with crypto",
       });
       return addModalToHandler(props.handleBuyCredits);
     case BuyButtonState.ENABLED_UNAUTHORIZED:
-      handleModalType(CertificateHolderModalTypeEnums.UNAUTHORIZED_USER);
+      handleModalType(CertificateHolderModalTypeEnums.GUEST_USER);
       tracking.trackEvent(TrackEvents.CLICKED_PAYMENT_BUTTON, {
         status: "unauthorized",
       });

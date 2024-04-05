@@ -28,18 +28,17 @@ const isCertificateHolderEmailValid = computed<boolean>(() => {
 });
 
 const isButtonDisabled = () => {
-  if (
-    (props.modalType === CertificateHolderModalTypeEnums.UNAUTHORIZED_USER &&
-      isCertificateHolderValid.value &&
-      isCertificateHolderEmailValid.value) ||
-    (props.modalType === CertificateHolderModalTypeEnums.AUTHORIZED_USER &&
-      isCertificateHolderValid.value) ||
-    (props.modalType === CertificateHolderModalTypeEnums.CRYPTO_WALLET_USER &&
-      isCertificateHolderValid.value)
-  ) {
-    return false;
+  if (!isCertificateHolderValid.value) {
+    return true;
   }
-  return true;
+
+  return !(
+    props.modalType === CertificateHolderModalTypeEnums.EMAIL_AUTHORIZED_USER ||
+    props.modalType ===
+      CertificateHolderModalTypeEnums.CRYPTO_WALLET_AUTHORIZED_USER ||
+    (props.modalType === CertificateHolderModalTypeEnums.GUEST_USER &&
+      isCertificateHolderEmailValid.value)
+  );
 };
 
 const handleOpenModal = () => {
