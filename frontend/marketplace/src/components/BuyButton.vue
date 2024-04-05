@@ -107,6 +107,7 @@ const buttonHandler = computed<(() => void) | undefined>(() => {
       });
       return addModalToHandler(props.handleCardPayment);
     case BuyButtonState.ENABLED_WALLET:
+      handleModalType(CertificateHolderModalTypeEnums.CRYPTO_WALLET_USER);
       tracking.trackEvent(TrackEvents.CLICKED_PAYMENT_BUTTON, {
         status: "pay with crypto",
       });

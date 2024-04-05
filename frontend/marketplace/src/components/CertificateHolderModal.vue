@@ -33,6 +33,8 @@ const isButtonDisabled = () => {
       isCertificateHolderValid.value &&
       isCertificateHolderEmailValid.value) ||
     (props.modalType === CertificateHolderModalTypeEnums.AUTHORIZED_USER &&
+      isCertificateHolderValid.value) ||
+    (props.modalType === CertificateHolderModalTypeEnums.CRYPTO_WALLET_USER &&
       isCertificateHolderValid.value)
   ) {
     return false;
