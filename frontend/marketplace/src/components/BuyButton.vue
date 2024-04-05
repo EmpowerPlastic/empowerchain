@@ -136,7 +136,7 @@ const isDisabled = computed(
 
 const handleContinue = (name: string, email?: string) => {
   if (
-    modalType.value === CertificateHolderModalTypeEnums.UNAUTHORIZED_USER &&
+    modalType.value === CertificateHolderModalTypeEnums.GUEST_USER &&
     continueUnauthorizedPaymentHandler.value
   ) {
     return continueUnauthorizedPaymentHandler.value(name, email || "");

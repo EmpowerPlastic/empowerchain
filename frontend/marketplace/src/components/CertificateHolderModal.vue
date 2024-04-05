@@ -75,7 +75,7 @@ defineExpose({
           >
         </div>
         <input
-          v-if="modalType === CertificateHolderModalTypeEnums.UNAUTHORIZED_USER"
+          v-if="modalType === CertificateHolderModalTypeEnums.GUEST_USER"
           type="email"
           placeholder="Certificate holder email"
           class="input input-bordered w-full text-white bg-lightGray mt-5"
