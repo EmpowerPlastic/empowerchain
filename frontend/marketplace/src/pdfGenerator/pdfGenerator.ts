@@ -1,6 +1,7 @@
 import type { CreditOffsetCertificate } from "@/types";
 import { jsPDF } from "jspdf";
 import autoTable, { type FontStyle } from "jspdf-autotable";
+import QRCode from "qrcode";
 import {
   wastePick,
   circular,
@@ -19,7 +20,6 @@ import {
   ipfsToHttpsProtocol,
   fontSize,
 } from "@/utils/utils";
-import { ref } from "vue";
 
 // https://github.com/simonbengtsson/jsPDF-AutoTable/issues/848
 interface IjsPDF extends jsPDF {
@@ -36,31 +36,60 @@ interface MaterialDetails {
   type: string;
 }
 
-const addedBinaryFiles = ref(false);
-const addedMediaFiles = ref(false);
-const addedMaterialData = ref(false);
-const addedLocations = ref(false);
-const xPosition = ref(0);
-const fontOpenSans = "Open Sans";
-const fontInter = "Inter";
+interface CertificateDataNode {
+  amount: string;
+  denom: string;
+  id: string;
+  nodeId: string;
+  retiringEntityAdditionalData: string;
+  retiringEntityName: string;
+  walletId: string;
+  timestamp?: string;
+}
+
+let addedBinaryFiles = false;
+let addedMediaFiles = false;
+let addedMaterialData = false;
+let addedLocations = false;
+let xPosition = 0;
+let firstPageMaxRows = 0;
+let secondPageMaxRows = 0;
+let allData: any[] = [];
+let pagesData: any[] = [];
+let qrCodeUrl = undefined;
+let plasticValuesString = "";
+let locations: Array<{ type: string; [key: string]: any }> = [];
+let mediaFileUrls: Array<{ type: string; [key: string]: any }> = [];
+let binaryFilesUrls: Array<{ type: string; [key: string]: any }> = [];
+let collectionAmount: number = 0;
+let issuanceDate: string = "";
+let applicantData: string = "";
+let applicantDataDescription: string = "";
+let materialDetails: Array<{ type: string; [key: string]: any }> = [];
+let currentHeaders: Array<string> = [];
+let primaryHeaders: Array<string> = [];
+let secondaryHeaders: Array<string> = [];
+let retiredDate: string = "";
+const otherPageMaxRows: number = 35;
+const fontOpenSans: string = "Open Sans";
+const fontInter: string = "Inter";
 
 export const generatePDF = (
   certificateData: CreditOffsetCertificate,
-  pagesData: any,
-  primaryHeaders: any,
-  secondaryHeaders: any,
-  plastciValuesString: string,
-  collectionAmount: number,
-  applicantData: string,
-  issuanceDate: string,
-  retiredDate: string,
   creditData: any,
+  creditCollectionData: any,
   ID: string,
-  applicantDataDescription: string,
-  qrCodeUrl: string | undefined,
 ) => {
   //To compress the PDF size
   const doc = new jsPDF("landscape", undefined, undefined, true) as IjsPDF;
+  //qrCodeUrl = await generateQRCode();
+  processCreditCollectionsNode(creditCollectionData);
+  processEventDataNode(creditData.eventData.nodes);
+  processCreditDataNode(creditData);
+  assignApplicantData(creditData);
+  assignAllDataValue();
+  processCertificateDataNode(certificateData);
+  preparePagesData();
   addFonts(doc);
   addGrayPadding(doc);
   addGreenRectanglePage1(doc);
@@ -69,7 +98,7 @@ export const generatePDF = (
   addHorizontalLinePage1(doc);
   addCertificateHolderPage1(doc, certificateData);
   addHorizontalLongLinePage1(doc);
-  addCertificateDetailsPage1(doc, certificateData, plastciValuesString);
+  addCertificateDetailsPage1(doc, certificateData, plasticValuesString);
   addCirularImagePage1(doc, ID, qrCodeUrl);
   addVerticalImagesPage2(doc);
   addHeaderPage2(doc);
@@ -89,6 +118,332 @@ export const generatePDF = (
   );
   addFinalPage(doc);
   doc.save("certificate.pdf");
+};
+
+const processCertificateDataNode = (
+  certificateDataNode: CertificateDataNode,
+) => {
+  console.log(certificateDataNode);
+
+  if (certificateDataNode.timestamp) {
+    retiredDate = certificateDataNode.timestamp.substring(0, 10);
+  } else {
+    retiredDate = "N/A";
+  }
+};
+
+const processCreditCollectionsNode = (creditCollectionsNode: any) => {
+  //Create string for issuance date on second page
+  collectionAmount =
+    Number(creditCollectionsNode.activeAmount) +
+    Number(creditCollectionsNode.retiredAmount);
+  issuanceDate = creditCollectionsNode.issuanceDate.substring(0, 10);
+};
+
+const processEventDataNode = (eventDataNode: any) => {
+  console.log(eventDataNode);
+
+  // Correct the typo here
+  const plasticValuesSet = new Set(
+    eventDataNode
+      .flatMap((eventNode: any) =>
+        eventNode.material.nodes.filter(
+          (material: any) => material.key === "plasticType",
+        ),
+      )
+      .map((material: any) => JSON.stringify(material)),
+  );
+
+  // Convert plasticValuesSet to an array of unique objects based on their properties and values
+  const uniqueMaterials = Array.from(plasticValuesSet, JSON.parse);
+
+  // Extract the value property from the unique objects and join them into a string
+  plasticValuesString = uniqueMaterials
+    .map((material: any) => material.value)
+    .join(", ");
+  console.log(plasticValuesString);
+
+  //Assign data to location table variables
+  locations = eventDataNode.reduce((unique: any, eventNode: any) => {
+    const duplicate = unique.find(
+      (location: any) =>
+        location.longitude === eventNode.longitude &&
+        location.latitude === eventNode.latitude,
+    );
+
+    if (!duplicate) {
+      unique.push({
+        country: eventNode.country || "N/A",
+        longitude: eventNode.longitude != null ? eventNode.longitude : "N/A",
+        latitude: eventNode.latitude != null ? eventNode.latitude : "N/A",
+        type: "location",
+      });
+    }
+    return unique;
+  }, []);
+
+  let eventData;
+  let materialData;
+  if (eventDataNode.length) {
+
+    const uniqueMaterialsSet = new Set();
+    const uniqueMaterials: any = [];
+
+    //Assign new keys to material table variables
+    const keyMapping: { [key: string]: string } = {
+      granularity: "Shape/Granularity",
+      "shape / granularity": "Shape/Granularity",
+      plasticType: "Plastic Type",
+      registrationDate: "Registration Date",
+      color: "Color",
+      kilo: "Weight (kg)",
+      condition: "Condition",
+      brand: "Brand",
+      "material origin": "Material Origin",
+    };
+
+    //Assign data to material table variables
+    eventDataNode.forEach((eventNode: any) => {
+      const materialCombination: any = {
+        type: "material",
+        [keyMapping["registrationDate"]]: eventNode.registrationDate.substring(
+          0,
+          10,
+        ),
+      };
+
+      eventNode.material.nodes.forEach((materialNode: any) => {
+        const key = keyMapping[materialNode.key] || materialNode.key;
+        // Assign the value property instead of the entire object
+        if (materialNode && materialNode.value) {
+          materialCombination[key] = materialNode.value;
+        }
+      });
+
+      if (Object.keys(materialCombination).length > 2) {
+        const materialString = JSON.stringify(materialCombination);
+        if (!uniqueMaterialsSet.has(materialString)) {
+          uniqueMaterialsSet.add(materialString);
+          uniqueMaterials.push(materialCombination);
+        }
+      }
+    });
+
+    materialDetails = uniqueMaterials;
+
+    //create headers for material table
+    const getTableHeaders = () => {
+      const headers: Array<string> = [];
+      for (const detail of materialDetails) {
+        for (const key in detail) {
+          if (detail[key] && !headers.includes(key)) {
+            headers.push(key);
+          }
+        }
+      }
+      return headers;
+    };
+
+    currentHeaders = getTableHeaders();
+
+    //Assign data to material table one and material table two
+    primaryHeaders = currentHeaders.slice(1, 6);
+    secondaryHeaders;
+    if (currentHeaders.length >= 6) {
+      secondaryHeaders = currentHeaders.slice(6);
+    } else {
+      secondaryHeaders = [];
+    }
+  }
+};
+
+
+
+const processCreditDataNode = (creditDataNode: any) => {
+  //Assign data to binary table variables
+
+  binaryFilesUrls = creditDataNode.binaryFiles.nodes.map(
+    (binaryFileNode: any) => {
+      return {
+        name: binaryFileNode.name || "N/A",
+        url: binaryFileNode.url || "N/A",
+        type: "binary",
+        startIndex: 0,
+        endIndex: 0,
+      };
+    },
+  );
+  //Assign data to media table variables
+  mediaFileUrls = creditDataNode.mediaFiles.nodes.map((mediaFileNode: any) => {
+    return {
+      name: mediaFileNode.name || "N/A",
+      url: mediaFileNode.url || "N/A",
+      type: "media",
+    };
+  });
+};
+
+const assignApplicantData = (creditDataNode: any) => {
+  //Assign data to Organization in collection information table
+  applicantData = creditDataNode.applicantDataByCreditDataId.nodes[0].name;
+
+  //Assign data to description in project description table
+  applicantDataDescription =
+    creditDataNode.applicantDataByCreditDataId.nodes[0].description;
+};
+
+const assignAllDataValue = () => {
+  allData = [
+    ...mediaFileUrls,
+    ...binaryFilesUrls,
+    ...locations,
+    ...materialDetails,
+  ];
+};
+
+//Calculate how many categories in total
+const calculateCategoryDistribution = () => {
+  const categoryCounts = new Map();
+
+  allData.forEach((item) => {
+    categoryCounts.set(item.type, (categoryCounts.get(item.type) || 0) + 1);
+  });
+
+  return categoryCounts;
+};
+
+//Calculate how many rows in page one and page two
+const calculateMaxRows = () => {
+  const categoryCounts = calculateCategoryDistribution();
+  const descriptionRows = Math.ceil(applicantDataDescription.length / 90);
+  const mediaCount = categoryCounts.get("media");
+  const binaryCount = categoryCounts.get("binary");
+  const locationCount = categoryCounts.get("location");
+
+  if (mediaCount + descriptionRows >= 22) {
+    firstPageMaxRows = 22 - descriptionRows;
+  } else if (mediaCount + binaryCount + descriptionRows >= 19) {
+    firstPageMaxRows = 19 - descriptionRows;
+  } else if (mediaCount + binaryCount + locationCount + descriptionRows >= 14) {
+    firstPageMaxRows = 14 - descriptionRows;
+  } else {
+    firstPageMaxRows = 11 - descriptionRows;
+  }
+  if (mediaCount + descriptionRows > 65) {
+    secondPageMaxRows = 47;
+  } else if (mediaCount + binaryCount + descriptionRows > 60) {
+    secondPageMaxRows = 42;
+  } else if (mediaCount + binaryCount + locationCount + descriptionRows > 55) {
+    secondPageMaxRows = 38;
+  } else {
+    secondPageMaxRows = 35;
+  }
+};
+
+interface CurrentPageData {
+  type: string;
+  items: any[]; // Change 'any' to the specific type of items if possible
+}
+
+//Organize the data for each page
+const preparePagesData = () => {
+  let currentPageData: CurrentPageData[] = [];
+  let currentRowCount = 0;
+  let isFirstPage = true;
+  let isSecondPage = false;
+
+  calculateMaxRows();
+
+  allData.forEach((item: any) => {
+    let maxRowsPerPage = isFirstPage ? firstPageMaxRows : otherPageMaxRows;
+
+    if (isSecondPage) {
+      maxRowsPerPage = secondPageMaxRows;
+    }
+
+    if (item.type === "material" && secondaryHeaders.length > 0) {
+      maxRowsPerPage -= item["Tracking Event"];
+    }
+
+    currentRowCount++;
+
+    if (currentRowCount > maxRowsPerPage) {
+      pagesData.push(currentPageData);
+      currentPageData = [];
+      currentRowCount = 0;
+
+      if (isFirstPage) {
+        isFirstPage = false;
+        isSecondPage = true;
+      } else if (isSecondPage) {
+        isSecondPage = false;
+      }
+    }
+
+    let category: any = currentPageData.find((c: any) => c.type === item.type);
+    if (!category) {
+      category = { type: item.type, items: [] };
+      currentPageData.push(category);
+    }
+    category.items.push(item);
+
+    if (currentRowCount === maxRowsPerPage && !isSecondPage) {
+      pagesData.push(currentPageData);
+      currentPageData = [];
+      currentRowCount = 0;
+      if (isFirstPage) {
+        isFirstPage = false;
+        isSecondPage = true;
+      }
+    }
+  });
+
+  if (currentPageData.length > 0) {
+    pagesData.push(currentPageData);
+  }
+};
+
+const generateQRCode = async () => {
+  // const canvas = document.getElementById("qrCode") as HTMLCanvasElement;
+  const url = await QRCode.toDataURL(`https://www.empowerchain.io/`);
+
+  // Create a new image for the QR code
+  const qrImage = new Image();
+  qrImage.src = url;
+
+  // Create a new image for the logo
+  const logo = new Image();
+  logo.src = greenLogo;
+  // Wait for both images to load
+  await Promise.all([
+    new Promise((resolve) => {
+      qrImage.onload = resolve;
+    }),
+    new Promise((resolve) => {
+      logo.onload = resolve;
+    }),
+  ]);
+
+  // Create a canvas and draw the QR code and logo on it
+  const qrDimensions = { width: qrImage.width, height: qrImage.height };
+  const canvas = document.createElement("canvas");
+  canvas.width = qrDimensions.width;
+  canvas.height = qrDimensions.height;
+  const context = canvas.getContext("2d");
+  if (context !== null) {
+    context.drawImage(qrImage, canvas.width / 2 - qrImage.width / 2, 0);
+
+    const logoX = canvas.width / 2 - logo.width / 2;
+    const logoY = canvas.height / 2 - logo.height / 2;
+
+    context.fillStyle = "white";
+    context.fillRect(logoX - 5, logoY - 5, logo.width + 10, logo.height + 10);
+
+    context.drawImage(logo, logoX, logoY);
+  }
+
+  // Get the data URL of the canvas
+  return canvas.toDataURL();
 };
 
 const bold = (): string => "bold";
@@ -254,7 +609,7 @@ const addHorizontalLongLinePage1 = (doc: IjsPDF) => {
 const addCertificateDetailsPage1 = (
   doc: IjsPDF,
   certificateData: CreditOffsetCertificate,
-  plastciValuesString: any,
+  plasticValuesString: any,
 ) => {
   doc.setFontSize(fontSize("medium"));
   doc.setTextColor(...lightBlack);
@@ -263,7 +618,7 @@ const addCertificateDetailsPage1 = (
   addTextWithSpacing(doc, "FOR MAKING AN IMPACT", 143, 110, 0.5);
   addTextWithSpacing(doc, "BY NEUTRALIZING AN IMPRESSIVE", 128, 116, 0.5);
   const weightText = certificateData.amount + " KG" || "N/A";
-  xPosition.value = calculateXPosition(weightText);
+  xPosition = calculateXPosition(weightText);
 
   doc.setFontSize(fontSize("medium"));
   doc.setTextColor(...lightBlack);
@@ -273,15 +628,15 @@ const addCertificateDetailsPage1 = (
   doc.setFontSize(fontSize("medium"));
   doc.setTextColor(...darkGreen);
   doc.setFont(fontOpenSans, bold());
-  doc.text(weightText, xPosition.value, 124);
+  doc.text(weightText, xPosition, 124);
 
-  const plasticText = plastciValuesString || "N/A";
-  xPosition.value = calculateXPosition(plasticText);
+  const plasticText = plasticValuesString || "N/A";
+  xPosition = calculateXPosition(plasticText);
 
   doc.setFontSize(fontSize("medium"));
   doc.setTextColor(...darkGreen);
   doc.setFont(fontOpenSans, bold());
-  doc.text(plasticText, xPosition.value, 140);
+  doc.text(plasticText, xPosition, 140);
 };
 
 const addCirularImagePage1 = (
@@ -760,7 +1115,7 @@ const addAllTables = (
     }
 
     const addLocations = (locations: any) => {
-      if (addedLocations.value === false) {
+      if (addedLocations === false) {
         const locationsData = locations.map((loc: any) => [
           loc.country,
           loc.longitude,
@@ -774,7 +1129,7 @@ const addAllTables = (
             locationsData,
             yPosition + marginBetweenTables,
           ) ?? 0;
-        addedLocations.value = true;
+        addedLocations = true;
       } else {
         yPosition -= 10;
         const locationsData = locations.map((loc: any) => [
@@ -794,7 +1149,7 @@ const addAllTables = (
     };
 
     const addMediaFiles = (mediaFiles: any) => {
-      if (addedMediaFiles.value === false) {
+      if (addedMediaFiles === false) {
         const photosTableData = mediaFiles.map((mf: any) => ({
           name: mf.name,
           url: mf.url,
@@ -806,7 +1161,7 @@ const addAllTables = (
             photosTableData,
             yPosition + marginBetweenTables,
           ) ?? 0;
-        addedMediaFiles.value = true;
+        addedMediaFiles = true;
       } else {
         yPosition -= 10;
         const photosTableData = mediaFiles.map((mf: any) => ({
@@ -824,7 +1179,7 @@ const addAllTables = (
     };
 
     const addMaterialData = (materialDetails: MaterialDetails[]) => {
-      if (addedMaterialData.value === false) {
+      if (addedMaterialData === false) {
         yPosition =
           addMaterialTableToPdf(
             doc,
@@ -834,7 +1189,7 @@ const addAllTables = (
             "Material Tracking Events",
           ) ?? 0;
         yPosition = (doc.lastAutoTable.finalY ?? 0) + marginBetweenTables;
-        addedMaterialData.value = true;
+        addedMaterialData = true;
         if (secondaryHeaders.length > 0) {
           yPosition =
             addSecondaryMaterialTableToPdf(
@@ -870,7 +1225,7 @@ const addAllTables = (
     };
 
     const addBinaryFiles = (binaryFiles: any) => {
-      if (addedBinaryFiles.value === false) {
+      if (addedBinaryFiles === false) {
         const binaryFilesTableData = binaryFiles.map((bf: any) => ({
           name: bf.name,
           url: bf.url,
@@ -882,7 +1237,7 @@ const addAllTables = (
             binaryFilesTableData,
             yPosition + marginBetweenTables,
           ) ?? 0;
-        addedBinaryFiles.value = true;
+        addedBinaryFiles = true;
       } else {
         yPosition -= 10;
         const binaryFilesTableData = binaryFiles.map((bf: any) => ({
@@ -924,8 +1279,23 @@ const addAllTables = (
 };
 
 const resetAddedValues = () => {
-  addedBinaryFiles.value = false;
-  addedMediaFiles.value = false;
-  addedMaterialData.value = false;
-  addedLocations.value = false;
+  addedBinaryFiles = false;
+  addedMediaFiles = false;
+  addedMaterialData = false;
+  addedLocations = false;
+  plasticValuesString = "";
+  locations = [];
+  mediaFileUrls = [];
+  binaryFilesUrls = [];
+  collectionAmount = 0;
+  issuanceDate = "";
+  applicantData = "";
+  applicantDataDescription = "";
+  materialDetails = [];
+  currentHeaders = [];
+  primaryHeaders = [];
+  secondaryHeaders = [];
+  retiredDate = "";
+  allData = [];
+  pagesData = [];
 };
