@@ -144,7 +144,7 @@ const processEventDataNode = (eventDataNode: any) => {
   console.log(eventDataNode);
 
   // Correct the typo here
-  const plasticValuesSet = new Set(
+  const plasticValuesSet = new Set<string>(
     eventDataNode
       .flatMap((eventNode: any) =>
         eventNode.material.nodes.filter(
@@ -155,7 +155,10 @@ const processEventDataNode = (eventDataNode: any) => {
   );
 
   // Convert plasticValuesSet to an array of unique objects based on their properties and values
-  const uniqueMaterials = Array.from(plasticValuesSet, JSON.parse);
+  // Map the Set of JSON strings to an array of objects
+  const uniqueMaterials = Array.from(plasticValuesSet).map((material: string) =>
+    JSON.parse(material),
+  );
 
   // Extract the value property from the unique objects and join them into a string
   plasticValuesString = uniqueMaterials
@@ -182,8 +185,6 @@ const processEventDataNode = (eventDataNode: any) => {
     return unique;
   }, []);
 
-  let eventData;
-  let materialData;
   if (eventDataNode.length) {
     const uniqueMaterialsSet = new Set();
     const uniqueMaterials: any = [];

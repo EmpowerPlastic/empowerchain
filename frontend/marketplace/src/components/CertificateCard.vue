@@ -84,8 +84,8 @@ const getCreditData = (denom: string) => {
       creditData.value =
         result.value.creditCollections.nodes[0].creditData.nodes[0];
       creditCollectionData.value = result.value.creditCollections.nodes[0];
-      showSpinner.value = false;
       await onGeneratePDF();
+      showSpinner.value = false;
     }
   });
   if (error.value) {
