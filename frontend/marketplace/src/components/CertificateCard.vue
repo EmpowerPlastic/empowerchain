@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import CustomImage from "@/components/CustomImage.vue";
 import {
-GET_CREDIT_COLLECTIONS,
-GET_CREDIT_OFFSET_CERTIFICATE,
+  GET_CREDIT_COLLECTIONS,
+  GET_CREDIT_OFFSET_CERTIFICATE,
 } from "@/graphql/queries";
 import { generatePDF } from "@/pdfGenerator/pdfGenerator";
 import { useNotifyer } from "@/utils/notifyer";

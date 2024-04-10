@@ -20,32 +20,30 @@ import {
   verticalLeafs,
   wastePick,
 } from "../pdfGenerator/AssetsBase64";
+import greenLogo2 from "@/assets/greenlogo.svg";
+import type {
+  MediaFileUrl,
+  BinaryFileUrl,
+  PagesData,
+  CreditCollectionData,
+  CreditDataNode,
+  CertificateDataNode,
+  eventNode,
+  MaterialNode,
+  Material,
+  Unique,
+  MaterialDetails,
+  Category,
+  DataItem,
+  IjsPDF,
+  BinaryFileNode,
+  MediaFileNode,
+  MediaFiles,
+  BinaryFiles,
+  AllData,
+} from "@/types/PdfGenerator";
 
 // https://github.com/simonbengtsson/jsPDF-AutoTable/issues/848
-interface IjsPDF extends jsPDF {
-  lastAutoTable: {
-    finalY?: number;
-  };
-}
-
-interface MaterialDetails {
-  Condition: string;
-  "Material Origin": string;
-  "Plastic Type": string;
-  "Registration Date": string;
-  type: string;
-}
-
-interface CertificateDataNode {
-  amount: string;
-  denom: string;
-  id: string;
-  nodeId: string;
-  retiringEntityAdditionalData: string;
-  retiringEntityName: string;
-  walletId: string;
-  timestamp?: string;
-}
 
 let addedBinaryFiles = false;
 let addedMediaFiles = false;
@@ -54,20 +52,20 @@ let addedLocations = false;
 let xPosition = 0;
 let firstPageMaxRows = 0;
 let secondPageMaxRows = 0;
-let allData: any[] = [];
-let pagesData: any[] = [];
+let allData: AllData[] = [];
+let pagesData: PagesData[] = [];
 let qrCodeUrl = undefined;
 let plasticValuesString = "";
-let locations: Array<{ type: string; [key: string]: any }> = [];
-let mediaFileUrls: Array<{ type: string; [key: string]: any }> = [];
-let binaryFilesUrls: Array<{ type: string; [key: string]: any }> = [];
+let locations: Location[] = [];
+let mediaFileUrls: MediaFileUrl[] = [];
+let binaryFilesUrls: BinaryFileUrl[] = [];
 let collectionAmount: number = 0;
 let issuanceDate: string = "";
 let applicantData: string = "";
 let applicantDataDescription: string = "";
-let materialDetails: Array<{ type: string; [key: string]: any }> = [];
+let materialDetails: any[] = [];
 let currentHeaders: Array<string> = [];
-let primaryHeaders: Array<string> = [];
+let primaryHeaders: any[] = []; // Fix: Change the type to PrimaryHeaders[]
 let secondaryHeaders: Array<string> = [];
 let retiredDate: string = "";
 const otherPageMaxRows: number = 35;
@@ -76,8 +74,8 @@ const fontInter: string = "Inter";
 
 export const generatePDF = async (
   certificateData: CreditOffsetCertificate,
-  creditData: any,
-  creditCollectionData: any,
+  creditData: CreditDataNode,
+  creditCollectionData: CreditCollectionData,
   ID: string,
 ) => {
   //To compress the PDF size
@@ -132,7 +130,9 @@ const processCertificateDataNode = (
   }
 };
 
-const processCreditCollectionsNode = (creditCollectionsNode: any) => {
+const processCreditCollectionsNode = (
+  creditCollectionsNode: CreditCollectionData,
+) => {
   //Create string for issuance date on second page
   collectionAmount =
     Number(creditCollectionsNode.activeAmount) +
@@ -141,17 +141,15 @@ const processCreditCollectionsNode = (creditCollectionsNode: any) => {
 };
 
 const processEventDataNode = (eventDataNode: any) => {
-  console.log(eventDataNode);
-
   // Correct the typo here
   const plasticValuesSet = new Set<string>(
     eventDataNode
-      .flatMap((eventNode: any) =>
+      .flatMap((eventNode: eventNode) =>
         eventNode.material.nodes.filter(
-          (material: any) => material.key === "plasticType",
+          (material: { key: string }) => material.key === "plasticType",
         ),
       )
-      .map((material: any) => JSON.stringify(material)),
+      .map((material: string) => JSON.stringify(material)),
   );
 
   // Convert plasticValuesSet to an array of unique objects based on their properties and values
@@ -162,32 +160,34 @@ const processEventDataNode = (eventDataNode: any) => {
 
   // Extract the value property from the unique objects and join them into a string
   plasticValuesString = uniqueMaterials
-    .map((material: any) => material.value)
+    .map((material: Material) => material.value)
     .join(", ");
-  console.log(plasticValuesString);
 
   //Assign data to location table variables
-  locations = eventDataNode.reduce((unique: any, eventNode: any) => {
-    const duplicate = unique.find(
-      (location: any) =>
-        location.longitude === eventNode.longitude &&
-        location.latitude === eventNode.latitude,
-    );
+  locations = eventDataNode.reduce(
+    (unique: Array<Unique>, eventNode: eventNode) => {
+      const duplicate = unique.find(
+        (location: Unique) =>
+          location.longitude === eventNode.longitude &&
+          location.latitude === eventNode.latitude,
+      );
 
-    if (!duplicate) {
-      unique.push({
-        country: eventNode.country || "N/A",
-        longitude: eventNode.longitude != null ? eventNode.longitude : "N/A",
-        latitude: eventNode.latitude != null ? eventNode.latitude : "N/A",
-        type: "location",
-      });
-    }
-    return unique;
-  }, []);
+      if (!duplicate) {
+        unique.push({
+          country: eventNode.country || "N/A",
+          longitude: eventNode.longitude != null ? eventNode.longitude : "N/A",
+          latitude: eventNode.latitude != null ? eventNode.latitude : "N/A",
+          type: "location",
+        });
+      }
+      return unique;
+    },
+    [],
+  );
 
   if (eventDataNode.length) {
     const uniqueMaterialsSet = new Set();
-    const uniqueMaterials: any = [];
+    const uniqueMaterials: string[] = [];
 
     //Assign new keys to material table variables
     const keyMapping: { [key: string]: string } = {
@@ -203,7 +203,7 @@ const processEventDataNode = (eventDataNode: any) => {
     };
 
     //Assign data to material table variables
-    eventDataNode.forEach((eventNode: any) => {
+    eventDataNode.forEach((eventNode: eventNode) => {
       const materialCombination: any = {
         type: "material",
         [keyMapping["registrationDate"]]: eventNode.registrationDate.substring(
@@ -212,7 +212,7 @@ const processEventDataNode = (eventDataNode: any) => {
         ),
       };
 
-      eventNode.material.nodes.forEach((materialNode: any) => {
+      eventNode.material.nodes.forEach((materialNode: MaterialNode) => {
         const key = keyMapping[materialNode.key] || materialNode.key;
         // Assign the value property instead of the entire object
         if (materialNode && materialNode.value) {
@@ -257,11 +257,11 @@ const processEventDataNode = (eventDataNode: any) => {
   }
 };
 
-const processCreditDataNode = (creditDataNode: any) => {
+const processCreditDataNode = (creditDataNode: CreditDataNode) => {
   //Assign data to binary table variables
 
   binaryFilesUrls = creditDataNode.binaryFiles.nodes.map(
-    (binaryFileNode: any) => {
+    (binaryFileNode: BinaryFileNode) => {
       return {
         name: binaryFileNode.name || "N/A",
         url: binaryFileNode.url || "N/A",
@@ -272,16 +272,18 @@ const processCreditDataNode = (creditDataNode: any) => {
     },
   );
   //Assign data to media table variables
-  mediaFileUrls = creditDataNode.mediaFiles.nodes.map((mediaFileNode: any) => {
-    return {
-      name: mediaFileNode.name || "N/A",
-      url: mediaFileNode.url || "N/A",
-      type: "media",
-    };
-  });
+  mediaFileUrls = creditDataNode.mediaFiles.nodes.map(
+    (mediaFileNode: MediaFileNode) => {
+      return {
+        name: mediaFileNode.name || "N/A",
+        url: mediaFileNode.url || "N/A",
+        type: "media",
+      };
+    },
+  );
 };
 
-const assignApplicantData = (creditDataNode: any) => {
+const assignApplicantData = (creditDataNode: CreditDataNode) => {
   //Assign data to Organization in collection information table
   applicantData = creditDataNode.applicantDataByCreditDataId.nodes[0].name;
 
@@ -338,14 +340,9 @@ const calculateMaxRows = () => {
   }
 };
 
-interface CurrentPageData {
-  type: string;
-  items: any[]; // Change 'any' to the specific type of items if possible
-}
-
 //Organize the data for each page
 const preparePagesData = () => {
-  let currentPageData: CurrentPageData[] = [];
+  let currentPageData: any = [];
   let currentRowCount = 0;
   let isFirstPage = true;
   let isSecondPage = false;
@@ -360,7 +357,7 @@ const preparePagesData = () => {
     }
 
     if (item.type === "material" && secondaryHeaders.length > 0) {
-      maxRowsPerPage -= item["Tracking Event"];
+      maxRowsPerPage -= item["Tracking Event"]; // Replace with maxRowsPerPage -= item["Tracking Event"];
     }
 
     currentRowCount++;
@@ -378,7 +375,9 @@ const preparePagesData = () => {
       }
     }
 
-    let category: any = currentPageData.find((c: any) => c.type === item.type);
+    let category: Category = currentPageData.find(
+      (c: any) => c.type === item.type,
+    );
     if (!category) {
       category = { type: item.type, items: [] };
       currentPageData.push(category);
@@ -411,7 +410,7 @@ const generateQRCode = async () => {
 
   // Create a new image for the logo
   const logo = new Image();
-  logo.src = "data:image/png;base64," + greenLogo;
+  logo.src = greenLogo2;
   // Wait for both images to load
   await Promise.all([
     new Promise((resolve, reject) => {
@@ -609,7 +608,7 @@ const addHorizontalLongLinePage1 = (doc: IjsPDF) => {
 const addCertificateDetailsPage1 = (
   doc: IjsPDF,
   certificateData: CreditOffsetCertificate,
-  plasticValuesString: any,
+  plasticValuesString: string,
 ) => {
   doc.setFontSize(fontSize("medium"));
   doc.setTextColor(...lightBlack);
@@ -720,8 +719,8 @@ const prepareSecondaryMaterialDataForPdf = (
   materialDetails: MaterialDetails[],
   secondaryHeaders: [],
 ) => {
-  const tableData = materialDetails.map((material: any) => {
-    return secondaryHeaders.map((header: any) => {
+  const tableData = materialDetails.map((material: Material) => {
+    return secondaryHeaders.map((header: string) => {
       return material[header] || "-";
     });
   });
@@ -877,8 +876,8 @@ const addSecondaryMaterialTableToPdf = (
 const addSimpleTable = (
   doc: IjsPDF,
   title: string,
-  headers: any,
-  data: any,
+  headers: string[],
+  data: any[],
   startY: number,
 ) => {
   startY = addTitle(doc, title, startY);
@@ -948,7 +947,7 @@ const addSimpleTable = (
 const addTableWithLinks = (
   doc: IjsPDF,
   title: string,
-  data: any,
+  data: DataItem[],
   startY: number,
 ) => {
   startY = addTitle(doc, title, startY);
@@ -981,7 +980,7 @@ const addTableWithLinks = (
         data.cell.text = "";
       }
     },
-    body: data.map((item: any) => [item.name, item.url]),
+    body: data.map((item: DataItem) => [item.name, item.url]),
     didDrawCell: (data: any) => {
       doc.setDrawColor(126, 194, 66);
       doc.setLineWidth(0.3);
@@ -1035,7 +1034,7 @@ const addTableWithLinks = (
 
 const addAllTables = (
   doc: IjsPDF,
-  pagesData: any,
+  pagesData: PagesData[],
   primaryHeaders: any,
   secondaryHeaders: any,
   certificateData: CreditOffsetCertificate,
@@ -1105,7 +1104,7 @@ const addAllTables = (
       doc.line(14, yPosition + 1, pageWidth - 14, yPosition + 1);
       const lines = doc.splitTextToSize(description, 170);
 
-      lines.forEach((line: any) => {
+      lines.forEach((line: string) => {
         yPosition += 6;
         doc.text(line, 20, yPosition);
       });
@@ -1114,7 +1113,7 @@ const addAllTables = (
       yPosition += 2;
     }
 
-    const addLocations = (locations: any) => {
+    const addLocations = (locations: string[]) => {
       if (addedLocations === false) {
         const locationsData = locations.map((loc: any) => [
           loc.country,
@@ -1150,7 +1149,7 @@ const addAllTables = (
 
     const addMediaFiles = (mediaFiles: any) => {
       if (addedMediaFiles === false) {
-        const photosTableData = mediaFiles.map((mf: any) => ({
+        const photosTableData = mediaFiles.map((mf: MediaFiles) => ({
           name: mf.name,
           url: mf.url,
         }));
@@ -1164,7 +1163,7 @@ const addAllTables = (
         addedMediaFiles = true;
       } else {
         yPosition -= 10;
-        const photosTableData = mediaFiles.map((mf: any) => ({
+        const photosTableData = mediaFiles.map((mf: MediaFiles) => ({
           name: mf.name,
           url: mf.url,
         }));
@@ -1178,7 +1177,7 @@ const addAllTables = (
       }
     };
 
-    const addMaterialData = (materialDetails: MaterialDetails[]) => {
+    const addMaterialData = (materialDetails: any) => {
       if (addedMaterialData === false) {
         yPosition =
           addMaterialTableToPdf(
@@ -1226,7 +1225,7 @@ const addAllTables = (
 
     const addBinaryFiles = (binaryFiles: any) => {
       if (addedBinaryFiles === false) {
-        const binaryFilesTableData = binaryFiles.map((bf: any) => ({
+        const binaryFilesTableData = binaryFiles.map((bf: BinaryFiles) => ({
           name: bf.name,
           url: bf.url,
         }));
@@ -1240,7 +1239,7 @@ const addAllTables = (
         addedBinaryFiles = true;
       } else {
         yPosition -= 10;
-        const binaryFilesTableData = binaryFiles.map((bf: any) => ({
+        const binaryFilesTableData = binaryFiles.map((bf: BinaryFiles) => ({
           name: bf.name,
           url: bf.url,
         }));
