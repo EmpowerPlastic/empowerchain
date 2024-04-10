@@ -1,25 +1,25 @@
 import type { CreditOffsetCertificate } from "@/types";
-import { jsPDF } from "jspdf";
-import autoTable, { type FontStyle } from "jspdf-autotable";
-import QRCode from "qrcode";
-import {
-  wastePick,
-  circular,
-  leaf1,
-  horizontalLeafs,
-  verticalLeafs,
-  greenLogo,
-  openSans,
-  openSansBold,
-  interRegular,
-} from "../pdfGenerator/AssetsBase64";
 import {
   addTextWithSpacing,
   calculateTextProperties,
   calculateXPosition,
-  ipfsToHttpsProtocol,
   fontSize,
+  ipfsToHttpsProtocol,
 } from "@/utils/utils";
+import { jsPDF } from "jspdf";
+import autoTable, { type FontStyle } from "jspdf-autotable";
+import QRCode from "qrcode";
+import {
+  circular,
+  greenLogo,
+  horizontalLeafs,
+  interRegular,
+  leaf1,
+  openSans,
+  openSansBold,
+  verticalLeafs,
+  wastePick,
+} from "../pdfGenerator/AssetsBase64";
 
 // https://github.com/simonbengtsson/jsPDF-AutoTable/issues/848
 interface IjsPDF extends jsPDF {
@@ -74,7 +74,7 @@ const otherPageMaxRows: number = 35;
 const fontOpenSans: string = "Open Sans";
 const fontInter: string = "Inter";
 
-export const generatePDF = (
+export const generatePDF = async (
   certificateData: CreditOffsetCertificate,
   creditData: any,
   creditCollectionData: any,
@@ -82,7 +82,7 @@ export const generatePDF = (
 ) => {
   //To compress the PDF size
   const doc = new jsPDF("landscape", undefined, undefined, true) as IjsPDF;
-  //qrCodeUrl = await generateQRCode();
+  qrCodeUrl = await generateQRCode();
   processCreditCollectionsNode(creditCollectionData);
   processEventDataNode(creditData.eventData.nodes);
   processCreditDataNode(creditData);
@@ -185,7 +185,6 @@ const processEventDataNode = (eventDataNode: any) => {
   let eventData;
   let materialData;
   if (eventDataNode.length) {
-
     const uniqueMaterialsSet = new Set();
     const uniqueMaterials: any = [];
 
@@ -256,8 +255,6 @@ const processEventDataNode = (eventDataNode: any) => {
     }
   }
 };
-
-
 
 const processCreditDataNode = (creditDataNode: any) => {
   //Assign data to binary table variables
@@ -413,14 +410,16 @@ const generateQRCode = async () => {
 
   // Create a new image for the logo
   const logo = new Image();
-  logo.src = greenLogo;
+  logo.src = "data:image/png;base64," + greenLogo;
   // Wait for both images to load
   await Promise.all([
-    new Promise((resolve) => {
+    new Promise((resolve, reject) => {
       qrImage.onload = resolve;
+      qrImage.onerror = () => reject(new Error("Failed to load QR image"));
     }),
-    new Promise((resolve) => {
+    new Promise((resolve, reject) => {
       logo.onload = resolve;
+      logo.onerror = () => reject(new Error("Failed to load logo"));
     }),
   ]);
 

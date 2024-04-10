@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
 import CustomImage from "@/components/CustomImage.vue";
-import { convertIPFStoHTTPS } from "@/utils/utils";
-import { useQuery } from "@vue/apollo-composable";
 import {
-  GET_CREDIT_COLLECTIONS,
-  GET_CREDIT_OFFSET_CERTIFICATE,
+GET_CREDIT_COLLECTIONS,
+GET_CREDIT_OFFSET_CERTIFICATE,
 } from "@/graphql/queries";
 import { generatePDF } from "@/pdfGenerator/pdfGenerator";
 import { useNotifyer } from "@/utils/notifyer";
-
+import { convertIPFStoHTTPS } from "@/utils/utils";
+import { useQuery } from "@vue/apollo-composable";
+import { computed, ref } from "vue";
 
 export interface CreditCardProps {
   cardData: any;
@@ -37,9 +36,9 @@ const downloadCertificate = async () => {
   queryCertificateData();
 };
 
-const onGeneratePDF = () => {
+const onGeneratePDF = async () => {
   try {
-    generatePDF(
+    await generatePDF(
       certificateData.value,
       creditData.value,
       creditCollectionData.value,
@@ -80,13 +79,13 @@ const getCreditData = (denom: string) => {
     denoms: [denom],
   });
 
-  onResult(() => {
+  onResult(async () => {
     if (result.value) {
       creditData.value =
         result.value.creditCollections.nodes[0].creditData.nodes[0];
       creditCollectionData.value = result.value.creditCollections.nodes[0];
       showSpinner.value = false;
-      onGeneratePDF();
+      await onGeneratePDF();
     }
   });
   if (error.value) {
