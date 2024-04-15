@@ -2,11 +2,11 @@
 import BuyButton from "@/components/BuyButton.vue";
 import Tooltip from "@/components/ui/Tooltip.vue";
 import {
-  CHAIN_ID,
-  MARKETPLACE_CONTRACT,
-  PC_BACKEND_ENDPOINT,
-  PC_BACKEND_ENDPOINT_API,
-  RPC_ENDPOINT,
+CHAIN_ID,
+MARKETPLACE_CONTRACT,
+PC_BACKEND_ENDPOINT,
+PC_BACKEND_ENDPOINT_API,
+RPC_ENDPOINT,
 } from "@/config/config";
 import { useAuth } from "@/stores/auth";
 import { useWallet } from "@/stores/wallet";
@@ -14,10 +14,10 @@ import { authHeader, useFetcher } from "@/utils/fetcher";
 import { log } from "@/utils/logger";
 import { useNotifyer } from "@/utils/notifyer";
 import {
-  formatDenom,
-  getWallet,
-  resolveSdkError,
-  walletConnected,
+formatDenom,
+getWallet,
+resolveSdkError,
+walletConnected,
 } from "@/utils/wallet-utils";
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { GasPrice } from "@cosmjs/stargate";
@@ -206,7 +206,7 @@ const handleCardPayment = async (retirererName: string) => {
     const accessToken = await getAccessToken(PC_BACKEND_ENDPOINT);
 
     const response = await post(
-      `${PC_BACKEND_ENDPOINT_API}/payments/create-checkout-session`,
+      `${PC_BACKEND_ENDPOINT_API}/payments/create-checkout-session-auth`,
       body,
       {
         headers: authHeader(accessToken),
@@ -243,7 +243,7 @@ const handleUnauthorizedUserPayment = async (
   };
   try {
     const response = await post(
-      `${PC_BACKEND_ENDPOINT_API}/payments/create-checkout-session`,
+      `${PC_BACKEND_ENDPOINT_API}/payments/create-checkout-session-noauth`,
       body,
     );
     const paymentGatewayLink = await response.text();
