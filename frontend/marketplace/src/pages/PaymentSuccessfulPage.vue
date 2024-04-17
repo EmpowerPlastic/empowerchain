@@ -26,6 +26,8 @@ const paymentStatus = ref<PaymentStatus | undefined>(undefined);
 const isCheckingStatus = ref(false);
 const route = useRoute();
 
+const { isAuthenticated } = useAuth()
+
 const handleFetchResponse = async (response: Response | null) => {
   // TODO: Handle 401 and maybe other errors
   if (!response) {
@@ -125,11 +127,18 @@ onMounted(async () => {
             class="bg-white/10 rounded-lg md:rounded-sm p-4 max-w-xl text-center"
           >
             <span
-              v-if="paymentStatus === PaymentStatus.COMPLETE"
+              v-if="isAuthenticated && paymentStatus === PaymentStatus.COMPLETE"
               class="font-Inter text-white text-title18"
             >
               Your plastic credit purchase was successful and a Plastic Credit
               Offset Certificate has been generated for you.
+            </span>
+            <span
+              v-else-if="paymentStatus === PaymentStatus.COMPLETE"
+              class="font-Inter text-white text-title18"
+            >
+              Your plastic credit purchase was successful.
+              You will receive an email shortly containing your Plastic Credit Offset Certificate.
             </span>
             <span
               v-else-if="paymentStatus === PaymentStatus.ERROR"
@@ -148,11 +157,11 @@ onMounted(async () => {
               of your transaction.
             </span>
             <a
-              v-if="paymentStatus === PaymentStatus.COMPLETE"
+              v-if="isAuthenticated && paymentStatus === PaymentStatus.COMPLETE"
               class="mt-5 text-white btn btn-ghost btn-block normal-case bg-greenPrimary hover:bg-greenDark text-title24 lg:text-title32 lg:btn-lg p-0 px-12 font-normal md:max-w-lg"
               href="/certificate"
-              >See your certificates</a
-            >
+              >See your certificates
+            </a>
             <a
               v-else
               class="mt-5 text-white btn btn-ghost btn-block normal-case bg-greenPrimary hover:bg-greenDark text-title24 lg:text-title32 lg:btn-lg p-0 px-12 font-normal md:max-w-lg"

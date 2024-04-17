@@ -2,10 +2,10 @@
 import { computed, ref } from "vue";
 import Modal from "@/components/ui/Modal.vue";
 import PrimaryButton from "@/components/ui/PrimaryButton.vue";
-import { CertificateHolderModalTypeEnums } from "@/types/CertificateHolderModalTypeEnums";
+import { UserType } from "@/types/UserType";
 
 export interface BuyCreditsModalProps {
-  modalType: CertificateHolderModalTypeEnums | null;
+  modalType: UserType | null;
 }
 
 const props = defineProps<BuyCreditsModalProps>();
@@ -33,10 +33,10 @@ const isButtonDisabled = () => {
   }
 
   return !(
-    props.modalType === CertificateHolderModalTypeEnums.EMAIL_AUTHORIZED_USER ||
+    props.modalType === UserType.EMAIL_AUTHORIZED ||
     props.modalType ===
-      CertificateHolderModalTypeEnums.CRYPTO_WALLET_AUTHORIZED_USER ||
-    (props.modalType === CertificateHolderModalTypeEnums.GUEST_USER &&
+      UserType.CRYPTO_WALLET_AUTHORIZED ||
+    (props.modalType === UserType.GUEST &&
       isCertificateHolderEmailValid.value)
   );
 };
@@ -75,7 +75,7 @@ defineExpose({
           >
         </div>
         <input
-          v-if="modalType === CertificateHolderModalTypeEnums.GUEST_USER"
+          v-if="modalType === UserType.GUEST"
           type="email"
           placeholder="Certificate holder email"
           class="input input-bordered w-full text-white bg-lightGray mt-5"
