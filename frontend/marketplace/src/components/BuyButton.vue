@@ -4,7 +4,7 @@ import { useAuth } from "@/stores/auth";
 import { isValidCreditAmount } from "@/utils/utils";
 import tracking, { TrackEvents } from "@/utils/analytics";
 import CertificateHolderModal from "@/components/CertificateHolderModal.vue";
-import { CertificateHolderModalTypeEnums } from "@/types/CertificateHolderModalTypeEnums";
+import { UserType } from "@/types/UserType";
 
 export interface BuyButtonProps {
   showButtonSpinner: boolean;
@@ -24,7 +24,7 @@ const continueHandler = ref<((name: string) => void) | undefined>(undefined);
 const continueUnauthorizedPaymentHandler = ref<
   ((name: string, email: string) => void) | undefined
 >(undefined);
-const modalType = ref<CertificateHolderModalTypeEnums | null>(null);
+const modalType = ref<UserType | null>(null);
 
 enum BuyButtonState {
   DISABLED = "disabled",
@@ -94,28 +94,28 @@ const addUnauthorizedPaymentModalToHandler = (
   };
 };
 
-const handleModalType = (type: CertificateHolderModalTypeEnums) => {
+const handleModalType = (type: UserType) => {
   modalType.value = type;
 };
 
 const buttonHandler = computed<(() => void) | undefined>(() => {
   switch (buttonState.value) {
     case BuyButtonState.ENABLED_CARD:
-      handleModalType(CertificateHolderModalTypeEnums.EMAIL_AUTHORIZED_USER);
+      handleModalType(UserType.EMAIL_AUTHORIZED);
       tracking.trackEvent(TrackEvents.CLICKED_PAYMENT_BUTTON, {
         status: "pay with card",
       });
       return addModalToHandler(props.handleCardPayment);
     case BuyButtonState.ENABLED_WALLET:
       handleModalType(
-        CertificateHolderModalTypeEnums.CRYPTO_WALLET_AUTHORIZED_USER,
+        UserType.CRYPTO_WALLET_AUTHORIZED,
       );
       tracking.trackEvent(TrackEvents.CLICKED_PAYMENT_BUTTON, {
         status: "pay with crypto",
       });
       return addModalToHandler(props.handleBuyCredits);
     case BuyButtonState.ENABLED_UNAUTHORIZED:
-      handleModalType(CertificateHolderModalTypeEnums.GUEST_USER);
+      handleModalType(UserType.GUEST);
       tracking.trackEvent(TrackEvents.CLICKED_PAYMENT_BUTTON, {
         status: "unauthorized",
       });
@@ -136,7 +136,7 @@ const isDisabled = computed(
 
 const handleContinue = (name: string, email?: string) => {
   if (
-    modalType.value === CertificateHolderModalTypeEnums.GUEST_USER &&
+    modalType.value === UserType.GUEST &&
     continueUnauthorizedPaymentHandler.value
   ) {
     return continueUnauthorizedPaymentHandler.value(name, email || "");
