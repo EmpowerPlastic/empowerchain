@@ -177,7 +177,7 @@ devnet:
     SAVE IMAGE --push ${IMAGE_NAME}:${VERSION} ${IMAGE_NAME}:latest
 
 interchaintest-prep:
-    FROM golang:1.20-bullseye
+    FROM golang:1.21-bullseye
     WORKDIR /interchaintest
     GIT CLONE --branch v7 https://github.com/strangelove-ventures/interchaintest /interchaintest
     RUN make interchaintest
