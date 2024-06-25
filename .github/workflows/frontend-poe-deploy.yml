@@ -13,7 +13,7 @@ jobs:
     name: Deploy Proof of Existence Frontend
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - run: npm ci && npm run build
         working-directory: ./frontend/proof-of-existence/

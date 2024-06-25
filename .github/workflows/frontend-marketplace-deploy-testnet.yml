@@ -13,7 +13,7 @@ jobs:
     name: Deploy Marketplace Frontend - testnet
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Load .env file
         uses: xom9ikk/dotenv@v2
         with:
