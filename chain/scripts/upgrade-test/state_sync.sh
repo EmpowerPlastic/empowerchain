@@ -15,6 +15,14 @@ if [ -z "$2" ]; then
 fi
 STATE_SYNC_PEER=$2
 
+if [ -z "$3" ]; then
+    echo "Missing SNAPSHOT_URL"
+    exit 1
+fi
+SNAPSHOT_URL=$3
+
+curl -L $SNAPSHOT_URL | tar -Ilz4 -xf - -C $HOME/.empowerchain
+
 SNAP_RPC="${STATE_SYNC_RPC}"
 PEER="${STATE_SYNC_PEER}"
 

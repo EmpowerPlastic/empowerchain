@@ -209,11 +209,12 @@ prep-genesis:
     ARG --required CHAIN_ID
     ARG --required STATE_SYNC_RPC
     ARG --required STATE_SYNC_PEER
+    ARG --required SNAPSHOT_URL
     FROM +node-base --CURRENT_VERSION=${CURRENT_VERSION}
     COPY scripts/upgrade-test/state_sync.sh state_sync.sh
     COPY scripts/upgrade-test/start_and_catch_up.sh start_and_catch_up.sh
     RUN empowerd init genesis-prepper --chain-id ${CHAIN_ID}
-    RUN ./state_sync.sh ${STATE_SYNC_RPC} ${STATE_SYNC_PEER}
+    RUN ./state_sync.sh ${STATE_SYNC_RPC} ${STATE_SYNC_PEER} ${SNAPSHOT_URL}
     RUN ./start_and_catch_up.sh
     RUN empowerd export > exported-genesis.json
     SAVE ARTIFACT exported-genesis.json AS LOCAL exported-genesis.json

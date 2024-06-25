@@ -3,7 +3,7 @@
 empowerd start > /tmp/start_and_catch_up 2>&1 &
 sleep 5
 
-max_catch_up_wait_attempts=30; # TODO, MAKE HIGHER
+max_catch_up_wait_attempts=250 # Adjust as needed
 catch_up_wait_count=0;
 
 while [ "`empowerd status | jq -r ".SyncInfo.catching_up"`" != "false" ] && [ $catch_up_wait_count -lt $max_catch_up_wait_attempts ]; do

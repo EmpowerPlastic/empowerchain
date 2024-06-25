@@ -19,6 +19,8 @@ on:
         description: "Current version of the binary"
       upgrade_name:
         description: "Name of the upgrade"
+      snapshot_url:
+        description: "URL to the snapshot"
   # TODO: Maybe do on a cron schedule, every week or something?
   # TODO: Potentially allow for getting some of these values from secrets, especially if we run it as a cron schedule
 
@@ -33,7 +35,7 @@ jobs:
         with:
           version: 0.6.30
 
-      - run: earthly --ci --no-cache --output +prep-genesis --CHAIN_ID=${{ github.event.inputs.chain_id }}  --STATE_SYNC_RPC=${{ github.event.inputs.state_sync_rpc }} --STATE_SYNC_PEER=${{ github.event.inputs.state_sync_peer }} --CURRENT_VERSION=${{ github.event.inputs.current_version }}
+      - run: earthly --ci --no-cache --output +prep-genesis --CHAIN_ID=${{ github.event.inputs.chain_id }}  --STATE_SYNC_RPC=${{ github.event.inputs.state_sync_rpc }} --STATE_SYNC_PEER=${{ github.event.inputs.state_sync_peer }} --CURRENT_VERSION=${{ github.event.inputs.current_version }} --SNAPSHOT_URL=${{ github.event.inputs.snapshot_url }}
         working-directory: ./chain
 
       - name: Archive genesis file
