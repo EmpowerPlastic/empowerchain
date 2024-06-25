@@ -14,7 +14,7 @@ jobs:
     name: Test EmpowerChain
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: earthly/actions-setup@v1
         with:
@@ -35,7 +35,7 @@ jobs:
     name: Smoke tests EmpowerChain
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: earthly/actions-setup@v1
         with:
@@ -48,7 +48,7 @@ jobs:
     name: Simulation non-determinism tests EmpowerChain
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: earthly/actions-setup@v1
         with:
@@ -61,7 +61,7 @@ jobs:
     name: Run interchaintest IBC conformace test suite
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: earthly/actions-setup@v1
         with:
