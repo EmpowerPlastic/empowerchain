@@ -124,7 +124,7 @@ import (
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 
-	v2 "github.com/EmpowerPlastic/empowerchain/app/upgrades/v2"
+	v3 "github.com/EmpowerPlastic/empowerchain/app/upgrades/v3"
 	certificatemoduletypes "github.com/EmpowerPlastic/empowerchain/x/certificates"
 	certificatemodulekeeper "github.com/EmpowerPlastic/empowerchain/x/certificates/keeper"
 	certificatemodule "github.com/EmpowerPlastic/empowerchain/x/certificates/module"
@@ -421,7 +421,7 @@ func New(
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
 	// See https://github.com/CosmWasm/cosmwasm/blob/main/docs/CAPABILITIES-BUILT-IN.md
-	availableCapabilities := "iterator,staking,stargate,cosmwasm_1_1,cosmwasm_1_2"
+	availableCapabilities := "iterator,staking,stargate,cosmwasm_1_1,cosmwasm_1_2,cosmwasm_1_3,cosmwasm_1_4,cosmwasm_2_0"
 	app.WasmKeeper = wasmkeeper.NewKeeper(
 		appCodec,
 		storeKeys[wasmtypes.StoreKey],
@@ -528,6 +528,7 @@ func New(
 		scopedICAHostKeeper,
 		app.MsgServiceRouter(),
 	)
+	app.ICAHostKeeper.WithQueryRouter(app.GRPCQueryRouter())
 
 	app.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
 		appCodec,
@@ -973,11 +974,10 @@ func (app *EmpowerApp) setupUpgradeStoreLoaders() {
 // read more here: https://docs.cosmos.network/main/core/upgrade
 func (app *EmpowerApp) setupUpgradeHandlers() {
 	app.UpgradeKeeper.SetUpgradeHandler(
-		v2.UpgradeName,
-		v2.CreateV2UpgradeHandler(
+		v3.UpgradeName,
+		v3.CreateV3UpgradeHandler(
 			*app.ModuleManager,
 			app.configurator,
-			app.IBCKeeper.ClientKeeper,
 		),
 	)
 }
