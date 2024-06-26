@@ -23,7 +23,7 @@ jobs:
       - run: earthly --ci --output +test-with-coverage
         working-directory: ./cosmwasm
 
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         if: ${{ github.actor != 'dependabot[bot]' }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

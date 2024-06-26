@@ -23,7 +23,7 @@ jobs:
       - run: earthly --ci --output -P +test-with-coverage
         working-directory: ./chain
 
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         if: ${{ github.actor != 'dependabot[bot]' }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
