@@ -12,7 +12,7 @@ require (
 	github.com/cometbft/cometbft-db v0.8.0
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5
 	github.com/cosmos/cosmos-sdk v0.47.13
-	github.com/cosmos/gogoproto v1.4.10
+	github.com/cosmos/gogoproto v1.5.0
 	github.com/cosmos/ibc-go/v7 v7.6.0
 	github.com/golang/protobuf v1.5.4
 	github.com/golangci/golangci-lint v1.51.2
@@ -24,7 +24,7 @@ require (
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
+	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
 	google.golang.org/genproto/googleapis/api v0.0.0-20240123012728-ef4313101c80
 	google.golang.org/grpc v1.62.1
 	google.golang.org/protobuf v1.33.0
