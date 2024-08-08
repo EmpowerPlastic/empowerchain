@@ -50,7 +50,7 @@ require (
 	github.com/Antonboom/nilnil v0.1.1 // indirect
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/ChainSafe/go-schnorrkel v1.0.0 // indirect
-	github.com/CosmWasm/wasmvm v1.5.0 // indirect
+	github.com/CosmWasm/wasmvm v1.5.4 // indirect
 	github.com/Djarvur/go-err113 v0.0.0-20210108212216-aea10b59be24 // indirect
 	github.com/GaijinEntertainment/go-exhaustruct/v2 v2.3.0 // indirect
 	github.com/Masterminds/semver v1.5.0 // indirect
