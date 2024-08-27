@@ -6,7 +6,8 @@ docker:
     RUN apt-get update -yq \
         && apt-get install --no-install-recommends -yq \
         wget gnupg ca-certificates gcc g++ make
-    RUN wget -qO- https://go.dev/dl/go1.20.linux-amd64.tar.gz | tar -v -C /usr/local -xz
+    RUN GOARCH=$(case "$(uname -m)" in x86_64) echo "amd64";; aarch64) echo "arm64";; *) exit 1;; esac) && \
+    wget -qO- "https://go.dev/dl/go1.20.linux-$GOARCH.tar.gz" | tar -v -C /usr/local -xz
     ENV PATH $PATH:/usr/local/go/bin:/root/go/bin
 
 build-prep:
@@ -32,6 +33,7 @@ build-local:
 build-with-wasmvm:
     FROM +build
     RUN find /root/go -name libwasmvm.x86_64.so -exec cp {} build/libwasmvm.x86_64.so \;
+    RUN find /root/go -name libwasmvm.aarch64.so -exec cp {} build/libwasmvm.aarch64.so \;
     SAVE ARTIFACT build/*
 
 build-static:
@@ -89,7 +91,7 @@ smoketest-prep:
     WORKDIR /workbench
     GIT CLONE --branch v7.1.0 https://github.com/cosmos/gaia gaia
     RUN cd gaia && make install && cd ..
-    GIT CLONE https://github.com/cosmos/relayer relayer
+    GIT CLONE --branch v2.4.2 https://github.com/cosmos/relayer relayer
     RUN cd relayer && make install && cd ..
 
 smoketest:
@@ -122,10 +124,20 @@ swagger-gen:
         chmod +x /usr/local/bin/swagger
     # Install protoc-gen-swagger
     RUN go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@latest
+    # Install statik
+    RUN go install github.com/rakyll/statik@latest
     RUN make swagger-gen
+
+swagger-md:
+    FROM +swagger-gen
     RUN cd client/docs/swagger-ui && swagger generate markdown
     SAVE ARTIFACT client/docs/swagger-ui/swagger.yaml
     SAVE ARTIFACT client/docs/swagger-ui/markdown.md
+
+swagger-docs:
+    FROM +swagger-gen
+    SAVE ARTIFACT client/docs/* AS LOCAL client/docs/
+
 
 docgen:
     FROM +build-prep
@@ -133,7 +145,7 @@ docgen:
     SAVE ARTIFACT scripts/docgen/output
 
 devnet:
-    FROM golang:1.20-bullseye
+    FROM golang:1.20-bookworm
     ARG EARTHLY_GIT_SHORT_HASH
     ARG VERSION=$EARTHLY_GIT_SHORT_HASH
     ARG IMAGE_NAME=empowerchain-devnet
@@ -144,6 +156,7 @@ devnet:
     WORKDIR /
     COPY +build-with-wasmvm/empowerd /usr/local/bin/empowerd
     COPY +build-with-wasmvm/libwasmvm.x86_64.so /usr/local/lib/libwasmvm.x86_64.so
+    COPY +build-with-wasmvm/libwasmvm.aarch64.so /usr/local/lib/libwasmvm.aarch64.so
     ENV LD_LIBRARY_PATH=/usr/local/lib
 
     RUN apt update && apt install jq -y
@@ -164,9 +177,9 @@ devnet:
     SAVE IMAGE --push ${IMAGE_NAME}:${VERSION} ${IMAGE_NAME}:latest
 
 interchaintest-prep:
-    FROM golang:1.20-bullseye
+    FROM golang:1.21-bullseye
     WORKDIR /interchaintest
-    GIT CLONE https://github.com/strangelove-ventures/interchaintest /interchaintest
+    GIT CLONE --branch v7 https://github.com/strangelove-ventures/interchaintest /interchaintest
     RUN make interchaintest
     SAVE ARTIFACT bin/interchaintest
 
@@ -177,3 +190,45 @@ ibc-conformance-test:
         RUN ./interchaintest -matrix tests/e2e/interchaintest.json
     END
     SAVE ARTIFACT /root/.interchaintest/reports/* AS LOCAL build/interchaintest-reports/
+
+node-base:
+    ARG --required CURRENT_VERSION
+    RUN apt-get update -yq \
+        && apt-get install --no-install-recommends -yq \
+        curl tar wget clang pkg-config libssl-dev jq \
+        build-essential bsdmainutils git make ncdu gcc \
+        git jq chrony liblz4-tool unzip
+    RUN wget https://github.com/EmpowerPlastic/empowerchain/releases/download/${CURRENT_VERSION}/empowerd-${CURRENT_VERSION}-linux-amd64.zip
+    RUN mkdir -p /root/binaries
+    RUN unzip -p empowerd-${CURRENT_VERSION}-linux-amd64.zip > /root/binaries/empowerd
+    RUN chmod +x /root/binaries/empowerd
+    ENV PATH $PATH:/root/binaries
+
+prep-genesis:
+    ARG --required CURRENT_VERSION
+    ARG --required CHAIN_ID
+    ARG --required STATE_SYNC_RPC
+    ARG --required STATE_SYNC_PEER
+    ARG --required SNAPSHOT_URL
+    FROM +node-base --CURRENT_VERSION=${CURRENT_VERSION}
+    COPY scripts/upgrade-test/state_sync.sh state_sync.sh
+    COPY scripts/upgrade-test/start_and_catch_up.sh start_and_catch_up.sh
+    RUN empowerd init genesis-prepper --chain-id ${CHAIN_ID}
+    RUN ./state_sync.sh ${STATE_SYNC_RPC} ${STATE_SYNC_PEER} ${SNAPSHOT_URL}
+    RUN ./start_and_catch_up.sh
+    RUN empowerd export > exported-genesis.json
+    SAVE ARTIFACT exported-genesis.json AS LOCAL exported-genesis.json
+
+upgrade-test:
+    ARG --required CURRENT_VERSION
+    ARG --required UPGRADE_NAME # Need to match the actual upgrade name in app.go. If there is not upgrade or the name is wrong, this will fail
+    FROM +node-base --CURRENT_VERSION=${CURRENT_VERSION}
+    COPY scripts/upgrade-test/upgrade.sh upgrade.sh
+    COPY exported-genesis.json exported-genesis.json
+    COPY +build-with-wasmvm/empowerd ./new_empowerd
+    COPY +build-with-wasmvm/libwasmvm.x86_64.so /usr/local/lib/libwasmvm.x86_64.so
+    COPY +build-with-wasmvm/libwasmvm.aarch64.so /usr/local/lib/libwasmvm.aarch64.so
+    ENV LD_LIBRARY_PATH=/usr/local/lib
+
+    RUN ./upgrade.sh ${UPGRADE_NAME}
+

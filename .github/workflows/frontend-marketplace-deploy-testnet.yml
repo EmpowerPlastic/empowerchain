@@ -1,0 +1,33 @@
+name: "Deploy Marketplace Frontend - testnet"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/marketplace/**'
+
+jobs:
+  build:
+    name: Deploy Marketplace Frontend - testnet
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Load .env file
+        uses: xom9ikk/dotenv@v2
+        with:
+          path: ./frontend/marketplace
+          mode: test
+      - run: npm ci && npm run build:test
+        working-directory: ./frontend/marketplace
+        env:
+          VITE_REVISION_ID: ${{ github.sha }}
+      - uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-args: '--prod'
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_MARKETPLACE}}
+          working-directory: ./frontend/marketplace/

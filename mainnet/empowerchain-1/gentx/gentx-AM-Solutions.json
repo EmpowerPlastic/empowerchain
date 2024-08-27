@@ -1,0 +1,68 @@
+{
+   "body":{
+      "messages":[
+         {
+            "@type":"/cosmos.staking.v1beta1.MsgCreateValidator",
+            "description":{
+               "moniker":"AM Solutions",
+               "identity":"5A1DB2A1F7B6A66F",
+               "website":"https://www.theamsolutions.info",
+               "security_contact":"latflat@gmail.com",
+               "details":"The most important is - reliability."
+            },
+            "commission":{
+               "rate":"0.050000000000000000",
+               "max_rate":"0.200000000000000000",
+               "max_change_rate":"0.100000000000000000"
+            },
+            "min_self_delegation":"1",
+            "delegator_address":"empower1y3k26f8gejvw2uq6nfpqpk22f4v99cnt8djqep",
+            "validator_address":"empowervaloper1y3k26f8gejvw2uq6nfpqpk22f4v99cntlkv0h5",
+            "pubkey":{
+               "@type":"/cosmos.crypto.ed25519.PubKey",
+               "key":"KqkVcxDliejla+/rslv5sogRVhqmEgFd+9uY6ceTykg="
+            },
+            "value":{
+               "denom":"umpwr",
+               "amount":"1000000"
+            }
+         }
+      ],
+      "memo":"b5f1d0204a2d9539ed988497b0f84d6db16aebda@65.108.44.149:26656",
+      "timeout_height":"0",
+      "extension_options":[
+         
+      ],
+      "non_critical_extension_options":[
+         
+      ]
+   },
+   "auth_info":{
+      "signer_infos":[
+         {
+            "public_key":{
+               "@type":"/cosmos.crypto.secp256k1.PubKey",
+               "key":"AzS9pbahGlH5DFs6WJG4r2+ASbhxgVjpFgKomAaLzqH0"
+            },
+            "mode_info":{
+               "single":{
+                  "mode":"SIGN_MODE_DIRECT"
+               }
+            },
+            "sequence":"0"
+         }
+      ],
+      "fee":{
+         "amount":[
+            
+         ],
+         "gas_limit":"200000",
+         "payer":"",
+         "granter":""
+      },
+      "tip":null
+   },
+   "signatures":[
+      "ovtuZIMdl26JlgRPJF5NEhURmUjDuyLb9gKIxernzJtvvAmuDkoZ10/qV7hS93+Y7ovtO7BCAcED+GbAYjiq+A=="
+   ]
+}

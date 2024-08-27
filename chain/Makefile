@@ -207,7 +207,7 @@ test-sim-nondeterminism:
 ###                                  Proto                                  ###
 ###############################################################################
 
-protoVer=0.11.5
+protoVer=0.13.0
 protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
 protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 
@@ -222,12 +222,22 @@ proto:
 
 swagger-gen:
 	@echo
-	@echo "=========== Generate Message ============"
+	@echo "=========== Generate Swagger Docs ============"
 	@echo
 	./scripts/generate-docs.sh
+	$(MAKE) update-swagger-docs
 	@echo
 	@echo "=========== Generate Complete ============"
 	@echo
+
+update-swagger-docs:
+	statik -src=client/docs/swagger-ui -dest=client/docs -f -m
+	@if [ -n "$(git status --porcelain)" ]; then \
+		echo "\033[91mSwagger docs are out of sync!!!\033[0m";\
+		exit 1;\
+	else \
+		echo "\033[92mSwagger docs are in sync\033[0m";\
+	fi
 
 ###############################################################################
 ###                                  Serve                                  ###

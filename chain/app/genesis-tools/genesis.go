@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -156,7 +156,7 @@ func UnmarshalGenesis(clientCtx client.Context, genesisState *GenesisState, appS
 	cdc.MustUnmarshalJSON(appState[slashingtypes.ModuleName], &genesisState.SlashingGenesis)
 	genesisState.StakingGenesis = *stakingtypes.GetGenesisStateFromAppState(cdc, appState)
 	cdc.MustUnmarshalJSON(appState[plasticcredit.ModuleName], &genesisState.PlasticcreditGenesis)
-	cdc.MustUnmarshalJSON(appState[wasm.ModuleName], &genesisState.WasmGenesis)
+	cdc.MustUnmarshalJSON(appState[wasmtypes.ModuleName], &genesisState.WasmGenesis)
 }
 
 // MarshalGenesis marshals the provided GenesisState into a map of module name to
@@ -270,7 +270,7 @@ func MarshalGenesis(clientCtx client.Context, genesisState *GenesisState, appSta
 	if err != nil {
 		log.Panic(fmt.Errorf("failed to marshal wasm genesis state: %w", err), err)
 	}
-	appState[wasm.ModuleName] = wasmGenStateBz
+	appState[wasmtypes.ModuleName] = wasmGenStateBz
 
 	return appState
 }
@@ -298,5 +298,35 @@ type GenesisState struct {
 	StakingGenesis          stakingtypes.GenesisState
 	PlasticcreditGenesis    plasticcredit.GenesisState
 	ProofofexistenceGenesis proofofexistence.GenesisState
-	WasmGenesis             wasm.GenesisState
+	WasmGenesis             wasmtypes.GenesisState
+}
+
+func GetModuleAccount(cdc codec.Codec, genesisState *GenesisState, moduleAccountName string) (authtypes.ModuleAccountI, bool) {
+	for _, accountAny := range genesisState.AuthGenesis.Accounts {
+		var account authtypes.AccountI
+		err := cdc.UnpackAny(accountAny, &account)
+		if err == nil {
+			moduleAccount, isModuleAccount := account.(authtypes.ModuleAccountI)
+			if isModuleAccount {
+				if moduleAccount.GetName() == moduleAccountName {
+					return moduleAccount, true
+				}
+			}
+		}
+	}
+	return nil, false
+}
+
+func GetBalanceOfAddress(genesisState *GenesisState, address string, denom string) (sdk.Coin, bool) {
+	for _, balance := range genesisState.BankGenesis.Balances {
+		if balance.Address == address {
+			for _, coin := range balance.Coins {
+				if coin.Denom == denom {
+					return coin, true
+				}
+			}
+		}
+	}
+
+	return sdk.Coin{}, false
 }

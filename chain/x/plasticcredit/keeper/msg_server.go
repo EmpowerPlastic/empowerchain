@@ -227,7 +227,7 @@ func (m msgServer) TransferCredits(goCtx context.Context, req *plasticcredit.Msg
 	if err != nil {
 		return &plasticcredit.MsgTransferCreditsResponse{}, sdkerrors.ErrInvalidAddress
 	}
-	err = m.transferCredits(ctx, req.Denom, from, to, req.Amount, req.Retire)
+	err = m.transferCredits(ctx, req.Denom, from, to, req.Amount, req.Retire, req.RetiringEntityName, req.RetiringEntityAdditionalData)
 	if err != nil {
 		return &plasticcredit.MsgTransferCreditsResponse{}, err
 	}

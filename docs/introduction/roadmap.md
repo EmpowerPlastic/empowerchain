@@ -38,6 +38,6 @@ In this phase we are focused on the following:
 After the release of the initial modules, the current plan is to focus on traceability and adding value to 
 collection incentives and plastic credits through access to products, services, and liquidity.
 
-This phase is right now the most uncertain one. It's contents might change, depending on market and user feedback.
+This phase is right now the most uncertain one. Its contents might change, depending on market and user feedback.
 It is also dependent on technological (privacy in particular) developments in the space.
 

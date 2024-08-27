@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -42,7 +42,7 @@ func TestFullAppSimulation(t *testing.T) {
 		nil,
 		true,
 		simtestutil.NewAppOptionsWithFlagHome(dir),
-		[]wasm.Option{},
+		[]wasmkeeper.Option{},
 		fauxMerkleModeOpt,
 		baseapp.SetChainID(SimAppChainID),
 	)

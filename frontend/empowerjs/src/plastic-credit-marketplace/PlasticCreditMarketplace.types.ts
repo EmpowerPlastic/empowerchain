@@ -11,6 +11,7 @@ export type ExecuteMsg = {
   create_listing: {
     denom: string;
     number_of_credits: Uint64;
+    operator?: Addr | null;
     price_per_credit: Coin;
   };
 } | {
@@ -24,10 +25,38 @@ export type ExecuteMsg = {
     denom: string;
     number_of_credits_to_buy: number;
     owner: Addr;
+    retire: boolean;
+    retiring_entity_additional_data?: string | null;
+    retiring_entity_name?: string | null;
   };
 } | {
   cancel_listing: {
     denom: string;
+  };
+} | {
+  freeze_credits: {
+    buyer: Addr;
+    denom: string;
+    number_of_credits_to_freeze: number;
+    owner: Addr;
+    timeout_unix_timestamp: number;
+  };
+} | {
+  cancel_frozen_credits: {
+    buyer: Addr;
+    denom: string;
+    number_of_frozen_credits_to_cancel: number;
+    owner: Addr;
+  };
+} | {
+  release_frozen_credits: {
+    buyer: Addr;
+    denom: string;
+    number_of_credits_to_release: number;
+    owner: Addr;
+    retire: boolean;
+    retiring_entity_additional_data?: string | null;
+    retiring_entity_name?: string | null;
   };
 } | {
   edit_fee_split_config: {
@@ -36,8 +65,8 @@ export type ExecuteMsg = {
   };
 };
 export type Uint64 = string;
-export type Uint128 = string;
 export type Addr = string;
+export type Uint128 = string;
 export type Decimal = string;
 export interface Coin {
   amount: Uint128;
@@ -60,6 +89,12 @@ export type QueryMsg = {
   };
 } | {
   fee_split_config: {};
+} | {
+  price: {
+    denom: string;
+    number_of_credits_to_buy: number;
+    owner: Addr;
+  };
 };
 export interface Config {
   fee_percentage: Decimal;
@@ -71,9 +106,14 @@ export interface ListingResponse {
 export interface Listing {
   denom: string;
   number_of_credits: Uint64;
+  operator?: Addr | null;
   owner: Addr;
   price_per_credit: Coin;
 }
 export interface ListingsResponse {
   listings: Listing[];
+}
+export interface PriceResponse {
+  fee: Coin;
+  total_price: Coin;
 }

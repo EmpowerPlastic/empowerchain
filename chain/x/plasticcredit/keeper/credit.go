@@ -11,6 +11,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/cosmos/gogoproto/proto"
+	"golang.org/x/exp/slices"
 
 	"github.com/EmpowerPlastic/empowerchain/utils"
 	"github.com/EmpowerPlastic/empowerchain/x/certificates"
@@ -65,6 +66,46 @@ func (k Keeper) GetCreditBalances(ctx sdk.Context, pageReq query.PageRequest) ([
 	return creditBalances, *pageRes, nil
 }
 
+func (k Keeper) createCreditRetirmentCertificate(
+	ctx sdk.Context,
+	owner sdk.AccAddress,
+	denom string,
+	amount uint64,
+	retiringEntityName string,
+	retiringEntityAdditionalData string,
+) error {
+	certificatesAdditionalData := []*certificates.AdditionalData{
+		{Key: "denom", Value: denom},
+		{Key: "amount", Value: fmt.Sprint(amount)},
+		{Key: "retiring_entity_address", Value: owner.String()},
+		{Key: "retiring_entity_name", Value: retiringEntityName},
+		{Key: "retiring_entity_additional_data", Value: retiringEntityAdditionalData},
+	}
+	abbrev, _ := SplitCreditDenom(denom)
+	creditType, found := k.GetCreditType(ctx, abbrev)
+	if !found {
+		return errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit type with abbrev %s not found", abbrev)
+	}
+	issuer, found := k.GetIssuer(ctx, creditType.IssuerId)
+	if !found {
+		return errors.Wrapf(plasticcredit.ErrIssuerNotFound, "issuer with id %d not found", creditType.IssuerId)
+	}
+	certificate := certificates.MsgCreateCertificate{
+		Owner:          owner.String(),
+		Issuer:         issuer.Admin,
+		Type:           0,
+		AdditionalData: certificatesAdditionalData,
+	}
+	_, err := k.certificatesKeeper.CreateCertificateSkipAllowedIssuers(ctx, &certificate)
+	if err != nil {
+		return errors.Wrapf(plasticcredit.ErrFailedCreateCertificate,
+			"unable to create certificate for owner %s for issuer %s",
+			owner.String(), issuer.Admin,
+		)
+	}
+	return nil
+}
+
 func (k Keeper) retireCreditsForAddress(
 	ctx sdk.Context,
 	ownerAccAddress string,
@@ -100,29 +141,12 @@ func (k Keeper) retireCreditsForAddress(
 	if !found {
 		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrCreditTypeNotFound, "credit type with abbrev %s not found", abbrev)
 	}
-	issuer, found := k.GetIssuer(ctx, creditType.IssuerId)
-	if !found {
-		return plasticcredit.CreditBalance{}, errors.Wrapf(plasticcredit.ErrIssuerNotFound, "issuer with id %d not found", creditType.IssuerId)
-	}
 
-	certificatesAdditionalData := []*certificates.AdditionalData{
-		{Key: "denom", Value: denom},
-		{Key: "amount", Value: fmt.Sprint(amount)},
-		{Key: "retiring_entity_address", Value: owner.String()},
-		{Key: "retiring_entity_name", Value: retiringEntityName},
-		{Key: "retiring_entity_additional_data", Value: retiringEntityAdditionalData},
-	}
-	certificate := certificates.MsgCreateCertificate{
-		Owner:          owner.String(),
-		Issuer:         issuer.Admin,
-		Type:           0,
-		AdditionalData: certificatesAdditionalData,
-	}
-	_, err = k.certificatesKeeper.CreateCertificateSkipAllowedIssuers(ctx, &certificate)
+	err = k.createCreditRetirmentCertificate(ctx, owner, denom, amount, retiringEntityName, retiringEntityAdditionalData)
 	if err != nil {
 		return creditBalance, errors.Wrapf(plasticcredit.ErrFailedCreateCertificate,
-			"unable to create certificate for owner %s for issuer %s",
-			owner.String(), issuer.Admin,
+			"unable to create certificate for owner %s for issuer %d",
+			owner.String(), &creditType.IssuerId,
 		)
 	}
 	return creditBalance, ctx.EventManager().EmitTypedEvent(&plasticcredit.EventRetiredCredits{
@@ -152,7 +176,16 @@ func (k Keeper) retireCreditsInCollection(ctx sdk.Context, denom string, amount 
 	return nil
 }
 
-func (k Keeper) transferCredits(ctx sdk.Context, denom string, from sdk.AccAddress, to sdk.AccAddress, amount uint64, retire bool) error {
+func (k Keeper) transferCredits(
+	ctx sdk.Context,
+	denom string,
+	from sdk.AccAddress,
+	to sdk.AccAddress,
+	amount uint64,
+	retire bool,
+	retiringEntityName string,
+	retiringEntityAdditionalData string,
+) error {
 	balanceSender, found := k.GetCreditBalance(ctx, from, denom)
 	if !found {
 		return errors.Wrapf(plasticcredit.ErrCreditBalanceNotFound, "no balance for denom %s and address %s found", denom, from)
@@ -216,6 +249,13 @@ func (k Keeper) transferCredits(ctx sdk.Context, denom string, from sdk.AccAddre
 		},
 	}
 	if retire {
+		err = k.createCreditRetirmentCertificate(ctx, to, denom, amount, retiringEntityName, retiringEntityAdditionalData)
+		if err != nil {
+			return errors.Wrapf(plasticcredit.ErrFailedCreateCertificate,
+				"unable to create certificate for owner %s for issuer %d",
+				to.String(), &creditType.IssuerId,
+			)
+		}
 		events = append(events, &plasticcredit.EventRetiredCredits{
 			Owner:                  to.String(),
 			Denom:                  denom,
@@ -278,8 +318,12 @@ func (k Keeper) issueCredits(ctx sdk.Context, creator string, projectID uint64, 
 	} else {
 		// If collection already exists, add new credits to the total and append new data if present
 		creditCollection.TotalAmount.Active += amount
-		creditCollection.MetadataUris = append(creditCollection.MetadataUris, metadataUris...)
-
+		// avoid adding duplicate metadata uris
+		for _, uri := range metadataUris {
+			if !slices.Contains(creditCollection.MetadataUris, uri) {
+				creditCollection.MetadataUris = append(creditCollection.MetadataUris, uri)
+			}
+		}
 	}
 
 	err = k.setCreditCollection(ctx, creditCollection)

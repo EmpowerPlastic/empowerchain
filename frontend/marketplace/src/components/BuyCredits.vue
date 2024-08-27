@@ -1,105 +1,332 @@
 <script setup lang="ts">
-import {contracts} from "@empower-plastic/empowerjs";
-import {GasPrice} from '@cosmjs/stargate';
-import {SigningCosmWasmClient} from "@cosmjs/cosmwasm-stargate";
-import {Tendermint37Client} from '@cosmjs/tendermint-rpc';
-import {CHAIN_ID, MARKETPLACE_CONTRACT, RPC_ENDPOINT} from "@/config/config";
-import {ref} from "vue";
-import {toast} from "vue3-toastify";
+import BuyButton from "@/components/BuyButton.vue";
+import Tooltip from "@/components/ui/Tooltip.vue";
+import {
+CHAIN_ID,
+MARKETPLACE_CONTRACT,
+PC_BACKEND_ENDPOINT,
+PC_BACKEND_ENDPOINT_API,
+RPC_ENDPOINT,
+} from "@/config/config";
+import { useAuth } from "@/stores/auth";
+import { useWallet } from "@/stores/wallet";
+import { authHeader, useFetcher } from "@/utils/fetcher";
+import { log } from "@/utils/logger";
+import { useNotifyer } from "@/utils/notifyer";
+import {
+formatDenom,
+getWallet,
+resolveSdkError,
+walletConnected,
+} from "@/utils/wallet-utils";
+import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { GasPrice } from "@cosmjs/stargate";
+import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
+import { contracts, empowerchain } from "@empower-plastic/empowerjs";
+import BigNumber from "bignumber.js";
+import { computed, onMounted, ref, watch } from "vue";
 
 export interface BuyCreditsProps {
-  availableCredits: string
-  pricePerCredit: number
-  selectedCoin: string
-  denom: string,
-  owner: string
+  availableCredits: number;
+  initialCredits: number;
+  pricePerCredit: number;
+  selectedCoin: string;
+  denom: string;
+  owner: string;
 }
 
-const amount = ref<number>(0)
+const { isAuthenticated, getAccessToken } = useAuth();
+const { isWalletConnected, address: walletAddress } = useWallet();
+const { notifyer } = useNotifyer();
+const amount = ref<number>(1);
 const props = defineProps<BuyCreditsProps>();
-const emitModalValue = defineEmits(['update:selectedCoin', 'update:amount'])
-const showButtonSpinner = ref(false)
-const updateAmount = (e: Event) => {
-  emitModalValue('update:amount', parseInt((e.target as HTMLInputElement).value))
-}
+const showButtonSpinner = ref(false);
+const insufficientBalance = ref(false);
+const coinFormatted = ref("");
+const currentBalance = ref(Number.MAX_SAFE_INTEGER);
+const currentPrice = ref(0);
 
-const coinsArray = ['Pay by invoice coming soon']
+const availableCreditsString = computed<string>(() => {
+  return `${props.availableCredits}/${props.initialCredits}`;
+});
 
+watch(isWalletConnected, async (newVal) => {
+  if (newVal === true) {
+    await initValues();
+  }
+});
 
-const buyCredits = async () => {
-  showButtonSpinner.value = true
+watch(amount, (newVal) => {
+  currentPrice.value = calculatePrice(newVal);
+  checkBalanceForPurchase(newVal);
+});
+
+watch(props, async (newVal) => {
+  if (newVal.selectedCoin) {
+    coinFormatted.value = await formatDenom(newVal.selectedCoin);
+    currentPrice.value = calculatePrice(amount.value);
+  }
+});
+
+const initValues = async () => {
   try {
-    const offlineSigner = window.keplr.getOfflineSigner(CHAIN_ID);
-    const accounts = await offlineSigner.getAccounts();
-    const tmClient = await Tendermint37Client.connect(
-        RPC_ENDPOINT);
-    // TODO replace with empowerjs getter when path registry issue is solved
-    const cosmWasmClient = await SigningCosmWasmClient.createWithSigner(tmClient,
-        offlineSigner, {
-          gasPrice: GasPrice.fromString("0.025umpwr"),
-        }
-    );
-    const contract = new contracts.PlasticCreditMarketplace.PlasticCreditMarketplaceClient(cosmWasmClient, accounts[0].address, MARKETPLACE_CONTRACT);
-    const res = await contract.buyCredits({
-      denom: props.denom,
-      owner: props.owner,
-      numberOfCreditsToBuy: amount.value ,
-    }, "auto", "", [{
-      denom: "umpwr",
-      amount: (props.pricePerCredit * 1000000 * amount.value).toString(),
-    }]);
+    if (props.selectedCoin) {
+      coinFormatted.value = await formatDenom(props.selectedCoin);
+    }
 
-    if (res) {
-      toast.success('Purchase was successful')
-      showButtonSpinner.value = false
+    if (walletConnected()) {
+      const wallet = getWallet();
+      const { createRPCQueryClient } = empowerchain.ClientFactory;
+      const rpcQueryClient = await createRPCQueryClient({
+        rpcEndpoint: RPC_ENDPOINT,
+      });
+      const balance = await rpcQueryClient.cosmos.bank.v1beta1.allBalances({
+        address: (await wallet.getKey(CHAIN_ID)).bech32Address,
+      });
+      currentBalance.value = 0;
+      balance.balances.forEach((b) => {
+        if (b.denom === props.selectedCoin) {
+          currentBalance.value = parseInt(b.amount);
+        }
+      });
+      checkBalanceForPurchase(amount.value);
     }
   } catch (error) {
-    showButtonSpinner.value = false
-    console.error(error)
-    toast.error('Purchase failed')
+    log(error);
   }
-}
+};
 
+onMounted(async () => {
+  await initValues();
+});
+
+const checkBalanceForPurchase = (amount: number) => {
+  if (
+    new BigNumber(currentPrice.value).times(1000000).toNumber() >
+    currentBalance.value
+  ) {
+    insufficientBalance.value = true;
+  } else {
+    insufficientBalance.value = false;
+  }
+};
+
+const calculatePrice = (amount: number) => {
+  if (!amount) {
+    return 0;
+  }
+  return new BigNumber(amount).times(props.pricePerCredit).toNumber();
+};
+
+const handleBuyCredits = async (retirererName: string) => {
+  if (!isWalletConnected.value || !walletAddress.value) {
+    notifyer.error("Please connect to wallet");
+    return;
+  }
+
+  showButtonSpinner.value = true;
+  try {
+    const wallet = getWallet();
+    const offlineSigner = await wallet.getOfflineSignerAuto(CHAIN_ID);
+    const accounts = await offlineSigner.getAccounts();
+    const tmClient = await Tendermint37Client.connect(RPC_ENDPOINT);
+    // TODO replace with empowerjs getter when path registry issue is solved
+    const cosmWasmClient = await SigningCosmWasmClient.createWithSigner(
+      tmClient,
+      offlineSigner,
+      {
+        gasPrice: GasPrice.fromString("0.025umpwr"),
+      },
+    );
+    const contract =
+      new contracts.PlasticCreditMarketplace.PlasticCreditMarketplaceClient(
+        cosmWasmClient,
+        accounts[0].address,
+        MARKETPLACE_CONTRACT,
+      );
+    const res = await contract.buyCredits(
+      {
+        denom: props.denom,
+        owner: props.owner,
+        numberOfCreditsToBuy: amount.value,
+        retire: true,
+        retiringEntityName: retirererName,
+      },
+      "auto",
+      "",
+      [
+        {
+          denom: props.selectedCoin,
+          amount: (props.pricePerCredit * 1000000 * amount.value).toString(),
+        },
+      ],
+    );
+    if (res) {
+      notifyer.success(
+        "Retired credits successfully and generated a certificate",
+      );
+    }
+  } catch (error) {
+    console.error(error);
+    notifyer.error("Purchase failed: " + resolveSdkError(error));
+  } finally {
+    showButtonSpinner.value = false;
+  }
+};
+
+const checkIfCreditsAvailable = () => {
+  if (props.availableCredits < amount.value) {
+    notifyer.error("Not enough credits available");
+    return false;
+  }
+  return true;
+};
+
+const handleCardPayment = async (retirererName: string) => {
+  if (!checkIfCreditsAvailable()) {
+    return;
+  }
+
+  if (!isAuthenticated) {
+    notifyer.error("Please login to buy credits");
+    return;
+  }
+
+  showButtonSpinner.value = true; // Guard against multiple clicks
+
+  const { post } = useFetcher();
+
+  const body = {
+    amount: amount.value,
+    denom: props.denom,
+    listingOwner: props.owner,
+    retirererName: retirererName,
+  };
+  try {
+    const accessToken = await getAccessToken(PC_BACKEND_ENDPOINT);
+
+    const response = await post(
+      `${PC_BACKEND_ENDPOINT_API}/payments/create-checkout-session-auth`,
+      body,
+      {
+        headers: authHeader(accessToken),
+      },
+    );
+    const paymentGatewayLink = await response.text();
+    window.location.href = paymentGatewayLink;
+  } catch (error) {
+    console.error("Custom error", error);
+    notifyer.error("This API call is not implemented yet"); // TODO: handle error
+  } finally {
+    showButtonSpinner.value = false;
+  }
+};
+
+const handleUnauthorizedUserPayment = async (
+  retirererName: string,
+  retirererEmail: string,
+) => {
+  if (!checkIfCreditsAvailable()) {
+    return;
+  }
+
+  showButtonSpinner.value = true; // Guard against multiple clicks
+
+  const { post } = useFetcher();
+
+  const body = {
+    amount: amount.value,
+    denom: props.denom,
+    listingOwner: props.owner,
+    retirererName: retirererName,
+    retirererEmail: retirererEmail,
+  };
+  try {
+    const response = await post(
+      `${PC_BACKEND_ENDPOINT_API}/payments/create-checkout-session-noauth`,
+      body,
+    );
+    const paymentGatewayLink = await response.text();
+    window.location.href = paymentGatewayLink;
+  } catch (error) {
+    console.error("Custom error", error);
+    notifyer.error("This API call is not implemented yet"); // TODO: handle error
+  } finally {
+    showButtonSpinner.value = false;
+  }
+};
 </script>
 <template>
-  <div class="bg-darkGray md:grid md:grid-cols-4 flex flex-col gap-1 p-6 rounded-sm">
-    <div>
+  <div
+    v-if="showButtonSpinner"
+    class="fixed inset-0 flex items-center justify-center z-50 bg-black opacity-80 md:hidden"
+  >
+    <div class="text-center">
+      <span class="loading loading-spinner"></span>
+      <p class="text-title24 lg:text-title32 text-white">
+        Processing transaction
+      </p>
+    </div>
+  </div>
+  <div
+    class="bg-darkGray md:flex-row flex md:justify-between flex-col gap-1 lg:gap-x-12 p-6 rounded-sm flex-wrap"
+  >
+    <div class="flex flex-col mb-6 lg:mb-0">
       <p class="text-title18">Available credits</p>
-      <p class="text-title38">{{ availableCredits }}</p>
+      <p class="text-title24 lg:text-title38">{{ availableCreditsString }}</p>
     </div>
-    <div>
+    <div class="flex flex-col mb-6 lg:mb-0 xl:grow">
       <p class="text-title18">Price per credit</p>
-      <p class="text-title38 font-bold">{{ pricePerCredit }} $MPWR</p>
+      <p class="text-title24 lg:text-title38 font-bold">
+        {{ pricePerCredit }} ${{ coinFormatted }}
+      </p>
     </div>
-    <div>
-      <div class="flex md:ml-[-60px]">
-        <p class="text-title18 text-subLabel  text-right hidden md:block mr-3 mt-8">Cost
-          {{ pricePerCredit * amount }}</p>
-        <div>
+    <div class="flex flex-col mb-6 lg:mb-0">
+      <div class="flex">
+        <div class="flex flex-col mb-0 mt-7">
+          <div class="md:flex flex-row items-center hidden mr-3">
+            <p class="text-title18 text-subLabel text-right mr-2">Cost</p>
+            <Tooltip
+              label="The seller will be charged a 3% service fee + 0-5% payment processing fee"
+              icon-class="w-[40px] h-[40px]"
+            />
+          </div>
+          <p class="text-title18 text-subLabel text-right hidden md:block mr-3">
+            {{ currentPrice }}
+          </p>
+        </div>
+        <div class="flex flex-col flex-wrap w-full">
           <p class="text-title18">How many you want to buy?</p>
-          <input type="number" class="input bg-darkGray mt-1 text-white text-title38 font-bold w-full" v-model="amount"/>
+          <input
+            type="number"
+            class="input bg-darkGray mt-1 p-7 text-white text-title24 font-bold w-full"
+            min="1"
+            v-model="amount"
+          />
         </div>
       </div>
-      <p class="text-title18 text-subLabel mt-1 md:hidden">Cost {{ pricePerCredit * amount }} $MPWR</p>
+      <div class="flex items-center text-title18 text-subLabel mt-2 md:hidden">
+        Cost
+        {{ pricePerCredit * amount }} ${{ coinFormatted }}
+        <Tooltip
+          label="The seller will be charged a 3% service fee + 0-5% payment processing fee"
+          icon-class="w-[20px] h-[20px]"
+          class="ml-2"
+        />
+      </div>
     </div>
-    <div class="flex flex-row mt-8">
-      <button
-          :disabled="showButtonSpinner"
-          class="btn btn-ghost w-full rounded-r-none md:max-w-[80%] max-w-[85%] normal-case bg-greenPrimary text-title24 p-0 font-normal md:ml-4 disabled:bg-lightGray disabled:text-white"
-          @click="buyCredits">
-        <span class="loading loading-spinner"></span>
-        {{ showButtonSpinner ? 'Processing transaction' : `Buy with ${selectedCoin}` }}
-      </button>
-      <div class="dropdown dropdown-end">
-        <label tabindex="0" class="btn btn-ghost rounded-l-none bg-dropdownGreen">
-          <img class="w-4" src="../assets/dropdownIconButton.svg"/>
-        </label>
-        <div tabindex="0" class="dropdown-content menu p-4 shadow bg-dropdownGray rounded-box w-52 !list-none">
-          <li disabled class="text-title12 font-semibold my-1 cursor-pointer" v-for="coin in coinsArray" :key="coin"
-          >{{ coin }}
-          </li>
-        </div>
-      </div>
+    <div class="flex flex-col w-full lg:w-auto lg:self-end">
+      <BuyButton
+        :show-button-spinner="showButtonSpinner"
+        :insufficient-balance="insufficientBalance"
+        :coin-formatted="coinFormatted"
+        :handle-buy-credits="handleBuyCredits"
+        :handle-card-payment="handleCardPayment"
+        :handle-unauthorized-user-payment="handleUnauthorizedUserPayment"
+        :is-wallet-connected="isWalletConnected"
+        :available-credits="availableCredits"
+        :buying-credit-amount="amount"
+      ></BuyButton>
     </div>
   </div>
 </template>

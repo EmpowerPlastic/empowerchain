@@ -1,70 +1,70 @@
-import * as _134 from "./certificates/events";
-import * as _135 from "./certificates/genesis";
-import * as _136 from "./certificates/query";
-import * as _137 from "./certificates/tx";
-import * as _138 from "./certificates/types";
-import * as _139 from "./plasticcredit/authz";
-import * as _140 from "./plasticcredit/events";
-import * as _141 from "./plasticcredit/genesis";
-import * as _142 from "./plasticcredit/query";
-import * as _143 from "./plasticcredit/tx";
-import * as _144 from "./plasticcredit/types";
-import * as _145 from "./proofofexistence/events";
-import * as _146 from "./proofofexistence/genesis";
-import * as _147 from "./proofofexistence/query";
-import * as _148 from "./proofofexistence/tx";
-import * as _149 from "./proofofexistence/types";
-import * as _246 from "./certificates/tx.amino";
-import * as _247 from "./plasticcredit/tx.amino";
-import * as _248 from "./proofofexistence/tx.amino";
-import * as _249 from "./certificates/tx.registry";
-import * as _250 from "./plasticcredit/tx.registry";
-import * as _251 from "./proofofexistence/tx.registry";
-import * as _252 from "./certificates/query.rpc.Query";
-import * as _253 from "./plasticcredit/query.rpc.Query";
-import * as _254 from "./proofofexistence/query.rpc.Query";
-import * as _255 from "./certificates/tx.rpc.msg";
-import * as _256 from "./plasticcredit/tx.rpc.msg";
-import * as _257 from "./proofofexistence/tx.rpc.msg";
-import * as _262 from "./rpc.query";
-import * as _263 from "./rpc.tx";
+import * as _135 from "./certificates/events";
+import * as _136 from "./certificates/genesis";
+import * as _137 from "./certificates/query";
+import * as _138 from "./certificates/tx";
+import * as _139 from "./certificates/types";
+import * as _140 from "./plasticcredit/authz";
+import * as _141 from "./plasticcredit/events";
+import * as _142 from "./plasticcredit/genesis";
+import * as _143 from "./plasticcredit/query";
+import * as _144 from "./plasticcredit/tx";
+import * as _145 from "./plasticcredit/types";
+import * as _146 from "./proofofexistence/events";
+import * as _147 from "./proofofexistence/genesis";
+import * as _148 from "./proofofexistence/query";
+import * as _149 from "./proofofexistence/tx";
+import * as _150 from "./proofofexistence/types";
+import * as _285 from "./certificates/tx.amino";
+import * as _286 from "./plasticcredit/tx.amino";
+import * as _287 from "./proofofexistence/tx.amino";
+import * as _288 from "./certificates/tx.registry";
+import * as _289 from "./plasticcredit/tx.registry";
+import * as _290 from "./proofofexistence/tx.registry";
+import * as _291 from "./certificates/query.rpc.Query";
+import * as _292 from "./plasticcredit/query.rpc.Query";
+import * as _293 from "./proofofexistence/query.rpc.Query";
+import * as _294 from "./certificates/tx.rpc.msg";
+import * as _295 from "./plasticcredit/tx.rpc.msg";
+import * as _296 from "./proofofexistence/tx.rpc.msg";
+import * as _326 from "./rpc.query";
+import * as _327 from "./rpc.tx";
 export namespace empowerchain {
   export const certificates = {
-    ..._134,
     ..._135,
     ..._136,
     ..._137,
     ..._138,
-    ..._246,
-    ..._249,
-    ..._252,
-    ..._255
+    ..._139,
+    ..._285,
+    ..._288,
+    ..._291,
+    ..._294
   };
   export const plasticcredit = {
-    ..._139,
     ..._140,
     ..._141,
     ..._142,
     ..._143,
     ..._144,
-    ..._247,
-    ..._250,
-    ..._253,
-    ..._256
+    ..._145,
+    ..._286,
+    ..._289,
+    ..._292,
+    ..._295
   };
   export const proofofexistence = {
-    ..._145,
     ..._146,
     ..._147,
     ..._148,
     ..._149,
-    ..._248,
-    ..._251,
-    ..._254,
-    ..._257
+    ..._150,
+    ..._287,
+    ..._290,
+    ..._293,
+    ..._296
   };
   export const ClientFactory = {
-    ..._262,
-    ..._263
+    ..._326,
+    ..._327
   };
 }

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/log"
@@ -39,7 +39,7 @@ func NewAppConstructor() network.AppConstructor {
 			nil,
 			true,
 			simtestutils.EmptyAppOptions{},
-			[]wasm.Option{},
+			[]wasmkeeper.Option{},
 			baseapp.SetChainID(val.GetCtx().Viper.GetString(flags.FlagChainID)),
 		)
 	}
@@ -70,7 +70,7 @@ func setup(withGenesis bool) (*EmpowerApp, GenesisState) {
 		nil,
 		true,
 		simtestutils.EmptyAppOptions{},
-		[]wasm.Option{},
+		[]wasmkeeper.Option{},
 	)
 
 	if withGenesis {
@@ -223,7 +223,7 @@ func NewTestNetworkFixture() network.TestFixture {
 		nil,
 		true,
 		simtestutils.NewAppOptionsWithFlagHome(dir),
-		[]wasm.Option{},
+		[]wasmkeeper.Option{},
 	)
 
 	return network.TestFixture{

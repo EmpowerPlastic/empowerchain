@@ -1,0 +1,1 @@
+# EmpowerChain mainnet resources

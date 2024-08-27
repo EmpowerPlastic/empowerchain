@@ -7,7 +7,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	dbm "github.com/cometbft/cometbft-db"
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -68,7 +68,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				nil,
 				true,
 				appOptions,
-				[]wasm.Option{},
+				[]wasmkeeper.Option{},
 				interBlockCacheOpt(),
 				baseapp.SetChainID(SimAppChainID),
 			)

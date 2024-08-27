@@ -17,6 +17,7 @@ pub enum ExecuteMsg {
         denom: String,
         number_of_credits: Uint64,
         price_per_credit: Coin,
+        operator: Option<Addr>,
     },
     UpdateListing {
         denom: String,
@@ -27,9 +28,34 @@ pub enum ExecuteMsg {
         owner: Addr,
         denom: String,
         number_of_credits_to_buy: u64,
+        retire: bool,
+        retiring_entity_name: Option<String>,
+        retiring_entity_additional_data: Option<String>,
     },
     CancelListing {
         denom: String,
+    },
+    FreezeCredits {
+        owner: Addr,
+        denom: String,
+        number_of_credits_to_freeze: u64,
+        buyer: Addr,
+        timeout_unix_timestamp: u64,
+    },
+    CancelFrozenCredits {
+        owner: Addr,
+        denom: String,
+        number_of_frozen_credits_to_cancel: u64, // 0 means all
+        buyer: Addr,
+    },
+    ReleaseFrozenCredits {
+        owner: Addr,
+        denom: String,
+        number_of_credits_to_release: u64,
+        buyer: Addr,
+        retire: bool,
+        retiring_entity_name: Option<String>,
+        retiring_entity_additional_data: Option<String>,
     },
     EditFeeSplitConfig {
         fee_percentage: Decimal,
@@ -58,6 +84,12 @@ pub enum QueryMsg {
     },
     #[returns(fee_splitter::Config)]
     FeeSplitConfig {},
+    #[returns(PriceResponse)]
+    Price {
+        owner: Addr,
+        denom: String,
+        number_of_credits_to_buy: u64,
+    },
 }
 
 #[cw_serde]
@@ -68,4 +100,10 @@ pub struct ListingsResponse {
 #[cw_serde]
 pub struct ListingResponse {
     pub listing: Listing,
+}
+
+#[cw_serde]
+pub struct PriceResponse {
+    pub total_price: Coin,
+    pub fee: Coin,
 }

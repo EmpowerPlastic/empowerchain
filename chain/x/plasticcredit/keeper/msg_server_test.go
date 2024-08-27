@@ -9,6 +9,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/cosmos/gogoproto/proto"
 
 	"github.com/EmpowerPlastic/empowerchain/app"
 	"github.com/EmpowerPlastic/empowerchain/app/params"
@@ -1264,6 +1265,7 @@ func (s *TestSuite) TestIssueCredits() {
 				s.Require().Equal(uint64(0), resp.Collection.TotalAmount.Retired)
 				s.Require().Equal(uint64(0), creditCollection.TotalAmount.Retired)
 				s.Require().Equal(uint64(0), ownerBalance.Balance.Retired)
+				s.Require().Equal(tc.msg.MetadataUris, creditCollection.MetadataUris)
 				s.Require().Len(events, 1)
 				parsedEvent, err := sdk.ParseTypedEvent(events[0])
 				s.Require().NoError(err)
@@ -1434,13 +1436,20 @@ func (s *TestSuite) TestTransferCredits() {
 				s.Require().Equal(tc.expectedSenderBalance, senderBalance.Balance.Active)
 				s.Require().Equal(tc.expectedRecipientBalanceActive, recipientBalance.Balance.Active)
 				s.Require().Equal(tc.expectedRecipientBalanceRetired, recipientBalance.Balance.Retired)
+				var parsedEvent proto.Message
 				if tc.msg.Retire == true {
 					collectionAfter, found = k.GetCreditCollection(s.ctx, tc.msg.Denom)
 					s.Require().True(found)
 					s.Require().Equal(collectionBefore.TotalAmount.Active-tc.msg.Amount, collectionAfter.TotalAmount.Active)
 					s.Require().Equal(collectionBefore.TotalAmount.Retired+tc.msg.Amount, collectionAfter.TotalAmount.Retired)
-					s.Require().Len(events, 2)
-					parsedEvent, err := sdk.ParseTypedEvent(events[1])
+					s.Require().Len(events, 3)
+					parsedEvent, err = sdk.ParseTypedEvent(events[0])
+					s.Require().NoError(err)
+					eventCreateCertificate, ok := parsedEvent.(*certificates.EventCreateCertificate)
+					s.Require().True(ok)
+					s.Require().Equal(tc.msg.To, eventCreateCertificate.Owner)
+					s.Require().Equal(certificates.CertificateType_CREDIT_RETIREMENT.String(), eventCreateCertificate.CertificateType)
+					parsedEvent, err = sdk.ParseTypedEvent(events[2])
 					s.Require().NoError(err)
 					eventRetiredCredits, ok := parsedEvent.(*plasticcredit.EventRetiredCredits)
 					s.Require().True(ok)
@@ -1451,10 +1460,11 @@ func (s *TestSuite) TestTransferCredits() {
 						IssuerId:               s.sampleIssuerID,
 						CreditTypeAbbreviation: s.sampleCreditTypeAbbreviation,
 					}, eventRetiredCredits)
+					parsedEvent, err = sdk.ParseTypedEvent(events[1])
 				} else {
 					s.Require().Len(events, 1)
+					parsedEvent, err = sdk.ParseTypedEvent(events[0])
 				}
-				parsedEvent, err := sdk.ParseTypedEvent(events[0])
 				s.Require().NoError(err)
 				EventTransferCredits, ok := parsedEvent.(*plasticcredit.EventTransferCredits)
 				s.Require().True(ok)

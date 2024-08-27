@@ -103,6 +103,14 @@ export default withMermaid(
             {
               text: 'Overview',
               link: '/tokenomics/overview'
+            },
+            {
+              text: 'Initial token distribution',
+              link: '/tokenomics/initial-token-distribution'
+            },
+            {
+              text: 'Emission distribution',
+              link: '/tokenomics/emission-distribution'
             }
           ],
         },
@@ -163,6 +171,10 @@ export default withMermaid(
               link: '/developers/architecture'
             },
             {
+              text: 'Release Life Cycle',
+              link: '/developers/release-life-cycle'
+            },
+            {
               text: 'Plastic Credits',
               link: '/developers/plastic-credits'
             }
@@ -191,6 +203,10 @@ export default withMermaid(
             {
               text: 'Delegation program',
               link: '/validators/delegation-program'
+            },
+            {
+              text: 'Resources',
+              link: '/validators/resources'
             }
           ]
         },
@@ -208,7 +224,12 @@ export default withMermaid(
               text: 'API docs',
               link: '/references/api-docs/swagger'
             },
-          ]))
+          ]).concat(cliDocs.concat([
+            {
+              text: 'Swagger',
+              link: 'https://api.empowerchain.io:1317/swagger/'
+            }
+          ])))
         },
         {
           text: 'Misc',

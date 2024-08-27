@@ -16,7 +16,7 @@ pub enum ContractError {
     #[error("listing needs to have a price per credit")]
     ZeroPrice {},
 
-    #[error("not enough credits available on listing to buy")]
+    #[error("not enough credits available on listing")]
     NotEnoughCredits {},
 
     #[error("not enough funds sent to buy credits")]
@@ -30,6 +30,18 @@ pub enum ContractError {
 
     #[error("listing already exists")]
     ListingAlreadyExists {},
+
+    #[error("timeout not in future")]
+    TimeoutNotInFuture {},
+
+    #[error("timeout over maximum, which is set to {max_timeout} seconds")]
+    TimeoutTooLong {max_timeout: u64},
+    
+    #[error("freeze timed out")]
+    TimedOut {},
+
+    #[error("freeze not found")]
+    FreezeNotFound {},
 
     #[error("fee split error {0}")]
     FeeSplitError(#[from] FeeSplitterError),
