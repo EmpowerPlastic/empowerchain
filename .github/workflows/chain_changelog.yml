@@ -24,7 +24,7 @@ jobs:
           echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
           echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Update changelogs
         run: ./chain/scripts/changelog.sh
