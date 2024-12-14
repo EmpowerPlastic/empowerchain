@@ -19,6 +19,9 @@ export default withMermaid(
         });
       },
     },
+    rewrites:{
+      'user-guides/:user-guides/(.*)':'user-guides/:user-guides/index.md'
+    },
     themeConfig: {
       logo: '/logo.svg',
       socialLinks: [
@@ -239,6 +242,16 @@ export default withMermaid(
               text: 'Brand assets',
               link: '/misc/brand-assets'
             }
+          ]
+        },
+        {
+          text: 'User Guides',
+          collapsed: true,
+          items:[
+            {
+              text: 'Proof of Existence',
+              link: '/user-guides/proof-of-existence/'
+            },
           ]
         }
       ]
